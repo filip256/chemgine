@@ -89,6 +89,11 @@ namespace tools
 			return true;
 		return false;
 	}
+
+	unsigned long int gcd()
+	{
+
+	}
 }
 
 namespace files 
@@ -166,11 +171,11 @@ namespace data
 	public:
 		std::string _ionName, _abreviation;
 		std::vector<int> _charges;
-		double _atomicMass;
+		long double _atomicMass;
 		bool _isPolyatomic;
 
 	public:
-		IonData(const std::string& abreviation, const std::string& ionName, const std::vector<int>& charges, const double atomicMass, const bool isPolyatomic) :
+		IonData(const std::string& abreviation, const std::string& ionName, const std::vector<int>& charges, const long double atomicMass, const bool isPolyatomic) :
 			_abreviation(abreviation),
 			_ionName(ionName),
 			_charges(charges),
@@ -184,7 +189,7 @@ namespace data
 	public:
 		std::string _atomName, _ionName;
 		std::vector<int> _charges;
-		double _atomicMass;
+		long double _atomicMass;
 		bool _isPolyatomic;
 
 	public:
@@ -195,7 +200,7 @@ namespace data
 			_isPolyatomic(false)
 		{}
 
-		AtomicData(const std::string& atomName, const std::string& ionName, const std::vector<int>& charges, const double atomicMass, const bool isPolyatomic) :
+		AtomicData(const std::string& atomName, const std::string& ionName, const std::vector<int>& charges, const long double atomicMass, const bool isPolyatomic) :
 			_atomName(atomName),
 			_ionName(ionName),
 			_charges(charges),
@@ -239,7 +244,7 @@ namespace data
 				for (std::vector<int>::size_type i = 0; i < size; ++i)
 					charges.push_back(std::stoi(stringCharges[i]));
 
-				_table[line[0]] = AtomicData(line[1], line[2], charges, std::stod(line[4]), tools::stringToBool(line[5]));
+				_table[line[0]] = AtomicData(line[1], line[2], charges, std::stold(line[4]), tools::stringToBool(line[5]));
 			}
 			file.close();
 
@@ -264,19 +269,30 @@ namespace data
 	};
 }
 
-namespace chem
+namespace util
 {
+	enum MeasureUnits
+	{
+		Unit = 0,
+		Gram = 1,
+		Liter = 2,
+		Mole = 3
+	};
+
 	class Quantity
 	{
 		//store in standard measure unit (i.e. grams, moles)
 		long double _standardAmount;
+		int _unit;
 
 	public:
-		Quantity() :
+		Quantity(MeasureUnits unit) :
+			_unit(unit),
 			_standardAmount(0.0)
 		{}
 
-		Quantity(const long double amount) :
+		Quantity(MeasureUnits unit, const long double amount) :
+			_unit(unit),
 			_standardAmount(amount)
 		{}
 
@@ -284,7 +300,23 @@ namespace chem
 		long double asStd() const { return _standardAmount; }
 		long double asMilli() const { return _standardAmount * 1000.0; }
 		long double asMicro() const { return _standardAmount * 1000000.0; }
-		std::string asString() const { return std::to_string(_standardAmount); }
+		std::string asString() const 
+		{ 
+			std::string unitStr;
+			switch (_unit) //TODO: change this if needed
+			{
+			case Gram:
+				unitStr = "grams";
+				break;
+			case Liter:
+				unitStr = "liters";
+				break;
+			case Mole:
+				unitStr = "moles";
+				break;
+			}
+			return std::to_string(_standardAmount) + " " + unitStr; 
+		}
 
 		void setAsKilo(const long double amount) { _standardAmount = amount * 1000.0; }
 		void set(const long double amount) { _standardAmount = amount; }
@@ -298,13 +330,15 @@ namespace chem
 
 	};
 
-	template <class A, class B> class Pair
+	template <class T> class WithQuantity
 	{
-	public:
-		A a;
-		B b;
+		Quantity amount;
+		T item;
 	};
+}
 
+namespace chem
+{
 	class Ion
 	{
 		std::string _id;
@@ -322,7 +356,10 @@ namespace chem
 			           )
 		{}
 
-		std::string name()        const { return _properties._ionName;     }
+		std::string name() const { return _properties._ionName; }
+		long double atomicMass() const { return _properties._atomicMass; }
+		std::vector<int> charges() const { return _properties._charges; }
+		bool isPolyatomic() const { return _properties._isPolyatomic; }
 		std::string abreviation() const { return _properties._abreviation; }
 
 	};
@@ -347,8 +384,11 @@ namespace chem
 			_cation(cation),
 			_anion(anion),
 			Substance(cation.name() + " " + anion.name(), cation.abreviation() + anion.abreviation())
-		{}
+		{
+			std::lcm(5, 3); // <- check t fit + add monocharges to table
+		}
 
+		InorganicSubstance(const util::WithQuantity<Ion>& cation, const util::WithQuantity<Ion>& anion)
 
 
 		void printName()
@@ -396,7 +436,7 @@ int main()
 	subst.printName();
 	subst.printAbreviation();*/
 
-	chem::Quantity q(123.564);
+	util::Quantity q(util::Gram, 123.564);
 	std::cout << q.asKilo() << ' ' << q.asMilli() << ' ' << q.asMicro() << '\n';
 	q.setAsMicro(1);
 	q.addAsKilo(1000000);
