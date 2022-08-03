@@ -90,9 +90,43 @@ namespace tools
 		return false;
 	}
 
-	unsigned long int gcd()
+	long long unsigned int gcd(unsigned int a, unsigned int b)
 	{
+		//Stein algorithm
+		if (a == 0)
+			return b;
+		if (b == 0)
+			return a;
 
+		int k = 0;
+		while (((a | b) & 1) == 0)
+		{
+			a >>= 1;
+			b >>= 1;
+			++k;
+		}
+
+		while ((a & 1) == 0)
+			a >>= 1;
+
+		do
+		{
+			while ((b & 1) == 0)
+				b >>= 1;
+
+			if (a > b)
+				std::swap(a, b);
+
+			b -= a;
+		} while (b != 0);
+
+		long long unsigned int ret = a; //avoid overflow
+		return ret << k;
+	}
+
+	long long unsigned int lcm(unsigned int a, unsigned int b)
+	{
+		return a / gcd(a, b) * b;
 	}
 }
 
@@ -267,6 +301,12 @@ namespace data
 
 		}
 	};
+
+	class SubstanceData
+	{
+		std::string _mame, _abreviation;
+		long double _molecularMass;
+	};
 }
 
 namespace util
@@ -286,12 +326,17 @@ namespace util
 		int _unit;
 
 	public:
-		Quantity(MeasureUnits unit) :
+		Quantity(const MeasureUnits unit) :
 			_unit(unit),
 			_standardAmount(0.0)
 		{}
 
-		Quantity(MeasureUnits unit, const long double amount) :
+		Quantity(const long double amount) :
+			_unit(Unit),
+			_standardAmount(amount)
+		{}
+
+		Quantity(const MeasureUnits unit, const long double amount) :
 			_unit(unit),
 			_standardAmount(amount)
 		{}
@@ -332,8 +377,22 @@ namespace util
 
 	template <class T> class WithQuantity
 	{
+	public:
 		Quantity amount;
 		T item;
+
+		WithQuantity(const T& object, const Quantity& quantity) :
+			amount(quantity),
+			item(object)
+		{}
+
+		//allows simpler synthax
+		WithQuantity(const T& object) :
+			amount(Unit, 1.0),
+			item(object)
+		{}
+
+
 	};
 }
 
@@ -362,6 +421,16 @@ namespace chem
 		bool isPolyatomic() const { return _properties._isPolyatomic; }
 		std::string abreviation() const { return _properties._abreviation; }
 
+		//returns the index in charges list or -1
+		int hasCharge(const int charge) const 
+		{
+			std::vector<int>::size_type size = _properties._charges.size();
+			for (std::vector<int>::size_type i = 0; i < size; ++i)
+				if (_properties._charges[i] == charge)
+					return i;
+			return -1;
+		}
+
 	};
 
 	class Substance
@@ -377,19 +446,38 @@ namespace chem
 
 	class InorganicSubstance : Substance
 	{
-		Ion _cation, _anion;
+		util::WithQuantity<Ion> _cation, _anion;
+		int _cationCharge, _anionCharge;
+		bool _isWellFormed;
 
 	public:
-		InorganicSubstance(const Ion& cation, const Ion& anion) :
+
+		InorganicSubstance(const util::WithQuantity<Ion>& cation, const util::WithQuantity<Ion>& anion) :
 			_cation(cation),
 			_anion(anion),
-			Substance(cation.name() + " " + anion.name(), cation.abreviation() + anion.abreviation())
+			_isWellFormed(true),
+			Substance(cation.item.name() + " " + anion.item.name(), cation.item.abreviation() + anion.item.abreviation())
 		{
-			std::lcm(5, 3); // <- check t fit + add monocharges to table
+			//check all combinations until a balanced one is found and set the isWellFormed flag
+			//needed because ions can have multiple charges
+			const std::vector<int>::size_type size1 = _cation.item.charges().size();
+			const std::vector<int>::size_type size2 = _anion.item.charges().size();
+			bool ok = false;
+			for(std::vector<int>::size_type i = 0; i < size1 && !ok; ++i)
+				for(std::vector<int>::size_type j = 0; j < size2; ++j)
+					if (_cation.amount.asStd() * _cation.item.charges()[i] == -1 * (_anion.amount.asStd() * _anion.item.charges()[j]))
+					{
+						_cationCharge = _cation.item.charges()[i];
+						_anionCharge = _anion.item.charges()[j];
+						ok = true;
+						break;
+					}
+
+			if(!ok)
+				_isWellFormed = false;
 		}
 
-		InorganicSubstance(const util::WithQuantity<Ion>& cation, const util::WithQuantity<Ion>& anion)
-
+		bool isWellFormed() const { return _isWellFormed; }
 
 		void printName()
 		{
@@ -428,19 +516,22 @@ namespace chem
 
 int main()
 {
-	/*data::AtomicDataTable datac;
+	data::AtomicDataTable datac;
 	std::cout<<datac.loadFromFile("Atoms.csv").message<<'\n';
 
-	chem::InorganicSubstance subst(chem::Ion(datac, "Na"), chem::Ion(datac, "Cl"));
+	chem::InorganicSubstance subst(chem::Ion(datac, "Mg"), util::WithQuantity<chem::Ion>(chem::Ion(datac, "SO4"), 1));
 
 	subst.printName();
-	subst.printAbreviation();*/
+	subst.printAbreviation();
+	std::cout << subst.isWellFormed();
 
-	util::Quantity q(util::Gram, 123.564);
+	/*util::Quantity q(util::Gram, 123.564);
 	std::cout << q.asKilo() << ' ' << q.asMilli() << ' ' << q.asMicro() << '\n';
 	q.setAsMicro(1);
 	q.addAsKilo(1000000);
-	std::cout << q.asString();
+	std::cout << q.asString();*/
+
+	//std::cout<<tools::lcm(11111111, 11111112);
 
 	//std::cout << files::createChecksum("Atoms.csv");
 
@@ -452,7 +543,7 @@ int main()
 
 	//table.print();
 
-
+	
 
 	getchar();
 	return 0;
