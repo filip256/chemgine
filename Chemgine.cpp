@@ -43,6 +43,7 @@ public:
 	static const StatusCode<> FileNotOpen; //42
 	static const StatusCode<> FileEmpty; //43
 	static const StatusCode<> FileCorrupted; //45
+	static const StatusCode<> BadFormat; //47
 
 	static const StatusCode<> Ok; //200
 	static const StatusCode<> Bad; //200
@@ -56,6 +57,7 @@ const StatusCode<> StatusCode<>::FileCouldNotOpen(41, "File could not have been 
 const StatusCode<> StatusCode<>::FileNotOpen(42, "File is not open");
 const StatusCode<> StatusCode<>::FileEmpty(43, "File is empty");
 const StatusCode<> StatusCode<>::FileCorrupted(45, "File failed checksum verification");
+const StatusCode<> StatusCode<>::BadFormat(47, "Error encountered while processing data");
 
 const StatusCode<> StatusCode<>::Ok(200, "Ok");
 const StatusCode<> StatusCode<>::True(201, "True");
@@ -198,117 +200,6 @@ namespace files
 	}
 }
 
-namespace data
-{
-	class IonData
-	{
-	public:
-		std::string _ionName, _abreviation;
-		std::vector<int> _charges;
-		long double _atomicMass;
-		bool _isPolyatomic;
-
-	public:
-		IonData(const std::string& abreviation, const std::string& ionName, const std::vector<int>& charges, const long double atomicMass, const bool isPolyatomic) :
-			_abreviation(abreviation),
-			_ionName(ionName),
-			_charges(charges),
-			_atomicMass(atomicMass),
-			_isPolyatomic(isPolyatomic)
-		{}
-	};
-
-	class AtomicData
-	{
-	public:
-		std::string _atomName, _ionName;
-		std::vector<int> _charges;
-		long double _atomicMass;
-		bool _isPolyatomic;
-
-	public:
-		AtomicData() :
-			_atomName("empty"),
-			_ionName("empty"),
-			_atomicMass(0),
-			_isPolyatomic(false)
-		{}
-
-		AtomicData(const std::string& atomName, const std::string& ionName, const std::vector<int>& charges, const long double atomicMass, const bool isPolyatomic) :
-			_atomName(atomName),
-			_ionName(ionName),
-			_charges(charges),
-			_atomicMass(atomicMass),
-			_isPolyatomic(isPolyatomic)
-		{}
-	};
-
-	class AtomicDataTable
-	{
-		std::map<std::string, AtomicData> _table;
-	public:
-		AtomicDataTable() : _table() 
-		{
-			
-		}
-
-		const StatusCode<> loadFromFile(const std::string& dataFile)
-		{
-			std::ifstream file(dataFile);
-
-			if (!file.is_open())
-				return StatusCode<>::FileCouldNotOpen;
-
-			if (files::verifyChecksum(file).code != 200) //not OK
-				return StatusCode<>::FileCorrupted;
-
-			//parse file
-			std::string buffer;
-			while (std::getline(file, buffer))
-			{
-				//parse csv line
-				auto line = tools::parseList(buffer, ',');
-
-				//get vector of strings of charges
-				auto stringCharges = tools::parseList(line[3], ' ');
-
-				//convert strings to ints
-				std::vector<int> charges;
-				const std::vector<int>::size_type size = stringCharges.size();
-				for (std::vector<int>::size_type i = 0; i < size; ++i)
-					charges.push_back(std::stoi(stringCharges[i]));
-
-				_table[line[0]] = AtomicData(line[1], line[2], charges, std::stold(line[4]), tools::stringToBool(line[5]));
-			}
-			file.close();
-
-			return StatusCode<>::Ok;
-		}
-
-		const std::map<std::string, AtomicData>& getData() const { return _table; }
-
-		void print()
-		{
-			//mostly for testing
-			for (std::map<std::string, AtomicData>::iterator it = _table.begin(), end = _table.end(); it != end; ++it)
-			{
-				std::cout << it->first << ": " << it->second._atomName << ", " << it->second._ionName << ", [";
-				unsigned int size = it->second._charges.size();
-				for (unsigned int i = 0; i < size; ++i)
-					std::cout << it->second._charges[i] << ",";
-				std::cout<< "], " << it->second._atomicMass << ", " << it->second._isPolyatomic << '\n';
-			}
-
-		}
-	};
-
-	class SubstanceData
-	{
-		std::string _mame, _abreviation;
-		long double _molecularMass;
-	};
-}
-
 namespace util
 {
 	enum MeasureUnits
@@ -323,7 +214,7 @@ namespace util
 	{
 		//store in standard measure unit (i.e. grams, moles)
 		long double _standardAmount;
-		int _unit;
+		MeasureUnits _unit;
 
 	public:
 		Quantity(const MeasureUnits unit) :
@@ -345,8 +236,8 @@ namespace util
 		long double asStd() const { return _standardAmount; }
 		long double asMilli() const { return _standardAmount * 1000.0; }
 		long double asMicro() const { return _standardAmount * 1000000.0; }
-		std::string asString() const 
-		{ 
+		std::string asString() const
+		{
 			std::string unitStr;
 			switch (_unit) //TODO: change this if needed
 			{
@@ -360,7 +251,7 @@ namespace util
 				unitStr = "moles";
 				break;
 			}
-			return std::to_string(_standardAmount) + " " + unitStr; 
+			return std::to_string(_standardAmount) + " " + unitStr;
 		}
 
 		void setAsKilo(const long double amount) { _standardAmount = amount * 1000.0; }
@@ -396,6 +287,211 @@ namespace util
 	};
 }
 
+namespace data
+{
+	class AtomicData
+	{
+	public:
+		std::string _atomName, _ionName;
+		std::vector<int> _charges;
+		long double _atomicMass;
+		bool _isPolyatomic;
+
+	public:
+
+		AtomicData(const std::string& atomName, const std::string& ionName, const std::vector<int>& charges, const long double atomicMass, const bool isPolyatomic) :
+			_atomName(atomName),
+			_ionName(ionName),
+			_charges(charges),
+			_atomicMass(atomicMass),
+			_isPolyatomic(isPolyatomic)
+		{}
+	};
+
+	class IonData
+	{
+	public:
+		std::string _ionName, _abreviation;
+		std::vector<int> _charges;
+		long double _atomicMass;
+		bool _isPolyatomic;
+
+	public:
+		IonData(const std::string& abreviation, const std::string& ionName, const std::vector<int>& charges, const long double atomicMass, const bool isPolyatomic) :
+			_abreviation(abreviation),
+			_ionName(ionName),
+			_charges(charges),
+			_atomicMass(atomicMass),
+			_isPolyatomic(isPolyatomic)
+		{}
+
+		IonData(const std::string& id, const AtomicData& atomData) :
+			_abreviation(id),
+			_ionName(atomData._ionName),
+			_charges(atomData._charges),
+			_atomicMass(atomData._atomicMass),
+			_isPolyatomic(atomData._isPolyatomic)
+		{}
+	};
+
+	class SubstanceData
+	{
+	public:
+		std::string _name, _class;
+		util::WithQuantity<std::string> _cationId, _anionId;
+		long double _molecularMass, _density, _acidity, _meltingPoint, _boilingPoint, _solubility;
+		int _reactivity;
+		//TODO: sf::Color _color;
+
+		SubstanceData(
+			const util::WithQuantity<std::string> cationId,
+			const util::WithQuantity<std::string> anionId,
+			const std::string& name,
+			const long double molecularMass,
+			const long double density,
+			const std::string& classType,
+			const long double acidity,
+			const int reactivity,
+			const long double meltingPoint,
+			const long double boilingPoint,
+			const long double solubility
+		) :
+			_name(name),
+			_class(classType),
+			_cationId(cationId),
+			_anionId(anionId),
+			_molecularMass(molecularMass),
+			_density(density),
+			_acidity(acidity),
+			_meltingPoint(meltingPoint),
+			_boilingPoint(boilingPoint),
+			_solubility(solubility),
+			_reactivity(reactivity)
+		{}
+
+
+	};
+
+	//base for data tables
+	template<class T> class DataTable
+	{
+	protected:
+		std::map<std::string, T> _table;
+	public:
+		DataTable() : _table()
+		{
+
+		}
+
+		const std::map<std::string, T>& getData() const { return _table; }
+
+		bool contains(const std::string id) const
+		{
+			return _table.find(id) != _table.end();
+		}
+	};
+
+	class AtomicDataTable : public DataTable<AtomicData>
+	{
+	public:
+		AtomicDataTable() : DataTable()
+		{
+			
+		}
+
+		const StatusCode<> loadFromFile(const std::string& dataFile)
+		{
+			std::ifstream file(dataFile);
+
+			if (!file.is_open())
+				return StatusCode<>::FileCouldNotOpen;
+
+			if (files::verifyChecksum(file).code != 200) //not OK
+				return StatusCode<>::FileCorrupted;
+
+			//erase old table
+			_table.erase(_table.begin(), _table.end());
+
+			//parse file
+			std::string buffer;
+			while (std::getline(file, buffer))
+			{
+				//parse csv line
+				auto line = tools::parseList(buffer, ',');
+
+				//get vector of strings of charges
+				auto stringCharges = tools::parseList(line[3], ' ');
+
+				//convert strings to ints
+				std::vector<int> charges;
+				const std::vector<int>::size_type size = stringCharges.size();
+				for (std::vector<int>::size_type i = 0; i < size; ++i)
+					charges.push_back(std::stoi(stringCharges[i]));
+
+				if (!_table.emplace(line[0], AtomicData(line[1], line[2], charges, std::stold(line[4]), tools::stringToBool(line[5]))).second)
+					return StatusCode<>::BadFormat;
+			}
+			file.close();
+
+			return StatusCode<>::Ok;
+		}
+
+		const AtomicData& getAtom(const std::string& id) const { return _table.at(id); }
+	};
+
+	class SubstanceDataTable : public DataTable<SubstanceData>
+	{
+	public:
+		SubstanceDataTable() : DataTable()
+		{
+
+		}
+
+		const StatusCode<> loadFromFile(const std::string& dataFile)
+		{
+			std::ifstream file(dataFile);
+
+			if (!file.is_open())
+				return StatusCode<>::FileCouldNotOpen;
+
+			if (files::verifyChecksum(file).code != 200) //not OK
+				return StatusCode<>::FileCorrupted;
+
+			//erase old table
+			_table.erase(_table.begin(), _table.end());
+
+			//parse file
+			std::string buffer;
+			while (std::getline(file, buffer))
+			{
+				//parse csv line
+				auto line = tools::parseList(buffer, ',');
+
+				//get cation and anion
+				auto cationString = tools::parseList(line[1], ' ');
+				auto anionString = tools::parseList(line[2], ' ');
+
+				//add element
+				if (!_table.emplace(line[0], SubstanceData(
+					util::WithQuantity<std::string>(cationString[0], cationString.size() > 1 ? util::Quantity(std::stoi(cationString[1])) : 1), // unreadable ik
+					util::WithQuantity<std::string>(anionString[0], anionString.size() > 1 ? util::Quantity(std::stoi(anionString[1])) : 1),    // if no value is specified in the table, use 1 as default
+					line[3], std::stold(line[4]), std::stold(line[5]), line[6], std::stold(line[7]), std::stoi(line[8]), std::stold(line[9]),
+					std::stold(line[10]), std::stold(line[11]))
+				).second)
+					return StatusCode<>::BadFormat;
+
+			}
+			file.close();
+
+			return StatusCode<>::Ok;
+		}
+
+		const util::WithQuantity<std::string> getCation(const std::string& id) const { return _table.at(id)._cationId; }
+
+		const util::WithQuantity<std::string> getAnion(const std::string& id) const { return _table.at(id)._anionId; }
+	};
+}
+
 namespace chem
 {
 	class Ion
@@ -406,13 +502,13 @@ namespace chem
 	public:
 		//copies data from the datastore to internal member properties
 		//TODO: check if id exists!
-		Ion(const data::AtomicDataTable& dataTable, const std::string& id) : 
+		Ion(const data::AtomicDataTable& dataTable, const std::string& id) :
 			_properties(id,
-				        dataTable.getData().at(id)._ionName,
-				        dataTable.getData().at(id)._charges,
-				        dataTable.getData().at(id)._atomicMass,
-				        dataTable.getData().at(id)._isPolyatomic
-			           )
+				dataTable.getData().at(id)._ionName,
+				dataTable.getData().at(id)._charges,
+				dataTable.getData().at(id)._atomicMass,
+				dataTable.getData().at(id)._isPolyatomic
+			)
 		{}
 
 		std::string name() const { return _properties._ionName; }
@@ -422,7 +518,7 @@ namespace chem
 		std::string abreviation() const { return _properties._abreviation; }
 
 		//returns the index in charges list or -1
-		int hasCharge(const int charge) const 
+		int hasCharge(const int charge) const
 		{
 			std::vector<int>::size_type size = _properties._charges.size();
 			for (std::vector<int>::size_type i = 0; i < size; ++i)
@@ -451,6 +547,14 @@ namespace chem
 		bool _isWellFormed;
 
 	public:
+		InorganicSubstance(const data::SubstanceDataTable& substanceRef, const data::AtomicDataTable& atomicRef, const std::string& id) :
+			_cation(util::WithQuantity<Ion>(Ion(atomicRef, substanceRef.getCation(id).item), substanceRef.getCation(id).amount)),
+			_anion(util::WithQuantity<Ion>(Ion(atomicRef, substanceRef.getAnion(id).item), substanceRef.getAnion(id).amount)),
+			_isWellFormed(true),
+			Substance(substanceRef.getData().at(id)._name, id)
+		{
+			//TODO: resolve charges
+		}
 
 		InorganicSubstance(const util::WithQuantity<Ion>& cation, const util::WithQuantity<Ion>& anion) :
 			_cation(cation),
@@ -463,8 +567,8 @@ namespace chem
 			const std::vector<int>::size_type size1 = _cation.item.charges().size();
 			const std::vector<int>::size_type size2 = _anion.item.charges().size();
 			bool ok = false;
-			for(std::vector<int>::size_type i = 0; i < size1 && !ok; ++i)
-				for(std::vector<int>::size_type j = 0; j < size2; ++j)
+			for (std::vector<int>::size_type i = 0; i < size1 && !ok; ++i)
+				for (std::vector<int>::size_type j = 0; j < size2; ++j)
 					if (_cation.amount.asStd() * _cation.item.charges()[i] == -1 * (_anion.amount.asStd() * _anion.item.charges()[j]))
 					{
 						_cationCharge = _cation.item.charges()[i];
@@ -473,7 +577,7 @@ namespace chem
 						break;
 					}
 
-			if(!ok)
+			if (!ok)
 				_isWellFormed = false;
 		}
 
@@ -514,16 +618,25 @@ namespace chem
 
 }
 
+
 int main()
 {
-	data::AtomicDataTable datac;
+	/*data::AtomicDataTable datac;
 	std::cout<<datac.loadFromFile("Atoms.csv").message<<'\n';
+	std::cout << datac.getData().size() << '\n';
 
 	chem::InorganicSubstance subst(chem::Ion(datac, "Mg"), util::WithQuantity<chem::Ion>(chem::Ion(datac, "SO4"), 1));
 
 	subst.printName();
 	subst.printAbreviation();
-	std::cout << subst.isWellFormed();
+	std::cout << subst.isWellFormed();*/
+
+	data::AtomicDataTable datac;
+	std::cout << datac.loadFromFile("Atoms.csv").message << '\n';
+	data::SubstanceDataTable datas;
+	std::cout << datas.loadFromFile("InorganicSubst.csv").message << '\n';
+	chem::InorganicSubstance subst(datas, datac, "H2SO4");
+	subst.printName();
 
 	/*util::Quantity q(util::Gram, 123.564);
 	std::cout << q.asKilo() << ' ' << q.asMilli() << ' ' << q.asMicro() << '\n';
@@ -531,9 +644,7 @@ int main()
 	q.addAsKilo(1000000);
 	std::cout << q.asString();*/
 
-	//std::cout<<tools::lcm(11111111, 11111112);
-
-	//std::cout << files::createChecksum("Atoms.csv");
+	//std::cout << files::createChecksum("InorganicSubst.csv");
 
 	/*std::ifstream in("Atoms.csv");
 	std::cout<<files::verifyChecksum(in).message;
@@ -543,7 +654,6 @@ int main()
 
 	//table.print();
 
-	
 
 	getchar();
 	return 0;
