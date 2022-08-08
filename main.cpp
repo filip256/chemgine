@@ -264,6 +264,12 @@ namespace util
 		void addAsMilli(const long double amount) { _standardAmount += amount / 1000.0; }
 		void addAsMicro(const long double amount) { _standardAmount += amount / 1000000.0; }
 
+		Quantity convertTo(const MeasureUnits unit, const long double conversionRate)
+		{
+			//
+			return *this;
+		}
+
 	};
 
 	template <class T> class WithQuantity
@@ -489,27 +495,26 @@ namespace chem
 	class Ion
 	{
 		std::string _id;
-		const data::IonDataTable& _dataRef;
+		static const data::IonDataTable* _dataRef;
 
 	public:
 		//copies data from the datastore to internal member properties
 		//TODO: check if id exists!
-		Ion(const data::IonDataTable& dataRef, const std::string& id) :
-			_id(id),
-			_dataRef(dataRef)
+		Ion(const std::string& id) :
+			_id(id)
 		{}
 
 		// return copies from now on
-		inline std::string name() const { return _dataRef.name(_id); }
-		inline long double mass() const { return _dataRef.mass(_id); }
-		inline std::vector<int> charges() const { return _dataRef.charges(_id); }
-		inline bool isPolyatomic() const { return _dataRef.isPolyatomic(_id); }
+		inline std::string name() const { return _dataRef->name(_id); }
+		inline long double mass() const { return _dataRef->mass(_id); }
+		inline std::vector<int> charges() const { return _dataRef->charges(_id); }
+		inline bool isPolyatomic() const { return _dataRef->isPolyatomic(_id); }
 		inline std::string abreviation() const { return _id; }
 
 		//returns the index in charges list or -1
 		int hasCharge(const int charge) const
 		{
-			const std::vector<int>& charges = _dataRef.charges(_id);
+			const std::vector<int>& charges = _dataRef->charges(_id);
 			std::vector<int>::size_type size = charges.size();
 			for (std::vector<int>::size_type i = 0; i < size; ++i)
 				if (charges[i] == charge)
@@ -517,7 +522,13 @@ namespace chem
 			return -1;
 		}
 
+		static void initialize(const data::IonDataTable* dataRef)
+		{
+			_dataRef = dataRef;
+		}
+
 	};
+	const data::IonDataTable* Ion::_dataRef = nullptr;
 
 	class Substance
 	{
@@ -532,37 +543,59 @@ namespace chem
 
 	class InorganicSubstance : Substance
 	{
-		util::WithQuantity<Ion> _cation, _anion;
+		//statically store the location of data tables
+		//no longer needed to pass table references on constructors but a call to initialize is needed before using the class
+		static const data::SubstanceDataTable* _substanceRef;
+		static const data::IonDataTable* _ionRef;
+
+		std::string _id;
+		util::WithQuantity<std::string> _cationId, _anionId; // <- could keep only one id, but access will take twice as much
 		int _cationCharge, _anionCharge;
 		bool _isWellFormed;
 
 	public:
-		InorganicSubstance(const data::SubstanceDataTable& substanceRef, const data::IonDataTable& atomicRef, const std::string& id) :
-			_cation(util::WithQuantity<Ion>(Ion(atomicRef, substanceRef.cation(id).item), substanceRef.cation(id).amount)),
-			_anion(util::WithQuantity<Ion>(Ion(atomicRef, substanceRef.anion(id).item), substanceRef.anion(id).amount)),
+		InorganicSubstance(const std::string& id) :
+			_id(id),
+			_cationId(util::WithQuantity<std::string>(_substanceRef->cation(id).item, _substanceRef->cation(id).amount)),
+			_anionId(util::WithQuantity<std::string>(_substanceRef->anion(id).item, _substanceRef->anion(id).amount)),
 			_isWellFormed(true),
-			Substance(substanceRef.getData().at(id)._name, id)
+			Substance(_substanceRef->getData().at(id)._name, id)
 		{
-			//TODO: resolve charges
-		}
-
-		InorganicSubstance(const util::WithQuantity<Ion>& cation, const util::WithQuantity<Ion>& anion) :
-			_cation(cation),
-			_anion(anion),
-			_isWellFormed(true),
-			Substance(cation.item.name() + " " + anion.item.name(), cation.item.abreviation() + anion.item.abreviation())
-		{
-			//check all combinations until a balanced one is found and set the isWellFormed flag
-			//needed because ions can have multiple charges
-			const std::vector<int>::size_type size1 = _cation.item.charges().size();
-			const std::vector<int>::size_type size2 = _anion.item.charges().size();
+			const std::vector<int>& cCharges = _ionRef->charges(_cationId.item);
+			const std::vector<int>& aCharges = _ionRef->charges(_anionId.item);
+			const std::vector<int>::size_type size1 = cCharges.size();
+			const std::vector<int>::size_type size2 = aCharges.size();
 			bool ok = false;
 			for (std::vector<int>::size_type i = 0; i < size1 && !ok; ++i)
 				for (std::vector<int>::size_type j = 0; j < size2; ++j)
-					if (_cation.amount.asStd() * _cation.item.charges()[i] == -1 * (_anion.amount.asStd() * _anion.item.charges()[j]))
+					if (_cationId.amount.asStd() * cCharges[i] == -1 * (_anionId.amount.asStd() * aCharges[j]))
 					{
-						_cationCharge = _cation.item.charges()[i];
-						_anionCharge = _anion.item.charges()[j];
+						_cationCharge = cCharges[i];
+						_anionCharge = aCharges[j];
+						ok = true;
+						break;
+					}
+		}
+
+		InorganicSubstance(const util::WithQuantity<std::string>& cationId, const util::WithQuantity<std::string>& anionId) :
+			_cationId(cationId),
+			_anionId(anionId),
+			_isWellFormed(true),
+			Substance(_ionRef->name(cationId.item) + " " + _ionRef->name(anionId.item), cationId.item + anionId.item)
+		{
+			//check all combinations until a balanced one is found and set the isWellFormed flag
+			//needed because ions can have multiple charges
+			const std::vector<int>& cCharges = _ionRef->charges(cationId.item);
+			const std::vector<int>& aCharges = _ionRef->charges(anionId.item);
+			const std::vector<int>::size_type size1 = cCharges.size();
+			const std::vector<int>::size_type size2 = aCharges.size();
+			bool ok = false;
+			for (std::vector<int>::size_type i = 0; i < size1 && !ok; ++i)
+				for (std::vector<int>::size_type j = 0; j < size2; ++j)
+					if (cationId.amount.asStd() * cCharges[i] == -1 * (anionId.amount.asStd() * aCharges[j]))
+					{
+						_cationCharge = cCharges[i];
+						_anionCharge = aCharges[j];
 						ok = true;
 						break;
 					}
@@ -575,13 +608,22 @@ namespace chem
 
 		void printName()
 		{
-			std::cout << name();
+			std::cout << name() <<' '<< _cationCharge<<' '<<_anionCharge<<'\n';
 		}
 		void printAbreviation()
 		{
 			std::cout << abreviation();
 		}
+
+		static void initialize(const data::IonDataTable* ionRef, const data::SubstanceDataTable* substanceRef)
+		{
+			_ionRef = ionRef;
+			_substanceRef = substanceRef;
+		}
 	};
+
+	const data::SubstanceDataTable* InorganicSubstance::_substanceRef = nullptr;
+	const data::IonDataTable* InorganicSubstance::_ionRef = nullptr;
 
 	class OrganicSubstance : Substance
 	{
@@ -593,21 +635,13 @@ namespace chem
 
 	};
 
-
-
-	class Molecule
-	{
-	public:
-	};
-
 	class Mixture
 	{
+		std::vector<util::WithQuantity<InorganicSubstance>> _constituents;
 	public:
-
+		
 	};
-
 }
-
 
 int main()
 {
@@ -625,7 +659,9 @@ int main()
 	std::cout << datac.loadFromFile("Atoms.csv").message << '\n';
 	data::SubstanceDataTable datas;
 	std::cout << datas.loadFromFile("InorganicSubst.csv").message << '\n';
-	chem::InorganicSubstance subst(datas, datac, "H2SO4");
+	chem::Ion::initialize(&datac);
+	chem::InorganicSubstance::initialize(&datac, &datas);
+	chem::InorganicSubstance subst("H2SO4");
 	subst.printName();
 
 	/*util::Quantity q(util::Gram, 123.564);
@@ -648,5 +684,4 @@ int main()
 	getchar();
 	return 0;
 }
-
 
