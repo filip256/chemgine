@@ -6,7 +6,7 @@
 
 #define CHECKSUM_SEED 2957289472
 
-template <class T = int> class StatusCode
+template <class T = char> class StatusCode
 {
 public:
 	int code;
@@ -264,12 +264,23 @@ namespace util
 		void addAsMilli(const long double amount) { _standardAmount += amount / 1000.0; }
 		void addAsMicro(const long double amount) { _standardAmount += amount / 1000000.0; }
 
-		Quantity convertTo(const MeasureUnits unit, const long double conversionRate)
+		//modifies and returns
+		Quantity& convertTo(const MeasureUnits unit, const long double conversionRate)
 		{
-			//
+			_unit = unit;
+			_standardAmount *= conversionRate;
 			return *this;
 		}
+		//just returns
+		Quantity getConvertedTo(const MeasureUnits unit, const long double conversionRate) const 
+		{
+			return Quantity(unit, _standardAmount * conversionRate);
+		}
 
+		inline void operator+= (const long double x) { _standardAmount += x; }
+		inline void operator-= (const long double x) { _standardAmount -= x; }
+		inline void operator*= (const long double x) { _standardAmount *= x; }
+		inline void operator/= (const long double x) { _standardAmount /= x; }
 	};
 
 	template <class T> class WithQuantity
@@ -532,34 +543,44 @@ namespace chem
 
 	class Substance
 	{
-		std::string _name, _abreviation;
-
-	public:
-		Substance(const std::string& name, const std::string& abreviation) : _name(name), _abreviation(abreviation) {}
-
-		std::string name() { return _name; }
-		std::string abreviation() { return _abreviation; }
-	};
-
-	class InorganicSubstance : Substance
-	{
+	protected:
 		//statically store the location of data tables
 		//no longer needed to pass table references on constructors but a call to initialize is needed before using the class
 		static const data::SubstanceDataTable* _substanceRef;
 		static const data::IonDataTable* _ionRef;
 
 		std::string _id;
-		util::WithQuantity<std::string> _cationId, _anionId; // <- could keep only one id, but access will take twice as much
-		int _cationCharge, _anionCharge;
+		util::Quantity _amount;
 		bool _isWellFormed;
 
 	public:
-		InorganicSubstance(const std::string& id) :
-			_id(id),
+		Substance(const std::string& id = "", const util::Quantity& amount = util::Quantity(1.0), const bool isWellFormed = true) : _id(id), _amount(amount), _isWellFormed(isWellFormed) {}
+
+		inline std::string id() const { return _id; }
+		inline util::Quantity amount() const { return _amount; }
+
+		inline const util::WithQuantity<std::string> cation() const { return _substanceRef->cation(_id); }
+		inline const util::WithQuantity<std::string> anion() const { return _substanceRef->anion(_id);}
+		inline const std::string& name() const { return _substanceRef->name(_id); }
+		inline const long double mass() const { return _substanceRef->mass(_id); }
+		inline const long double density() const { return _substanceRef->density(_id); }
+		inline const std::string& type() const { return _substanceRef->type(_id); }
+		inline const long double acidity() const { return _substanceRef->acidity(_id); }
+		inline const int reactivity() const { return _substanceRef->reactivity(_id); }
+		inline const long double meltingPoint() const { return _substanceRef->meltingPoint(_id); }
+		inline const long double boilingPoint() const { return _substanceRef->boilingPoint(_id); }
+		inline const long double solubility() const { return _substanceRef->solubility(_id); }
+	};
+
+	class InorganicSubstance : public Substance
+	{
+		util::WithQuantity<std::string> _cationId, _anionId; // <- could keep only one id, but access will take twice as much
+		int _cationCharge, _anionCharge;
+	public:
+		InorganicSubstance(const std::string& id, const util::Quantity& amount = util::Quantity(util::Mole, 1.0)) :
 			_cationId(util::WithQuantity<std::string>(_substanceRef->cation(id).item, _substanceRef->cation(id).amount)),
 			_anionId(util::WithQuantity<std::string>(_substanceRef->anion(id).item, _substanceRef->anion(id).amount)),
-			_isWellFormed(true),
-			Substance(_substanceRef->getData().at(id)._name, id)
+			Substance(id, amount)
 		{
 			const std::vector<int>& cCharges = _ionRef->charges(_cationId.item);
 			const std::vector<int>& aCharges = _ionRef->charges(_anionId.item);
@@ -579,10 +600,14 @@ namespace chem
 
 		InorganicSubstance(const util::WithQuantity<std::string>& cationId, const util::WithQuantity<std::string>& anionId) :
 			_cationId(cationId),
-			_anionId(anionId),
-			_isWellFormed(true),
-			Substance(_ionRef->name(cationId.item) + " " + _ionRef->name(anionId.item), cationId.item + anionId.item)
+			_anionId(anionId)
 		{
+			//reduce coeficients if possible
+			long long unsigned int gcd = tools::gcd(_cationId.amount.asStd(), _anionId.amount.asStd());
+			_cationId.amount /= gcd;
+			_anionId.amount /= gcd;
+			_amount = util::Quantity(util::Mole, gcd);
+
 			//check all combinations until a balanced one is found and set the isWellFormed flag
 			//needed because ions can have multiple charges
 			const std::vector<int>& cCharges = _ionRef->charges(cationId.item);
@@ -592,7 +617,7 @@ namespace chem
 			bool ok = false;
 			for (std::vector<int>::size_type i = 0; i < size1 && !ok; ++i)
 				for (std::vector<int>::size_type j = 0; j < size2; ++j)
-					if (cationId.amount.asStd() * cCharges[i] == -1 * (anionId.amount.asStd() * aCharges[j]))
+					if (_cationId.amount.asStd() * cCharges[i] == -1 * (_anionId.amount.asStd() * aCharges[j]))
 					{
 						_cationCharge = cCharges[i];
 						_anionCharge = aCharges[j];
@@ -608,11 +633,11 @@ namespace chem
 
 		void printName()
 		{
-			std::cout << name() <<' '<< _cationCharge<<' '<<_anionCharge<<'\n';
+			std::cout << _substanceRef->name(_id) <<' '<< _cationCharge<<' '<<_anionCharge<<'\n';
 		}
 		void printAbreviation()
 		{
-			std::cout << abreviation();
+			std::cout <<_id;
 		}
 
 		static void initialize(const data::IonDataTable* ionRef, const data::SubstanceDataTable* substanceRef)
@@ -621,7 +646,6 @@ namespace chem
 			_substanceRef = substanceRef;
 		}
 	};
-
 	const data::SubstanceDataTable* InorganicSubstance::_substanceRef = nullptr;
 	const data::IonDataTable* InorganicSubstance::_ionRef = nullptr;
 
@@ -635,16 +659,66 @@ namespace chem
 
 	};
 
+	class Reaction
+	{
+
+	};
+
+	class SystemState //physical state of a system
+	{
+		long double _temperature, _pressure; //in C and torr
+	public:
+		SystemState(const long double temperature, const long double pressure) :
+			_temperature(temperature),
+			_pressure(pressure)
+		{}
+
+		inline long double temperature() const { return _temperature; }
+		inline long double pressure() const { return _pressure; }
+
+		static SystemState Atmosphere;
+	};
+	SystemState SystemState::Atmosphere = SystemState(25, 760);
+
 	class Mixture
 	{
-		std::vector<util::WithQuantity<InorganicSubstance>> _constituents;
+		std::vector<std::unique_ptr<Substance>> _solidLayer, _denseNonpolarLayer, _polarLayer, _nonpolarLayer, _gasLayer;
+		SystemState _state;
 	public:
-		
+		Mixture(const SystemState& state = SystemState::Atmosphere) :
+			_state(state)
+		{}
+
+		void add(Substance* newSubstance)
+		{
+			if (newSubstance->meltingPoint() < _state.temperature())
+				_solidLayer.push_back(std::unique_ptr<Substance>(newSubstance));
+			else if(newSubstance->boilingPoint() < _state.temperature())
+				_polarLayer.push_back(std::unique_ptr<Substance>(newSubstance));
+			else
+				_gasLayer.push_back(std::unique_ptr<Substance>(newSubstance));
+		}
+
+		void printConstituents()
+		{
+			std::cout << "Solids:\n";
+			for (int i = 0; i < _solidLayer.size(); ++i)
+				std::cout <<" - "<< _solidLayer[i].get()->id() << ' ' << _solidLayer[i].get()->amount().asStd() << " moles\n";
+
+			std::cout << "Liquids:\n";
+			for (int i = 0; i < _polarLayer.size(); ++i)
+				std::cout << " - "<< _polarLayer[i].get()->id() << ' ' << _polarLayer[i].get()->amount().asStd() << " moles\n";
+
+			std::cout << "Gases:\n";
+			for (int i = 0; i < _gasLayer.size(); ++i)
+				std::cout << " - "<< _gasLayer[i].get()->id() << ' ' << _gasLayer[i].get()->amount().asStd() << " moles\n";
+		}
 	};
 }
 
 int main()
 {
+	//ION TEST
 	/*data::IonDataTable datac;
 	std::cout<<datac.loadFromFile("Atoms.csv").message<<'\n';
 	std::cout << datac.getData().size() << '\n';
@@ -655,6 +729,17 @@ int main()
 	subst.printAbreviation();
 	std::cout << subst.isWellFormed();*/
 
+	//INORGANIC SUBST TEST
+	/*data::IonDataTable datac;
+	std::cout << datac.loadFromFile("Atoms.csv").message << '\n';
+	data::SubstanceDataTable datas;
+	std::cout << datas.loadFromFile("InorganicSubst.csv").message << '\n';
+	chem::Ion::initialize(&datac);
+	chem::InorganicSubstance::initialize(&datac, &datas);
+	chem::InorganicSubstance subst("H2SO4");
+	subst.printName();*/
+	
+	//MIXTURE TEST
 	data::IonDataTable datac;
 	std::cout << datac.loadFromFile("Atoms.csv").message << '\n';
 	data::SubstanceDataTable datas;
@@ -662,7 +747,10 @@ int main()
 	chem::Ion::initialize(&datac);
 	chem::InorganicSubstance::initialize(&datac, &datas);
 	chem::InorganicSubstance subst("H2SO4");
-	subst.printName();
+	chem::Mixture mixture;
+	mixture.add(new chem::InorganicSubstance("H2SO4", util::Quantity(util::Mole, 2.0)));
+	mixture.add(new chem::InorganicSubstance("NaOH", util::Quantity(util::Mole, 2.0)));		
+	mixture.printConstituents();
 
 	/*util::Quantity q(util::Gram, 123.564);
 	std::cout << q.asKilo() << ' ' << q.asMilli() << ' ' << q.asMicro() << '\n';
