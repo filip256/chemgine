@@ -232,6 +232,7 @@ namespace util
 			_standardAmount(amount)
 		{}
 
+		MeasureUnits unit() const { return _unit; }
 		long double asKilo() const { return _standardAmount / 1000.0; }
 		long double asStd() const { return _standardAmount; }
 		long double asMilli() const { return _standardAmount * 1000.0; }
@@ -272,7 +273,7 @@ namespace util
 			return *this;
 		}
 		//just returns
-		Quantity getConvertedTo(const MeasureUnits unit, const long double conversionRate) const 
+		inline Quantity getConvertedTo(const MeasureUnits unit, const long double conversionRate) const 
 		{
 			return Quantity(unit, _standardAmount * conversionRate);
 		}
@@ -281,6 +282,7 @@ namespace util
 		inline void operator-= (const long double x) { _standardAmount -= x; }
 		inline void operator*= (const long double x) { _standardAmount *= x; }
 		inline void operator/= (const long double x) { _standardAmount /= x; }
+		inline void operator+= (const Quantity& x) { _standardAmount += x.asStd(); }
 	};
 
 	template <class T> class WithQuantity
@@ -503,6 +505,20 @@ namespace data
 
 namespace chem
 {
+	long double getAdjustedTemperature(const long double temperature, const long double pressure)
+	{
+		//Clausius–Clapeyron
+		return 1.0 / ((8.31446261815324 / 2264.705) * log(760.0 / pressure) + 1.0 / (temperature + 273.15)) - 273.15;
+
+		//
+		//return temperature - 0.045 * (760.0 - pressure);
+		//return temperature - 0.0965 * (760.0 - pressure); //30
+		//return temperature - 0.042 * (760.0 - pressure); //500
+		//return temperature - (0.16 - 1.1489361702127659574468085106383e-4 * (40 * pressure - 40)) * (760.0 - pressure);
+		//1.1489361702127659574468085106383e-4
+
+	}
+
 	class Ion
 	{
 		std::string _id;
@@ -570,6 +586,18 @@ namespace chem
 		inline const long double meltingPoint() const { return _substanceRef->meltingPoint(_id); }
 		inline const long double boilingPoint() const { return _substanceRef->boilingPoint(_id); }
 		inline const long double solubility() const { return _substanceRef->solubility(_id); }
+
+		util::Quantity getQuantityConvertedTo(const util::MeasureUnits unit) const
+		{
+			if (_amount.unit() == util::Mole)
+			{
+				if (unit == util::Gram)
+					return _amount.getConvertedTo(util::Gram, mass());
+				if (unit == util::Liter)
+					return _amount.getConvertedTo(util::Gram, mass()).getConvertedTo(util::Liter, 0.001 / density() );
+			}
+			return util::Quantity(0.0);
+		}
 	};
 
 	class InorganicSubstance : public Substance
@@ -659,15 +687,10 @@ namespace chem
 
 	};
 
-	class Reaction
-	{
-
-	};
-
 	class SystemState //physical state of a system
 	{
-		long double _temperature, _pressure; //in C and torr
 	public:
+		long double _temperature, _pressure; //in C and torr
 		SystemState(const long double temperature, const long double pressure) :
 			_temperature(temperature),
 			_pressure(pressure)
@@ -675,6 +698,8 @@ namespace chem
 
 		inline long double temperature() const { return _temperature; }
 		inline long double pressure() const { return _pressure; }
+		inline void setTemperature(const long double temperature) { _temperature = temperature; }
+		inline void setPressure(const long double pressure) { _pressure = pressure; }
 
 		static SystemState Atmosphere;
 	};
@@ -684,23 +709,152 @@ namespace chem
 	{
 		std::vector<std::unique_ptr<Substance>> _solidLayer, _denseNonpolarLayer, _polarLayer, _nonpolarLayer, _gasLayer;
 		SystemState _state;
+		util::Quantity _totalVolume;
+
+		//define reactions as private functions
+		//define a static vector with all possible inorganic reactions (maybe split for optim)
+		//define vector with currently running reactions that are called on tick
+
+		// - keep track of when a compound appears for the first time and add all possible reactions with it
+		// - when a reaction no longer works, remove it
+		// - only check for new reactions when the conditions change
+
 	public:
 		Mixture(const SystemState& state = SystemState::Atmosphere) :
-			_state(state)
+			_state(state),
+			_totalVolume(util::Liter, 0.0)
 		{}
+
+		inline long double temperature() const { return _state.temperature(); }
+		inline long double pressure() const { return _state.pressure(); }
+		inline util::Quantity totalVolume() const { return _totalVolume; }
 
 		void add(Substance* newSubstance)
 		{
-			if (newSubstance->meltingPoint() < _state.temperature())
-				_solidLayer.push_back(std::unique_ptr<Substance>(newSubstance));
-			else if(newSubstance->boilingPoint() < _state.temperature())
-				_polarLayer.push_back(std::unique_ptr<Substance>(newSubstance));
+			//TODO: find if already present and increase amount instead of insert
+			_totalVolume  += newSubstance->getQuantityConvertedTo(util::Liter);
+
+			if (newSubstance->meltingPoint() > _state.temperature())
+				_solidLayer.emplace_back(newSubstance);
+			else if(newSubstance->boilingPoint() > _state.temperature())
+				_polarLayer.emplace_back(newSubstance);
 			else
-				_gasLayer.push_back(std::unique_ptr<Substance>(newSubstance));
+				_gasLayer.emplace_back(newSubstance);
+
 		}
+
+		//the given mixture is emptied after its contents are moved
+		void add(Mixture& mixture)
+		{
+			//compute the new state
+			//TODO: be scientific
+			_state.setTemperature(
+				(_state.temperature() * _totalVolume.asStd() + mixture.temperature() * mixture.totalVolume().asStd()) / (_totalVolume.asStd() + mixture.totalVolume().asStd()));
+			_state.setPressure(
+				(_state.pressure() * _totalVolume.asStd() + mixture.pressure() * mixture.totalVolume().asStd()) / (_totalVolume.asStd() + mixture.totalVolume().asStd()));
+
+			checkStates();
+
+			std::vector<std::unique_ptr<Substance>>::size_type size = mixture.polarLayer().size();
+			for (std::vector<std::unique_ptr<Substance>>::size_type i = 0; i < size; ++i)
+				add(mixture.polarLayer()[i].release());
+
+			size = mixture.solidLayer().size();
+			for (std::vector<std::unique_ptr<Substance>>::size_type i = 0; i < size; ++i)
+				add(mixture.solidLayer()[i].release());
+
+			size = mixture.gasLayer().size();
+			for (std::vector<std::unique_ptr<Substance>>::size_type i = 0; i < size; ++i)
+				add(mixture.gasLayer()[i].release());
+
+			mixture.empty();
+		}
+
+
+		void checkStates()
+		{
+			//solid
+			std::vector<std::unique_ptr<Substance>>::size_type size = _solidLayer.size();
+			for (std::vector<std::unique_ptr<Substance>>::size_type i = 0; i < size; ++i)
+			{
+				if (_solidLayer[i].get()->boilingPoint() < _state.temperature())
+				{
+					_gasLayer.emplace_back(_solidLayer[i].release());
+					_solidLayer.erase(_solidLayer.begin() + i);
+					--i;
+					--size;
+				}
+				else if (_solidLayer[i].get()->meltingPoint() < _state.temperature())
+				{
+					_polarLayer.emplace_back(_solidLayer[i].release());
+					_solidLayer.erase(_solidLayer.begin() + i);
+					--i;
+					--size;
+				}
+			}
+
+			//polar
+			size = _polarLayer.size();
+			for (std::vector<std::unique_ptr<Substance>>::size_type i = 0; i < size; ++i)
+			{
+				if (_polarLayer[i].get()->boilingPoint() < _state.temperature())
+				{
+					_gasLayer.emplace_back(_polarLayer[i].release());
+					_polarLayer.erase(_polarLayer.begin() + i);
+					--i;
+					--size;
+				}
+				else if (_polarLayer[i].get()->meltingPoint() > _state.temperature())
+				{
+					_solidLayer.emplace_back(_polarLayer[i].release());
+					_polarLayer.erase(_polarLayer.begin() + i);
+					--i;
+					--size;
+				}
+			}
+
+			//gas
+			size = _gasLayer.size();
+			for (std::vector<std::unique_ptr<Substance>>::size_type i = 0; i < size; ++i)
+			{
+				if (_gasLayer[i].get()->boilingPoint() > _state.temperature())
+				{
+					_polarLayer.emplace_back(_gasLayer[i].release());
+					_gasLayer.erase(_gasLayer.begin() + i);
+					--i;
+					--size;
+				}
+				else if (_gasLayer[i].get()->meltingPoint() > _state.temperature())
+				{
+					_solidLayer.emplace_back(_gasLayer[i].release());
+					_gasLayer.erase(_gasLayer.begin() + i);
+					--i;
+					--size;
+				}
+			}
+		}
+
+		void empty()
+		{
+			_solidLayer.clear();
+			_denseNonpolarLayer.clear();
+			_polarLayer.clear();
+			_nonpolarLayer.clear();
+			_gasLayer.clear();
+			_totalVolume = 0.0;
+			_state.setPressure(760);
+			_state.setTemperature(25);
+		}
+
+		std::vector<std::unique_ptr<Substance>>& solidLayer() { return _solidLayer; }
+		std::vector<std::unique_ptr<Substance>>& denseNonpolarLayer() { return _denseNonpolarLayer; }
+		std::vector<std::unique_ptr<Substance>>& polarLayer() { return _polarLayer; }
+		std::vector<std::unique_ptr<Substance>>& nonpolarLayer() { return _nonpolarLayer; }
+		std::vector<std::unique_ptr<Substance>>& gasLayer() { return _gasLayer; }
 
 		void printConstituents()
 		{
+			std::cout << "Total: " << _totalVolume.asMilli() <<"ml   "<<temperature()<< '\n';
 			std::cout << "Solids:\n";
 			for (int i = 0; i < _solidLayer.size(); ++i)
 				std::cout <<" - "<< _solidLayer[i].get()->id() << ' ' << _solidLayer[i].get()->amount().asStd() << " moles\n";
@@ -740,17 +894,29 @@ int main()
 	subst.printName();*/
 	
 	//MIXTURE TEST
-	data::IonDataTable datac;
+	/*data::IonDataTable datac;
 	std::cout << datac.loadFromFile("Atoms.csv").message << '\n';
 	data::SubstanceDataTable datas;
 	std::cout << datas.loadFromFile("InorganicSubst.csv").message << '\n';
 	chem::Ion::initialize(&datac);
 	chem::InorganicSubstance::initialize(&datac, &datas);
 	chem::InorganicSubstance subst("H2SO4");
-	chem::Mixture mixture;
-	mixture.add(new chem::InorganicSubstance("H2SO4", util::Quantity(util::Mole, 2.0)));
-	mixture.add(new chem::InorganicSubstance("NaOH", util::Quantity(util::Mole, 2.0)));		
-	mixture.printConstituents();
+	chem::Mixture mixture1, mixture2(chem::SystemState(1000.0, 760));
+	mixture1.add(new chem::InorganicSubstance("H2SO4", util::Quantity(util::Mole, 2.0)));
+	mixture1.add(new chem::InorganicSubstance("NaOH", util::Quantity(util::Mole, 2.0)));
+	mixture2.add(new chem::InorganicSubstance("LiCl", util::Quantity(util::Mole, 5.0)));
+
+	mixture1.printConstituents();
+	std::cout << "---------------------\n";
+	mixture2.printConstituents();
+	std::cout<<"---------------------\n";
+	mixture1.add(mixture2);
+	mixture1.printConstituents();
+	std::cout << "---------------------\n";
+	mixture2.printConstituents();*/
+
+	//TEMP ADJUST TEST
+	std::cout << chem::getAdjustedTemperature(100.0, 750);
 
 	/*util::Quantity q(util::Gram, 123.564);
 	std::cout << q.asKilo() << ' ' << q.asMilli() << ' ' << q.asMicro() << '\n';
