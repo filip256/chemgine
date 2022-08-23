@@ -3,6 +3,7 @@
 #include <vector>
 #include <map>
 #include <fstream>
+#include <algorithm>
 
 #define CHECKSUM_SEED 2957289472
 
@@ -37,6 +38,14 @@ public:
 		value(statusValue)
 	{}
 
+	StatusCode(const StatusCode<>& statusCode) :
+		code(statusCode.code),
+		message(statusCode.message)
+		//value(NULL)
+	{}
+
+	inline bool operator== (StatusCode<> x) { return code == x.code; }
+
 	static const StatusCode<> ConversionError; //35
 
 	static const StatusCode<> FileCouldNotOpen; //41
@@ -50,6 +59,8 @@ public:
 
 	static const StatusCode<> True; //201
 	static const StatusCode<> False; //401
+
+	static const StatusCode<> NotFound; //404
 };
 
 const StatusCode<> StatusCode<>::ConversionError(35, "Conversion error");
@@ -63,6 +74,8 @@ const StatusCode<> StatusCode<>::Ok(200, "Ok");
 const StatusCode<> StatusCode<>::True(201, "True");
 const StatusCode<> StatusCode<>::Bad(400, "Bad");
 const StatusCode<> StatusCode<>::False(401, "False");
+const StatusCode<> StatusCode<>::NotFound(404, "Object not found");
+
 
 namespace tools
 {
@@ -392,6 +405,8 @@ namespace data
 			
 		}
 
+		IonDataTable(const IonDataTable&) = delete;
+
 		const StatusCode<> loadFromFile(const std::string& dataFile)
 		{
 			std::ifstream file(dataFile);
@@ -446,6 +461,8 @@ namespace data
 		{
 
 		}
+
+		SubstanceDataTable(const SubstanceDataTable&) = delete;
 
 		const StatusCode<> loadFromFile(const std::string& dataFile)
 		{
@@ -574,6 +591,7 @@ namespace chem
 
 		inline std::string id() const { return _id; }
 		inline util::Quantity amount() const { return _amount; }
+		inline util::Quantity& accessAmount() { return _amount; }
 
 		inline const util::WithQuantity<std::string> cation() const { return _substanceRef->cation(_id); }
 		inline const util::WithQuantity<std::string> anion() const { return _substanceRef->anion(_id);}
@@ -598,7 +616,22 @@ namespace chem
 			}
 			return util::Quantity(0.0);
 		}
+
+		//help count instances in order to avoid leaks
+		void* operator new(const std::size_t count)
+		{
+			++instanceCount;
+			return ::operator new(count);
+		}
+		void operator delete(void *ptr)
+		{
+			--instanceCount;
+			return ::operator delete(ptr);
+		}
+
+		static int instanceCount;
 	};
+	int Substance::instanceCount = 0;
 
 	class InorganicSubstance : public Substance
 	{
@@ -705,9 +738,18 @@ namespace chem
 	};
 	SystemState SystemState::Atmosphere = SystemState(25, 760);
 
+	class Reaction
+	{
+		int _priority;
+
+		static void acidBase()
+		{
+		}
+	};
+
 	class Mixture
 	{
-		std::vector<std::unique_ptr<Substance>> _solidLayer, _denseNonpolarLayer, _polarLayer, _nonpolarLayer, _gasLayer;
+		std::vector<Substance*> _solidLayer, _denseNonpolarLayer, _polarLayer, _nonpolarLayer, _gasLayer;
 		SystemState _state;
 		util::Quantity _totalVolume;
 
@@ -724,6 +766,28 @@ namespace chem
 			_state(state),
 			_totalVolume(util::Liter, 0.0)
 		{}
+		~Mixture()
+		{
+			std::vector<Substance*>::size_type size = _solidLayer.size();
+			for (std::vector<Substance*>::size_type i = 0; i < size; ++i)
+				delete _solidLayer[i];
+
+			size = _denseNonpolarLayer.size();
+			for (std::vector<Substance*>::size_type i = 0; i < size; ++i)
+				delete _denseNonpolarLayer[i];
+
+			size = _polarLayer.size();
+			for (std::vector<Substance*>::size_type i = 0; i < size; ++i)
+				delete _polarLayer[i];
+
+			size = _nonpolarLayer.size();
+			for (std::vector<Substance*>::size_type i = 0; i < size; ++i)
+				delete _nonpolarLayer[i];
+
+			size = _gasLayer.size();
+			for (std::vector<Substance*>::size_type i = 0; i < size; ++i)
+				delete _gasLayer[i];
+		}
 
 		inline long double temperature() const { return _state.temperature(); }
 		inline long double pressure() const { return _state.pressure(); }
@@ -731,16 +795,23 @@ namespace chem
 
 		void add(Substance* newSubstance)
 		{
-			//TODO: find if already present and increase amount instead of insert
-			_totalVolume  += newSubstance->getQuantityConvertedTo(util::Liter);
+			_totalVolume += newSubstance->getQuantityConvertedTo(util::Liter);
 
-			if (newSubstance->meltingPoint() > _state.temperature())
-				_solidLayer.emplace_back(newSubstance);
-			else if(newSubstance->boilingPoint() > _state.temperature())
-				_polarLayer.emplace_back(newSubstance);
+			auto result = find(newSubstance->id());
+			if (result == StatusCode<>::Ok) // if already present just incease its amount
+			{
+				(*result.value)->accessAmount() += newSubstance->amount();
+				delete newSubstance;
+			}
 			else
-				_gasLayer.emplace_back(newSubstance);
-
+			{
+				if (newSubstance->meltingPoint() > _state.temperature())
+					_solidLayer.push_back(newSubstance);
+				else if (newSubstance->boilingPoint() > _state.temperature())
+					_polarLayer.push_back(newSubstance);
+				else
+					_gasLayer.push_back(newSubstance);
+			}
 		}
 
 		//the given mixture is emptied after its contents are moved
@@ -755,38 +826,88 @@ namespace chem
 
 			checkStates();
 
-			std::vector<std::unique_ptr<Substance>>::size_type size = mixture.polarLayer().size();
-			for (std::vector<std::unique_ptr<Substance>>::size_type i = 0; i < size; ++i)
-				add(mixture.polarLayer()[i].release());
+			std::vector<Substance*>::size_type size = mixture._polarLayer.size();
+			for (std::vector<Substance*>::size_type i = 0; i < size; ++i)
+				add(mixture._polarLayer[i]);
 
-			size = mixture.solidLayer().size();
-			for (std::vector<std::unique_ptr<Substance>>::size_type i = 0; i < size; ++i)
-				add(mixture.solidLayer()[i].release());
+			size = mixture._solidLayer.size();
+			for (std::vector<Substance*>::size_type i = 0; i < size; ++i)
+				add(mixture._solidLayer[i]);
 
-			size = mixture.gasLayer().size();
-			for (std::vector<std::unique_ptr<Substance>>::size_type i = 0; i < size; ++i)
-				add(mixture.gasLayer()[i].release());
+			size = mixture._gasLayer.size();
+			for (std::vector<Substance*>::size_type i = 0; i < size; ++i)
+				add(mixture._gasLayer[i]);
 
 			mixture.empty();
 		}
 
+		StatusCode<std::vector<Substance*>::const_iterator> find(const std::vector<Substance*>& vector, const std::string& id) const
+		{
+			for (auto it = vector.begin(); it != vector.end(); ++it)
+				if ((*it)->id() == id)
+					return it;
+			return StatusCode<>::NotFound;
+		}
+		StatusCode<std::vector<Substance*>::const_iterator> find(const std::string& id) const
+		{
+			auto result = find(_polarLayer, id);
+			if (result == StatusCode<>::Ok)
+				return result;
+
+			result = find(_nonpolarLayer, id);
+			if (result == StatusCode<>::Ok)
+				return result;
+
+			result = find(_denseNonpolarLayer, id);
+			if (result == StatusCode<>::Ok)
+				return result;
+
+			result = find(_solidLayer, id);
+			if (result == StatusCode<>::Ok)
+				return result;
+
+			result = find(_gasLayer, id);
+			if (result == StatusCode<>::Ok)
+				return result;
+
+			return StatusCode<>::NotFound;
+		}
+
+		StatusCode<std::vector<Substance*>::const_iterator> find(const std::vector<Substance*>& vector, bool(*condition)(const Substance*)) const
+		{
+			for (auto it = vector.begin(); it != vector.end(); ++it)
+				if (condition(*it))
+					return it;
+			return StatusCode<>::NotFound;
+		}
+
+		std::vector<std::vector<Substance*>::const_iterator> findAll(const std::vector<Substance*>& vector, bool(*condition)(const Substance*)) const
+		{
+			//TODO: maybe reserve size
+			std::vector<std::vector<Substance*>::const_iterator> returnVector;
+			for (auto it = vector.begin(); it != vector.end(); ++it)
+				if (condition(*it))
+					returnVector.push_back(it);
+			return returnVector;
+			
+		}
 
 		void checkStates()
 		{
 			//solid
-			std::vector<std::unique_ptr<Substance>>::size_type size = _solidLayer.size();
-			for (std::vector<std::unique_ptr<Substance>>::size_type i = 0; i < size; ++i)
+			std::vector<Substance*>::size_type size = _solidLayer.size();
+			for (std::vector<Substance*>::size_type i = 0; i < size; ++i)
 			{
-				if (_solidLayer[i].get()->boilingPoint() < _state.temperature())
+				if (_solidLayer[i]->boilingPoint() < _state.temperature())
 				{
-					_gasLayer.emplace_back(_solidLayer[i].release());
+					_gasLayer.push_back(_solidLayer[i]);
 					_solidLayer.erase(_solidLayer.begin() + i);
 					--i;
 					--size;
 				}
-				else if (_solidLayer[i].get()->meltingPoint() < _state.temperature())
+				else if (_solidLayer[i]->meltingPoint() < _state.temperature())
 				{
-					_polarLayer.emplace_back(_solidLayer[i].release());
+					_polarLayer.push_back(_solidLayer[i]);
 					_solidLayer.erase(_solidLayer.begin() + i);
 					--i;
 					--size;
@@ -795,18 +916,18 @@ namespace chem
 
 			//polar
 			size = _polarLayer.size();
-			for (std::vector<std::unique_ptr<Substance>>::size_type i = 0; i < size; ++i)
+			for (std::vector<Substance*>::size_type i = 0; i < size; ++i)
 			{
-				if (_polarLayer[i].get()->boilingPoint() < _state.temperature())
+				if (_polarLayer[i]->boilingPoint() < _state.temperature())
 				{
-					_gasLayer.emplace_back(_polarLayer[i].release());
+					_gasLayer.emplace_back(_polarLayer[i]);
 					_polarLayer.erase(_polarLayer.begin() + i);
 					--i;
 					--size;
 				}
-				else if (_polarLayer[i].get()->meltingPoint() > _state.temperature())
+				else if (_polarLayer[i]->meltingPoint() > _state.temperature())
 				{
-					_solidLayer.emplace_back(_polarLayer[i].release());
+					_solidLayer.emplace_back(_polarLayer[i]);
 					_polarLayer.erase(_polarLayer.begin() + i);
 					--i;
 					--size;
@@ -815,18 +936,18 @@ namespace chem
 
 			//gas
 			size = _gasLayer.size();
-			for (std::vector<std::unique_ptr<Substance>>::size_type i = 0; i < size; ++i)
+			for (std::vector<Substance*>::size_type i = 0; i < size; ++i)
 			{
-				if (_gasLayer[i].get()->boilingPoint() > _state.temperature())
+				if (_gasLayer[i]->boilingPoint() > _state.temperature())
 				{
-					_polarLayer.emplace_back(_gasLayer[i].release());
+					_polarLayer.emplace_back(_gasLayer[i]);
 					_gasLayer.erase(_gasLayer.begin() + i);
 					--i;
 					--size;
 				}
-				else if (_gasLayer[i].get()->meltingPoint() > _state.temperature())
+				else if (_gasLayer[i]->meltingPoint() > _state.temperature())
 				{
-					_solidLayer.emplace_back(_gasLayer[i].release());
+					_solidLayer.emplace_back(_gasLayer[i]);
 					_gasLayer.erase(_gasLayer.begin() + i);
 					--i;
 					--size;
@@ -841,31 +962,52 @@ namespace chem
 			_polarLayer.clear();
 			_nonpolarLayer.clear();
 			_gasLayer.clear();
+
 			_totalVolume = 0.0;
 			_state.setPressure(760);
 			_state.setTemperature(25);
 		}
 
-		std::vector<std::unique_ptr<Substance>>& solidLayer() { return _solidLayer; }
-		std::vector<std::unique_ptr<Substance>>& denseNonpolarLayer() { return _denseNonpolarLayer; }
-		std::vector<std::unique_ptr<Substance>>& polarLayer() { return _polarLayer; }
-		std::vector<std::unique_ptr<Substance>>& nonpolarLayer() { return _nonpolarLayer; }
-		std::vector<std::unique_ptr<Substance>>& gasLayer() { return _gasLayer; }
+		//std::vector<Substance*>& solidLayer() { return _solidLayer; }
+		//std::vector<Substance*>& denseNonpolarLayer() { return _denseNonpolarLayer; }
+		//std::vector<Substance*>& polarLayer() { return _polarLayer; }
+		//std::vector<Substance*>& nonpolarLayer() { return _nonpolarLayer; }
+		//std::vector<Substance*>& gasLayer() { return _gasLayer; }
+
+		void react()
+		{
+			//TODO: maybe this can be done async
+			std::vector<std::vector<Substance*>::const_iterator> polarAcids = findAll(_polarLayer, [](const Substance* subst) -> bool { return subst->acidity() < 7.0; });
+			std::vector<std::vector<Substance*>::const_iterator> polarBases = findAll(_polarLayer, [](const Substance* subst) -> bool { return subst->acidity() > 7.0; });
+
+			//sort so that the most acidic and the most basic are first     !!!maybe sort after!!!
+			std::sort(polarAcids.begin(), polarAcids.end(), [](const std::vector<Substance*>::const_iterator& x, const std::vector<Substance*>::const_iterator& y) -> bool { return (*x)->acidity() < (*y)->acidity(); });
+			std::sort(polarBases.begin(), polarBases.end(), [](const std::vector<Substance*>::const_iterator& x, const std::vector<Substance*>::const_iterator& y) -> bool { return (*x)->acidity() > (*y)->acidity(); });
+
+			const std::vector <std::vector<Substance*>::const_iterator>::size_type polarAcidsSize = polarAcids.size();
+			const std::vector <std::vector<Substance*>::const_iterator>::size_type polarBasesSize = polarBases.size();
+			for (auto i = 0; i < polarAcidsSize; ++i)
+				for (auto j = 0; j < polarBasesSize; ++j)
+					std::cout << (*polarAcids[i])->id() << " + " << (*polarBases[j])->id()<<'\n';
+
+			//define reactions (it, it) that modify mixtures
+			//compute reation priorities and add them to a queue
+		}
 
 		void printConstituents()
 		{
 			std::cout << "Total: " << _totalVolume.asMilli() <<"ml   "<<temperature()<< '\n';
 			std::cout << "Solids:\n";
 			for (int i = 0; i < _solidLayer.size(); ++i)
-				std::cout <<" - "<< _solidLayer[i].get()->id() << ' ' << _solidLayer[i].get()->amount().asStd() << " moles\n";
+				std::cout <<" - "<< _solidLayer[i]->id() << ' ' << _solidLayer[i]->amount().asStd() << " moles\n";
 
 			std::cout << "Liquids:\n";
 			for (int i = 0; i < _polarLayer.size(); ++i)
-				std::cout << " - "<< _polarLayer[i].get()->id() << ' ' << _polarLayer[i].get()->amount().asStd() << " moles\n";
+				std::cout << " - "<< _polarLayer[i]->id() << ' ' << _polarLayer[i]->amount().asStd() << " moles\n";
 
 			std::cout << "Gases:\n";
 			for (int i = 0; i < _gasLayer.size(); ++i)
-				std::cout << " - "<< _gasLayer[i].get()->id() << ' ' << _gasLayer[i].get()->amount().asStd() << " moles\n";
+				std::cout << " - "<< _gasLayer[i]->id() << ' ' << _gasLayer[i]->amount().asStd() << " moles\n";
 		}
 	};
 }
@@ -893,30 +1035,34 @@ int main()
 	chem::InorganicSubstance subst("H2SO4");
 	subst.printName();*/
 	
-	//MIXTURE TEST
-	/*data::IonDataTable datac;
-	std::cout << datac.loadFromFile("Atoms.csv").message << '\n';
-	data::SubstanceDataTable datas;
-	std::cout << datas.loadFromFile("InorganicSubst.csv").message << '\n';
-	chem::Ion::initialize(&datac);
-	chem::InorganicSubstance::initialize(&datac, &datas);
-	chem::InorganicSubstance subst("H2SO4");
-	chem::Mixture mixture1, mixture2(chem::SystemState(1000.0, 760));
-	mixture1.add(new chem::InorganicSubstance("H2SO4", util::Quantity(util::Mole, 2.0)));
-	mixture1.add(new chem::InorganicSubstance("NaOH", util::Quantity(util::Mole, 2.0)));
-	mixture2.add(new chem::InorganicSubstance("LiCl", util::Quantity(util::Mole, 5.0)));
-
-	mixture1.printConstituents();
-	std::cout << "---------------------\n";
-	mixture2.printConstituents();
-	std::cout<<"---------------------\n";
-	mixture1.add(mixture2);
-	mixture1.printConstituents();
-	std::cout << "---------------------\n";
-	mixture2.printConstituents();*/
+	{
+		//MIXTURE TEST
+		data::IonDataTable datac;
+		std::cout << datac.loadFromFile("Atoms.csv").message << '\n';
+		data::SubstanceDataTable datas;
+		std::cout << datas.loadFromFile("InorganicSubst.csv").message << '\n';
+		chem::Ion::initialize(&datac);
+		chem::InorganicSubstance::initialize(&datac, &datas);
+		chem::Mixture mixture1, mixture2(chem::SystemState(1000.0, 760));
+		mixture1.add(new chem::InorganicSubstance("H2SO4", util::Quantity(util::Mole, 2.0)));
+		mixture1.add(new chem::InorganicSubstance("NaOH", util::Quantity(util::Mole, 2.0)));
+		mixture2.add(new chem::InorganicSubstance("LiCl", util::Quantity(util::Mole, 5.0)));
+		mixture1.add(new chem::InorganicSubstance("H2SO4", util::Quantity(util::Mole, 2.0)));
+		mixture1.add(new chem::InorganicSubstance("H2SO4", util::Quantity(util::Mole, 2.0)));
+		//mixture1.printConstituents();
+		//std::cout << "---------------------\n";
+		//mixture2.printConstituents();
+		//std::cout<<"---------------------\n";
+		mixture1.add(mixture2);
+		mixture1.printConstituents();
+		//std::cout << "---------------------\n";
+		//mixture2.printConstituents();
+		mixture1.react();
+	}
+	std::cout<<chem::Substance::instanceCount;
 
 	//TEMP ADJUST TEST
-	std::cout << chem::getAdjustedTemperature(100.0, 750);
+	//std::cout << chem::getAdjustedTemperature(100.0, 750);
 
 	/*util::Quantity q(util::Gram, 123.564);
 	std::cout << q.asKilo() << ' ' << q.asMilli() << ' ' << q.asMicro() << '\n';
