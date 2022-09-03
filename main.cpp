@@ -1,11 +1,14 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <array>
 #include <map>
 #include <fstream>
 #include <algorithm>
 
+#define IGNORE_CHECKSUM true
 #define CHECKSUM_SEED 2957289472
+#define MOLAR_EXISTANCE_THRESHOLD 0.0000001 // molar amounts smaller that this (0.1 umol) can be ignored
 
 template <class T = char> class StatusCode
 {
@@ -105,6 +108,29 @@ namespace tools
 		return false;
 	}
 
+	bool checkAll(const std::string& string, bool(*condition)(const char c))
+	{
+		const std::string::size_type size = string.size();
+		for (std::string::size_type i = 0; i < size; ++i)
+			if (condition(string[i]))
+				return true;
+		return false;
+	}
+	bool checkAtLeastTwo(const std::string& string, bool(*condition)(const char c)) // checks if a condition is fullfiled at leaft twice
+	{
+		bool first = false;
+		const std::string::size_type size = string.size();
+		for (std::string::size_type i = 0; i < size; ++i)
+			if (condition(string[i]))
+			{
+				if (first)
+					return true;
+				else
+					first = true;
+			}
+		return false;
+	}
+
 	long long unsigned int gcd(unsigned int a, unsigned int b)
 	{
 		//Stein algorithm
@@ -179,6 +205,10 @@ namespace files
 		if (buffer.size() == 0)
 			return StatusCode<>::FileEmpty;
 		std::streampos afterFirstLine = stream.tellg();
+
+		// TODO: remove this on production
+		if(IGNORE_CHECKSUM)
+			return StatusCode<>::Ok;
 
 		//get checksum
 		unsigned long long int checksum = strtoull(buffer.c_str(), nullptr, 10);
@@ -507,6 +537,8 @@ namespace data
 		inline const SubstanceData& get(const std::string& id) const { return _table.at(id); }
 		inline const util::WithQuantity<std::string> cation(const std::string& id) const { return _table.at(id)._cationId; }
 		inline const util::WithQuantity<std::string> anion(const std::string& id) const { return _table.at(id)._anionId; }
+		inline const int cationCount(const std::string& id) const { return _table.at(id)._cationId.amount.asStd(); }
+		inline const int anionCount(const std::string& id) const { return _table.at(id)._anionId.amount.asStd(); }
 		inline const std::string& name(const std::string& id) const { return _table.at(id)._name;  }
 		inline const long double mass(const std::string& id) const { return _table.at(id)._molecularMass; }
 		inline const long double density(const std::string& id) const { return _table.at(id)._density; }
@@ -534,6 +566,27 @@ namespace chem
 		//return temperature - (0.16 - 1.1489361702127659574468085106383e-4 * (40 * pressure - 40)) * (760.0 - pressure);
 		//1.1489361702127659574468085106383e-4
 
+	}
+
+	inline std::string getId(const std::string& cationId, const unsigned int cationCount, const std::string& anionId, const unsigned int anionCount)
+	{
+		// TODO : could be done more efficiently
+		std::string id;
+		if (cationCount == 1)
+			id += cationId;
+		else if (tools::checkAtLeastTwo(cationId, [](const char c) -> bool { return (c >= 'A' && c <= 'Z'); }))
+			id += '(' + cationId + ')' + std::to_string(cationCount);
+		else
+			id += cationId + std::to_string(cationCount);
+
+		if (anionCount == 1)
+			id += anionId;
+		else if (tools::checkAtLeastTwo(anionId, [](const char c) -> bool { return (c >= 'A' && c <= 'Z'); }))
+			id += '(' + anionId + ')' + std::to_string(anionCount);
+		else
+			id += anionId + std::to_string(anionCount);
+
+		return id;
 	}
 
 	class Ion
@@ -583,18 +636,16 @@ namespace chem
 		static const data::IonDataTable* _ionRef;
 
 		std::string _id;
-		util::Quantity _amount;
+		util::Quantity _amount; //only stored as moles
 		bool _isWellFormed;
 
 	public:
-		Substance(const std::string& id = "", const util::Quantity& amount = util::Quantity(1.0), const bool isWellFormed = true) : _id(id), _amount(amount), _isWellFormed(isWellFormed) {}
+		Substance(const std::string& id, const util::Quantity& amount = util::Quantity(util::Mole, 1.0), const bool isWellFormed = true) : _id(id), _amount(amount), _isWellFormed(isWellFormed) {}
 
 		inline std::string id() const { return _id; }
 		inline util::Quantity amount() const { return _amount; }
 		inline util::Quantity& accessAmount() { return _amount; }
 
-		inline const util::WithQuantity<std::string> cation() const { return _substanceRef->cation(_id); }
-		inline const util::WithQuantity<std::string> anion() const { return _substanceRef->anion(_id);}
 		inline const std::string& name() const { return _substanceRef->name(_id); }
 		inline const long double mass() const { return _substanceRef->mass(_id); }
 		inline const long double density() const { return _substanceRef->density(_id); }
@@ -604,6 +655,7 @@ namespace chem
 		inline const long double meltingPoint() const { return _substanceRef->meltingPoint(_id); }
 		inline const long double boilingPoint() const { return _substanceRef->boilingPoint(_id); }
 		inline const long double solubility() const { return _substanceRef->solubility(_id); }
+		inline const bool isWellFormed() const { return _isWellFormed;  }
 
 		util::Quantity getQuantityConvertedTo(const util::MeasureUnits unit) const
 		{
@@ -661,7 +713,8 @@ namespace chem
 
 		InorganicSubstance(const util::WithQuantity<std::string>& cationId, const util::WithQuantity<std::string>& anionId) :
 			_cationId(cationId),
-			_anionId(anionId)
+			_anionId(anionId),
+			Substance(getId(cationId.item, cationId.amount.asStd(), anionId.item, anionId.amount.asStd()))
 		{
 			//reduce coeficients if possible
 			long long unsigned int gcd = tools::gcd(_cationId.amount.asStd(), _anionId.amount.asStd());
@@ -690,6 +743,34 @@ namespace chem
 				_isWellFormed = false;
 		}
 
+		InorganicSubstance(const std::string& cationId, const int cationCharge, const std::string& anionId, const int anionCharge) : // tries to build from knwo charges, needed for reactions
+			_cationCharge(cationCharge),
+			_anionCharge(anionCharge),
+			_cationId(cationId),
+			_anionId(anionId),
+			Substance("") //the id is not knwon yet
+		{
+			if (Ion(cationId).hasCharge(cationCharge) == -1 || Ion(anionId).hasCharge(anionCharge) == -1)
+			{
+				_isWellFormed = false;
+				return;
+			}
+
+			long long unsigned int lcm = tools::lcm(abs(cationCharge), abs(anionCharge));
+			_cationId.amount.set(lcm / abs(cationCharge));
+			_anionId.amount.set(lcm / abs(anionCharge));
+			_id = getId(_cationId.item, _cationId.amount.asStd(), _anionId.item, _anionId.amount.asStd());
+		}
+
+		inline const util::WithQuantity<std::string> cation() const { return _substanceRef->cation(_id); }
+		inline const util::WithQuantity<std::string> anion() const { return _substanceRef->anion(_id); }
+		inline const int currentCationCharge() const { return _cationCharge; }
+		inline const int currentAnionCharge() const { return _anionCharge; }
+		inline const unsigned int absCurrentCationCharge() const { return abs(_cationCharge); }
+		inline const unsigned int absCurrentAnionCharge() const { return abs(_anionCharge); }
+		inline const int cationCount() const { return _substanceRef->cationCount(_id); } // get number of positive ions in one molecule
+		inline const int anionCount() const { return _substanceRef->anionCount(_id); }   // get number of negative ions in one molecule
+
 		bool isWellFormed() const { return _isWellFormed; }
 
 		void printName()
@@ -709,6 +790,32 @@ namespace chem
 	};
 	const data::SubstanceDataTable* InorganicSubstance::_substanceRef = nullptr;
 	const data::IonDataTable* InorganicSubstance::_ionRef = nullptr;
+
+	const std::array<int, 4> balanceBinaryReaction(const InorganicSubstance& reactant1, const InorganicSubstance& reactant2, const InorganicSubstance& product1)
+	{
+		//this creates a system, creates an equation like a*A = b*B = c*C = d*D, sets the reaction coeficient with the largest system coeficient to 1 and solves for the other coeficients
+		//the second product is not even needed but it is important that the substance with the largest system coeficient is present
+		double systemCoef[4];
+		systemCoef[0] = reactant1.cationCount();
+		unsigned short int imax = 0;
+
+		systemCoef[2] = product1.cationCount();
+		if (systemCoef[2] > systemCoef[imax]) imax = 2;
+
+		systemCoef[1] = systemCoef[2] / product1.anionCount();
+		if (systemCoef[1] > systemCoef[imax]) imax = 1;
+
+		systemCoef[3] = systemCoef[1] / reactant2.cationCount();
+		if (systemCoef[3] > systemCoef[imax]) imax = 3;
+
+		std::array<int, 4> reactionCoef;
+		reactionCoef[imax] = 1;
+		for (unsigned short int i = 0; i < 4; ++i)
+			if (i != imax)
+				reactionCoef[i] = reactionCoef[imax] * systemCoef[imax] / systemCoef[i];
+
+		return reactionCoef;
+	}
 
 	class OrganicSubstance : Substance
 	{
@@ -738,28 +845,105 @@ namespace chem
 	};
 	SystemState SystemState::Atmosphere = SystemState(25, 760);
 
-	class Reaction
+	class ReactionHandle
 	{
 		int _priority;
 
-		static void acidBase()
-		{
-		}
 	};
+
+	bool inorgAcidBase2(const InorganicSubstance& subst1, const InorganicSubstance& subst2)
+	{
+		if (subst1.amount().asStd() < MOLAR_EXISTANCE_THRESHOLD || subst2.amount().asStd() < MOLAR_EXISTANCE_THRESHOLD)
+			return false;
+
+		InorganicSubstance *product1 = new InorganicSubstance(subst1.cation().item, subst1.currentCationCharge(), subst2.anion().item, subst2.currentAnionCharge());
+		if (!product1->isWellFormed())
+		{
+			delete product1;
+			return false;
+		}
+		InorganicSubstance *product2 = new InorganicSubstance(subst2.cation().item, subst2.currentCationCharge(), subst1.anion().item, subst1.currentAnionCharge());
+		if (!product2->isWellFormed())
+		{
+			delete product1;
+			delete product2;
+			return false;
+		}
+
+		// maybe compute all coeficients
+		//TODO : get rid of this ugly quick-fix  --------------------------------------------------------------------------------------|
+		std::array<int, 4> reactionCoef;                                                                                            // v
+		if (product1->cationCount() + product1->anionCount() >= product2->cationCount() + product2->anionCount() && product1->id() != "HOH") // <- make sure the substance with largest system coeficient used for the function (check definition) 
+		{
+			reactionCoef = balanceBinaryReaction(subst1, subst2, *product1);
+		}
+		else
+		{
+			reactionCoef = balanceBinaryReaction(subst2, subst1, *product2);
+			std::swap(reactionCoef[0], reactionCoef[1]);
+			std::swap(reactionCoef[2], reactionCoef[3]);
+		}
+
+
+		std::cout << reactionCoef[0] << ' ' << subst1.id() << " + " << reactionCoef[1] << ' ' << subst2.id() << "  -->  " << reactionCoef[2] << ' ' << product1->id() << " + " << reactionCoef[3] << ' ' << product2->id() << '\n';
+
+		delete product1;
+		delete product2;
+
+		return true;
+	}
 
 	class Mixture
 	{
-		std::vector<Substance*> _solidLayer, _denseNonpolarLayer, _polarLayer, _nonpolarLayer, _gasLayer;
+		class Reaction //will contain both inorganic and organic pointers and function pointers, the type of the reaction will be specified
+		{
+			InorganicSubstance* _subst1;
+			InorganicSubstance* _subst2;
+			bool(*_checkReaction)(const InorganicSubstance&, const InorganicSubstance&);
+			bool(*_doReaction)(const InorganicSubstance&, const InorganicSubstance&);
+			bool(*_redoReaction)(const InorganicSubstance&, const InorganicSubstance&);
+
+		public:
+			Reaction(InorganicSubstance* subst1, InorganicSubstance* subst2, bool(*checkReaction)(const InorganicSubstance&, const InorganicSubstance&))
+			{
+				_subst1 = subst1;
+				_subst2 = subst2;
+				_checkReaction = checkReaction;
+			}
+			void act()
+			{
+				_checkReaction(*_subst1, *_subst2);
+			}
+
+		};
+
+		std::vector<Substance*> _solidLayer, _denseNonpolarLayer, _polarLayer, _nonpolarLayer, _gasLayer; // <- owning
 		SystemState _state;
 		util::Quantity _totalVolume;
 
-		//define reactions as private functions
-		//define a static vector with all possible inorganic reactions (maybe split for optim)
-		//define vector with currently running reactions that are called on tick
+		void add(Substance* newSubstance)
+		{
+			if (!newSubstance->isWellFormed()) //mixtures cannot contain invalid substances
+				return;
 
-		// - keep track of when a compound appears for the first time and add all possible reactions with it
-		// - when a reaction no longer works, remove it
-		// - only check for new reactions when the conditions change
+			_totalVolume += newSubstance->getQuantityConvertedTo(util::Liter);
+
+			auto result = find(newSubstance->id());
+			if (result == StatusCode<>::Ok) // if already present just incease its amount
+			{
+				(*result.value)->accessAmount() += newSubstance->amount();
+				delete newSubstance;
+			}
+			else
+			{
+				if (newSubstance->meltingPoint() > _state.temperature())
+					_solidLayer.push_back(newSubstance);
+				else if (newSubstance->boilingPoint() > _state.temperature())
+					_polarLayer.push_back(newSubstance);
+				else
+					_gasLayer.push_back(newSubstance);
+			}
+		}
 
 	public:
 		Mixture(const SystemState& state = SystemState::Atmosphere) :
@@ -793,24 +977,27 @@ namespace chem
 		inline long double pressure() const { return _state.pressure(); }
 		inline util::Quantity totalVolume() const { return _totalVolume; }
 
-		void add(Substance* newSubstance)
+		void add(const InorganicSubstance& newSubstance)
 		{
-			_totalVolume += newSubstance->getQuantityConvertedTo(util::Liter);
+			if (!newSubstance.isWellFormed()) //mixtures cannot contain invalid substances
+				return;
 
-			auto result = find(newSubstance->id());
+			_totalVolume += newSubstance.getQuantityConvertedTo(util::Liter);
+
+			auto result = find(newSubstance.id());
 			if (result == StatusCode<>::Ok) // if already present just incease its amount
 			{
-				(*result.value)->accessAmount() += newSubstance->amount();
-				delete newSubstance;
+				(*result.value)->accessAmount() += newSubstance.amount();
 			}
 			else
 			{
-				if (newSubstance->meltingPoint() > _state.temperature())
-					_solidLayer.push_back(newSubstance);
-				else if (newSubstance->boilingPoint() > _state.temperature())
-					_polarLayer.push_back(newSubstance);
+				Substance* temp = new InorganicSubstance(newSubstance); // <- non owning
+				if (newSubstance.meltingPoint() > _state.temperature())
+					_solidLayer.push_back(temp);
+				else if (newSubstance.boilingPoint() > _state.temperature())
+					_polarLayer.push_back(temp);
 				else
-					_gasLayer.push_back(newSubstance);
+					_gasLayer.push_back(temp);
 			}
 		}
 
@@ -873,20 +1060,20 @@ namespace chem
 			return StatusCode<>::NotFound;
 		}
 
-		StatusCode<std::vector<Substance*>::const_iterator> find(const std::vector<Substance*>& vector, bool(*condition)(const Substance*)) const
+		StatusCode<std::vector<Substance*>::const_iterator> find(const std::vector<Substance*>& vector, bool(*condition)(const Substance&)) const
 		{
 			for (auto it = vector.begin(); it != vector.end(); ++it)
-				if (condition(*it))
+				if (condition(**it))
 					return it;
 			return StatusCode<>::NotFound;
 		}
 
-		std::vector<std::vector<Substance*>::const_iterator> findAll(const std::vector<Substance*>& vector, bool(*condition)(const Substance*)) const
+		std::vector<std::vector<Substance*>::const_iterator> findAll(const std::vector<Substance*>& vector, bool(*condition)(const Substance&)) const
 		{
 			//TODO: maybe reserve size
 			std::vector<std::vector<Substance*>::const_iterator> returnVector;
 			for (auto it = vector.begin(); it != vector.end(); ++it)
-				if (condition(*it))
+				if (condition(**it))
 					returnVector.push_back(it);
 			return returnVector;
 			
@@ -977,8 +1164,8 @@ namespace chem
 		void react()
 		{
 			//TODO: maybe this can be done async
-			std::vector<std::vector<Substance*>::const_iterator> polarAcids = findAll(_polarLayer, [](const Substance* subst) -> bool { return subst->acidity() < 7.0; });
-			std::vector<std::vector<Substance*>::const_iterator> polarBases = findAll(_polarLayer, [](const Substance* subst) -> bool { return subst->acidity() > 7.0; });
+			std::vector<std::vector<Substance*>::const_iterator> polarAcids = findAll(_polarLayer, [](const Substance& subst) -> bool { return subst.acidity() < 7.0; });
+			std::vector<std::vector<Substance*>::const_iterator> polarBases = findAll(_polarLayer, [](const Substance& subst) -> bool { return subst.acidity() > 7.0; });
 
 			//sort so that the most acidic and the most basic are first     !!!maybe sort after!!!
 			std::sort(polarAcids.begin(), polarAcids.end(), [](const std::vector<Substance*>::const_iterator& x, const std::vector<Substance*>::const_iterator& y) -> bool { return (*x)->acidity() < (*y)->acidity(); });
@@ -1009,11 +1196,139 @@ namespace chem
 			for (int i = 0; i < _gasLayer.size(); ++i)
 				std::cout << " - "<< _gasLayer[i]->id() << ' ' << _gasLayer[i]->amount().asStd() << " moles\n";
 		}
+
 	};
+
+	namespace react
+	{
+		bool inorgAcidBase(const Mixture& mixture, const std::vector<InorganicSubstance*>::const_iterator& subst1, const std::vector<InorganicSubstance*>::const_iterator& subst2)
+		{
+			// check if the reaction can be done
+			// TODO: see how this is handled, maybe remove them, maybe set a flag etc...
+			if ((*subst1)->amount().asStd() < MOLAR_EXISTANCE_THRESHOLD || (*subst2)->amount().asStd() < MOLAR_EXISTANCE_THRESHOLD)
+				return false;
+
+			// balancing
+			const unsigned int lcm1 = tools::lcm((*subst1)->absCurrentCationCharge() * (*subst1)->cationCount(), (*subst2)->absCurrentAnionCharge() * (*subst2)->anionCount());
+			const unsigned int lcm2 = tools::lcm((*subst2)->absCurrentCationCharge() * (*subst2)->cationCount(), (*subst1)->absCurrentAnionCharge() * (*subst1)->anionCount());
+
+			const unsigned int requiredSubst1 = tools::lcm((lcm1 / (*subst1)->absCurrentCationCharge()) / (*subst1)->cationCount(), (lcm2 / (*subst1)->absCurrentAnionCharge()) / (*subst1)->anionCount());
+			const unsigned int requiredSubst2 = tools::lcm((lcm2 / (*subst2)->absCurrentCationCharge()) / (*subst2)->cationCount(), (lcm1 / (*subst2)->absCurrentAnionCharge()) / (*subst2)->anionCount());
+
+			const unsigned int productAmount1 = requiredSubst1 * (*subst1)->cationCount() / (*subst2)->absCurrentAnionCharge();
+			const unsigned int productAmount2 = requiredSubst1 * (*subst1)->anionCount() / (*subst2)->absCurrentCationCharge();
+
+
+			//create the products of the reaction
+			Substance *newSubst1 = new InorganicSubstance(getId((*subst1)->cation().item, requiredSubst1 * (*subst1)->cationCount() / productAmount1,
+				(*subst2)->anion().item, requiredSubst2 * (*subst2)->anionCount() / productAmount1), util::Quantity(util::Mole, productAmount1));
+			if (!newSubst1->isWellFormed())
+			{
+				delete newSubst1;
+				return false;
+			}
+			/*Substance *newSubst2 = new InorganicSubstance((*subst2)->cation().item, (*subst2)->currentCationCharge(), (*subst1)->anion().item, (*subst1)->currentAnionCharge());
+			if (!newSubst2->isWellFormed())
+			{
+				delete newSubst1;
+				delete newSubst2;
+				return false;
+			}*/
+
+			//modify mixture
+
+		}
+
+		bool inorgAcidBase(const InorganicSubstance& subst1, const InorganicSubstance& subst2)
+		{
+			// check if the reaction can be done
+			// TODO: see how this is handled, maybe remove them, maybe set a flag etc...
+			if (subst1.amount().asStd() < MOLAR_EXISTANCE_THRESHOLD || subst2.amount().asStd() < MOLAR_EXISTANCE_THRESHOLD)
+				return false;
+
+			long long unsigned int lcm1 = tools::lcm(subst1.absCurrentCationCharge() * subst1.cationCount(), subst2.absCurrentAnionCharge() * subst2.anionCount());
+			int requiredCat1 = lcm1 / subst1.absCurrentCationCharge();
+			int requiredAn2 = lcm1 / subst2.absCurrentAnionCharge();
+			if (subst1.absCurrentCationCharge() * subst1.cationCount() == subst2.absCurrentAnionCharge() * subst2.anionCount())
+				requiredCat1 = 1, requiredAn2 = 1;
+
+			long long unsigned int lcm2 = tools::lcm(subst2.absCurrentCationCharge() * subst2.cationCount(), subst1.absCurrentAnionCharge() * subst1.anionCount());
+
+			int requiredCat2 = lcm2 / subst2.absCurrentCationCharge();
+			int requiredAn1 = lcm2 / subst1.absCurrentAnionCharge();
+			if (subst2.absCurrentCationCharge() * subst2.cationCount() == subst1.absCurrentAnionCharge() * subst1.anionCount())
+				requiredCat2 = 1, requiredAn1 = 1;
+
+			int requiredSubst1 = tools::lcm(requiredCat1 / subst1.cationCount(), requiredAn1 / subst1.anionCount());
+			int requiredSubst2 = tools::lcm(requiredCat2 / subst2.cationCount(), requiredAn2 / subst2.anionCount());
+
+
+			//TODO : there is a special case where the charge*counts are equal but the lcm is not 1 (CaOH2 + H2SO4), this special case needs to be handled or a new formula is needed
+			double product1 = requiredSubst1 * subst1.cationCount() / subst2.absCurrentAnionCharge();
+			double product2 = requiredSubst1 * subst1.anionCount() / subst2.absCurrentCationCharge();
+
+			std::cout << "rCat1= " << requiredCat1 << "\nrAn1= " << requiredAn1 << "\nrCat2= " << requiredCat2 << "\nrAn2= " << requiredAn2 << '\n';
+			std::cout << requiredSubst1 << ' ' << requiredSubst2 << ' ' << product1 << ' ' << product2 << '\n';
+
+			std::cout << getId(subst1.cation().item, requiredSubst1 * subst1.cationCount() / product1, subst2.anion().item, requiredSubst2 * subst2.anionCount() / product1) << ' ';
+
+			std::cout << getId(subst2.cation().item, requiredSubst2 * subst2.cationCount() / product2, subst1.anion().item, requiredSubst1 * subst1.anionCount() / product2) << ' ';
+
+		}
+
+
+		bool inorgAcidBase2(const InorganicSubstance& subst1, const InorganicSubstance& subst2)
+		{
+			if (subst1.amount().asStd() < MOLAR_EXISTANCE_THRESHOLD || subst2.amount().asStd() < MOLAR_EXISTANCE_THRESHOLD)
+				return false;
+
+			InorganicSubstance *product1 = new InorganicSubstance(subst1.cation().item, subst1.currentCationCharge(), subst2.anion().item, subst2.currentAnionCharge());
+			if (!product1->isWellFormed())
+			{
+				delete product1;
+				return false;
+			}
+			InorganicSubstance *product2 = new InorganicSubstance(subst2.cation().item, subst2.currentCationCharge(), subst1.anion().item, subst1.currentAnionCharge());
+			if (!product2->isWellFormed())
+			{
+				delete product1;
+				delete product2;
+				return false;
+			}
+			
+			// maybe compute all coeficients
+			//TODO : get rid of this ugly quick-fix  --------------------------------------------------------------------------------------|
+			std::array<int, 4> reactionCoef;                                                                                            // v
+			if (product1->cationCount() + product1->anionCount() >= product2->cationCount() + product2->anionCount() && product1->id() != "HOH") // <- make sure the substance with largest system coeficient used for the function (check definition) 
+			{
+				reactionCoef = balanceBinaryReaction(subst1, subst2, *product1);
+			}
+			else
+			{
+				reactionCoef = balanceBinaryReaction(subst2, subst1, *product2);
+				std::swap(reactionCoef[0], reactionCoef[1]);
+				std::swap(reactionCoef[2], reactionCoef[3]);
+			}
+			
+			
+			std::cout << reactionCoef[0] << ' ' << subst1.id() << " + " << reactionCoef[1] << ' ' << subst2.id() << "  -->  " << reactionCoef[2] << ' ' << product1->id() << " + " << reactionCoef[3] << ' ' << product2->id() << '\n';
+
+
+
+			delete product1;
+			delete product2;
+
+			return true;
+		}
+	}
 }
+
+
 
 int main()
 {
+	//std::cout << files::createChecksum("InorganicSubst.csv");
+
 	//ION TEST
 	/*data::IonDataTable datac;
 	std::cout<<datac.loadFromFile("Atoms.csv").message<<'\n';
@@ -1034,7 +1349,6 @@ int main()
 	chem::InorganicSubstance::initialize(&datac, &datas);
 	chem::InorganicSubstance subst("H2SO4");
 	subst.printName();*/
-	
 	{
 		//MIXTURE TEST
 		data::IonDataTable datac;
@@ -1044,11 +1358,11 @@ int main()
 		chem::Ion::initialize(&datac);
 		chem::InorganicSubstance::initialize(&datac, &datas);
 		chem::Mixture mixture1, mixture2(chem::SystemState(1000.0, 760));
-		mixture1.add(new chem::InorganicSubstance("H2SO4", util::Quantity(util::Mole, 2.0)));
-		mixture1.add(new chem::InorganicSubstance("NaOH", util::Quantity(util::Mole, 2.0)));
-		mixture2.add(new chem::InorganicSubstance("LiCl", util::Quantity(util::Mole, 5.0)));
-		mixture1.add(new chem::InorganicSubstance("H2SO4", util::Quantity(util::Mole, 2.0)));
-		mixture1.add(new chem::InorganicSubstance("H2SO4", util::Quantity(util::Mole, 2.0)));
+		mixture1.add(chem::InorganicSubstance("H2SO4", util::Quantity(util::Mole, 2.0)));
+		mixture1.add(chem::InorganicSubstance("NaOH", util::Quantity(util::Mole, 2.0)));
+		mixture2.add(chem::InorganicSubstance("LiCl", util::Quantity(util::Mole, 5.0)));
+		mixture1.add(chem::InorganicSubstance("H2SO4", util::Quantity(util::Mole, 2.0)));
+		mixture1.add(chem::InorganicSubstance("H2SO4", util::Quantity(util::Mole, 2.0)));
 		//mixture1.printConstituents();
 		//std::cout << "---------------------\n";
 		//mixture2.printConstituents();
@@ -1058,6 +1372,24 @@ int main()
 		//std::cout << "---------------------\n";
 		//mixture2.printConstituents();
 		mixture1.react();
+
+		std::cout << "\n__\n";
+		chem::react::inorgAcidBase2(chem::InorganicSubstance("H3PO4", util::Quantity(util::Mole, 1.0)), chem::InorganicSubstance("Ca(OH)2", util::Quantity(util::Mole, 1.0)));
+		std::cout << "\n__\n";
+		chem::react::inorgAcidBase2(chem::InorganicSubstance("Ca(OH)2", util::Quantity(util::Mole, 1.0)), chem::InorganicSubstance("H3PO4", util::Quantity(util::Mole, 1.0)));
+		std::cout << "\n__\n";
+		chem::react::inorgAcidBase2(chem::InorganicSubstance("Ca(OH)2", util::Quantity(util::Mole, 1.0)), chem::InorganicSubstance("H2SO4", util::Quantity(util::Mole, 1.0)));
+		std::cout << "\n__\n";
+		chem::react::inorgAcidBase2(chem::InorganicSubstance("H2SO4", util::Quantity(util::Mole, 1.0)), chem::InorganicSubstance("Ca(OH)2", util::Quantity(util::Mole, 1.0)));
+		std::cout << "\n__\n";
+		chem::react::inorgAcidBase2(chem::InorganicSubstance("NaCl", util::Quantity(util::Mole, 1.0)), chem::InorganicSubstance("HCl", util::Quantity(util::Mole, 1.0)));
+		std::cout << "\n__\n";
+		chem::react::inorgAcidBase2(chem::InorganicSubstance("NaCl", util::Quantity(util::Mole, 1.0)), chem::InorganicSubstance("H3PO4", util::Quantity(util::Mole, 1.0)));
+		std::cout << "\n__\n";
+		chem::react::inorgAcidBase2(chem::InorganicSubstance("H3PO4", util::Quantity(util::Mole, 1.0)), chem::InorganicSubstance("NaCl", util::Quantity(util::Mole, 1.0)));
+		std::cout << "\n__\n";
+		chem::react::inorgAcidBase2(chem::InorganicSubstance("Ca(OH)2", util::Quantity(util::Mole, 1.0)), chem::InorganicSubstance("NaCl", util::Quantity(util::Mole, 1.0)));
+		std::cout << "\n__\n";
 	}
 	std::cout<<chem::Substance::instanceCount;
 
@@ -1069,8 +1401,6 @@ int main()
 	q.setAsMicro(1);
 	q.addAsKilo(1000000);
 	std::cout << q.asString();*/
-
-	//std::cout << files::createChecksum("InorganicSubst.csv");
 
 	/*std::ifstream in("Atoms.csv");
 	std::cout<<files::verifyChecksum(in).message;
