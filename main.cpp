@@ -664,6 +664,8 @@ namespace chem
 		bool _isWellFormed;
 		SubstanceType _type;
 
+		double _granularity = 100;
+
 	public:
 		Substance(const std::string& id, SubstanceType type, const util::Quantity& amount = util::Quantity(util::Mole, 1.0), const bool isWellFormed = true) : _id(id), _type(type), _amount(amount), _isWellFormed(isWellFormed) {}
 
@@ -870,11 +872,21 @@ namespace chem
 	};
 	SystemState SystemState::Atmosphere = SystemState(25, 760);
 
+	enum SubstanceLayer
+	{
+		SolidLayer = 1,
+		DenseNonpolarLayer = 2,
+		PolarLayer = 3,
+		NonpolarLayer = 4,
+		GasLayer = 5
+	};
+
 	class SubstanceContainer
 	{
 		SystemState _systemState;
 		util::Quantity _totalVolume;
 		std::vector<Substance*> _solidLayer, _denseNonpolarLayer, _polarLayer, _nonpolarLayer, _gasLayer; // <- owning
+		// lastIndexes are used to keep track of newly added substances, good for reactions
 		std::vector<Substance*>::size_type _solidLastIndex = 0, _denseNonpolarLastIndex = 0, _polarLastIndex = 0, _nonpolarLastIndex = 0, _gasLastIndex = 0;
 
 		inline void _addNewSubstance(Substance* newSubstance) // when a new substance is added it has to be distributed between layers
@@ -888,15 +900,85 @@ namespace chem
 			newSubstanceFlag = true;
 		}
 
+		// allows accessing specific layers using an enum value
+		inline const std::vector<Substance*>& _layerSwitch(const SubstanceLayer layer) const 
+		{
+			switch (layer)
+			{
+			case SolidLayer:
+				return _solidLayer;
+			case DenseNonpolarLayer:
+				return _denseNonpolarLayer;
+			case PolarLayer:
+				return _polarLayer;
+			case NonpolarLayer:
+				return _nonpolarLayer;
+			case GasLayer:
+				return _gasLayer;
+			default:
+				return _polarLayer;
+			}
+		}
+		inline std::vector<Substance*>::size_type _layerLastIndexSwitch(const SubstanceLayer layer) const 
+		{
+			switch (layer)
+			{
+			case SolidLayer:
+				return _solidLastIndex;
+			case DenseNonpolarLayer:
+				return _denseNonpolarLastIndex;
+			case PolarLayer:
+				return _polarLastIndex;
+			case NonpolarLayer:
+				return _nonpolarLastIndex;
+			case GasLayer:
+				return _gasLastIndex;
+			default:
+				return _polarLastIndex;
+			}
+		}
+		inline Substance* _findFirst(const std::vector<Substance*>& vector, const std::string& id) const
+		{
+			const std::vector<Substance*>::size_type size = vector.size();
+			for (std::vector<Substance*>::size_type i = 0; i < size; ++i)
+				if (vector[i]->id() == id)
+					return vector[i];
+			return nullptr;
+		}
+		inline Substance* _findFirst(const std::vector<Substance*>& vector, bool(*condition)(const Substance*)) const
+		{
+			const std::vector<Substance*>::size_type size = vector.size();
+			for (std::vector<Substance*>::size_type i = 0; i < size; ++i)
+				if (condition(vector[i]))
+					return vector[i];
+			return nullptr;
+		}
+		inline std::vector<Substance*> _findAll(const std::vector<Substance*>& vector, bool(*condition)(const Substance*)) const
+		{
+			std::vector<Substance*> returnVector;
+			const std::vector<Substance*>::size_type size = vector.size();
+			for (std::vector<Substance*>::size_type i = 0; i < size; ++i)
+				if (condition(vector[i]))
+					returnVector.push_back(vector[i]);
+			return returnVector;
+		}
+		inline std::vector<Substance*> _findAllNew(const std::vector<Substance*>& vector, const std::vector<Substance*>::size_type startIndex, bool(*condition)(const Substance*)) const
+		{
+			std::vector<Substance*> returnVector;
+			const std::vector<Substance*>::size_type size = vector.size();
+			for (std::vector<Substance*>::size_type i = startIndex; i < size; ++i)
+				if (condition(vector[i]))
+					returnVector.push_back(vector[i]);
+			return returnVector;
+		}
+
 	public:
 		bool newSubstanceFlag = false, substanceDepletedFlag = false, volumeChangedFlag = false, stateChangedFlag = false;
 
 		SubstanceContainer(const SystemState& systemState) :
 			_systemState(systemState),
 			_totalVolume(util::Liter, 0.0)
-		{
-			//TODO: make statistics and reserve sizes 
-		}
+		{}
 		~SubstanceContainer()
 		{
 			std::vector<Substance*>::size_type size = _solidLayer.size();
@@ -920,67 +1002,48 @@ namespace chem
 				delete _gasLayer[i];
 		}
 
-		inline Substance* findFirst(const std::vector<Substance*>& vector, const std::string& id) const
+		inline Substance* findFirst(const SubstanceLayer layer, const std::string& id) const
 		{
-			const std::vector<Substance*>::size_type size = vector.size();
-			for (std::vector<Substance*>::size_type i = 0; i < size; ++i)
-				if (vector[i]->id() == id)
-					return vector[i];
-			return nullptr;
+			return _findFirst(_layerSwitch(layer), id);
 		}
-		inline Substance* findFirst(const std::vector<Substance*>& vector, bool(*condition)(const Substance*)) const
+		inline Substance* findFirst(const SubstanceLayer layer, bool(*condition)(const Substance*)) const
 		{
-			const std::vector<Substance*>::size_type size = vector.size();
-			for (std::vector<Substance*>::size_type i = 0; i < size; ++i)
-				if (condition(vector[i]))
-					return vector[i];
-			return nullptr;
+			return _findFirst(_layerSwitch(layer), condition);
 		}
-		inline std::vector<Substance*> findAll(const std::vector<Substance*>& vector, bool(*condition)(const Substance*)) const
-		{
-			//TODO: maybe reserve size
-			std::vector<Substance*> returnVector;
-			const std::vector<Substance*>::size_type size = vector.size();
-			for (std::vector<Substance*>::size_type i = 0; i < size; ++i)
-				if (condition(vector[i]))
-					returnVector.push_back(vector[i]);
-			return returnVector;
-		}
-
 		inline Substance* findFirst(const std::string& id) const
 		{
-			Substance* result = findFirst(_solidLayer, id);
+			Substance* result = _findFirst(_solidLayer, id);
 			if (result) return result;
 
-			result = findFirst(_polarLayer, id);
+			result = _findFirst(_polarLayer, id);
 			if (result) return result;
 
-			result = findFirst(_nonpolarLayer, id);
+			result = _findFirst(_nonpolarLayer, id);
 			if (result) return result;
 
-			result = findFirst(_denseNonpolarLayer, id);
+			result = _findFirst(_denseNonpolarLayer, id);
 			if (result) return result;
 
-			result = findFirst(_gasLayer, id);
+			result = _findFirst(_gasLayer, id);
 			if (result) return result;
 
 			return nullptr;
 		}
 		inline Substance* findFirst(bool(*condition)(const Substance*)) const
 		{
-			Substance* result = findFirst(_solidLayer, condition);
+			Substance* result = _findFirst(_solidLayer, condition);
 			if (result) return result;
 
-			result = findFirst(_polarLayer, condition);
+			result = _findFirst(_polarLayer, condition);
 			if (result) return result;
 
-			result = findFirst(_nonpolarLayer, condition);
+			result = _findFirst(_nonpolarLayer, condition);
 			if (result) return result;
 
-			result = findFirst(_denseNonpolarLayer, condition);
+			result = _findFirst(_denseNonpolarLayer, condition);
 			if (result) return result;
 
-			result = findFirst(_gasLayer, condition);
+			result = _findFirst(_gasLayer, condition);
 			if (result) return result;
 
 			return nullptr;
@@ -1015,6 +1078,62 @@ namespace chem
 					returnVector.push_back(_gasLayer[i]);
 
 			return returnVector;
+		}
+		inline std::vector<Substance*> findAll(const SubstanceLayer layer, bool(*condition)(const Substance*)) const
+		{
+			return _findAll(_layerSwitch(layer), condition);
+		}
+		inline std::vector<Substance*> findAllNew(bool(*condition)(const Substance*)) const
+		{
+			//to do this efficiently is them naste way...
+			std::vector<Substance*> returnVector;
+			std::vector<Substance*>::size_type size = _solidLayer.size();
+			for (std::vector<Substance*>::size_type i = _solidLastIndex; i < size; ++i)
+				if (condition(_solidLayer[i]))
+					returnVector.push_back(_solidLayer[i]);
+
+			size = _polarLayer.size();
+			for (std::vector<Substance*>::size_type i = _polarLastIndex; i < size; ++i)
+				if (condition(_polarLayer[i]))
+					returnVector.push_back(_polarLayer[i]);
+
+			size = _nonpolarLayer.size();
+			for (std::vector<Substance*>::size_type i = _nonpolarLastIndex; i < size; ++i)
+				if (condition(_nonpolarLayer[i]))
+					returnVector.push_back(_nonpolarLayer[i]);
+
+			size = _denseNonpolarLayer.size();
+			for (std::vector<Substance*>::size_type i = _denseNonpolarLastIndex; i < size; ++i)
+				if (condition(_denseNonpolarLayer[i]))
+					returnVector.push_back(_denseNonpolarLayer[i]);
+
+			size = _gasLayer.size();
+			for (std::vector<Substance*>::size_type i = _gasLastIndex; i < size; ++i)
+				if (condition(_gasLayer[i]))
+					returnVector.push_back(_gasLayer[i]);
+
+			return returnVector;
+		}
+		inline std::vector<Substance*> findAllNew(const SubstanceLayer layer, bool(*condition)(const Substance*)) const
+		{
+			return _findAllNew(_layerSwitch(layer), _layerLastIndexSwitch(layer), condition);
+		}
+
+		inline void saveLastIndexes() // keep track of where newly added substances start, for reactions
+		{
+			_solidLastIndex = _solidLayer.size();
+			_denseNonpolarLastIndex = _denseNonpolarLayer.size();
+			_polarLastIndex = _polarLayer.size();
+			_nonpolarLastIndex = _nonpolarLayer.size();
+			_gasLastIndex = _gasLayer.size();
+		}
+		inline void resetLastIndexes()
+		{
+			_solidLastIndex = 0;
+			_denseNonpolarLastIndex = 0;
+			_polarLastIndex = 0;
+			_nonpolarLastIndex = 0;
+			_gasLastIndex = 0;
 		}
 
 		inline long double temperature() const { return _systemState.temperature(); }
@@ -1164,6 +1283,18 @@ namespace chem
 			_systemState.setTemperature(25);
 		}
 
+		std::vector<Substance*>& solidLayer() { return _solidLayer; }
+		std::vector<Substance*>& denseNonpolarLayer() { return _denseNonpolarLayer; }
+		std::vector<Substance*>& polarLayer() { return _polarLayer; }
+		std::vector<Substance*>& nonpolarLayer() { return _nonpolarLayer; }
+		std::vector<Substance*>& gasLayer() { return _gasLayer; }
+
+		const std::vector<Substance*>::size_type solidLastIndex() const { return _solidLastIndex; }
+		const std::vector<Substance*>::size_type denseNonpolarLastIndex() const { return _denseNonpolarLastIndex; }
+		const std::vector<Substance*>::size_type polarLastIndex() const { return _polarLastIndex; }
+		const std::vector<Substance*>::size_type nonpolarLastIndex() const { return _nonpolarLastIndex; }
+		const std::vector<Substance*>::size_type gasLastIndex() const { return _gasLastIndex; }
+
 		void printConstituents()
 		{
 			std::cout << "Total: " << _totalVolume.asMilli() << "ml   " << temperature() << '\n';
@@ -1179,12 +1310,6 @@ namespace chem
 			for (int i = 0; i < _gasLayer.size(); ++i)
 				std::cout << " - " << _gasLayer[i]->id() << ' ' << _gasLayer[i]->amount().asStd() << " moles\n";
 		}
-
-		//std::vector<Substance*>& solidLayer() { return _solidLayer; }
-		//std::vector<Substance*>& denseNonpolarLayer() { return _denseNonpolarLayer; }
-		//std::vector<Substance*>& polarLayer() { return _polarLayer; }
-		//std::vector<Substance*>& nonpolarLayer() { return _nonpolarLayer; }
-		//std::vector<Substance*>& gasLayer() { return _gasLayer; }
 	};
 
 	class Mixture
@@ -1201,6 +1326,8 @@ namespace chem
 				_priority(priority)
 			{}
 
+			inline int priority() const { return _priority; }
+
 			virtual bool react() = 0;
 
 			void* operator new(const std::size_t count)
@@ -1214,16 +1341,14 @@ namespace chem
 				return ::operator delete(ptr);
 			}
 
-			static void mergeReactionLists(std::vector<BaseReaction*>& a, std::vector<BaseReaction*>& b)
+			//merges a & b into a
+			inline static void mergeReactionLists(std::vector<BaseReaction*>& a, std::vector<BaseReaction*>& b)
 			{
-				std::vector<BaseReaction*>::size_type sizeA = a.size(), sizeB = b.size(), i = 0, j = 0;
-				a.reserve(sizeA + sizeB);
-
-				if (a[i] >= b[j])
-				{
-					a.insert(a.begin() + i, b[j]);
-					b.erase(b.begin() + j);
-				}
+				std::vector<BaseReaction*> result;
+				result.reserve(a.size() + b.size());
+				std::merge(a.begin(), a.end(), b.begin(), b.end(), back_inserter(result));
+				a = std::move(result);
+				b.clear();
 			}
 
 			static int instanceCount;
@@ -1361,30 +1486,29 @@ namespace chem
 		
 		inline void _computeReactions()
 		{
-			//TODO: maybe this can be done async
-			std::vector<Substance*> polarAcids = _content.findAll([](const Substance* subst) -> bool { return subst->acidity() < 7.0; });
-			std::vector<Substance*> polarBases = _content.findAll([](const Substance* subst) -> bool { return subst->acidity() > 7.0; });
+			const std::vector<Substance*>& polarLayer = _content.polarLayer();
+			const std::vector<Substance*>::size_type polarSize = polarLayer.size();
+			for (std::vector<Substance*>::size_type i = _content.polarLastIndex(); i < polarSize; ++i)
+			{
+				for(std::vector<Substance*>::size_type j = _content.polarLastIndex(); j < polarSize; ++j)
+					if (polarLayer[i]->acidity() > 7.0 && polarLayer[j]->acidity() < 7.0)
+					{
+						std::cout << polarLayer[i]->id() << " + " << polarLayer[j]->id() << '\n';
+						_ongoingReactions.push_back(new InorganicReaction(
+							*this,
+							*static_cast<InorganicSubstance*>(polarLayer[i]),
+							*static_cast<InorganicSubstance*>(polarLayer[j]),
+							polarLayer[i]->reactivity() + polarLayer[j]->reactivity(),
+							InorganicReaction::ck_inorgAcidBase,
+							InorganicReaction::cp_inorgAcidBase,
+							InorganicReaction::ap_inorgAcidBase
+						));
+					}
+			}
 
-			//sort so that the most acidic and the most basic are first     !!!maybe sort after!!!
-			std::sort(polarAcids.begin(), polarAcids.end(), [](const Substance* x, const Substance* y) -> bool { return x->acidity() < y->acidity(); });
-			std::sort(polarBases.begin(), polarBases.end(), [](const Substance* x, const Substance* y) -> bool { return x->acidity() > y->acidity(); });
+			std::sort(_ongoingReactions.begin(), _ongoingReactions.end(), [](const BaseReaction* x, const BaseReaction* y) -> bool { return x->priority() < y->priority(); });
 
-			const std::vector<Substance*>::size_type polarAcidsSize = polarAcids.size();
-			const std::vector<Substance*>::size_type polarBasesSize = polarBases.size();
-			for (std::vector<Substance*>::size_type i = 0; i < polarAcidsSize; ++i)
-				for (std::vector<Substance*>::size_type j = 0; j < polarBasesSize; ++j)
-				{
-					std::cout << polarAcids[i]->id() << " + " << polarBases[j]->id() << '\n';
-					_ongoingReactions.push_back(new InorganicReaction(
-						*this,
-						*static_cast<InorganicSubstance*>(polarAcids[j]),
-						*static_cast<InorganicSubstance*>(polarBases[i]),
-						5,
-						InorganicReaction::ck_inorgAcidBase,
-						InorganicReaction::cp_inorgAcidBase,
-						InorganicReaction::ap_inorgAcidBase
-					));
-				}
+			_content.saveLastIndexes();
 		}
 		inline void _doReactions()
 		{
@@ -1415,9 +1539,9 @@ namespace chem
 		//the given mixture is emptied after its contents are moved
 		void add(Mixture& mixture) 
 		{
-			_content.add(mixture.content());
-			BaseReaction::mergeReactionLists(_ongoingReactions, mixture.ongoingReactions());
-			//clear mixture
+			_content.add(mixture.content()); // clears content as well
+			//merging reactions is acctually a really bad idea, BaseReaction::mergeReactionLists(_ongoingReactions, mixture.ongoingReactions()); //clears vector as well
+			//TODO: if the glass has non-zero mass then give it negative energy in order to cool it down
 		}
 
 		void tick()
