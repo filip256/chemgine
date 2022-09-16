@@ -1283,17 +1283,17 @@ namespace chem
 			_systemState.setTemperature(25);
 		}
 
-		std::vector<Substance*>& solidLayer() { return _solidLayer; }
-		std::vector<Substance*>& denseNonpolarLayer() { return _denseNonpolarLayer; }
-		std::vector<Substance*>& polarLayer() { return _polarLayer; }
-		std::vector<Substance*>& nonpolarLayer() { return _nonpolarLayer; }
-		std::vector<Substance*>& gasLayer() { return _gasLayer; }
+		inline std::vector<Substance*>& solidLayer() { return _solidLayer; }
+		inline std::vector<Substance*>& denseNonpolarLayer() { return _denseNonpolarLayer; }
+		inline std::vector<Substance*>& polarLayer() { return _polarLayer; }
+		inline std::vector<Substance*>& nonpolarLayer() { return _nonpolarLayer; }
+		inline std::vector<Substance*>& gasLayer() { return _gasLayer; }
 
-		const std::vector<Substance*>::size_type solidLastIndex() const { return _solidLastIndex; }
-		const std::vector<Substance*>::size_type denseNonpolarLastIndex() const { return _denseNonpolarLastIndex; }
-		const std::vector<Substance*>::size_type polarLastIndex() const { return _polarLastIndex; }
-		const std::vector<Substance*>::size_type nonpolarLastIndex() const { return _nonpolarLastIndex; }
-		const std::vector<Substance*>::size_type gasLastIndex() const { return _gasLastIndex; }
+		inline const std::vector<Substance*>::size_type solidLastIndex() const { return _solidLastIndex; }
+		inline const std::vector<Substance*>::size_type denseNonpolarLastIndex() const { return _denseNonpolarLastIndex; }
+		inline const std::vector<Substance*>::size_type polarLastIndex() const { return _polarLastIndex; }
+		inline const std::vector<Substance*>::size_type nonpolarLastIndex() const { return _nonpolarLastIndex; }
+		inline const std::vector<Substance*>::size_type gasLastIndex() const { return _gasLastIndex; }
 
 		void printConstituents()
 		{
