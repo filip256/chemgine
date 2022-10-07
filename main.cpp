@@ -536,7 +536,7 @@ namespace data
 					util::WithQuantity<std::string>(cationString[0], cationString.size() > 1 ? util::Quantity(std::stoi(cationString[1])) : 1), // unreadable ik
 					util::WithQuantity<std::string>(anionString[0], anionString.size() > 1 ? util::Quantity(std::stoi(anionString[1])) : 1),    // if no value is specified in the table, use 1 as default
 					line[3], std::stold(line[4]), std::stold(line[5]), line[6], std::stold(line[7]), std::stoi(line[8]), std::stold(line[9]),
-					std::stold(line[10]), std::stold(line[11]), std::stold(line[12]), std::stold(line[13]), std::stold(line[14]))
+					std::stold(line[10]), std::stold(line[11]), std::stold(line[13]), std::stold(line[14]), std::stold(line[15]))
 				).second)
 					return StatusCode<>::BadFormat;
 
@@ -570,6 +570,14 @@ namespace data
 
 namespace chem
 {
+	enum AggregationTag
+	{
+		NullState = 0,
+		Solid = 1,
+		Liquid = 2,
+		Gas = 3
+	};
+
 	class Conversions
 	{
 	public:
@@ -600,6 +608,10 @@ namespace chem
 		inline static const long double energyToChangedStateMass(const long double energy, const long double heatConstant)
 		{
 			return energy / heatConstant;
+		}
+		inline static const long double changedStateMassToEnergy(const long double mass, const long double heatConstant)
+		{
+			return mass * heatConstant;
 		}
 	};
 	const long double Conversions::TorrToPa = 133.3223684211;
@@ -645,7 +657,7 @@ namespace chem
 
 	enum SubstanceTypeTag
 	{
-		None = 0,
+		NullSubstance = 0,
 		Inorganic = 1,
 		Organic = 2
 	};
@@ -750,6 +762,20 @@ namespace chem
 			--instanceCount;
 			return ::operator delete(ptr);
 		}
+
+		//free data access
+		static inline const std::string& name(const std::string& id) { return _substanceRef->name(id); }
+		static inline const long double mass(const std::string& id) { return _substanceRef->mass(id); }
+		static inline const long double density(const std::string& id) { return _substanceRef->density(id); }
+		static inline const std::string& specificType(const std::string& id) { return _substanceRef->type(id); }
+		static inline const long double acidity(const std::string& id) { return _substanceRef->acidity(id); }
+		static inline const int reactivity(const std::string& id) { return _substanceRef->reactivity(id); }
+		static inline const long double meltingPoint(const std::string& id) { return _substanceRef->meltingPoint(id); }
+		static inline const long double boilingPoint(const std::string& id) { return _substanceRef->boilingPoint(id); }
+		static inline const long double solubility(const std::string& id) { return _substanceRef->solubility(id); }
+		static inline const long double heatCapacity(const std::string& id) { return _substanceRef->heatCapacity(id); }
+		static inline const long double heatOfFusion(const std::string& id) { return _substanceRef->heatOfFusion(id); }
+		static inline const long double heatOfVaporization(const std::string& id) { return _substanceRef->heatOfVaporization(id); }
 
 		static int instanceCount;
 	};
@@ -917,7 +943,7 @@ namespace chem
 		{}
 
 		// allocates new substance from the image
-		inline Substance* getNew()
+		inline Substance* getNew() const 
 		{
 			if (_type == Inorganic)
 				return new InorganicSubstance(id, amount);
@@ -926,9 +952,36 @@ namespace chem
 			return nullptr;
 		}
 
+		inline bool isValid() const { return _type != SubstanceTypeTag::NullSubstance && id.size() > 0; }
+
+		inline const std::string& name() const { return Substance::name(id); }
+		inline const long double mass() const { return Substance::mass(id); }
+		inline const long double density() const { return Substance::density(id); }
+		inline const std::string& specificType() const { return Substance::specificType(id); }
+		inline const long double acidity() const { return Substance::acidity(id); }
+		inline const int reactivity() const { return Substance::reactivity(id); }
+		inline const long double meltingPoint() const { return Substance::meltingPoint(id); }
+		inline const long double boilingPoint() const { return Substance::boilingPoint(id); }
+		inline const long double solubility() const { return Substance::solubility(id); }
+		inline const long double heatCapacity() const { return Substance::heatCapacity(id); }
+		inline const long double heatOfFusion() const { return Substance::heatOfFusion(id); }
+		inline const long double heatOfVaporization() const { return Substance::heatOfVaporization(id); }
+
+		util::Quantity getQuantityConvertedTo(const util::MeasureUnitTag unit) const
+		{
+			if (amount.unit() == util::Mole)
+			{
+				if (unit == util::Gram)
+					return amount.getConvertedTo(util::Gram, mass());
+				if (unit == util::Liter)
+					return amount.getConvertedTo(util::Gram, mass()).getConvertedTo(util::Liter, 0.001 / density());
+			}
+			return util::Quantity(0.0);
+		}
+
 		static const SubstanceImage Empty;
 	};
-	const SubstanceImage SubstanceImage::Empty = SubstanceImage("", 0.0, SubstanceTypeTag::None);
+	const SubstanceImage SubstanceImage::Empty = SubstanceImage("", 0.0, SubstanceTypeTag::NullSubstance);
 
 	//Class for managing the physical properties of a closed system
 	class SystemState //physical state of a system
@@ -956,7 +1009,7 @@ namespace chem
 
 	enum SubstanceLayerTag
 	{
-		None = 0,
+		NullLayer = 0,
 		SolidLayer = 1,
 		MetallicLiquidLayer = 2, 
 		DenseNonpolarLayer = 3,
@@ -989,7 +1042,7 @@ namespace chem
 
 			Substance* aux = ignore != _content[0] ? _content[0] : _content[1];
 			for (std::vector<Substance*>::size_type i = ignore != _content[0] ? 1 : 2; i < size; ++i)
-				if (ignore != _content[i] && comparison(_content[i], aux))
+				if (_content[i]->amount().asStd() >= MOLAR_EXISTANCE_THRESHOLD && ignore != _content[i] && comparison(_content[i], aux))
 					aux = _content[i];
 			return aux;
 		}
@@ -1003,7 +1056,16 @@ namespace chem
 			_avgHeatCapacity = (_avgHeatCapacity * _weight + subst.heatCapacity()) / (_weight + subst.getQuantityConvertedTo(util::Gram).asStd()); // before weight
 
 			_weight += subst.getQuantityConvertedTo(util::Gram).asStd();
+		}
+		inline void _propertiesAdd(const SubstanceImage& subst)
+		{
+			_volume += _layerTag == GasLayer ?
+				Conversions::gasMoleToVolume(subst.amount.asStd(), _state.pressure(), _state.temperature()) :
+				subst.getQuantityConvertedTo(util::Liter).asStd();
 
+			_avgHeatCapacity = (_avgHeatCapacity * _weight + subst.heatCapacity()) / (_weight + subst.getQuantityConvertedTo(util::Gram).asStd()); // before weight
+
+			_weight += subst.getQuantityConvertedTo(util::Gram).asStd();
 		}
 		inline void _propertiesRemove(const Substance& subst)
 		{
@@ -1054,7 +1116,7 @@ namespace chem
 				else if (subst->boilingPoint() > _lowestTemp->boilingPoint()) // keep highest boilling point
 					_lowestTemp = subst;
 			}
-			else if (_layerTag != None)
+			else if (_layerTag != NullLayer)
 			{
 				if (_lowestTemp == nullptr)
 					_lowestTemp = subst;
@@ -1070,7 +1132,7 @@ namespace chem
 		void _removeTempLimits(const Substance* subst)
 		{
 			//receives a soon to be removed substance and handles temp limits
-			if (_content.size() == 0 || _content.size() == 1)
+			if (_content.size() < 2)
 			{
 				_lowestTemp = nullptr;
 				_highestTemp = nullptr;
@@ -1081,7 +1143,7 @@ namespace chem
 			{
 				if (_layerTag == GasLayer)
 					_lowestTemp = _findExtremum([](const Substance* subst1, const Substance* subst2) -> bool { return subst1->boilingPoint() > subst2->boilingPoint(); }, subst); // highest boilling point
-				else if (_layerTag != None)
+				else if (_layerTag != NullLayer)
 					_lowestTemp = _findExtremum([](const Substance* subst1, const Substance* subst2) -> bool { return subst1->meltingPoint() > subst2->meltingPoint(); }, subst); // highest melting point
 			}
 
@@ -1089,11 +1151,79 @@ namespace chem
 			{
 				if (_layerTag == SolidLayer)
 					_highestTemp = _findExtremum([](const Substance* subst1, const Substance* subst2) -> bool { return subst1->meltingPoint() < subst2->meltingPoint(); }, subst); // lowest melting point
-				else if (_layerTag != None)
+				else if (_layerTag != NullLayer)
 					_highestTemp = _findExtremum([](const Substance* subst1, const Substance* subst2) -> bool { return subst1->boilingPoint() < subst2->boilingPoint(); }, subst); // lowest boiling point
 			}
 		}
 
+		inline const SubstanceImage _consumePositiveEnergy(const long double limitTemp, const long double latentHeat)
+		{
+			const long double deltaTemperature = Conversions::energyToTemperature(_unconsumedEnergy, _avgHeatCapacity, _weight);
+			if (deltaTemperature > limitTemp - _state.temperature())
+			{
+				_state.setTemperature(limitTemp);
+				_unconsumedEnergy -= Conversions::temperatureToEnergy(limitTemp - _state.temperature(), _avgHeatCapacity, _weight);
+
+				//initiate the state transfer
+				const long double changedMoles = Conversions::energyToChangedStateMass(_unconsumedEnergy, latentHeat) / _highestTemp->mass();
+				if (changedMoles > _highestTemp->amount().asStd())
+				{
+					const SubstanceImage aux(_highestTemp->id(), _highestTemp->amount(), _highestTemp->type());
+					_unconsumedEnergy -= Conversions::changedStateMassToEnergy(_highestTemp->amount().asStd() * _highestTemp->mass(), latentHeat);
+					_propertiesRemove(*_highestTemp);
+					_highestTemp->accessAmount() = 0.0;
+					_removeTempLimits(_highestTemp);
+					return aux;
+				}
+				else
+				{
+					_unconsumedEnergy = 0.0;
+					_highestTemp->accessAmount() -= changedMoles;
+					_propertiesUpdate();
+					return SubstanceImage(_highestTemp->id(), changedMoles, _highestTemp->type());
+				}
+			}
+			else
+			{
+				_state.setTemperature(_state.temperature() + deltaTemperature);
+				_unconsumedEnergy = 0.0;
+			}
+			return SubstanceImage::Empty;
+		}
+		inline const SubstanceImage _consumeNegativeEnergy(const long double limitTemp, const long double latentHeat)
+		{
+			const long double deltaTemperature = Conversions::energyToTemperature(_unconsumedEnergy, _avgHeatCapacity, _weight);
+			if (deltaTemperature < limitTemp - _state.temperature())
+			{
+				_state.setTemperature(limitTemp);
+				_unconsumedEnergy += Conversions::temperatureToEnergy(_state.temperature() - limitTemp, _avgHeatCapacity, _weight);
+
+				//initiate the state transfer
+				const long double changedMoles = Conversions::energyToChangedStateMass(abs(_unconsumedEnergy), latentHeat) / _lowestTemp->mass();
+				if (changedMoles > _lowestTemp->amount().asStd())
+				{
+					const SubstanceImage aux(_lowestTemp->id(), _lowestTemp->amount(), _lowestTemp->type());
+					_unconsumedEnergy += Conversions::changedStateMassToEnergy(_lowestTemp->amount().asStd() * _lowestTemp->mass(), latentHeat);
+					_propertiesRemove(*_lowestTemp);
+					_lowestTemp->accessAmount() = 0.0;
+					_removeTempLimits(_lowestTemp);
+					return aux;
+				}
+				else
+				{
+					_unconsumedEnergy = 0.0;
+					_lowestTemp->accessAmount() -= changedMoles;
+					_propertiesUpdate();
+					return SubstanceImage(_lowestTemp->id(), changedMoles, _lowestTemp->type());
+				}
+			}
+			else
+			{
+				_state.setTemperature(_state.temperature() + deltaTemperature);
+				_unconsumedEnergy = 0.0;
+			}
+			return SubstanceImage::Empty;
+		}
 		
 	public:
 		SubstanceLayer(const SystemState& systemState, const SubstanceLayerTag layerTag) :
@@ -1123,6 +1253,10 @@ namespace chem
 			}
 			return _volume;
 		}
+		inline long double unconsumedEnergy() const
+		{
+			return _unconsumedEnergy;
+		}
 		inline const std::vector<Substance*>::size_type lastIndex() const { return _lastIndex; }
 		const std::vector<Substance*>& content() { return _content; }
 
@@ -1147,19 +1281,26 @@ namespace chem
 			return nullptr;
 		}
 
-		Substance* add(const InorganicSubstance& newSubstance)
+		Substance* add(const SubstanceImage& newSubstance)
 		{
-			_propertiesAdd(newSubstance);
+			if (_contentChangedFlag == false)
+				_propertiesAdd(newSubstance);
 
-			Substance* result = findFirst(newSubstance.id());
+			Substance* result = findFirst(newSubstance.id);
 			if (result) // if already present just incease its amount
 			{
-				result->accessAmount() += newSubstance.amount();
+				result->accessAmount() += newSubstance.amount;
+				_contentChangedFlag = true;
 				return result;
 			}
 			else
 			{
-				Substance* temp = new InorganicSubstance(newSubstance);
+				Substance* temp = newSubstance.getNew();
+				if (!temp->isWellFormed())
+				{
+					delete temp;
+					return nullptr;
+				}
 				_content.push_back(temp);
 				_addTempLimits(temp);
 				_newSubstanceFlag = true;
@@ -1168,7 +1309,8 @@ namespace chem
 		}
 		Substance* add(Substance* newSubstance)
 		{
-			_propertiesAdd(*newSubstance);
+			if (_contentChangedFlag == false)
+				_propertiesAdd(*newSubstance);
 
 			Substance* result = findFirst(newSubstance->id());
 			if (result) // if already present just incease its amount
@@ -1179,6 +1321,11 @@ namespace chem
 			}
 			else
 			{
+				if (!newSubstance->isWellFormed())
+				{
+					delete newSubstance;
+					return nullptr;
+				}
 				_content.push_back(newSubstance);
 				_addTempLimits(newSubstance);
 				_newSubstanceFlag = true;
@@ -1188,95 +1335,42 @@ namespace chem
 
 		inline void addEnergy(const long double energy) { _unconsumedEnergy += energy; }
 
-		const SubstanceImage tick()
+		inline const std::pair<const SubstanceImage, const AggregationTag> handleEnergyConsumption()
 		{
-			if (abs(_unconsumedEnergy) < ENERGETIC_EXISTANCE_THRESHOLD)
-			{
-				_unconsumedEnergy = 0.0;
-				return SubstanceImage::Empty;
-			}
 			// heat or cool as much as possible
 			if (_unconsumedEnergy > 0.0)
 			{
-				long double deltaTemperature = Conversions::energyToTemperature(_unconsumedEnergy, _avgHeatCapacity, _weight);
 				if (_layerTag == SolidLayer)
 				{
-					if (deltaTemperature > _highestTemp->meltingPoint() - _state.temperature())
-					{
-						_state.setTemperature(_highestTemp->meltingPoint());
-						_unconsumedEnergy = Conversions::temperatureToEnergy(deltaTemperature - _highestTemp->meltingPoint() + _state.temperature(), _avgHeatCapacity, _weight);
-
-						//initiate the state transfer
-						const long double changedMoles = Conversions::energyToChangedStateMass(_unconsumedEnergy / 2.0, _highestTemp->heatOfFusion()) / _highestTemp->mass();
-						if (changedMoles > _highestTemp->amount().asStd())
-						{// TODO: handle excess energy
-							SubstanceImage aux(_highestTemp->id(), _highestTemp->amount(), _highestTemp->type());
-							_propertiesRemove(*_highestTemp);
-							_highestTemp->accessAmount() = 0.0;
-							return aux;
-						}
-
-					}
-					else
-					{
-						_state.setTemperature(_state.temperature() + deltaTemperature);
-						_unconsumedEnergy = 0.0;
-					}
+					return std::pair<SubstanceImage, AggregationTag>(_consumePositiveEnergy(_highestTemp->meltingPoint(), _highestTemp->heatOfFusion()), Liquid);
 				}
 				else if (_layerTag == GasLayer)
 				{
-					_state.setTemperature(_state.temperature() + deltaTemperature);
+					_state.setTemperature(_state.temperature() + Conversions::energyToTemperature(_unconsumedEnergy, _avgHeatCapacity, _weight)); // add the deltatemp to state
 					_unconsumedEnergy = 0.0;
 				}
-				else if (_layerTag != None)
+				else if (_layerTag != NullLayer)
 				{
-					if (deltaTemperature > _highestTemp->boilingPoint() - _state.temperature())
-					{
-						_state.setTemperature(_highestTemp->boilingPoint());
-						_unconsumedEnergy = Conversions::temperatureToEnergy(deltaTemperature - _highestTemp->boilingPoint() + _state.temperature(), _avgHeatCapacity, _weight);
-					}
-					else
-					{
-						_state.setTemperature(_state.temperature() + deltaTemperature);
-						_unconsumedEnergy = 0.0;
-					}
+					return std::pair<SubstanceImage, AggregationTag>(_consumePositiveEnergy(_highestTemp->boilingPoint(), _highestTemp->heatOfVaporization()), Gas);
 				}
 			}
 			else if (_unconsumedEnergy < 0.0)
 			{
-				long double deltaTemperature = Conversions::energyToTemperature(_unconsumedEnergy, _avgHeatCapacity, _weight);
 				if (_layerTag == SolidLayer)
 				{
-					_state.setTemperature(_state.temperature() + deltaTemperature);
+					_state.setTemperature(_state.temperature() + Conversions::energyToTemperature(_unconsumedEnergy, _avgHeatCapacity, _weight)); // add the deltatemp to state
 					_unconsumedEnergy = 0.0;
 				}
 				else if (_layerTag == GasLayer)
 				{
-					if (deltaTemperature < _lowestTemp->boilingPoint() - _state.temperature())
-					{
-						_state.setTemperature(_lowestTemp->boilingPoint());
-						_unconsumedEnergy = Conversions::temperatureToEnergy(deltaTemperature - _lowestTemp->boilingPoint() + _state.temperature(), _avgHeatCapacity, _weight);
-					}
-					else
-					{
-						_state.setTemperature(_state.temperature() + deltaTemperature);
-						_unconsumedEnergy = 0.0;
-					}
+					return std::pair<SubstanceImage, AggregationTag>(_consumeNegativeEnergy(_lowestTemp->boilingPoint(), _lowestTemp->heatOfVaporization()), Liquid);
 				}
-				else if (_layerTag != None)
+				else if (_layerTag != NullLayer)
 				{
-					if (deltaTemperature < _lowestTemp->meltingPoint() - _state.temperature())
-					{
-						_state.setTemperature(_lowestTemp->meltingPoint());
-						_unconsumedEnergy = Conversions::temperatureToEnergy(deltaTemperature - _lowestTemp->meltingPoint() + _state.temperature(), _avgHeatCapacity, _weight);
-					}
-					else
-					{
-						_state.setTemperature(_state.temperature() + deltaTemperature);
-						_unconsumedEnergy = 0.0;
-					}
+					return std::pair<SubstanceImage, AggregationTag>(_consumeNegativeEnergy(_lowestTemp->meltingPoint(), _lowestTemp->heatOfFusion()), Solid);
 				}
 			}
+			return std::pair<SubstanceImage, AggregationTag>(SubstanceImage::Empty, AggregationTag::NullState);
 		}
 
 		void clean()
@@ -1299,14 +1393,16 @@ namespace chem
 		}
 		inline void erase(const std::vector<Substance*>::size_type idx) 
 		{
-			_propertiesRemove(*_content[idx]);
+			if(_contentChangedFlag == false)
+				_propertiesRemove(*_content[idx]);
 			_removeTempLimits(_content[idx]);
 
 			_content.erase(_content.begin() + idx);
 		}
 		inline void eraseAndDestroy(const std::vector<Substance*>::size_type idx)
 		{
-			_propertiesRemove(*_content[idx]);
+			if (_contentChangedFlag == false)
+				_propertiesRemove(*_content[idx]);
 			_removeTempLimits(_content[idx]);
 
 			delete _content[idx];
@@ -1322,6 +1418,15 @@ namespace chem
 		SubstanceLayer _solidLayer, _metallicLiquidLayer, _denseNonpolarLayer, _polarLayer, _nonpolarLayer, _gasLayer;
 
 		inline SubstanceLayer& _getRepartitionLayer(const Substance& substance)
+		{
+			if (substance.meltingPoint() > _solidLayer.temperature())
+				return _solidLayer;
+			else if (substance.boilingPoint() > _polarLayer.temperature())
+				return _polarLayer;
+			else
+				return _gasLayer;
+		}
+		inline SubstanceLayer& _getRepartitionLayer(const SubstanceImage& substance)
 		{
 			if (substance.meltingPoint() > _solidLayer.temperature())
 				return _solidLayer;
@@ -1392,18 +1497,12 @@ namespace chem
 
 		inline const long double totalVolume() { return _solidLayer.volume() + _metallicLiquidLayer.volume() + _denseNonpolarLayer.volume() + _polarLayer.volume() + _nonpolarLayer.volume() + _gasLayer.volume(); }
 
-		inline Substance* add(const InorganicSubstance& newSubstance)
+		inline Substance* add(const SubstanceImage& newSubstance)
 		{
-			if (!newSubstance.isWellFormed()) //mixtures cannot contain invalid substances
-				return nullptr;
-
 			return _getRepartitionLayer(newSubstance).add(newSubstance);
 		}
 		inline Substance* add(Substance* newSubstance)
 		{
-			if (!newSubstance->isWellFormed()) //mixtures cannot contain invalid substances
-				return nullptr;
-
 			return _getRepartitionLayer(*newSubstance).add(newSubstance);
 		}
 		void add(SubstanceContainer& container)
@@ -1432,6 +1531,23 @@ namespace chem
 			container.empty();
 		}
 
+		// tickable
+		const void consumeEnergies()
+		{
+			while (abs(_solidLayer.unconsumedEnergy()) < ENERGETIC_EXISTANCE_THRESHOLD)
+			{
+				const std::pair<SubstanceImage, AggregationTag> temp = _solidLayer.handleEnergyConsumption();
+				if (!temp.first.isValid())
+				{
+					if (temp.second == AggregationTag::Gas)
+						_gasLayer.add(temp.first);
+					else if(temp.second == AggregationTag::Liquid)
+						_polarLayer.add(temp.first); //TODO: add the other liquid layers
+					else if (temp.second == AggregationTag::Solid)
+						_solidLayer.add(temp.first);
+				}
+			}
+		}
 
 		void clean()
 		{
@@ -1777,7 +1893,7 @@ namespace chem
 		inline SubstanceContainer& content() { return _content; }
 		inline std::vector<BaseReaction*>& ongoingReactions() { return _ongoingReactions; }
 
-		inline Substance* add(const InorganicSubstance& newSubstance) { return _content.add(newSubstance); }
+		inline Substance* add(const SubstanceImage& newSubstance) { return _content.add(newSubstance); }
 		inline Substance* add(Substance* newSubstance) { return _content.add(newSubstance); }
 
 		//the given mixture is emptied after its contents are moved
@@ -1845,8 +1961,8 @@ int main()
 		chem::Ion::initialize(&datac);
 		chem::InorganicSubstance::initialize(&datac, &datas);
 		chem::Mixture mixture1, mixture2(chem::SystemState(1000.0, 760));
-		mixture1.add(chem::InorganicSubstance("H2SO4", util::Quantity(util::Mole, 2.0)));
-		mixture1.add(chem::InorganicSubstance("NaOH", util::Quantity(util::Mole, 2.0)));
+		mixture1.add(chem::SubstanceImage("H2SO4", util::Quantity(util::Mole, 2.0), chem::SubstanceTypeTag::Inorganic));
+		mixture1.add(chem::SubstanceImage("NaOH", util::Quantity(util::Mole, 2.0), chem::SubstanceTypeTag::Inorganic));
 		//mixture1.add(chem::InorganicSubstance("Ca(OH)2", util::Quantity(util::Mole, 1.0)));
 		//mixture1.add(chem::InorganicSubstance("H3PO4", util::Quantity(util::Mole, 2.0)));
 		//mixture2.add(chem::InorganicSubstance("LiCl", util::Quantity(util::Mole, 5.0)));
@@ -1869,7 +1985,7 @@ int main()
 			}
 			mixture1.tick();
 			mixture1.content().printConstituents();
-			mixture1.add(chem::InorganicSubstance("Ca(OH)2", util::Quantity(util::Mole, 0.5)));
+			mixture1.add(chem::SubstanceImage("Ca(OH)2", util::Quantity(util::Mole, 0.5), chem::SubstanceTypeTag::Inorganic));
 		}
 		/*std::cout << "\n__\n";
 		chem::react::inorgAcidBase2(chem::InorganicSubstance("H3PO4", util::Quantity(util::Mole, 1.0)), chem::InorganicSubstance("Ca(OH)2", util::Quantity(util::Mole, 1.0)));
