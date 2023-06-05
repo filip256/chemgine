@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33723.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Chemgine", "Chemgine\Chemgine.vcxproj", "{42282A59-FBFF-4B7D-A318-172C1F483DE7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "old_Chemgine", "old_Chemgine\old_Chemgine.vcxproj", "{A31C4922-5DE7-474C-9314-82FC92897BD5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Debug|x64.ActiveCfg = Debug|x64
+		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Debug|x64.Build.0 = Debug|x64
+		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Debug|x86.ActiveCfg = Debug|Win32
+		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Debug|x86.Build.0 = Debug|Win32
+		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Release|x64.ActiveCfg = Release|x64
+		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Release|x64.Build.0 = Release|x64
+		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Release|x86.ActiveCfg = Release|Win32
+		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Release|x86.Build.0 = Release|Win32
+		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Debug|x64.ActiveCfg = Debug|x64
+		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Debug|x64.Build.0 = Debug|x64
+		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Debug|x86.ActiveCfg = Debug|Win32
+		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Debug|x86.Build.0 = Debug|Win32
+		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Release|x64.ActiveCfg = Release|x64
+		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Release|x64.Build.0 = Release|x64
+		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Release|x86.ActiveCfg = Release|Win32
+		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7BE29D9A-8793-4815-B17C-321C33B26397}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
+EndGlobal
