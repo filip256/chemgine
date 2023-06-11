@@ -1,10 +1,16 @@
 #pragma once
 
-#include "Bond.hpp"
+#include "BondType.hpp"
 #include "AtomIdentifier.hpp"
 
 class GraphEdge
 {
-    const Bond bond;
+    const BondType type;
     const AtomIdentifier pairId;
+
+public:
+    GraphEdge(const AtomIdentifier& pairId, const BondType type) :
+        pairId(pairId),
+        type(type)
+    {}
 };

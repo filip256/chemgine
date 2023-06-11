@@ -1,0 +1,76 @@
+We need a SMILES interpreter for defining structures, and using third party software
+We need to store backbones, functional groups and atoms as singletons for RAM and form molecules from them
+
+=> Thus we need a way to convert SMILES <--> molecule <--> optimized molecule (ideally whithout the molecule middle step)
+
+Optimized molecules = Molecules derived from a backbone using functional groups and atoms.
+Backbone = Common molecule like benzene, indole, tryptamine etc.
+Functional groups = Incomplete molecules that can be completed by ONE OR MORE atoms, backbones or functional groups
+Atom = Most basic unit
+
+-- Storing singletons --
+A data manager class is needed that loads the properties of objects from CSV files
+Info about an object can be retrieved by a key or id (incremental numeric / string with hashmap)
+
+
+-- MolecularStructure --
+A graph like representation for molecules holding Atoms, FunctionalGroups and Backbones as nodes and Bonds
+Hydrogens are implied where needed 
+
+
+-- Atoms --
+Atoms are modeld as a class containg their properties, stored as singletons
+Some special atoms need to be defined like: 
+ > R (organic radical)
+ > A (aromatic radical)
+ > Me (metal) 
+ (see Functional Groups and Reactions)
+
+
+-- Functional Groups --
+Functional groups are MolecularStructures that contain at least one special atom,
+specifying the position where a radical should be inserted
+
+
+-- Backbones --
+Complete MolecularStructures on which substitutions can be made.
+New backbones cannot be creaded by the algorithm.
+
+
+-- Molecules -- 
+Complete MolecularStructures. They differ from backbones by being more specific.
+Molecules cannot be considered backbones for other molecules.
+Some molecules can be defined in files for their properties and new ones can be created and stored by the algorithm.
+
+
+
+In an optimized molecular structure there must be a way to specify which atoms are bounded:
+  AtomIdentifier can hold a reference to a MolecularStructure and the index of one atoms withing that structure
+
+
+
+Logic:
+  1. Read all atoms from file
+  2. Read all functional groups from file and build them using the atoms
+  3. Read all backbones from file and build them using atoms and functional groups
+  4. Read all molecules from file and build them using backbones, functinal groups and atoms
+
+
+
+Tasks:
+  1. Create atoms CSV with Id, symbol, valence, weight
+  2. Create AtomData class for storing properties, initialization from csv line
+  3. Create DataManager for storing Datas as singletons
+---
+  4. Create BaseComponent, AtomIdentifier, Bond and MolecularStructure classes
+  5. Create FunctionalGroup derived from BaseComponent
+  6. Create FunctionalGroups CSV with Id, smiles
+  7. Create FunctionalGroupData with a MolecularStrcuture and write initilizer from SMILES
+---
+  8. Create Backbone derived from BaseComponent
+  9. Create Backbones CSV with Id, smiles
+ 10. Create BackboneData with a MolecularStructure and write initilizer from SMILES
+---
+ 11. Create OrganicMolecule class
+ 12. Create OrganicMolecules CSV with Id, smiles
+ 13. Create OrganicMoleculeData with a MolecularStructure and write initilizer from SMILES

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -116,6 +116,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <EnablePREfast>false</EnablePREfast>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -164,23 +165,41 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Atom.cpp" />
+    <ClCompile Include="AtomData.cpp" />
+    <ClCompile Include="AtomDataTable.cpp" />
     <ClCompile Include="AtomIdentifier.cpp" />
     <ClCompile Include="Bond.cpp" />
     <ClCompile Include="Chemgine.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Composite.cpp" />
+    <ClCompile Include="DataHelpers.cpp" />
+    <ClCompile Include="DataStore.cpp" />
+    <ClCompile Include="DataTable.cpp" />
     <ClCompile Include="GraphEdge.cpp" />
     <ClCompile Include="GraphStructure.cpp" />
+    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="LogType.hpp" />
+    <ClCompile Include="Result.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Atom.hpp" />
+    <ClInclude Include="AtomData.hpp" />
+    <ClInclude Include="AtomDataTable.hpp" />
     <ClInclude Include="AtomIdentifier.hpp" />
     <ClInclude Include="Bond.hpp" />
     <ClInclude Include="BondType.hpp" />
     <ClInclude Include="Component.hpp" />
     <ClInclude Include="Composite.hpp" />
+    <ClInclude Include="DataHelpers.hpp" />
+    <ClInclude Include="DataStore.hpp" />
+    <ClInclude Include="DataTable.hpp" />
     <ClInclude Include="GraphEdge.hpp" />
-    <ClInclude Include="GraphStructure.hpp" />
+    <ClInclude Include="Logger.hpp" />
+    <ClInclude Include="MolecularStructure.hpp" />
+    <ClInclude Include="Result.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\AtomData.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

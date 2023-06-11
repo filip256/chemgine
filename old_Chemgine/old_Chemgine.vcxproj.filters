@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Chemgine\old_Chemgine.cpp">
+    <ClCompile Include="old_Chemgine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
