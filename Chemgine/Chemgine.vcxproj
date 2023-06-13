@@ -165,35 +165,33 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Atom.cpp" />
+    <ClCompile Include="AtomComponent.cpp" />
+    <ClCompile Include="AtomComponent.hpp" />
     <ClCompile Include="AtomData.cpp" />
     <ClCompile Include="AtomDataTable.cpp" />
     <ClCompile Include="AtomIdentifier.cpp" />
     <ClCompile Include="Bond.cpp" />
     <ClCompile Include="Chemgine.cpp" />
     <ClCompile Include="BaseComponent.cpp" />
-    <ClCompile Include="Composite.cpp" />
+    <ClCompile Include="CompositeComponent.hpp" />
     <ClCompile Include="DataHelpers.cpp" />
     <ClCompile Include="DataStore.cpp" />
     <ClCompile Include="DataTable.cpp" />
-    <ClCompile Include="GraphEdge.cpp" />
-    <ClCompile Include="GraphStructure.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="LogType.hpp" />
+    <ClCompile Include="MolecularStructure.cpp" />
     <ClCompile Include="Result.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Atom.hpp" />
     <ClInclude Include="AtomData.hpp" />
     <ClInclude Include="AtomDataTable.hpp" />
-    <ClInclude Include="AtomIdentifier.hpp" />
     <ClInclude Include="Bond.hpp" />
     <ClInclude Include="BondType.hpp" />
     <ClInclude Include="BaseComponent.hpp" />
-    <ClInclude Include="Composite.hpp" />
     <ClInclude Include="DataHelpers.hpp" />
     <ClInclude Include="DataStore.hpp" />
     <ClInclude Include="DataTable.hpp" />
-    <ClInclude Include="GraphEdge.hpp" />
     <ClInclude Include="Logger.hpp" />
     <ClInclude Include="MolecularStructure.hpp" />
     <ClInclude Include="Result.hpp" />

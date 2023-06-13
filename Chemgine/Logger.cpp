@@ -42,7 +42,7 @@ void Logger::log(const char* str, const LogType type)
 	if (type == LogType::FATAL)
 	{
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
-		std::cout << "   The execution was halted by a fatal error!\n   Press ENTER to exit.\n";
+		std::cout << "\n   The execution was halted due to a fatal error!\n   Press ENTER to exit.\n";
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
 		getchar();
 		std::exit(EXIT_FAILURE);

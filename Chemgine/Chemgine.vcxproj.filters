@@ -45,19 +45,7 @@
     <ClCompile Include="Chemgine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Bond.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AtomIdentifier.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphEdge.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GraphStructure.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Composite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AtomData.cpp">
@@ -90,26 +78,23 @@
     <ClCompile Include="Atom.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
+    <ClCompile Include="Bond.cpp">
+      <Filter>Source Files\Moleculars</Filter>
+    </ClCompile>
+    <ClCompile Include="MolecularStructure.cpp">
+      <Filter>Source Files\Moleculars</Filter>
+    </ClCompile>
+    <ClCompile Include="AtomComponent.hpp">
+      <Filter>Header Files\Moleculars</Filter>
+    </ClCompile>
+    <ClCompile Include="CompositeComponent.hpp">
+      <Filter>Header Files\Moleculars</Filter>
+    </ClCompile>
+    <ClCompile Include="AtomComponent.cpp">
+      <Filter>Source Files\Moleculars</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bond.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BondType.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AtomIdentifier.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GraphEdge.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Composite.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MolecularStructure.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AtomData.hpp">
       <Filter>Header Files\Data</Filter>
     </ClInclude>
@@ -135,6 +120,15 @@
       <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
     <ClInclude Include="Atom.hpp">
+      <Filter>Header Files\Moleculars</Filter>
+    </ClInclude>
+    <ClInclude Include="Bond.hpp">
+      <Filter>Header Files\Moleculars</Filter>
+    </ClInclude>
+    <ClInclude Include="BondType.hpp">
+      <Filter>Header Files\Moleculars</Filter>
+    </ClInclude>
+    <ClInclude Include="MolecularStructure.hpp">
       <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
   </ItemGroup>
