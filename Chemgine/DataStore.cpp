@@ -1,11 +1,11 @@
 #include "DataStore.hpp"
 
 DataStore::DataStore() : 
-	atomsTable()
+	atoms()
 {}
 
 DataStore& DataStore::loadAtomsData(const std::string& path)
 {
-	atomsTable.loadFromFile(path);
+	atoms.loadFromFile(path);
 	return *this;
 }

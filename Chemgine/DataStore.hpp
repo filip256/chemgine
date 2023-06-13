@@ -8,10 +8,9 @@
 
 class DataStore
 {
-private:
-	AtomDataTable atomsTable;
-
 public:
+	AtomDataTable atoms;
+
 	DataStore();
 	DataStore(const DataStore&) = delete;
 

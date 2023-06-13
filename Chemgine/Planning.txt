@@ -58,9 +58,9 @@ Logic:
 
 
 Tasks:
-  1. Create atoms CSV with Id, symbol, valence, weight
-  2. Create AtomData class for storing properties, initialization from csv line
-  3. Create DataManager for storing Datas as singletons
+  DONE. Create atoms CSV with Id, symbol, valence, weight
+  DONE. Create AtomData class for storing properties, initialization from csv line
+  DONE. Create DataManager for storing Datas as singletons
 ---
   4. Create BaseComponent, AtomIdentifier, Bond and MolecularStructure classes
   5. Create FunctionalGroup derived from BaseComponent

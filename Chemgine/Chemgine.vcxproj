@@ -170,7 +170,7 @@
     <ClCompile Include="AtomIdentifier.cpp" />
     <ClCompile Include="Bond.cpp" />
     <ClCompile Include="Chemgine.cpp" />
-    <ClCompile Include="Component.cpp" />
+    <ClCompile Include="BaseComponent.cpp" />
     <ClCompile Include="Composite.cpp" />
     <ClCompile Include="DataHelpers.cpp" />
     <ClCompile Include="DataStore.cpp" />
@@ -188,7 +188,7 @@
     <ClInclude Include="AtomIdentifier.hpp" />
     <ClInclude Include="Bond.hpp" />
     <ClInclude Include="BondType.hpp" />
-    <ClInclude Include="Component.hpp" />
+    <ClInclude Include="BaseComponent.hpp" />
     <ClInclude Include="Composite.hpp" />
     <ClInclude Include="DataHelpers.hpp" />
     <ClInclude Include="DataStore.hpp" />

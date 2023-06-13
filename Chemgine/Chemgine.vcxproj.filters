@@ -34,18 +34,18 @@
     <Filter Include="Source Files\Logger">
       <UniqueIdentifier>{0fedb36f-f314-4a1a-8d0c-1e540066cb3c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Moleculars">
+      <UniqueIdentifier>{a94d79da-7fa6-493b-8148-015b4c4a4212}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Moleculars">
+      <UniqueIdentifier>{1b7cdcfc-d655-4553-91ee-a2621a26a737}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Chemgine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Bond.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Component.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Atom.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AtomIdentifier.cpp">
@@ -84,18 +84,18 @@
     <ClCompile Include="Result.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="BaseComponent.cpp">
+      <Filter>Source Files\Moleculars</Filter>
+    </ClCompile>
+    <ClCompile Include="Atom.cpp">
+      <Filter>Source Files\Moleculars</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bond.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BondType.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Component.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Atom.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AtomIdentifier.hpp">
@@ -130,6 +130,12 @@
     </ClInclude>
     <ClInclude Include="Result.hpp">
       <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseComponent.hpp">
+      <Filter>Header Files\Moleculars</Filter>
+    </ClInclude>
+    <ClInclude Include="Atom.hpp">
+      <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -27,6 +27,7 @@ void Logger::log(const char* str, const LogType type)
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN);
 		std::cout << "WARN:    ";
 		break;
+
 	case LogType::GOOD:
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
 		std::cout << "SUCCESS: ";
@@ -37,6 +38,15 @@ void Logger::log(const char* str, const LogType type)
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
 
 	std::cout << str << '\n';
+
+	if (type == LogType::FATAL)
+	{
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
+		std::cout << "   The execution was halted by a fatal error!\n   Press ENTER to exit.\n";
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN);
+		getchar();
+		std::exit(EXIT_FAILURE);
+	}
 }
 
 void Logger::log(const std::string& str, const LogType type)

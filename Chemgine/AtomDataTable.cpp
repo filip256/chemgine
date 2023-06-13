@@ -18,7 +18,6 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 	//if (files::verifyChecksum(file).code != 200) //not OK
 	//	return StatusCode<>::FileCorrupted;
 
-	//erase old table
 	table.erase(table.begin(), table.end());
 
 	//parse file
@@ -26,7 +25,6 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 	std::getline(file, buffer);
 	while (std::getline(file, buffer))
 	{
-		//parse csv line
 		auto line = DataHelpers::parseList(buffer, ',');
 
 		if (line[1].empty())
