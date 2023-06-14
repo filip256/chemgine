@@ -3,11 +3,11 @@
 #include "Atom.hpp"
 #include "CompositeComponent.hpp"
 
-class AtomComponent : public Atom
+class AtomIdentifier : public Atom
 {
 private:
 	const CompositeComponent& composite;
 
 public:
-	AtomComponent(const CompositeComponent& composite, const AtomIdType id);
+	AtomIdentifier(const CompositeComponent& composite, const AtomIdType id);
 };

@@ -4,11 +4,13 @@
 #include <string>
 #include <unordered_map>
 #include <stack>
+#include "Bond.hpp"
 
 class MolecularStructure
 {
-    //std::vector<std::reference_wrapper<Component>> nodes;
-    //std::vector<std::reference_wrapper<GraphEdge>> edges;
+private:
+    std::vector<std::reference_wrapper<BaseComponent>> nodes;
+    std::vector<std::vector<std::reference_wrapper<Bond>>> edges;
 
 public:
     //MolecularStructure(const std::string& smiles)

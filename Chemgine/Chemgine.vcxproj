@@ -165,11 +165,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Atom.cpp" />
-    <ClCompile Include="AtomComponent.cpp" />
-    <ClCompile Include="AtomComponent.hpp" />
+    <ClCompile Include="AtomIdentifier.cpp" />
+    <ClCompile Include="AtomIdentifier.hpp" />
     <ClCompile Include="AtomData.cpp" />
     <ClCompile Include="AtomDataTable.cpp" />
-    <ClCompile Include="AtomIdentifier.cpp" />
     <ClCompile Include="Bond.cpp" />
     <ClCompile Include="Chemgine.cpp" />
     <ClCompile Include="BaseComponent.cpp" />

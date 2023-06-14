@@ -45,9 +45,6 @@
     <ClCompile Include="Chemgine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AtomIdentifier.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AtomData.cpp">
       <Filter>Source Files\Data</Filter>
     </ClCompile>
@@ -84,13 +81,13 @@
     <ClCompile Include="MolecularStructure.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
-    <ClCompile Include="AtomComponent.hpp">
+    <ClCompile Include="AtomIdentifier.hpp">
       <Filter>Header Files\Moleculars</Filter>
     </ClCompile>
     <ClCompile Include="CompositeComponent.hpp">
       <Filter>Header Files\Moleculars</Filter>
     </ClCompile>
-    <ClCompile Include="AtomComponent.cpp">
+    <ClCompile Include="AtomIdentifier.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
   </ItemGroup>
