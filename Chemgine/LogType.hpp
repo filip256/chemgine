@@ -1,6 +1,6 @@
 #pragma once
 
-enum LogType
+enum class LogType
 {
 	NONE,
 	FATAL,

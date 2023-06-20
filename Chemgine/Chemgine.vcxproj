@@ -166,21 +166,22 @@
   <ItemGroup>
     <ClCompile Include="Atom.cpp" />
     <ClCompile Include="AtomIdentifier.cpp" />
-    <ClCompile Include="AtomIdentifier.hpp" />
+    <ClInclude Include="AtomIdentifier.hpp" />
     <ClCompile Include="AtomData.cpp" />
     <ClCompile Include="AtomDataTable.cpp" />
     <ClCompile Include="Bond.cpp" />
     <ClCompile Include="Chemgine.cpp" />
     <ClCompile Include="BaseComponent.cpp" />
-    <ClCompile Include="CompositeComponent.hpp" />
+    <ClCompile Include="CompositeComponent.cpp" />
+    <ClInclude Include="CompositeComponent.hpp" />
     <ClCompile Include="DataHelpers.cpp" />
     <ClCompile Include="DataStore.cpp" />
     <ClCompile Include="DataTable.cpp" />
     <ClCompile Include="Logger.cpp" />
-    <ClCompile Include="LogType.hpp" />
+    <ClInclude Include="LogType.hpp" />
     <ClCompile Include="MolecularStructure.cpp" />
     <ClCompile Include="MultiIndexMap.cpp" />
-    <ClCompile Include="MultiIndexMap.hpp" />
+    <ClInclude Include="MultiIndexMap.hpp" />
     <ClCompile Include="Result.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -190,6 +191,7 @@
     <ClInclude Include="Bond.hpp" />
     <ClInclude Include="BondType.hpp" />
     <ClInclude Include="BaseComponent.hpp" />
+    <ClInclude Include="ComponentType.hpp" />
     <ClInclude Include="DataHelpers.hpp" />
     <ClInclude Include="DataStore.hpp" />
     <ClInclude Include="DataTable.hpp" />

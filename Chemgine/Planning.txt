@@ -36,6 +36,13 @@ specifying the position where a radical should be inserted
 Complete MolecularStructures on which substitutions can be made.
 New backbones cannot be creaded by the algorithm.
 
+Could a backbone be formed from another backbone?
+ - YES:   better memory for storing backbones
+          pattern matching could break
+ - no:   better memory for atom identifiers, which are more common (only one id needs to be stored)
+         backbone reccurrsion could be mentained in data files, bun not in RAM
+ - both: establish a hard limit (ie 3) for how deep the reccursion can get
+
 
 -- Molecules -- 
 Complete MolecularStructures. They differ from backbones by being more specific.

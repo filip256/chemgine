@@ -66,9 +66,6 @@
     <ClCompile Include="Logger.cpp">
       <Filter>Source Files\Logger</Filter>
     </ClCompile>
-    <ClCompile Include="LogType.hpp">
-      <Filter>Header Files\Logger</Filter>
-    </ClCompile>
     <ClCompile Include="Result.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
@@ -84,23 +81,17 @@
     <ClCompile Include="MolecularStructure.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
-    <ClCompile Include="AtomIdentifier.hpp">
-      <Filter>Header Files\Moleculars</Filter>
-    </ClCompile>
-    <ClCompile Include="CompositeComponent.hpp">
-      <Filter>Header Files\Moleculars</Filter>
-    </ClCompile>
     <ClCompile Include="AtomIdentifier.cpp">
       <Filter>Source Files\Moleculars</Filter>
-    </ClCompile>
-    <ClCompile Include="MultiIndexMap.hpp">
-      <Filter>Header Files\DataStructures</Filter>
     </ClCompile>
     <ClCompile Include="Chemgine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MultiIndexMap.cpp">
       <Filter>Source Files\DataStructures</Filter>
+    </ClCompile>
+    <ClCompile Include="CompositeComponent.cpp">
+      <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +130,21 @@
     </ClInclude>
     <ClInclude Include="MolecularStructure.hpp">
       <Filter>Header Files\Moleculars</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentType.hpp">
+      <Filter>Header Files\Moleculars</Filter>
+    </ClInclude>
+    <ClInclude Include="AtomIdentifier.hpp">
+      <Filter>Header Files\Moleculars</Filter>
+    </ClInclude>
+    <ClInclude Include="CompositeComponent.hpp">
+      <Filter>Header Files\Moleculars</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiIndexMap.hpp">
+      <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="LogType.hpp">
+      <Filter>Header Files\Logger</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

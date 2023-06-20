@@ -9,10 +9,12 @@
 class MolecularStructure
 {
 private:
-    std::vector<std::reference_wrapper<BaseComponent>> nodes;
-    std::vector<std::vector<std::reference_wrapper<Bond>>> edges;
+    std::vector<BaseComponent*> components;
+    std::vector<std::vector<std::reference_wrapper<Bond>>> bonds;
 
 public:
+    const BaseComponent* getComponent(const size_t idx) const;
+
     //MolecularStructure(const std::string& smiles)
     //{
     //    size_t i = 0;
