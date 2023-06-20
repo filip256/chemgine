@@ -1,35 +1,44 @@
 #include "DataTable.hpp"
 #include "AtomData.hpp"
 
-template <typename KeyT, class ObjT>
-DataTable<KeyT, ObjT>::DataTable() : table() 
+template<class KeyT1, class KeyT2, class ObjT>
+DataTable<KeyT1, KeyT2, ObjT>::DataTable() : table() 
 {}
 
-template <typename KeyT, class ObjT>
-const std::unordered_map<KeyT, ObjT>& DataTable<KeyT, ObjT>::getData() const 
+template<class KeyT1, class KeyT2, class ObjT>
+const MultiIndexMap<KeyT1, KeyT2, ObjT>& DataTable<KeyT1, KeyT2, ObjT>::getData() const
 {
 	return table; 
 }
 
-template <typename KeyT, class ObjT>
-bool DataTable<KeyT, ObjT>::contains(const KeyT id) const 
+template<class KeyT1, class KeyT2, class ObjT>
+bool DataTable<KeyT1, KeyT2, ObjT>::contains(const KeyT1 id) const
 { 
-	return table.find(id) != table.end();
+	return table.containsKey1(id);
 }
 
-template <typename KeyT, class ObjT>
-const ObjT& DataTable<KeyT, ObjT>::operator[](const KeyT id) const
+template<class KeyT1, class KeyT2, class ObjT>
+const ObjT& DataTable<KeyT1, KeyT2, ObjT>::operator[](const KeyT1 id) const
 {
-	return table.at(id);
+	return table.atKey1(id);
 }
 
-template <typename KeyT, class ObjT>
-const ObjT* DataTable<KeyT, ObjT>::first(bool (*predicate) (const ObjT&)) const
+template<class KeyT1, class KeyT2, class ObjT>
+const ObjT& DataTable<KeyT1, KeyT2, ObjT>::operator[](const KeyT2 id) const
 {
-	for (const auto& e : table)
-		if (predicate(e.second))
-			return &(e.second);
-	return nullptr;
+	return table.atKey2(id);
 }
 
-template class DataTable<AtomIdType, AtomData>;
+template<class KeyT1, class KeyT2, class ObjT>
+const ObjT* DataTable<KeyT1, KeyT2, ObjT>::findFirst(bool (*predicate) (const ObjT&)) const
+{
+	return table.findFirst(predicate);
+}
+
+template<class KeyT1, class KeyT2, class ObjT>
+void DataTable<KeyT1, KeyT2, ObjT>::clear()
+{
+	table.clear();
+}
+
+template class DataTable<AtomIdType, std::string, AtomData>;

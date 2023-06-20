@@ -40,11 +40,14 @@
     <Filter Include="Source Files\Moleculars">
       <UniqueIdentifier>{1b7cdcfc-d655-4553-91ee-a2621a26a737}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\DataStructures">
+      <UniqueIdentifier>{96466535-1e14-434e-894f-552763e21119}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DataStructures">
+      <UniqueIdentifier>{4ed9ad60-5606-4e20-b002-ced56a1ce134}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Chemgine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AtomData.cpp">
       <Filter>Source Files\Data</Filter>
     </ClCompile>
@@ -89,6 +92,15 @@
     </ClCompile>
     <ClCompile Include="AtomIdentifier.cpp">
       <Filter>Source Files\Moleculars</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiIndexMap.hpp">
+      <Filter>Header Files\DataStructures</Filter>
+    </ClCompile>
+    <ClCompile Include="Chemgine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiIndexMap.cpp">
+      <Filter>Source Files\DataStructures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

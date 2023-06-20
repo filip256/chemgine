@@ -1,24 +1,23 @@
 #pragma once
 
-#include <unordered_map>
+#include "MultiIndexMap.hpp"
 
-template<typename KeyT, class ObjT>
+template<class KeyT1, class KeyT2, class ObjT>
 class DataTable
 {
 protected:
-	std::unordered_map<KeyT, ObjT> table;
+	MultiIndexMap<KeyT1, KeyT2, ObjT> table;
 
 public:
 	DataTable();
-	DataTable(const DataTable<KeyT, ObjT>&) = delete;
+	DataTable(const MultiIndexMap<KeyT1, KeyT2, ObjT>&) = delete;
 
-	const std::unordered_map<KeyT, ObjT>& getData() const;
-	bool contains(const KeyT id) const;
-	const ObjT& operator[](const KeyT id) const;
+	const MultiIndexMap<KeyT1, KeyT2, ObjT>& getData() const;
+	bool contains(const KeyT1 id) const;
+	const ObjT& operator[](const KeyT1 id) const;
+	const ObjT& operator[](const KeyT2 id) const;
 
-	/// <summary>
-	/// Returns a pointer to the first element that satisfies the given predicate, or nullptr if no such element exists.
-	/// Complexity: O(size)
-	/// </summary>
-	virtual const ObjT* first(bool (*predicate) (const ObjT&)) const;
+	virtual const ObjT* findFirst(bool (*predicate) (const ObjT&)) const;
+
+	void clear();
 };

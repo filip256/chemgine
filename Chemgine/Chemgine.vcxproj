@@ -116,7 +116,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <EnablePREfast>false</EnablePREfast>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -179,6 +179,8 @@
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="LogType.hpp" />
     <ClCompile Include="MolecularStructure.cpp" />
+    <ClCompile Include="MultiIndexMap.cpp" />
+    <ClCompile Include="MultiIndexMap.hpp" />
     <ClCompile Include="Result.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -3,7 +3,7 @@
 #include "DataTable.hpp"
 #include "AtomData.hpp"
 
-class AtomDataTable : public DataTable<AtomIdType, AtomData>
+class AtomDataTable : public DataTable<AtomIdType, std::string, AtomData>
 {
 public:
 	AtomDataTable();

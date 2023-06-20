@@ -3,7 +3,7 @@
 #include "Logger.hpp"
 #include <fstream>
 
-AtomDataTable::AtomDataTable() : DataTable<AtomIdType, AtomData>()
+AtomDataTable::AtomDataTable() : DataTable<AtomIdType, std::string, AtomData>()
 {
 
 }
@@ -18,7 +18,7 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 	//if (files::verifyChecksum(file).code != 200) //not OK
 	//	return StatusCode<>::FileCorrupted;
 
-	table.erase(table.begin(), table.end());
+	table.clear();
 
 	//parse file
 	std::string buffer;
@@ -47,8 +47,11 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 			continue;
 		}
 
-		if (table.emplace(std::make_pair(id.result, std::move(AtomData(id.result, line[1], line[2], weight.result, valence.result))))
-			.second == false)
+		if (table.emplace(
+			id.result,
+			line[1],
+			std::move(AtomData(id.result, line[1], line[2], weight.result, valence.result))
+			) == false)
 		{
 			Logger::log("Possible atom duplicate id value: " + std::to_string(table.size()) + '.', LogType::WARN);
 		}
