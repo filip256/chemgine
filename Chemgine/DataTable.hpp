@@ -13,9 +13,10 @@ public:
 	DataTable(const MultiIndexMap<KeyT1, KeyT2, ObjT>&) = delete;
 
 	const MultiIndexMap<KeyT1, KeyT2, ObjT>& getData() const;
-	bool contains(const KeyT1 id) const;
-	const ObjT& operator[](const KeyT1 id) const;
-	const ObjT& operator[](const KeyT2 id) const;
+	bool contains(const KeyT1 key) const;
+	bool contains(const KeyT2 key) const;
+	const ObjT& operator[](const KeyT1 key) const;
+	const ObjT& operator[](const KeyT2 key) const;
 
 	virtual const ObjT* findFirst(bool (*predicate) (const ObjT&)) const;
 

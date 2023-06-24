@@ -3,7 +3,13 @@
 enum BondType
 {
     NONE,
+    NO_BOND,
+    IONIC,
     SINGLE,
     DOUBLE,
-    TRIPLE
+    TRIPLE,
+    QUADRUPLE,
+    AROMATIC,
+    LEVO_SINGLE,
+    DEXTRO_SINGLE,
 };

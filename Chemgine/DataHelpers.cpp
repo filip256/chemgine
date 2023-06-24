@@ -12,10 +12,10 @@ std::vector<std::string> DataHelpers::parseList(const std::string& csvLine, cons
 	for (std::string::size_type i = 0; i < size; ++i)
 		if (csvLine[i] == sep)
 		{
-			outVector.emplace_back(csvLine.substr(lastComma + 1, i - lastComma - 1));
+			outVector.emplace_back(std::move(csvLine.substr(lastComma + 1, i - lastComma - 1)));
 			lastComma = i;
 		}
-	outVector.emplace_back(csvLine.substr(lastComma + 1));
+	outVector.emplace_back(std::move(csvLine.substr(lastComma + 1)));
 	return outVector;
 }
 
@@ -25,11 +25,11 @@ Result<int> DataHelpers::toInt(const std::string& str)
 	{
 		return Result<int>(std::stoi(str));
 	}
-	catch (std::invalid_argument const& ex)
+	catch (const std::invalid_argument&)
 	{
 		return Result<int>();
 	}
-	catch (std::out_of_range const& ex)
+	catch (const std::out_of_range&)
 	{
 		return Result<int>();
 	}
@@ -51,11 +51,11 @@ Result<double> DataHelpers::toDouble(const std::string& str)
 	{
 		return Result<double>(std::stod(str));
 	}
-	catch (std::invalid_argument const& ex)
+	catch (const std::invalid_argument&)
 	{
 		return Result<double>();
 	}
-	catch (std::out_of_range const& ex)
+	catch (const std::out_of_range&)
 	{
 		return Result<double>();
 	}

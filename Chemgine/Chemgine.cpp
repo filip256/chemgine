@@ -5,6 +5,7 @@
 #include "DataStore.hpp"
 #include "Logger.hpp"
 #include "Atom.hpp"
+#include "CompositeComponent.hpp"
 
 
 
@@ -19,7 +20,9 @@ int main()
     r.loadAtomsData("Data/AtomData.csv");
     BaseComponent::setDataStore(&r);
 
-    Atom a(206);
-
+    MolecularStructure c("CCCCCC");
+    std::cout<<c.print();
+    
+    getchar();
     return 0;
 }

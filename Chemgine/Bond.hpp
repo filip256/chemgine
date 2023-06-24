@@ -5,10 +5,12 @@
 
 class Bond
 {
-    const BondType type;
-    const Atom& other;
-
 public:
-    Bond(const Atom& other, const BondType type);
+    const BondType type;
+    const size_t other;
+
+    Bond(const size_t other, const BondType type);
+
+    static BondType fromSMILES(const char symbol);
 };
 

@@ -12,21 +12,27 @@ const MultiIndexMap<KeyT1, KeyT2, ObjT>& DataTable<KeyT1, KeyT2, ObjT>::getData(
 }
 
 template<class KeyT1, class KeyT2, class ObjT>
-bool DataTable<KeyT1, KeyT2, ObjT>::contains(const KeyT1 id) const
+bool DataTable<KeyT1, KeyT2, ObjT>::contains(const KeyT1 key) const
 { 
-	return table.containsKey1(id);
+	return table.containsKey1(key);
 }
 
 template<class KeyT1, class KeyT2, class ObjT>
-const ObjT& DataTable<KeyT1, KeyT2, ObjT>::operator[](const KeyT1 id) const
+bool DataTable<KeyT1, KeyT2, ObjT>::contains(const KeyT2 key) const
 {
-	return table.atKey1(id);
+	return table.containsKey2(key);
 }
 
 template<class KeyT1, class KeyT2, class ObjT>
-const ObjT& DataTable<KeyT1, KeyT2, ObjT>::operator[](const KeyT2 id) const
+const ObjT& DataTable<KeyT1, KeyT2, ObjT>::operator[](const KeyT1 key) const
 {
-	return table.atKey2(id);
+	return table.atKey1(key);
+}
+
+template<class KeyT1, class KeyT2, class ObjT>
+const ObjT& DataTable<KeyT1, KeyT2, ObjT>::operator[](const KeyT2 key) const
+{
+	return table.atKey2(key);
 }
 
 template<class KeyT1, class KeyT2, class ObjT>

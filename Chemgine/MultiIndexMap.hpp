@@ -73,9 +73,9 @@ bool MultiIndexMap<KeyT1, KeyT2, ObjT>::emplace(const KeyT1& key1, const KeyT2& 
 	if (containsKey1(key1) || containsKey2(key2))
 		return false;
 
-	objects.emplace_back(object);
-	indexer1.emplace(std::make_pair(key1, objects.size() - 1));
-	indexer2.emplace(std::make_pair(key2, objects.size() - 1));
+	objects.emplace_back(std::move(object));
+	indexer1.emplace(std::move(std::make_pair(key1, objects.size() - 1)));
+	indexer2.emplace(std::move(std::make_pair(key2, objects.size() - 1)));
 	return true;
 }
 
