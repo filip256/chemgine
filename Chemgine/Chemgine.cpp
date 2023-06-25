@@ -16,13 +16,19 @@
 
 int main()
 {
-    DataStore r;
-    r.loadAtomsData("Data/AtomData.csv");
-    BaseComponent::setDataStore(&r);
+    {
+        DataStore r;
+        r.loadAtomsData("Data/AtomData.csv");
+        BaseComponent::setDataStore(&r);
 
-    MolecularStructure c("CCCCCC");
-    std::cout<<c.print();
-    
+        MolecularStructure c("COCCC");
+        std::cout << c.print() << '\n';
+        std::cout << c.getMolarMass();
+    }
+
+    if (BaseComponent::instanceCount != 0)
+        Logger::log("Memory leak detected: BaseComponent (" + std::to_string(BaseComponent::instanceCount) + " unreleased instances).", LogType::BAD);
+
     getchar();
     return 0;
 }

@@ -2,6 +2,7 @@
 #include "Logger.hpp"
 
 const DataStore* BaseComponent::dataStore = nullptr;
+size_t BaseComponent::instanceCount = 0;
 
 BaseComponent::BaseComponent(const ComponentType type) :
 	type(type)
@@ -21,4 +22,19 @@ bool BaseComponent::isCompositeType(const BaseComponent& component)
 		component.type == ComponentType::COMPOSITE ||
 		component.type == ComponentType::FUNCTIONAL ||
 		component.type == ComponentType::BACKBONE;
+}
+
+
+
+
+void* BaseComponent::operator new(const size_t count)
+{
+	++instanceCount;
+	return ::operator new(count);
+}
+
+void BaseComponent::operator delete(void* ptr)
+{
+	--instanceCount;
+	return ::operator delete(ptr);
 }

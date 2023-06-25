@@ -5,6 +5,11 @@ Bond::Bond(const size_t other, const BondType type) :
 	type(type)
 {}
 
+uint8_t Bond::getValence() const
+{
+	return Bond::getValence(type);
+}
+
 BondType Bond::fromSMILES(const char symbol)
 {
 	switch (symbol)
@@ -24,4 +29,18 @@ BondType Bond::fromSMILES(const char symbol)
 	default:
 		return BondType::NONE;
 	}
+}
+
+uint8_t Bond::getValence(const BondType type)
+{
+	if (type == BondType::SINGLE)
+		return 1;
+	if (type == BondType::DOUBLE)
+		return 2;
+	if (type == BondType::TRIPLE)
+		return 3;
+	if (type == BondType::QUADRUPLE)
+		return 4;
+
+	return 1;
 }

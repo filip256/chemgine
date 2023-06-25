@@ -8,7 +8,7 @@ Atom::Atom(const AtomIdType id, const ComponentType type) :
 {
     if (dataStore->atoms.contains(id) == false)
     {
-        Logger::log("Atom with id " + std::to_string(id) + " could not be found.", LogType::BAD);
+        Logger::log("Atomic id " + std::to_string(id) + " is undefined.", LogType::BAD);
         this->id = 0;
     }
 }
@@ -18,7 +18,7 @@ Atom::Atom(const std::string& symbol) :
 {
     if (dataStore->atoms.contains(symbol) == false)
     {
-        Logger::log("Atom with symbol " + symbol + " could not be found.", LogType::BAD);
+        Logger::log("Atomic symbol '" + symbol + "' is undefined.", LogType::BAD);
         return;
     }
     id = dataStore->atoms[symbol].id;

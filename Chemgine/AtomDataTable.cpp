@@ -39,7 +39,7 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 
 		const auto id = DataHelpers::toUInt(line[0]);
 		const auto weight = DataHelpers::toUDouble(line[3]);
-		const auto valence = DataHelpers::toUInt(line[3]);
+		const auto valence = DataHelpers::toUInt(line[4]);
 
 		if (id.status == 0 || weight.status == 0 || valence.status == 0)
 		{

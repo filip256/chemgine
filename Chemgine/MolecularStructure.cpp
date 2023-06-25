@@ -1,23 +1,27 @@
 #include <queue>
 
 #include "MolecularStructure.hpp"
+#include "Logger.hpp"
 
 MolecularStructure::MolecularStructure(const std::string& smiles)
 {
     loadFromSMILES(smiles);
 }
 
+MolecularStructure::~MolecularStructure()
+{
+    clear();
+}
+
 bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 {
-    size_t i = 0;
     std::unordered_map<uint8_t, size_t> rings;
     std::stack<size_t> branches;
 
+    size_t prev = std::string::npos;
     BondType bondType = BondType::SINGLE;
     for(size_t i = 0; i < smiles.size(); ++i)
     {
-        size_t prev = std::string::npos;
-
         if (isalpha(smiles[i])) // basic organic atom identification
         {
             if (Atom::isDefined(smiles[i]))
@@ -28,6 +32,12 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             {
                 components.emplace_back(new Atom(smiles.substr(i, 2)));
                 ++i;
+            }
+            else
+            {
+                Logger::log("Atomic symbol '" + std::string(1, smiles[i]) + "' at " + std::to_string(i) + "is undefined.", LogType::BAD);
+                clear();
+                return false;
             }
 
             bonds.emplace_back(std::move(std::vector<Bond>()));
@@ -51,12 +61,18 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 
         if (smiles[i] == '(')
         {
-            branches.emplace(components.size() - 1);
+            branches.emplace(prev);
             continue;
         }
 
         if (smiles[i] == ')')
         {
+            if (branches.empty())
+            {
+                Logger::log("Unpaired ')' found at " + std::to_string(i) + " .", LogType::BAD);
+                clear();
+                return false;
+            }
             prev = branches.top();
             branches.pop();
             continue;
@@ -66,8 +82,19 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
         {
             const size_t t = smiles.find(']', i + 1);
             if (t == std::string::npos)
+            {
+                Logger::log("Unpaired '[' found at " + std::to_string(i) + " .", LogType::BAD);
+                clear();
                 return false;
+            }
 
+            if (Atom::isDefined(smiles.substr(i + 1, t - i - 1)) == false)
+            {
+                Logger::log("Atomic symbol '" + smiles.substr(i + 1, t - i - 1) + "' at " + std::to_string(i) + "is undefined.", LogType::BAD);
+                clear();
+                return false;
+            }
+            
             components.emplace_back(new Atom(smiles.substr(i + 1, t - i - 1)));
             bonds.emplace_back(std::move(std::vector<Bond>()));
 
@@ -79,14 +106,18 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             }
 
             prev = components.size() - 1;
-            i = t + 1;
+            i = t;
             continue;
         }
 
         if (smiles[i] == '%')
         {
-            if (i + 2 >= smiles.size())
+            if (i + 2 >= smiles.size() || isdigit(smiles[i + 1]) == false || isdigit(smiles[i + 2]) == false)
+            {
+                Logger::log("Two-digit ring label is missing.", LogType::BAD);
+                clear();
                 return false;
+            }
 
             uint8_t label = smiles[i + 1] * 10 + smiles[i + 2] - 11 * '0';
             if (rings.contains(label))
@@ -118,8 +149,45 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             }
             continue;
         }
+
+
+        Logger::log("Unidentified symbol '" + std::string(1, smiles[i]) + "' at " + std::to_string(i) + " found.", LogType::BAD);
+        clear();
+        return false;
     }
 
+    if(branches.empty() == false)
+    {
+        Logger::log("Unpaired '(' found.", LogType::BAD);
+        clear();
+        return false;
+    }
+
+    if(checkValences() == false)
+    {
+        Logger::log("Valence of an atom was exceeded.", LogType::BAD);
+        clear();
+        return false;
+    }
+
+    Logger::log("Molecular structure read successfully.", LogType::GOOD);
+    return true;
+}
+
+bool MolecularStructure::checkValences() const
+{
+    for (size_t i = 0; i < components.size(); ++i)
+    {
+        auto v = components[i]->data().valence;
+        if (bonds[i].size() > v)
+            return false;
+
+        uint8_t cnt = 0;
+        for (size_t j = 0; j < bonds[i].size(); ++j)
+            cnt += bonds[i][j].getValence();
+        if (cnt > v)
+            return false;
+    }
     return true;
 }
 
@@ -127,6 +195,17 @@ const BaseComponent* MolecularStructure::getComponent(const size_t idx) const
 {
     return components[idx];
 }
+
+double MolecularStructure::getMolarMass() const
+{
+    double cnt = 0;
+    for (size_t i = 0; i < components.size(); ++i)
+    {
+        cnt += components[i]->data().weight;
+    }
+    return cnt;
+}
+
 
 void MolecularStructure::rPrint(
     std::vector<std::string>& buffer,
@@ -144,36 +223,40 @@ void MolecularStructure::rPrint(
 
     buffer[y][x] = components[c]->data().symbol[0];
 
-    std::vector<size_t> unvisited;
     for (size_t i = 0; i < bonds[c].size(); ++i)
         if (visited[bonds[c][i].other] == false)
-            unvisited.emplace_back(bonds[c][i].other);
+        {
+            char vC = '³', hC = 'Ä';
+            if (bonds[c][i].type == BondType::DOUBLE)
+                vC = 'º', hC = 'Í';
+            else if (bonds[c][i].type == BondType::TRIPLE)
+                vC = 'ð', hC = 'ð';
 
-    if (unvisited.size() >= 1)
-    {
-        buffer[y][x + 1] = 'Ä';
-        rPrint(buffer, x + 2, y, unvisited[0], visited);
-    }
 
-    if (unvisited.size() >= 2)
-    {
-        buffer[y - 1][x] = '³';
-        rPrint(buffer, x, y - 2, unvisited[1], visited);
-    }
-
-    if (unvisited.size() >= 3)
-    {
-        buffer[y][x - 1] = 'Ä';
-        rPrint(buffer, x - 2, y, unvisited[2], visited);
-    }
-
-    if (unvisited.size() >= 4)
-    {
-        buffer[y + 1][x] = '³';
-        rPrint(buffer, x, y + 2, unvisited[3], visited);
-    }
+            if (buffer[y][x + 2] == ' ')
+            {
+                buffer[y][x + 1] = hC;
+                rPrint(buffer, x + 2, y, bonds[c][i].other, visited);
+            }
+            else if (buffer[y - 2][x] == ' ')
+            {
+                buffer[y - 1][x] = vC;
+                rPrint(buffer, x, y - 2, bonds[c][i].other, visited);
+            }
+            else if (buffer[y][x - 2] == ' ')
+            {
+                buffer[y][x - 1] = hC;
+                rPrint(buffer, x - 2, y, bonds[c][i].other, visited);
+            }
+            else if (buffer[y + 2][x] == ' ')
+            {
+                buffer[y + 1][x] = vC;
+                rPrint(buffer, x, y + 2, bonds[c][i].other, visited);
+            }
+            else
+                break;
+        }
 }
-
 
 std::string MolecularStructure::print(const size_t maxWidth, const size_t maxHeight) const
 {
@@ -197,4 +280,15 @@ std::string MolecularStructure::print(const size_t maxWidth, const size_t maxHei
     while (buffer[i].find_first_not_of(' ') != std::string::npos);
 
     return str;
+}
+
+
+void MolecularStructure::clear()
+{
+    while (components.empty() == false)
+    {
+        delete components.back();
+        components.pop_back();
+    }
+    bonds.clear();
 }
