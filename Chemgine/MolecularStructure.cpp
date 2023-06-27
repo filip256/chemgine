@@ -35,7 +35,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             }
             else
             {
-                Logger::log("Atomic symbol '" + std::string(1, smiles[i]) + "' at " + std::to_string(i) + "is undefined.", LogType::BAD);
+                Logger::log("Atomic symbol '" + std::string(1, smiles[i]) + "' at " + std::to_string(i) + " is undefined.", LogType::BAD);
                 clear();
                 return false;
             }
@@ -163,37 +163,47 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
         return false;
     }
 
-    if(checkValences() == false)
+    const auto hCount = getHCount();
+    if(hydrogenCount == -1)
     {
-        Logger::log("Valence of an atom was exceeded.", LogType::BAD);
+        Logger::log("Valence of a component was exceeded.", LogType::BAD);
         clear();
         return false;
     }
+    hydrogenCount = hCount;
 
     Logger::log("Molecular structure read successfully.", LogType::GOOD);
     return true;
 }
 
-bool MolecularStructure::checkValences() const
+int16_t MolecularStructure::getHCount() const
 {
+    int16_t hCount = 0;
     for (size_t i = 0; i < components.size(); ++i)
     {
         auto v = components[i]->data().valence;
         if (bonds[i].size() > v)
-            return false;
+            return -1;
 
         uint8_t cnt = 0;
         for (size_t j = 0; j < bonds[i].size(); ++j)
             cnt += bonds[i][j].getValence();
         if (cnt > v)
-            return false;
+            return -1;
+
+        hCount += v - cnt;
     }
-    return true;
+    return hCount;
 }
 
 const BaseComponent* MolecularStructure::getComponent(const size_t idx) const
 {
     return components[idx];
+}
+
+uint16_t MolecularStructure::getHydrogenCount() const
+{
+    return hydrogenCount;
 }
 
 double MolecularStructure::getMolarMass() const
@@ -203,6 +213,7 @@ double MolecularStructure::getMolarMass() const
     {
         cnt += components[i]->data().weight;
     }
+    cnt += hydrogenCount * Atom('H').data().weight;
     return cnt;
 }
 
@@ -291,4 +302,5 @@ void MolecularStructure::clear()
         components.pop_back();
     }
     bonds.clear();
+    hydrogenCount = 0;
 }

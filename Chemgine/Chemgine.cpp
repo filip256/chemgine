@@ -21,7 +21,7 @@ int main()
         r.loadAtomsData("Data/AtomData.csv");
         BaseComponent::setDataStore(&r);
 
-        MolecularStructure c("COCCC");
+        MolecularStructure c("CO[Na]");
         std::cout << c.print() << '\n';
         std::cout << c.getMolarMass();
     }

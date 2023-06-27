@@ -38,12 +38,17 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 		}
 
 		const auto id = DataHelpers::toUInt(line[0]);
-		const auto weight = DataHelpers::toUDouble(line[3]);
-		const auto valence = DataHelpers::toUInt(line[4]);
+		auto weight = DataHelpers::toUDouble(line[3]);
+		auto valence = DataHelpers::toUInt(line[4]);
 
-		if (id.status == 0 || weight.status == 0 || valence.status == 0)
+		if (line[3].empty())
+			weight.result = 0;
+		if (line[4].empty())
+			valence.result = 0;
+
+		if (id.status == 0)
 		{
-			Logger::log("Some of the properties couldn't be deserialized.  (" + line[1] + ')', LogType::BAD);
+			Logger::log("Missing id, atom '" + line[1] + "' skipped.", LogType::BAD);
 			continue;
 		}
 
@@ -58,7 +63,21 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 	}
 	file.close();
 
+	if (table.containsKey2("H") == false)
+	{
+		auto id = getFreeId();
+		table.emplace(id, "H", std::move(AtomData(id, "H", "Hydrogen", 1.008, 1)));
+		Logger::log("Missing required atom 'H' created automatically with id " + std::to_string(id) + '.', LogType::WARN);
+	}
+
 	Logger::log("Loaded " + std::to_string(table.size()) + " atoms.", LogType::GOOD);
 
 	return true;
+}
+
+AtomIdType AtomDataTable::getFreeId() const
+{
+	AtomIdType id = 201;
+	while (table.containsKey1(id) && id != 0) ++id; // overflow protection
+	return id;
 }

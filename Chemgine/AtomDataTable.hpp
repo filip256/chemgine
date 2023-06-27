@@ -10,4 +10,6 @@ public:
 	AtomDataTable(const AtomDataTable&) = delete;
 
 	bool loadFromFile(const std::string& path);
+
+	AtomIdType getFreeId() const;
 };
