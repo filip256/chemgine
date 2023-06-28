@@ -13,5 +13,5 @@ private:
 public:
 	AtomIdentifier(const CompositeComponent& composite);
 
-	const AtomData& data() const override;
+	const AtomData& data() const override final;
 };

@@ -48,5 +48,12 @@ public:
     /// <returns></returns>
     double getMolarMass() const;
 
+    /// <summary>
+    /// Checks if the molecule contains at least one radical type. 
+    /// Complexity: O(n)
+    /// </summary>
+    /// <returns></returns>
+    bool isComplete() const;
+
     void clear();
 };

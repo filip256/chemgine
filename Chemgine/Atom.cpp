@@ -14,7 +14,8 @@ Atom::Atom(const AtomIdType id, const ComponentType type) :
 }
 
 Atom::Atom(const std::string& symbol) :
-    BaseComponent(ComponentType::ATOM)
+    BaseComponent(ComponentType::ATOM),
+    id(0)
 {
     if (dataStore->atoms.contains(symbol) == false)
     {

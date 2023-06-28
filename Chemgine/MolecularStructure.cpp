@@ -217,6 +217,16 @@ double MolecularStructure::getMolarMass() const
     return cnt;
 }
 
+bool MolecularStructure::isComplete() const
+{
+    // weight is used as a convention to avoid downcasting
+    for (size_t i = 0; i < components.size(); ++i)
+        if (components[i]->data().weight == 0.0)
+            return false;
+    return true;
+}
+
+
 
 void MolecularStructure::rPrint(
     std::vector<std::string>& buffer,

@@ -19,7 +19,6 @@ void BaseComponent::setDataStore(const DataStore* const dataStore)
 bool BaseComponent::isCompositeType(const BaseComponent& component)
 {
 	return 
-		component.type == ComponentType::COMPOSITE ||
 		component.type == ComponentType::FUNCTIONAL ||
 		component.type == ComponentType::BACKBONE;
 }

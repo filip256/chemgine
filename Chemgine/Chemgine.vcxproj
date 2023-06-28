@@ -177,7 +177,9 @@
     <ClCompile Include="DataHelpers.cpp" />
     <ClCompile Include="DataStore.cpp" />
     <ClCompile Include="DataTable.cpp" />
+    <ClCompile Include="FunctionalGroup.cpp" />
     <ClCompile Include="Logger.cpp" />
+    <ClInclude Include="FunctionalGroup.hpp" />
     <ClInclude Include="LogType.hpp" />
     <ClCompile Include="MolecularStructure.cpp" />
     <ClCompile Include="MultiIndexMap.cpp" />

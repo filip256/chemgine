@@ -93,3 +93,5 @@ Tasks:
 Possible optimizations:
  - keep symbols as char* to avoid uneccessary constructor for 'C'
  - avoid contains then access for maps
+ - type could be dropped from base component and replaced with isAtom(), isComposite() virtual methods
+ - logger.hpp could be included once in a base .hpp file rather than every time

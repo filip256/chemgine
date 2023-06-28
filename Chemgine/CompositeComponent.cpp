@@ -1,8 +1,11 @@
 #include "CompositeComponent.hpp"
 
-CompositeComponent::CompositeComponent(const ComponentType type) :
+CompositeComponent::CompositeComponent(
+	const std::string& smiles,
+	const ComponentType type
+) :
 	BaseComponent(type),
-	structure("")
+	structure(smiles)
 {}
 
 const BaseComponent* CompositeComponent::getComponent(const size_t idx) const

@@ -93,6 +93,9 @@
     <ClCompile Include="CompositeComponent.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
+    <ClCompile Include="FunctionalGroup.cpp">
+      <Filter>Source Files\Moleculars</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AtomData.hpp">
@@ -145,6 +148,9 @@
     </ClInclude>
     <ClInclude Include="LogType.hpp">
       <Filter>Header Files\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionalGroup.hpp">
+      <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
