@@ -50,12 +50,6 @@ Molecules cannot be considered backbones for other molecules.
 Some molecules can be defined in files for their properties and new ones can be created and stored by the algorithm.
 
 
--- SMILES --
-Currently implemented:
-atoms: C, N, O,..., [Ag]
-bonds: ., -, =, #, $, :
-
-
 
 In an optimized molecular structure there must be a way to specify which atoms are bounded:
   AtomIdentifier can hold a reference to a MolecularStructure and the index of one atoms withing that structure
@@ -76,7 +70,8 @@ Tasks:
   DONE. Create DataManager for storing Datas as singletons
 ---
   DONE. Create BaseComponent, AtomIdentifier, Bond and MolecularStructure classes
-  5. Create FunctionalGroup derived from BaseComponent
+  DONE. Create FunctionalGroup derived from BaseComponent
+  >. Create property generator with fallbacks
   6. Create FunctionalGroups CSV with Id, smiles
   7. Create FunctionalGroupData with a MolecularStrcuture and write initilizer from SMILES
 ---
@@ -92,6 +87,4 @@ Tasks:
 
 Possible optimizations:
  - keep symbols as char* to avoid uneccessary constructor for 'C'
- - avoid contains then access for maps
- - type could be dropped from base component and replaced with isAtom(), isComposite() virtual methods
- - logger.hpp could be included once in a base .hpp file rather than every time
+ - avoid contains-then-access for maps

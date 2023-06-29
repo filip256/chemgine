@@ -6,17 +6,17 @@
 class Atom : public BaseComponent
 {
 protected:
-    AtomIdType id;
+    ComponentIdType id;
 
 public:
-    Atom(const AtomIdType id, const ComponentType type = ComponentType::ATOM);
+    Atom(const ComponentIdType id, const ComponentType type = ComponentType::ATOM);
 
     Atom(const std::string& symbol);
     Atom(const char symbol);
 
-    virtual const AtomData& data() const;
+    virtual const AtomData& data() const final;
 
-    static bool isDefined(const AtomIdType id);
+    static bool isDefined(const ComponentIdType id);
     static bool isDefined(const std::string& symbol);
     static bool isDefined(const char symbol);
 };

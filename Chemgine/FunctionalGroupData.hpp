@@ -2,10 +2,10 @@
 
 #include "BaseComponentData.hpp"
 
-class AtomData : public BaseComponentData
+class FunctionalGroupData : public BaseComponentData
 {
 public:
-	AtomData(
+	FunctionalGroupData(
 		const ComponentIdType id,
 		const std::string& symbol,
 		const std::string& name,

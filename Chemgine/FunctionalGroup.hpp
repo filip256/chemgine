@@ -6,4 +6,6 @@ class FunctionalGroup : public CompositeComponent
 {
 public:
 	FunctionalGroup(const std::string& smiles);
+
+
 };

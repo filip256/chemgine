@@ -2,7 +2,7 @@
 #include "Logger.hpp"
 
 
-Atom::Atom(const AtomIdType id, const ComponentType type) :
+Atom::Atom(const ComponentIdType id, const ComponentType type) :
     BaseComponent(type),
     id(id)
 {
@@ -34,7 +34,7 @@ const AtomData& Atom::data() const
     return dataStore->atoms[id];
 }
 
-bool Atom::isDefined(const AtomIdType id)
+bool Atom::isDefined(const ComponentIdType id)
 {
     return dataStore->atoms.contains(id);
 }

@@ -3,7 +3,7 @@
 #include "Logger.hpp"
 #include <fstream>
 
-AtomDataTable::AtomDataTable() : DataTable<AtomIdType, std::string, AtomData>()
+AtomDataTable::AtomDataTable() : DataTable<ComponentIdType, std::string, AtomData>()
 {
 
 }
@@ -75,9 +75,9 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 	return true;
 }
 
-AtomIdType AtomDataTable::getFreeId() const
+ComponentIdType AtomDataTable::getFreeId() const
 {
-	AtomIdType id = 201;
+	ComponentIdType id = 201;
 	while (table.containsKey1(id) && id != 0) ++id; // overflow protection
 	return id;
 }

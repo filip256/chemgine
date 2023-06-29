@@ -3,7 +3,7 @@
 #include "DataTable.hpp"
 #include "AtomData.hpp"
 
-class AtomDataTable : public DataTable<AtomIdType, std::string, AtomData>
+class AtomDataTable : public DataTable<ComponentIdType, std::string, AtomData>
 {
 public:
 	AtomDataTable();
@@ -11,5 +11,5 @@ public:
 
 	bool loadFromFile(const std::string& path);
 
-	AtomIdType getFreeId() const;
+	ComponentIdType getFreeId() const;
 };

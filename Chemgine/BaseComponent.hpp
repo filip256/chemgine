@@ -13,7 +13,7 @@ protected:
 public:
 	static size_t instanceCount;
 
-	virtual const AtomData& data() const = 0;
+	virtual const BaseComponentData& data() const = 0;
 
 	static void setDataStore(const DataStore* const dataStore);
 	static bool isCompositeType(const BaseComponent& component);

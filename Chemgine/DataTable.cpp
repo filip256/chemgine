@@ -1,5 +1,6 @@
 #include "DataTable.hpp"
 #include "AtomData.hpp"
+#include "FunctionalGroupData.hpp"
 
 template<class KeyT1, class KeyT2, class ObjT>
 DataTable<KeyT1, KeyT2, ObjT>::DataTable() : table() 
@@ -47,4 +48,5 @@ void DataTable<KeyT1, KeyT2, ObjT>::clear()
 	table.clear();
 }
 
-template class DataTable<AtomIdType, std::string, AtomData>;
+template class DataTable<ComponentIdType, std::string, AtomData>;
+template class DataTable<ComponentIdType, std::string, FunctionalGroupData>;

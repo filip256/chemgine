@@ -96,6 +96,15 @@
     <ClCompile Include="FunctionalGroup.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
+    <ClCompile Include="BaseComponentData.cpp">
+      <Filter>Source Files\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionalGroupData.cpp">
+      <Filter>Source Files\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionalGroupDataTable.cpp">
+      <Filter>Source Files\Data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AtomData.hpp">
@@ -151,6 +160,15 @@
     </ClInclude>
     <ClInclude Include="FunctionalGroup.hpp">
       <Filter>Header Files\Moleculars</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseComponentData.hpp">
+      <Filter>Header Files\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionalGroupData.hpp">
+      <Filter>Header Files\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionalGroupDataTable.hpp">
+      <Filter>Header Files\Data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

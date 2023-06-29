@@ -1,6 +1,6 @@
-#include "AtomData.hpp"
+#include "FunctionalGroupData.hpp"
 
-AtomData::AtomData(
+FunctionalGroupData::FunctionalGroupData(
 	const ComponentIdType id,
 	const std::string& symbol,
 	const std::string& name,

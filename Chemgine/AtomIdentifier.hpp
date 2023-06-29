@@ -8,7 +8,7 @@ class AtomIdentifier : public BaseComponent
 {
 private:
 	const CompositeComponent& composite;
-	const std::vector<AtomIdType> ids;
+	const std::vector<ComponentIdType> ids;
 
 public:
 	AtomIdentifier(const CompositeComponent& composite);

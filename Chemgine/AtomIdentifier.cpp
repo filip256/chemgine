@@ -13,5 +13,5 @@ const AtomData& AtomIdentifier::data() const
 	{
 		temp = static_cast<const CompositeComponent*>(temp)->getComponent(ids[i]);
 	}
-	return temp->data();
+	return static_cast<const Atom*>(temp)->data();
 }
