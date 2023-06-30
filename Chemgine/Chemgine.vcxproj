@@ -166,6 +166,8 @@
   <ItemGroup>
     <ClCompile Include="Atom.cpp" />
     <ClCompile Include="AtomIdentifier.cpp" />
+    <ClCompile Include="FloatValue.cpp" />
+    <ClCompile Include="Value.cpp" />
     <ClInclude Include="AtomIdentifier.hpp" />
     <ClCompile Include="AtomData.cpp" />
     <ClCompile Include="AtomDataTable.cpp" />
@@ -183,6 +185,7 @@
     <ClCompile Include="FunctionalGroupData.cpp" />
     <ClCompile Include="FunctionalGroupDataTable.cpp" />
     <ClCompile Include="Logger.cpp" />
+    <ClInclude Include="FloatValue.hpp" />
     <ClInclude Include="FunctionalGroup.hpp" />
     <ClInclude Include="FunctionalGroupData.hpp" />
     <ClInclude Include="FunctionalGroupDataTable.hpp" />
@@ -191,6 +194,7 @@
     <ClCompile Include="MultiIndexMap.cpp" />
     <ClInclude Include="MultiIndexMap.hpp" />
     <ClCompile Include="Result.cpp" />
+    <ClInclude Include="Value.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Atom.hpp" />
@@ -209,6 +213,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv" />
+    <None Include="Data\FunctionalGrpupData.csv" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Planning.txt" />

@@ -34,6 +34,11 @@ const AtomData& Atom::data() const
     return dataStore->atoms[id];
 }
 
+bool Atom::isRadicalType() const
+{
+    return dataStore->atoms[id].weight == 0;
+}
+
 bool Atom::isDefined(const ComponentIdType id)
 {
     return dataStore->atoms.contains(id);

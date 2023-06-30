@@ -46,18 +46,24 @@
     <Filter Include="Source Files\DataStructures">
       <UniqueIdentifier>{4ed9ad60-5606-4e20-b002-ced56a1ce134}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Data\Values">
+      <UniqueIdentifier>{498e81bf-67b0-4d47-98ca-40bbcab62556}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Data\Values">
+      <UniqueIdentifier>{94424c06-9994-4e2c-98ec-ab2dac600d69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Data\Tables">
+      <UniqueIdentifier>{5eaaa1ad-d8ce-4664-9923-b658d64f1748}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Data\Tables">
+      <UniqueIdentifier>{78984b14-b56a-42d0-b624-cf385402b523}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AtomData.cpp">
       <Filter>Source Files\Data</Filter>
     </ClCompile>
     <ClCompile Include="DataStore.cpp">
-      <Filter>Source Files\Data</Filter>
-    </ClCompile>
-    <ClCompile Include="DataTable.cpp">
-      <Filter>Source Files\Data</Filter>
-    </ClCompile>
-    <ClCompile Include="AtomDataTable.cpp">
       <Filter>Source Files\Data</Filter>
     </ClCompile>
     <ClCompile Include="DataHelpers.cpp">
@@ -102,8 +108,20 @@
     <ClCompile Include="FunctionalGroupData.cpp">
       <Filter>Source Files\Data</Filter>
     </ClCompile>
+    <ClCompile Include="Value.cpp">
+      <Filter>Source Files\Data\Values</Filter>
+    </ClCompile>
+    <ClCompile Include="FloatValue.cpp">
+      <Filter>Source Files\Data\Values</Filter>
+    </ClCompile>
+    <ClCompile Include="AtomDataTable.cpp">
+      <Filter>Source Files\Data\Tables</Filter>
+    </ClCompile>
     <ClCompile Include="FunctionalGroupDataTable.cpp">
-      <Filter>Source Files\Data</Filter>
+      <Filter>Source Files\Data\Tables</Filter>
+    </ClCompile>
+    <ClCompile Include="DataTable.cpp">
+      <Filter>Source Files\Data\Tables</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -111,12 +129,6 @@
       <Filter>Header Files\Data</Filter>
     </ClInclude>
     <ClInclude Include="DataStore.hpp">
-      <Filter>Header Files\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="DataTable.hpp">
-      <Filter>Header Files\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="AtomDataTable.hpp">
       <Filter>Header Files\Data</Filter>
     </ClInclude>
     <ClInclude Include="DataHelpers.hpp">
@@ -167,12 +179,27 @@
     <ClInclude Include="FunctionalGroupData.hpp">
       <Filter>Header Files\Data</Filter>
     </ClInclude>
+    <ClInclude Include="FloatValue.hpp">
+      <Filter>Header Files\Data\Values</Filter>
+    </ClInclude>
+    <ClInclude Include="Value.hpp">
+      <Filter>Header Files\Data\Values</Filter>
+    </ClInclude>
     <ClInclude Include="FunctionalGroupDataTable.hpp">
-      <Filter>Header Files\Data</Filter>
+      <Filter>Header Files\Data\Tables</Filter>
+    </ClInclude>
+    <ClInclude Include="DataTable.hpp">
+      <Filter>Header Files\Data\Tables</Filter>
+    </ClInclude>
+    <ClInclude Include="AtomDataTable.hpp">
+      <Filter>Header Files\Data\Tables</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv">
+      <Filter>Resource Files\ChemicalData</Filter>
+    </None>
+    <None Include="Data\FunctionalGrpupData.csv">
       <Filter>Resource Files\ChemicalData</Filter>
     </None>
   </ItemGroup>

@@ -71,8 +71,7 @@ Tasks:
 ---
   DONE. Create BaseComponent, AtomIdentifier, Bond and MolecularStructure classes
   DONE. Create FunctionalGroup derived from BaseComponent
-  >. Create property generator with fallbacks
-  6. Create FunctionalGroups CSV with Id, smiles
+  DONE. Create FunctionalGroups CSV with Id, smiles
   7. Create FunctionalGroupData with a MolecularStrcuture and write initilizer from SMILES
 ---
   8. Create Backbone derived from BaseComponent

@@ -2,10 +2,11 @@
 
 FunctionalGroupData::FunctionalGroupData(
 	const ComponentIdType id,
-	const std::string& symbol,
+	const std::string& smiles,
 	const std::string& name,
-	const double weight,
-	const uint8_t valence
+	MolecularStructure&& structure
 ) :
-	BaseComponentData(id, symbol, name, weight, valence)
-{}
+	BaseComponentData(id, symbol, name, structure.getMolarMass(), structure.getRadicalAtomsCount()),
+	structure(std::move(structure))
+{
+}

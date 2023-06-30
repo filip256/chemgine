@@ -30,6 +30,8 @@ private:
 
 public:
     MolecularStructure(const std::string& smiles);
+    MolecularStructure(MolecularStructure&& structure);
+    MolecularStructure(const MolecularStructure&) = delete;
     ~MolecularStructure();
 
     const BaseComponent* getComponent(const size_t idx) const;
@@ -41,6 +43,12 @@ public:
     /// </summary>
     /// <returns></returns>
     uint16_t getHydrogenCount() const;
+
+    /// <summary>
+    /// Complexity: O(n)
+    /// </summary>
+    /// <returns></returns>
+    uint16_t getRadicalAtomsCount() const;
 
     /// <summary>
     /// Complexity: O(n)

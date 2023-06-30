@@ -7,6 +7,11 @@ MolecularStructure::MolecularStructure(const std::string& smiles)
 {
     loadFromSMILES(smiles);
 }
+MolecularStructure::MolecularStructure(MolecularStructure&& structure) :
+    components(std::move(structure.components)),
+    bonds(std::move(structure.bonds)),
+    hydrogenCount(structure.hydrogenCount)
+{}
 
 MolecularStructure::~MolecularStructure()
 {
@@ -221,7 +226,7 @@ bool MolecularStructure::isComplete() const
 {
     // weight is used as a convention to avoid downcasting
     for (size_t i = 0; i < components.size(); ++i)
-        if (components[i]->data().weight == 0.0)
+        if (components[i]->isCompositeType() == false)
             return false;
     return true;
 }

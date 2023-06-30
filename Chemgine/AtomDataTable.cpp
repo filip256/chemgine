@@ -51,6 +51,16 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 			Logger::log("Missing id, atom '" + line[1] + "' skipped.", LogType::BAD);
 			continue;
 		}
+		if(table.containsKey1(id.result))
+		{
+			Logger::log("Atom with duplicate id " + std::to_string(id.result) + " skipped.", LogType::WARN);
+			continue;
+		}
+		if (table.containsKey2(line[1]))
+		{
+			Logger::log("Atom with duplicate symbol '" + line[1] + "' skipped.", LogType::WARN);
+			continue;
+		}
 
 		if (table.emplace(
 			id.result,
@@ -58,7 +68,7 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 			std::move(AtomData(id.result, line[1], line[2], weight.result, valence.result))
 			) == false)
 		{
-			Logger::log("Possible atom duplicate id value: " + std::to_string(table.size()) + '.', LogType::WARN);
+			Logger::log("Insertion of atom with id " + std::to_string(id.result) + " failed unexpectedly.", LogType::WARN);
 		}
 	}
 	file.close();

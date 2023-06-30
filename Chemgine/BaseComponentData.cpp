@@ -1,5 +1,7 @@
 #include "BaseComponentData.hpp"
 
+BaseComponentData::BaseComponentData() {}
+
 BaseComponentData::BaseComponentData(
 	const ComponentIdType id,
 	const std::string& symbol,
