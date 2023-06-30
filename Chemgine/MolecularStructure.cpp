@@ -2,12 +2,13 @@
 
 #include "MolecularStructure.hpp"
 #include "Logger.hpp"
+#include "CompositeComponent.hpp"
 
 MolecularStructure::MolecularStructure(const std::string& smiles)
 {
     loadFromSMILES(smiles);
 }
-MolecularStructure::MolecularStructure(MolecularStructure&& structure) :
+MolecularStructure::MolecularStructure(MolecularStructure&& structure) noexcept :
     components(std::move(structure.components)),
     bonds(std::move(structure.bonds)),
     hydrogenCount(structure.hydrogenCount)
@@ -222,12 +223,23 @@ double MolecularStructure::getMolarMass() const
     return cnt;
 }
 
+uint16_t MolecularStructure::getRadicalAtomsCount() const
+{
+    uint16_t cnt = 0;
+    for (size_t i = 0; i < components.size(); ++i)
+        if (components[i]->isAtomicType() &&
+            static_cast<AtomicComponent*>(components[i])->isRadicalType())
+            ++cnt;
+    return cnt;
+}
+
 bool MolecularStructure::isComplete() const
 {
-    // weight is used as a convention to avoid downcasting
+    // it does not search sub components
     for (size_t i = 0; i < components.size(); ++i)
-        if (components[i]->isCompositeType() == false)
-            return false;
+        if (components[i]->isAtomicType() &&
+            static_cast<AtomicComponent*>(components[i])->isRadicalType())
+                return false;
     return true;
 }
 

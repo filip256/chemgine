@@ -165,9 +165,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Atom.cpp" />
+    <ClCompile Include="AtomicComponent.cpp" />
     <ClCompile Include="AtomIdentifier.cpp" />
     <ClCompile Include="FloatValue.cpp" />
     <ClCompile Include="Value.cpp" />
+    <ClInclude Include="AtomicComponent.hpp" />
     <ClInclude Include="AtomIdentifier.hpp" />
     <ClCompile Include="AtomData.cpp" />
     <ClCompile Include="AtomDataTable.cpp" />

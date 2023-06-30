@@ -30,9 +30,9 @@ private:
 
 public:
     MolecularStructure(const std::string& smiles);
-    MolecularStructure(MolecularStructure&& structure);
+    MolecularStructure(MolecularStructure&& structure) noexcept;
     MolecularStructure(const MolecularStructure&) = delete;
-    ~MolecularStructure();
+    ~MolecularStructure() noexcept;
 
     const BaseComponent* getComponent(const size_t idx) const;
     std::string print(const size_t maxWidth = 100, const size_t maxHeight = 50) const;

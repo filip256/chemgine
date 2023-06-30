@@ -2,7 +2,6 @@
 
 FunctionalGroupData::FunctionalGroupData(
 	const ComponentIdType id,
-	const std::string& smiles,
 	const std::string& name,
 	MolecularStructure&& structure
 ) :

@@ -10,5 +10,9 @@ public:
 		const std::string& symbol,
 		const std::string& name,
 		const double weight,
-		const uint8_t valence);
+		const uint8_t valence) noexcept;
+
+	AtomData(const AtomData&) = delete;
+	AtomData(AtomData&&) = default;
+	~AtomData() = default;
 };

@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Atom.hpp"
+#include "AtomicComponent.hpp"
 #include "CompositeComponent.hpp"
 
-class AtomIdentifier : public BaseComponent
-
+class AtomIdentifier : public AtomicComponent
 {
 private:
 	const CompositeComponent& composite;
@@ -13,5 +13,9 @@ private:
 public:
 	AtomIdentifier(const CompositeComponent& composite);
 
+	const Atom& atom() const;
+
 	const AtomData& data() const override final;
+
+	bool isRadicalType() const override final;
 };

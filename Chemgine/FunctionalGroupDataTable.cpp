@@ -53,10 +53,10 @@ bool FunctionalGroupDataTable::loadFromFile(const std::string& path)
 		if (table.emplace(
 			id.result,
 			line[1],
-			std::move(FunctionalGroupData(id.result, line[1], line[2]))
+			std::move(FunctionalGroupData(id.result, line[2], std::move(MolecularStructure(line[1]))))
 		) == false)
 		{
-			Logger::log("Insertion of atom with id " + std::to_string(id.result) + " failed unexpectedly.", LogType::WARN);
+			Logger::log("Insertion of functional group with id " + std::to_string(id.result) + " failed unexpectedly.", LogType::WARN);
 		}
 	}
 	file.close();

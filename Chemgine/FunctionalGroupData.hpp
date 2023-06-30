@@ -10,7 +10,10 @@ public:
 
 	FunctionalGroupData(
 		const ComponentIdType id,
-		const std::string& symbol,
 		const std::string& name,
-		MolecularStructure&& structure);
+		MolecularStructure&& structure) noexcept;
+
+	FunctionalGroupData(const FunctionalGroupData&) = delete;
+	FunctionalGroupData(FunctionalGroupData&&) = default;
+	~FunctionalGroupData() = default;
 };

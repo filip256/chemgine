@@ -2,8 +2,8 @@
 #include "Logger.hpp"
 
 
-Atom::Atom(const ComponentIdType id, const ComponentType type) :
-    BaseComponent(type),
+Atom::Atom(const ComponentIdType id) :
+    AtomicComponent(ComponentType::ATOM),
     id(id)
 {
     if (dataStore->atoms.contains(id) == false)
@@ -14,7 +14,7 @@ Atom::Atom(const ComponentIdType id, const ComponentType type) :
 }
 
 Atom::Atom(const std::string& symbol) :
-    BaseComponent(ComponentType::ATOM),
+    AtomicComponent(ComponentType::ATOM),
     id(0)
 {
     if (dataStore->atoms.contains(symbol) == false)

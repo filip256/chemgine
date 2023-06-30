@@ -21,4 +21,6 @@ public:
 		const std::string& name,
 		const double weight,
 		const uint8_t valence);
+
+	BaseComponentData(BaseComponentData&&) noexcept = default;
 };

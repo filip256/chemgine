@@ -4,7 +4,7 @@
 const DataStore* BaseComponent::dataStore = nullptr;
 size_t BaseComponent::instanceCount = 0;
 
-BaseComponent::BaseComponent(const ComponentType type) :
+BaseComponent::BaseComponent(const ComponentType type) noexcept :
 	type(type)
 {
 	if (dataStore == nullptr)
@@ -14,6 +14,16 @@ BaseComponent::BaseComponent(const ComponentType type) :
 void BaseComponent::setDataStore(const DataStore* const dataStore)
 {
 	BaseComponent::dataStore = dataStore;
+}
+
+bool BaseComponent::isAtomicType() const
+{
+	return !BaseComponent::isCompositeType(*this);
+}
+
+bool BaseComponent::isCompositeType() const
+{
+	return BaseComponent::isCompositeType(*this);
 }
 
 bool BaseComponent::isCompositeType(const BaseComponent& component)

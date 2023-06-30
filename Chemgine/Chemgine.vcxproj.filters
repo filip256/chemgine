@@ -123,6 +123,9 @@
     <ClCompile Include="DataTable.cpp">
       <Filter>Source Files\Data\Tables</Filter>
     </ClCompile>
+    <ClCompile Include="AtomicComponent.cpp">
+      <Filter>Source Files\Moleculars</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AtomData.hpp">
@@ -193,6 +196,9 @@
     </ClInclude>
     <ClInclude Include="AtomDataTable.hpp">
       <Filter>Header Files\Data\Tables</Filter>
+    </ClInclude>
+    <ClInclude Include="AtomicComponent.hpp">
+      <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
