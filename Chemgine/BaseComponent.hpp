@@ -1,6 +1,8 @@
 #pragma once
-#include "DataStore.hpp"
+
 #include "ComponentType.hpp"
+
+class DataStore;
 
 class BaseComponent
 {

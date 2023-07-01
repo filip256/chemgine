@@ -19,6 +19,7 @@ int main()
     {
         DataStore r;
         r.loadAtomsData("Data/AtomData.csv");
+        r.loadAtomsData("Data/FunctionalGroupData.csv");
         BaseComponent::setDataStore(&r);
 
         MolecularStructure c("CO[Na]");

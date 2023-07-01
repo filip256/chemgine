@@ -10,10 +10,15 @@ FunctionalGroupDataTable::FunctionalGroupDataTable() : DataTable<ComponentIdType
 
 bool FunctionalGroupDataTable::loadFromFile(const std::string& path)
 {
+	Logger::enterContext();
+
 	std::ifstream file(path);
 
 	if (!file.is_open())
+	{
 		return false;
+		Logger::log("Failed to open file '" + path + "'.", LogType::BAD);
+	}
 
 	//if (files::verifyChecksum(file).code != 200) //not OK
 	//	return StatusCode<>::FileCorrupted;
@@ -60,6 +65,9 @@ bool FunctionalGroupDataTable::loadFromFile(const std::string& path)
 		}
 	}
 	file.close();
+
+	Logger::exitContext();
+	Logger::log("Loaded " + std::to_string(table.size()) + " functional groups.", LogType::GOOD);
 
 	return true;
 }

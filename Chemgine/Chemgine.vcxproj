@@ -155,6 +155,8 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <EnablePREfast>false</EnablePREfast>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -215,7 +217,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv" />
-    <None Include="Data\FunctionalGrpupData.csv" />
+    <None Include="Data\FunctionalGroupData.csv" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Planning.txt" />

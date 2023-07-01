@@ -5,9 +5,10 @@
 
 class FunctionalGroupData : public BaseComponentData
 {
-public:
-	const MolecularStructure structure;
+private:
+	MolecularStructure structure;
 
+public:
 	FunctionalGroupData(
 		const ComponentIdType id,
 		const std::string& name,

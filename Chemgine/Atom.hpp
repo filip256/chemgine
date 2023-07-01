@@ -3,6 +3,7 @@
 #include "AtomicComponent.hpp"
 #include "AtomData.hpp"
 
+
 class Atom : public AtomicComponent
 {
 protected:

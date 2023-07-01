@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Atom.hpp"
 #include "AtomicComponent.hpp"
 #include "CompositeComponent.hpp"
 

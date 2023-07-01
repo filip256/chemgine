@@ -1,8 +1,9 @@
 #include <queue>
 
 #include "MolecularStructure.hpp"
-#include "Logger.hpp"
 #include "CompositeComponent.hpp"
+#include "BaseComponent.hpp"
+#include "Logger.hpp"
 
 MolecularStructure::MolecularStructure(const std::string& smiles)
 {
@@ -21,6 +22,8 @@ MolecularStructure::~MolecularStructure()
 
 bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 {
+    Logger::enterContext();
+
     std::unordered_map<uint8_t, size_t> rings;
     std::stack<size_t> branches;
 
@@ -156,7 +159,6 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             continue;
         }
 
-
         Logger::log("Unidentified symbol '" + std::string(1, smiles[i]) + "' at " + std::to_string(i) + " found.", LogType::BAD);
         clear();
         return false;
@@ -178,7 +180,9 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
     }
     hydrogenCount = hCount;
 
+    Logger::exitContext();
     Logger::log("Molecular structure read successfully.", LogType::GOOD);
+
     return true;
 }
 

@@ -205,7 +205,7 @@
     <None Include="Data\AtomData.csv">
       <Filter>Resource Files\ChemicalData</Filter>
     </None>
-    <None Include="Data\FunctionalGrpupData.csv">
+    <None Include="Data\FunctionalGroupData.csv">
       <Filter>Resource Files\ChemicalData</Filter>
     </None>
   </ItemGroup>

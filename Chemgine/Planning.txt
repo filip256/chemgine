@@ -87,3 +87,19 @@ Tasks:
 Possible optimizations:
  - keep symbols as char* to avoid uneccessary constructor for 'C'
  - avoid contains-then-access for maps
+ - const fields in data objects need to be copied (not moved) on reallocation because of const
+
+
+ How forward-declarations can significantly reduce build times:
+You can get the declaration of a function into your current .cpp or .h file by
+#includ'ing the header that already contains a declaration of the function.
+However, this can slow down your compile, especially if you #include a header 
+into a .h instead of .cpp of your program, as everything that #includes the .h
+you're writing would end up #include'ing all the headers you wrote #includes 
+for too. Suddenly, the compiler has #included pages and pages of code that it 
+needs to compile even when you only wanted to use one or two functions. To 
+avoid this, you can use a forward-declaration and just type the declaration of
+the function yourself at the top of the file. If you're only using a few 
+functions, this can really make your compiles quicker compared to always 
+#including the header. For really large projects, the difference could be an 
+hour or more of compile time bought down to a few minutes.

@@ -6,6 +6,8 @@
 #include <stack>
 #include "Bond.hpp"
 
+class BaseComponent;
+
 class MolecularStructure
 {
 private:

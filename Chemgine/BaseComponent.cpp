@@ -1,4 +1,5 @@
 #include "BaseComponent.hpp"
+#include "DataStore.hpp"
 #include "Logger.hpp"
 
 const DataStore* BaseComponent::dataStore = nullptr;
@@ -8,7 +9,7 @@ BaseComponent::BaseComponent(const ComponentType type) noexcept :
 	type(type)
 {
 	if (dataStore == nullptr)
-		Logger::log("No datastore was set for molecular components.", LogType::FATAL);
+		Logger::fatal("No datastore was set for molecular components.");
 }
 
 void BaseComponent::setDataStore(const DataStore* const dataStore)
