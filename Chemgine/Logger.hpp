@@ -13,6 +13,7 @@ class Logger
 private:
 	static uint8_t contexts;
 public:
+	static LogType severityLevel;
 	static std::ostream& outputStream;
 	static void enterContext();
 	static void exitContext();

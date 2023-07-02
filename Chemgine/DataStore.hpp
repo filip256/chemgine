@@ -1,11 +1,9 @@
 #pragma once
 
-#include "AtomData.hpp"
 #include "AtomDataTable.hpp"
 #include "FunctionalGroupDataTable.hpp"
 
 #include <string>
-
 
 class DataStore
 {

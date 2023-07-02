@@ -218,6 +218,7 @@
   <ItemGroup>
     <None Include="Data\AtomData.csv" />
     <None Include="Data\FunctionalGroupData.csv" />
+    <None Include="diagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Planning.txt" />

@@ -4,14 +4,10 @@
 #include <fstream>
 
 FunctionalGroupDataTable::FunctionalGroupDataTable() : DataTable<ComponentIdType, std::string, FunctionalGroupData>()
-{
-
-}
+{}
 
 bool FunctionalGroupDataTable::loadFromFile(const std::string& path)
 {
-	Logger::enterContext();
-
 	std::ifstream file(path);
 
 	if (!file.is_open())
@@ -58,7 +54,7 @@ bool FunctionalGroupDataTable::loadFromFile(const std::string& path)
 		if (table.emplace(
 			id.result,
 			line[1],
-			std::move(FunctionalGroupData(id.result, line[2], std::move(MolecularStructure(line[1]))))
+			std::move(FunctionalGroupData::create(id.result, line[2], line[1]))
 		) == false)
 		{
 			Logger::log("Insertion of functional group with id " + std::to_string(id.result) + " failed unexpectedly.", LogType::WARN);
@@ -66,7 +62,6 @@ bool FunctionalGroupDataTable::loadFromFile(const std::string& path)
 	}
 	file.close();
 
-	Logger::exitContext();
 	Logger::log("Loaded " + std::to_string(table.size()) + " functional groups.", LogType::GOOD);
 
 	return true;

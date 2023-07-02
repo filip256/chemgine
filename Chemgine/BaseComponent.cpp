@@ -2,20 +2,33 @@
 #include "DataStore.hpp"
 #include "Logger.hpp"
 
-const DataStore* BaseComponent::dataStore = nullptr;
+const DataStore* BaseComponent::sDataStore = nullptr;
 size_t BaseComponent::instanceCount = 0;
 
 BaseComponent::BaseComponent(const ComponentType type) noexcept :
 	type(type)
 {
-	if (dataStore == nullptr)
+	if (sDataStore == nullptr)
 		Logger::fatal("No datastore was set for molecular components.");
 }
 
-void BaseComponent::setDataStore(const DataStore* const dataStore)
+void BaseComponent::setDataStore(const DataStore& dataStore)
 {
-	BaseComponent::dataStore = dataStore;
+	BaseComponent::sDataStore = &dataStore;
 }
+
+const DataStore& BaseComponent::getDataStore()
+{
+	if (sDataStore == nullptr)
+		Logger::fatal("No datastore was set for molecular components.");
+	return *sDataStore;
+}
+
+const DataStore& BaseComponent::dataStore() const
+{
+	return *BaseComponent::sDataStore;
+}
+
 
 bool BaseComponent::isAtomicType() const
 {

@@ -4,6 +4,7 @@
 #include <Windows.h>
 
 uint8_t Logger::contexts = 0;
+LogType Logger::severityLevel = LogType::WARN;
 std::ostream& Logger::outputStream = std::cout;
 
 void Logger::enterContext()
@@ -31,25 +32,26 @@ void Logger::log(const char* str, const LogType type)
 		return;
 	}
 
+	if (type > severityLevel)
+		return;
+
 	for (uint8_t i = 0; i < contexts; ++i)
 		outputStream << "  ";
 
-	switch (type)
+	if (type == LogType::BAD)
 	{
-	case LogType::BAD:
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_INTENSITY);
 		outputStream << "ERROR:   ";
-		break;
-
-	case LogType::WARN:
+	}
+	else if (type == LogType::WARN)
+	{
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN);
 		outputStream << "WARN:    ";
-		break;
-
-	case LogType::GOOD:
+	}
+	else if (type == LogType::GOOD)
+	{
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
 		outputStream << "SUCCESS: ";
-		break;
 	}
 
 	if(type != LogType::NONE)

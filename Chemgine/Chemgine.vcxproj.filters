@@ -208,6 +208,7 @@
     <None Include="Data\FunctionalGroupData.csv">
       <Filter>Resource Files\ChemicalData</Filter>
     </None>
+    <None Include="diagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Planning.txt" />

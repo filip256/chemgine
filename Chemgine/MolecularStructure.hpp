@@ -4,9 +4,9 @@
 #include <string>
 #include <unordered_map>
 #include <stack>
-#include "Bond.hpp"
 
-class BaseComponent;
+#include "Bond.hpp"
+#include "BaseComponent.hpp"
 
 class MolecularStructure
 {
@@ -32,7 +32,7 @@ private:
 
 public:
     MolecularStructure(const std::string& smiles);
-    MolecularStructure(MolecularStructure&& structure) noexcept;
+    MolecularStructure(MolecularStructure&& structure) = default;
     MolecularStructure(const MolecularStructure&) = delete;
     ~MolecularStructure() noexcept;
 

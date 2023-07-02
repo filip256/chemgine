@@ -1,8 +1,8 @@
 Id,Symbol,Name,Atomic Weight,Valence
-101,R,Alkyl Radical,,
-102,A,Aromatic Radical,,
-103,X,Halogen Radical,,
-104,Me,Metal Radical,,
+101,R,Alkyl Radical,,1
+102,A,Aromatic Radical,,1
+103,X,Halogen Radical,,1
+104,Me,Metal Radical,,1
 201,H,Hydrogen,1.008,1
 202,C,Carbon,12.011,4
 203,O,Oxygen,15.999,2

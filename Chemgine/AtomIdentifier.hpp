@@ -1,5 +1,9 @@
 #pragma once
 
+#include <vector>
+
+#include "Atom.hpp"
+#include "AtomData.hpp"
 #include "AtomicComponent.hpp"
 #include "CompositeComponent.hpp"
 

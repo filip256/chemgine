@@ -2,18 +2,12 @@
 
 #include "MolecularStructure.hpp"
 #include "CompositeComponent.hpp"
-#include "BaseComponent.hpp"
 #include "Logger.hpp"
 
 MolecularStructure::MolecularStructure(const std::string& smiles)
 {
     loadFromSMILES(smiles);
 }
-MolecularStructure::MolecularStructure(MolecularStructure&& structure) noexcept :
-    components(std::move(structure.components)),
-    bonds(std::move(structure.bonds)),
-    hydrogenCount(structure.hydrogenCount)
-{}
 
 MolecularStructure::~MolecularStructure()
 {
@@ -22,7 +16,7 @@ MolecularStructure::~MolecularStructure()
 
 bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 {
-    Logger::enterContext();
+    clear();
 
     std::unordered_map<uint8_t, size_t> rings;
     std::stack<size_t> branches;
@@ -180,7 +174,6 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
     }
     hydrogenCount = hCount;
 
-    Logger::exitContext();
     Logger::log("Molecular structure read successfully.", LogType::GOOD);
 
     return true;
@@ -263,7 +256,8 @@ void MolecularStructure::rPrint(
 
     visited[c] = true;
 
-    buffer[y][x] = components[c]->data().symbol[0];
+    for(size_t i = 0; i < components[c]->data().symbol.size() && x + i < buffer[0].size(); ++i)
+        buffer[y][x + i] = components[c]->data().symbol[i];
 
     for (size_t i = 0; i < bonds[c].size(); ++i)
         if (visited[bonds[c][i].other] == false)

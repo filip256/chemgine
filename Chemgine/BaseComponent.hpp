@@ -1,17 +1,26 @@
 #pragma once
 
 #include "ComponentType.hpp"
+#include "BaseComponentData.hpp"
 
 class DataStore;
 
 class BaseComponent
 {
+private:
+	static const DataStore* sDataStore;
+
 protected:
 	const ComponentType type;
-	static const DataStore* dataStore;
 
 	BaseComponent(const ComponentType type) noexcept;
 	BaseComponent(BaseComponent&&) noexcept = default;
+
+	/// <summary>
+	/// Similar to the static getDataStore but assumes that the null check has been done by the constructor
+	/// </summary>
+	/// <returns></returns>
+	const DataStore& dataStore() const;
 
 public:
 	~BaseComponent() noexcept = default;
@@ -23,7 +32,9 @@ public:
 	bool isAtomicType() const;
 	bool isCompositeType() const;
 
-	static void setDataStore(const DataStore* const dataStore);
+	static void setDataStore(const DataStore& dataStore);
+	static const DataStore& getDataStore();
+
 	static bool isCompositeType(const BaseComponent& component);
 
 

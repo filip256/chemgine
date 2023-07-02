@@ -10,8 +10,6 @@ AtomDataTable::AtomDataTable() : DataTable<ComponentIdType, std::string, AtomDat
 
 bool AtomDataTable::loadFromFile(const std::string& path)
 {
-	Logger::enterContext();
-
 	std::ifstream file(path);
 
 	if (!file.is_open())
@@ -86,7 +84,6 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 		Logger::log("Missing required atom 'H' created automatically with id " + std::to_string(id) + '.', LogType::WARN);
 	}
 
-	Logger::exitContext();
 	Logger::log("Loaded " + std::to_string(table.size()) + " atoms.", LogType::GOOD);
 
 	return true;

@@ -8,6 +8,37 @@
 #include "CompositeComponent.hpp"
 
 
+/*
+FunctionalGroup {
+    CompositeComponent {
+        BaseComponent {
+            ComponentType,
+            DataStore {
+                AtomDataTable {
+                    DataTable { MultiIndexMap },
+                    AtomData { BaseComponentData }
+                }
+                FunctionalGroupDataTable {
+                    DataTable { MultiIndexMap },
+                    FunctionalGroupData {
+                        BaseComponentData,
+                        MolecularStructure {
+                            Bond{
+                                BondType,
+                                Atom {
+                                    AtomicComponent { BaseComponent... }
+                                    AtomData { BaseComponentData }
+                                }
+                            },
+                            BaseComponent...
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+*/
 
 
 
@@ -18,9 +49,9 @@ int main()
 {
     {
         DataStore r;
+        BaseComponent::setDataStore(r);
         r.loadAtomsData("Data/AtomData.csv");
-        r.loadAtomsData("Data/FunctionalGroupData.csv");
-        BaseComponent::setDataStore(&r);
+        r.loadFunctionalGroupsData("Data/FunctionalGroupData.csv");
 
         MolecularStructure c("CO[Na]");
         std::cout << c.print() << '\n';
