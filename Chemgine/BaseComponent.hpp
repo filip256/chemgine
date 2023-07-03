@@ -11,9 +11,10 @@ private:
 	static const DataStore* sDataStore;
 
 protected:
+	mutable ComponentIdType id;
 	const ComponentType type;
 
-	BaseComponent(const ComponentType type) noexcept;
+	BaseComponent(const ComponentIdType id, const ComponentType type) noexcept;
 	BaseComponent(BaseComponent&&) noexcept = default;
 
 	/// <summary>
@@ -28,6 +29,8 @@ public:
 	static size_t instanceCount;
 
 	virtual const BaseComponentData& data() const = 0;
+
+	ComponentIdType getId() const;
 
 	bool isAtomicType() const;
 	bool isCompositeType() const;

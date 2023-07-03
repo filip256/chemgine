@@ -72,11 +72,11 @@ Tasks:
   DONE. Create BaseComponent, AtomIdentifier, Bond and MolecularStructure classes
   DONE. Create FunctionalGroup derived from BaseComponent
   DONE. Create FunctionalGroups CSV with Id, smiles
-  7. Create FunctionalGroupData with a MolecularStrcuture and write initilizer from SMILES
+  DONE. Create FunctionalGroupData with a MolecularStrcuture and write initilizer from SMILES
 ---
-  8. Create Backbone derived from BaseComponent
-  9. Create Backbones CSV with Id, smiles
- 10. Create BackboneData with a MolecularStructure and write initilizer from SMILES
+  DONE. Create Backbone derived from BaseComponent
+  DONE. Create Backbones CSV with Id, smiles
+  DONE. Create BackboneData with a MolecularStructure and write initilizer from SMILES
 ---
  11. Create OrganicMolecule class
  12. Create OrganicMolecules CSV with Id, smiles

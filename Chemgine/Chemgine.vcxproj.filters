@@ -126,6 +126,18 @@
     <ClCompile Include="AtomicComponent.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
+    <ClCompile Include="BackboneData.cpp">
+      <Filter>Source Files\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="CompositeComponentData.cpp">
+      <Filter>Source Files\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="Backbone.cpp">
+      <Filter>Source Files\Moleculars</Filter>
+    </ClCompile>
+    <ClCompile Include="BackboneDataTable.cpp">
+      <Filter>Source Files\Data\Tables</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AtomData.hpp">
@@ -199,6 +211,18 @@
     </ClInclude>
     <ClInclude Include="AtomicComponent.hpp">
       <Filter>Header Files\Moleculars</Filter>
+    </ClInclude>
+    <ClInclude Include="Backbone.hpp">
+      <Filter>Header Files\Moleculars</Filter>
+    </ClInclude>
+    <ClInclude Include="BackboneData.hpp">
+      <Filter>Header Files\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="CompositeComponentData.hpp">
+      <Filter>Header Files\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="BackboneDataTable.hpp">
+      <Filter>Header Files\Data\Tables</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -4,7 +4,7 @@
 #include <Windows.h>
 
 uint8_t Logger::contexts = 0;
-LogType Logger::severityLevel = LogType::WARN;
+LogType Logger::severityLevel = LogType::GOOD;
 std::ostream& Logger::outputStream = std::cout;
 
 void Logger::enterContext()

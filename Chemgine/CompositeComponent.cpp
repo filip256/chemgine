@@ -1,11 +1,5 @@
 #include "CompositeComponent.hpp"
 
-CompositeComponent::CompositeComponent(const ComponentType type) :
-	BaseComponent(type)
+CompositeComponent::CompositeComponent(const ComponentIdType id, const ComponentType type) :
+	BaseComponent(id, type)
 {}
-
-const BaseComponent* CompositeComponent::getComponent(const size_t idx) const
-{
-	return nullptr;
-	//return structure.getComponent(idx);
-}

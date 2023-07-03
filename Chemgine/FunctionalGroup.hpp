@@ -5,13 +5,10 @@
 
 class FunctionalGroup : public CompositeComponent
 {
-protected:
-	ComponentIdType id;
-
 public:
 	FunctionalGroup(const ComponentIdType id);
 
 	const FunctionalGroupData& data() const override final;
 
-
+	const BaseComponent* getComponent(const size_t idx) const override final;
 };

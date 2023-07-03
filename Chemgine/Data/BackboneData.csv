@@ -1,0 +1,4 @@
+Id,SMILES,Name
+201,C1=CC=CC=C1,benzene
+202,C1CCCCC1,cyclohexane
+203,O1CCOCC1,dioxane

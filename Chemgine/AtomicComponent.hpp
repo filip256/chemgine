@@ -5,7 +5,7 @@
 class AtomicComponent : public BaseComponent
 {
 protected:
-	AtomicComponent(const ComponentType type);
+	AtomicComponent(const ComponentIdType id, const ComponentType type);
 
 public:
 	virtual bool isRadicalType() const = 0;

@@ -15,3 +15,9 @@ DataStore& DataStore::loadFunctionalGroupsData(const std::string& path)
 	functionalGroups.loadFromFile(path);
 	return *this;
 }
+
+DataStore& DataStore::loadBackbonesData(const std::string& path)
+{
+	backbones.loadFromFile(path);
+	return *this;
+}

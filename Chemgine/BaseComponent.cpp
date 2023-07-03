@@ -5,7 +5,8 @@
 const DataStore* BaseComponent::sDataStore = nullptr;
 size_t BaseComponent::instanceCount = 0;
 
-BaseComponent::BaseComponent(const ComponentType type) noexcept :
+BaseComponent::BaseComponent(const ComponentIdType id, const ComponentType type) noexcept :
+	id(id),
 	type(type)
 {
 	if (sDataStore == nullptr)
@@ -29,6 +30,11 @@ const DataStore& BaseComponent::dataStore() const
 	return *BaseComponent::sDataStore;
 }
 
+
+ComponentIdType BaseComponent::getId() const
+{
+	return id;
+}
 
 bool BaseComponent::isAtomicType() const
 {

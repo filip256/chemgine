@@ -3,12 +3,11 @@
 #include "Logger.hpp"
 
 FunctionalGroup::FunctionalGroup(const ComponentIdType id) :
-	CompositeComponent(ComponentType::FUNCTIONAL),
-    id(id)
+	CompositeComponent(id, ComponentType::FUNCTIONAL)
 {
     if (dataStore().atoms.contains(id) == false)
     {
-        Logger::log("Atomic id " + std::to_string(id) + " is undefined.", LogType::BAD);
+        Logger::log("Functional group id " + std::to_string(id) + " is undefined.", LogType::BAD);
         this->id = 0;
     }
 }
@@ -16,4 +15,9 @@ FunctionalGroup::FunctionalGroup(const ComponentIdType id) :
 const FunctionalGroupData& FunctionalGroup::data() const
 {
     return dataStore().functionalGroups[id];
+}
+
+const BaseComponent* FunctionalGroup::getComponent(const size_t idx) const
+{
+    return dataStore().functionalGroups[id].getStructure().getComponent(idx);
 }

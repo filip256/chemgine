@@ -4,23 +4,21 @@
 
 
 Atom::Atom(const ComponentIdType id) :
-    AtomicComponent(ComponentType::ATOM),
-    id(id)
+    AtomicComponent(id, ComponentType::ATOM)
 {
     if (dataStore().atoms.contains(id) == false)
     {
-        Logger::log("Atomic id " + std::to_string(id) + " is undefined.", LogType::BAD);
+        Logger::log("Atom id " + std::to_string(id) + " is undefined.", LogType::BAD);
         this->id = 0;
     }
 }
 
 Atom::Atom(const std::string& symbol) :
-    AtomicComponent(ComponentType::ATOM),
-    id(0)
+    AtomicComponent(0 ,ComponentType::ATOM)
 {
     if (dataStore().atoms.contains(symbol) == false)
     {
-        Logger::log("Atomic symbol '" + symbol + "' is undefined.", LogType::BAD);
+        Logger::log("Atom symbol '" + symbol + "' is undefined.", LogType::BAD);
         return;
     }
     id = dataStore().atoms[symbol].id;

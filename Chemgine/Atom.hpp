@@ -6,9 +6,6 @@
 
 class Atom : public AtomicComponent
 {
-protected:
-    ComponentIdType id;
-
 public:
     Atom(const ComponentIdType id);
     Atom(const std::string& symbol);

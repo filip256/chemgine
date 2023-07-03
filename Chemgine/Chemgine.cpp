@@ -52,6 +52,7 @@ int main()
         BaseComponent::setDataStore(r);
         r.loadAtomsData("Data/AtomData.csv");
         r.loadFunctionalGroupsData("Data/FunctionalGroupData.csv");
+        r.loadBackbonesData("Data/BackboneData.csv");
 
         MolecularStructure c("CO[Na]");
         std::cout << c.print() << '\n';
