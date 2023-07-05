@@ -173,7 +173,11 @@
     <ClCompile Include="BackboneData.cpp" />
     <ClCompile Include="BackboneDataTable.cpp" />
     <ClCompile Include="CompositeComponentData.cpp" />
+    <ClCompile Include="DataStoreAccessor.cpp" />
     <ClCompile Include="FloatValue.cpp" />
+    <ClCompile Include="MoleculeDataTable.cpp" />
+    <ClCompile Include="OrganicMolecule.cpp" />
+    <ClCompile Include="OrganicMoleculeData.cpp" />
     <ClCompile Include="Value.cpp" />
     <ClInclude Include="AtomicComponent.hpp" />
     <ClInclude Include="AtomIdentifier.hpp" />
@@ -197,6 +201,7 @@
     <ClCompile Include="FunctionalGroupDataTable.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClInclude Include="CompositeComponentData.hpp" />
+    <ClInclude Include="DataStoreAccessor.hpp" />
     <ClInclude Include="FloatValue.hpp" />
     <ClInclude Include="FunctionalGroup.hpp" />
     <ClInclude Include="FunctionalGroupData.hpp" />
@@ -204,8 +209,11 @@
     <ClInclude Include="LogType.hpp" />
     <ClCompile Include="MolecularStructure.cpp" />
     <ClCompile Include="MultiIndexMap.cpp" />
+    <ClInclude Include="MoleculeDataTable.hpp" />
     <ClInclude Include="MultiIndexMap.hpp" />
     <ClCompile Include="Result.cpp" />
+    <ClInclude Include="OrganicMolecule.hpp" />
+    <ClInclude Include="OrganicMoleculeData.hpp" />
     <ClInclude Include="Value.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -225,6 +233,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv" />
+    <None Include="Data\BackboneData.csv" />
     <None Include="Data\FunctionalGroupData.csv" />
     <None Include="diagram.cd" />
   </ItemGroup>

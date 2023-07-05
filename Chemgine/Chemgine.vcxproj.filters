@@ -58,11 +58,20 @@
     <Filter Include="Source Files\Data\Tables">
       <UniqueIdentifier>{78984b14-b56a-42d0-b624-cf385402b523}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Molecules">
+      <UniqueIdentifier>{aab057ff-3147-420c-a0d0-e4dc5ca43e8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Molecules">
+      <UniqueIdentifier>{257e59b3-15a6-4caf-bf8b-2c1e572901ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Data\DataTypes">
+      <UniqueIdentifier>{9ecdf820-a124-4753-823c-f6e21ca0a752}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Data\DataTypes">
+      <UniqueIdentifier>{61a424bc-ab0f-4e9f-951c-9acbd6ffbdb3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AtomData.cpp">
-      <Filter>Source Files\Data</Filter>
-    </ClCompile>
     <ClCompile Include="DataStore.cpp">
       <Filter>Source Files\Data</Filter>
     </ClCompile>
@@ -102,12 +111,6 @@
     <ClCompile Include="FunctionalGroup.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
-    <ClCompile Include="BaseComponentData.cpp">
-      <Filter>Source Files\Data</Filter>
-    </ClCompile>
-    <ClCompile Include="FunctionalGroupData.cpp">
-      <Filter>Source Files\Data</Filter>
-    </ClCompile>
     <ClCompile Include="Value.cpp">
       <Filter>Source Files\Data\Values</Filter>
     </ClCompile>
@@ -126,23 +129,41 @@
     <ClCompile Include="AtomicComponent.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
-    <ClCompile Include="BackboneData.cpp">
-      <Filter>Source Files\Data</Filter>
-    </ClCompile>
-    <ClCompile Include="CompositeComponentData.cpp">
-      <Filter>Source Files\Data</Filter>
-    </ClCompile>
     <ClCompile Include="Backbone.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
     <ClCompile Include="BackboneDataTable.cpp">
       <Filter>Source Files\Data\Tables</Filter>
     </ClCompile>
+    <ClCompile Include="OrganicMolecule.cpp">
+      <Filter>Source Files\Molecules</Filter>
+    </ClCompile>
+    <ClCompile Include="MoleculeDataTable.cpp">
+      <Filter>Source Files\Data\Tables</Filter>
+    </ClCompile>
+    <ClCompile Include="AtomData.cpp">
+      <Filter>Source Files\Data\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="BackboneData.cpp">
+      <Filter>Source Files\Data\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseComponentData.cpp">
+      <Filter>Source Files\Data\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="CompositeComponentData.cpp">
+      <Filter>Source Files\Data\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionalGroupData.cpp">
+      <Filter>Source Files\Data\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="OrganicMoleculeData.cpp">
+      <Filter>Source Files\Data\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="DataStoreAccessor.cpp">
+      <Filter>Source Files\Data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AtomData.hpp">
-      <Filter>Header Files\Data</Filter>
-    </ClInclude>
     <ClInclude Include="DataStore.hpp">
       <Filter>Header Files\Data</Filter>
     </ClInclude>
@@ -188,12 +209,6 @@
     <ClInclude Include="FunctionalGroup.hpp">
       <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
-    <ClInclude Include="BaseComponentData.hpp">
-      <Filter>Header Files\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="FunctionalGroupData.hpp">
-      <Filter>Header Files\Data</Filter>
-    </ClInclude>
     <ClInclude Include="FloatValue.hpp">
       <Filter>Header Files\Data\Values</Filter>
     </ClInclude>
@@ -215,14 +230,35 @@
     <ClInclude Include="Backbone.hpp">
       <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
-    <ClInclude Include="BackboneData.hpp">
-      <Filter>Header Files\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="CompositeComponentData.hpp">
-      <Filter>Header Files\Data</Filter>
-    </ClInclude>
     <ClInclude Include="BackboneDataTable.hpp">
       <Filter>Header Files\Data\Tables</Filter>
+    </ClInclude>
+    <ClInclude Include="OrganicMolecule.hpp">
+      <Filter>Header Files\Molecules</Filter>
+    </ClInclude>
+    <ClInclude Include="MoleculeDataTable.hpp">
+      <Filter>Header Files\Data\Tables</Filter>
+    </ClInclude>
+    <ClInclude Include="AtomData.hpp">
+      <Filter>Header Files\Data\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="BackboneData.hpp">
+      <Filter>Header Files\Data\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseComponentData.hpp">
+      <Filter>Header Files\Data\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="CompositeComponentData.hpp">
+      <Filter>Header Files\Data\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionalGroupData.hpp">
+      <Filter>Header Files\Data\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="OrganicMoleculeData.hpp">
+      <Filter>Header Files\Data\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="DataStoreAccessor.hpp">
+      <Filter>Header Files\Data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -233,6 +269,9 @@
       <Filter>Resource Files\ChemicalData</Filter>
     </None>
     <None Include="diagram.cd" />
+    <None Include="Data\BackboneData.csv">
+      <Filter>Resource Files\ChemicalData</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Planning.txt" />

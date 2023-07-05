@@ -2,14 +2,14 @@
 
 #include "ComponentType.hpp"
 #include "BaseComponentData.hpp"
+#include "DataStoreAccessor.hpp"
 
 class DataStore;
 
 class BaseComponent
 {
 private:
-	static const DataStore* sDataStore;
-
+	static DataStoreAccessor dataAccessor;
 protected:
 	mutable ComponentIdType id;
 	const ComponentType type;

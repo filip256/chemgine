@@ -2,32 +2,28 @@
 #include "DataStore.hpp"
 #include "Logger.hpp"
 
-const DataStore* BaseComponent::sDataStore = nullptr;
 size_t BaseComponent::instanceCount = 0;
 
 BaseComponent::BaseComponent(const ComponentIdType id, const ComponentType type) noexcept :
 	id(id),
 	type(type)
 {
-	if (sDataStore == nullptr)
-		Logger::fatal("No datastore was set for molecular components.");
+	dataAccessor.crashIfUninitialized();
 }
 
 void BaseComponent::setDataStore(const DataStore& dataStore)
 {
-	BaseComponent::sDataStore = &dataStore;
+	dataAccessor.set(dataStore);
 }
 
 const DataStore& BaseComponent::getDataStore()
 {
-	if (sDataStore == nullptr)
-		Logger::fatal("No datastore was set for molecular components.");
-	return *sDataStore;
+	return dataAccessor.getSafe();
 }
 
 const DataStore& BaseComponent::dataStore() const
 {
-	return *BaseComponent::sDataStore;
+	return dataAccessor.get();
 }
 
 

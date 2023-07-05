@@ -21,3 +21,9 @@ DataStore& DataStore::loadBackbonesData(const std::string& path)
 	backbones.loadFromFile(path);
 	return *this;
 }
+
+DataStore& DataStore::loadMoleculesData(const std::string& path)
+{
+	molecules.loadFromFile(path);
+	return *this;
+}
