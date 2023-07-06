@@ -13,24 +13,26 @@ FunctionalGroup {
     CompositeComponent {
         BaseComponent {
             ComponentType,
-            DataStore {
-                AtomDataTable {
-                    DataTable { MultiIndexMap },
-                    AtomData { BaseComponentData }
-                }
-                FunctionalGroupDataTable {
-                    DataTable { MultiIndexMap },
-                    FunctionalGroupData {
-                        BaseComponentData,
-                        MolecularStructure {
-                            Bond{
-                                BondType,
-                                Atom {
-                                    AtomicComponent { BaseComponent... }
-                                    AtomData { BaseComponentData }
-                                }
-                            },
-                            BaseComponent...
+            DataStoreAccessor {
+                DataStore {
+                    AtomDataTable {
+                        DataTable { MultiIndexMap },
+                        AtomData { BaseComponentData }
+                    }
+                    FunctionalGroupDataTable {
+                        DataTable { MultiIndexMap },
+                        FunctionalGroupData {
+                            BaseComponentData,
+                            MolecularStructure {
+                                Bond{
+                                    BondType,
+                                    Atom {
+                                        AtomicComponent { BaseComponent... }
+                                        AtomData { BaseComponentData }
+                                    }
+                                },
+                                BaseComponent...
+                            }
                         }
                     }
                 }
@@ -53,6 +55,7 @@ int main()
         r.loadAtomsData("Data/AtomData.csv");
         r.loadFunctionalGroupsData("Data/FunctionalGroupData.csv");
         r.loadBackbonesData("Data/BackboneData.csv");
+        r.loadMoleculesData("Data/OrganicMoleculeData.csv");
 
         MolecularStructure c("CO[Na]");
         std::cout << c.print() << '\n';

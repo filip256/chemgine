@@ -78,9 +78,14 @@ Tasks:
   DONE. Create Backbones CSV with Id, smiles
   DONE. Create BackboneData with a MolecularStructure and write initilizer from SMILES
 ---
- 11. Create OrganicMolecule class
- 12. Create OrganicMolecules CSV with Id, smiles
- 13. Create OrganicMoleculeData with a MolecularStructure and write initilizer from SMILES
+  DONE. Create OrganicMolecule class
+  DONE. Create OrganicMolecules CSV with Id, smiles
+  DONE. Create OrganicMoleculeData with a MolecularStructure and write initilizer from SMILES
+---
+   1. Implement graph matching algorithm
+   2. Apply algorithm to organic molecules
+   3. Write molecule to smiles and cmiles algorithm and print to CSV files
+---
 
 
 

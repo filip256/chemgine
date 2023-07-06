@@ -4,8 +4,6 @@
 #include "BaseComponentData.hpp"
 #include "DataStoreAccessor.hpp"
 
-class DataStore;
-
 class BaseComponent
 {
 private:

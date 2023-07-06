@@ -3,6 +3,7 @@
 #include "Logger.hpp"
 
 size_t BaseComponent::instanceCount = 0;
+DataStoreAccessor BaseComponent::dataAccessor = DataStoreAccessor();
 
 BaseComponent::BaseComponent(const ComponentIdType id, const ComponentType type) noexcept :
 	id(id),

@@ -1,5 +1,11 @@
 #pragma once
-#include "DataStore.hpp"
+
+// Break cyclic dependency: BaseComponent <- DataStore <- MolecularStructure <- BaseComponent
+class DataStore;
+
+/// <summary>
+/// Encapsulates a pointer to a DataStore object.
+/// </summary>
 
 class DataStoreAccessor
 {

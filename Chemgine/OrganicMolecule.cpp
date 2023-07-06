@@ -1,4 +1,7 @@
 #include "OrganicMolecule.hpp"
+#include "DataStore.hpp"
+
+DataStoreAccessor OrganicMolecule::dataAccessor = DataStoreAccessor();
 
 OrganicMolecule::OrganicMolecule(const MoleculeIdType id) :
 	id(id)
