@@ -66,4 +66,33 @@ public:
     bool isComplete() const;
 
     void clear();
+
+    std::vector<size_t> findAll(const BaseComponent& other, const uint8_t degree) const;
+
+    std::vector<size_t> findAllNeighbors(const size_t idx, const BaseComponent& other, const uint8_t degree) const;
+
+    /// <summary>
+    /// Returns the number of bonds connected to a components (multiple bonds are taken into account)
+    /// Complexity: O(n)
+    /// </summary>
+    /// <returns></returns>
+    uint8_t getDegreeOf(const size_t idx) const;
+
+    static bool marchCompare(
+        size_t idxA,
+        const MolecularStructure& a,
+        std::vector<uint8_t> visitedA,
+        size_t idxB,
+        const MolecularStructure& b);
+
+    static bool isPartOf(
+        size_t idxTarget,
+        const MolecularStructure& target,
+        const MolecularStructure& pattern)
+    {
+        /*auto possible = pattern.findAll(target.components[idxTarget]->getId(), target.getDegreeOf(idxTarget));
+        if (possible.empty())
+            return false;*/
+        return true;
+    }
 };

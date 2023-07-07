@@ -83,6 +83,7 @@ Tasks:
   DONE. Create OrganicMoleculeData with a MolecularStructure and write initilizer from SMILES
 ---
    1. Implement graph matching algorithm
+   *. Hardcode special atom types
    2. Apply algorithm to organic molecules
    3. Write molecule to smiles and cmiles algorithm and print to CSV files
 ---

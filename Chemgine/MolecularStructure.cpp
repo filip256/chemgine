@@ -188,15 +188,21 @@ int16_t MolecularStructure::getHCount() const
         if (bonds[i].size() > v)
             return -1;
 
-        uint8_t cnt = 0;
-        for (size_t j = 0; j < bonds[i].size(); ++j)
-            cnt += bonds[i][j].getValence();
+        auto cnt = getDegreeOf(i);
         if (cnt > v)
             return -1;
 
         hCount += v - cnt;
     }
     return hCount;
+}
+
+uint8_t MolecularStructure::getDegreeOf(const size_t idx) const
+{
+    uint8_t cnt = 0;
+    for (size_t i = 0; i < bonds[idx].size(); ++i)
+        cnt += bonds[idx][i].getValence();
+    return cnt;
 }
 
 const BaseComponent* MolecularStructure::getComponent(const size_t idx) const
@@ -328,4 +334,53 @@ void MolecularStructure::clear()
     }
     bonds.clear();
     hydrogenCount = 0;
+}
+
+
+std::vector<size_t> MolecularStructure::findAll(const BaseComponent& other, const uint8_t degree) const
+{
+    std::vector<size_t> result;
+    for (size_t i = 0; i < components.size(); ++i)
+        if (BaseComponent::areMatching(*components[i], other) && getDegreeOf(i) == degree)
+            result.emplace_back(i);
+    return result;
+}
+
+std::vector<size_t> MolecularStructure::findAllNeighbors(const size_t idx, const BaseComponent& other, const uint8_t degree) const
+{
+    std::vector<size_t> result;
+    for (size_t i = 0; i < bonds[idx].size(); ++i)
+        if (BaseComponent::areMatching(*components[bonds[idx][i].other], other) && getDegreeOf(bonds[idx][i].other) == degree)
+            result.emplace_back(bonds[idx][i].other);
+    return result;
+}
+
+bool MolecularStructure::marchCompare(
+    size_t idxA,
+    const MolecularStructure& a,
+    std::vector<uint8_t> visitedA,
+    size_t idxB,
+    const MolecularStructure& b)
+{
+    for (size_t i = 0; i < a.bonds[idxA].size(); ++i)
+    {
+        // find all nodes in B which can match the next node of A
+        size_t next = a.bonds[idxA][i].other;
+        if (visitedA[next])
+            continue;
+        visitedA[next] = true;
+
+        auto possible = b.findAllNeighbors(idxB, *(a.components[next]), a.getDegreeOf(next));
+        if (possible.empty())
+            return false;
+
+        bool r = false;
+        for (size_t j = 0; r == false && j < possible.size(); ++j)
+            r |= marchCompare(next, a, visitedA, possible[j], b);
+
+        if (r == false)
+            return false;
+    }
+
+    return true;
 }

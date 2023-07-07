@@ -38,6 +38,8 @@ public:
 
 	static bool isCompositeType(const BaseComponent& component);
 
+	static bool areMatching(const BaseComponent& x, const BaseComponent& y);
+
 
 	// for memory leak checking 
 	void* operator new(const size_t count);

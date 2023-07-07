@@ -57,9 +57,9 @@ int main()
         r.loadBackbonesData("Data/BackboneData.csv");
         r.loadMoleculesData("Data/OrganicMoleculeData.csv");
 
-        MolecularStructure c("CO[Na]");
-        std::cout << c.print() << '\n';
-        std::cout << c.getMolarMass();
+        MolecularStructure a("RCO"), b("CCO");
+        std::vector<uint8_t> vect(3, false);
+        std::cout << MolecularStructure::marchCompare(0, a, vect, 1, b);
     }
 
     if (BaseComponent::instanceCount != 0)

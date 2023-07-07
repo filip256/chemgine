@@ -50,6 +50,17 @@ bool BaseComponent::isCompositeType(const BaseComponent& component)
 		component.type == ComponentType::BACKBONE;
 }
 
+bool BaseComponent::areMatching(const BaseComponent& x, const BaseComponent& y)
+{
+	if (x.getId() == y.getId())
+		return true;
+
+	if (x.getId() == 101 || y.getId() == 101)
+		return true;
+
+	return false;
+}
+
 
 
 
