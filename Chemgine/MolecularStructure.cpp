@@ -1,4 +1,4 @@
-#include <queue>
+#include <array>
 
 #include "MolecularStructure.hpp"
 #include "CompositeComponent.hpp"
@@ -246,7 +246,31 @@ bool MolecularStructure::isComplete() const
     return true;
 }
 
+size_t MolecularStructure::atomCount() const
+{
+    return components.size();
+}
 
+size_t MolecularStructure::bondCount() const
+{
+    size_t cnt = 0;
+    for (size_t i = 0; i < bonds.size(); ++i)
+        cnt += bonds[i].size();
+    return cnt;
+}
+
+bool MolecularStructure::isCyclic() const
+{
+    return bondCount() > atomCount() - 1;
+}
+
+bool MolecularStructure::areAdjacent(const size_t idxA, const size_t idxB) const
+{
+    for (size_t i = 0; i < bonds[idxA].size(); ++i)
+        if (idxB == bonds[idxA][i].other)
+            return true;
+    return false;
+}
 
 void MolecularStructure::rPrint(
     std::vector<std::string>& buffer,
@@ -346,41 +370,149 @@ std::vector<size_t> MolecularStructure::findAll(const BaseComponent& other, cons
     return result;
 }
 
-std::vector<size_t> MolecularStructure::findAllNeighbors(const size_t idx, const BaseComponent& other, const uint8_t degree) const
+std::vector<size_t> MolecularStructure::findAllNeighbors(const size_t idx, const BaseComponent& other, const BondType bondType) const
 {
     std::vector<size_t> result;
     for (size_t i = 0; i < bonds[idx].size(); ++i)
-        if (BaseComponent::areMatching(*components[bonds[idx][i].other], other) && getDegreeOf(bonds[idx][i].other) == degree)
-            result.emplace_back(bonds[idx][i].other);
+        if (BaseComponent::areMatching(*components[bonds[idx][i].other], other) &&
+            bonds[idx][i].type == bondType)
+                result.emplace_back(bonds[idx][i].other);
     return result;
 }
 
-bool MolecularStructure::marchCompare(
-    size_t idxA,
-    const MolecularStructure& a,
-    std::vector<uint8_t> visitedA,
-    size_t idxB,
-    const MolecularStructure& b)
+bool MolecularStructure::areMatching(
+    const size_t idxA, const MolecularStructure& a,
+    const size_t idxB, const MolecularStructure& b)
 {
-    for (size_t i = 0; i < a.bonds[idxA].size(); ++i)
+    if (a.bonds[idxA].size() != b.bonds[idxB].size())
+        return false;
+
+    if (BaseComponent::areMatching(*a.components[idxA], *(b.components[idxB])) == false)
+        return false;
+
+    return true;
+}
+
+
+bool MolecularStructure::areMatching(
+    const Bond& nextA, const MolecularStructure& a,
+    const Bond& nextB, const MolecularStructure& b)
+{
+    if (nextA.type != nextB.type)
+        return false;
+
+    // escape radical types
+    if (b.components[nextB.other]->isRadicalType())
     {
-        // find all nodes in B which can match the next node of A
-        size_t next = a.bonds[idxA][i].other;
-        if (visitedA[next])
+        return true;
+    }
+
+    if (areMatching(nextA.other, a, nextB.other, b) == false)
+        return false;
+
+    // test to see both have the same types of bonds
+    std::array<int8_t, 5> counts{ 0 };
+    for (size_t i = 0; i < a.bonds[nextA.other].size(); ++i)
+    {
+        ++counts[a.bonds[nextA.other][i].getValence()];
+        --counts[b.bonds[nextB.other][i].getValence()];
+    }
+    for (size_t i = 0; i < counts.size(); ++i)
+        if (counts[i] != 0)
+            return false;
+
+    return true;
+}
+
+bool MolecularStructure::DFSCompare(
+    size_t idxA, const MolecularStructure& a,
+    size_t idxB, const MolecularStructure& b,
+    std::vector<uint8_t>& visitedB,
+    std::unordered_map<size_t, size_t>& mapping)
+{
+    if (mapping.contains(idxA))
+        return false;
+
+    mapping.emplace(std::move(std::make_pair(idxA, idxB)));
+
+    visitedB[idxB] = true;
+    for (size_t i = 0; i < b.bonds[idxB].size(); ++i)
+    {
+        const Bond& next = b.bonds[idxB][i];
+        if (visitedB[next.other])
+        {
+            // here we could mark the nodes contained in cycles
             continue;
-        visitedA[next] = true;
+        }
 
-        auto possible = b.findAllNeighbors(idxB, *(a.components[next]), a.getDegreeOf(next));
-        if (possible.empty())
+        bool matchFound = false;
+        for (size_t j = 0; j < a.bonds[idxA].size(); ++j)
+            if (areMatching(a.bonds[idxA][j], a, next, b) &&
+                DFSCompare(a.bonds[idxA][j].other, a, next.other, b, visitedB, mapping))
+            {
+                matchFound = true;
+                break;
+            }
+
+        if (matchFound == false)
+        {
             return false;
-
-        bool r = false;
-        for (size_t j = 0; r == false && j < possible.size(); ++j)
-            r |= marchCompare(next, a, visitedA, possible[j], b);
-
-        if (r == false)
-            return false;
+        }
     }
 
     return true;
+}
+
+bool MolecularStructure::checkConnectivity(
+    const MolecularStructure& target,
+    const MolecularStructure& pattern,
+    const std::unordered_map<size_t, size_t>& mapping)
+{
+    for (auto const& m : mapping)
+    {
+        for (auto const& n : mapping)
+            if (pattern.areAdjacent(m.second, n.second) &&
+                target.areAdjacent(m.first, n.first) == false)
+            {
+                return false;
+            }
+    }
+    return true;
+}
+
+bool MolecularStructure::isPartOf(const MolecularStructure& target, const MolecularStructure& pattern)
+{
+    if (pattern.atomCount() == 0) // null pattern matches anything
+        return true;
+    if (target.atomCount() == 0) // only null pattern matches null target
+        return false;
+
+    // should start with a non radical type
+    size_t pStart = 0;
+    while (pStart < pattern.atomCount() && pattern.components[pStart]->isRadicalType())
+        ++pStart;
+    if (pStart == pattern.atomCount())
+        pStart = 0;
+
+
+    for (size_t i = 0; i < target.atomCount(); ++i)
+    {
+        if (areMatching(i, target, pStart, pattern))
+        {
+            std::vector<uint8_t> visited(pattern.atomCount(), false);
+            std::unordered_map<size_t, size_t> mapping;
+
+            if (DFSCompare(i, target, pStart, pattern, visited, mapping) == false)
+                continue;
+
+            if (pattern.isCyclic() == false)
+                return true;
+
+            // re-verifying connectivity is necessary for cycles
+            if(checkConnectivity(target, pattern, mapping))
+
+            return true;
+        }
+    }
+    return false;
 }

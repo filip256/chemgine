@@ -11,4 +11,6 @@ protected:
 
 public:
 	virtual const BaseComponent* getComponent(const size_t idx) const = 0;
+
+	bool isRadicalType() const override final;
 };

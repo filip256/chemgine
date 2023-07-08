@@ -40,6 +40,7 @@ public:
 
 	static bool areMatching(const BaseComponent& x, const BaseComponent& y);
 
+	virtual bool isRadicalType() const = 0;
 
 	// for memory leak checking 
 	void* operator new(const size_t count);

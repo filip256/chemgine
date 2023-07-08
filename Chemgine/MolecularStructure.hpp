@@ -65,11 +65,23 @@ public:
     /// <returns></returns>
     bool isComplete() const;
 
+    size_t atomCount() const;
+
+    size_t bondCount() const;
+
+    bool isCyclic() const;
+
+    /// <summary>
+    /// Checks if the two components are adjacent.
+    /// Complexity: O(n)
+    /// </summary>
+    bool areAdjacent(const size_t idxA, const size_t idxB) const;
+
     void clear();
 
     std::vector<size_t> findAll(const BaseComponent& other, const uint8_t degree) const;
 
-    std::vector<size_t> findAllNeighbors(const size_t idx, const BaseComponent& other, const uint8_t degree) const;
+    std::vector<size_t> findAllNeighbors(const size_t idx, const BaseComponent& other, const BondType bondType) const;
 
     /// <summary>
     /// Returns the number of bonds connected to a components (multiple bonds are taken into account)
@@ -78,21 +90,44 @@ public:
     /// <returns></returns>
     uint8_t getDegreeOf(const size_t idx) const;
 
-    static bool marchCompare(
-        size_t idxA,
-        const MolecularStructure& a,
-        std::vector<uint8_t> visitedA,
-        size_t idxB,
-        const MolecularStructure& b);
+    // basic matching
+    static bool areMatching(
+        const size_t idxA, const MolecularStructure& a,
+        const size_t idxB, const MolecularStructure& b);
+
+    // finner matching for the compare method
+    static bool areMatching(
+        const Bond& nextA, const MolecularStructure& a,
+        const Bond& nextB, const MolecularStructure& b);
+
+    /// <summary>
+    /// Tries to find the pattern structure into the target starting from the given indexes.
+    /// A cycle will match with a smaller cycle, connectivity of the mapping must be checked after this function is called
+    /// If successful it returns true.
+    /// </summary>
+    /// <param name="idxA">: starting index in target</param>
+    /// <param name="a">: target</param>
+    /// <param name="idxB">: starting index in pattern</param>
+    /// <param name="b">: pattern</param>
+    /// <param name="visitedB">: vector with the size of the pattern, initilized to false</param>
+    /// <param name="mapping">: empty map that will store all matching nodes at the end of the execution</param>
+    /// <param name="cycleFlag">: marks that a cycle has be found</param>
+    static bool DFSCompare(
+        size_t idxA, const MolecularStructure& a,
+        size_t idxB, const MolecularStructure& b,
+        std::vector<uint8_t>& visitedB,
+        std::unordered_map<size_t, size_t>& mapping
+        );
+
+    /// <summary>
+    /// Checks if the connectivity of pattern is preserved in the target.
+    /// Complexity: O(n^3)
+    static bool checkConnectivity(
+        const MolecularStructure& target,
+        const MolecularStructure& pattern,
+        const std::unordered_map<size_t, size_t>& mapping);
 
     static bool isPartOf(
-        size_t idxTarget,
         const MolecularStructure& target,
-        const MolecularStructure& pattern)
-    {
-        /*auto possible = pattern.findAll(target.components[idxTarget]->getId(), target.getDegreeOf(idxTarget));
-        if (possible.empty())
-            return false;*/
-        return true;
-    }
+        const MolecularStructure& pattern);
 };

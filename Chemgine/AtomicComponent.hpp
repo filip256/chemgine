@@ -8,5 +8,4 @@ protected:
 	AtomicComponent(const ComponentIdType id, const ComponentType type);
 
 public:
-	virtual bool isRadicalType() const = 0;
 };

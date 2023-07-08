@@ -5,6 +5,8 @@
 
 class AtomDataTable : public DataTable<ComponentIdType, std::string, AtomData>
 {
+private:
+	void addPredefined();
 public:
 	AtomDataTable();
 	AtomDataTable(const AtomDataTable&) = delete;

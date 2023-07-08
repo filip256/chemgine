@@ -8,6 +8,15 @@ AtomDataTable::AtomDataTable() : DataTable<ComponentIdType, std::string, AtomDat
 
 }
 
+void AtomDataTable::addPredefined()
+{
+	table.emplace(101, "*", std::move(AtomData(101, "*", "Any Radical", 0, 1)));
+	table.emplace(102, "R", std::move(AtomData(102, "R", "Alkyl Radical", 0, 1)));
+	table.emplace(103, "A", std::move(AtomData(103, "A", "Aromatic Radical", 0, 1)));
+	table.emplace(104, "X", std::move(AtomData(104, "X", "Halogen Radical", 0, 1)));
+	table.emplace(105, "Me", std::move(AtomData(105, "Me", "Metal Radical", 0, 1)));
+}
+
 bool AtomDataTable::loadFromFile(const std::string& path)
 {
 	std::ifstream file(path);
@@ -22,6 +31,7 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 	//	return StatusCode<>::FileCorrupted;
 
 	table.clear();
+	addPredefined();
 
 	//parse file
 	std::string buffer;
@@ -72,7 +82,7 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 			std::move(AtomData(id.result, line[1], line[2], weight.result, valence.result))
 			) == false)
 		{
-			Logger::log("Insertion of atom with id " + std::to_string(id.result) + " failed unexpectedly.", LogType::WARN);
+			Logger::log("Duplicate atom with id " + std::to_string(id.result) + ". Insertion failed.", LogType::WARN);
 		}
 	}
 	file.close();

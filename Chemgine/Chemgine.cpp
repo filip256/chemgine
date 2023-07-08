@@ -57,9 +57,18 @@ int main()
         r.loadBackbonesData("Data/BackboneData.csv");
         r.loadMoleculesData("Data/OrganicMoleculeData.csv");
 
-        MolecularStructure a("RCO"), b("CCO");
-        std::vector<uint8_t> vect(3, false);
-        std::cout << MolecularStructure::marchCompare(0, a, vect, 1, b);
+        MolecularStructure a("CC(=O)OC"), b("RC(=O)OR");  // true
+        //MolecularStructure a("CC(=O)OC"), b("RC(=O)O");  // false
+        //MolecularStructure a("CC(=O)N(C)C"), b("RC(=O)N(R)R");  // true
+        //MolecularStructure a("O(C)(CC)"), b("O(C)(C)");  // false
+        //MolecularStructure a("C1CC1"), b("C1CC1"); // true
+        //MolecularStructure a("C1CCC1"), b("C1CC1"); // false
+        //MolecularStructure a("C1C(OC)CC1"), b("C1CC(OR)C1"); // true
+        //MolecularStructure a("CC(O)C"), b("OR"); // true
+        std::cout << a.print()<<'\n';
+        std::cout << b.print();
+
+        std::cout << MolecularStructure::isPartOf(a, b)<<'\n';
     }
 
     if (BaseComponent::instanceCount != 0)
