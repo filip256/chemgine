@@ -45,11 +45,6 @@ bool FunctionalGroupDataTable::loadFromFile(const std::string& path)
 			Logger::log("Missing id, functional group '" + line[1] + "' skipped.", LogType::BAD);
 			continue;
 		}
-		if (table.containsKey1(id.result))
-		{
-			Logger::log("Functional group with duplicate id " + std::to_string(id.result) + " skipped.", LogType::WARN);
-			continue;
-		}
 
 		if (table.emplace(
 			id.result,
@@ -57,7 +52,7 @@ bool FunctionalGroupDataTable::loadFromFile(const std::string& path)
 			std::move(FunctionalGroupData(id.result, line[2], line[1]))
 		) == false)
 		{
-			Logger::log("Insertion of functional group with id " + std::to_string(id.result) + " failed unexpectedly.", LogType::WARN);
+			Logger::log("Functional group with duplicate id " + std::to_string(id.result) + " skipped.", LogType::WARN);
 		}
 	}
 	file.close();

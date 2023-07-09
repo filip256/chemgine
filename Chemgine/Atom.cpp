@@ -21,7 +21,7 @@ Atom::Atom(const std::string& symbol) :
         Logger::log("Atom symbol '" + symbol + "' is undefined.", LogType::BAD);
         return;
     }
-    id = dataStore().atoms[symbol].id;
+    id = dataStore().atoms.at(symbol).id;
 }
 
 Atom::Atom(const char symbol) :
@@ -30,12 +30,12 @@ Atom::Atom(const char symbol) :
 
 const AtomData& Atom::data() const
 {
-    return dataStore().atoms[id];
+    return dataStore().atoms.at(id);
 }
 
 bool Atom::isRadicalType() const
 {
-    return dataStore().atoms[id].weight == 0;
+    return dataStore().atoms.at(id).weight == 0;
 }
 
 bool Atom::isDefined(const ComponentIdType id)

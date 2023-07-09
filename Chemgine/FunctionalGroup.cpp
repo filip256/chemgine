@@ -14,10 +14,10 @@ FunctionalGroup::FunctionalGroup(const ComponentIdType id) :
 
 const FunctionalGroupData& FunctionalGroup::data() const
 {
-    return dataStore().functionalGroups[id];
+    return dataStore().functionalGroups.at(id);
 }
 
 const BaseComponent* FunctionalGroup::getComponent(const size_t idx) const
 {
-    return dataStore().functionalGroups[id].getStructure().getComponent(idx);
+    return dataStore().functionalGroups.at(id).getStructure().getComponent(idx);
 }

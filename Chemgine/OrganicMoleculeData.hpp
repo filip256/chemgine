@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MolecularStructure.hpp"
+#include "FunctionalGroupDataTable.hpp"
 
 #include <cstdint>
 #include <string>
@@ -22,4 +23,6 @@ public:
 	OrganicMoleculeData(const OrganicMoleculeData&) = delete;
 	OrganicMoleculeData(OrganicMoleculeData&&) = default;
 	~OrganicMoleculeData() = default;
+
+	void categorize(const FunctionalGroupDataTable& patterns);
 };

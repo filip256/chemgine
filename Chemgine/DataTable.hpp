@@ -15,8 +15,12 @@ public:
 	const MultiIndexMap<KeyT1, KeyT2, ObjT>& getData() const;
 	bool contains(const KeyT1 key) const;
 	bool contains(const KeyT2 key) const;
-	const ObjT& operator[](const KeyT1 key) const;
-	const ObjT& operator[](const KeyT2 key) const;
+	const ObjT& at(const KeyT1 key) const;
+	const ObjT& at(const KeyT2 key) const;
+
+	const size_t size() const;
+	const ObjT& operator[](const size_t idx) const;
+	ObjT& operator[](const size_t idx);
 
 	virtual const ObjT* findFirst(bool (*predicate) (const ObjT&)) const;
 

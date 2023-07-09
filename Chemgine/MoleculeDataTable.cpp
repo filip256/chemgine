@@ -1,6 +1,7 @@
 #include "MoleculeDataTable.hpp"
 #include "DataHelpers.hpp"
 #include "Logger.hpp"
+
 #include <fstream>
 
 MoleculeDataTable::MoleculeDataTable() : DataTable<ComponentIdType, std::string, OrganicMoleculeData>()
@@ -45,11 +46,6 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 			Logger::log("Missing id, molecule '" + line[1] + "' skipped.", LogType::BAD);
 			continue;
 		}
-		if (table.containsKey1(id.result))
-		{
-			Logger::log("Molecule with duplicate id " + std::to_string(id.result) + " skipped.", LogType::WARN);
-			continue;
-		}
 
 		if (table.emplace(
 			id.result,
@@ -57,7 +53,7 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 			std::move(OrganicMoleculeData(id.result, line[2], line[1]))
 		) == false)
 		{
-			Logger::log("Insertion of molecule with id " + std::to_string(id.result) + " failed unexpectedly.", LogType::WARN);
+			Logger::log("Molecule with duplicate id " + std::to_string(id.result) + " skipped.", LogType::WARN);
 		}
 	}
 	file.close();
@@ -65,4 +61,11 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 	Logger::log("Loaded " + std::to_string(table.size()) + " molecules.", LogType::GOOD);
 
 	return true;
+}
+
+
+void MoleculeDataTable::categorize(const FunctionalGroupDataTable& patterns)
+{
+	for (size_t i = 0; i < table.size(); ++i)
+		table[i].categorize(patterns);
 }

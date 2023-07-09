@@ -68,7 +68,7 @@ int main()
         std::cout << a.print()<<'\n';
         std::cout << b.print();
 
-        std::cout << MolecularStructure::isPartOf(a, b)<<'\n';
+        //std::cout << MolecularStructure::isPartOf(a, b)<<'\n';
     }
 
     if (BaseComponent::instanceCount != 0)

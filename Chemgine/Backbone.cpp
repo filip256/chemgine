@@ -14,10 +14,10 @@ Backbone::Backbone(const ComponentIdType id) :
 
 const BackboneData& Backbone::data() const
 {
-    return dataStore().backbones[id];
+    return dataStore().backbones.at(id);
 }
 
 const BaseComponent* Backbone::getComponent(const size_t idx) const
 {
-    return dataStore().backbones[id].getStructure().getComponent(idx);
+    return dataStore().backbones.at(id).getStructure().getComponent(idx);
 }

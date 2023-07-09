@@ -27,15 +27,33 @@ bool DataTable<KeyT1, KeyT2, ObjT>::contains(const KeyT2 key) const
 }
 
 template<class KeyT1, class KeyT2, class ObjT>
-const ObjT& DataTable<KeyT1, KeyT2, ObjT>::operator[](const KeyT1 key) const
+const ObjT& DataTable<KeyT1, KeyT2, ObjT>::at(const KeyT1 key) const
 {
 	return table.atKey1(key);
 }
 
 template<class KeyT1, class KeyT2, class ObjT>
-const ObjT& DataTable<KeyT1, KeyT2, ObjT>::operator[](const KeyT2 key) const
+const ObjT& DataTable<KeyT1, KeyT2, ObjT>::at(const KeyT2 key) const
 {
 	return table.atKey2(key);
+}
+
+template<class KeyT1, class KeyT2, class ObjT>
+const size_t DataTable<KeyT1, KeyT2, ObjT>::size() const
+{
+	return table.size();
+}
+
+template<class KeyT1, class KeyT2, class ObjT>
+const ObjT& DataTable<KeyT1, KeyT2, ObjT>::operator[](const size_t idx) const
+{
+	return table[idx];
+}
+
+template<class KeyT1, class KeyT2, class ObjT>
+ObjT& DataTable<KeyT1, KeyT2, ObjT>::operator[](const size_t idx)
+{
+	return table[idx];
 }
 
 template<class KeyT1, class KeyT2, class ObjT>

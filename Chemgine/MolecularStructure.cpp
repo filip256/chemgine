@@ -360,26 +360,6 @@ void MolecularStructure::clear()
     hydrogenCount = 0;
 }
 
-
-std::vector<size_t> MolecularStructure::findAll(const BaseComponent& other, const uint8_t degree) const
-{
-    std::vector<size_t> result;
-    for (size_t i = 0; i < components.size(); ++i)
-        if (BaseComponent::areMatching(*components[i], other) && getDegreeOf(i) == degree)
-            result.emplace_back(i);
-    return result;
-}
-
-std::vector<size_t> MolecularStructure::findAllNeighbors(const size_t idx, const BaseComponent& other, const BondType bondType) const
-{
-    std::vector<size_t> result;
-    for (size_t i = 0; i < bonds[idx].size(); ++i)
-        if (BaseComponent::areMatching(*components[bonds[idx][i].other], other) &&
-            bonds[idx][i].type == bondType)
-                result.emplace_back(bonds[idx][i].other);
-    return result;
-}
-
 bool MolecularStructure::areMatching(
     const size_t idxA, const MolecularStructure& a,
     const size_t idxB, const MolecularStructure& b)
@@ -480,12 +460,10 @@ bool MolecularStructure::checkConnectivity(
     return true;
 }
 
-bool MolecularStructure::isPartOf(const MolecularStructure& target, const MolecularStructure& pattern)
+std::unordered_map<size_t, size_t> MolecularStructure::mapTo(const MolecularStructure& pattern)
 {
-    if (pattern.atomCount() == 0) // null pattern matches anything
-        return true;
-    if (target.atomCount() == 0) // only null pattern matches null target
-        return false;
+    if (pattern.atomCount() == 0 || this->atomCount() == 0)
+        return std::unordered_map<size_t, size_t>();
 
     // should start with a non radical type
     size_t pStart = 0;
@@ -495,24 +473,23 @@ bool MolecularStructure::isPartOf(const MolecularStructure& target, const Molecu
         pStart = 0;
 
 
-    for (size_t i = 0; i < target.atomCount(); ++i)
+    for (size_t i = 0; i < this->atomCount(); ++i)
     {
-        if (areMatching(i, target, pStart, pattern))
+        if (areMatching(i, *this, pStart, pattern))
         {
             std::vector<uint8_t> visited(pattern.atomCount(), false);
             std::unordered_map<size_t, size_t> mapping;
 
-            if (DFSCompare(i, target, pStart, pattern, visited, mapping) == false)
+            if (DFSCompare(i, *this, pStart, pattern, visited, mapping) == false)
                 continue;
 
             if (pattern.isCyclic() == false)
-                return true;
+                return mapping;
 
             // re-verifying connectivity is necessary for cycles
-            if(checkConnectivity(target, pattern, mapping))
-
-            return true;
+            if(checkConnectivity(*this, pattern, mapping))
+                return mapping;
         }
     }
-    return false;
+    return std::unordered_map<size_t, size_t>();
 }

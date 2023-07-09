@@ -11,5 +11,5 @@ OrganicMolecule::OrganicMolecule(const MoleculeIdType id) :
 
 const OrganicMoleculeData& OrganicMolecule::data() const
 {
-	return dataAccessor.get().molecules[id];
+	return dataAccessor.get().molecules.at(id);
 }

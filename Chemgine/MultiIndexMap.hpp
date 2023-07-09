@@ -45,6 +45,12 @@ public:
 	const ObjT& operator[](const size_t idx) const;
 
 	/// <summary>
+	/// Used to iterate over elements with vector-like efficiency.
+	/// Complexity: O(1)
+	/// </summary>
+	ObjT& operator[](const size_t idx);
+
+	/// <summary>
 	/// Clears the contents of the container
 	/// Complexity: O(n)
 	/// </summary>
@@ -105,6 +111,12 @@ bool MultiIndexMap<KeyT1, KeyT2, ObjT>::containsKey2(const KeyT2& key2) const
 
 template <class KeyT1, class KeyT2, class ObjT>
 const ObjT& MultiIndexMap<KeyT1, KeyT2, ObjT>::operator[](const size_t idx) const
+{
+	return objects[idx];
+}
+
+template <class KeyT1, class KeyT2, class ObjT>
+ObjT& MultiIndexMap<KeyT1, KeyT2, ObjT>::operator[](const size_t idx)
 {
 	return objects[idx];
 }

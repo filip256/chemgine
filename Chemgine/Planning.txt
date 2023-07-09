@@ -88,7 +88,7 @@ Tasks:
   3. Write molecule to smiles and cmiles algorithm and print to CSV files
   ?. Implement algorithm using BFS
 ---
-
+  1. Implement reactions
 
 
 Possible optimizations:
@@ -96,17 +96,33 @@ Possible optimizations:
  - avoid contains-then-access for maps
  - const fields in data objects need to be copied (not moved) on reallocation because of const
 
+Categorizations:
+ - When a categorization is done with a backbone or f. group, it is applied globally to all other
+   backbones, molecules and f. groups
+    => comparison matching does not need to check deep links
 
- How forward-declarations can significantly reduce build times:
-You can get the declaration of a function into your current .cpp or .h file by
-#includ'ing the header that already contains a declaration of the function.
-However, this can slow down your compile, especially if you #include a header 
-into a .h instead of .cpp of your program, as everything that #includes the .h
-you're writing would end up #include'ing all the headers you wrote #includes 
-for too. Suddenly, the compiler has #included pages and pages of code that it 
-needs to compile even when you only wanted to use one or two functions. To 
-avoid this, you can use a forward-declaration and just type the declaration of
-the function yourself at the top of the file. If you're only using a few 
-functions, this can really make your compiles quicker compared to always 
-#including the header. For really large projects, the difference could be an 
-hour or more of compile time bought down to a few minutes.
+ - When a categorization is done with the smallest f. group or backbone first. Once a f. group or 
+   backbone is used as a pattern it cannot be modified.
+    => already formed bond idexes remain valid
+
+ - Radical atoms where binding occurs will remain in the pattern f. group but when accessed
+   from target they will be ignored. Same with hydrogen atoms in backbones 
+    => patterns remain unchanged singletons
+
+ - Radical atoms remain in the target even if they are mapped by the pattern
+    => an f. group remains trivial, i.e. no deep search is required in order to find its radicals
+
+ - Matched patterns are added at the end of the components vector and the replaced atoms are removed
+   the end
+    => simplifies algorithm
+
+ - Bonds to composite components need vector of ohter for deep ceonnections
+
+ - System needed for normalizing radicals on symetric cycles, p-xylene must be p-xylene no mater the
+   position of the methyls. Radicals could always be brought down to the smallest index.
+
+
+   !!! LAZY IDEA: we have pattern matching, we could do reactions first, maybe the cool categorization
+                  is not necessary yet.
+
+
