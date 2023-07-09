@@ -62,10 +62,3 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 
 	return true;
 }
-
-
-void MoleculeDataTable::categorize(const FunctionalGroupDataTable& patterns)
-{
-	for (size_t i = 0; i < table.size(); ++i)
-		table[i].categorize(patterns);
-}

@@ -12,6 +12,4 @@ public:
 	MoleculeDataTable(const MoleculeDataTable&) = delete;
 
 	bool loadFromFile(const std::string& path);
-
-	void categorize(const FunctionalGroupDataTable& patterns);
 };
