@@ -43,12 +43,12 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
                 return false;
             }
 
-            bonds.emplace_back(std::move(std::vector<Bond>()));
+            bonds.emplace_back(std::move(std::vector<Bond*>()));
 
             if (prev != std::string::npos)
             {
-                bonds[prev].emplace_back(std::move(Bond(components.size() - 1, bondType)));
-                bonds[bonds.size() - 1].emplace_back(std::move(Bond(prev, bondType)));
+                bonds[prev].emplace_back(new Bond(components.size() - 1, bondType));
+                bonds[bonds.size() - 1].emplace_back(new Bond(prev, bondType));
                 bondType = BondType::SINGLE;
             }
 
@@ -99,12 +99,12 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             }
             
             components.emplace_back(new Atom(smiles.substr(i + 1, t - i - 1)));
-            bonds.emplace_back(std::move(std::vector<Bond>()));
+            bonds.emplace_back(std::move(std::vector<Bond*>()));
 
             if (prev != std::string::npos)
             {
-                bonds[prev].emplace_back(std::move(Bond(components.size() - 1, bondType)));
-                bonds[bonds.size() - 1].emplace_back(std::move(Bond(prev, bondType)));
+                bonds[prev].emplace_back(new Bond(components.size() - 1, bondType));
+                bonds[bonds.size() - 1].emplace_back(new Bond(prev, bondType));
                 bondType = BondType::SINGLE;
             }
 
@@ -125,8 +125,8 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             uint8_t label = smiles[i + 1] * 10 + smiles[i + 2] - 11 * '0';
             if (rings.contains(label))
             {
-                bonds[rings[label]].emplace_back(std::move(Bond(components.size() - 1, bondType)));
-                bonds[components.size() - 1].emplace_back(std::move(Bond(rings[label], bondType)));
+                bonds[rings[label]].emplace_back(new Bond(components.size() - 1, bondType));
+                bonds[components.size() - 1].emplace_back(new Bond(rings[label], bondType));
                 bondType = BondType::SINGLE;
             }
             else
@@ -143,8 +143,8 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             uint8_t label = smiles[i] - '0';
             if (rings.contains(label))
             {
-                bonds[rings[label]].emplace_back(std::move(Bond(components.size() - 1, bondType)));
-                bonds[components.size() - 1].emplace_back(std::move(Bond(rings[label], bondType)));
+                bonds[rings[label]].emplace_back(new Bond(components.size() - 1, bondType));
+                bonds[components.size() - 1].emplace_back(new Bond(rings[label], bondType));
             }
             else
             {
@@ -201,7 +201,7 @@ uint8_t MolecularStructure::getDegreeOf(const size_t idx) const
 {
     uint8_t cnt = 0;
     for (size_t i = 0; i < bonds[idx].size(); ++i)
-        cnt += bonds[idx][i].getValence();
+        cnt += bonds[idx][i]->getValence();
     return cnt;
 }
 
@@ -267,7 +267,7 @@ bool MolecularStructure::isCyclic() const
 bool MolecularStructure::areAdjacent(const size_t idxA, const size_t idxB) const
 {
     for (size_t i = 0; i < bonds[idxA].size(); ++i)
-        if (idxB == bonds[idxA][i].other)
+        if (idxB == bonds[idxA][i]->other)
             return true;
     return false;
 }
@@ -290,34 +290,34 @@ void MolecularStructure::rPrint(
         buffer[y][x + i] = components[c]->data().symbol[i];
 
     for (size_t i = 0; i < bonds[c].size(); ++i)
-        if (visited[bonds[c][i].other] == false)
+        if (visited[bonds[c][i]->other] == false)
         {
             char vC = '³', hC = 'Ä';
-            if (bonds[c][i].type == BondType::DOUBLE)
+            if (bonds[c][i]->type == BondType::DOUBLE)
                 vC = 'º', hC = 'Í';
-            else if (bonds[c][i].type == BondType::TRIPLE)
+            else if (bonds[c][i]->type == BondType::TRIPLE)
                 vC = 'ð', hC = 'ð';
 
 
             if (buffer[y][x + 2] == ' ')
             {
                 buffer[y][x + 1] = hC;
-                rPrint(buffer, x + 2, y, bonds[c][i].other, visited);
+                rPrint(buffer, x + 2, y, bonds[c][i]->other, visited);
             }
             else if (buffer[y - 2][x] == ' ')
             {
                 buffer[y - 1][x] = vC;
-                rPrint(buffer, x, y - 2, bonds[c][i].other, visited);
+                rPrint(buffer, x, y - 2, bonds[c][i]->other, visited);
             }
             else if (buffer[y][x - 2] == ' ')
             {
                 buffer[y][x - 1] = hC;
-                rPrint(buffer, x - 2, y, bonds[c][i].other, visited);
+                rPrint(buffer, x - 2, y, bonds[c][i]->other, visited);
             }
             else if (buffer[y + 2][x] == ' ')
             {
                 buffer[y + 1][x] = vC;
-                rPrint(buffer, x, y + 2, bonds[c][i].other, visited);
+                rPrint(buffer, x, y + 2, bonds[c][i]->other, visited);
             }
             else
                 break;
@@ -353,10 +353,14 @@ void MolecularStructure::clear()
 {
     while (components.empty() == false)
     {
+        while (bonds[components.size() - 1].empty() == false)
+        {
+            delete bonds[components.size() - 1].back();
+            bonds[components.size() - 1].pop_back();
+        }
         delete components.back();
         components.pop_back();
     }
-    bonds.clear();
     hydrogenCount = 0;
 }
 
@@ -394,8 +398,8 @@ bool MolecularStructure::areMatching(
     std::array<int8_t, 5> counts{ 0 };
     for (size_t i = 0; i < a.bonds[nextA.other].size(); ++i)
     {
-        ++counts[a.bonds[nextA.other][i].getValence()];
-        --counts[b.bonds[nextB.other][i].getValence()];
+        ++counts[a.bonds[nextA.other][i]->getValence()];
+        --counts[b.bonds[nextB.other][i]->getValence()];
     }
     for (size_t i = 0; i < counts.size(); ++i)
         if (counts[i] != 0)
@@ -418,7 +422,7 @@ bool MolecularStructure::DFSCompare(
     visitedB[idxB] = true;
     for (size_t i = 0; i < b.bonds[idxB].size(); ++i)
     {
-        const Bond& next = b.bonds[idxB][i];
+        const Bond& next = *b.bonds[idxB][i];
         if (visitedB[next.other])
         {
             // here we could mark the nodes contained in cycles
@@ -427,8 +431,8 @@ bool MolecularStructure::DFSCompare(
 
         bool matchFound = false;
         for (size_t j = 0; j < a.bonds[idxA].size(); ++j)
-            if (areMatching(a.bonds[idxA][j], a, next, b) &&
-                DFSCompare(a.bonds[idxA][j].other, a, next.other, b, visitedB, mapping))
+            if (areMatching(*a.bonds[idxA][j], a, next, b) &&
+                DFSCompare(a.bonds[idxA][j]->other, a, next.other, b, visitedB, mapping))
             {
                 matchFound = true;
                 break;

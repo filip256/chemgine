@@ -24,7 +24,6 @@ protected:
 public:
 	~BaseComponent() noexcept = default;
 
-	static size_t instanceCount;
 
 	virtual const BaseComponentData& data() const = 0;
 
@@ -42,7 +41,11 @@ public:
 
 	virtual bool isRadicalType() const = 0;
 
+
 	// for memory leak checking 
+	static size_t instanceCount;
+#ifndef NDEBUG
 	void* operator new(const size_t count);
 	void operator delete(void* ptr);
+#endif
 };

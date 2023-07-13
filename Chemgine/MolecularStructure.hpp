@@ -13,7 +13,7 @@ class MolecularStructure
 private:
     uint16_t hydrogenCount = 0;
     std::vector<BaseComponent*> components;
-    std::vector<std::vector<Bond>> bonds;
+    std::vector<std::vector<Bond*>> bonds;
 
     void rPrint(
         std::vector<std::string>& buffer,

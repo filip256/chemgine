@@ -63,7 +63,7 @@ bool BaseComponent::areMatching(const BaseComponent& x, const BaseComponent& y)
 
 
 
-
+#ifndef NDEBUG
 void* BaseComponent::operator new(const size_t count)
 {
 	++instanceCount;
@@ -75,3 +75,4 @@ void BaseComponent::operator delete(void* ptr)
 	--instanceCount;
 	return ::operator delete(ptr);
 }
+#endif

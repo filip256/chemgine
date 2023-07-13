@@ -73,6 +73,8 @@ int main()
 
     if (BaseComponent::instanceCount != 0)
         Logger::log("Memory leak detected: BaseComponent (" + std::to_string(BaseComponent::instanceCount) + " unreleased instances).", LogType::BAD);
+    if (Bond::instanceCount != 0)
+        Logger::log("Memory leak detected: Bond (" + std::to_string(Bond::instanceCount) + " unreleased instances).", LogType::BAD);
 
     getchar();
     return 0;
