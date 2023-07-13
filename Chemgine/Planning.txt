@@ -56,12 +56,22 @@ In an optimized molecular structure there must be a way to specify which atoms a
 
 
 
-Logic:
-  1. Read all atoms from file
-  2. Read all functional groups from file and build them using the atoms
-  3. Read all backbones from file and build them using atoms and functional groups
-  4. Read all molecules from file and build them using backbones, functinal groups and atoms
+  Reactions:
+   A reaction has a list of reactants, a list of products, a list of conditions and some
+   properties like base speed. A mapping between every atom in reactants and those from products
+   must be made in a deterministic and trivial way.
+   Stoechiometry could be determined.
 
+   Possible CSV:
+       id, reactants    , conditions, products     , properties
+       10, [smiles, ...], [cat, ...], [smiles, ...], prop ...
+
+  ReactionCondition:
+   Polymorphic type with a method that determines to what extent the condition is met.
+
+  PhysicalState: (for later)
+   Describes the physical system inside a reactor/environment.
+    
 
 
 Tasks:
@@ -82,13 +92,18 @@ Tasks:
   DONE. Create OrganicMolecules CSV with Id, smiles
   DONE. Create OrganicMoleculeData with a MolecularStructure and write initilizer from SMILES
 ---
+  1. Implement BaseReactionCondition
+  2. Implement ReactionData with CSV loader
+  3. Implement indexing system for reactions
+  4. Implement algorithm for checking if a reaction is possible
+---
+  1. Implement reactor 
+---
   DONE. Implement graph matching algorithm
   DONE. Hardcode special atom types
   2. Apply algorithm to organic molecules
   3. Write molecule to smiles and cmiles algorithm and print to CSV files
   ?. Implement algorithm using BFS
----
-  1. Implement reactions
 
 
 Possible optimizations:
