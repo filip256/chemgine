@@ -3,8 +3,6 @@
 #include "Logger.hpp"
 #include <fstream>
 
-BackboneDataTable::BackboneDataTable() : DataTable<ComponentIdType, std::string, BackboneData>()
-{}
 
 bool BackboneDataTable::loadFromFile(const std::string& path)
 {

@@ -246,7 +246,7 @@ bool MolecularStructure::isComplete() const
     return true;
 }
 
-size_t MolecularStructure::atomCount() const
+size_t MolecularStructure::componentCount() const
 {
     return components.size();
 }
@@ -261,7 +261,7 @@ size_t MolecularStructure::bondCount() const
 
 bool MolecularStructure::isCyclic() const
 {
-    return bondCount() > atomCount() - 1;
+    return bondCount() > componentCount() - 1;
 }
 
 bool MolecularStructure::areAdjacent(const size_t idxA, const size_t idxB) const
@@ -371,7 +371,7 @@ bool MolecularStructure::areMatching(
     if (a.bonds[idxA].size() != b.bonds[idxB].size())
         return false;
 
-    if (BaseComponent::areMatching(*a.components[idxA], *(b.components[idxB])) == false)
+    if (BaseComponent::areEqual(*a.components[idxA], *(b.components[idxB])) == false)
         return false;
 
     return true;
@@ -380,13 +380,14 @@ bool MolecularStructure::areMatching(
 
 bool MolecularStructure::areMatching(
     const Bond& nextA, const MolecularStructure& a,
-    const Bond& nextB, const MolecularStructure& b)
+    const Bond& nextB, const MolecularStructure& b,
+    bool escapeRadicalTypes)
 {
     if (nextA.type != nextB.type)
         return false;
 
     // escape radical types
-    if (b.components[nextB.other]->isRadicalType())
+    if (escapeRadicalTypes == true && b.components[nextB.other]->isRadicalType())
     {
         return true;
     }
@@ -412,7 +413,8 @@ bool MolecularStructure::DFSCompare(
     size_t idxA, const MolecularStructure& a,
     size_t idxB, const MolecularStructure& b,
     std::vector<uint8_t>& visitedB,
-    std::unordered_map<size_t, size_t>& mapping)
+    std::unordered_map<size_t, size_t>& mapping,
+    bool escapeRadicalTypes)
 {
     if (mapping.contains(idxA))
         return false;
@@ -431,8 +433,8 @@ bool MolecularStructure::DFSCompare(
 
         bool matchFound = false;
         for (size_t j = 0; j < a.bonds[idxA].size(); ++j)
-            if (areMatching(*a.bonds[idxA][j], a, next, b) &&
-                DFSCompare(a.bonds[idxA][j]->other, a, next.other, b, visitedB, mapping))
+            if (areMatching(*a.bonds[idxA][j], a, next, b, escapeRadicalTypes) &&
+                DFSCompare(a.bonds[idxA][j]->other, a, next.other, b, visitedB, mapping, escapeRadicalTypes))
             {
                 matchFound = true;
                 break;
@@ -464,27 +466,27 @@ bool MolecularStructure::checkConnectivity(
     return true;
 }
 
-std::unordered_map<size_t, size_t> MolecularStructure::mapTo(const MolecularStructure& pattern)
+std::unordered_map<size_t, size_t> MolecularStructure::mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const
 {
-    if (pattern.atomCount() == 0 || this->atomCount() == 0)
+    if (pattern.componentCount() == 0 || this->componentCount() == 0)
         return std::unordered_map<size_t, size_t>();
 
     // should start with a non radical type
     size_t pStart = 0;
-    while (pStart < pattern.atomCount() && pattern.components[pStart]->isRadicalType())
+    while (pStart < pattern.componentCount() && pattern.components[pStart]->isRadicalType())
         ++pStart;
-    if (pStart == pattern.atomCount())
+    if (pStart == pattern.componentCount())
         pStart = 0;
 
 
-    for (size_t i = 0; i < this->atomCount(); ++i)
+    for (size_t i = 0; i < this->componentCount(); ++i)
     {
         if (areMatching(i, *this, pStart, pattern))
         {
-            std::vector<uint8_t> visited(pattern.atomCount(), false);
+            std::vector<uint8_t> visited(pattern.componentCount(), false);
             std::unordered_map<size_t, size_t> mapping;
 
-            if (DFSCompare(i, *this, pStart, pattern, visited, mapping) == false)
+            if (DFSCompare(i, *this, pStart, pattern, visited, mapping, escapeRadicalTypes) == false)
                 continue;
 
             if (pattern.isCyclic() == false)
@@ -496,4 +498,22 @@ std::unordered_map<size_t, size_t> MolecularStructure::mapTo(const MolecularStru
         }
     }
     return std::unordered_map<size_t, size_t>();
+}
+
+bool MolecularStructure::operator==(const MolecularStructure& other)
+{
+    if (this->componentCount() != other.componentCount())
+        return false;
+
+    const auto mapping = this->mapTo(other, false);
+    return mapping.size() == this->componentCount();
+}
+
+bool MolecularStructure::operator!=(const MolecularStructure& other)
+{
+    if (this->componentCount() != other.componentCount())
+        return true;
+
+    const auto mapping = this->mapTo(other, false);
+    return mapping.size() != this->componentCount();
 }

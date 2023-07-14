@@ -8,7 +8,7 @@ class MoleculeDataTable :
 	public DataTable<ComponentIdType, std::string, OrganicMoleculeData>
 {
 public:
-	MoleculeDataTable();
+	MoleculeDataTable() = default;
 	MoleculeDataTable(const MoleculeDataTable&) = delete;
 
 	bool loadFromFile(const std::string& path);

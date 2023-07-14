@@ -172,12 +172,15 @@
     <ClCompile Include="Backbone.cpp" />
     <ClCompile Include="BackboneData.cpp" />
     <ClCompile Include="BackboneDataTable.cpp" />
+    <ClCompile Include="BaseReactionCondition.cpp" />
     <ClCompile Include="CompositeComponentData.cpp" />
     <ClCompile Include="DataStoreAccessor.cpp" />
     <ClCompile Include="FloatValue.cpp" />
     <ClCompile Include="MoleculeDataTable.cpp" />
     <ClCompile Include="OrganicMolecule.cpp" />
     <ClCompile Include="OrganicMoleculeData.cpp" />
+    <ClCompile Include="ReactionData.cpp" />
+    <ClCompile Include="ReactionDataTable.cpp" />
     <ClCompile Include="Value.cpp" />
     <ClInclude Include="AtomicComponent.hpp" />
     <ClInclude Include="AtomIdentifier.hpp" />
@@ -192,6 +195,7 @@
     <ClInclude Include="BackboneData.hpp" />
     <ClInclude Include="BackboneDataTable.hpp" />
     <ClInclude Include="BaseComponentData.hpp" />
+    <ClInclude Include="BaseReactionCondition.hpp" />
     <ClInclude Include="CompositeComponent.hpp" />
     <ClCompile Include="DataHelpers.cpp" />
     <ClCompile Include="DataStore.cpp" />
@@ -214,6 +218,8 @@
     <ClCompile Include="Result.cpp" />
     <ClInclude Include="OrganicMolecule.hpp" />
     <ClInclude Include="OrganicMoleculeData.hpp" />
+    <ClInclude Include="ReactionData.hpp" />
+    <ClInclude Include="ReactionDataTable.hpp" />
     <ClInclude Include="Value.hpp" />
   </ItemGroup>
   <ItemGroup>

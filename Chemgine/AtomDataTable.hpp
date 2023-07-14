@@ -8,7 +8,7 @@ class AtomDataTable : public DataTable<ComponentIdType, std::string, AtomData>
 private:
 	void addPredefined();
 public:
-	AtomDataTable();
+	AtomDataTable() = default;
 	AtomDataTable(const AtomDataTable&) = delete;
 
 	bool loadFromFile(const std::string& path);

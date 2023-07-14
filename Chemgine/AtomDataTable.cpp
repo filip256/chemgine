@@ -3,11 +3,6 @@
 #include "Logger.hpp"
 #include <fstream>
 
-AtomDataTable::AtomDataTable() : DataTable<ComponentIdType, std::string, AtomData>()
-{
-
-}
-
 void AtomDataTable::addPredefined()
 {
 	table.emplace(101, "*", std::move(AtomData(101, "*", "Any Radical", 0, 1)));

@@ -1,11 +1,10 @@
-#include "MoleculeDataTable.hpp"
+#include "ReactionDataTable.hpp"
 #include "DataHelpers.hpp"
 #include "Logger.hpp"
 
 #include <fstream>
 
-
-bool MoleculeDataTable::loadFromFile(const std::string& path)
+bool ReactionDataTable::loadFromFile(const std::string& path)
 {
 	std::ifstream file(path);
 
@@ -48,7 +47,7 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 		if (table.emplace(
 			id.result,
 			line[1],
-			std::move(OrganicMoleculeData(id.result, line[2], line[1]))
+			std::move(ReactionData(id.result, line[2], line[1]))
 		) == false)
 		{
 			Logger::log("Molecule with duplicate id " + std::to_string(id.result) + " skipped.", LogType::WARN);

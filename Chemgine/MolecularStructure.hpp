@@ -38,7 +38,8 @@ private:
     // finner matching for the compare method
     static bool areMatching(
         const Bond& nextA, const MolecularStructure& a,
-        const Bond& nextB, const MolecularStructure& b);
+        const Bond& nextB, const MolecularStructure& b,
+        bool escapeRadicalTypes);
 
     /// <summary>
     /// Tries to find the pattern structure into the target starting from the given indexes.
@@ -57,7 +58,8 @@ private:
         size_t idxA, const MolecularStructure& a,
         size_t idxB, const MolecularStructure& b,
         std::vector<uint8_t>& visitedB,
-        std::unordered_map<size_t, size_t>& mapping
+        std::unordered_map<size_t, size_t>& mapping,
+        bool escapeRadicalTypes
     );
 
     /// <summary>
@@ -103,7 +105,11 @@ public:
     /// <returns></returns>
     bool isComplete() const;
 
-    size_t atomCount() const;
+    /// <summary>
+    /// Hydrogens not included.
+    /// </summary>
+    /// <returns></returns>
+    size_t componentCount() const;
 
     size_t bondCount() const;
 
@@ -127,9 +133,20 @@ public:
 
     /// <summary>
     /// Returns the first found mapping between the atoms of the pattern and the atoms of *this.
+    /// The whole pattern strcture must be matched. 
     /// Complexity: rather large
     /// </summary>
     /// <param name="pattern"></param>
-    /// <returns></returns>
-    std::unordered_map<size_t, size_t> mapTo(const MolecularStructure& pattern);
+    std::unordered_map<size_t, size_t> mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const;
+
+    /// <summary>
+    /// Returns true iff both structures represent the exact same molecule.
+    /// Complexity: rather large
+    /// </summary>
+    bool operator==(const MolecularStructure& other);
+    /// <summary>
+    /// Returns true iff the structures represent different molecules.
+    /// Complexity: rather large
+    /// </summary>
+    bool operator!=(const MolecularStructure& other);
 };

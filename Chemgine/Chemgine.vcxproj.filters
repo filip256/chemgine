@@ -70,6 +70,12 @@
     <Filter Include="Source Files\Data\DataTypes">
       <UniqueIdentifier>{61a424bc-ab0f-4e9f-951c-9acbd6ffbdb3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Reactions">
+      <UniqueIdentifier>{fcdb1bfa-1df1-4fb1-9ed3-e5f70acbd5a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Reactions">
+      <UniqueIdentifier>{aa2f0169-c257-4503-8b80-c4ebc6174e49}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataStore.cpp">
@@ -161,6 +167,15 @@
     </ClCompile>
     <ClCompile Include="DataStoreAccessor.cpp">
       <Filter>Source Files\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseReactionCondition.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
+    <ClCompile Include="ReactionData.cpp">
+      <Filter>Source Files\Data\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="ReactionDataTable.cpp">
+      <Filter>Source Files\Data\Tables</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -259,6 +274,15 @@
     </ClInclude>
     <ClInclude Include="DataStoreAccessor.hpp">
       <Filter>Header Files\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseReactionCondition.hpp">
+      <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="ReactionData.hpp">
+      <Filter>Header Files\Data\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="ReactionDataTable.hpp">
+      <Filter>Header Files\Data\Tables</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

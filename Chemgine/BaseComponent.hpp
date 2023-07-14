@@ -37,6 +37,13 @@ public:
 
 	static bool isCompositeType(const BaseComponent& component);
 
+	/// <summary>
+	/// Must be the exact atoms.
+	/// </summary>
+	static bool areEqual(const BaseComponent& x, const BaseComponent& y);
+	/// <summary>
+	/// Must be the exact atoms or satisfy radical matching.
+	/// </summary>
 	static bool areMatching(const BaseComponent& x, const BaseComponent& y);
 
 	virtual bool isRadicalType() const = 0;

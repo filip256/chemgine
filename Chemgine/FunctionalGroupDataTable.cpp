@@ -3,8 +3,6 @@
 #include "Logger.hpp"
 #include <fstream>
 
-FunctionalGroupDataTable::FunctionalGroupDataTable() : DataTable<ComponentIdType, std::string, FunctionalGroupData>()
-{}
 
 bool FunctionalGroupDataTable::loadFromFile(const std::string& path)
 {

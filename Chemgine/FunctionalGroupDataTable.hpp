@@ -7,7 +7,7 @@ class FunctionalGroupDataTable :
 	public DataTable<ComponentIdType, std::string, FunctionalGroupData>
 {
 public:
-	FunctionalGroupDataTable();
+	FunctionalGroupDataTable() = default;
 	FunctionalGroupDataTable(const FunctionalGroupDataTable&) = delete;
 
 	bool loadFromFile(const std::string& path);

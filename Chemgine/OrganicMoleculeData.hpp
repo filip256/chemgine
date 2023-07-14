@@ -1,7 +1,6 @@
 #pragma once
 
 #include "MolecularStructure.hpp"
-#include "FunctionalGroupDataTable.hpp"
 
 #include <cstdint>
 #include <string>

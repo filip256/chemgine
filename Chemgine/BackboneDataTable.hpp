@@ -5,7 +5,7 @@ class BackboneDataTable :
 	public DataTable<ComponentIdType, std::string, BackboneData>
 {
 public:
-	BackboneDataTable();
+	BackboneDataTable() = default;
 	BackboneDataTable(const BackboneDataTable&) = delete;
 
 	bool loadFromFile(const std::string& path);
