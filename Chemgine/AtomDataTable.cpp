@@ -43,7 +43,6 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 		if (line[2].empty())
 		{
 			Logger::log("Atom name was empty. (" + line[1] + ')', LogType::WARN);
-
 		}
 
 		const auto id = DataHelpers::toUInt(line[0]);

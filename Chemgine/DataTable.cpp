@@ -3,6 +3,7 @@
 #include "FunctionalGroupData.hpp"
 #include "BackboneData.hpp"
 #include "OrganicMoleculeData.hpp"
+#include "ReactionData.hpp"
 
 template<class KeyT1, class KeyT2, class ObjT>
 DataTable<KeyT1, KeyT2, ObjT>::DataTable() : table() 
@@ -72,3 +73,4 @@ template class DataTable<ComponentIdType, std::string, AtomData>;
 template class DataTable<ComponentIdType, std::string, FunctionalGroupData>;
 template class DataTable<ComponentIdType, std::string, BackboneData>;
 template class DataTable<ComponentIdType, std::string, OrganicMoleculeData>;
+template class DataTable<ReactionIdType, std::string, ReactionData>;

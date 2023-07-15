@@ -11,7 +11,10 @@ public:
 	/// <summary>
 	/// Parses a string consisting of words delimited by a character  and returns a vector of these words
 	/// </summary>
-	static std::vector<std::string> parseList(const std::string& csvLine, const char sep);
+	static std::vector<std::string> parseList(
+		const std::string& csvLine,
+		const char sep,
+		const bool ignoreEmpty = false);
 
 
 	/// <summary>

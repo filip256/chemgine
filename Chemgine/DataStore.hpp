@@ -6,6 +6,7 @@
 #include "MoleculeDataTable.hpp"
 
 #include <string>
+#include "ReactionDataTable.hpp"
 
 class DataStore
 {
@@ -16,6 +17,8 @@ public:
 
 	MoleculeDataTable molecules;
 
+	ReactionDataTable reactions;
+
 	DataStore();
 	DataStore(const DataStore&) = delete;
 
@@ -23,4 +26,5 @@ public:
 	DataStore& loadFunctionalGroupsData(const std::string& path);
 	DataStore& loadBackbonesData(const std::string& path);
 	DataStore& loadMoleculesData(const std::string& path);
+	DataStore& loadReactionsData(const std::string& path);
 };

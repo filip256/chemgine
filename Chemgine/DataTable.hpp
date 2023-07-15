@@ -25,4 +25,6 @@ public:
 	virtual const ObjT* findFirst(bool (*predicate) (const ObjT&)) const;
 
 	void clear();
+
+	static constexpr size_t npos = static_cast<size_t>(-1);
 };

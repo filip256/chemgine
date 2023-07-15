@@ -2,21 +2,20 @@
 
 #include <stdexcept>
 
-std::vector<std::string> DataHelpers::parseList(const std::string& csvLine, const char sep)
+std::vector<std::string> DataHelpers::parseList(const std::string& line, const char sep, const bool ignoreEmpty)
 {
-	std::vector<std::string> outVector;
+	std::vector<std::string> result;
+	size_t lastComma = -1;
 
-	const std::string::size_type size = csvLine.size();
-	std::string::size_type lastComma = -1;
-
-	for (std::string::size_type i = 0; i < size; ++i)
-		if (csvLine[i] == sep)
+	for (size_t i = 0; i < line.size(); ++i)
+		if (line[i] == sep)
 		{
-			outVector.emplace_back(std::move(csvLine.substr(lastComma + 1, i - lastComma - 1)));
+			if (ignoreEmpty == false || i - lastComma - 1 > 0)
+				result.emplace_back(std::move(line.substr(lastComma + 1, i - lastComma - 1)));
 			lastComma = i;
 		}
-	outVector.emplace_back(std::move(csvLine.substr(lastComma + 1)));
-	return outVector;
+	result.emplace_back(std::move(line.substr(lastComma + 1)));
+	return result;
 }
 
 Result<int> DataHelpers::toInt(const std::string& str)

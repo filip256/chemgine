@@ -174,8 +174,6 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
     }
     hydrogenCount = hCount;
 
-    Logger::log("Molecular structure read successfully.", LogType::GOOD);
-
     return true;
 }
 
@@ -500,7 +498,7 @@ std::unordered_map<size_t, size_t> MolecularStructure::mapTo(const MolecularStru
     return std::unordered_map<size_t, size_t>();
 }
 
-bool MolecularStructure::operator==(const MolecularStructure& other)
+bool MolecularStructure::operator==(const MolecularStructure& other) const
 {
     if (this->componentCount() != other.componentCount())
         return false;
@@ -509,11 +507,21 @@ bool MolecularStructure::operator==(const MolecularStructure& other)
     return mapping.size() == this->componentCount();
 }
 
-bool MolecularStructure::operator!=(const MolecularStructure& other)
+bool MolecularStructure::operator!=(const MolecularStructure& other) const
 {
     if (this->componentCount() != other.componentCount())
         return true;
 
     const auto mapping = this->mapTo(other, false);
     return mapping.size() != this->componentCount();
+}
+
+bool MolecularStructure::operator==(const std::string& other) const
+{
+    return *this == MolecularStructure(other);
+}
+
+bool MolecularStructure::operator!=(const std::string& other) const
+{
+    return *this != MolecularStructure(other);
 }

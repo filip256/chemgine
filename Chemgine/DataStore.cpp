@@ -1,7 +1,11 @@
 #include "DataStore.hpp"
 
 DataStore::DataStore() : 
-	atoms()
+	atoms(),
+	functionalGroups(),
+	backbones(),
+	molecules(),
+	reactions(functionalGroups, backbones, molecules)
 {}
 
 DataStore& DataStore::loadAtomsData(const std::string& path)
@@ -25,5 +29,11 @@ DataStore& DataStore::loadBackbonesData(const std::string& path)
 DataStore& DataStore::loadMoleculesData(const std::string& path)
 {
 	molecules.loadFromFile(path);
+	return *this;
+}
+
+DataStore& DataStore::loadReactionsData(const std::string& path)
+{
+	reactions.loadFromFile(path);
 	return *this;
 }

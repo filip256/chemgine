@@ -139,14 +139,17 @@ public:
     /// <param name="pattern"></param>
     std::unordered_map<size_t, size_t> mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const;
 
+
     /// <summary>
     /// Returns true iff both structures represent the exact same molecule.
     /// Complexity: rather large
     /// </summary>
-    bool operator==(const MolecularStructure& other);
+    bool operator==(const MolecularStructure& other) const;
     /// <summary>
     /// Returns true iff the structures represent different molecules.
     /// Complexity: rather large
     /// </summary>
-    bool operator!=(const MolecularStructure& other);
+    bool operator!=(const MolecularStructure& other) const;
+    bool operator==(const std::string& other) const;
+    bool operator!=(const std::string& other) const;
 };

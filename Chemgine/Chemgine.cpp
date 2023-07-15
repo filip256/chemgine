@@ -6,6 +6,7 @@
 #include "Logger.hpp"
 #include "Atom.hpp"
 #include "CompositeComponent.hpp"
+#include "Tests.hpp"
 
 
 /*
@@ -50,25 +51,8 @@ FunctionalGroup {
 int main()
 {
     {
-        DataStore r;
-        BaseComponent::setDataStore(r);
-        r.loadAtomsData("Data/AtomData.csv");
-        r.loadFunctionalGroupsData("Data/FunctionalGroupData.csv");
-        r.loadBackbonesData("Data/BackboneData.csv");
-        r.loadMoleculesData("Data/OrganicMoleculeData.csv");
-
-        MolecularStructure a("CC(=O)OC"), b("RC(=O)OR");  // true
-        //MolecularStructure a("CC(=O)OC"), b("RC(=O)O");  // false
-        //MolecularStructure a("CC(=O)N(C)C"), b("RC(=O)N(R)R");  // true
-        //MolecularStructure a("O(C)(CC)"), b("O(C)(C)");  // false
-        //MolecularStructure a("C1CC1"), b("C1CC1"); // true
-        //MolecularStructure a("C1CCC1"), b("C1CC1"); // false
-        //MolecularStructure a("C1C(OC)CC1"), b("C1CC(OR)C1"); // true
-        //MolecularStructure a("CC(O)C"), b("OR"); // true
-        std::cout << a.print()<<'\n';
-        std::cout << b.print();
-
-        //std::cout << MolecularStructure::isPartOf(a, b)<<'\n';
+        TestManager tests;
+        tests.runAll();
     }
 
     if (BaseComponent::instanceCount != 0)

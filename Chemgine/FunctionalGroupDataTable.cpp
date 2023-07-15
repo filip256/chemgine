@@ -10,8 +10,8 @@ bool FunctionalGroupDataTable::loadFromFile(const std::string& path)
 
 	if (!file.is_open())
 	{
-		return false;
 		Logger::log("Failed to open file '" + path + "'.", LogType::BAD);
+		return false;
 	}
 
 	//if (files::verifyChecksum(file).code != 200) //not OK
@@ -58,4 +58,13 @@ bool FunctionalGroupDataTable::loadFromFile(const std::string& path)
 	Logger::log("Loaded " + std::to_string(table.size()) + " functional groups.", LogType::GOOD);
 
 	return true;
+}
+
+size_t FunctionalGroupDataTable::findFirst(const std::string& smiles) const
+{
+	for (size_t i = 0; i < table.size(); ++i)
+		if (table[i].getStructure() == smiles)
+			return i;
+
+	return npos;
 }

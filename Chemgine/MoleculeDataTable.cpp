@@ -11,8 +11,8 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 
 	if (!file.is_open())
 	{
-		return false;
 		Logger::log("Failed to open file '" + path + "'.", LogType::BAD);
+		return false;
 	}
 
 	//if (files::verifyChecksum(file).code != 200) //not OK

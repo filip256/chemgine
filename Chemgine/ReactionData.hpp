@@ -10,12 +10,14 @@ class ReactionData
 {
 private:
 	const ReactionIdType id;
+	const std::string name;
 	std::vector<ComponentIdType> reactants;
 	std::vector<ComponentIdType> products;
 
 public:
 	ReactionData(
 		const ReactionIdType id,
+		const std::string& name,
 		std::vector<ComponentIdType>&& reactants,
 		std::vector<ComponentIdType>&& products
 	) noexcept;

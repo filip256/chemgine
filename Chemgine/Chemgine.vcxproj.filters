@@ -284,6 +284,9 @@
     <ClInclude Include="ReactionDataTable.hpp">
       <Filter>Header Files\Data\Tables</Filter>
     </ClInclude>
+    <ClInclude Include="Tests.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv">
@@ -294,6 +297,12 @@
     </None>
     <None Include="diagram.cd" />
     <None Include="Data\BackboneData.csv">
+      <Filter>Resource Files\ChemicalData</Filter>
+    </None>
+    <None Include="Data\OrganicMoleculeData.csv">
+      <Filter>Resource Files\ChemicalData</Filter>
+    </None>
+    <None Include="Data\ReactionData.csv">
       <Filter>Resource Files\ChemicalData</Filter>
     </None>
   </ItemGroup>
