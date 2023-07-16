@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <stack>
 
 #include "Bond.hpp"
@@ -39,7 +40,7 @@ private:
     static bool areMatching(
         const Bond& nextA, const MolecularStructure& a,
         const Bond& nextB, const MolecularStructure& b,
-        bool escapeRadicalTypes);
+        const bool escapeRadicalTypes);
 
     /// <summary>
     /// Tries to find the pattern structure into the target starting from the given indexes.
@@ -53,7 +54,6 @@ private:
     /// <param name="b">: pattern</param>
     /// <param name="visitedB">: vector with the size of the pattern, initilized to false</param>
     /// <param name="mapping">: empty map that will store all matching nodes at the end of the execution</param>
-    /// <param name="cycleFlag">: marks that a cycle has be found</param>
     static bool DFSCompare(
         size_t idxA, const MolecularStructure& a,
         size_t idxB, const MolecularStructure& b,
@@ -62,9 +62,16 @@ private:
         bool escapeRadicalTypes
     );
 
+    static std::unordered_map<size_t, size_t> DFSMaximal(
+        size_t idxA, const MolecularStructure& a,
+        std::unordered_set<size_t>& mappedA,
+        size_t idxB, const MolecularStructure& b,
+        std::unordered_set<size_t>& mappedB
+    );
+
     /// <summary>
     /// Checks if the connectivity of pattern is preserved in the target.
-    /// Complexity: O(n^3)
+    /// Complexity: O(n*m*b)
     static bool checkConnectivity(
         const MolecularStructure& target,
         const MolecularStructure& pattern,
@@ -138,6 +145,8 @@ public:
     /// </summary>
     /// <param name="pattern"></param>
     std::unordered_map<size_t, size_t> mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const;
+
+    std::unordered_map<size_t, size_t> maximalMapTo(const MolecularStructure& pattern) const;
 
 
     /// <summary>

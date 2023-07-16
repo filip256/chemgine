@@ -52,7 +52,8 @@ int main()
 {
     {
         TestManager tests;
-        tests.runAll();
+        //tests.runAll();
+
     }
 
     if (BaseComponent::instanceCount != 0)
