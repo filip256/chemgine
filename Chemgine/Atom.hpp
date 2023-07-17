@@ -20,4 +20,6 @@ public:
     static bool isDefined(const ComponentIdType id);
     static bool isDefined(const std::string& symbol);
     static bool isDefined(const char symbol);
+
+    uint8_t getPrecedence() const override final;
 };

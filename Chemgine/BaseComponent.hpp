@@ -48,6 +48,7 @@ public:
 
 	virtual bool isRadicalType() const = 0;
 
+	virtual uint8_t getPrecedence() const = 0;
 
 	// for memory leak checking 
 	static size_t instanceCount;

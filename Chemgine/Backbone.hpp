@@ -11,4 +11,6 @@ public:
 	const BackboneData& data() const override final;
 
 	const BaseComponent* getComponent(const size_t idx) const override final;
+
+	uint8_t getPrecedence() const override final;
 };

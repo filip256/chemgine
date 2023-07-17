@@ -21,3 +21,8 @@ const BaseComponent* Backbone::getComponent(const size_t idx) const
 {
     return dataStore().backbones.at(id).getStructure().getComponent(idx);
 }
+
+uint8_t Backbone::getPrecedence() const
+{
+    return 100;
+}

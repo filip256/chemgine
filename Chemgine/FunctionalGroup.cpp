@@ -21,3 +21,8 @@ const BaseComponent* FunctionalGroup::getComponent(const size_t idx) const
 {
     return dataStore().functionalGroups.at(id).getStructure().getComponent(idx);
 }
+
+uint8_t FunctionalGroup::getPrecedence() const
+{
+    return 9;
+}

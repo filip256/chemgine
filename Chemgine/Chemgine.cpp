@@ -52,7 +52,12 @@ int main()
 {
     {
         TestManager tests;
-        //tests.runAll();
+        tests.runAll();
+
+        //DataStore r;
+        //BaseComponent::setDataStore(r);
+        //r.loadAtomsData("Data/AtomData.csv");
+        //MolecularStructure("OC(R)O");
 
     }
 

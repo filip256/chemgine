@@ -13,7 +13,7 @@ class MolecularStructure
 {
 private:
     uint16_t hydrogenCount = 0;
-    std::vector<BaseComponent*> components;
+    std::vector<const BaseComponent*> components;
     std::vector<std::vector<Bond*>> bonds;
 
     void rPrint(
@@ -22,6 +22,8 @@ private:
         const size_t y,
         const size_t c,
         std::vector<uint8_t>& visited) const;
+
+    void normalize();
 
     /// <summary>
     /// Returns the number of required hydrogens in order to complete the molecule.
@@ -78,6 +80,8 @@ private:
         const std::unordered_map<size_t, size_t>& mapping);
 
 public:
+    constexpr static size_t npos = static_cast<size_t>(-1);
+
     MolecularStructure(const std::string& smiles);
     MolecularStructure(MolecularStructure&& structure) = default;
     MolecularStructure(const MolecularStructure&) = delete;

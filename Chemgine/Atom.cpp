@@ -52,3 +52,11 @@ bool Atom::isDefined(const char symbol)
 {
     return isDefined(std::string(1, symbol));
 }
+
+uint8_t Atom::getPrecedence() const
+{
+    if (isRadicalType())
+        return 0;
+    
+    return data().getRarity();
+}

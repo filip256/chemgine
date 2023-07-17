@@ -7,6 +7,9 @@ typedef uint16_t ComponentIdType;
 
 class BaseComponentData
 {
+private:
+	uint8_t rarity = 255;
+
 public:
 	const uint8_t valence = 0;
 	const ComponentIdType id = 0;
@@ -20,7 +23,10 @@ public:
 		const std::string& symbol,
 		const std::string& name,
 		const double weight,
-		const uint8_t valence);
+		const uint8_t valence,
+		const uint8_t rarity = 255);
 
 	BaseComponentData(BaseComponentData&&) noexcept = default;
+
+	uint8_t getRarity() const;
 };

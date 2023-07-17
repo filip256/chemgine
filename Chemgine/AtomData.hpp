@@ -15,4 +15,6 @@ public:
 	AtomData(const AtomData&) = delete;
 	AtomData(AtomData&&) = default;
 	~AtomData() = default;
+
+	static uint8_t rarityOf(const std::string& symbol);
 };

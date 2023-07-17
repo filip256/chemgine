@@ -3,10 +3,12 @@
 #include "MolecularStructure.hpp"
 #include "CompositeComponent.hpp"
 #include "Logger.hpp"
+#include <algorithm>
 
 MolecularStructure::MolecularStructure(const std::string& smiles)
 {
     loadFromSMILES(smiles);
+    normalize();
 }
 
 MolecularStructure::~MolecularStructure()
@@ -177,6 +179,57 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
     return true;
 }
 
+
+void MolecularStructure::normalize()
+{
+    if (components.size() == 0)
+        return;
+
+    std::vector<size_t> map;
+    map.reserve(components.size());
+    for (size_t i = 0; i < components.size(); ++i)
+        map.emplace_back(i);
+
+    for (size_t i = 1; i < components.size(); ++i)
+    {
+        int j = i - 1;
+        while (j >= 0 && components[map[j]]->getPrecedence() < components[map[i]]->getPrecedence())
+        {
+            ++map[j];
+            --j;
+        }
+        map[i] = j + 1;
+    }
+
+    for (size_t i = 0; i < bonds.size(); ++i)
+        for (size_t j = 0; j < bonds[i].size(); ++j)
+            bonds[i][j]->other = map[bonds[i][j]->other];
+
+    for (size_t i = 0; i < components.size(); ++i)
+    {
+        if (map[i] == npos || map[i] == i)
+            continue;
+
+        size_t p = i;
+        auto pC = components[p];
+        auto pB = std::move(bonds[p]);
+        do
+        {
+            const auto tempC = components[map[p]];
+            components[map[p]] = pC;
+            pC = tempC;
+
+            const auto tempB = std::move(bonds[map[p]]);
+            bonds[map[p]] = std::move(pB);
+            pB = std::move(tempB);
+
+            const size_t tempP = p;
+            p = map[p];
+            map[tempP] = npos;
+        } while (p != npos && map[p] != npos);
+    }
+}
+
 int16_t MolecularStructure::getHCount() const
 {
     int16_t hCount = 0;
@@ -229,7 +282,7 @@ uint16_t MolecularStructure::getRadicalAtomsCount() const
     uint16_t cnt = 0;
     for (size_t i = 0; i < components.size(); ++i)
         if (components[i]->isAtomicType() &&
-            static_cast<AtomicComponent*>(components[i])->isRadicalType())
+            static_cast<const AtomicComponent*>(components[i])->isRadicalType())
             ++cnt;
     return cnt;
 }
@@ -239,7 +292,7 @@ bool MolecularStructure::isComplete() const
     // it does not search sub components
     for (size_t i = 0; i < components.size(); ++i)
         if (components[i]->isAtomicType() &&
-            static_cast<AtomicComponent*>(components[i])->isRadicalType())
+            static_cast<const AtomicComponent*>(components[i])->isRadicalType())
                 return false;
     return true;
 }
