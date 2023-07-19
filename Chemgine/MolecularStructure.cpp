@@ -182,24 +182,34 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 
 void MolecularStructure::normalize()
 {
-    if (components.size() == 0)
+    if (components.size() <= 1)
         return;
 
-    std::vector<size_t> map;
-    map.reserve(components.size());
-    for (size_t i = 0; i < components.size(); ++i)
-        map.emplace_back(i);
+    std::vector<const BaseComponent*> copy(components);
+    std::vector<size_t> map(components.size(), npos);
 
-    for (size_t i = 1; i < components.size(); ++i)
+
+    for (size_t i = 1; i < copy.size(); ++i)
     {
         int j = i - 1;
-        while (j >= 0 && components[map[j]]->getPrecedence() < components[map[i]]->getPrecedence())
+        auto k = copy[i];
+        while (j >= 0 && copy[j]->getPrecedence() < k->getPrecedence())
         {
-            ++map[j];
+            copy[j + 1] = copy[j];
             --j;
         }
-        map[i] = j + 1;
+        copy[j + 1] = k;
     }
+
+    //not very efficient :(
+    for (size_t i = 0; i < map.size(); ++i)
+    {
+        for (size_t j = 0; j < copy.size(); ++j)
+            if (copy[j] == components[i])
+                map[i] = j;
+    }
+
+    components = copy;
 
     for (size_t i = 0; i < bonds.size(); ++i)
         for (size_t j = 0; j < bonds[i].size(); ++j)
@@ -211,22 +221,33 @@ void MolecularStructure::normalize()
             continue;
 
         size_t p = i;
-        auto pC = components[p];
         auto pB = std::move(bonds[p]);
         do
         {
-            const auto tempC = components[map[p]];
-            components[map[p]] = pC;
-            pC = tempC;
-
-            const auto tempB = std::move(bonds[map[p]]);
+            auto tempB = std::move(bonds[map[p]]);
             bonds[map[p]] = std::move(pB);
             pB = std::move(tempB);
 
             const size_t tempP = p;
             p = map[p];
             map[tempP] = npos;
-        } while (p != npos && map[p] != npos);
+        } while (map[p] != npos);
+    }
+
+    for (size_t b = 0; b < bonds.size(); ++b)
+    {
+        for (size_t i = 1; i < bonds[b].size(); ++i)
+        {
+            int j = i - 1;
+            auto k = bonds[b][i];
+            while (j >= 0 &&
+                components[bonds[b][j]->other]->getPrecedence() < components[k->other]->getPrecedence())
+            {
+                bonds[b][j + 1] = bonds[b][j];
+                --j;
+            }
+            bonds[b][j + 1] = k;
+        }
     }
 }
 

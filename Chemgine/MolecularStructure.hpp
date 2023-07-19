@@ -23,6 +23,12 @@ private:
         const size_t c,
         std::vector<uint8_t>& visited) const;
 
+    /// <summary>
+    /// Normalizes the structure by ordering components and bonds in decreasing order of
+    /// component precedence.
+    /// Normalization simplifies algorithms and speeds up comparison.
+    /// Complexity: O(n_comps * n_bonds * n_bonds)
+    /// </summary>
     void normalize();
 
     /// <summary>
