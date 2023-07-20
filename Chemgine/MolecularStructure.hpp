@@ -50,6 +50,15 @@ private:
         const Bond& nextB, const MolecularStructure& b,
         const bool escapeRadicalTypes);
 
+    static uint8_t getBondSimilarity(
+        const size_t idxA, const MolecularStructure& a,
+        const size_t idxB, const MolecularStructure& b);
+
+    // returns a similarity score for grading maximal mappings, a score of 0 means no matching
+    static uint8_t maximalSimilarity(
+        const Bond& nextA, const MolecularStructure& a,
+        const Bond& nextB, const MolecularStructure& b);
+
     /// <summary>
     /// Tries to find the pattern structure into the target starting from the given indexes.
     /// A cycle will match with a smaller cycle, connectivity of the mapping must be checked after this function is called
@@ -70,7 +79,7 @@ private:
         bool escapeRadicalTypes
     );
 
-    static std::unordered_map<size_t, size_t> DFSMaximal(
+    static std::pair<std::unordered_map<size_t, size_t>, uint8_t> DFSMaximal(
         size_t idxA, const MolecularStructure& a,
         std::unordered_set<size_t>& mappedA,
         size_t idxB, const MolecularStructure& b,

@@ -51,14 +51,23 @@ FunctionalGroup {
 int main()
 {
     {
-        TestManager tests;
-        tests.runAll();
+        //TestManager tests;
+        //tests.runAll();
 
-        //DataStore r;
-        //BaseComponent::setDataStore(r);
-        //r.loadAtomsData("Data/AtomData.csv");
-        //MolecularStructure("OC(R)O");
-
+        DataStore r;
+        BaseComponent::setDataStore(r);
+        r.loadAtomsData("Data/AtomData.csv");
+        MolecularStructure a("CC(=O)OC");
+        MolecularStructure b("CO");
+        std::cout << a.print() << '\n' << b.print() << '\n';
+        auto map = a.maximalMapTo(b);
+        for (auto const& x : map)
+        {
+            std::cout << x.first  // string (key)
+                << ':'
+                << x.second // string's value 
+                << std::endl;
+        }
     }
 
     if (BaseComponent::instanceCount != 0)

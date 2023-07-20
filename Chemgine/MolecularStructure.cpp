@@ -8,7 +8,7 @@
 MolecularStructure::MolecularStructure(const std::string& smiles)
 {
     loadFromSMILES(smiles);
-    normalize();
+    //normalize();
 }
 
 MolecularStructure::~MolecularStructure()
@@ -481,6 +481,38 @@ bool MolecularStructure::areMatching(
     return true;
 }
 
+uint8_t MolecularStructure::getBondSimilarity(
+    const size_t idxA, const MolecularStructure& a,
+    const size_t idxB, const MolecularStructure& b)
+{
+    uint8_t score = 255;
+    uint8_t scorePerBond = a.bonds[idxA].size() / 255;
+    std::array<int8_t, 5> counts{ 0 };
+
+    for (size_t i = 0; i < a.bonds[idxA].size(); ++i)
+        ++counts[a.bonds[idxA][i]->getValence()];
+    for (size_t i = 0; i < b.bonds[idxB].size(); ++i)
+        --counts[b.bonds[idxB][i]->getValence()];
+
+    for (size_t i = 0; i < counts.size(); ++i)
+        score -= counts[i] * scorePerBond;
+
+    return score;
+}
+
+uint8_t MolecularStructure::maximalSimilarity(
+    const Bond& nextA, const MolecularStructure& a,
+    const Bond& nextB, const MolecularStructure& b)
+{
+    if (nextA.type != nextB.type)
+        return 0;
+
+    if (BaseComponent::areEqual(*a.components[nextA.other], *(b.components[nextB.other])) == false)
+        return 0;
+
+    return getBondSimilarity(nextA.other, a, nextB.other, b);
+}
+
 bool MolecularStructure::DFSCompare(
     size_t idxA, const MolecularStructure& a,
     size_t idxB, const MolecularStructure& b,
@@ -502,21 +534,21 @@ bool MolecularStructure::DFSCompare(
 
         bool matchFound = false;
         for (size_t j = 0; j < a.bonds[idxA].size(); ++j)
-            if (mapping.contains(a.bonds[idxA][j]->other) == false &&  // do not reuse already mapped nodes
-                areMatching(*a.bonds[idxA][j], a, next, b, escapeRadicalTypes))
+        {
+            if (mapping.contains(a.bonds[idxA][j]->other) ||  // do not reuse already mapped nodes
+                areMatching(*a.bonds[idxA][j], a, next, b, escapeRadicalTypes) == false)
+                continue;
+
+            if (DFSCompare(a.bonds[idxA][j]->other, a, next.other, b, visitedB, mapping, escapeRadicalTypes))
             {
-                if (DFSCompare(a.bonds[idxA][j]->other, a, next.other, b, visitedB, mapping, escapeRadicalTypes))
-                {
-                    matchFound = true;
-                    break;
-                }
-                else
-                {
-                    // revert wrong pathway
-                    visitedB[next.other] = false;
-                    mapping.erase(a.bonds[idxA][j]->other);
-                }
+                matchFound = true;
+                break;
             }
+            
+            // revert wrong branch
+            visitedB[next.other] = false;
+            mapping.erase(a.bonds[idxA][j]->other);
+        }
 
         if (matchFound == false)
         {
@@ -527,14 +559,14 @@ bool MolecularStructure::DFSCompare(
     return true;
 }
 
-std::unordered_map<size_t, size_t> MolecularStructure::DFSMaximal(
+std::pair<std::unordered_map<size_t, size_t>, uint8_t> MolecularStructure::DFSMaximal(
     size_t idxA, const MolecularStructure& a,
     std::unordered_set<size_t>& mappedA,
     size_t idxB, const MolecularStructure& b,
     std::unordered_set<size_t>& mappedB)
 {
-    std::unordered_map<size_t, size_t> subMap;
-    subMap.emplace(std::move(std::make_pair(idxA, idxB)));
+    std::pair<std::unordered_map<size_t, size_t>, uint8_t> newMap;
+    newMap.first.emplace(std::move(std::make_pair(idxA, idxB)));
     mappedA.emplace(idxA);
     mappedB.emplace(idxB);
 
@@ -547,32 +579,37 @@ std::unordered_map<size_t, size_t> MolecularStructure::DFSMaximal(
         }
 
         // only the largest mapping is added into the final but states need to be copied
-        std::unordered_map<size_t, size_t> maxMapping;
+        std::pair<std::unordered_map<size_t, size_t>, uint8_t> maxMapping;
         std::unordered_set<size_t> maxMappedA;
         std::unordered_set<size_t> maxMappedB;
         for (size_t j = 0; j < a.bonds[idxA].size(); ++j)
         {
-            if (mappedA.contains(a.bonds[idxA][j]->other) == false &&  // do not reuse already mapped nodes
-                areMatching(*a.bonds[idxA][j], a, next, b, false))
+            if (mappedA.contains(a.bonds[idxA][j]->other)) // do not reuse already mapped nodes
+                continue;
+
+            const auto score = maximalSimilarity(*a.bonds[idxA][j], a, next, b);
+            if (score == 0)
+                continue;
+
+            // reversing bad branches isn't possible here, so copies are needed :(
+            auto mappedACopy = mappedA;
+            auto mappedBCopy = mappedB;
+            auto subMap = DFSMaximal(a.bonds[idxA][j]->other, a, mappedBCopy, next.other, b, mappedBCopy);
+            if (subMap.first.size() > maxMapping.first.size() ||
+               (subMap.first.size() == maxMapping.first.size() && score > maxMapping.second))
             {
-                std::unordered_set<size_t> mappedACopy = mappedA;
-                std::unordered_set<size_t> mappedBCopy = mappedB;
-                std::unordered_map<size_t, size_t> subMap =
-                    DFSMaximal(a.bonds[idxA][j]->other, a, mappedBCopy, next.other, b, mappedBCopy);
-                if (subMap.size() > maxMapping.size())
-                {
-                    maxMapping = std::move(subMap);
-                    maxMappedA = std::move(mappedACopy);
-                    maxMappedB = std::move(mappedBCopy);
-                }
+                maxMapping = std::move(subMap);
+                maxMappedA = std::move(mappedACopy);
+                maxMappedB = std::move(mappedBCopy);
             }
         }
 
-        subMap.merge(maxMapping);
+        newMap.first.merge(maxMapping.first);
+        newMap.second = maxMapping.second;
         mappedA.merge(maxMappedA);
         mappedB.merge(maxMappedB);
     }
-    return subMap;
+    return newMap;
 }
 
 bool MolecularStructure::checkConnectivity(
@@ -632,23 +669,30 @@ std::unordered_map<size_t, size_t> MolecularStructure::maximalMapTo(const Molecu
         return std::unordered_map<size_t, size_t>();
 
     // find atom that matches in both target and pattern
-    std::unordered_map<size_t, size_t> maxMapping;
+    std::pair<std::unordered_map<size_t, size_t>, uint8_t> maxMapping;
+    uint8_t maxScore = 0;
     for (size_t i = 0; i < this->componentCount(); ++i)
     {
-        if (areMatching(i, *this, 0, pattern))
+        if (BaseComponent::areEqual(*this->components[i], *(pattern.components[0])) == false)
+            continue;
+
+        const auto score = getBondSimilarity(i, *this, 0, pattern);
+        std::vector<uint8_t> visited(pattern.componentCount(), false);
+        std::unordered_set<size_t> mappedA, mappedB;
+        auto map = DFSMaximal(i, *this, mappedA, 0, pattern, mappedB);
+
+        // picks largest mapping, then best 2nd comp. score, then best 1st comp. score
+        if (map.first.size() > maxMapping.first.size() ||
+            (map.first.size() == maxMapping.first.size() && (
+                map.second > maxMapping.second ||
+                (map.second == maxMapping.second &&
+                    score > maxScore))))
         {
-            std::vector<uint8_t> visited(pattern.componentCount(), false);
-            std::unordered_map<size_t, size_t> mapping;
-            DFSCompare(i, *this, 0, pattern, visited, mapping, false);
-            
-
-
+            maxMapping = std::move(map);
+            maxScore == score;
         }
     }
-    return std::unordered_map<size_t, size_t>();
-    // no radical escaping
-    // not all atoms in pattern need matching
-    // do not check that the next atom has the right amount of bonds (iff it is final)
+    return maxMapping.first;
 }
 
 bool MolecularStructure::operator==(const MolecularStructure& other) const
