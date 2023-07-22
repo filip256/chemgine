@@ -60,3 +60,8 @@ uint8_t Atom::getPrecedence() const
     
     return data().getRarity();
 }
+
+std::unordered_map<ComponentIdType, size_t> Atom::getComponentCountMap() const
+{
+    return std::unordered_map<ComponentIdType, size_t> {std::make_pair(id, 1)};
+}

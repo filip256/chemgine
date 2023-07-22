@@ -132,11 +132,20 @@ public:
     bool isComplete() const;
 
     /// <summary>
+    /// Complexity: O(n)
+    /// </summary>
+    std::unordered_map<ComponentIdType, size_t> getComponentCountMap() const;
+
+    /// <summary>
     /// Hydrogens not included.
+    /// Complexity: O(1)
     /// </summary>
     /// <returns></returns>
     size_t componentCount() const;
 
+    /// <summary>
+    /// Complexity: O(n)
+    /// </summary>
     size_t bondCount() const;
 
     bool isCyclic() const;

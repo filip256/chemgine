@@ -26,3 +26,8 @@ uint8_t FunctionalGroup::getPrecedence() const
 {
     return 9;
 }
+
+std::unordered_map<ComponentIdType, size_t> FunctionalGroup::getComponentCountMap() const
+{
+    return dataStore().backbones.at(id).getStructure().getComponentCountMap();
+}

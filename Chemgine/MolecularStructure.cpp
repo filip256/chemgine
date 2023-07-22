@@ -318,6 +318,29 @@ bool MolecularStructure::isComplete() const
     return true;
 }
 
+std::unordered_map<ComponentIdType, size_t> MolecularStructure::getComponentCountMap() const
+{
+    std::unordered_map<ComponentIdType, size_t> result;
+    for (size_t i = 0; i < components.size(); ++i)
+    {
+        if (result.contains(components[i]->getId()))
+            ++result[components[i]->getId()];
+        else
+            result.emplace(std::move(std::make_pair(components[i]->getId(), 1)));
+    }
+    
+    if (hydrogenCount == 0)
+        return result;
+
+    const auto hId = Atom("H").getId();
+    if (result.contains(hId))
+        result[hId] += hydrogenCount;
+    else
+        result.emplace(std::move(std::make_pair(hId, hydrogenCount)));
+
+    return result;
+}
+
 size_t MolecularStructure::componentCount() const
 {
     return components.size();
@@ -448,7 +471,6 @@ bool MolecularStructure::areMatching(
 
     return true;
 }
-
 
 bool MolecularStructure::areMatching(
     const Bond& nextA, const MolecularStructure& a,

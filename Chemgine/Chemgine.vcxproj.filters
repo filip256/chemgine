@@ -177,6 +177,21 @@
     <ClCompile Include="ReactionDataTable.cpp">
       <Filter>Source Files\Data\Tables</Filter>
     </ClCompile>
+    <ClCompile Include="SystemMatrix.cpp">
+      <Filter>Source Files\DataStructures</Filter>
+    </ClCompile>
+    <ClCompile Include="Reactable.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
+    <ClCompile Include="BackboneReactable.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionalGroupReactable.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
+    <ClCompile Include="ReactableFactory.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -286,6 +301,21 @@
     </ClInclude>
     <ClInclude Include="Tests.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemMatrix.hpp">
+      <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="Reactable.hpp">
+      <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="BackboneReactable.hpp">
+      <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionalGroupReactable.hpp">
+      <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="ReactableFactory.hpp">
+      <Filter>Header Files\Reactions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

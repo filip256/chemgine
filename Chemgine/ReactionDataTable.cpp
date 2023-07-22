@@ -3,7 +3,6 @@
 #include "Logger.hpp"
 
 #include <fstream>
-#include <algorithm>
 
 ReactionDataTable::ReactionDataTable(
 	const FunctionalGroupDataTable& functionalGroups,
@@ -80,25 +79,36 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			continue;
 		}
 
-		auto reactantsIds = findComponents(reactants);
-		if (std::any_of(reactantsIds.begin(), reactantsIds.end(), [](ComponentIdType id) {return id == 0; }))
+		std::vector<std::pair<ComponentIdType, uint8_t>>reactantIds;
+		reactantIds.reserve(reactants.size());
+		for (size_t i = 0; i < reactants.size(); ++i)
 		{
-			Logger::log("Undefined reactant, reaction with id " + std::to_string(id.result) + " skipped.", LogType::BAD);
-			continue;
+			const auto cId = findComponent(reactants[i]);
+			if (cId == 0)
+			{
+				Logger::log("Undefined reactant '" + reactants[i] + "' in reaction with id " + std::to_string(id.result) + " skipped.", LogType::BAD);
+				continue;
+			}
+			reactantIds.emplace_back(std::make_pair(cId, 0));
 		}
 
-		auto productsIds = findComponents(products);
-		if (std::any_of(reactantsIds.begin(), reactantsIds.end(), [](ComponentIdType id) {return id == 0; }))
+		std::vector<std::pair<ComponentIdType, uint8_t>>productIds;
+		productIds.reserve(products.size());
+		for (size_t i = 0; i < products.size(); ++i)
 		{
-			Logger::log("Undefined product, reaction with id " + std::to_string(id.result) + " skipped.", LogType::BAD);
-			continue;
+			const auto cId = findComponent(products[i]);
+			if (cId == 0)
+			{
+				Logger::log("Undefined product '" + products[i] + "' in reaction with id " + std::to_string(id.result) + " skipped.", LogType::BAD);
+				continue;
+			}
+			productIds.emplace_back(std::make_pair(cId, 0));
 		}
-
 
 		if (table.emplace(
 			id.result,
 			line[1],
-			std::move(ReactionData(id.result, line[1], std::move(reactantsIds), std::move(productsIds)))
+			std::move(ReactionData(id.result, line[1], std::move(reactantIds), std::move(productIds)))
 		) == false)
 		{
 			Logger::log("Reaction with duplicate id " + std::to_string(id.result) + " skipped.", LogType::WARN);

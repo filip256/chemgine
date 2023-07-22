@@ -172,15 +172,20 @@
     <ClCompile Include="Backbone.cpp" />
     <ClCompile Include="BackboneData.cpp" />
     <ClCompile Include="BackboneDataTable.cpp" />
+    <ClCompile Include="BackboneReactable.cpp" />
     <ClCompile Include="BaseReactionCondition.cpp" />
     <ClCompile Include="CompositeComponentData.cpp" />
     <ClCompile Include="DataStoreAccessor.cpp" />
     <ClCompile Include="FloatValue.cpp" />
+    <ClCompile Include="FunctionalGroupReactable.cpp" />
     <ClCompile Include="MoleculeDataTable.cpp" />
     <ClCompile Include="OrganicMolecule.cpp" />
     <ClCompile Include="OrganicMoleculeData.cpp" />
+    <ClCompile Include="Reactable.cpp" />
+    <ClCompile Include="ReactableFactory.cpp" />
     <ClCompile Include="ReactionData.cpp" />
     <ClCompile Include="ReactionDataTable.cpp" />
+    <ClCompile Include="SystemMatrix.cpp" />
     <ClCompile Include="Value.cpp" />
     <ClInclude Include="AtomicComponent.hpp" />
     <ClInclude Include="AtomIdentifier.hpp" />
@@ -194,6 +199,7 @@
     <ClInclude Include="Backbone.hpp" />
     <ClInclude Include="BackboneData.hpp" />
     <ClInclude Include="BackboneDataTable.hpp" />
+    <ClInclude Include="BackboneReactable.hpp" />
     <ClInclude Include="BaseComponentData.hpp" />
     <ClInclude Include="BaseReactionCondition.hpp" />
     <ClInclude Include="CompositeComponent.hpp" />
@@ -210,6 +216,7 @@
     <ClInclude Include="FunctionalGroup.hpp" />
     <ClInclude Include="FunctionalGroupData.hpp" />
     <ClInclude Include="FunctionalGroupDataTable.hpp" />
+    <ClInclude Include="FunctionalGroupReactable.hpp" />
     <ClInclude Include="LogType.hpp" />
     <ClCompile Include="MolecularStructure.cpp" />
     <ClCompile Include="MultiIndexMap.cpp" />
@@ -218,8 +225,11 @@
     <ClCompile Include="Result.cpp" />
     <ClInclude Include="OrganicMolecule.hpp" />
     <ClInclude Include="OrganicMoleculeData.hpp" />
+    <ClInclude Include="Reactable.hpp" />
+    <ClInclude Include="ReactableFactory.hpp" />
     <ClInclude Include="ReactionData.hpp" />
     <ClInclude Include="ReactionDataTable.hpp" />
+    <ClInclude Include="SystemMatrix.hpp" />
     <ClInclude Include="Tests.hpp" />
     <ClInclude Include="Value.hpp" />
   </ItemGroup>

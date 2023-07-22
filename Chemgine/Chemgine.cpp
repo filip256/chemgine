@@ -7,6 +7,8 @@
 #include "Atom.hpp"
 #include "CompositeComponent.hpp"
 #include "Tests.hpp"
+#include "Reactable.hpp"
+#include "ReactableFactory.hpp"
 
 
 /*
@@ -56,6 +58,7 @@ int main()
 
         DataStore r;
         BaseComponent::setDataStore(r);
+        ReactableFactory::setDataStore(r);
         r.loadAtomsData("Data/AtomData.csv");
         MolecularStructure a("CC(=O)OC");
         MolecularStructure b("CO");
@@ -74,6 +77,8 @@ int main()
         Logger::log("Memory leak detected: BaseComponent (" + std::to_string(BaseComponent::instanceCount) + " unreleased instances).", LogType::BAD);
     if (Bond::instanceCount != 0)
         Logger::log("Memory leak detected: Bond (" + std::to_string(Bond::instanceCount) + " unreleased instances).", LogType::BAD);
+    if (Reactable::instanceCount != 0)
+        Logger::log("Memory leak detected: Reactable (" + std::to_string(Reactable::instanceCount) + " unreleased instances).", LogType::BAD);
 
     getchar();
     return 0;

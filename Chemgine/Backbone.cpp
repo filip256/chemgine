@@ -26,3 +26,8 @@ uint8_t Backbone::getPrecedence() const
 {
     return 100;
 }
+
+std::unordered_map<ComponentIdType, size_t> Backbone::getComponentCountMap() const
+{
+    return dataStore().backbones.at(id).getStructure().getComponentCountMap();
+}

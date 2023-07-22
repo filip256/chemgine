@@ -1,5 +1,7 @@
 #pragma once
 
+#include <unordered_map>
+
 #include "ComponentType.hpp"
 #include "BaseComponentData.hpp"
 #include "DataStoreAccessor.hpp"
@@ -13,12 +15,10 @@ protected:
 	const ComponentType type;
 
 	BaseComponent(const ComponentIdType id, const ComponentType type) noexcept;
-	BaseComponent(BaseComponent&&) noexcept = default;
 
 	/// <summary>
 	/// Similar to the static getDataStore but assumes that the null check has been done by the constructor
 	/// </summary>
-	/// <returns></returns>
 	const DataStore& dataStore() const;
 
 public:
@@ -33,6 +33,10 @@ public:
 	bool isCompositeType() const;
 
 	static void setDataStore(const DataStore& dataStore);
+
+	/// <summary>
+	/// Also checks that the data accessor was set, should be called by other static methods.
+	/// </summary>
 	static const DataStore& getDataStore();
 
 	static bool isCompositeType(const BaseComponent& component);
@@ -49,6 +53,8 @@ public:
 	virtual bool isRadicalType() const = 0;
 
 	virtual uint8_t getPrecedence() const = 0;
+
+	virtual std::unordered_map<ComponentIdType, size_t> getComponentCountMap() const = 0;
 
 	// for memory leak checking 
 	static size_t instanceCount;
