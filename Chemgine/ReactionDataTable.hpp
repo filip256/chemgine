@@ -14,9 +14,6 @@ private:
 	const BackboneDataTable& backbones;
 	const MoleculeDataTable& molecules;
 
-	ComponentIdType findComponent(const std::string& smiles) const;
-	std::vector<ComponentIdType> findComponents(const std::vector<std::string>& smilesList) const;
-
 public:
 	ReactionDataTable(
 		const FunctionalGroupDataTable& functionalGroups,

@@ -7,5 +7,5 @@ FunctionalGroupReactable::FunctionalGroupReactable(const ComponentIdType id) noe
 
 const MolecularStructure& FunctionalGroupReactable::getStructure() const
 {
-	return dataStore().backbones.at(id).getStructure();
+	return dataStore().functionalGroups.at(id).getStructure();
 }

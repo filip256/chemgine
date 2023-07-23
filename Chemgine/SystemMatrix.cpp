@@ -11,7 +11,7 @@ void SystemMatrix<T>::addRow(std::vector<T>&& row, const T result)
 template <class T>
 void SystemMatrix<T>::addRow(const size_t n)
 {
-	matrix.emplace_back(std::move(std::vector(n + 1, 0)));
+	matrix.emplace_back(std::move(std::vector<T>(n + 1, 0)));
 }
 
 template <class T>
@@ -37,3 +37,6 @@ std::vector<T>& SystemMatrix<T>::back()
 {
 	return matrix.back();
 }
+
+template class SystemMatrix<float>;
+template class SystemMatrix<int>;

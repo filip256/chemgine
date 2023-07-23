@@ -15,7 +15,6 @@ private:
 	std::vector<std::pair<const Reactable*, uint8_t>> reactants;
 	std::vector<std::pair<const Reactable*, uint8_t>> products;
 
-	bool balance();
 
 public:
 	ReactionData(
@@ -28,4 +27,6 @@ public:
 	ReactionData(const ReactionData&) = delete;
 	ReactionData(ReactionData&&) = default;
 	~ReactionData() noexcept;
+	
+	bool balance();
 };

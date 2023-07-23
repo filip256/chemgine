@@ -1,6 +1,7 @@
 #include "ReactionDataTable.hpp"
 #include "DataHelpers.hpp"
 #include "Logger.hpp"
+#include "ReactableFactory.hpp"
 
 #include <fstream>
 
@@ -13,28 +14,6 @@ ReactionDataTable::ReactionDataTable(
 	backbones(backbones),
 	molecules(molecules)
 {}
-
-ComponentIdType ReactionDataTable::findComponent(const std::string& smiles) const
-{
-	size_t result = functionalGroups.findFirst(smiles);
-	if (result != DataTable::npos)
-		return functionalGroups[result].id;
-
-	result = backbones.findFirst(smiles);
-	if (result != DataTable::npos)
-		return backbones[result].id;
-
-	return 0;
-}
-
-std::vector<ComponentIdType> ReactionDataTable::findComponents(const std::vector<std::string>& smilesList) const
-{
-	std::vector<ComponentIdType> result;
-	result.reserve(smilesList.size());
-	for (size_t i = 0; i < smilesList.size(); ++i)
-		result.emplace_back(findComponent(smilesList[i]));
-	return result;
-}
 
 bool ReactionDataTable::loadFromFile(const std::string& path)
 {
@@ -79,36 +58,44 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			continue;
 		}
 
-		std::vector<std::pair<ComponentIdType, uint8_t>>reactantIds;
+		const ReactableFactory factory;
+		std::vector<std::pair<const Reactable*, uint8_t>>reactantIds;
 		reactantIds.reserve(reactants.size());
 		for (size_t i = 0; i < reactants.size(); ++i)
 		{
-			const auto cId = findComponent(reactants[i]);
-			if (cId == 0)
+			const auto r = factory.get(reactants[i]);
+			if (r == nullptr)
 			{
 				Logger::log("Undefined reactant '" + reactants[i] + "' in reaction with id " + std::to_string(id.result) + " skipped.", LogType::BAD);
 				continue;
 			}
-			reactantIds.emplace_back(std::make_pair(cId, 0));
+			reactantIds.emplace_back(std::make_pair(r, 0));
 		}
 
-		std::vector<std::pair<ComponentIdType, uint8_t>>productIds;
+		std::vector<std::pair<const Reactable*, uint8_t>>productIds;
 		productIds.reserve(products.size());
 		for (size_t i = 0; i < products.size(); ++i)
 		{
-			const auto cId = findComponent(products[i]);
-			if (cId == 0)
+			const auto r = factory.get(products[i]);
+			if (r == 0)
 			{
 				Logger::log("Undefined product '" + products[i] + "' in reaction with id " + std::to_string(id.result) + " skipped.", LogType::BAD);
 				continue;
 			}
-			productIds.emplace_back(std::make_pair(cId, 0));
+			productIds.emplace_back(std::make_pair(r, 0));
+		}
+
+		auto temp = ReactionData(id.result, line[1], std::move(reactantIds), std::move(productIds));
+		if (temp.balance() == false)
+		{
+			Logger::log("Reaction with id " + std::to_string(id.result) + " could not be balanced.", LogType::BAD);
+			continue;
 		}
 
 		if (table.emplace(
 			id.result,
 			line[1],
-			std::move(ReactionData(id.result, line[1], std::move(reactantIds), std::move(productIds)))
+			std::move(temp)
 		) == false)
 		{
 			Logger::log("Reaction with duplicate id " + std::to_string(id.result) + " skipped.", LogType::WARN);

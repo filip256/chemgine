@@ -60,6 +60,10 @@ int main()
         BaseComponent::setDataStore(r);
         ReactableFactory::setDataStore(r);
         r.loadAtomsData("Data/AtomData.csv");
+        r.loadFunctionalGroupsData("Data/FunctionalGroupData.csv");
+        r.loadBackbonesData("Data/BackboneData.csv");
+        r.loadMoleculesData("Data/OrganicMoleculeData.csv");
+        r.loadReactionsData("Data/ReactionData.csv");
         MolecularStructure a("CC(=O)OC");
         MolecularStructure b("CO");
         std::cout << a.print() << '\n' << b.print() << '\n';

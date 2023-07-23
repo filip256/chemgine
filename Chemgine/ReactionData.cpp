@@ -29,7 +29,7 @@ ReactionData::~ReactionData() noexcept
 
 bool ReactionData::balance()
 {
-	SystemMatrix<float> system;
+	SystemMatrix<int> system;
 	const size_t syslen = reactants.size() + products.size();
 	std::unordered_map<ComponentIdType, size_t> sysmap;
 
@@ -63,14 +63,12 @@ bool ReactionData::balance()
 			{
 				sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
 				system.addRow(syslen);
-				system.back()[i] = c.second;
-				system.back().back() = products[i].second;
+				system.back()[reactants.size() + i] = -1 * c.second;
 			}
 			else
 			{
 				const auto temp = sysmap[c.first];
-				system[temp][i] = c.second;
-				system[temp].back() = products[i].second;
+				system[temp][reactants.size() + i] = -1 * c.second;
 			}
 		}
 	}

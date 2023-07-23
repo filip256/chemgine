@@ -3,6 +3,8 @@
 #include "DataStoreAccessor.hpp"
 #include "MolecularStructure.hpp"
 
+class ReactableFactory;
+
 class Reactable
 {
 private:
@@ -17,6 +19,8 @@ public:
 	virtual const MolecularStructure& getStructure() const = 0;
 
 	static void setDataStore(const DataStore& dataStore);
+
+	friend class ReactableFactory;
 
 	// for memory leak checking 
 	static size_t instanceCount;
