@@ -67,7 +67,7 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			if (r == nullptr)
 			{
 				Logger::log("Undefined reactant '" + reactants[i] + "' in reaction with id " + std::to_string(id.result) + " skipped.", LogType::BAD);
-				continue;
+				continue; // TODO: add unknown into molecules and predict properties
 			}
 			reactantIds.emplace_back(std::make_pair(r, 0));
 		}
@@ -80,7 +80,7 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			if (r == 0)
 			{
 				Logger::log("Undefined product '" + products[i] + "' in reaction with id " + std::to_string(id.result) + " skipped.", LogType::BAD);
-				continue;
+				continue; // TODO: add unknown into molecules and predict properties
 			}
 			productIds.emplace_back(std::make_pair(r, 0));
 		}

@@ -60,3 +60,12 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 
 	return true;
 }
+
+size_t MoleculeDataTable::findFirst(const std::string& smiles) const
+{
+	for (size_t i = 0; i < table.size(); ++i)
+		if (table[i].getStructure() == smiles)
+			return i;
+
+	return npos;
+}

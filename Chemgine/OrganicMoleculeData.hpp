@@ -14,6 +14,9 @@ private:
 	MolecularStructure structure;
 
 public:
+	const MoleculeIdType id;
+	const std::string name;
+
 	OrganicMoleculeData(
 		const MoleculeIdType id,
 		const std::string& name,
@@ -22,4 +25,6 @@ public:
 	OrganicMoleculeData(const OrganicMoleculeData&) = delete;
 	OrganicMoleculeData(OrganicMoleculeData&&) = default;
 	~OrganicMoleculeData() = default;
+
+	const MolecularStructure& getStructure() const;
 };

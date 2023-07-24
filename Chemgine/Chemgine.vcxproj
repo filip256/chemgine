@@ -179,6 +179,7 @@
     <ClCompile Include="FloatValue.cpp" />
     <ClCompile Include="FunctionalGroupReactable.cpp" />
     <ClCompile Include="MoleculeDataTable.cpp" />
+    <ClCompile Include="MoleculeReactable.cpp" />
     <ClCompile Include="OrganicMolecule.cpp" />
     <ClCompile Include="OrganicMoleculeData.cpp" />
     <ClCompile Include="Reactable.cpp" />
@@ -221,6 +222,7 @@
     <ClCompile Include="MolecularStructure.cpp" />
     <ClCompile Include="MultiIndexMap.cpp" />
     <ClInclude Include="MoleculeDataTable.hpp" />
+    <ClInclude Include="MoleculeReactable.hpp" />
     <ClInclude Include="MultiIndexMap.hpp" />
     <ClCompile Include="Result.cpp" />
     <ClInclude Include="OrganicMolecule.hpp" />
