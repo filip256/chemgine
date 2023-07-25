@@ -77,7 +77,10 @@ In an optimized molecular structure there must be a way to specify which atoms a
     1. Name each reactant (Ri) and product (Pi), and their coefficinets (Xi, Yi);
     2. Find the liniar eq of every atom A by:
         SUM[i:0->n] { Xi*(cnt A in Ri) - Yi*(cnt A in Pi) }
-    3. Solve the system formed by each eq(A) = 0 using Gaussian elimination
+    3. Since the system will usually have 1 degree of freedom, the coefficient of 
+       the first product is locked in at 1 and thus the number of unknowns is reduced
+    4. Solve the system formed by each eq(A) using Gaussian elimination
+    5. If needed, multiply coefficients to obtain integers
 
 
 -- Reactables --
@@ -110,9 +113,10 @@ Tasks:
   DONE. Implement ReactionData with CSV loader
   ?. Implement indexing system for reactions
   DONE. Implement maximalMapping
-  5. Implement reactables and reactable factory
+  DONE. Implement reactables and reactable factory
   6. Implement reactant - product mapping
-  7. Implement stoechiometry
+  DONE. Implement stoechiometry
+  8. Implement toSMILES
 ---
   1. Implement reactor 
   6. Implement algorithm for checking if a reaction is possible

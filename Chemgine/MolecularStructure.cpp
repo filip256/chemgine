@@ -744,3 +744,45 @@ bool MolecularStructure::operator!=(const std::string& other) const
 {
     return *this != MolecularStructure(other);
 }
+
+
+
+std::string MolecularStructure::rToSMILES(size_t c, std::vector<uint8_t>& visited) const
+{
+    std::string r;
+    while (true)
+    {
+        if (visited[c])
+            break;
+        visited[c] = true;
+
+        r += components[c]->data().symbol;
+        if (bonds[c].size() == 1)
+        {
+            c = bonds[c][0]->other;
+        }
+        else if (bonds[c].size() == 2)
+        {
+            if(bonds[c][0]->other != c)
+                c = bonds[c][0]->other;
+            else
+                c = bonds[c][1]->other;
+        }
+        else if (bonds[c].empty())
+        {
+            break;
+        }
+        else
+        {
+            for (size_t i = 0; i < bonds[c].size(); ++i)
+                r += '(' + rToSMILES(bonds[c][i]->other, visited) + ')';
+        }
+    }
+    return r;
+}
+
+std::string MolecularStructure::toSMILES() const
+{
+    std::vector<uint8_t> visited(components.size(), false);
+    return rToSMILES(0, visited);
+}

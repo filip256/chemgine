@@ -1,2 +1,4 @@
 Id,Name,Reactants,Products,Conditions,Properties
 201,esterification,O=C(R)O;OR,O=C(R)OR;O,,
+202,dehydration,OR;OC,COR;O,,
+203,dehydration,OC,COC;O,,

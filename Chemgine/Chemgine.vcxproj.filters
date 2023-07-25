@@ -195,6 +195,9 @@
     <ClCompile Include="MoleculeReactable.cpp">
       <Filter>Source Files\Reactions</Filter>
     </ClCompile>
+    <ClCompile Include="Maths.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -322,6 +325,9 @@
     </ClInclude>
     <ClInclude Include="MoleculeReactable.hpp">
       <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="Maths.hpp">
+      <Filter>Header Files\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

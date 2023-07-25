@@ -65,6 +65,7 @@ int main()
         r.loadMoleculesData("Data/OrganicMoleculeData.csv");
         r.loadReactionsData("Data/ReactionData.csv");
         MolecularStructure a("CC(=O)OC");
+        std::cout << a.toSMILES()<<"\n";
         MolecularStructure b("CO");
         std::cout << a.print() << '\n' << b.print() << '\n';
         auto map = a.maximalMapTo(b);

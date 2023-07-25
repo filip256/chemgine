@@ -94,7 +94,7 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 
 		if (table.emplace(
 			id.result,
-			line[1],
+			std::to_string(id.result),
 			std::move(temp)
 		) == false)
 		{

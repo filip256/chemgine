@@ -23,6 +23,8 @@ private:
         const size_t c,
         std::vector<uint8_t>& visited) const;
 
+    std::string rToSMILES(const size_t c, std::vector<uint8_t>& visited) const;
+
     /// <summary>
     /// Normalizes the structure by ordering components and bonds in decreasing order of
     /// component precedence.
@@ -105,6 +107,7 @@ public:
     const BaseComponent* getComponent(const size_t idx) const;
     std::string print(const size_t maxWidth = 100, const size_t maxHeight = 50) const;
     bool loadFromSMILES(const std::string& smiles);
+    std::string toSMILES() const;
 
     /// <summary>
     /// Complexity: O(1)
@@ -141,7 +144,7 @@ public:
     /// Complexity: O(1)
     /// </summary>
     /// <returns></returns>
-    size_t componentCount() const;
+    inline size_t componentCount() const;
 
     /// <summary>
     /// Complexity: O(n)

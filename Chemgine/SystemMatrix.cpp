@@ -1,46 +1,41 @@
 #include "SystemMatrix.hpp"
 
+#include <iostream>
 
 template <class T>
 bool SystemMatrix<T>::toREF()
 {
-    for (size_t k = 0; k < matrix.size(); ++k)
+    int cols = matrix[0].size() - 1;
+    int rows = cols;
+
+    for (size_t i = 0; i < rows; ++i) 
     {
-        // Initialize maximum value and index for pivot
-        size_t i_max = k;
-        size_t v_max = matrix[i_max][k];
+        size_t pivotRow = i;
+        for (size_t k = i + 1; k < rows; ++k) {
+            if (std::abs(matrix[k][i]) > std::abs(matrix[pivotRow][i])) {
+                pivotRow = k;
+            }
+        }
 
-        /* find greater amplitude for pivot if any */
-        for (size_t i = k + 1; i < matrix.size(); ++i)
-            if (std::abs(matrix[i][k]) > v_max)
-                v_max = matrix[i][k], i_max = i;
+        if (pivotRow != i)
+            swapRows(i, pivotRow);
 
-        /* if a principal diagonal element  is zero,
-         * it denotes that matrix is singular, and
-         * will lead to a division-by-zero later. */
-        if (matrix[k][i_max] == 0)
-            return false; // Matrix is singular
+        const T pivot = matrix[i][i];
+        if (std::abs(matrix[i][i]) < 1e-10)
+            return false;
 
-        /* Swap the greatest value row with current row */
-        if (i_max != k)
-            swapRows(k, i_max);
+        for (size_t j = i; j < cols + 1; ++j)
+            matrix[i][j] /= pivot;
 
-
-        for (size_t i = k + 1; i < matrix.size(); ++i)
+        // Eliminate non-zero elements below the pivot
+        for (size_t k = i + 1; k < rows; ++k) 
         {
-            /* factor f to set current row kth element to 0,
-             * and subsequently remaining kth column to 0 */
-            double f = matrix[i][k] / matrix[k][k];
-
-            /* subtract fth multiple of corresponding kth
-               row element*/
-            for (size_t j = k + 1; j <= matrix.size(); ++j)
-                matrix[i][j] -= matrix[k][j] * f;
-
-            /* filling lower triangular matrix with zeros*/
-            matrix[i][k] = 0;
+            const T factor = matrix[k][i];
+            for (size_t j = i; j < cols + 1; ++j) 
+                matrix[k][j] -= factor * matrix[i][j];
         }
     }
+
     return true;
 }
 
@@ -70,28 +65,15 @@ std::vector<T> SystemMatrix<T>::solve()
     if(toREF() == false)
         return std::vector<T>();
 
-    std::vector<T> result(matrix.size() - 1, 0);  // An array to store solution
+    size_t n = matrix[0].size() - 1;
+    std::vector<T> result(n, 0);
 
-    /* Start calculating from last equation up to the
-       first */
-    for (int i = matrix.size() - 1; i >= 0; --i)
+    for (size_t i = n; i-- > 0;) 
     {
-        /* start with the RHS of the equation */
-        result[i] = matrix[i].back();
-
-        /* Initialize j to i+1 since matrix is upper
-           triangular*/
-        for (size_t j = i + 1; j < matrix.size(); ++j)
-        {
-            /* subtract all the lhs values
-             * except the coefficient of the variable
-             * whose value is being calculated */
+        result[i] = matrix[i][n];
+        for (size_t j = i + 1; j < n; ++j)
             result[i] -= matrix[i][j] * result[j];
-        }
-
-        /* divide the RHS by the coefficient of the
-           unknown being calculated */
-        result[i] = result[i] / matrix[i][i];
+        result[i] /= matrix[i][i];
     }
 
 	return result;
@@ -115,5 +97,6 @@ std::vector<T>& SystemMatrix<T>::back()
 	return matrix.back();
 }
 
-template class SystemMatrix<double>;
 template class SystemMatrix<float>;
+template class SystemMatrix<double>;
+template class SystemMatrix<long double>;

@@ -1,5 +1,6 @@
 #include "ReactionData.hpp"
 #include "SystemMatrix.hpp"
+#include "Maths.hpp"
 
 ReactionData::ReactionData(
 	const ReactionIdType id,
@@ -29,8 +30,11 @@ ReactionData::~ReactionData() noexcept
 
 bool ReactionData::balance()
 {
-	SystemMatrix<double> system;
-	const size_t syslen = reactants.size() + products.size();
+	if (reactants.size() == 0 || products.size() == 0)
+		return false;
+
+	SystemMatrix<float> system;
+	const size_t syslen = reactants.size() + products.size() - 1;
 	std::unordered_map<ComponentIdType, size_t> sysmap;
 
 	for (size_t i = 0; i < reactants.size(); ++i)
@@ -45,14 +49,25 @@ bool ReactionData::balance()
 				system.back()[i] = static_cast<double>(c.second);
 			}
 			else
-			{
-				const auto temp = sysmap[c.first];
-				system[temp][i] = static_cast<double>(c.second);
-			}
+				system[sysmap[c.first]][i] = static_cast<double>(c.second);
 		}
 	}
 
-	for (size_t i = 0; i < products.size(); ++i)
+	// the "1st product" rule: lock the coefficient to 1 and apply to system
+	const auto map = products[0].first->getStructure().getComponentCountMap();
+	for (const auto& c : map)
+	{
+		if (sysmap.contains(c.first) == false)
+		{
+			sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
+			system.addRow(syslen);
+			system.back().back() = static_cast<double>(c.second);
+		}
+		else
+			system[sysmap[c.first]].back() = static_cast<double>(c.second);
+	}
+
+	for (size_t i = 1; i < products.size(); ++i)
 	{
 		const auto map = products[i].first->getStructure().getComponentCountMap();
 		for (const auto& c : map)
@@ -61,13 +76,10 @@ bool ReactionData::balance()
 			{
 				sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
 				system.addRow(syslen);
-				system.back()[reactants.size() + i] = -1 * static_cast<double>(c.second);
+				system.back()[reactants.size() + i - 1] = -1 * static_cast<double>(c.second);
 			}
 			else
-			{
-				const auto temp = sysmap[c.first];
-				system[temp][reactants.size() + i] = -1 * static_cast<double>(c.second);
-			}
+				system[sysmap[c.first]][reactants.size() + i - 1] = -1 * static_cast<double>(c.second);
 		}
 	}
 
@@ -75,10 +87,13 @@ bool ReactionData::balance()
 	if (result.empty())
 		return false;
 
+	const auto intCoef = Maths::integerCoefficient(result);
+
 	for (size_t i = 0; i < reactants.size(); ++i)
-		reactants[i].second = result[i];
-	for (size_t i = 0; i < products.size(); ++i)
-		products[i].second = result[reactants.size() + i];
+		reactants[i].second = result[i] * intCoef;
+	products[0].second = intCoef;
+	for (size_t i = 1; i < products.size(); ++i)
+		products[i].second = result[reactants.size() + i - 1] *intCoef;
 
 	return true;
 }

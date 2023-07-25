@@ -178,6 +178,7 @@
     <ClCompile Include="DataStoreAccessor.cpp" />
     <ClCompile Include="FloatValue.cpp" />
     <ClCompile Include="FunctionalGroupReactable.cpp" />
+    <ClCompile Include="Maths.cpp" />
     <ClCompile Include="MoleculeDataTable.cpp" />
     <ClCompile Include="MoleculeReactable.cpp" />
     <ClCompile Include="OrganicMolecule.cpp" />
@@ -221,6 +222,7 @@
     <ClInclude Include="LogType.hpp" />
     <ClCompile Include="MolecularStructure.cpp" />
     <ClCompile Include="MultiIndexMap.cpp" />
+    <ClInclude Include="Maths.hpp" />
     <ClInclude Include="MoleculeDataTable.hpp" />
     <ClInclude Include="MoleculeReactable.hpp" />
     <ClInclude Include="MultiIndexMap.hpp" />
