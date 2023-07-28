@@ -13,6 +13,27 @@ uint8_t Bond::getValence() const
 	return Bond::getValence(type);
 }
 
+std::string Bond::toSMILES(const BondType type)
+{
+	switch (type)
+	{
+	case BondType::NO_BOND:
+		return ".";
+	case BondType::SINGLE:
+		return "";
+	case BondType::DOUBLE:
+		return "=";
+	case BondType::TRIPLE:
+		return "#";
+	case BondType::QUADRUPLE:
+		return "$";
+	case BondType::AROMATIC:
+		return ":";
+	default:
+		return "?";
+	}
+}
+
 BondType Bond::fromSMILES(const char symbol)
 {
 	switch (symbol)

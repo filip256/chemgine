@@ -56,6 +56,7 @@ int main()
         //TestManager tests;
         //tests.runAll();
 
+
         DataStore r;
         BaseComponent::setDataStore(r);
         ReactableFactory::setDataStore(r);
@@ -64,8 +65,11 @@ int main()
         r.loadBackbonesData("Data/BackboneData.csv");
         r.loadMoleculesData("Data/OrganicMoleculeData.csv");
         r.loadReactionsData("Data/ReactionData.csv");
+
+
+        std::cout << MolecularStructure("CC(=O)OC").toSMILES()<<'\n';
+
         MolecularStructure a("CC(=O)OC");
-        std::cout << a.toSMILES()<<"\n";
         MolecularStructure b("CO");
         std::cout << a.print() << '\n' << b.print() << '\n';
         auto map = a.maximalMapTo(b);

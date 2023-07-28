@@ -8,7 +8,7 @@
 MolecularStructure::MolecularStructure(const std::string& smiles)
 {
     loadFromSMILES(smiles);
-    //normalize();
+    normalize();
 }
 
 MolecularStructure::~MolecularStructure()
@@ -752,21 +752,65 @@ std::string MolecularStructure::rToSMILES(size_t c, std::vector<uint8_t>& visite
     std::string r;
     while (true)
     {
-        if (visited[c])
+        visited[c] = true;
+        r += components[c]->data().symbol;
+
+        if (bonds[c].empty())
             break;
+
+        if (bonds[c].size() == 1)
+        {
+            if (visited[bonds[c][0]->other] == false)
+            {
+                r += Bond::toSMILES(bonds[c][0]->type);
+                c = bonds[c][0]->other;
+            }
+            else
+                break;
+        }
+        else
+        {
+            for (size_t i = 0; i < bonds[c].size() - 1; ++i)
+            {
+                if (c == bonds[c][i]->other)
+                    continue;
+
+                if (visited[bonds[c][i]->other] == false)
+                    r += '(' + Bond::toSMILES(bonds[c][i]->type) + rToSMILES(bonds[c][i]->other, visited) + ')';
+                else
+                {
+                    r = "1" + r;
+                    r += "1";
+                }
+
+            }
+            r += Bond::toSMILES(bonds[c].back()->type);
+            c = bonds[c].back()->other;
+        }
+    }
+    return r;
+
+    /*std::string r;
+    while (true)
+    {
+        if (visited[c])
+        {
+            r = "1" + r;
+            r += "1";
+            break;
+        }
         visited[c] = true;
 
         r += components[c]->data().symbol;
         if (bonds[c].size() == 1)
         {
-            c = bonds[c][0]->other;
-        }
-        else if (bonds[c].size() == 2)
-        {
-            if(bonds[c][0]->other != c)
+            if (visited[bonds[c][0]->other] == false)
+            {
+                r += Bond::toSMILES(bonds[c][0]->type);
                 c = bonds[c][0]->other;
+            }
             else
-                c = bonds[c][1]->other;
+                break;
         }
         else if (bonds[c].empty())
         {
@@ -774,11 +818,17 @@ std::string MolecularStructure::rToSMILES(size_t c, std::vector<uint8_t>& visite
         }
         else
         {
-            for (size_t i = 0; i < bonds[c].size(); ++i)
-                r += '(' + rToSMILES(bonds[c][i]->other, visited) + ')';
+            for (size_t i = 0; i < bonds[c].size() - 1; ++i)
+            {
+                if (visited[bonds[c][i]->other] == false && bonds[c][i]->other != c)
+                {
+                    r += '(' + Bond::toSMILES(bonds[c][i]->type) + rToSMILES(bonds[c][i]->other, visited) + ')';
+                }
+            }
+            r += Bond::toSMILES(bonds[c].back()->type) + rToSMILES(bonds[c].back()->other, visited);
         }
     }
-    return r;
+    return r;*/
 }
 
 std::string MolecularStructure::toSMILES() const
