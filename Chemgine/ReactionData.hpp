@@ -15,6 +15,8 @@ private:
 	std::vector<std::pair<const Reactable*, uint8_t>> reactants;
 	std::vector<std::pair<const Reactable*, uint8_t>> products;
 
+	bool balance();
+	bool mapReactantsToProducts();
 
 public:
 	ReactionData(
@@ -28,5 +30,5 @@ public:
 	ReactionData(ReactionData&&) = default;
 	~ReactionData() noexcept;
 	
-	bool balance();
+	friend class ReactionDataTable;
 };

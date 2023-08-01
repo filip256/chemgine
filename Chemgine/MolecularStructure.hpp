@@ -23,7 +23,7 @@ private:
         const size_t c,
         std::vector<uint8_t>& visited) const;
 
-    std::string rToSMILES(const size_t c, std::vector<uint8_t>& visited) const;
+    std::string rToSMILES(const size_t c, size_t prev, std::vector<uint8_t>& visited, uint8_t& cycleCount) const;
 
     /// <summary>
     /// Normalizes the structure by ordering components and bonds in decreasing order of
@@ -107,6 +107,7 @@ public:
     const BaseComponent* getComponent(const size_t idx) const;
     std::string print(const size_t maxWidth = 100, const size_t maxHeight = 50) const;
     bool loadFromSMILES(const std::string& smiles);
+    // not working for cycles :(
     std::string toSMILES() const;
 
     /// <summary>
@@ -174,10 +175,17 @@ public:
     /// The whole pattern strcture must be matched. 
     /// Complexity: rather large
     /// </summary>
-    /// <param name="pattern"></param>
     std::unordered_map<size_t, size_t> mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const;
 
-    std::unordered_map<size_t, size_t> maximalMapTo(const MolecularStructure& pattern) const;
+    /// <summary>
+    /// Returns the largest mapping between the atoms of the pattern and the atoms of *this.
+    /// Complexity: rather large
+    /// </summary>
+    std::unordered_map<size_t, size_t> maximalMapTo(
+        const MolecularStructure& pattern,
+        const std::unordered_set<size_t>& targetIgnore = std::unordered_set<size_t>(),
+        const std::unordered_set<size_t>& patternIgnore = std::unordered_set<size_t>()
+    ) const;
 
 
     /// <summary>

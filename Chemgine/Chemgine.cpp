@@ -67,11 +67,13 @@ int main()
         r.loadReactionsData("Data/ReactionData.csv");
 
 
-        std::cout << MolecularStructure("CC(=O)OC").toSMILES()<<'\n';
 
+        //MolecularStructure a("O=C(OC)C");
         MolecularStructure a("CC(=O)OC");
-        MolecularStructure b("CO");
+        MolecularStructure b("OCC");
         std::cout << a.print() << '\n' << b.print() << '\n';
+        //std::cout << MolecularStructure("CC1COC2CN(C)C(C)C3OCC1C23").toSMILES()<<'\n';
+        //std::cout << MolecularStructure("C1C2CC12").toSMILES() << '\n';
         auto map = a.maximalMapTo(b);
         for (auto const& x : map)
         {

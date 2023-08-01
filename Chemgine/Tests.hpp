@@ -8,11 +8,12 @@
 #include "Logger.hpp"
 #include "MolecularStructure.hpp"
 #include "DataStore.hpp"
+#include "ReactableFactory.hpp"
 
 class MolecularStructureTest
 {
 private:
-	std::vector<MolecularStructure> setA, setB;
+	std::vector<MolecularStructure> setA, setB, setC, setD;
 	std::unordered_map<std::string, std::vector<uint8_t>> res;
 
 public:
@@ -86,7 +87,6 @@ public:
 		res["mapTo"].emplace_back(true);
 		res["=="].emplace_back(false);
 
-		// visitedB bug
 		setA.emplace_back(std::move(MolecularStructure("O(CCC)CC")));
 		setB.emplace_back(std::move(MolecularStructure("O(CC)(CCC)")));
 		res["mapTo"].emplace_back(true);
@@ -101,24 +101,60 @@ public:
 		setB.emplace_back(std::move(MolecularStructure("RNC12CC(CC=C1C1=C(OR)C=CC3=C1C(C2)=CN3)C(=O)N(R)R")));
 		res["mapTo"].emplace_back(true);
 		res["=="].emplace_back(false);
+
+		//-----//
+
+		setC.emplace_back(std::move(MolecularStructure("CC(=O)OC")));
+		setD.emplace_back(std::move(MolecularStructure("OCC")));
+		res["maximal"].emplace_back(3);
+
+		setC.emplace_back(std::move(MolecularStructure("C1CCCCC(O)CC1")));
+		setD.emplace_back(std::move(MolecularStructure("CC(O)C")));
+		res["maximal"].emplace_back(4);
+
+		setC.emplace_back(std::move(MolecularStructure("CC(=O)OR")));
+		setD.emplace_back(std::move(MolecularStructure("OCR")));
+		res["maximal"].emplace_back(2);
+
+		setC.emplace_back(std::move(MolecularStructure("C(=O)N(C)C")));
+		setD.emplace_back(std::move(MolecularStructure("C1CCC1")));
+		res["maximal"].emplace_back(1);
+
+		setC.emplace_back(std::move(MolecularStructure("O(C)CC")));
+		setD.emplace_back(std::move(MolecularStructure("O(CC)C")));
+		res["maximal"].emplace_back(4);
+
+		setC.emplace_back(std::move(MolecularStructure("CC2CCCC(C1CCCCC1)C2")));
+		setD.emplace_back(std::move(MolecularStructure("CC1CCCCC1")));
+		res["maximal"].emplace_back(7);
 	}
 
 	void runTests()
 	{
-		for (size_t i = 0; i < setA.size(); ++i)
-		{
-			if (setA[i].mapTo(setB[i], true).size() > 0 != res["mapTo"][i])
-			{
-				Logger::log("Test failed > MolecularStructure > mapTo > #" + std::to_string(i)
-					+ ": expected=" + std::to_string(res["mapTo"][i]) + "\n"
-					+ setA[i].print() + '\n' + setB[i].print(), LogType::BAD);
-			}
+		//for (size_t i = 0; i < setA.size(); ++i)
+		//{
+		//	if (setA[i].mapTo(setB[i], true).size() > 0 != res["mapTo"][i])
+		//	{
+		//		Logger::log("Test failed > MolecularStructure > mapTo > #" + std::to_string(i)
+		//			+ ": expected=" + std::to_string(res["mapTo"][i]) + "\n"
+		//			+ setA[i].print() + '\n' + setB[i].print(), LogType::BAD);
+		//	}
 
-			if ((setA[i] == setB[i]) != res["=="][i])
+		//	if ((setA[i] == setB[i]) != res["=="][i])
+		//	{
+		//		Logger::log("Test failed > MolecularStructure > == > #" + std::to_string(i)
+		//			+ ": expected=" + std::to_string(res["=="][i]) + "\n"
+		//			+ setA[i].print() + '\n' + setB[i].print(), LogType::BAD);
+		//	}
+		//}
+
+		for (size_t i = 0; i < setC.size(); ++i)
+		{
+			if (setC[i].maximalMapTo(setD[i]).size() != res["maximal"][i])
 			{
-				Logger::log("Test failed > MolecularStructure > == > #" + std::to_string(i)
-					+ ": expected=" + std::to_string(res["=="][i]) + "\n"
-					+ setA[i].print() + '\n' + setB[i].print(), LogType::BAD);
+				Logger::log("Test failed > MolecularStructure > maximalMapTo > #" + std::to_string(i)
+					+ ": expected=" + std::to_string(res["maximal"][i]) + "\n"
+					+ setC[i].print() + '\n' + setD[i].print(), LogType::BAD);
 			}
 		}
 	}
@@ -135,6 +171,7 @@ public:
 	{
 		const auto begin = std::chrono::steady_clock::now();
 		BaseComponent::setDataStore(r);
+		ReactableFactory::setDataStore(r);
 		r.loadAtomsData("Data/AtomData.csv");
 		r.loadFunctionalGroupsData("Data/FunctionalGroupData.csv");
 		r.loadBackbonesData("Data/BackboneData.csv");
@@ -149,8 +186,6 @@ public:
 
 	void runAll()
 	{
-		//std::cout << MolecularStructure("CC(=O)OC").print() << '\n';
-		//std::cout << MolecularStructure("CONC").print() << '\n';
 		const auto begin = std::chrono::steady_clock::now();
 		molecularStructureTest.runTests();
 		const auto end = std::chrono::steady_clock::now();

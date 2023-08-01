@@ -97,3 +97,11 @@ bool ReactionData::balance()
 
 	return true;
 }
+
+bool ReactionData::mapReactantsToProducts()
+{
+	std::unordered_map<std::pair<size_t, size_t>, std::pair<size_t, size_t>> mapping;
+	mapping.reserve((reactants.size() + products.size()) * 4); // why 4? most molecules have at least 4 atoms
+
+
+}

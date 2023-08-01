@@ -116,7 +116,10 @@ Tasks:
   DONE. Implement reactables and reactable factory
   6. Implement reactant - product mapping
   DONE. Implement stoechiometry
-  8. Implement toSMILES
+  ?. Implement strict molecule serialization and deserialization
+  ?. Accept user balance hints for reactions
+  ?. Accept user mapping hints for reactions
+  ?. Implement toSMILES
 ---
   1. Implement reactor 
   6. Implement algorithm for checking if a reaction is possible

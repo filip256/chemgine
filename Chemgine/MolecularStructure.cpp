@@ -8,7 +8,7 @@
 MolecularStructure::MolecularStructure(const std::string& smiles)
 {
     loadFromSMILES(smiles);
-    normalize();
+    //normalize();
 }
 
 MolecularStructure::~MolecularStructure()
@@ -616,7 +616,7 @@ std::pair<std::unordered_map<size_t, size_t>, uint8_t> MolecularStructure::DFSMa
             // reversing bad branches isn't possible here, so copies are needed :(
             auto mappedACopy = mappedA;
             auto mappedBCopy = mappedB;
-            auto subMap = DFSMaximal(a.bonds[idxA][j]->other, a, mappedBCopy, next.other, b, mappedBCopy);
+            auto subMap = DFSMaximal(a.bonds[idxA][j]->other, a, mappedACopy, next.other, b, mappedBCopy);
             if (subMap.first.size() > maxMapping.first.size() ||
                (subMap.first.size() == maxMapping.first.size() && score > maxMapping.second))
             {
@@ -685,7 +685,10 @@ std::unordered_map<size_t, size_t> MolecularStructure::mapTo(const MolecularStru
     return std::unordered_map<size_t, size_t>();
 }
 
-std::unordered_map<size_t, size_t> MolecularStructure::maximalMapTo(const MolecularStructure& pattern) const
+std::unordered_map<size_t, size_t> MolecularStructure::maximalMapTo(
+    const MolecularStructure& pattern,
+    const std::unordered_set<size_t>& targetIgnore,
+    const std::unordered_set<size_t>& patternIgnore) const
 {
     if (pattern.componentCount() == 0 || this->componentCount() == 0)
         return std::unordered_map<size_t, size_t>();
@@ -693,25 +696,37 @@ std::unordered_map<size_t, size_t> MolecularStructure::maximalMapTo(const Molecu
     // find atom that matches in both target and pattern
     std::pair<std::unordered_map<size_t, size_t>, uint8_t> maxMapping;
     uint8_t maxScore = 0;
-    for (size_t i = 0; i < this->componentCount(); ++i)
+    for (size_t i = 0; i < this->components.size(); ++i)
     {
-        if (BaseComponent::areEqual(*this->components[i], *(pattern.components[0])) == false)
+        if (targetIgnore.contains(i))
             continue;
 
-        const auto score = getBondSimilarity(i, *this, 0, pattern);
-        std::vector<uint8_t> visited(pattern.componentCount(), false);
-        std::unordered_set<size_t> mappedA, mappedB;
-        auto map = DFSMaximal(i, *this, mappedA, 0, pattern, mappedB);
+        // skip some comparisons
+        if (maxMapping.first.contains(i))
+            continue;
 
-        // picks largest mapping, then best 2nd comp. score, then best 1st comp. score
-        if (map.first.size() > maxMapping.first.size() ||
-            (map.first.size() == maxMapping.first.size() && (
-                map.second > maxMapping.second ||
-                (map.second == maxMapping.second &&
-                    score > maxScore))))
+        for (size_t j = 0; j < pattern.components.size(); ++j)
         {
-            maxMapping = std::move(map);
-            maxScore == score;
+            if (patternIgnore.contains(j))
+                continue;
+
+            if (BaseComponent::areEqual(*this->components[i], *(pattern.components[j])) == false)
+                continue;
+
+            const auto score = getBondSimilarity(i, *this, j, pattern);
+            std::unordered_set<size_t> mappedA(targetIgnore), mappedB(patternIgnore);
+            auto map = DFSMaximal(i, *this, mappedA, j, pattern, mappedB);
+
+            // picks largest mapping, then best 2nd comp. score, then best 1st comp. score
+            if (map.first.size() > maxMapping.first.size() ||
+                (map.first.size() == maxMapping.first.size() && (
+                    map.second > maxMapping.second ||
+                    (map.second == maxMapping.second &&
+                        score > maxScore))))
+            {
+                maxMapping = std::move(map);
+                maxScore == score;
+            }
         }
     }
     return maxMapping.first;
@@ -719,7 +734,7 @@ std::unordered_map<size_t, size_t> MolecularStructure::maximalMapTo(const Molecu
 
 bool MolecularStructure::operator==(const MolecularStructure& other) const
 {
-    if (this->componentCount() != other.componentCount())
+    if (this->componentCount() != other.componentCount() || this->hydrogenCount != other.hydrogenCount)
         return false;
 
     const auto mapping = this->mapTo(other, false);
@@ -728,7 +743,7 @@ bool MolecularStructure::operator==(const MolecularStructure& other) const
 
 bool MolecularStructure::operator!=(const MolecularStructure& other) const
 {
-    if (this->componentCount() != other.componentCount())
+    if (this->componentCount() != other.componentCount() || this->hydrogenCount != other.hydrogenCount)
         return true;
 
     const auto mapping = this->mapTo(other, false);
@@ -747,7 +762,7 @@ bool MolecularStructure::operator!=(const std::string& other) const
 
 
 
-std::string MolecularStructure::rToSMILES(size_t c, std::vector<uint8_t>& visited) const
+std::string MolecularStructure::rToSMILES(size_t c, size_t prev, std::vector<uint8_t>& visited, uint8_t& cycleCount) const
 {
     std::string r;
     while (true)
@@ -772,20 +787,33 @@ std::string MolecularStructure::rToSMILES(size_t c, std::vector<uint8_t>& visite
         {
             for (size_t i = 0; i < bonds[c].size() - 1; ++i)
             {
-                if (c == bonds[c][i]->other)
+                if (bonds[c][i]->other == prev)
                     continue;
 
                 if (visited[bonds[c][i]->other] == false)
-                    r += '(' + Bond::toSMILES(bonds[c][i]->type) + rToSMILES(bonds[c][i]->other, visited) + ')';
+                {
+                    const auto cc = cycleCount;
+                    const auto temp = rToSMILES(bonds[c][i]->other, c, visited, cycleCount);
+                    if (cc == cycleCount)
+                        r += '(' + Bond::toSMILES(bonds[c][i]->type) + temp + ')';
+                    else
+                        r += Bond::toSMILES(bonds[c][i]->type) + temp;
+                }
                 else
                 {
-                    r = "1" + r;
-                    r += "1";
+                    ++cycleCount;
+                    r = std::to_string(cycleCount) + r;
+                    r += std::to_string(cycleCount);
                 }
-
             }
-            r += Bond::toSMILES(bonds[c].back()->type);
-            c = bonds[c].back()->other;
+
+            if (visited[bonds[c].back()->other] == false)
+            {
+                r += Bond::toSMILES(bonds[c].back()->type);
+                c = bonds[c].back()->other;
+            }
+            else
+                break;
         }
     }
     return r;
@@ -834,5 +862,6 @@ std::string MolecularStructure::rToSMILES(size_t c, std::vector<uint8_t>& visite
 std::string MolecularStructure::toSMILES() const
 {
     std::vector<uint8_t> visited(components.size(), false);
-    return rToSMILES(0, visited);
+    uint8_t cycleCount = 0;
+    return rToSMILES(0, 0, visited, cycleCount);
 }
