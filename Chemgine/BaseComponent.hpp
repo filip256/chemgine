@@ -5,6 +5,7 @@
 #include "ComponentType.hpp"
 #include "BaseComponentData.hpp"
 #include "DataStoreAccessor.hpp"
+#include "SizeTypedefs.hpp"
 
 class BaseComponent
 {
@@ -54,7 +55,7 @@ public:
 
 	virtual uint8_t getPrecedence() const = 0;
 
-	virtual std::unordered_map<ComponentIdType, size_t> getComponentCountMap() const = 0;
+	virtual std::unordered_map<ComponentIdType, c_size> getComponentCountMap() const = 0;
 
 	// for memory leak checking 
 	static size_t instanceCount;

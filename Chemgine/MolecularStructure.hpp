@@ -20,10 +20,10 @@ private:
         std::vector<std::string>& buffer,
         const size_t x,
         const size_t y,
-        const size_t c,
+        const c_size c,
         std::vector<uint8_t>& visited) const;
 
-    std::string rToSMILES(const size_t c, size_t prev, std::vector<uint8_t>& visited, uint8_t& cycleCount) const;
+    std::string rToSMILES(const c_size c, c_size prev, std::vector<uint8_t>& visited, uint8_t& cycleCount) const;
 
     /// <summary>
     /// Normalizes the structure by ordering components and bonds in decreasing order of
@@ -43,8 +43,8 @@ private:
 
     // basic matching
     static bool areMatching(
-        const size_t idxA, const MolecularStructure& a,
-        const size_t idxB, const MolecularStructure& b);
+        const c_size idxA, const MolecularStructure& a,
+        const c_size idxB, const MolecularStructure& b);
 
     // finner matching for the compare method
     static bool areMatching(
@@ -53,8 +53,8 @@ private:
         const bool escapeRadicalTypes);
 
     static uint8_t getBondSimilarity(
-        const size_t idxA, const MolecularStructure& a,
-        const size_t idxB, const MolecularStructure& b);
+        const c_size idxA, const MolecularStructure& a,
+        const c_size idxB, const MolecularStructure& b);
 
     // returns a similarity score for grading maximal mappings, a score of 0 means no matching
     static uint8_t maximalSimilarity(
@@ -74,18 +74,18 @@ private:
     /// <param name="visitedB">: vector with the size of the pattern, initilized to false</param>
     /// <param name="mapping">: empty map that will store all matching nodes at the end of the execution</param>
     static bool DFSCompare(
-        size_t idxA, const MolecularStructure& a,
-        size_t idxB, const MolecularStructure& b,
+        c_size idxA, const MolecularStructure& a,
+        c_size idxB, const MolecularStructure& b,
         std::vector<uint8_t>& visitedB,
-        std::unordered_map<size_t, size_t>& mapping,
+        std::unordered_map<c_size, c_size>& mapping,
         bool escapeRadicalTypes
     );
 
-    static std::pair<std::unordered_map<size_t, size_t>, uint8_t> DFSMaximal(
-        size_t idxA, const MolecularStructure& a,
-        std::unordered_set<size_t>& mappedA,
-        size_t idxB, const MolecularStructure& b,
-        std::unordered_set<size_t>& mappedB
+    static std::pair<std::unordered_map<c_size, c_size>, uint8_t> DFSMaximal(
+        c_size idxA, const MolecularStructure& a,
+        std::unordered_set<c_size>& mappedA,
+        c_size idxB, const MolecularStructure& b,
+        std::unordered_set<c_size>& mappedB
     );
 
     /// <summary>
@@ -94,17 +94,17 @@ private:
     static bool checkConnectivity(
         const MolecularStructure& target,
         const MolecularStructure& pattern,
-        const std::unordered_map<size_t, size_t>& mapping);
+        const std::unordered_map<c_size, c_size>& mapping);
 
 public:
-    constexpr static size_t npos = static_cast<size_t>(-1);
+    constexpr static c_size npos = static_cast<c_size>(-1);
 
     MolecularStructure(const std::string& smiles);
     MolecularStructure(MolecularStructure&& structure) = default;
     MolecularStructure(const MolecularStructure&) = delete;
     ~MolecularStructure() noexcept;
 
-    const BaseComponent* getComponent(const size_t idx) const;
+    const BaseComponent* getComponent(const c_size idx) const;
     std::string print(const size_t maxWidth = 100, const size_t maxHeight = 50) const;
     bool loadFromSMILES(const std::string& smiles);
     // not working for cycles :(
@@ -138,19 +138,19 @@ public:
     /// <summary>
     /// Complexity: O(n)
     /// </summary>
-    std::unordered_map<ComponentIdType, size_t> getComponentCountMap() const;
+    std::unordered_map<ComponentIdType, c_size> getComponentCountMap() const;
 
     /// <summary>
     /// Hydrogens not included.
     /// Complexity: O(1)
     /// </summary>
     /// <returns></returns>
-    inline size_t componentCount() const;
+    inline c_size componentCount() const;
 
     /// <summary>
     /// Complexity: O(n)
     /// </summary>
-    size_t bondCount() const;
+    c_size bondCount() const;
 
     bool isCyclic() const;
 
@@ -158,7 +158,7 @@ public:
     /// Checks if the two components are adjacent.
     /// Complexity: O(n)
     /// </summary>
-    bool areAdjacent(const size_t idxA, const size_t idxB) const;
+    bool areAdjacent(const c_size idxA, const c_size idxB) const;
 
     void clear();
 
@@ -167,7 +167,7 @@ public:
     /// Complexity: O(n)
     /// </summary>
     /// <returns></returns>
-    uint8_t getDegreeOf(const size_t idx) const;
+    uint8_t getDegreeOf(const c_size idx) const;
 
 
     /// <summary>
@@ -175,16 +175,16 @@ public:
     /// The whole pattern strcture must be matched. 
     /// Complexity: rather large
     /// </summary>
-    std::unordered_map<size_t, size_t> mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const;
+    std::unordered_map<c_size, c_size> mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const;
 
     /// <summary>
     /// Returns the largest mapping between the atoms of the pattern and the atoms of *this.
     /// Complexity: rather large
     /// </summary>
-    std::unordered_map<size_t, size_t> maximalMapTo(
+    std::unordered_map<c_size, c_size> maximalMapTo(
         const MolecularStructure& pattern,
-        const std::unordered_set<size_t>& targetIgnore = std::unordered_set<size_t>(),
-        const std::unordered_set<size_t>& patternIgnore = std::unordered_set<size_t>()
+        const std::unordered_set<c_size>& targetIgnore = std::unordered_set<c_size>(),
+        const std::unordered_set<c_size>& patternIgnore = std::unordered_set<c_size>()
     ) const;
 
 

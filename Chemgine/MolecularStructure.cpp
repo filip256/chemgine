@@ -1,14 +1,14 @@
 #include <array>
+#include <algorithm>
 
 #include "MolecularStructure.hpp"
 #include "CompositeComponent.hpp"
 #include "Logger.hpp"
-#include <algorithm>
 
 MolecularStructure::MolecularStructure(const std::string& smiles)
 {
     loadFromSMILES(smiles);
-    //normalize();
+    normalize();
 }
 
 MolecularStructure::~MolecularStructure()
@@ -20,10 +20,10 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 {
     clear();
 
-    std::unordered_map<uint8_t, size_t> rings;
-    std::stack<size_t> branches;
+    std::unordered_map<uint8_t, c_size> rings;
+    std::stack<c_size> branches;
 
-    size_t prev = std::string::npos;
+    c_size prev = npos;
     BondType bondType = BondType::SINGLE;
     for(size_t i = 0; i < smiles.size(); ++i)
     {
@@ -47,7 +47,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 
             bonds.emplace_back(std::move(std::vector<Bond*>()));
 
-            if (prev != std::string::npos)
+            if (prev != npos)
             {
                 bonds[prev].emplace_back(new Bond(components.size() - 1, bondType));
                 bonds[bonds.size() - 1].emplace_back(new Bond(prev, bondType));
@@ -103,7 +103,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             components.emplace_back(new Atom(smiles.substr(i + 1, t - i - 1)));
             bonds.emplace_back(std::move(std::vector<Bond*>()));
 
-            if (prev != std::string::npos)
+            if (prev != npos)
             {
                 bonds[prev].emplace_back(new Bond(components.size() - 1, bondType));
                 bonds[bonds.size() - 1].emplace_back(new Bond(prev, bondType));
@@ -186,10 +186,10 @@ void MolecularStructure::normalize()
         return;
 
     std::vector<const BaseComponent*> copy(components);
-    std::vector<size_t> map(components.size(), npos);
+    std::vector<c_size> map(components.size(), npos);
 
 
-    for (size_t i = 1; i < copy.size(); ++i)
+    for (c_size i = 1; i < copy.size(); ++i)
     {
         int j = i - 1;
         auto k = copy[i];
@@ -202,25 +202,25 @@ void MolecularStructure::normalize()
     }
 
     //not very efficient :(
-    for (size_t i = 0; i < map.size(); ++i)
+    for (c_size i = 0; i < map.size(); ++i)
     {
-        for (size_t j = 0; j < copy.size(); ++j)
+        for (c_size j = 0; j < copy.size(); ++j)
             if (copy[j] == components[i])
                 map[i] = j;
     }
 
     components = copy;
 
-    for (size_t i = 0; i < bonds.size(); ++i)
-        for (size_t j = 0; j < bonds[i].size(); ++j)
+    for (c_size i = 0; i < bonds.size(); ++i)
+        for (c_size j = 0; j < bonds[i].size(); ++j)
             bonds[i][j]->other = map[bonds[i][j]->other];
 
-    for (size_t i = 0; i < components.size(); ++i)
+    for (c_size i = 0; i < components.size(); ++i)
     {
         if (map[i] == npos || map[i] == i)
             continue;
 
-        size_t p = i;
+        c_size p = i;
         auto pB = std::move(bonds[p]);
         do
         {
@@ -228,15 +228,15 @@ void MolecularStructure::normalize()
             bonds[map[p]] = std::move(pB);
             pB = std::move(tempB);
 
-            const size_t tempP = p;
+            const c_size tempP = p;
             p = map[p];
             map[tempP] = npos;
         } while (map[p] != npos);
     }
 
-    for (size_t b = 0; b < bonds.size(); ++b)
+    for (c_size b = 0; b < bonds.size(); ++b)
     {
-        for (size_t i = 1; i < bonds[b].size(); ++i)
+        for (c_size i = 1; i < bonds[b].size(); ++i)
         {
             int j = i - 1;
             auto k = bonds[b][i];
@@ -254,7 +254,7 @@ void MolecularStructure::normalize()
 int16_t MolecularStructure::getHCount() const
 {
     int16_t hCount = 0;
-    for (size_t i = 0; i < components.size(); ++i)
+    for (c_size i = 0; i < components.size(); ++i)
     {
         auto v = components[i]->data().valence;
         if (bonds[i].size() > v)
@@ -269,15 +269,15 @@ int16_t MolecularStructure::getHCount() const
     return hCount;
 }
 
-uint8_t MolecularStructure::getDegreeOf(const size_t idx) const
+uint8_t MolecularStructure::getDegreeOf(const c_size idx) const
 {
     uint8_t cnt = 0;
-    for (size_t i = 0; i < bonds[idx].size(); ++i)
+    for (c_size i = 0; i < bonds[idx].size(); ++i)
         cnt += bonds[idx][i]->getValence();
     return cnt;
 }
 
-const BaseComponent* MolecularStructure::getComponent(const size_t idx) const
+const BaseComponent* MolecularStructure::getComponent(const c_size idx) const
 {
     return components[idx];
 }
@@ -290,7 +290,7 @@ uint16_t MolecularStructure::getHydrogenCount() const
 double MolecularStructure::getMolarMass() const
 {
     double cnt = 0;
-    for (size_t i = 0; i < components.size(); ++i)
+    for (c_size i = 0; i < components.size(); ++i)
     {
         cnt += components[i]->data().weight;
     }
@@ -301,7 +301,7 @@ double MolecularStructure::getMolarMass() const
 uint16_t MolecularStructure::getRadicalAtomsCount() const
 {
     uint16_t cnt = 0;
-    for (size_t i = 0; i < components.size(); ++i)
+    for (c_size i = 0; i < components.size(); ++i)
         if (components[i]->isAtomicType() &&
             static_cast<const AtomicComponent*>(components[i])->isRadicalType())
             ++cnt;
@@ -311,17 +311,17 @@ uint16_t MolecularStructure::getRadicalAtomsCount() const
 bool MolecularStructure::isComplete() const
 {
     // it does not search sub components
-    for (size_t i = 0; i < components.size(); ++i)
+    for (c_size i = 0; i < components.size(); ++i)
         if (components[i]->isAtomicType() &&
             static_cast<const AtomicComponent*>(components[i])->isRadicalType())
                 return false;
     return true;
 }
 
-std::unordered_map<ComponentIdType, size_t> MolecularStructure::getComponentCountMap() const
+std::unordered_map<ComponentIdType, c_size> MolecularStructure::getComponentCountMap() const
 {
-    std::unordered_map<ComponentIdType, size_t> result;
-    for (size_t i = 0; i < components.size(); ++i)
+    std::unordered_map<ComponentIdType, c_size> result;
+    for (c_size i = 0; i < components.size(); ++i)
     {
         if (result.contains(components[i]->getId()))
             ++result[components[i]->getId()];
@@ -341,15 +341,15 @@ std::unordered_map<ComponentIdType, size_t> MolecularStructure::getComponentCoun
     return result;
 }
 
-size_t MolecularStructure::componentCount() const
+c_size MolecularStructure::componentCount() const
 {
     return components.size();
 }
 
-size_t MolecularStructure::bondCount() const
+c_size MolecularStructure::bondCount() const
 {
-    size_t cnt = 0;
-    for (size_t i = 0; i < bonds.size(); ++i)
+    c_size cnt = 0;
+    for (c_size i = 0; i < bonds.size(); ++i)
         cnt += bonds[i].size();
     return cnt;
 }
@@ -359,9 +359,9 @@ bool MolecularStructure::isCyclic() const
     return bondCount() > componentCount() - 1;
 }
 
-bool MolecularStructure::areAdjacent(const size_t idxA, const size_t idxB) const
+bool MolecularStructure::areAdjacent(const c_size idxA, const c_size idxB) const
 {
-    for (size_t i = 0; i < bonds[idxA].size(); ++i)
+    for (c_size i = 0; i < bonds[idxA].size(); ++i)
         if (idxB == bonds[idxA][i]->other)
             return true;
     return false;
@@ -371,7 +371,7 @@ void MolecularStructure::rPrint(
     std::vector<std::string>& buffer,
     const size_t x,
     const size_t y,
-    const size_t c,
+    const c_size c,
     std::vector<uint8_t>& visited) const
 {
     if (x < 1 || y < 1 ||
@@ -381,10 +381,10 @@ void MolecularStructure::rPrint(
 
     visited[c] = true;
 
-    for(size_t i = 0; i < components[c]->data().symbol.size() && x + i < buffer[0].size(); ++i)
+    for(c_size i = 0; i < components[c]->data().symbol.size() && x + i < buffer[0].size(); ++i)
         buffer[y][x + i] = components[c]->data().symbol[i];
 
-    for (size_t i = 0; i < bonds[c].size(); ++i)
+    for (c_size i = 0; i < bonds[c].size(); ++i)
         if (visited[bonds[c][i]->other] == false)
         {
             char vC = '³', hC = 'Ä';
@@ -460,8 +460,8 @@ void MolecularStructure::clear()
 }
 
 bool MolecularStructure::areMatching(
-    const size_t idxA, const MolecularStructure& a,
-    const size_t idxB, const MolecularStructure& b)
+    const c_size idxA, const MolecularStructure& a,
+    const c_size idxB, const MolecularStructure& b)
 {
     if (a.bonds[idxA].size() != b.bonds[idxB].size())
         return false;
@@ -491,12 +491,12 @@ bool MolecularStructure::areMatching(
 
     // test to see both have the same types of bonds
     std::array<int8_t, 5> counts{ 0 };
-    for (size_t i = 0; i < a.bonds[nextA.other].size(); ++i)
+    for (c_size i = 0; i < a.bonds[nextA.other].size(); ++i)
     {
         ++counts[a.bonds[nextA.other][i]->getValence()];
         --counts[b.bonds[nextB.other][i]->getValence()];
     }
-    for (size_t i = 0; i < counts.size(); ++i)
+    for (uint8_t i = 0; i < counts.size(); ++i)
         if (counts[i] != 0)
             return false;
 
@@ -504,19 +504,19 @@ bool MolecularStructure::areMatching(
 }
 
 uint8_t MolecularStructure::getBondSimilarity(
-    const size_t idxA, const MolecularStructure& a,
-    const size_t idxB, const MolecularStructure& b)
+    const c_size idxA, const MolecularStructure& a,
+    const c_size idxB, const MolecularStructure& b)
 {
     uint8_t score = 255;
     uint8_t scorePerBond = a.bonds[idxA].size() / 255;
     std::array<int8_t, 5> counts{ 0 };
 
-    for (size_t i = 0; i < a.bonds[idxA].size(); ++i)
+    for (c_size i = 0; i < a.bonds[idxA].size(); ++i)
         ++counts[a.bonds[idxA][i]->getValence()];
-    for (size_t i = 0; i < b.bonds[idxB].size(); ++i)
+    for (c_size i = 0; i < b.bonds[idxB].size(); ++i)
         --counts[b.bonds[idxB][i]->getValence()];
 
-    for (size_t i = 0; i < counts.size(); ++i)
+    for (uint8_t i = 0; i < counts.size(); ++i)
         score -= counts[i] * scorePerBond;
 
     return score;
@@ -536,16 +536,16 @@ uint8_t MolecularStructure::maximalSimilarity(
 }
 
 bool MolecularStructure::DFSCompare(
-    size_t idxA, const MolecularStructure& a,
-    size_t idxB, const MolecularStructure& b,
+    c_size idxA, const MolecularStructure& a,
+    c_size idxB, const MolecularStructure& b,
     std::vector<uint8_t>& visitedB,
-    std::unordered_map<size_t, size_t>& mapping,
+    std::unordered_map<c_size, c_size>& mapping,
     bool escapeRadicalTypes)
 {
     mapping.emplace(std::move(std::make_pair(idxA, idxB)));
     visitedB[idxB] = true;
 
-    for (size_t i = 0; i < b.bonds[idxB].size(); ++i)
+    for (c_size i = 0; i < b.bonds[idxB].size(); ++i)
     {
         const Bond& next = *b.bonds[idxB][i];
         if (visitedB[next.other])
@@ -555,7 +555,7 @@ bool MolecularStructure::DFSCompare(
         }
 
         bool matchFound = false;
-        for (size_t j = 0; j < a.bonds[idxA].size(); ++j)
+        for (c_size j = 0; j < a.bonds[idxA].size(); ++j)
         {
             if (mapping.contains(a.bonds[idxA][j]->other) ||  // do not reuse already mapped nodes
                 areMatching(*a.bonds[idxA][j], a, next, b, escapeRadicalTypes) == false)
@@ -581,18 +581,18 @@ bool MolecularStructure::DFSCompare(
     return true;
 }
 
-std::pair<std::unordered_map<size_t, size_t>, uint8_t> MolecularStructure::DFSMaximal(
-    size_t idxA, const MolecularStructure& a,
-    std::unordered_set<size_t>& mappedA,
-    size_t idxB, const MolecularStructure& b,
-    std::unordered_set<size_t>& mappedB)
+std::pair<std::unordered_map<c_size, c_size>, uint8_t> MolecularStructure::DFSMaximal(
+    c_size idxA, const MolecularStructure& a,
+    std::unordered_set<c_size>& mappedA,
+    c_size idxB, const MolecularStructure& b,
+    std::unordered_set<c_size>& mappedB)
 {
-    std::pair<std::unordered_map<size_t, size_t>, uint8_t> newMap;
+    std::pair<std::unordered_map<c_size, c_size>, uint8_t> newMap;
     newMap.first.emplace(std::move(std::make_pair(idxA, idxB)));
     mappedA.emplace(idxA);
     mappedB.emplace(idxB);
 
-    for (size_t i = 0; i < b.bonds[idxB].size(); ++i)
+    for (c_size i = 0; i < b.bonds[idxB].size(); ++i)
     {
         const Bond& next = *b.bonds[idxB][i];
         if (mappedB.contains(next.other))
@@ -601,10 +601,10 @@ std::pair<std::unordered_map<size_t, size_t>, uint8_t> MolecularStructure::DFSMa
         }
 
         // only the largest mapping is added into the final but states need to be copied
-        std::pair<std::unordered_map<size_t, size_t>, uint8_t> maxMapping;
-        std::unordered_set<size_t> maxMappedA;
-        std::unordered_set<size_t> maxMappedB;
-        for (size_t j = 0; j < a.bonds[idxA].size(); ++j)
+        std::pair<std::unordered_map<c_size, c_size>, uint8_t> maxMapping;
+        std::unordered_set<c_size> maxMappedA;
+        std::unordered_set<c_size> maxMappedB;
+        for (c_size j = 0; j < a.bonds[idxA].size(); ++j)
         {
             if (mappedA.contains(a.bonds[idxA][j]->other)) // do not reuse already mapped nodes
                 continue;
@@ -637,7 +637,7 @@ std::pair<std::unordered_map<size_t, size_t>, uint8_t> MolecularStructure::DFSMa
 bool MolecularStructure::checkConnectivity(
     const MolecularStructure& target,
     const MolecularStructure& pattern,
-    const std::unordered_map<size_t, size_t>& mapping)
+    const std::unordered_map<c_size, c_size>& mapping)
 {
     for (auto const& m : mapping)
     {
@@ -651,25 +651,25 @@ bool MolecularStructure::checkConnectivity(
     return true;
 }
 
-std::unordered_map<size_t, size_t> MolecularStructure::mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const
+std::unordered_map<c_size, c_size> MolecularStructure::mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const
 {
     if (pattern.componentCount() == 0 || this->componentCount() == 0)
-        return std::unordered_map<size_t, size_t>();
+        return std::unordered_map<c_size, c_size>();
 
     // should start with a non radical type
-    size_t pStart = 0;
+    c_size pStart = 0;
     while (pStart < pattern.componentCount() && pattern.components[pStart]->isRadicalType())
         ++pStart;
     if (pStart == pattern.componentCount())
         pStart = 0;
 
 
-    for (size_t i = 0; i < this->componentCount(); ++i)
+    for (c_size i = 0; i < this->componentCount(); ++i)
     {
         if (areMatching(i, *this, pStart, pattern))
         {
             std::vector<uint8_t> visited(pattern.componentCount(), false);
-            std::unordered_map<size_t, size_t> mapping;
+            std::unordered_map<c_size, c_size> mapping;
 
             if (DFSCompare(i, *this, pStart, pattern, visited, mapping, escapeRadicalTypes) == false)
                 continue;
@@ -682,21 +682,21 @@ std::unordered_map<size_t, size_t> MolecularStructure::mapTo(const MolecularStru
                 return mapping;
         }
     }
-    return std::unordered_map<size_t, size_t>();
+    return std::unordered_map<c_size, c_size>();
 }
 
-std::unordered_map<size_t, size_t> MolecularStructure::maximalMapTo(
+std::unordered_map<c_size, c_size> MolecularStructure::maximalMapTo(
     const MolecularStructure& pattern,
-    const std::unordered_set<size_t>& targetIgnore,
-    const std::unordered_set<size_t>& patternIgnore) const
+    const std::unordered_set<c_size>& targetIgnore,
+    const std::unordered_set<c_size>& patternIgnore) const
 {
     if (pattern.componentCount() == 0 || this->componentCount() == 0)
-        return std::unordered_map<size_t, size_t>();
+        return std::unordered_map<c_size, c_size>();
 
     // find atom that matches in both target and pattern
-    std::pair<std::unordered_map<size_t, size_t>, uint8_t> maxMapping;
+    std::pair<std::unordered_map<c_size, c_size>, uint8_t> maxMapping;
     uint8_t maxScore = 0;
-    for (size_t i = 0; i < this->components.size(); ++i)
+    for (c_size i = 0; i < this->components.size(); ++i)
     {
         if (targetIgnore.contains(i))
             continue;
@@ -705,7 +705,7 @@ std::unordered_map<size_t, size_t> MolecularStructure::maximalMapTo(
         if (maxMapping.first.contains(i))
             continue;
 
-        for (size_t j = 0; j < pattern.components.size(); ++j)
+        for (c_size j = 0; j < pattern.components.size(); ++j)
         {
             if (patternIgnore.contains(j))
                 continue;
@@ -714,7 +714,7 @@ std::unordered_map<size_t, size_t> MolecularStructure::maximalMapTo(
                 continue;
 
             const auto score = getBondSimilarity(i, *this, j, pattern);
-            std::unordered_set<size_t> mappedA(targetIgnore), mappedB(patternIgnore);
+            std::unordered_set<c_size> mappedA(targetIgnore), mappedB(patternIgnore);
             auto map = DFSMaximal(i, *this, mappedA, j, pattern, mappedB);
 
             // picks largest mapping, then best 2nd comp. score, then best 1st comp. score
@@ -762,7 +762,7 @@ bool MolecularStructure::operator!=(const std::string& other) const
 
 
 
-std::string MolecularStructure::rToSMILES(size_t c, size_t prev, std::vector<uint8_t>& visited, uint8_t& cycleCount) const
+std::string MolecularStructure::rToSMILES(c_size c, c_size prev, std::vector<uint8_t>& visited, uint8_t& cycleCount) const
 {
     std::string r;
     while (true)
@@ -785,7 +785,7 @@ std::string MolecularStructure::rToSMILES(size_t c, size_t prev, std::vector<uin
         }
         else
         {
-            for (size_t i = 0; i < bonds[c].size() - 1; ++i)
+            for (c_size i = 0; i < bonds[c].size() - 1; ++i)
             {
                 if (bonds[c][i]->other == prev)
                     continue;
@@ -846,7 +846,7 @@ std::string MolecularStructure::rToSMILES(size_t c, size_t prev, std::vector<uin
         }
         else
         {
-            for (size_t i = 0; i < bonds[c].size() - 1; ++i)
+            for (c_size i = 0; i < bonds[c].size() - 1; ++i)
             {
                 if (visited[bonds[c][i]->other] == false && bonds[c][i]->other != c)
                 {

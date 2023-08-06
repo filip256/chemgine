@@ -233,6 +233,7 @@
     <ClInclude Include="ReactableFactory.hpp" />
     <ClInclude Include="ReactionData.hpp" />
     <ClInclude Include="ReactionDataTable.hpp" />
+    <ClInclude Include="SizeTypedefs.hpp" />
     <ClInclude Include="SystemMatrix.hpp" />
     <ClInclude Include="Tests.hpp" />
     <ClInclude Include="Value.hpp" />

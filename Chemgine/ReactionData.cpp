@@ -46,10 +46,10 @@ bool ReactionData::balance()
 			{
 				sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
 				system.addRow(syslen);
-				system.back()[i] = static_cast<double>(c.second);
+				system.back()[i] = static_cast<float>(c.second);
 			}
 			else
-				system[sysmap[c.first]][i] = static_cast<double>(c.second);
+				system[sysmap[c.first]][i] = static_cast<float>(c.second);
 		}
 	}
 
@@ -61,10 +61,10 @@ bool ReactionData::balance()
 		{
 			sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
 			system.addRow(syslen);
-			system.back().back() = static_cast<double>(c.second);
+			system.back().back() = static_cast<float>(c.second);
 		}
 		else
-			system[sysmap[c.first]].back() = static_cast<double>(c.second);
+			system[sysmap[c.first]].back() = static_cast<float>(c.second);
 	}
 
 	for (size_t i = 1; i < products.size(); ++i)
@@ -76,10 +76,10 @@ bool ReactionData::balance()
 			{
 				sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
 				system.addRow(syslen);
-				system.back()[reactants.size() + i - 1] = -1 * static_cast<double>(c.second);
+				system.back()[reactants.size() + i - 1] = -1 * static_cast<float>(c.second);
 			}
 			else
-				system[sysmap[c.first]][reactants.size() + i - 1] = -1 * static_cast<double>(c.second);
+				system[sysmap[c.first]][reactants.size() + i - 1] = -1 * static_cast<float>(c.second);
 		}
 	}
 
@@ -100,8 +100,8 @@ bool ReactionData::balance()
 
 bool ReactionData::mapReactantsToProducts()
 {
-	std::unordered_map<std::pair<size_t, size_t>, std::pair<size_t, size_t>> mapping;
-	mapping.reserve((reactants.size() + products.size()) * 4); // why 4? most molecules have at least 4 atoms
-
+	//std::unordered_map<std::pair<size_t, size_t>, std::pair<size_t, size_t>> mapping;
+	//mapping.reserve((reactants.size() + products.size()) * 4); // why 4? most molecules have at least 4 atoms
+	return true;
 
 }

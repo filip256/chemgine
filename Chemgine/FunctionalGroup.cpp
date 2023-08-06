@@ -17,7 +17,7 @@ const FunctionalGroupData& FunctionalGroup::data() const
     return dataStore().functionalGroups.at(id);
 }
 
-const BaseComponent* FunctionalGroup::getComponent(const size_t idx) const
+const BaseComponent* FunctionalGroup::getComponent(const c_size idx) const
 {
     return dataStore().functionalGroups.at(id).getStructure().getComponent(idx);
 }
@@ -27,7 +27,7 @@ uint8_t FunctionalGroup::getPrecedence() const
     return 9;
 }
 
-std::unordered_map<ComponentIdType, size_t> FunctionalGroup::getComponentCountMap() const
+std::unordered_map<ComponentIdType, c_size> FunctionalGroup::getComponentCountMap() const
 {
     return dataStore().backbones.at(id).getStructure().getComponentCountMap();
 }

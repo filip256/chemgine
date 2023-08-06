@@ -7,9 +7,9 @@ class Bond
 {
 public:
     const BondType type;
-    size_t other;
+    c_size other;
 
-    Bond(const size_t other, const BondType type);
+    Bond(const c_size other, const BondType type);
 
     uint8_t getValence() const;
 

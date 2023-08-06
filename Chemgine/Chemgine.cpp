@@ -53,8 +53,8 @@ FunctionalGroup {
 int main()
 {
     {
-        //TestManager tests;
-        //tests.runAll();
+        TestManager tests;
+        tests.runAll();
 
 
         DataStore r;

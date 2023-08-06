@@ -23,5 +23,5 @@ public:
 
     uint8_t getPrecedence() const override final;
 
-    std::unordered_map<ComponentIdType, size_t> getComponentCountMap() const override final;
+    std::unordered_map<ComponentIdType, c_size> getComponentCountMap() const override final;
 };

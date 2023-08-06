@@ -3,7 +3,7 @@
 
 size_t Bond::instanceCount = 0;
 
-Bond::Bond(const size_t other, const BondType type) :
+Bond::Bond(const c_size other, const BondType type) :
 	other(other),
 	type(type)
 {}

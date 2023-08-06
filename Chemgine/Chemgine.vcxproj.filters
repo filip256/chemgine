@@ -329,6 +329,9 @@
     <ClInclude Include="Maths.hpp">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="SizeTypedefs.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv">

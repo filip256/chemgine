@@ -17,7 +17,7 @@ const BackboneData& Backbone::data() const
     return dataStore().backbones.at(id);
 }
 
-const BaseComponent* Backbone::getComponent(const size_t idx) const
+const BaseComponent* Backbone::getComponent(const c_size idx) const
 {
     return dataStore().backbones.at(id).getStructure().getComponent(idx);
 }
@@ -27,7 +27,7 @@ uint8_t Backbone::getPrecedence() const
     return 100;
 }
 
-std::unordered_map<ComponentIdType, size_t> Backbone::getComponentCountMap() const
+std::unordered_map<ComponentIdType, c_size> Backbone::getComponentCountMap() const
 {
     return dataStore().backbones.at(id).getStructure().getComponentCountMap();
 }

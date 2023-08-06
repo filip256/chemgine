@@ -10,7 +10,7 @@ protected:
 	CompositeComponent(const ComponentIdType id, const ComponentType type);
 
 public:
-	virtual const BaseComponent* getComponent(const size_t idx) const = 0;
+	virtual const BaseComponent* getComponent(const c_size idx) const = 0;
 
 	bool isRadicalType() const override final;
 };
