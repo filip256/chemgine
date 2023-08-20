@@ -21,6 +21,7 @@ public:
 	{
 		res.emplace(std::make_pair("mapTo", std::vector<uint8_t>()));
 		res.emplace(std::make_pair("==", std::vector<uint8_t>()));
+		res.emplace(std::make_pair("maximal", std::vector<uint8_t>()));
 
 		setA.emplace_back(std::move(MolecularStructure("CN(C)C(=O)C1=CC=CC=C1")));
 		setB.emplace_back(std::move(MolecularStructure("C1=CC=CC=C1R")));
@@ -150,11 +151,21 @@ public:
 
 		for (size_t i = 0; i < setC.size(); ++i)
 		{
-			if (setC[i].maximalMapTo(setD[i]).size() != res["maximal"][i])
+			if (setC[i].maximalMapTo(setD[i]).first.size() != res["maximal"][i])
 			{
 				Logger::log("Test failed > MolecularStructure > maximalMapTo > #" + std::to_string(i)
 					+ ": expected=" + std::to_string(res["maximal"][i]) + "\n"
 					+ setC[i].print() + '\n' + setD[i].print(), LogType::BAD);
+			}
+		}
+
+		for (size_t i = 0; i < setC.size(); ++i)
+		{
+			if (MolecularStructure(setC[i].serialize(), true) != setC[i])
+			{
+				Logger::log("Test failed > MolecularStructure > serialize/deserialize > #" + std::to_string(i)
+					+ ": expected= true\n"
+					+ setC[i].print(), LogType::BAD);
 			}
 		}
 	}
@@ -169,6 +180,7 @@ private:
 public:
 	TestManager()
 	{
+		Logger::enterContext();
 		const auto begin = std::chrono::steady_clock::now();
 		BaseComponent::setDataStore(r);
 		ReactableFactory::setDataStore(r);
@@ -191,5 +203,6 @@ public:
 		const auto end = std::chrono::steady_clock::now();
 		Logger::log("Test execution completed in " +
 			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.");
+		Logger::exitContext();
 	}
 };

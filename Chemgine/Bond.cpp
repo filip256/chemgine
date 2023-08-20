@@ -13,6 +13,11 @@ uint8_t Bond::getValence() const
 	return Bond::getValence(type);
 }
 
+std::string Bond::toSMILES() const
+{
+	return toSMILES(type);
+}
+
 std::string Bond::toSMILES(const BondType type)
 {
 	switch (type)

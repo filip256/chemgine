@@ -74,14 +74,9 @@ int main()
         std::cout << a.print() << '\n' << b.print() << '\n';
         //std::cout << MolecularStructure("CC1COC2CN(C)C(C)C3OCC1C23").toSMILES()<<'\n';
         //std::cout << MolecularStructure("C1C2CC12").toSMILES() << '\n';
-        auto map = a.maximalMapTo(b);
-        for (auto const& x : map)
-        {
-            std::cout << x.first  // string (key)
-                << ':'
-                << x.second // string's value 
-                << std::endl;
-        }
+
+        std::cout << MolecularStructure(MolecularStructure("CC1COC2CN(C)C(C)C3OCC1C23").serialize(), false).print()<<'\n';
+
     }
 
     if (BaseComponent::instanceCount != 0)

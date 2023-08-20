@@ -85,17 +85,24 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			productIds.emplace_back(std::make_pair(r, 0));
 		}
 
-		auto temp = ReactionData(id.result, line[1], std::move(reactantIds), std::move(productIds));
-		if (temp.balance() == false)
+		if (ReactionData::balance(reactantIds, productIds) == false)
 		{
 			Logger::log("Reaction with id " + std::to_string(id.result) + " could not be balanced.", LogType::BAD);
+			continue;
+		}
+
+
+		ReactionData data(id.result, line[1], reactantIds, productIds);
+		if (data.mapReactantsToProducts() == false)
+		{
+			Logger::log("Reaction with id " + std::to_string(id.result) + " is not a valid reaction.", LogType::BAD);
 			continue;
 		}
 
 		if (table.emplace(
 			id.result,
 			std::to_string(id.result),
-			std::move(temp)
+			std::move(data)
 		) == false)
 		{
 			Logger::log("Reaction with duplicate id " + std::to_string(id.result) + " skipped.", LogType::WARN);

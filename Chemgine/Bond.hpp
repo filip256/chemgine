@@ -12,6 +12,7 @@ public:
     Bond(const c_size other, const BondType type);
 
     uint8_t getValence() const;
+    std::string toSMILES() const;
 
     static std::string toSMILES(const BondType type);
     static BondType fromSMILES(const char symbol);

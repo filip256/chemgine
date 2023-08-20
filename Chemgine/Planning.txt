@@ -114,9 +114,9 @@ Tasks:
   ?. Implement indexing system for reactions
   DONE. Implement maximalMapping
   DONE. Implement reactables and reactable factory
-  6. Implement reactant - product mapping
+  DONE. Implement reactant - product mapping
   DONE. Implement stoechiometry
-  ?. Implement strict molecule serialization and deserialization
+  DONE. Implement strict molecule serialization and deserialization
   ?. Accept user balance hints for reactions
   ?. Accept user mapping hints for reactions
   ?. Implement toSMILES

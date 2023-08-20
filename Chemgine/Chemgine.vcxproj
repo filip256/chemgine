@@ -219,6 +219,7 @@
     <ClInclude Include="FunctionalGroupData.hpp" />
     <ClInclude Include="FunctionalGroupDataTable.hpp" />
     <ClInclude Include="FunctionalGroupReactable.hpp" />
+    <ClInclude Include="HashCombine.hpp" />
     <ClInclude Include="LogType.hpp" />
     <ClCompile Include="MolecularStructure.cpp" />
     <ClCompile Include="MultiIndexMap.cpp" />
@@ -229,6 +230,7 @@
     <ClCompile Include="Result.cpp" />
     <ClInclude Include="OrganicMolecule.hpp" />
     <ClInclude Include="OrganicMoleculeData.hpp" />
+    <ClInclude Include="PairHash.hpp" />
     <ClInclude Include="Reactable.hpp" />
     <ClInclude Include="ReactableFactory.hpp" />
     <ClInclude Include="ReactionData.hpp" />

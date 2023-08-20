@@ -100,6 +100,7 @@ public:
     constexpr static c_size npos = static_cast<c_size>(-1);
 
     MolecularStructure(const std::string& smiles);
+    MolecularStructure(const std::string& serialized, const bool renormalize);
     MolecularStructure(MolecularStructure&& structure) = default;
     MolecularStructure(const MolecularStructure&) = delete;
     ~MolecularStructure() noexcept;
@@ -150,9 +151,10 @@ public:
     /// <summary>
     /// Complexity: O(n)
     /// </summary>
-    c_size bondCount() const;
+    c_size virtualBondCount() const;
 
     bool isCyclic() const;
+    bool isConnected() const;
 
     /// <summary>
     /// Checks if the two components are adjacent.
@@ -181,7 +183,7 @@ public:
     /// Returns the largest mapping between the atoms of the pattern and the atoms of *this.
     /// Complexity: rather large
     /// </summary>
-    std::unordered_map<c_size, c_size> maximalMapTo(
+    std::pair<std::unordered_map<c_size, c_size>, uint8_t> maximalMapTo(
         const MolecularStructure& pattern,
         const std::unordered_set<c_size>& targetIgnore = std::unordered_set<c_size>(),
         const std::unordered_set<c_size>& patternIgnore = std::unordered_set<c_size>()
@@ -200,4 +202,7 @@ public:
     bool operator!=(const MolecularStructure& other) const;
     bool operator==(const std::string& other) const;
     bool operator!=(const std::string& other) const;
+
+    std::string serialize() const;
+    bool deserialize(const std::string& str);
 };

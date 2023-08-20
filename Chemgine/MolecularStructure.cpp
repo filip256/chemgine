@@ -1,14 +1,24 @@
 #include <array>
 #include <algorithm>
+#include <queue>
 
 #include "MolecularStructure.hpp"
 #include "CompositeComponent.hpp"
+#include "DataHelpers.hpp"
 #include "Logger.hpp"
 
 MolecularStructure::MolecularStructure(const std::string& smiles)
 {
     loadFromSMILES(smiles);
     normalize();
+}
+
+MolecularStructure::MolecularStructure(const std::string& serialized, const bool renormalize)
+{
+    deserialize(serialized);
+
+    if(renormalize)
+        normalize();
 }
 
 MolecularStructure::~MolecularStructure()
@@ -346,7 +356,7 @@ c_size MolecularStructure::componentCount() const
     return components.size();
 }
 
-c_size MolecularStructure::bondCount() const
+c_size MolecularStructure::virtualBondCount() const
 {
     c_size cnt = 0;
     for (c_size i = 0; i < bonds.size(); ++i)
@@ -356,7 +366,42 @@ c_size MolecularStructure::bondCount() const
 
 bool MolecularStructure::isCyclic() const
 {
-    return bondCount() > componentCount() - 1;
+    return virtualBondCount() / 2 > components.size() - 1;
+}
+
+bool MolecularStructure::isConnected() const
+{
+    if (components.size() == 0)
+        return true;
+
+    if (virtualBondCount() / 2 < components.size() - 1)
+        return false;
+
+    std::vector<uint8_t> visited;
+    visited.resize(components.size(), false);
+    std::queue<c_size> queue;
+
+    c_size c = 0;
+
+    while (true)
+    {
+        visited[c] = true;
+
+        for(c_size i = 0; i < bonds[c].size(); ++i)
+            if (visited[bonds[c][i]->other] == false) 
+                queue.push(bonds[c][i]->other);
+
+        if (queue.empty())
+            break;
+
+        c = queue.front();
+        queue.pop();
+    }
+
+    for (c_size i = 0; i < visited.size(); ++i)
+        if (visited[i] == false)
+            return false;
+    return true;
 }
 
 bool MolecularStructure::areAdjacent(const c_size idxA, const c_size idxB) const
@@ -626,10 +671,10 @@ std::pair<std::unordered_map<c_size, c_size>, uint8_t> MolecularStructure::DFSMa
             }
         }
 
-        newMap.first.merge(maxMapping.first);
+        newMap.first.merge(std::move(maxMapping.first));
         newMap.second = maxMapping.second;
-        mappedA.merge(maxMappedA);
-        mappedB.merge(maxMappedB);
+        mappedA.merge(std::move(maxMappedA));
+        mappedB.merge(std::move(maxMappedB));
     }
     return newMap;
 }
@@ -685,13 +730,13 @@ std::unordered_map<c_size, c_size> MolecularStructure::mapTo(const MolecularStru
     return std::unordered_map<c_size, c_size>();
 }
 
-std::unordered_map<c_size, c_size> MolecularStructure::maximalMapTo(
+std::pair<std::unordered_map<c_size, c_size>, uint8_t> MolecularStructure::maximalMapTo(
     const MolecularStructure& pattern,
     const std::unordered_set<c_size>& targetIgnore,
     const std::unordered_set<c_size>& patternIgnore) const
 {
     if (pattern.componentCount() == 0 || this->componentCount() == 0)
-        return std::unordered_map<c_size, c_size>();
+        return std::pair<std::unordered_map<c_size, c_size>, uint8_t>();
 
     // find atom that matches in both target and pattern
     std::pair<std::unordered_map<c_size, c_size>, uint8_t> maxMapping;
@@ -729,7 +774,7 @@ std::unordered_map<c_size, c_size> MolecularStructure::maximalMapTo(
             }
         }
     }
-    return maxMapping.first;
+    return maxMapping;
 }
 
 bool MolecularStructure::operator==(const MolecularStructure& other) const
@@ -864,4 +909,104 @@ std::string MolecularStructure::toSMILES() const
     std::vector<uint8_t> visited(components.size(), false);
     uint8_t cycleCount = 0;
     return rToSMILES(0, 0, visited, cycleCount);
+}
+
+
+std::string MolecularStructure::serialize() const
+{
+    std::string result;
+    for (c_size i = 0; i < components.size(); ++i)
+        result += std::to_string(components[i]->getId()) + ';';
+    result.back() = '_';
+    for (c_size i = 0; i < components.size(); ++i)
+    {
+        for (c_size j = 0; j < bonds[i].size(); ++j)
+            result += bonds[i][j]->toSMILES() + std::to_string(bonds[i][j]->other) + ';';
+        result.back() = '_';
+    }
+    result.pop_back();
+    return result;
+}
+
+bool MolecularStructure::deserialize(const std::string& str)
+{
+    clear();
+    
+    const auto tokens = DataHelpers::parseList(str, '_');
+    if (tokens.empty())
+    {
+        clear();
+        return false;
+    }
+
+    auto comps = DataHelpers::parseList(tokens[0], ';');
+    for (c_size i = 0; i < comps.size(); ++i)
+    {
+        const auto id = DataHelpers::toUInt(comps[i]);
+        if (id.status == 0 || Atom::isDefined(static_cast<ComponentIdType>(id.result)) == false)
+        {
+            clear();
+            return false;
+        }
+
+        components.emplace_back(new Atom(static_cast<ComponentIdType>(id.result)));
+    }
+
+    for (c_size i = 1; i < tokens.size(); ++i)
+    {
+        comps = DataHelpers::parseList(tokens[i], ';');
+        bonds.emplace_back(std::vector<Bond*>());
+        for (c_size j = 0; j < comps.size(); ++j)
+        {
+            if (comps[j].empty())
+            {
+                clear();
+                return false;
+            }
+
+            if (std::isdigit(comps[j][0]))
+            {
+                const auto id = DataHelpers::toUInt(comps[j]);
+                if (id.status == 0)
+                {
+                    clear();
+                    return false;
+                }
+
+                bonds[i - 1].emplace_back(new Bond(id.result, BondType::SINGLE));
+            }
+            else
+            {
+                const auto bType = Bond::fromSMILES(comps[j][0]);
+                if (bType == BondType::NONE)
+                {
+                    clear();
+                    return false;
+                }
+
+                const auto id = DataHelpers::toUInt(comps[j].substr(1));
+                if (id.status == 0)
+                {
+                    clear();
+                    return false;
+                }
+
+                bonds[i - 1].emplace_back(new Bond(id.result, bType));
+            }
+        }
+    }
+
+    if (isConnected() == false)
+    {
+        clear();
+        return false;
+    }
+
+    const auto hCount = getHCount();
+    if (hydrogenCount == -1)
+    {
+        clear();
+        return false;
+    }
+    hydrogenCount = hCount;
 }
