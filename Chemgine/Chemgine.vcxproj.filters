@@ -129,9 +129,6 @@
     <ClCompile Include="FunctionalGroupDataTable.cpp">
       <Filter>Source Files\Data\Tables</Filter>
     </ClCompile>
-    <ClCompile Include="DataTable.cpp">
-      <Filter>Source Files\Data\Tables</Filter>
-    </ClCompile>
     <ClCompile Include="AtomicComponent.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
@@ -198,6 +195,9 @@
     <ClCompile Include="Maths.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="DataTable.cpp">
+      <Filter>Source Files\DataStructures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -252,9 +252,6 @@
       <Filter>Header Files\Data\Values</Filter>
     </ClInclude>
     <ClInclude Include="FunctionalGroupDataTable.hpp">
-      <Filter>Header Files\Data\Tables</Filter>
-    </ClInclude>
-    <ClInclude Include="DataTable.hpp">
       <Filter>Header Files\Data\Tables</Filter>
     </ClInclude>
     <ClInclude Include="AtomDataTable.hpp">
@@ -336,6 +333,12 @@
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
     <ClInclude Include="PairHash.hpp">
+      <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="PVector.hpp">
+      <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="DataTable.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
   </ItemGroup>

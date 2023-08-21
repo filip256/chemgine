@@ -991,7 +991,7 @@ bool MolecularStructure::deserialize(const std::string& str)
                     return false;
                 }
 
-                bonds[i - 1].emplace_back(new Bond(id.result, bType));
+                  bonds[i - 1].emplace_back(new Bond(id.result, bType));
             }
         }
     }

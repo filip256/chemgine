@@ -10,6 +10,8 @@
 #include "Reactable.hpp"
 #include "ReactableFactory.hpp"
 
+#include "PVector.hpp"
+
 
 /*
 FunctionalGroup {

@@ -231,6 +231,7 @@
     <ClInclude Include="OrganicMolecule.hpp" />
     <ClInclude Include="OrganicMoleculeData.hpp" />
     <ClInclude Include="PairHash.hpp" />
+    <ClInclude Include="PVector.hpp" />
     <ClInclude Include="Reactable.hpp" />
     <ClInclude Include="ReactableFactory.hpp" />
     <ClInclude Include="ReactionData.hpp" />
