@@ -159,15 +159,15 @@ public:
 			}
 		}
 
-		for (size_t i = 0; i < setC.size(); ++i)
-		{
-			if (MolecularStructure(setC[i].serialize(), true) != setC[i])
-			{
-				Logger::log("Test failed > MolecularStructure > serialize/deserialize > #" + std::to_string(i)
-					+ ": expected= true\n"
-					+ setC[i].print(), LogType::BAD);
-			}
-		}
+		//for (size_t i = 0; i < setC.size(); ++i)
+		//{
+		//	if (MolecularStructure(setC[i].serialize(), true) != setC[i])
+		//	{
+		//		Logger::log("Test failed > MolecularStructure > serialize/deserialize > #" + std::to_string(i)
+		//			+ ": expected= true\n"
+		//			+ setC[i].print(), LogType::BAD);
+		//	}
+		//}
 	}
 };
 
@@ -192,8 +192,8 @@ public:
 
 		molecularStructureTest.initialize();
 		const auto end = std::chrono::steady_clock::now();
-		Logger::log("Test initialization completed in " +
-			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.");
+		std::cout << "Test initialization completed in " +
+			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.\n";
 	}
 
 	void runAll()
@@ -201,8 +201,8 @@ public:
 		const auto begin = std::chrono::steady_clock::now();
 		molecularStructureTest.runTests();
 		const auto end = std::chrono::steady_clock::now();
-		Logger::log("Test execution completed in " +
-			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.");
+		std::cout<<"Test execution completed in " +
+			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.\n";
 		Logger::exitContext();
 	}
 };

@@ -8,13 +8,16 @@
 
 #include "Bond.hpp"
 #include "BaseComponent.hpp"
+#include "PVector.hpp"
 
 class MolecularStructure
 {
 private:
     uint16_t hydrogenCount = 0;
-    std::vector<const BaseComponent*> components;
-    std::vector<std::vector<Bond*>> bonds;
+    PVector<const BaseComponent, c_size> components;
+    std::vector<PVector<Bond, c_size>> bonds;
+    //std::vector<const BaseComponent*> components;
+    //std::vector<std::vector<Bond*>> bonds;
 
     void rPrint(
         std::vector<std::string>& buffer,

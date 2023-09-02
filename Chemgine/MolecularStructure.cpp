@@ -55,7 +55,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
                 return false;
             }
 
-            bonds.emplace_back(std::move(std::vector<Bond*>()));
+            bonds.emplace_back(std::vector<Bond*>());
 
             if (prev != npos)
             {
@@ -111,7 +111,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             }
             
             components.emplace_back(new Atom(smiles.substr(i + 1, t - i - 1)));
-            bonds.emplace_back(std::move(std::vector<Bond*>()));
+            bonds.emplace_back(std::vector<Bond*>());
 
             if (prev != npos)
             {
@@ -195,7 +195,7 @@ void MolecularStructure::normalize()
     if (components.size() <= 1)
         return;
 
-    std::vector<const BaseComponent*> copy(components);
+    std::vector<const BaseComponent*> copy(components.data());
     std::vector<c_size> map(components.size(), npos);
 
 
@@ -219,7 +219,7 @@ void MolecularStructure::normalize()
                 map[i] = j;
     }
 
-    components = copy;
+    components = std::move(copy);
 
     for (c_size i = 0; i < bonds.size(); ++i)
         for (c_size j = 0; j < bonds[i].size(); ++j)
@@ -491,17 +491,26 @@ std::string MolecularStructure::print(const size_t maxWidth, const size_t maxHei
 
 void MolecularStructure::clear()
 {
-    while (components.empty() == false)
+    components.clear();
+    while (bonds.size())
     {
-        while (bonds[components.size() - 1].empty() == false)
-        {
-            delete bonds[components.size() - 1].back();
-            bonds[components.size() - 1].pop_back();
-        }
-        delete components.back();
-        components.pop_back();
+        bonds.back().clear();
+        bonds.pop_back();
     }
     hydrogenCount = 0;
+
+    // for freeing memory
+    //while (components.empty() == false)
+    //{
+    //    while (bonds[components.size() - 1].empty() == false)
+    //    {
+    //        delete bonds[components.size() - 1].back();
+    //        bonds[components.size() - 1].pop_back();
+    //    }
+    //    delete components.back();
+    //    components.pop_back();
+    //}
+    //hydrogenCount = 0;
 }
 
 bool MolecularStructure::areMatching(
@@ -770,7 +779,7 @@ std::pair<std::unordered_map<c_size, c_size>, uint8_t> MolecularStructure::maxim
                         score > maxScore))))
             {
                 maxMapping = std::move(map);
-                maxScore == score;
+                maxScore = score;
             }
         }
     }
@@ -1009,4 +1018,5 @@ bool MolecularStructure::deserialize(const std::string& str)
         return false;
     }
     hydrogenCount = hCount;
+    return true;
 }
