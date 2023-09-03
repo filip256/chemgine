@@ -118,6 +118,7 @@ Tasks:
   DONE. Implement stoechiometry
   DONE. Implement strict molecule serialization and deserialization
   DONE. Implement pVector
+  DONE. Implement query
   ?. Accept user balance hints for reactions
   ?. Accept user mapping hints for reactions
   ?. Implement toSMILES

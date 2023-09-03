@@ -138,7 +138,7 @@
     <ClCompile Include="BackboneDataTable.cpp">
       <Filter>Source Files\Data\Tables</Filter>
     </ClCompile>
-    <ClCompile Include="OrganicMolecule.cpp">
+    <ClCompile Include="Molecule.cpp">
       <Filter>Source Files\Molecules</Filter>
     </ClCompile>
     <ClCompile Include="MoleculeDataTable.cpp">
@@ -197,6 +197,15 @@
     </ClCompile>
     <ClCompile Include="DataTable.cpp">
       <Filter>Source Files\DataStructures</Filter>
+    </ClCompile>
+    <ClCompile Include="ReactorLayer.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
+    <ClCompile Include="Reactor.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
+    <ClCompile Include="Reaction.cpp">
+      <Filter>Source Files\Reactions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -266,7 +275,7 @@
     <ClInclude Include="BackboneDataTable.hpp">
       <Filter>Header Files\Data\Tables</Filter>
     </ClInclude>
-    <ClInclude Include="OrganicMolecule.hpp">
+    <ClInclude Include="Molecule.hpp">
       <Filter>Header Files\Molecules</Filter>
     </ClInclude>
     <ClInclude Include="MoleculeDataTable.hpp">
@@ -340,6 +349,21 @@
     </ClInclude>
     <ClInclude Include="DataTable.hpp">
       <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="ReactorLayer.hpp">
+      <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="LayerType.hpp">
+      <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="Reactor.hpp">
+      <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="Query.hpp">
+      <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="Reaction.hpp">
+      <Filter>Header Files\Reactions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

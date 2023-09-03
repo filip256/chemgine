@@ -5,6 +5,7 @@
 #include "BaseComponentData.hpp"
 #include "Reactable.hpp"
 #include "PairHash.hpp"
+#include "Molecule.hpp"
 
 typedef uint16_t ReactionIdType;
 
@@ -41,6 +42,8 @@ public:
 	ReactionData(const ReactionData&) = delete;
 	ReactionData(ReactionData&&) = default;
 	~ReactionData() noexcept;
+
+	bool hasAsReactant(const Molecule& molecule) const;
 	
 	friend class ReactionDataTable;
 };

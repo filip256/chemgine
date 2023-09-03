@@ -11,6 +11,8 @@
 #include "ReactableFactory.hpp"
 
 #include "PVector.hpp"
+#include "Reactor.hpp"
+#include "Query.hpp"
 
 
 /*
@@ -62,6 +64,7 @@ int main()
         DataStore r;
         BaseComponent::setDataStore(r);
         ReactableFactory::setDataStore(r);
+        Reactor::setDataStore(r);
         r.loadAtomsData("Data/AtomData.csv");
         r.loadFunctionalGroupsData("Data/FunctionalGroupData.csv");
         r.loadBackbonesData("Data/BackboneData.csv");

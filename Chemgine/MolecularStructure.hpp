@@ -177,7 +177,7 @@ public:
 
     /// <summary>
     /// Returns the first found mapping between the atoms of the pattern and the atoms of *this.
-    /// The whole pattern strcture must be matched. 
+    /// The whole pattern structure must be matched. 
     /// Complexity: rather large
     /// </summary>
     std::unordered_map<c_size, c_size> mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const;

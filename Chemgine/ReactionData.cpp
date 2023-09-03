@@ -182,3 +182,13 @@ std::vector<const Reactable*> ReactionData::flatten(
 
 	return result;
 }
+
+bool ReactionData::hasAsReactant(const Molecule& molecule) const
+{
+	for (size_t i = 0; i < reactants.size(); ++i)
+	{
+		if (molecule.data().getStructure().mapTo(reactants[i]->getStructure(), true).size() != 0)
+			return true;
+	}
+	return false;
+}

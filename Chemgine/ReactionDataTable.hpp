@@ -5,6 +5,7 @@
 #include "FunctionalGroupDataTable.hpp"
 #include "BackboneDataTable.hpp"
 #include "MoleculeDataTable.hpp"
+#include "Reaction.hpp"
 
 class ReactionDataTable :
 	public DataTable<ReactionIdType, std::string, ReactionData>
@@ -24,4 +25,6 @@ public:
 	ReactionDataTable(const ReactionDataTable&) = delete;
 
 	bool loadFromFile(const std::string& path);
+
+	std::vector<Reaction> findReactionsFor(const Molecule& structure) const;
 };

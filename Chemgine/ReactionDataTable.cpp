@@ -2,6 +2,7 @@
 #include "DataHelpers.hpp"
 #include "Logger.hpp"
 #include "ReactableFactory.hpp"
+#include "Molecule.hpp"
 
 #include <fstream>
 
@@ -113,5 +114,17 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 	Logger::log("Loaded " + std::to_string(table.size()) + " reactions.", LogType::GOOD);
 
 	return true;
+}
+
+
+std::vector<Reaction> ReactionDataTable::findReactionsFor(const Molecule& molecule) const
+{
+	std::vector<Reaction> result;
+	for (size_t i = 0; i < table.size(); ++i)
+	{
+		if (table[i].hasAsReactant(molecule))
+			result.emplace_back(table[i].id);
+	}
+	return result;
 }
 

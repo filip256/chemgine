@@ -11,6 +11,7 @@ class BaseComponent
 {
 private:
 	static DataStoreAccessor dataAccessor;
+
 protected:
 	mutable ComponentIdType id;
 	const ComponentType type;
