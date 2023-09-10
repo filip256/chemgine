@@ -116,15 +116,3 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 	return true;
 }
 
-
-std::vector<Reaction> ReactionDataTable::findReactionsFor(const Molecule& molecule) const
-{
-	std::vector<Reaction> result;
-	for (size_t i = 0; i < table.size(); ++i)
-	{
-		if (table[i].hasAsReactant(molecule))
-			result.emplace_back(table[i].id);
-	}
-	return result;
-}
-

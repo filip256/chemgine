@@ -175,6 +175,8 @@
     <ClCompile Include="BackboneReactable.cpp" />
     <ClCompile Include="BaseReactionCondition.cpp" />
     <ClCompile Include="CompositeComponentData.cpp" />
+    <ClCompile Include="ConcreteReaction.cpp" />
+    <ClCompile Include="Constants.cpp" />
     <ClCompile Include="DataStoreAccessor.cpp" />
     <ClCompile Include="FloatValue.cpp" />
     <ClCompile Include="FunctionalGroupReactable.cpp" />
@@ -192,6 +194,7 @@
     <ClCompile Include="ReactorLayer.cpp" />
     <ClCompile Include="SystemMatrix.cpp" />
     <ClCompile Include="Value.cpp" />
+    <ClInclude Include="Amount.hpp" />
     <ClInclude Include="AtomicComponent.hpp" />
     <ClInclude Include="AtomIdentifier.hpp" />
     <ClCompile Include="AtomData.cpp" />
@@ -216,6 +219,8 @@
     <ClCompile Include="FunctionalGroupDataTable.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClInclude Include="CompositeComponentData.hpp" />
+    <ClInclude Include="ConcreteReaction.hpp" />
+    <ClInclude Include="Constants.hpp" />
     <ClInclude Include="DataStoreAccessor.hpp" />
     <ClInclude Include="FloatValue.hpp" />
     <ClInclude Include="FunctionalGroup.hpp" />
@@ -223,11 +228,13 @@
     <ClInclude Include="FunctionalGroupDataTable.hpp" />
     <ClInclude Include="FunctionalGroupReactable.hpp" />
     <ClInclude Include="HashCombine.hpp" />
+    <ClInclude Include="IndexMap.hpp" />
     <ClInclude Include="LayerType.hpp" />
     <ClInclude Include="LogType.hpp" />
     <ClCompile Include="MolecularStructure.cpp" />
     <ClCompile Include="MultiIndexMap.cpp" />
     <ClInclude Include="Maths.hpp" />
+    <ClInclude Include="Unit.hpp" />
     <ClInclude Include="MoleculeDataTable.hpp" />
     <ClInclude Include="MoleculeReactable.hpp" />
     <ClInclude Include="MultiIndexMap.hpp" />

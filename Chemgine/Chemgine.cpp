@@ -15,6 +15,8 @@
 #include "Query.hpp"
 
 
+#include "Amount.hpp"
+
 /*
 FunctionalGroup {
     CompositeComponent {
@@ -56,6 +58,10 @@ FunctionalGroup {
 
 int main()
 {
+    Amount<Unit::MOLE> moles(5);
+    auto x= moles.to<Unit::GRAM>(123.0);
+    Amount<Unit::CUBIC_METER> vol(Amount<Unit::LITER>(5));
+
     {
         TestManager tests;
         tests.runAll();

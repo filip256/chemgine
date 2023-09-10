@@ -17,6 +17,7 @@ protected:
 
 public:
 	virtual const MolecularStructure& getStructure() const = 0;
+	virtual std::unordered_map<c_size, c_size> matchWith(const MolecularStructure& structure) const = 0;
 
 	static void setDataStore(const DataStore& dataStore);
 

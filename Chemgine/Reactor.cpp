@@ -1,16 +1,45 @@
 #include "Reactor.hpp"
 #include "DataStore.hpp"
+#include "PairHash.hpp"
+#include "Constants.hpp"
 #include "Query.hpp"
+
+Reactor::Reactant::Reactant(
+	const Molecule& molecule,
+	const LayerType layer,
+	const double amount
+) noexcept :
+	molecule(molecule),
+	layer(layer),
+	amount(amount),
+	isNew(true)
+{}
+
+bool Reactor::Reactant::operator== (const Reactant& other) const
+{
+	return this->layer == other.layer && 
+		   this->molecule.getId() == other.molecule.getId();
+}
+
+bool Reactor::Reactant::operator!= (const Reactant& other) const
+{
+	return this->layer != other.layer &&
+		this->molecule.getId() != other.molecule.getId();
+}
+
+
+size_t Reactor::ReactantHash::operator() (const Reactor::Reactant& reactant) const
+{
+	return PairHash()(std::make_pair(reactant.molecule.getId(), reactant.layer));
+}
+
+
 
 DataStoreAccessor Reactor::dataAccessor = DataStoreAccessor();
 
 Reactor::Reactor() noexcept
 {
 	dataAccessor.crashIfUninitialized();
-
-	layers.reserve(layerCount);
-	for (uint8_t i = 0; i < layerCount; ++i)
-		layers.emplace_back(ReactorLayer(*this, static_cast<LayerType>(i)));
 }
 
 void Reactor::setDataStore(const DataStore& dataStore)
@@ -18,21 +47,36 @@ void Reactor::setDataStore(const DataStore& dataStore)
 	dataAccessor.set(dataStore);
 }
 
+void Reactor::removeNegligibles()
+{
+	for (auto const& r : content)
+	{
+		if (r.amount < Constants::MOLAR_EXISTANCE_THRESHOLD)
+			content.erase(r);
+	}
+}
+
+
+void Reactor::generateMappingForReaction(const Reaction& reaction) const
+{
+
+}
+
 void Reactor::checkReactions()
 {
-	for (size_t i = 0; i < layers.size(); ++i)
-	{
-		for (size_t j = 0; j < layers[i].contents.size(); ++j)
-		{
-			dataAccessor.get().reactions.findReactionsFor(layers[i].contents[j]))
-		}
-	}
+
 }
 
 void Reactor::add(Reactor& other)
 {
-	for (uint8_t i = 0; i < layers.size(); ++i)
-		this->layers[i].add(other.layers[i]);
+	for (auto const& r : other.content)
+	{
+		auto const it = this->content.find(r);
+		if (it == this->content.end())
+			this->content.emplace(r);
+		else
+			it->amount += r.amount;
+	}
 }
 
 void Reactor::add(Reactor& other, const double ratio)
@@ -43,11 +87,19 @@ void Reactor::add(Reactor& other, const double ratio)
 		return;
 	}
 
-	for (uint8_t i = 0; i < layers.size(); ++i)
-		this->layers[i].add(other.layers[i], ratio);
+	for (auto& r : other.content)
+	{
+		auto const it = this->content.find(r);
+		if (it == this->content.end())
+			this->content.emplace(Reactor::Reactant(r.molecule, r.layer, r.amount * ratio));
+		else
+			it->amount += r.amount * ratio;
+		r.amount -= r.amount * ratio;
+	}
 }
 
 void Reactor::tick()
 {
+	removeNegligibles();
 	checkReactions();
 }

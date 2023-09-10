@@ -17,6 +17,7 @@ public:
 	bool contains(const KeyT2 key) const;
 	const ObjT& at(const KeyT1 key) const;
 	const ObjT& at(const KeyT2 key) const;
+	const std::vector<ObjT>& data() const;
 
 	const size_t size() const;
 	const ObjT& operator[](const size_t idx) const;

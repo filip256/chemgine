@@ -40,6 +40,12 @@ const ObjT& DataTable<KeyT1, KeyT2, ObjT>::at(const KeyT2 key) const
 }
 
 template<class KeyT1, class KeyT2, class ObjT>
+const std::vector<ObjT>& DataTable<KeyT1, KeyT2, ObjT>::data() const
+{
+	return table.data();
+}
+
+template<class KeyT1, class KeyT2, class ObjT>
 const size_t DataTable<KeyT1, KeyT2, ObjT>::size() const
 {
 	return table.size();

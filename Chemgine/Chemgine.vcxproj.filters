@@ -207,6 +207,12 @@
     <ClCompile Include="Reaction.cpp">
       <Filter>Source Files\Reactions</Filter>
     </ClCompile>
+    <ClCompile Include="ConcreteReaction.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
+    <ClCompile Include="Constants.cpp">
+      <Filter>Source Files\Data</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -364,6 +370,21 @@
     </ClInclude>
     <ClInclude Include="Reaction.hpp">
       <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="ConcreteReaction.hpp">
+      <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.hpp">
+      <Filter>Header Files\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Amount.hpp">
+      <Filter>Header Files\Data\Values</Filter>
+    </ClInclude>
+    <ClInclude Include="Unit.hpp">
+      <Filter>Header Files\Data\Values</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexMap.hpp">
+      <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -69,3 +69,12 @@ size_t MoleculeDataTable::findFirst(const std::string& smiles) const
 
 	return npos;
 }
+
+size_t MoleculeDataTable::findFirst(const MolecularStructure& structure) const
+{
+	for (size_t i = 0; i < table.size(); ++i)
+		if (table[i].getStructure() == structure)
+			return i;
+
+	return npos;
+}

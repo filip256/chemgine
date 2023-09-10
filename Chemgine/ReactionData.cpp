@@ -1,6 +1,7 @@
 #include "ReactionData.hpp"
 #include "SystemMatrix.hpp"
 #include "Maths.hpp"
+#include "PairHash.hpp"
 
 ReactionData::ReactionData(
 	const ReactionIdType id,
@@ -191,4 +192,98 @@ bool ReactionData::hasAsReactant(const Molecule& molecule) const
 			return true;
 	}
 	return false;
+}
+
+void ReactionData::enumerateReactantPairs(
+	const std::vector<Molecule>& molecules,
+	const std::unordered_set<std::pair<size_t, size_t>, PairHash>& allowedPairs,
+	std::vector<std::pair<size_t, size_t>>& currentMatch,
+	std::vector<std::vector<std::pair<size_t, size_t>>>& result) const
+{
+	if (currentMatch.size() == reactants.size()) {
+		result.emplace_back(std::move(currentMatch));
+		return;
+	}
+
+	for (size_t i = 0; i < molecules.size(); ++i) {
+		const auto potentialPair = std::make_pair(i, currentMatch.size());
+
+		if (allowedPairs.contains(potentialPair)) 
+		{
+			currentMatch.push_back(potentialPair);
+			enumerateReactantPairs(molecules, allowedPairs, currentMatch, result);
+			currentMatch.pop_back();
+		}
+	}
+}
+
+std::vector<std::vector<std::pair<size_t, std::unordered_map<c_size, c_size>>>> ReactionData::mapReactantsToMolecules(
+	const std::vector<Molecule>& molecules) const
+{
+	std::vector<std::vector<std::pair<size_t, std::unordered_map<c_size, c_size>>>> allowedMatches;
+
+	for (size_t i = 0; i < reactants.size(); ++i)
+	{
+		allowedMatches.emplace_back();
+		for (size_t j = 0; j < molecules.size(); ++j)
+		{
+			const auto match = reactants[i]->matchWith(molecules[j].data().getStructure());
+			if (match.size())
+				allowedMatches.back().emplace_back(std::make_pair(j, match));
+		}
+		if (allowedMatches.empty())
+			return std::vector<std::vector<std::pair<size_t, std::unordered_map<c_size, c_size>>>>();
+
+		// skip repeated reactants
+		while (i + 1 < reactants.size() && reactants[i] == reactants[i + 1])
+			++i;
+	}
+
+	return allowedMatches;
+}
+
+void ReactionData::foo(const std::vector<Molecule>& molecules) const
+{
+	const auto mapVect = mapReactantsToMolecules(molecules);
+	if (mapVect.empty())
+		return;
+
+	std::unordered_set<std::pair<size_t, size_t>, PairHash> allowedPairs;
+
+	size_t reactantIdx = 0;
+	for (size_t i = 0; i < mapVect.size(); ++i)
+	{
+		while (reactantIdx + 1 < reactants.size() && reactants[reactantIdx] == reactants[reactantIdx + 1])
+		{
+			for (size_t j = 0; j < mapVect[i].size(); ++j)
+				allowedPairs.insert(std::make_pair(reactantIdx, mapVect[i][j].first));
+			++reactantIdx;
+		}
+		for (size_t j = 0; j < mapVect[i].size(); ++j)
+			allowedPairs.insert(std::make_pair(reactantIdx, mapVect[i][j].first));
+	}
+
+	std::vector<std::pair<size_t, size_t>> matchAlloc;
+	matchAlloc.reserve(reactants.size());
+	std::vector<std::vector<std::pair<size_t, size_t>>> resultAlloc;
+	resultAlloc.reserve(
+		Maths::combinations(reactants.size() + allowedPairs.size() - 1, allowedPairs.size())
+	);
+
+	enumerateReactantPairs(molecules, allowedPairs, matchAlloc, resultAlloc);
+
+	for (size_t i = 0; i < resultAlloc.size(); ++i)
+	{
+		//...
+	}
+}
+
+const std::vector<const Reactable*>& ReactionData::getReactants() const
+{
+	return reactants;
+}
+
+const std::vector<const Reactable*>& ReactionData::getProducts() const
+{
+	return products;
 }

@@ -89,6 +89,39 @@ Reactables provide access to the MolecularStructure of each of these types.
 They are similar to Components but with a different purpose.
     
 
+-- ConcreteReactions --
+Represent the actual reaction that takes place and it is formed by instancing an existing
+Reaction with real molecules from a Reactor. In essence they must describe efficiently
+exactly what gets consumed and created and must be appliable on a reactor.
+
+# How to check if a reaction occurs in a reactor:
+   - physical conditions must match
+   - catalysts must be present
+   - every there must be o molecule that matches every reactant:
+      ! molecules, f. groups, bacbones have different matching rules => reactables !
+      ! the same molecule can match mutiple reactants !
+      ! one reactant must be matched by exactly one molecule !
+      ! not all molecules in the reactor need to match (obvious) !
+
+   I.  Easy but bad: Loop through all reactions and check if each reactant matches a molecule, return
+       the matching between each reactant and molecule
+   II. Faster but more memory: Send a list of molecules to the dataStore. the store does intelligen queries
+       and returns a map of {molecules, reactions}
+
+   How to prevent duplicate reactions:
+      New reactions should occur when:
+       - a new molecule appears => the reaction must contain at least 1 new molecule
+       - physical props. change => the new reaction must have a different id from the existing ones
+
+# How to generate a concrete reaction:
+    - find a possible reaction
+    - decide how many of each of the reacting molecules is needed
+    - knowing the molecule-reactant mapping and the reactant-product mapping,
+      generate the structures of the products
+    - if no molecule is defined with this new structure, define it and approximate properties
+    - store the reactant and product lists of molecules
+    - approximate reaction speed and themodynamics
+
 
 Tasks:
   DONE. Create atoms CSV with Id, symbol, valence, weight
@@ -119,6 +152,7 @@ Tasks:
   DONE. Implement strict molecule serialization and deserialization
   DONE. Implement pVector
   DONE. Implement query
+  DONE. Implement amount
   ?. Accept user balance hints for reactions
   ?. Accept user mapping hints for reactions
   ?. Implement toSMILES

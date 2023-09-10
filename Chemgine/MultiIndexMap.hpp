@@ -12,7 +12,7 @@ private:
 	std::unordered_map<KeyT2, size_t> indexer2;
 
 public:
-	MultiIndexMap();
+	MultiIndexMap() = default;
 
 	bool emplace(const KeyT1& key1, const KeyT2& key2, ObjT&& object);
 
@@ -28,6 +28,11 @@ public:
 	/// </summary>
 	const ObjT& atKey2(const KeyT2& key2) const;
 
+	/// <summary>
+	/// Returns a reference to the underlying data container.
+	/// </summary>
+	/// <returns></returns>
+	const std::vector<ObjT>& data() const;
 
 	bool containsKey1(const KeyT1& key1) const;
 	bool containsKey2(const KeyT2& key2) const;
@@ -68,11 +73,6 @@ public:
 };
 
 
-
-template <class KeyT1, class KeyT2, class ObjT>
-MultiIndexMap<KeyT1, KeyT2, ObjT>::MultiIndexMap()
-{}
-
 template <class KeyT1, class KeyT2, class ObjT>
 bool MultiIndexMap<KeyT1, KeyT2, ObjT>::emplace(const KeyT1& key1, const KeyT2& key2, ObjT&& object)
 {
@@ -95,6 +95,12 @@ template <class KeyT1, class KeyT2, class ObjT>
 const ObjT& MultiIndexMap<KeyT1, KeyT2, ObjT>::atKey2(const KeyT2& key2) const
 {
 	return objects[indexer2.at(key2)];
+}
+
+template <class KeyT1, class KeyT2, class ObjT>
+const std::vector<ObjT>& MultiIndexMap<KeyT1, KeyT2, ObjT>::data() const
+{
+	return objects;
 }
 
 template <class KeyT1, class KeyT2, class ObjT>

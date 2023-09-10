@@ -1,19 +1,82 @@
 #include "Value.hpp"
 
+#include <cmath>
 
 template<class T>
-constexpr Value<T>::Value(T value) :
+const T Value<T>::epsilon = std::numeric_limits<T>::epsilon();
+
+template<class T>
+constexpr Value<T>::Value(const T value) noexcept :
 	value(value)
 {}
 
 template<class T>
-constexpr T Value<T>::asKilo() const { return value / 1000.0; }
+Value<T>& Value<T>::operator=(const Value<T>& other)
+{
+	if (this != &other) 
+		value = other.value;
 
-template<class T>
-constexpr T Value<T>::asStd() const { return value; }
+	return *this;
+}
 
-template<class T>
-constexpr T Value<T>::asMilli() const { return value * 1000.0; }
+template <class T>
+bool Value<T>::operator==(const Value<T>& other) const { return std::abs(value - other.value) < epsilon; }
 
-template<class T>
-constexpr T Value<T>::asMicro() const { return value * 1000000.0; }
+template <class T>
+bool Value<T>::operator!=(const Value<T>& other) const { return !(*this == other); }
+
+template <class T>
+bool Value<T>::operator<(const Value<T>& other) const { return value < other.value; }
+
+template <class T>
+bool Value<T>::operator<=(const Value<T>& other) const { return *this < other || *this == other; }
+
+template <class T>
+bool Value<T>::operator>(const Value<T>& other) const { return value > other.value; }
+
+template <class T>
+bool Value<T>::operator>=(const Value<T>& other) const { return *this > other || *this == other;; }
+
+template <class T>
+Value<T> Value<T>::operator+(const Value<T>& other) const { return Value<T>(value + other.value); }
+
+template <class T>
+Value<T> Value<T>::operator-(const Value<T>& other) const { return Value<T>(value - other.value); }
+
+template <class T>
+Value<T> Value<T>::operator*(const double scalar) const { return Value<T>(value * scalar); }
+
+template <class T>
+Value<T> Value<T>::operator/(const double divisor) const { return Value<T>(value / divisor); }
+
+template <class T>
+Value<T>& Value<T>::operator+=(const Value<T>& other)
+{
+	value += other.value;
+	return *this;
+}
+
+template <class T>
+Value<T>& Value<T>::operator-=(const Value<T>& other)
+{
+	value -= other.value;
+	return *this;
+}
+
+template <class T>
+Value<T>& Value<T>::operator*=(const double scalar)
+{
+	value *= scalar;
+	return *this;
+}
+
+template <class T>
+Value<T>& Value<T>::operator/=(const double divisor)
+{
+	value /= divisor;
+	return *this;
+}
+
+template class Value<float>;
+template class Value<double>;
+template class Value<long double>;

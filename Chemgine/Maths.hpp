@@ -20,4 +20,9 @@ public:
 	/// for every element of the list Li, Li * N is an integer.
 	/// </summary>
 	static uint32_t integerCoefficient(const std::vector<float>& list);
+
+	/// <summary>
+	/// Returns the result of C(n, k) aka "n choose k"
+	/// </summary>
+	static uint64_t combinations(uint64_t n, uint64_t k);
 };
