@@ -77,12 +77,13 @@ int main()
         r.loadMoleculesData("Data/OrganicMoleculeData.csv");
         r.loadReactionsData("Data/ReactionData.csv");
 
-
+        Reactor reactor;
+        reactor.add(Molecule())
 
         //MolecularStructure a("O=C(OC)C");
-        MolecularStructure a("CC(=O)OC");
-        MolecularStructure b("OCC");
-        std::cout << a.print() << '\n' << b.print() << '\n';
+        //MolecularStructure a("CC(=O)OC");
+        //MolecularStructure b("OCC");
+        //std::cout << a.print() << '\n' << b.print() << '\n';
         //std::cout << MolecularStructure("CC1COC2CN(C)C(C)C3OCC1C23").toSMILES()<<'\n';
         //std::cout << MolecularStructure("C1C2CC12").toSMILES() << '\n';
 

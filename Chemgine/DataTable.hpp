@@ -8,8 +8,11 @@ class DataTable
 protected:
 	MultiIndexMap<KeyT1, KeyT2, ObjT> table;
 
+	template<class T = KeyT1, typename = std::enable_if_t<std::is_integral<T>::value>>
+	static T getFreeId();
+
 public:
-	DataTable();
+	DataTable() = default;
 	DataTable(const MultiIndexMap<KeyT1, KeyT2, ObjT>&) = delete;
 
 	const MultiIndexMap<KeyT1, KeyT2, ObjT>& getData() const;
@@ -28,4 +31,5 @@ public:
 	void clear();
 
 	static constexpr size_t npos = static_cast<size_t>(-1);
+
 };

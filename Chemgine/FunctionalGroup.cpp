@@ -31,3 +31,8 @@ std::unordered_map<ComponentIdType, c_size> FunctionalGroup::getComponentCountMa
 {
     return dataStore().backbones.at(id).getStructure().getComponentCountMap();
 }
+
+FunctionalGroup* FunctionalGroup::clone() const
+{
+    return new FunctionalGroup(*this);
+}

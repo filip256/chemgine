@@ -13,7 +13,7 @@
 class MolecularStructureTest
 {
 private:
-	std::vector<MolecularStructure> setA, setB, setC, setD;
+	std::vector<MolecularStructure> setA, setB, setC, setD, setE, setF;
 	std::unordered_map<std::string, std::vector<uint8_t>> res;
 
 public:
@@ -22,6 +22,7 @@ public:
 		res.emplace(std::make_pair("mapTo", std::vector<uint8_t>()));
 		res.emplace(std::make_pair("==", std::vector<uint8_t>()));
 		res.emplace(std::make_pair("maximal", std::vector<uint8_t>()));
+		res.emplace(std::make_pair("addSub", std::vector<uint8_t>()));
 
 		setA.emplace_back(std::move(MolecularStructure("CN(C)C(=O)C1=CC=CC=C1")));
 		setB.emplace_back(std::move(MolecularStructure("C1=CC=CC=C1R")));
@@ -128,6 +129,29 @@ public:
 		setC.emplace_back(std::move(MolecularStructure("CC2CCCC(C1CCCCC1)C2")));
 		setD.emplace_back(std::move(MolecularStructure("CC1CCCCC1")));
 		res["maximal"].emplace_back(7);
+
+		//-----//
+
+		setE.emplace_back(std::move(MolecularStructure("CC(=O)OC")));
+		setF.emplace_back(std::move(MolecularStructure("OCCC")));
+		res["addSub"].emplace_back(6);
+
+		setE.emplace_back(std::move(MolecularStructure("CCC(=O)O")));
+		setF.emplace_back(std::move(MolecularStructure("CC(=O)OCC")));
+		res["addSub"].emplace_back(6);
+
+		setE.emplace_back(std::move(MolecularStructure("C(=O)O")));
+		setF.emplace_back(std::move(MolecularStructure("CC(=O)OC(C)C")));
+		res["addSub"].emplace_back(7);
+
+		setE.emplace_back(std::move(MolecularStructure("C1CCCC1")));
+		setF.emplace_back(std::move(MolecularStructure("C1CC(O)C1")));
+		res["addSub"].emplace_back(6);
+
+		setE.emplace_back(std::move(MolecularStructure("CC(=C)C")));
+		setF.emplace_back(std::move(MolecularStructure("C1CCC1O")));
+		res["addSub"].emplace_back(6);
+
 	}
 
 	void runTests()
@@ -168,6 +192,17 @@ public:
 		//			+ setC[i].print(), LogType::BAD);
 		//	}
 		//}
+
+		for (size_t i = 0; i < setE.size(); ++i)
+		{
+			auto map = setF[i].maximalMapTo(setE[i]).first;
+			if (MolecularStructure::addSubstituents(setE[i], setF[i], map).componentCount() != res["addSub"][i])
+			{
+				Logger::log("Test failed > MolecularStructure > addSubstituents > #" + std::to_string(i)
+					+ ": expected=" + std::to_string(res["addSub"][i]) + "\n"
+					+ setE[i].print() + '\n' + setF[i].print(), LogType::BAD);
+			}
+		}
 	}
 };
 

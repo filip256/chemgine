@@ -50,6 +50,11 @@ bool BaseComponent::isCompositeType(const BaseComponent& component)
 		component.type == ComponentType::BACKBONE;
 }
 
+bool BaseComponent::isRadicalType() const
+{
+	return false;
+}
+
 bool BaseComponent::areEqual(const BaseComponent& x, const BaseComponent& y)
 {
 	return x.getId() == y.getId();

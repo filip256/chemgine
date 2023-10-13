@@ -82,10 +82,3 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 
 	return true;
 }
-
-ComponentIdType AtomDataTable::getFreeId() const
-{
-	ComponentIdType id = 201;
-	while (table.containsKey1(id) && id != 0) ++id; // overflow protection
-	return id;
-}

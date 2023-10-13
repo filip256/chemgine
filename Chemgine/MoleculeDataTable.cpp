@@ -78,3 +78,14 @@ size_t MoleculeDataTable::findFirst(const MolecularStructure& structure) const
 
 	return npos;
 }
+
+MoleculeIdType MoleculeDataTable::findOrAdd(MolecularStructure&& structure)
+{
+	const auto idx = findFirst(structure);
+	if (idx != npos)
+		return table[idx].id;
+
+	const auto id = getFreeId();
+	table.emplace(id, std::to_string(id), OrganicMoleculeData(id, std::move(structure)));
+	return id;
+}

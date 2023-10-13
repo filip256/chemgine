@@ -22,6 +22,10 @@ public:
 		const std::string& name,
 		const std::string& smiles) noexcept;
 
+	OrganicMoleculeData(
+		const MoleculeIdType id,
+		MolecularStructure&& structure) noexcept;
+
 	OrganicMoleculeData(const OrganicMoleculeData&) = delete;
 	OrganicMoleculeData(OrganicMoleculeData&&) = default;
 	~OrganicMoleculeData() = default;

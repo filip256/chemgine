@@ -94,6 +94,18 @@ Represent the actual reaction that takes place and it is formed by instancing an
 Reaction with real molecules from a Reactor. In essence they must describe efficiently
 exactly what gets consumed and created and must be appliable on a reactor.
 
+
+-- MergeSubstitute --
+A method that receives the molecules X, R, P and a mapping between X-R and R-P and returns a new molecule
+similar to P but containing all of the substituents from X.
+
+
+0 - 1
+1 - 5
+3 - 2
+2 - 0
+
+
 # How to check if a reaction occurs in a reactor:
    - physical conditions must match
    - catalysts must be present

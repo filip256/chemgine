@@ -12,6 +12,4 @@ public:
 	AtomDataTable(const AtomDataTable&) = delete;
 
 	bool loadFromFile(const std::string& path);
-
-	ComponentIdType getFreeId() const;
 };

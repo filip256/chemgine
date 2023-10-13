@@ -6,6 +6,9 @@
 
 class Atom : public AtomicComponent
 {
+private:
+    Atom(const Atom&) = default;
+
 public:
     Atom(const ComponentIdType id);
     Atom(const std::string& symbol);
@@ -24,4 +27,6 @@ public:
     uint8_t getPrecedence() const override final;
 
     std::unordered_map<ComponentIdType, c_size> getComponentCountMap() const override final;
+
+    Atom* clone() const override final;
 };

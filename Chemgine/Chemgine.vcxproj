@@ -254,6 +254,7 @@
     <ClInclude Include="SizeTypedefs.hpp" />
     <ClInclude Include="SystemMatrix.hpp" />
     <ClInclude Include="Tests.hpp" />
+    <ClInclude Include="Utils.hpp" />
     <ClInclude Include="Value.hpp" />
   </ItemGroup>
   <ItemGroup>

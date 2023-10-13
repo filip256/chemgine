@@ -99,13 +99,14 @@ private:
         const MolecularStructure& pattern,
         const std::unordered_map<c_size, c_size>& mapping);
 
+    MolecularStructure(const MolecularStructure& other) noexcept;
+
 public:
     constexpr static c_size npos = static_cast<c_size>(-1);
 
     MolecularStructure(const std::string& smiles);
     MolecularStructure(const std::string& serialized, const bool renormalize);
     MolecularStructure(MolecularStructure&& structure) = default;
-    MolecularStructure(const MolecularStructure&) = delete;
     ~MolecularStructure() noexcept;
 
     const BaseComponent* getComponent(const c_size idx) const;
@@ -192,6 +193,30 @@ public:
         const std::unordered_set<c_size>& patternIgnore = std::unordered_set<c_size>()
     ) const;
 
+    /// <summary>
+    /// Copies the branch starting at sourceIdx from source into the destination, using the mapping
+    /// in order to avoid copying unwanted branches and resolve cycles.
+    /// </summary>
+    /// <param name="sourceIdx">: the common component between the destination and source, where the branch starts</param>
+    /// <param name="sdMapping">: a map between the components of the source and thos of the destination.</param>
+    /// <param name="renormalize">: if true, normalization occurs after the copy is made and sdMapping is invalidated. </param>
+    static void copyBranch(
+        MolecularStructure& destination,
+        const MolecularStructure& source,
+        const c_size sourceIdx,
+        std::unordered_map<c_size, c_size>& sdMapping,
+        bool renormalize = true);
+
+    /// <summary>
+    /// Returns a molecule derived from pattern by adding all the substituents of instance that start from common components.
+    /// </summary>
+    /// <param name="pattern">: the base structure </param>
+    /// <param name="instance">: a structure that has common substructures with the pattern </param>
+    /// <param name="ipMap">: a map between the common components of pattern and instance </param>
+    static MolecularStructure addSubstituents(
+        const MolecularStructure& pattern,
+        const MolecularStructure& instance,
+        std::unordered_map<c_size, c_size>& ipMap);
 
     /// <summary>
     /// Returns true iff both structures represent the exact same molecule.

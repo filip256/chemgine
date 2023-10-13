@@ -21,6 +21,22 @@ MolecularStructure::MolecularStructure(const std::string& serialized, const bool
         normalize();
 }
 
+MolecularStructure::MolecularStructure(const MolecularStructure& other) noexcept :
+    hydrogenCount(other.hydrogenCount),
+    bonds(other.bonds.size())
+{
+    this->components.reserve(other.components.size());
+    for (size_t i = 0; i < other.components.size(); ++i)
+        this->components.emplace_back(other.components[i]->clone());
+
+    for (size_t i = 0; i < other.bonds.size(); ++i)
+    {
+        this->bonds[i].reserve(other.bonds[i].size());
+        for (size_t j = 0; j < other.bonds[i].size(); ++j)
+            this->bonds[i].emplace_back(new Bond(*other.bonds[i][j]));
+    }
+}
+
 MolecularStructure::~MolecularStructure()
 {
     clear();
@@ -312,8 +328,7 @@ uint16_t MolecularStructure::getRadicalAtomsCount() const
 {
     uint16_t cnt = 0;
     for (c_size i = 0; i < components.size(); ++i)
-        if (components[i]->isAtomicType() &&
-            static_cast<const AtomicComponent*>(components[i])->isRadicalType())
+        if (components[i]->isRadicalType())
             ++cnt;
     return cnt;
 }
@@ -322,8 +337,7 @@ bool MolecularStructure::isComplete() const
 {
     // it does not search sub components
     for (c_size i = 0; i < components.size(); ++i)
-        if (components[i]->isAtomicType() &&
-            static_cast<const AtomicComponent*>(components[i])->isRadicalType())
+        if (components[i]->isRadicalType())
                 return false;
     return true;
 }
@@ -785,6 +799,80 @@ std::pair<std::unordered_map<c_size, c_size>, uint8_t> MolecularStructure::maxim
     }
     return maxMapping;
 }
+
+
+void MolecularStructure::copyBranch(
+    MolecularStructure& destination,
+    const MolecularStructure& source,
+    const c_size sourceIdx,
+    std::unordered_map<c_size, c_size>& sdMapping,
+    bool renormalize)
+{
+    std::queue<c_size> queue;
+    for (c_size i = 0; i < source.bonds[sourceIdx].size(); ++i)
+        if(sdMapping.contains(source.bonds[sourceIdx][i]->other) == false)
+            queue.push(source.bonds[sourceIdx][i]->other);
+
+    if (queue.empty())
+        return;
+
+    while (queue.size()) 
+    {
+        const auto c = queue.front();
+        queue.pop();
+
+        // add current node
+        sdMapping.insert(std::make_pair(c, destination.components.size()));
+        destination.components.emplace_back(source.components[c]->clone());
+        destination.bonds.emplace_back(std::vector<Bond*>());
+
+        // add bonds to existing nodes and queue non-existing nodes
+        for (c_size i = 0; i < source.bonds[c].size(); ++i)
+        {
+            if (sdMapping.contains(source.bonds[c][i]->other))
+            {
+                destination.bonds.back().emplace_back(new Bond(
+                    sdMapping.at(source.bonds[c][i]->other),
+                    source.bonds[c][i]->type)
+                );
+
+                destination.bonds[sdMapping.at(source.bonds[c][i]->other)].emplace_back(new Bond(
+                    destination.components.size() - 1,
+                    source.bonds[c][i]->type)
+                );
+            }
+            else
+            {
+                queue.push(source.bonds[c][i]->other);
+            }
+        }
+    }
+
+    if (renormalize)
+    {
+        destination.normalize();
+        sdMapping.clear();
+    }
+}
+
+MolecularStructure MolecularStructure::addSubstituents(
+    const MolecularStructure& pattern,
+    const MolecularStructure& instance,
+    std::unordered_map<c_size, c_size>& ipMap)
+{
+    //auto composeMap = Utils::compose(ipMap);
+
+    MolecularStructure result(pattern);
+
+    for (auto const& p : ipMap)
+    {
+        copyBranch(result, instance, p.first, ipMap, false);
+    }
+    result.normalize();
+
+    return result;
+}
+
 
 bool MolecularStructure::operator==(const MolecularStructure& other) const
 {

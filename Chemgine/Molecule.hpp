@@ -12,6 +12,7 @@ private:
 
 public:
 	Molecule(const MoleculeIdType id);
+	Molecule(MolecularStructure&& structure);
 
 	MoleculeIdType getId() const;
 	const OrganicMoleculeData& data() const;

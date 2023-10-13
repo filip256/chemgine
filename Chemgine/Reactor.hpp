@@ -42,7 +42,6 @@ private:
 
 	static DataStoreAccessor dataAccessor;
 
-	void r() const;
 	void generateMappingForReaction(const Reaction& reaction) const;
 
 	void removeNegligibles();
@@ -55,6 +54,7 @@ public:
 
 	void add(Reactor& other);
 	void add(Reactor& other, const double ratio);
+	void add(const Molecule& molecule, const double amount);
 
 	void tick();
 

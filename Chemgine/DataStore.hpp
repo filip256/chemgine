@@ -15,7 +15,7 @@ public:
 	FunctionalGroupDataTable functionalGroups;
 	BackboneDataTable backbones;
 
-	MoleculeDataTable molecules;
+	mutable MoleculeDataTable molecules;
 
 	ReactionDataTable reactions;
 

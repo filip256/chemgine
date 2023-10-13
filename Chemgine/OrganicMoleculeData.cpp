@@ -12,7 +12,21 @@ OrganicMoleculeData::OrganicMoleculeData(
 {
 	if (this->structure.isComplete() == false)
 	{
-		Logger::log("Incomplete structure with id " + std::to_string(id) + " defined as backbone.", LogType::WARN);
+		Logger::log("Incomplete structure with id " + std::to_string(id) + " defined as molecule.", LogType::WARN);
+	}
+}
+
+OrganicMoleculeData::OrganicMoleculeData(
+	const MoleculeIdType id,
+	MolecularStructure&& structure
+) noexcept :
+	id(id),
+	name("?"),
+	structure(std::move(structure))
+{
+	if (this->structure.isComplete() == false)
+	{
+		Logger::log("Incomplete structure with id " + std::to_string(id) + " defined as molecule.", LogType::WARN);
 	}
 }
 

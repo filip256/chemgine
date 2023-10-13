@@ -9,6 +9,11 @@ Molecule::Molecule(const MoleculeIdType id) :
 	dataAccessor.crashIfUninitialized();
 }
 
+Molecule::Molecule(MolecularStructure&& structure) :
+	id(dataAccessor.getSafe().molecules.findOrAdd(std::move(structure)))
+{
+}
+
 MoleculeIdType Molecule::getId() const
 {
 	return id;

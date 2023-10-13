@@ -5,6 +5,9 @@
 
 class FunctionalGroup : public CompositeComponent
 {
+private:
+	FunctionalGroup(const FunctionalGroup&) = default;
+
 public:
 	FunctionalGroup(const ComponentIdType id);
 
@@ -15,4 +18,6 @@ public:
 	uint8_t getPrecedence() const override final;
 
 	std::unordered_map<ComponentIdType, c_size> getComponentCountMap() const override final;
+
+	FunctionalGroup* clone() const override final;
 };

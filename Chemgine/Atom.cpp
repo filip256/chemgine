@@ -65,3 +65,8 @@ std::unordered_map<ComponentIdType, c_size> Atom::getComponentCountMap() const
 {
     return std::unordered_map<ComponentIdType, c_size> {std::make_pair(id, 1)};
 }
+
+Atom* Atom::clone() const
+{
+    return new Atom(*this);
+}

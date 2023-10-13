@@ -29,3 +29,8 @@ bool AtomIdentifier::isRadicalType() const
 {
 	return Atom(id).isRadicalType();
 }
+
+//AtomIdentifier* AtomIdentifier::clone() const
+//{
+//	return new AtomIdentifier(*this);
+//}

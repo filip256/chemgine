@@ -5,9 +5,6 @@
 #include "OrganicMoleculeData.hpp"
 #include "ReactionData.hpp"
 
-template<class KeyT1, class KeyT2, class ObjT>
-DataTable<KeyT1, KeyT2, ObjT>::DataTable() : table() 
-{}
 
 template<class KeyT1, class KeyT2, class ObjT>
 const MultiIndexMap<KeyT1, KeyT2, ObjT>& DataTable<KeyT1, KeyT2, ObjT>::getData() const
@@ -75,8 +72,17 @@ void DataTable<KeyT1, KeyT2, ObjT>::clear()
 	table.clear();
 }
 
+template<class KeyT1, class KeyT2, class ObjT>
+template<class T, typename>
+T DataTable<KeyT1, KeyT2, ObjT>::getFreeId()
+{
+	size_t id = 201;
+	while (table.containsKey1(id) && id != 0) ++id; // overflow protection
+	return id;
+}
+
 template class DataTable<ComponentIdType, std::string, AtomData>;
 template class DataTable<ComponentIdType, std::string, FunctionalGroupData>;
 template class DataTable<ComponentIdType, std::string, BackboneData>;
-template class DataTable<ComponentIdType, std::string, OrganicMoleculeData>;
+template class DataTable<MoleculeIdType, std::string, OrganicMoleculeData>;
 template class DataTable<ReactionIdType, std::string, ReactionData>;

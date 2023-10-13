@@ -386,6 +386,9 @@
     <ClInclude Include="IndexMap.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
+    <ClInclude Include="Utils.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv">

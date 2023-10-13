@@ -32,7 +32,6 @@ public:
 	PVector<ObjT, sizeT>& operator=(std::vector<PObjT>&& other) noexcept;
 
 	void emplace_back(PObjT obj);
-	void emplace_back(ObjT&& obj);
 	void pop_back();
 	void insert(PObjT obj, const sizeT idx);
 	void insert(ObjT&& obj, const sizeT idx);
@@ -91,12 +90,6 @@ template<class ObjT, class sizeT>
 void PVector<ObjT, sizeT>::emplace_back(PObjT obj)
 {
 	content.push_back(obj);
-}
-
-template<class ObjT, class sizeT>
-void PVector<ObjT, sizeT>::emplace_back(ObjT&& obj)
-{
-	content.push_back(new ObjT(obj));
 }
 
 template<class ObjT, class sizeT>

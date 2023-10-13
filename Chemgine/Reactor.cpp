@@ -98,6 +98,11 @@ void Reactor::add(Reactor& other, const double ratio)
 	}
 }
 
+void Reactor::add(const Molecule& molecule, const double amount)
+{
+	content.emplace(molecule, LayerType::POLAR, amount);
+}
+
 void Reactor::tick()
 {
 	removeNegligibles();

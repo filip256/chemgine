@@ -52,11 +52,13 @@ public:
 	/// </summary>
 	static bool areMatching(const BaseComponent& x, const BaseComponent& y);
 
-	virtual bool isRadicalType() const = 0;
+	virtual bool isRadicalType() const;
 
 	virtual uint8_t getPrecedence() const = 0;
 
 	virtual std::unordered_map<ComponentIdType, c_size> getComponentCountMap() const = 0;
+
+	virtual BaseComponent* clone() const = 0;
 
 	// for memory leak checking 
 	static size_t instanceCount;

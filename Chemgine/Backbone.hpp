@@ -5,6 +5,9 @@
 
 class Backbone : public CompositeComponent
 {
+private:
+	Backbone(const Backbone&) = default;
+
 public:
 	Backbone(const ComponentIdType id);
 
@@ -15,4 +18,6 @@ public:
 	uint8_t getPrecedence() const override final;
 
 	std::unordered_map<ComponentIdType, c_size> getComponentCountMap() const override final;
+
+	Backbone* clone() const override final;
 };

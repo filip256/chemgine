@@ -13,6 +13,8 @@ private:
 	const CompositeComponent& composite;
 	const std::vector<ComponentIdType> ids;
 
+	//AtomIdentifier(const AtomIdentifier&) = default;
+
 public:
 	AtomIdentifier(const CompositeComponent& composite);
 
@@ -21,4 +23,6 @@ public:
 	const AtomData& data() const override final;
 
 	bool isRadicalType() const override final;
+
+	//AtomIdentifier* clone() const override final;
 };

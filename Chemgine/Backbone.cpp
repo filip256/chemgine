@@ -31,3 +31,8 @@ std::unordered_map<ComponentIdType, c_size> Backbone::getComponentCountMap() con
 {
     return dataStore().backbones.at(id).getStructure().getComponentCountMap();
 }
+
+Backbone* Backbone::clone() const
+{
+    return new Backbone(*this);
+}
