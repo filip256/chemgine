@@ -37,3 +37,9 @@ DataStore& DataStore::loadReactionsData(const std::string& path)
 	reactions.loadFromFile(path);
 	return *this;
 }
+
+DataStore& DataStore::loadLabwareData(const std::string& path)
+{
+	labware.loadFromFile(path);
+	return *this;
+}

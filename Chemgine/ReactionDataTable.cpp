@@ -116,3 +116,8 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 	return true;
 }
 
+void ReactionDataTable::findOccuringReactions(const std::vector<Molecule>& molecules) const
+{
+	for (size_t i = 0; i < table.size(); ++i)
+		table[i].foo(molecules);
+}

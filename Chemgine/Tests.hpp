@@ -9,6 +9,7 @@
 #include "MolecularStructure.hpp"
 #include "DataStore.hpp"
 #include "ReactableFactory.hpp"
+#include "Reactor.hpp"
 
 class MolecularStructureTest
 {
@@ -138,7 +139,7 @@ public:
 
 		setE.emplace_back(std::move(MolecularStructure("CCC(=O)O")));
 		setF.emplace_back(std::move(MolecularStructure("CC(=O)OCC")));
-		res["addSub"].emplace_back(6);
+		res["addSub"].emplace_back(7);
 
 		setE.emplace_back(std::move(MolecularStructure("C(=O)O")));
 		setF.emplace_back(std::move(MolecularStructure("CC(=O)OC(C)C")));
@@ -209,7 +210,7 @@ public:
 class TestManager
 {
 private:
-	DataStore r;
+	DataStore store;
 	MolecularStructureTest molecularStructureTest;
 
 public:
@@ -217,13 +218,16 @@ public:
 	{
 		Logger::enterContext();
 		const auto begin = std::chrono::steady_clock::now();
-		BaseComponent::setDataStore(r);
-		ReactableFactory::setDataStore(r);
-		r.loadAtomsData("Data/AtomData.csv");
-		r.loadFunctionalGroupsData("Data/FunctionalGroupData.csv");
-		r.loadBackbonesData("Data/BackboneData.csv");
-		r.loadMoleculesData("Data/OrganicMoleculeData.csv");
-		r.loadReactionsData("Data/ReactionData.csv");
+		BaseComponent::setDataStore(store);
+		ReactableFactory::setDataStore(store);
+		Reactor::setDataStore(store);
+		Molecule::setDataStore(store);
+		store.loadAtomsData("Data/AtomData.csv")
+			.loadFunctionalGroupsData("Data/FunctionalGroupData.csv")
+			.loadBackbonesData("Data/BackboneData.csv")
+			.loadMoleculesData("Data/OrganicMoleculeData.csv")
+			.loadReactionsData("Data/ReactionData.csv")
+			.loadLabwareData("Data/LabwareData.csv");
 
 		molecularStructureTest.initialize();
 		const auto end = std::chrono::steady_clock::now();

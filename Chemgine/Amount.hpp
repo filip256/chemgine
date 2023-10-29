@@ -15,6 +15,7 @@ class Amount : public Value<double>
 {
 public:
 	constexpr inline Amount(const double value) noexcept;
+	constexpr inline Amount(const Value<double> value) noexcept;
 	constexpr inline Amount(const Amount<UnitT>&) = default;
 
 	template<Unit OUnitT>
@@ -41,7 +42,13 @@ public:
 
 template<Unit UnitT>
 constexpr Amount<UnitT>::Amount(const double value) noexcept :
-	Value<double>(value){}
+	Value<double>(value)
+{}
+
+template<Unit UnitT>
+constexpr Amount<UnitT>::Amount(const Value<double> value) noexcept :
+	Value<double>(value) 
+{}
 
 template<Unit UnitT>
 constexpr double Amount<UnitT>::asStd() const noexcept { return value; }

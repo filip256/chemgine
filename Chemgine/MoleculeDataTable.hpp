@@ -5,7 +5,7 @@
 #include "FunctionalGroupDataTable.hpp"
 
 class MoleculeDataTable :
-	public DataTable<ComponentIdType, std::string, OrganicMoleculeData>
+	public DataTable<MoleculeIdType, std::string, OrganicMoleculeData>
 {
 public:
 	MoleculeDataTable() = default;

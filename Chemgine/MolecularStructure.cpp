@@ -9,7 +9,11 @@
 
 MolecularStructure::MolecularStructure(const std::string& smiles)
 {
-    loadFromSMILES(smiles);
+    if (loadFromSMILES(smiles) == false)
+    {
+        Logger::log("Molecule initialized with ill-formed smiles: \"" + smiles + "\".", LogType::BAD);
+        return;
+    }
     normalize();
 }
 
@@ -860,8 +864,6 @@ MolecularStructure MolecularStructure::addSubstituents(
     const MolecularStructure& instance,
     std::unordered_map<c_size, c_size>& ipMap)
 {
-    //auto composeMap = Utils::compose(ipMap);
-
     MolecularStructure result(pattern);
 
     for (auto const& p : ipMap)

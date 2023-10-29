@@ -210,3 +210,12 @@ Categorizations:
    position of the methyls. Radicals could always be brought down to the smallest index.
 
 
+
+   -----------------------------------------------------------------------------------------------------------------
+
+   Labware:
+    - a labware system is a graph of components
+
+   BaseLabComponent:
+    - an object that can have some adjacent components and defines the flow between these components
+    - have a tick function that defines their effect

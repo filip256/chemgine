@@ -16,6 +16,7 @@
 
 
 #include "Amount.hpp"
+#include "BaseLabwareData.hpp"
 
 /*
 FunctionalGroup {
@@ -58,27 +59,27 @@ FunctionalGroup {
 
 int main()
 {
-    Amount<Unit::MOLE> moles(5);
-    auto x= moles.to<Unit::GRAM>(123.0);
-    Amount<Unit::CUBIC_METER> vol(Amount<Unit::LITER>(5));
-
     {
         TestManager tests;
         tests.runAll();
 
 
-        DataStore r;
-        BaseComponent::setDataStore(r);
-        ReactableFactory::setDataStore(r);
-        Reactor::setDataStore(r);
-        r.loadAtomsData("Data/AtomData.csv");
-        r.loadFunctionalGroupsData("Data/FunctionalGroupData.csv");
-        r.loadBackbonesData("Data/BackboneData.csv");
-        r.loadMoleculesData("Data/OrganicMoleculeData.csv");
-        r.loadReactionsData("Data/ReactionData.csv");
+        DataStore store;
+        BaseComponent::setDataStore(store);
+        ReactableFactory::setDataStore(store);
+        Reactor::setDataStore(store);
+        Molecule::setDataStore(store);
+        store.loadAtomsData("Data/AtomData.csv")
+            .loadFunctionalGroupsData("Data/FunctionalGroupData.csv")
+            .loadBackbonesData("Data/BackboneData.csv")
+            .loadMoleculesData("Data/OrganicMoleculeData.csv")
+            .loadReactionsData("Data/ReactionData.csv")
+            .loadLabwareData("Data/LabwareData.csv");
 
-        Reactor reactor;
-        reactor.add(Molecule())
+        //Reactor reactor;
+        //reactor.add(Molecule("CC(=O)O"), 1.0);
+        //reactor.add(Molecule("CCCO"), 2.0);
+        //reactor.tick();
 
         //MolecularStructure a("O=C(OC)C");
         //MolecularStructure a("CC(=O)OC");
@@ -86,9 +87,6 @@ int main()
         //std::cout << a.print() << '\n' << b.print() << '\n';
         //std::cout << MolecularStructure("CC1COC2CN(C)C(C)C3OCC1C23").toSMILES()<<'\n';
         //std::cout << MolecularStructure("C1C2CC12").toSMILES() << '\n';
-
-        std::cout << MolecularStructure(MolecularStructure("CC1COC2CN(C)C(C)C3OCC1C23").serialize(), false).print()<<'\n';
-
     }
 
     if (BaseComponent::instanceCount != 0)
@@ -97,6 +95,8 @@ int main()
         Logger::log("Memory leak detected: Bond (" + std::to_string(Bond::instanceCount) + " unreleased instances).", LogType::BAD);
     if (Reactable::instanceCount != 0)
         Logger::log("Memory leak detected: Reactable (" + std::to_string(Reactable::instanceCount) + " unreleased instances).", LogType::BAD);
+    if (BaseLabwareData::instanceCount != 0)
+        Logger::log("Memory leak detected: BaseLabwareData (" + std::to_string(BaseLabwareData::instanceCount) + " unreleased instances).", LogType::BAD);
 
     getchar();
     return 0;

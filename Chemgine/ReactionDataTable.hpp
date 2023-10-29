@@ -25,4 +25,6 @@ public:
 	ReactionDataTable(const ReactionDataTable&) = delete;
 
 	bool loadFromFile(const std::string& path);
+
+	void findOccuringReactions(const std::vector<Molecule>& molecules) const;
 };

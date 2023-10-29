@@ -6,6 +6,7 @@
 #include "Molecule.hpp"
 #include "LayerType.hpp"
 #include "ConcreteReaction.hpp"
+#include "Amount.hpp"
 
 class Reactor
 {
@@ -14,13 +15,13 @@ class Reactor
 	public:
 		const Molecule molecule;
 		const LayerType layer;
-		mutable double amount;
+		mutable Amount<Unit::MOLE> amount;
 		mutable bool isNew;
 
 		Reactant(
 			const Molecule& molecule,
 			const LayerType layer,
-			const double amount
+			const Amount<Unit::MOLE> amount
 		) noexcept;
 
 		Reactant(const Reactant&) = default;
@@ -54,7 +55,7 @@ public:
 
 	void add(Reactor& other);
 	void add(Reactor& other, const double ratio);
-	void add(const Molecule& molecule, const double amount);
+	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount);
 
 	void tick();
 

@@ -52,29 +52,41 @@
     <Filter Include="Source Files\Data\Values">
       <UniqueIdentifier>{94424c06-9994-4e2c-98ec-ab2dac600d69}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Data\Tables">
-      <UniqueIdentifier>{5eaaa1ad-d8ce-4664-9923-b658d64f1748}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Data\Tables">
-      <UniqueIdentifier>{78984b14-b56a-42d0-b624-cf385402b523}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Molecules">
-      <UniqueIdentifier>{aab057ff-3147-420c-a0d0-e4dc5ca43e8b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Molecules">
       <UniqueIdentifier>{257e59b3-15a6-4caf-bf8b-2c1e572901ae}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Data\DataTypes">
-      <UniqueIdentifier>{9ecdf820-a124-4753-823c-f6e21ca0a752}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Data\DataTypes">
-      <UniqueIdentifier>{61a424bc-ab0f-4e9f-951c-9acbd6ffbdb3}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\Reactions">
       <UniqueIdentifier>{fcdb1bfa-1df1-4fb1-9ed3-e5f70acbd5a9}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Reactions">
       <UniqueIdentifier>{aa2f0169-c257-4503-8b80-c4ebc6174e49}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Labware">
+      <UniqueIdentifier>{ee9b022b-e8ff-4306-936a-1b746821818c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Labware">
+      <UniqueIdentifier>{0974a9b4-3d32-454a-8f61-6df1878b94a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Moleculars\DataTypes">
+      <UniqueIdentifier>{2ee84778-3045-46d1-8355-771b31313044}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Moleculars\Tables">
+      <UniqueIdentifier>{b63ad8de-a52f-4a96-a26c-248f6927db75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Labware\DataTypes">
+      <UniqueIdentifier>{01a269aa-c302-41e8-8b7e-08865afae803}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Molecules">
+      <UniqueIdentifier>{aab057ff-3147-420c-a0d0-e4dc5ca43e8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Moleculars\DataTypes">
+      <UniqueIdentifier>{c6872c67-ea05-4b0f-b063-90d2d69b2acb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Moleculars\Tables">
+      <UniqueIdentifier>{7fd23ded-219b-4150-80cc-1f7fcf93e82d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Labware\DataTypes">
+      <UniqueIdentifier>{f420b4a8-ab21-4b49-b67a-86b5224a49e5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -123,56 +135,20 @@
     <ClCompile Include="FloatValue.cpp">
       <Filter>Source Files\Data\Values</Filter>
     </ClCompile>
-    <ClCompile Include="AtomDataTable.cpp">
-      <Filter>Source Files\Data\Tables</Filter>
-    </ClCompile>
-    <ClCompile Include="FunctionalGroupDataTable.cpp">
-      <Filter>Source Files\Data\Tables</Filter>
-    </ClCompile>
     <ClCompile Include="AtomicComponent.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
     <ClCompile Include="Backbone.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
-    <ClCompile Include="BackboneDataTable.cpp">
-      <Filter>Source Files\Data\Tables</Filter>
-    </ClCompile>
     <ClCompile Include="Molecule.cpp">
       <Filter>Source Files\Molecules</Filter>
-    </ClCompile>
-    <ClCompile Include="MoleculeDataTable.cpp">
-      <Filter>Source Files\Data\Tables</Filter>
-    </ClCompile>
-    <ClCompile Include="AtomData.cpp">
-      <Filter>Source Files\Data\DataTypes</Filter>
-    </ClCompile>
-    <ClCompile Include="BackboneData.cpp">
-      <Filter>Source Files\Data\DataTypes</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseComponentData.cpp">
-      <Filter>Source Files\Data\DataTypes</Filter>
-    </ClCompile>
-    <ClCompile Include="CompositeComponentData.cpp">
-      <Filter>Source Files\Data\DataTypes</Filter>
-    </ClCompile>
-    <ClCompile Include="FunctionalGroupData.cpp">
-      <Filter>Source Files\Data\DataTypes</Filter>
-    </ClCompile>
-    <ClCompile Include="OrganicMoleculeData.cpp">
-      <Filter>Source Files\Data\DataTypes</Filter>
     </ClCompile>
     <ClCompile Include="DataStoreAccessor.cpp">
       <Filter>Source Files\Data</Filter>
     </ClCompile>
     <ClCompile Include="BaseReactionCondition.cpp">
       <Filter>Source Files\Reactions</Filter>
-    </ClCompile>
-    <ClCompile Include="ReactionData.cpp">
-      <Filter>Source Files\Data\DataTypes</Filter>
-    </ClCompile>
-    <ClCompile Include="ReactionDataTable.cpp">
-      <Filter>Source Files\Data\Tables</Filter>
     </ClCompile>
     <ClCompile Include="SystemMatrix.cpp">
       <Filter>Source Files\DataStructures</Filter>
@@ -212,6 +188,54 @@
     </ClCompile>
     <ClCompile Include="Constants.cpp">
       <Filter>Source Files\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="LabwareDataFactory.cpp">
+      <Filter>Source Files\Labware</Filter>
+    </ClCompile>
+    <ClCompile Include="LabwareDataTable.cpp">
+      <Filter>Source Files\Labware</Filter>
+    </ClCompile>
+    <ClCompile Include="ReactionDataTable.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
+    <ClCompile Include="ReactionData.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
+    <ClCompile Include="AtomData.cpp">
+      <Filter>Source Files\Moleculars\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="BackboneData.cpp">
+      <Filter>Source Files\Moleculars\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseComponentData.cpp">
+      <Filter>Source Files\Moleculars\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="CompositeComponentData.cpp">
+      <Filter>Source Files\Moleculars\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionalGroupData.cpp">
+      <Filter>Source Files\Moleculars\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="AtomDataTable.cpp">
+      <Filter>Source Files\Moleculars\Tables</Filter>
+    </ClCompile>
+    <ClCompile Include="BackboneDataTable.cpp">
+      <Filter>Source Files\Moleculars\Tables</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionalGroupDataTable.cpp">
+      <Filter>Source Files\Moleculars\Tables</Filter>
+    </ClCompile>
+    <ClCompile Include="MoleculeDataTable.cpp">
+      <Filter>Source Files\Molecules</Filter>
+    </ClCompile>
+    <ClCompile Include="OrganicMoleculeData.cpp">
+      <Filter>Source Files\Molecules</Filter>
+    </ClCompile>
+    <ClCompile Include="FlaskData.cpp">
+      <Filter>Source Files\Labware\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseLabwareData.cpp">
+      <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -266,56 +290,20 @@
     <ClInclude Include="Value.hpp">
       <Filter>Header Files\Data\Values</Filter>
     </ClInclude>
-    <ClInclude Include="FunctionalGroupDataTable.hpp">
-      <Filter>Header Files\Data\Tables</Filter>
-    </ClInclude>
-    <ClInclude Include="AtomDataTable.hpp">
-      <Filter>Header Files\Data\Tables</Filter>
-    </ClInclude>
     <ClInclude Include="AtomicComponent.hpp">
       <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
     <ClInclude Include="Backbone.hpp">
       <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
-    <ClInclude Include="BackboneDataTable.hpp">
-      <Filter>Header Files\Data\Tables</Filter>
-    </ClInclude>
     <ClInclude Include="Molecule.hpp">
       <Filter>Header Files\Molecules</Filter>
-    </ClInclude>
-    <ClInclude Include="MoleculeDataTable.hpp">
-      <Filter>Header Files\Data\Tables</Filter>
-    </ClInclude>
-    <ClInclude Include="AtomData.hpp">
-      <Filter>Header Files\Data\DataTypes</Filter>
-    </ClInclude>
-    <ClInclude Include="BackboneData.hpp">
-      <Filter>Header Files\Data\DataTypes</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseComponentData.hpp">
-      <Filter>Header Files\Data\DataTypes</Filter>
-    </ClInclude>
-    <ClInclude Include="CompositeComponentData.hpp">
-      <Filter>Header Files\Data\DataTypes</Filter>
-    </ClInclude>
-    <ClInclude Include="FunctionalGroupData.hpp">
-      <Filter>Header Files\Data\DataTypes</Filter>
-    </ClInclude>
-    <ClInclude Include="OrganicMoleculeData.hpp">
-      <Filter>Header Files\Data\DataTypes</Filter>
     </ClInclude>
     <ClInclude Include="DataStoreAccessor.hpp">
       <Filter>Header Files\Data</Filter>
     </ClInclude>
     <ClInclude Include="BaseReactionCondition.hpp">
       <Filter>Header Files\Reactions</Filter>
-    </ClInclude>
-    <ClInclude Include="ReactionData.hpp">
-      <Filter>Header Files\Data\DataTypes</Filter>
-    </ClInclude>
-    <ClInclude Include="ReactionDataTable.hpp">
-      <Filter>Header Files\Data\Tables</Filter>
     </ClInclude>
     <ClInclude Include="Tests.hpp">
       <Filter>Header Files</Filter>
@@ -389,6 +377,60 @@
     <ClInclude Include="Utils.hpp">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="BaseLabComponent.hpp">
+      <Filter>Header Files\Labware</Filter>
+    </ClInclude>
+    <ClInclude Include="LabwareType.hpp">
+      <Filter>Header Files\Labware</Filter>
+    </ClInclude>
+    <ClInclude Include="LabwareDataFactory.hpp">
+      <Filter>Header Files\Labware</Filter>
+    </ClInclude>
+    <ClInclude Include="LabwareDataTable.hpp">
+      <Filter>Header Files\Labware</Filter>
+    </ClInclude>
+    <ClInclude Include="ReactionData.hpp">
+      <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="ReactionDataTable.hpp">
+      <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="AtomData.hpp">
+      <Filter>Header Files\Moleculars\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="BackboneData.hpp">
+      <Filter>Header Files\Moleculars\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseComponentData.hpp">
+      <Filter>Header Files\Moleculars\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="CompositeComponentData.hpp">
+      <Filter>Header Files\Moleculars\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionalGroupData.hpp">
+      <Filter>Header Files\Moleculars\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionalGroupDataTable.hpp">
+      <Filter>Header Files\Moleculars\Tables</Filter>
+    </ClInclude>
+    <ClInclude Include="BackboneDataTable.hpp">
+      <Filter>Header Files\Moleculars\Tables</Filter>
+    </ClInclude>
+    <ClInclude Include="AtomDataTable.hpp">
+      <Filter>Header Files\Moleculars\Tables</Filter>
+    </ClInclude>
+    <ClInclude Include="MoleculeDataTable.hpp">
+      <Filter>Header Files\Molecules</Filter>
+    </ClInclude>
+    <ClInclude Include="OrganicMoleculeData.hpp">
+      <Filter>Header Files\Molecules</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseLabwareData.hpp">
+      <Filter>Header Files\Labware\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="FlaskData.hpp">
+      <Filter>Header Files\Labware\DataTypes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv">
@@ -405,6 +447,9 @@
       <Filter>Resource Files\ChemicalData</Filter>
     </None>
     <None Include="Data\ReactionData.csv">
+      <Filter>Resource Files\ChemicalData</Filter>
+    </None>
+    <None Include="Data\LabwareData.csv">
       <Filter>Resource Files\ChemicalData</Filter>
     </None>
   </ItemGroup>

@@ -212,7 +212,9 @@ void ReactionData::enumerateReactantPairs(
 		{
 			currentMatch.push_back(potentialPair);
 			enumerateReactantPairs(molecules, allowedPairs, currentMatch, result);
-			currentMatch.pop_back();
+
+			if(currentMatch.size())
+				currentMatch.pop_back();
 		}
 	}
 }

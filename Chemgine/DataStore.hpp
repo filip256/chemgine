@@ -5,6 +5,7 @@
 #include "BackboneDataTable.hpp"
 #include "MoleculeDataTable.hpp"
 #include "ReactionDataTable.hpp"
+#include "LabwareDataTable.hpp"
 
 #include <string>
 
@@ -19,6 +20,8 @@ public:
 
 	ReactionDataTable reactions;
 
+	LabwareDataTable labware;
+
 	DataStore();
 	DataStore(const DataStore&) = delete;
 
@@ -27,6 +30,8 @@ public:
 	DataStore& loadBackbonesData(const std::string& path);
 	DataStore& loadMoleculesData(const std::string& path);
 	DataStore& loadReactionsData(const std::string& path);
+
+	DataStore& loadLabwareData(const std::string& path);
 
 	static constexpr size_t npos = static_cast<size_t>(-1);
 };

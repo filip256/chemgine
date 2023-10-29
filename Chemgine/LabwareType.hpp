@@ -1,0 +1,16 @@
+#pragma once
+
+enum class LabwareType
+{
+	NONE,
+	FLASK,
+	J_FLASK,
+	CONNECTOR,
+	CONDENSER,
+	FUNNEL,
+	SEP_FUNNEL,
+	DROP_FUNNEL,
+	HEATER,
+	STIRRER,
+	HEATER_STIRRER
+};

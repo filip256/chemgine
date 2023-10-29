@@ -173,13 +173,17 @@
     <ClCompile Include="BackboneData.cpp" />
     <ClCompile Include="BackboneDataTable.cpp" />
     <ClCompile Include="BackboneReactable.cpp" />
+    <ClCompile Include="BaseLabwareData.cpp" />
     <ClCompile Include="BaseReactionCondition.cpp" />
     <ClCompile Include="CompositeComponentData.cpp" />
     <ClCompile Include="ConcreteReaction.cpp" />
     <ClCompile Include="Constants.cpp" />
     <ClCompile Include="DataStoreAccessor.cpp" />
+    <ClCompile Include="FlaskData.cpp" />
     <ClCompile Include="FloatValue.cpp" />
     <ClCompile Include="FunctionalGroupReactable.cpp" />
+    <ClCompile Include="LabwareDataFactory.cpp" />
+    <ClCompile Include="LabwareDataTable.cpp" />
     <ClCompile Include="Maths.cpp" />
     <ClCompile Include="MoleculeDataTable.cpp" />
     <ClCompile Include="MoleculeReactable.cpp" />
@@ -209,6 +213,8 @@
     <ClInclude Include="BackboneDataTable.hpp" />
     <ClInclude Include="BackboneReactable.hpp" />
     <ClInclude Include="BaseComponentData.hpp" />
+    <ClInclude Include="BaseLabComponent.hpp" />
+    <ClInclude Include="BaseLabwareData.hpp" />
     <ClInclude Include="BaseReactionCondition.hpp" />
     <ClInclude Include="CompositeComponent.hpp" />
     <ClCompile Include="DataHelpers.cpp" />
@@ -222,6 +228,7 @@
     <ClInclude Include="ConcreteReaction.hpp" />
     <ClInclude Include="Constants.hpp" />
     <ClInclude Include="DataStoreAccessor.hpp" />
+    <ClInclude Include="FlaskData.hpp" />
     <ClInclude Include="FloatValue.hpp" />
     <ClInclude Include="FunctionalGroup.hpp" />
     <ClInclude Include="FunctionalGroupData.hpp" />
@@ -229,6 +236,9 @@
     <ClInclude Include="FunctionalGroupReactable.hpp" />
     <ClInclude Include="HashCombine.hpp" />
     <ClInclude Include="IndexMap.hpp" />
+    <ClInclude Include="LabwareDataFactory.hpp" />
+    <ClInclude Include="LabwareDataTable.hpp" />
+    <ClInclude Include="LabwareType.hpp" />
     <ClInclude Include="LayerType.hpp" />
     <ClInclude Include="LogType.hpp" />
     <ClCompile Include="MolecularStructure.cpp" />
@@ -276,6 +286,7 @@
     <None Include="Data\AtomData.csv" />
     <None Include="Data\BackboneData.csv" />
     <None Include="Data\FunctionalGroupData.csv" />
+    <None Include="Data\LabwareData.csv" />
     <None Include="Data\OrganicMoleculeData.csv" />
     <None Include="Data\ReactionData.csv" />
     <None Include="diagram.cd" />
