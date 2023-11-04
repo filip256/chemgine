@@ -7,6 +7,9 @@ enum class Unit
 	CUBIC_METER,
 	GRAM,
 	MOLE,
+	JOULE,
+	SECOND,
+	WATT,
 
 	OF_DENSITY
 };

@@ -10,6 +10,7 @@
 #include "DataStore.hpp"
 #include "ReactableFactory.hpp"
 #include "Reactor.hpp"
+#include "BaseLabwareComponent.hpp"
 
 class MolecularStructureTest
 {
@@ -222,6 +223,7 @@ public:
 		ReactableFactory::setDataStore(store);
 		Reactor::setDataStore(store);
 		Molecule::setDataStore(store);
+		BaseLabwareComponent::setDataStore(store);
 		store.loadAtomsData("Data/AtomData.csv")
 			.loadFunctionalGroupsData("Data/FunctionalGroupData.csv")
 			.loadBackbonesData("Data/BackboneData.csv")

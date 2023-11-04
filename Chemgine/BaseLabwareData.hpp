@@ -16,8 +16,8 @@ public:
 
 	BaseLabwareData(
 		const LabwareIdType id,
-		const LabwareType type,
-		const std::string& name
+		const std::string& name,
+		const LabwareType type
 	) noexcept;
 	BaseLabwareData(const BaseLabwareData&) = delete;
 	BaseLabwareData(BaseLabwareData&&) = default;

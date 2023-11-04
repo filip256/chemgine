@@ -4,12 +4,12 @@ size_t BaseLabwareData::instanceCount = 0;
 
 BaseLabwareData::BaseLabwareData(
 	const LabwareIdType id,
-	const LabwareType type,
-	const std::string& name
+	const std::string& name,
+	const LabwareType type
 ) noexcept :
 	id(id),
-	type(type),
-	name(name)
+	name(name),
+	type(type)
 {}
 
 #ifndef NDEBUG

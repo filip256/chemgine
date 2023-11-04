@@ -88,6 +88,18 @@
     <Filter Include="Source Files\Labware\DataTypes">
       <UniqueIdentifier>{f420b4a8-ab21-4b49-b67a-86b5224a49e5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Labware\Components">
+      <UniqueIdentifier>{3a71782e-6d4f-4423-96b7-28d48d6e8883}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Moleculars\Components">
+      <UniqueIdentifier>{dc57883d-f6cc-448c-b782-ef782f4e04d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Moleculars\Components">
+      <UniqueIdentifier>{e4ed3873-8285-4fd6-ba4a-ea3e07241f33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Labware\Components">
+      <UniqueIdentifier>{7defd315-a4f9-4513-b498-bd99828def55}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataStore.cpp">
@@ -102,19 +114,10 @@
     <ClCompile Include="Result.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="BaseComponent.cpp">
-      <Filter>Source Files\Moleculars</Filter>
-    </ClCompile>
-    <ClCompile Include="Atom.cpp">
-      <Filter>Source Files\Moleculars</Filter>
-    </ClCompile>
     <ClCompile Include="Bond.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
     <ClCompile Include="MolecularStructure.cpp">
-      <Filter>Source Files\Moleculars</Filter>
-    </ClCompile>
-    <ClCompile Include="AtomIdentifier.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
     <ClCompile Include="Chemgine.cpp">
@@ -123,23 +126,11 @@
     <ClCompile Include="MultiIndexMap.cpp">
       <Filter>Source Files\DataStructures</Filter>
     </ClCompile>
-    <ClCompile Include="CompositeComponent.cpp">
-      <Filter>Source Files\Moleculars</Filter>
-    </ClCompile>
-    <ClCompile Include="FunctionalGroup.cpp">
-      <Filter>Source Files\Moleculars</Filter>
-    </ClCompile>
     <ClCompile Include="Value.cpp">
       <Filter>Source Files\Data\Values</Filter>
     </ClCompile>
     <ClCompile Include="FloatValue.cpp">
       <Filter>Source Files\Data\Values</Filter>
-    </ClCompile>
-    <ClCompile Include="AtomicComponent.cpp">
-      <Filter>Source Files\Moleculars</Filter>
-    </ClCompile>
-    <ClCompile Include="Backbone.cpp">
-      <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
     <ClCompile Include="Molecule.cpp">
       <Filter>Source Files\Molecules</Filter>
@@ -237,6 +228,48 @@
     <ClCompile Include="BaseLabwareData.cpp">
       <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
+    <ClCompile Include="JFlaskData.cpp">
+      <Filter>Source Files\Labware\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="LabwareJoint.cpp">
+      <Filter>Source Files\Labware</Filter>
+    </ClCompile>
+    <ClCompile Include="JointedLabwareData.cpp">
+      <Filter>Source Files\Labware\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="HeatSourceData.cpp">
+      <Filter>Source Files\Labware\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="Atom.cpp">
+      <Filter>Source Files\Moleculars\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="AtomicComponent.cpp">
+      <Filter>Source Files\Moleculars\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="AtomIdentifier.cpp">
+      <Filter>Source Files\Moleculars\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Backbone.cpp">
+      <Filter>Source Files\Moleculars\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseComponent.cpp">
+      <Filter>Source Files\Moleculars\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="CompositeComponent.cpp">
+      <Filter>Source Files\Moleculars\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionalGroup.cpp">
+      <Filter>Source Files\Moleculars\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseLabwareComponent.cpp">
+      <Filter>Source Files\Labware\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Flask.cpp">
+      <Filter>Source Files\Labware\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="LabwareSystem.cpp">
+      <Filter>Source Files\Labware</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -251,12 +284,6 @@
     <ClInclude Include="Result.hpp">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="BaseComponent.hpp">
-      <Filter>Header Files\Moleculars</Filter>
-    </ClInclude>
-    <ClInclude Include="Atom.hpp">
-      <Filter>Header Files\Moleculars</Filter>
-    </ClInclude>
     <ClInclude Include="Bond.hpp">
       <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
@@ -269,32 +296,17 @@
     <ClInclude Include="ComponentType.hpp">
       <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
-    <ClInclude Include="AtomIdentifier.hpp">
-      <Filter>Header Files\Moleculars</Filter>
-    </ClInclude>
-    <ClInclude Include="CompositeComponent.hpp">
-      <Filter>Header Files\Moleculars</Filter>
-    </ClInclude>
     <ClInclude Include="MultiIndexMap.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
     <ClInclude Include="LogType.hpp">
       <Filter>Header Files\Logger</Filter>
     </ClInclude>
-    <ClInclude Include="FunctionalGroup.hpp">
-      <Filter>Header Files\Moleculars</Filter>
-    </ClInclude>
     <ClInclude Include="FloatValue.hpp">
       <Filter>Header Files\Data\Values</Filter>
     </ClInclude>
     <ClInclude Include="Value.hpp">
       <Filter>Header Files\Data\Values</Filter>
-    </ClInclude>
-    <ClInclude Include="AtomicComponent.hpp">
-      <Filter>Header Files\Moleculars</Filter>
-    </ClInclude>
-    <ClInclude Include="Backbone.hpp">
-      <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
     <ClInclude Include="Molecule.hpp">
       <Filter>Header Files\Molecules</Filter>
@@ -377,9 +389,6 @@
     <ClInclude Include="Utils.hpp">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="BaseLabComponent.hpp">
-      <Filter>Header Files\Labware</Filter>
-    </ClInclude>
     <ClInclude Include="LabwareType.hpp">
       <Filter>Header Files\Labware</Filter>
     </ClInclude>
@@ -430,6 +439,51 @@
     </ClInclude>
     <ClInclude Include="FlaskData.hpp">
       <Filter>Header Files\Labware\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="JFlaskData.hpp">
+      <Filter>Header Files\Labware\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="JointedLabwareData.hpp">
+      <Filter>Header Files\Labware\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="LabwareJoint.hpp">
+      <Filter>Header Files\Labware</Filter>
+    </ClInclude>
+    <ClInclude Include="HeatSourceData.hpp">
+      <Filter>Header Files\Labware\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseLabwareComponent.hpp">
+      <Filter>Header Files\Labware\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Atom.hpp">
+      <Filter>Header Files\Moleculars\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="AtomicComponent.hpp">
+      <Filter>Header Files\Moleculars\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="AtomIdentifier.hpp">
+      <Filter>Header Files\Moleculars\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Backbone.hpp">
+      <Filter>Header Files\Moleculars\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseComponent.hpp">
+      <Filter>Header Files\Moleculars\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="CompositeComponent.hpp">
+      <Filter>Header Files\Moleculars\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionalGroup.hpp">
+      <Filter>Header Files\Moleculars\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Flask.hpp">
+      <Filter>Header Files\Labware\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="LabwareSystem.hpp">
+      <Filter>Header Files\Labware</Filter>
+    </ClInclude>
+    <ClInclude Include="PortType.hpp">
+      <Filter>Header Files\Labware</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

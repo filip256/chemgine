@@ -16,4 +16,6 @@ public:
 	~LabwareDataTable() noexcept;
 
 	bool loadFromFile(const std::string& path);
+
+	const BaseLabwareData& at(const LabwareIdType id) const;
 };

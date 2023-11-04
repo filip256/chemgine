@@ -17,6 +17,9 @@
 
 #include "Amount.hpp"
 #include "BaseLabwareData.hpp"
+#include "BaseLabwareComponent.hpp"
+
+#include <SFML/Graphics.hpp>
 
 /*
 FunctionalGroup {
@@ -69,6 +72,7 @@ int main()
         ReactableFactory::setDataStore(store);
         Reactor::setDataStore(store);
         Molecule::setDataStore(store);
+        BaseLabwareComponent::setDataStore(store);
         store.loadAtomsData("Data/AtomData.csv")
             .loadFunctionalGroupsData("Data/FunctionalGroupData.csv")
             .loadBackbonesData("Data/BackboneData.csv")
@@ -97,6 +101,8 @@ int main()
         Logger::log("Memory leak detected: Reactable (" + std::to_string(Reactable::instanceCount) + " unreleased instances).", LogType::BAD);
     if (BaseLabwareData::instanceCount != 0)
         Logger::log("Memory leak detected: BaseLabwareData (" + std::to_string(BaseLabwareData::instanceCount) + " unreleased instances).", LogType::BAD);
+    if (BaseLabwareComponent::instanceCount != 0)
+        Logger::log("Memory leak detected: BaseLabwareComponent (" + std::to_string(BaseLabwareComponent::instanceCount) + " unreleased instances).", LogType::BAD);
 
     getchar();
     return 0;

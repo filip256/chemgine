@@ -68,3 +68,9 @@ bool LabwareDataTable::loadFromFile(const std::string& path)
 
 	return true;
 }
+
+
+const BaseLabwareData& LabwareDataTable::at(const LabwareIdType id) const
+{
+	return *table.at(id);
+}

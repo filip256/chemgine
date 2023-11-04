@@ -1,11 +1,24 @@
 #pragma once
 
 #include "BaseLabwareData.hpp"
+#include "Amount.hpp"
 
 class FlaskData : public BaseLabwareData
 {
-public:
-	const double volume;
+protected:
+	FlaskData(
+		const LabwareIdType id,
+		const std::string& name,
+		const Amount<Unit::LITER> volume,
+		const LabwareType type
+	) noexcept;
 
-	FlaskData(const LabwareIdType id, const std::string& name, const double volume) noexcept;
+public:
+	const Amount<Unit::LITER> volume;
+
+	FlaskData(
+		const LabwareIdType id,
+		const std::string& name,
+		const Amount<Unit::LITER> volume
+	) noexcept;
 };
