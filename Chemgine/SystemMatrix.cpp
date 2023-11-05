@@ -5,8 +5,8 @@
 template <class T>
 bool SystemMatrix<T>::toREF()
 {
-    int cols = matrix[0].size() - 1;
-    int rows = cols;
+    size_t cols = matrix[0].size() - 1;
+    size_t rows = cols;
 
     for (size_t i = 0; i < rows; ++i) 
     {

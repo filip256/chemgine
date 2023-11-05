@@ -4,8 +4,7 @@ enum class LabwareType
 {
 	NONE,
 	FLASK,
-	J_FLASK,
-	CONNECTOR,
+	ADAPTOR,
 	CONDENSER,
 	FUNNEL,
 	SEP_FUNNEL,

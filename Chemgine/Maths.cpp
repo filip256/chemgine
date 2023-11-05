@@ -48,7 +48,7 @@ bool Maths::isInteger(const float v, const float precision)
 uint32_t Maths::integerCoefficient(float v)
 {
 	// find p, where p * v = int
-	if (isInteger(v, 0.05))
+	if (isInteger(v, 0.05f))
 		return 1;
 
 	v = v - static_cast<int>(v);
@@ -58,8 +58,8 @@ uint32_t Maths::integerCoefficient(float v)
 		v = 1 / (v - static_cast<int>(v));
 		p *= v;
 	} 
-	while (isInteger(v, 0.05) == false);
-	return p;
+	while (isInteger(v, 0.05f) == false);
+	return static_cast<uint32_t>(p);
 }
 
 uint32_t Maths::integerCoefficient(const std::vector<float>& list)
@@ -93,4 +93,18 @@ uint64_t Maths::combinations(uint64_t n, uint64_t k)
 		result /= i;
 	}
 	return result;
+}
+
+float Maths::sqaredDistance(const float aX, const float aY, const float bX, const float bY)
+{
+	return (aX - bX) * (aX - bX) + (aY - bY) * (aY - bY);
+}
+
+float Maths::sqaredDistance(
+	const float pX, const float pY,
+	const float rLeft, const float rTop, const float rRight, const float rBottom)
+{
+	const float dx = std::max(std::max(rLeft - pX, pX - rRight), 0.0f);
+	const float dy = std::max(std::max(rTop - pY, pY - rBottom), 0.0f);
+	return dx * dx + dy * dy;
 }

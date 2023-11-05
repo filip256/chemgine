@@ -25,9 +25,6 @@
     <Filter Include="Source Files\Helpers">
       <UniqueIdentifier>{b8c164f9-bc88-447e-acac-70a3088b9bab}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\ChemicalData">
-      <UniqueIdentifier>{7882107e-ae92-4adc-8e96-02ed9c88b221}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Logger">
       <UniqueIdentifier>{246aeafc-ad72-4a6f-8fbc-0291bd3fc205}</UniqueIdentifier>
     </Filter>
@@ -100,6 +97,21 @@
     <Filter Include="Source Files\Labware\Components">
       <UniqueIdentifier>{7defd315-a4f9-4513-b498-bd99828def55}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Textures">
+      <UniqueIdentifier>{0e36bde9-4540-44e7-b0cb-366d8d0ab939}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\External">
+      <UniqueIdentifier>{85a1d6be-8a49-4102-b4e4-270c2c5415da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\External">
+      <UniqueIdentifier>{d7fe13f8-8af8-4d49-b35f-ba315f9c6d38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Fonts">
+      <UniqueIdentifier>{e247a95a-28bd-40eb-9698-24fa231c2240}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Data">
+      <UniqueIdentifier>{7882107e-ae92-4adc-8e96-02ed9c88b221}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataStore.cpp">
@@ -122,9 +134,6 @@
     </ClCompile>
     <ClCompile Include="Chemgine.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MultiIndexMap.cpp">
-      <Filter>Source Files\DataStructures</Filter>
     </ClCompile>
     <ClCompile Include="Value.cpp">
       <Filter>Source Files\Data\Values</Filter>
@@ -222,20 +231,17 @@
     <ClCompile Include="OrganicMoleculeData.cpp">
       <Filter>Source Files\Molecules</Filter>
     </ClCompile>
-    <ClCompile Include="FlaskData.cpp">
+    <ClCompile Include="ContainerLabwareData.cpp">
       <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
     <ClCompile Include="BaseLabwareData.cpp">
       <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
-    <ClCompile Include="JFlaskData.cpp">
+    <ClCompile Include="FlaskData.cpp">
       <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
     <ClCompile Include="LabwareJoint.cpp">
       <Filter>Source Files\Labware</Filter>
-    </ClCompile>
-    <ClCompile Include="JointedLabwareData.cpp">
-      <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
     <ClCompile Include="HeatSourceData.cpp">
       <Filter>Source Files\Labware\DataTypes</Filter>
@@ -269,6 +275,24 @@
     </ClCompile>
     <ClCompile Include="LabwareSystem.cpp">
       <Filter>Source Files\Labware</Filter>
+    </ClCompile>
+    <ClCompile Include="LabwareConnection.cpp">
+      <Filter>Source Files\Labware</Filter>
+    </ClCompile>
+    <ClCompile Include="Collision.cpp">
+      <Filter>Source Files\External</Filter>
+    </ClCompile>
+    <ClCompile Include="AdaptorData.cpp">
+      <Filter>Source Files\Labware\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="Adaptor.cpp">
+      <Filter>Source Files\Labware\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawableComponent.cpp">
+      <Filter>Source Files\Labware\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawableLabwareData.cpp">
+      <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -437,13 +461,10 @@
     <ClInclude Include="BaseLabwareData.hpp">
       <Filter>Header Files\Labware\DataTypes</Filter>
     </ClInclude>
+    <ClInclude Include="ContainerLabwareData.hpp">
+      <Filter>Header Files\Labware\DataTypes</Filter>
+    </ClInclude>
     <ClInclude Include="FlaskData.hpp">
-      <Filter>Header Files\Labware\DataTypes</Filter>
-    </ClInclude>
-    <ClInclude Include="JFlaskData.hpp">
-      <Filter>Header Files\Labware\DataTypes</Filter>
-    </ClInclude>
-    <ClInclude Include="JointedLabwareData.hpp">
       <Filter>Header Files\Labware\DataTypes</Filter>
     </ClInclude>
     <ClInclude Include="LabwareJoint.hpp">
@@ -485,29 +506,60 @@
     <ClInclude Include="PortType.hpp">
       <Filter>Header Files\Labware</Filter>
     </ClInclude>
+    <ClInclude Include="LabwareConnection.hpp">
+      <Filter>Header Files\Labware</Filter>
+    </ClInclude>
+    <ClInclude Include="UIContext.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Collision.hpp">
+      <Filter>Header Files\External</Filter>
+    </ClInclude>
+    <ClInclude Include="AdaptorData.hpp">
+      <Filter>Header Files\Labware\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Adaptor.hpp">
+      <Filter>Header Files\Labware\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawableComponent.hpp">
+      <Filter>Header Files\Labware\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawableLabwareData.hpp">
+      <Filter>Header Files\Labware\DataTypes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv">
-      <Filter>Resource Files\ChemicalData</Filter>
+      <Filter>Resource Files\Data</Filter>
     </None>
     <None Include="Data\FunctionalGroupData.csv">
-      <Filter>Resource Files\ChemicalData</Filter>
+      <Filter>Resource Files\Data</Filter>
     </None>
     <None Include="diagram.cd" />
     <None Include="Data\BackboneData.csv">
-      <Filter>Resource Files\ChemicalData</Filter>
+      <Filter>Resource Files\Data</Filter>
     </None>
     <None Include="Data\OrganicMoleculeData.csv">
-      <Filter>Resource Files\ChemicalData</Filter>
+      <Filter>Resource Files\Data</Filter>
     </None>
     <None Include="Data\ReactionData.csv">
-      <Filter>Resource Files\ChemicalData</Filter>
+      <Filter>Resource Files\Data</Filter>
     </None>
     <None Include="Data\LabwareData.csv">
-      <Filter>Resource Files\ChemicalData</Filter>
+      <Filter>Resource Files\Data</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Planning.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Textures\jrbf500.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Fonts\font.ttf">
+      <Filter>Resource Files\Fonts</Filter>
+    </Font>
   </ItemGroup>
 </Project>

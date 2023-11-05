@@ -2,6 +2,7 @@
 
 #include "BaseLabwareData.hpp"
 #include "FlaskData.hpp"
+#include "AdaptorData.hpp"
 
 #include <vector>
 #include <string>
@@ -9,6 +10,7 @@
 class LabwareDataFactory
 {
 	static FlaskData* getFlask(const LabwareIdType id, const std::vector<std::string>& dataLine);
+	static AdaptorData* getAdaptor(const LabwareIdType id, const std::vector<std::string>& dataLine);
 
 public:
 

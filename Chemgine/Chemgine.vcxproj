@@ -187,6 +187,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Adaptor.cpp" />
     <ClCompile Include="Atom.cpp" />
     <ClCompile Include="AtomicComponent.cpp" />
     <ClCompile Include="AtomIdentifier.cpp" />
@@ -197,17 +198,21 @@
     <ClCompile Include="BaseLabwareComponent.cpp" />
     <ClCompile Include="BaseLabwareData.cpp" />
     <ClCompile Include="BaseReactionCondition.cpp" />
+    <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CompositeComponentData.cpp" />
     <ClCompile Include="ConcreteReaction.cpp" />
+    <ClCompile Include="AdaptorData.cpp" />
     <ClCompile Include="Constants.cpp" />
+    <ClCompile Include="DrawableComponent.cpp" />
     <ClCompile Include="DataStoreAccessor.cpp" />
+    <ClCompile Include="DrawableLabwareData.cpp" />
     <ClCompile Include="Flask.cpp" />
-    <ClCompile Include="FlaskData.cpp" />
+    <ClCompile Include="ContainerLabwareData.cpp" />
     <ClCompile Include="FloatValue.cpp" />
     <ClCompile Include="FunctionalGroupReactable.cpp" />
     <ClCompile Include="HeatSourceData.cpp" />
-    <ClCompile Include="JFlaskData.cpp" />
-    <ClCompile Include="JointedLabwareData.cpp" />
+    <ClCompile Include="FlaskData.cpp" />
+    <ClCompile Include="LabwareConnection.cpp" />
     <ClCompile Include="LabwareDataFactory.cpp" />
     <ClCompile Include="LabwareDataTable.cpp" />
     <ClCompile Include="LabwareJoint.cpp" />
@@ -226,6 +231,7 @@
     <ClCompile Include="ReactorLayer.cpp" />
     <ClCompile Include="SystemMatrix.cpp" />
     <ClCompile Include="Value.cpp" />
+    <ClInclude Include="Adaptor.hpp" />
     <ClInclude Include="Amount.hpp" />
     <ClInclude Include="AtomicComponent.hpp" />
     <ClInclude Include="AtomIdentifier.hpp" />
@@ -244,6 +250,7 @@
     <ClInclude Include="BaseLabwareComponent.hpp" />
     <ClInclude Include="BaseLabwareData.hpp" />
     <ClInclude Include="BaseReactionCondition.hpp" />
+    <ClInclude Include="Collision.hpp" />
     <ClInclude Include="CompositeComponent.hpp" />
     <ClCompile Include="DataHelpers.cpp" />
     <ClCompile Include="DataStore.cpp" />
@@ -254,10 +261,13 @@
     <ClCompile Include="Logger.cpp" />
     <ClInclude Include="CompositeComponentData.hpp" />
     <ClInclude Include="ConcreteReaction.hpp" />
+    <ClInclude Include="AdaptorData.hpp" />
     <ClInclude Include="Constants.hpp" />
+    <ClInclude Include="DrawableComponent.hpp" />
     <ClInclude Include="DataStoreAccessor.hpp" />
+    <ClInclude Include="DrawableLabwareData.hpp" />
     <ClInclude Include="Flask.hpp" />
-    <ClInclude Include="FlaskData.hpp" />
+    <ClInclude Include="ContainerLabwareData.hpp" />
     <ClInclude Include="FloatValue.hpp" />
     <ClInclude Include="FunctionalGroup.hpp" />
     <ClInclude Include="FunctionalGroupData.hpp" />
@@ -266,8 +276,8 @@
     <ClInclude Include="HashCombine.hpp" />
     <ClInclude Include="HeatSourceData.hpp" />
     <ClInclude Include="IndexMap.hpp" />
-    <ClInclude Include="JFlaskData.hpp" />
-    <ClInclude Include="JointedLabwareData.hpp" />
+    <ClInclude Include="FlaskData.hpp" />
+    <ClInclude Include="LabwareConnection.hpp" />
     <ClInclude Include="LabwareDataFactory.hpp" />
     <ClInclude Include="LabwareDataTable.hpp" />
     <ClInclude Include="LabwareJoint.hpp" />
@@ -276,9 +286,9 @@
     <ClInclude Include="LayerType.hpp" />
     <ClInclude Include="LogType.hpp" />
     <ClCompile Include="MolecularStructure.cpp" />
-    <ClCompile Include="MultiIndexMap.cpp" />
     <ClInclude Include="Maths.hpp" />
     <ClInclude Include="PortType.hpp" />
+    <ClInclude Include="UIContext.hpp" />
     <ClInclude Include="Unit.hpp" />
     <ClInclude Include="MoleculeDataTable.hpp" />
     <ClInclude Include="MoleculeReactable.hpp" />
@@ -328,6 +338,12 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Planning.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Textures\jrbf500.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Fonts\font.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

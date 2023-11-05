@@ -2,10 +2,10 @@
 
 #include "ContainerLabwareData.hpp"
 
-class FlaskData : public ContainerLabwareData
+class AdaptorData : public ContainerLabwareData
 {
 public:
-	FlaskData(
+	AdaptorData(
 		const LabwareIdType id,
 		const std::string& name,
 		const Amount<Unit::LITER> volume,

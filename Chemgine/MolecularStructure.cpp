@@ -312,7 +312,7 @@ const BaseComponent* MolecularStructure::getComponent(const c_size idx) const
     return components[idx];
 }
 
-uint16_t MolecularStructure::getHydrogenCount() const
+c_size MolecularStructure::getHydrogenCount() const
 {
     return hydrogenCount;
 }
@@ -328,9 +328,9 @@ double MolecularStructure::getMolarMass() const
     return cnt;
 }
 
-uint16_t MolecularStructure::getRadicalAtomsCount() const
+c_size MolecularStructure::getRadicalAtomsCount() const
 {
-    uint16_t cnt = 0;
+    c_size cnt = 0;
     for (c_size i = 0; i < components.size(); ++i)
         if (components[i]->isRadicalType())
             ++cnt;

@@ -8,10 +8,19 @@ BaseLabwareComponent::BaseLabwareComponent(const LabwareIdType id) noexcept :
 	data(dataAccessor.getSafe().labware.at(id))
 {}
 
+const DataStore& BaseLabwareComponent::dataStore() const
+{
+	return dataAccessor.get();
+}
 
 void BaseLabwareComponent::setDataStore(const DataStore& dataStore)
 {
 	dataAccessor.set(dataStore);
+}
+
+bool BaseLabwareComponent::isContainerType() const
+{
+	return data.type == LabwareType::FLASK || data.type == LabwareType::ADAPTOR;
 }
 
 #ifndef NDEBUG

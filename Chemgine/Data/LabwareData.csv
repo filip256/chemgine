@@ -1,3 +1,4 @@
-Id,Type,Name,
-201,1,Erlenmayer Flask,0.5
-202,1,Beaker,0.1
+Id,Type,Name,,
+201,1,Round Botton Flask,0.5,3 31 9 90,./Textures/jrbf500.png
+202,1,Round Botton Flask,0.5,3 31 9 90,./Textures/jrbf500.png
+301,2,3-way Adaptor, 0.05,4 6 58 0;4 36 33 45,./Textures/3way.png

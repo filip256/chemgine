@@ -44,10 +44,10 @@ template <class T>
 Value<T> Value<T>::operator-(const Value<T>& other) const { return Value<T>(value - other.value); }
 
 template <class T>
-Value<T> Value<T>::operator*(const double scalar) const { return Value<T>(value * scalar); }
+Value<T> Value<T>::operator*(const T scalar) const { return Value<T>(value * scalar); }
 
 template <class T>
-Value<T> Value<T>::operator/(const double divisor) const { return Value<T>(value / divisor); }
+Value<T> Value<T>::operator/(const T divisor) const { return Value<T>(value / divisor); }
 
 template <class T>
 Value<T>& Value<T>::operator+=(const Value<T>& other)
@@ -64,14 +64,14 @@ Value<T>& Value<T>::operator-=(const Value<T>& other)
 }
 
 template <class T>
-Value<T>& Value<T>::operator*=(const double scalar)
+Value<T>& Value<T>::operator*=(const T scalar)
 {
 	value *= scalar;
 	return *this;
 }
 
 template <class T>
-Value<T>& Value<T>::operator/=(const double divisor)
+Value<T>& Value<T>::operator/=(const T divisor)
 {
 	value /= divisor;
 	return *this;

@@ -18,8 +18,9 @@
 #include "Amount.hpp"
 #include "BaseLabwareData.hpp"
 #include "BaseLabwareComponent.hpp"
+#include "LabwareSystem.hpp"
 
-#include <SFML/Graphics.hpp>
+#include "UIContext.hpp"
 
 /*
 FunctionalGroup {
@@ -79,6 +80,9 @@ int main()
             .loadMoleculesData("Data/OrganicMoleculeData.csv")
             .loadReactionsData("Data/ReactionData.csv")
             .loadLabwareData("Data/LabwareData.csv");
+
+        UIContext uiContext;
+        uiContext.run();
 
         //Reactor reactor;
         //reactor.add(Molecule("CC(=O)O"), 1.0);

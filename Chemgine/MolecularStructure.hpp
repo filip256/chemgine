@@ -119,13 +119,13 @@ public:
     /// Complexity: O(1)
     /// </summary>
     /// <returns></returns>
-    uint16_t getHydrogenCount() const;
+    c_size getHydrogenCount() const;
 
     /// <summary>
     /// Complexity: O(n)
     /// </summary>
     /// <returns></returns>
-    uint16_t getRadicalAtomsCount() const;
+    c_size getRadicalAtomsCount() const;
 
     /// <summary>
     /// Complexity: O(n)

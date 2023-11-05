@@ -6,5 +6,6 @@ enum class PortType
 	SIMPLE,
 	INLET,
 	OUTLET,
+	DROPPER,
 	HOSE
 };
