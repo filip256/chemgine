@@ -21,29 +21,29 @@ FlaskData* LabwareDataFactory::getFlask(const LabwareIdType id,  const std::vect
 	if (volume.status == 0)
 		return nullptr;
 
-	const auto jointStrings = DataHelpers::parseList(dataLine[4], ';', true);
-	std::vector<LabwareJoint> joints;
-	joints.reserve(jointStrings.size());
+	const auto portStrings = DataHelpers::parseList(dataLine[4], ';', true);
+	std::vector<LabwarePort> ports;
+	ports.reserve(portStrings.size());
 
-	for (uint8_t i = 0; i < jointStrings.size(); ++i)
+	for (uint8_t i = 0; i < portStrings.size(); ++i)
 	{
-		const auto joint = DataHelpers::parseList(jointStrings[i], ' ', true);
+		const auto port = DataHelpers::parseList(portStrings[i], ' ', true);
 
-		if (joint.size() != 4)
+		if (port.size() != 4)
 			return nullptr;
 
-		const auto type = DataHelpers::toUInt(joint[0]);
-		const auto x = DataHelpers::toUInt(joint[1]);
-		const auto y = DataHelpers::toUInt(joint[2]);
-		const auto angle = DataHelpers::toUDouble(joint[3]);
+		const auto type = DataHelpers::toUInt(port[0]);
+		const auto x = DataHelpers::toUInt(port[1]);
+		const auto y = DataHelpers::toUInt(port[2]);
+		const auto angle = DataHelpers::toUDouble(port[3]);
 
 		if (type.status == 0 || x.status == 0 || y.status == 0 || angle.status == 0)
 			return nullptr;
 
-		joints.emplace_back(static_cast<PortType>(type.result), x.result, y.result, angle.result);
+		ports.emplace_back(static_cast<PortType>(type.result), x.result, y.result, angle.result);
 	}
 
-	return new FlaskData(id, dataLine[2], volume.result, std::move(joints), dataLine[5]);
+	return new FlaskData(id, dataLine[2], std::move(ports), volume.result, dataLine[5]);
 }
 
 AdaptorData* LabwareDataFactory::getAdaptor(const LabwareIdType id, const std::vector<std::string>& dataLine)
@@ -52,27 +52,27 @@ AdaptorData* LabwareDataFactory::getAdaptor(const LabwareIdType id, const std::v
 	if (volume.status == 0)
 		return nullptr;
 
-	const auto jointStrings = DataHelpers::parseList(dataLine[4], ';', true);
-	std::vector<LabwareJoint> joints;
-	joints.reserve(jointStrings.size());
+	const auto portStrings = DataHelpers::parseList(dataLine[4], ';', true);
+	std::vector<LabwarePort> ports;
+	ports.reserve(portStrings.size());
 
-	for (uint8_t i = 0; i < jointStrings.size(); ++i)
+	for (uint8_t i = 0; i < portStrings.size(); ++i)
 	{
-		const auto joint = DataHelpers::parseList(jointStrings[i], ' ', true);
+		const auto port = DataHelpers::parseList(portStrings[i], ' ', true);
 
-		if (joint.size() != 4)
+		if (port.size() != 4)
 			return nullptr;
 
-		const auto type = DataHelpers::toUInt(joint[0]);
-		const auto x = DataHelpers::toUInt(joint[1]);
-		const auto y = DataHelpers::toUInt(joint[2]);
-		const auto angle = DataHelpers::toUDouble(joint[3]);
+		const auto type = DataHelpers::toUInt(port[0]);
+		const auto x = DataHelpers::toUInt(port[1]);
+		const auto y = DataHelpers::toUInt(port[2]);
+		const auto angle = DataHelpers::toUDouble(port[3]);
 
 		if (type.status == 0 || x.status == 0 || y.status == 0 || angle.status == 0)
 			return nullptr;
 
-		joints.emplace_back(static_cast<PortType>(type.result), x.result, y.result, angle.result);
+		ports.emplace_back(static_cast<PortType>(type.result), x.result, y.result, angle.result);
 	}
 
-	return new AdaptorData(id, dataLine[2], volume.result, std::move(joints), dataLine[5]);
+	return new AdaptorData(id, dataLine[2], std::move(ports), volume.result, dataLine[5]);
 }

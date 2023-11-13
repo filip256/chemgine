@@ -12,5 +12,5 @@ const FlaskData& Flask::getData() const
 
 Flask* Flask::clone() const
 {
-	return new Flask(*this);
+	return new Flask(this->data.id);
 }

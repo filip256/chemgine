@@ -8,8 +8,8 @@ public:
 	AdaptorData(
 		const LabwareIdType id,
 		const std::string& name,
+		std::vector<LabwarePort>&& ports,
 		const Amount<Unit::LITER> volume,
-		std::vector<LabwareJoint>&& joints,
 		const std::string& textureFile
 	) noexcept;
 };

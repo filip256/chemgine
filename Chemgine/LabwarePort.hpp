@@ -2,12 +2,12 @@
 
 #include "PortType.hpp"
 
-class LabwareJoint
+class LabwarePort
 {
 public:
 	const PortType type;
 	const float x, y;
 	const float angle;
 
-	LabwareJoint(const PortType type, const float x, const float y, const float angle) noexcept;
+	LabwarePort(const PortType type, const float x, const float y, const float angle) noexcept;
 };

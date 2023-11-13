@@ -9,12 +9,13 @@ class LabwareConnection
 {
 public:
 	const l_size other;
-	const l_size port;
+	const uint8_t otherPort, thisPort;
 	const uint8_t sealLevel;
 
 	LabwareConnection(
 		const l_size other,
-		const l_size port,
+		const uint8_t otherPort,
+		const uint8_t thisPort,
 		const uint8_t sealLevel
 	) noexcept;
 

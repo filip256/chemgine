@@ -9,6 +9,7 @@ protected:
 	DrawableLabwareData(
 		const LabwareIdType id,
 		const std::string& name,
+		std::vector<LabwarePort>&& ports,
 		const std::string& textureFile,
 		const LabwareType type
 	) noexcept;

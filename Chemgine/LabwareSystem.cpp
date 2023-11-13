@@ -2,26 +2,89 @@
 #include "ContainerLabwareData.hpp"
 #include "Maths.hpp"
 
+PortIdentifier::PortIdentifier(
+	LabwareSystem& system,
+	const l_size componentIdx,
+	const uint8_t portIdx
+) noexcept :
+	system(system),
+	componentIdx(componentIdx),
+	portIdx(portIdx)
+{}
+
+bool PortIdentifier::isValid() const
+{
+	return componentIdx != LabwareSystem::npos;
+}
+
+l_size PortIdentifier::getComponentIndex() const
+{
+	return componentIdx;
+}
+
+uint8_t PortIdentifier::getPortIndex() const
+{
+	return portIdx;
+}
+
+const BaseLabwareComponent& PortIdentifier::getComponent() const
+{
+	return *system.components[componentIdx];
+}
+
+LabwareSystem& PortIdentifier::getSystem()
+{
+	return system;
+}
+
+const LabwarePort* PortIdentifier::operator->() const
+{
+	return &system.components[componentIdx]->getPort(portIdx);
+}
+
 LabwareSystem::LabwareSystem(const BaseLabwareComponent& component) noexcept
 {
 	add(component);
 }
 
+l_size LabwareSystem::size() const
+{
+	return components.size();
+}
+
+void LabwareSystem::add(BaseLabwareComponent* component)
+{
+	components.emplace_back(component);
+
+	const auto newBox = component->getSprite().getGlobalBounds();
+
+	sf::Vector2f end(
+		std::max(boundingBox.left + boundingBox.width, newBox.left + newBox.width),
+		std::max(boundingBox.top + boundingBox.height, newBox.top + newBox.height)
+	);
+
+	boundingBox.left = std::min(boundingBox.left, newBox.left);
+	boundingBox.top = std::min(boundingBox.top, newBox.top);
+	boundingBox.width = end.x - boundingBox.left;
+	boundingBox.height = end.y - boundingBox.top;
+}
+
+void LabwareSystem::add(BaseLabwareComponent* component, uint8_t componentPort, const PortIdentifier& thisPort)
+{
+	component->setRotation(thisPort->angle);
+
+	const auto& cp = component->getPort(componentPort);
+	component->setPosition(
+		thisPort.getComponent().getSprite().getPosition() + sf::Vector2f(thisPort->x, thisPort->y) - sf::Vector2f(cp.x, cp.y) + component->getOrigin()
+	);
+
+
+	add(component);
+}
+
 void LabwareSystem::add(const BaseLabwareComponent& component)
 {
-	components.emplace_back(component.clone());
-
-	const auto newBox = component.getSprite().getGlobalBounds();
-
-	if (newBox.left + newBox.width > boundingBox.left + boundingBox.width)
-		boundingBox.width = newBox.left + newBox.width - boundingBox.left;
-	if (newBox.top + newBox.height > boundingBox.top + boundingBox.height)
-		boundingBox.height = newBox.top + newBox.height - boundingBox.top;
-
-	if (newBox.left < boundingBox.left)
-		boundingBox.left = newBox.left;
-	if (newBox.top < boundingBox.top)
-		boundingBox.top = newBox.top;
+	add(component.clone());
 }
 
 void LabwareSystem::draw(sf::RenderTarget& target) const
@@ -29,7 +92,7 @@ void LabwareSystem::draw(sf::RenderTarget& target) const
 #ifndef NDEBUG
 	sf::RectangleShape bBox(boundingBox.getSize());
 	bBox.setPosition(boundingBox.getPosition());
-	bBox.setFillColor(sf::Color(255, 255, 255, 50));
+	bBox.setFillColor(sf::Color(100, 255, 100, 50));
 	target.draw(bBox);
 #endif
 
@@ -76,36 +139,76 @@ l_size LabwareSystem::findFirst() const
 	return components.empty() ? npos : 0;
 }
 
-PortIterator LabwareSystem::findClosestPort(const sf::Vector2f& point, const float maxSqDistance) const
+std::pair<PortIdentifier, float> LabwareSystem::findClosestPort(const sf::Vector2f& point, const float maxSqDistance)
 {
-	PortIterator result(npos, 0);
+	auto result = std::make_pair(PortIdentifier(*this, npos, 0), -1.0f);
 
 	if (Maths::sqaredDistance(
 		point.x, point.y,
 		boundingBox.left, boundingBox.top, boundingBox.left + boundingBox.width, boundingBox.top + boundingBox.height) > maxSqDistance)
 		return result;
 
-	float minDist = maxSqDistance;
+	result.second = maxSqDistance;
 
 	for (l_size i = 0; i < components.size(); ++i)
 	{
 		if (components[i]->isContainerType() == false)
 			continue;
 
-		const auto& joints = static_cast<const ContainerLabwareData&>(components[i]->getData()).joints;
-		const auto& offset = components[i]->getSprite().getPosition();
+		const auto& ports = components[i]->getPorts();
+		const auto& offset = components[i]->getPosition();
 
-		for (uint8_t j = 0; j < joints.size(); ++j)
+		for (uint8_t j = 0; j < ports.size(); ++j)
 		{
-			const float dist = Maths::sqaredDistance(point.x, point.y, joints[j].x + offset.x, joints[j].y + offset.y);
-			if (dist <= minDist)
+			const float dist = Maths::sqaredDistance(point.x, point.y, ports[j].x + offset.x, ports[j].y + offset.y);
+			if (dist <= result.second)
 			{
-				minDist = dist;
-				result.first = i;
-				result.second = j;
+				result.second = dist;
+				result.first.componentIdx = i;
+				result.first.portIdx = j;
 			}
 		}
 	}
 
 	return result;
+}
+
+std::pair<PortIdentifier, PortIdentifier> LabwareSystem::findClosestPort(LabwareSystem& other, const float maxSqDistance)
+{
+	auto result = std::make_pair(PortIdentifier(*this, npos, 0), PortIdentifier(other, npos, 0));
+
+	float minDist = maxSqDistance;
+	for (l_size i = 0; i < components.size(); ++i)
+	{
+		const auto& ports = components[i]->getPorts();
+		for (uint8_t j = 0; j < ports.size(); ++j)
+		{
+			const auto temp =
+				other.findClosestPort(components[i]->getPosition() + sf::Vector2f(ports[j].x, ports[j].y), maxSqDistance);
+
+			if (temp.first.isValid() && temp.second < minDist)
+			{
+				minDist = temp.second;
+				result.first.componentIdx = i;
+				result.first.portIdx = j;
+				result.second.componentIdx = temp.first.componentIdx;
+				result.second.portIdx = temp.first.portIdx;
+			}
+		}
+	}
+
+	return result;
+}
+
+BaseLabwareComponent* LabwareSystem::release(const l_size componentIdx)
+{
+	return components.release(componentIdx);
+}
+
+void LabwareSystem::connect(PortIdentifier& destination, PortIdentifier& source)
+{
+	destination.getSystem().add(
+		source.getSystem().release(source.getComponentIndex()),
+		source.getPortIndex(),
+		destination);
 }

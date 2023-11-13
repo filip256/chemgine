@@ -1,6 +1,6 @@
-#include "LabwareJoint.hpp"
+#include "LabwarePort.hpp"
 
-LabwareJoint::LabwareJoint(
+LabwarePort::LabwarePort(
 	const PortType type,
 	const float x,
 	const float y,

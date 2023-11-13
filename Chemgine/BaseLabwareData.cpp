@@ -5,10 +5,12 @@ size_t BaseLabwareData::instanceCount = 0;
 BaseLabwareData::BaseLabwareData(
 	const LabwareIdType id,
 	const std::string& name,
+	std::vector<LabwarePort>&& ports,
 	const LabwareType type
 ) noexcept :
 	id(id),
 	name(name),
+	ports(std::move(ports)),
 	type(type)
 {}
 

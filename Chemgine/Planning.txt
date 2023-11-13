@@ -215,7 +215,7 @@ Categorizations:
 
    LabwareData:
     - all const properties of a type of labware
-    - a list of joints
+    - a list of ports
 
 
 

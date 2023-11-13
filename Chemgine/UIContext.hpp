@@ -10,6 +10,7 @@ class UIContext
 {
 private:
 	sf::RenderWindow window = sf::RenderWindow(sf::VideoMode(1200, 800), "Chemgine");
+    std::vector<LabwareSystem> systems;
 
     class InHand
     {
@@ -63,6 +64,13 @@ private:
 
 public:
 
+    void removeEmptySystems()
+    {
+        for (size_t i = systems.size(); i-- > 0;)
+            if(systems[i].size() == 0)
+                systems.erase(systems.begin() + i);
+    }
+
 	void run()
 	{
         Logger::enterContext();
@@ -75,11 +83,13 @@ public:
         InHand inHand;
         DragNDropHelper dndHelper;
 
-
-		std::vector<LabwareSystem> systems;
+        systems.emplace_back(Flask(201));
         systems.emplace_back(Flask(201));
         systems.emplace_back(Adaptor(301));
-        systems.front().move(sf::Vector2f(100, 100));
+        systems.emplace_back(Adaptor(301));
+        systems[0].move(sf::Vector2f(100, 100));
+        systems[1].move(sf::Vector2f(200, 200));
+        systems[2].move(sf::Vector2f(300, 300));
 
         //window.setFramerateLimit(300);
         window.setVerticalSyncEnabled(true);
@@ -105,16 +115,6 @@ public:
                                 break;
                             }
                         dndHelper.resetOrigin(mousePos);
-
-                        for (size_t i = 0; i < systems.size(); ++i)
-                        {
-                            if (i == inHand.idx)
-                                continue;
-
-                            const auto port = systems[i].findClosestPort(mousePos, 400.0f);
-                            if (port.first != LabwareSystem::npos)
-                                Logger::log("System: " + std::to_string(i) + "   Component: " + std::to_string(port.first) + "   Port: " + std::to_string(port.second));
-                        }
                     }
                 }
                 else if (event.type == sf::Event::MouseButtonPressed)
@@ -128,8 +128,25 @@ public:
                 }
                 else if (event.type == sf::Event::MouseButtonReleased)
                 {
-                    inHand.unset();
-                    dndHelper.end();
+                    if (inHand.isSet())
+                    {
+                        for (size_t i = 0; i < systems.size(); ++i)
+                        {
+                            if (i == inHand.idx)
+                                continue;
+
+                            auto ports = systems[i].findClosestPort(systems[inHand.idx], 900.0f);
+                            if (ports.first.isValid())
+                            {
+                                LabwareSystem::connect(ports.first, ports.second);
+                                removeEmptySystems();
+                                break;
+                            }
+                        }
+
+                        inHand.unset();
+                        dndHelper.end();
+                    }
                 }
                 else if (event.type == sf::Event::Closed)
                     window.close();

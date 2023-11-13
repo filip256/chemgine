@@ -2,8 +2,10 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 #include "LabwareType.hpp"
+#include "LabwarePort.hpp"
 
 typedef uint32_t LabwareIdType;
 
@@ -13,10 +15,12 @@ public:
 	const LabwareIdType id;
 	const LabwareType type;
 	const std::string name;
+	const std::vector<LabwarePort> ports;
 
 	BaseLabwareData(
 		const LabwareIdType id,
 		const std::string& name,
+		std::vector<LabwarePort>&& ports,
 		const LabwareType type
 	) noexcept;
 	BaseLabwareData(const BaseLabwareData&) = delete;

@@ -2,11 +2,13 @@
 
 LabwareConnection::LabwareConnection(
 	const l_size other,
-	const l_size port,
+	const uint8_t otherPort,
+	const uint8_t thisPort,
 	const uint8_t sealLevel
 ) noexcept :
 	other(other),
-	port(port),
+	otherPort(otherPort),
+	thisPort(thisPort),
 	sealLevel(sealLevel)
 {}
 

@@ -215,7 +215,7 @@
     <ClCompile Include="LabwareConnection.cpp" />
     <ClCompile Include="LabwareDataFactory.cpp" />
     <ClCompile Include="LabwareDataTable.cpp" />
-    <ClCompile Include="LabwareJoint.cpp" />
+    <ClCompile Include="LabwarePort.cpp" />
     <ClCompile Include="LabwareSystem.cpp" />
     <ClCompile Include="Maths.cpp" />
     <ClCompile Include="MoleculeDataTable.cpp" />
@@ -280,7 +280,7 @@
     <ClInclude Include="LabwareConnection.hpp" />
     <ClInclude Include="LabwareDataFactory.hpp" />
     <ClInclude Include="LabwareDataTable.hpp" />
-    <ClInclude Include="LabwareJoint.hpp" />
+    <ClInclude Include="LabwarePort.hpp" />
     <ClInclude Include="LabwareSystem.hpp" />
     <ClInclude Include="LabwareType.hpp" />
     <ClInclude Include="LayerType.hpp" />

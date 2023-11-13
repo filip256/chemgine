@@ -3,12 +3,11 @@
 ContainerLabwareData::ContainerLabwareData(
 	const LabwareIdType id,
 	const std::string& name,
+	std::vector<LabwarePort>&& ports,
 	const std::string& textureFile,
 	const Amount<Unit::LITER> volume,
-	std::vector<LabwareJoint>&& joints,
 	const LabwareType type
 ) noexcept :
-	DrawableLabwareData(id, name, textureFile, type),
-	volume(volume),
-	joints(joints)
+	DrawableLabwareData(id, name, std::move(ports), textureFile, type),
+	volume(volume)
 {}

@@ -11,5 +11,5 @@ const AdaptorData& Adaptor::getData() const
 
 Adaptor* Adaptor::clone() const
 {
-	return new Adaptor(*this);
+	return new Adaptor(this->data.id);
 }

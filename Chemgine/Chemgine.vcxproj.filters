@@ -240,7 +240,7 @@
     <ClCompile Include="FlaskData.cpp">
       <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
-    <ClCompile Include="LabwareJoint.cpp">
+    <ClCompile Include="LabwarePort.cpp">
       <Filter>Source Files\Labware</Filter>
     </ClCompile>
     <ClCompile Include="HeatSourceData.cpp">
@@ -467,7 +467,7 @@
     <ClInclude Include="FlaskData.hpp">
       <Filter>Header Files\Labware\DataTypes</Filter>
     </ClInclude>
-    <ClInclude Include="LabwareJoint.hpp">
+    <ClInclude Include="LabwarePort.hpp">
       <Filter>Header Files\Labware</Filter>
     </ClInclude>
     <ClInclude Include="HeatSourceData.hpp">
