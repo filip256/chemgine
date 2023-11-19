@@ -7,6 +7,10 @@ DrawableComponent::DrawableComponent(const LabwareIdType id) noexcept :
 	sprite(static_cast<const DrawableLabwareData&>(data).texture)
 {
 	sprite.setOrigin(sprite.getLocalBounds().getSize() / 2.0f);
+
+	adjustedPorts.reserve(data.ports.size());
+	for (uint8_t i = 0; i < data.ports.size(); ++i)
+		adjustedPorts.emplace_back(data.ports[i], sprite.getOrigin());
 }
 
 const sf::Sprite& DrawableComponent::getSprite() const
@@ -21,9 +25,13 @@ sf::Sprite& DrawableComponent::getSprite()
 
 const sf::Vector2f& DrawableComponent::getPosition() const
 {
-	return sprite.getPosition() - sprite.getOrigin();
+	return sprite.getPosition();
 }
 
+const sf::Vector2f& DrawableComponent::getAdjustedPosition() const
+{
+	return sprite.getPosition() - sprite.getOrigin();
+}
 
 void DrawableComponent::setPosition(const sf::Vector2f& position)
 {
@@ -35,9 +43,11 @@ float DrawableComponent::getRotation() const
 	return sprite.getRotation();
 }
 
-void DrawableComponent::setRotation(const float rotation)
+void DrawableComponent::setRotation(const float angle)
 {
-	sprite.setRotation(rotation);
+	for (uint8_t i = 0; i < adjustedPorts.size(); ++i)
+		adjustedPorts[i].rotate(angle);
+	sprite.setRotation(angle);
 }
 
 const sf::Vector2f& DrawableComponent::getOrigin() const
@@ -45,15 +55,19 @@ const sf::Vector2f& DrawableComponent::getOrigin() const
 	return sprite.getOrigin();
 }
 
-const LabwarePort& DrawableComponent::getPort(const uint8_t idx) const
+sf::FloatRect DrawableComponent::getBounds() const
 {
-	const auto pos = sprite.getTransform().transformPoint(data.ports[idx].x, data.ports[idx].y);
-	return LabwarePort(data.ports[idx].type, pos.x, pos.y, data.ports[idx].angle);
+	return sprite.getGlobalBounds();
 }
 
-const std::vector<LabwarePort>& DrawableComponent::getPorts() const
+const DrawablePort& DrawableComponent::getPort(const uint8_t idx) const
 {
-	return data.ports;
+	return adjustedPorts[idx];
+}
+
+const std::vector<DrawablePort>& DrawableComponent::getPorts() const
+{
+	return adjustedPorts;
 }
 
 
@@ -62,7 +76,7 @@ void DrawableComponent::draw(sf::RenderTarget& target) const
 #ifndef NDEBUG
 	sf::RectangleShape bBox(sprite.getGlobalBounds().getSize());
 	bBox.setPosition(sprite.getGlobalBounds().getPosition());
-	bBox.setFillColor(sf::Color(255, 255, 255, 50));
+	bBox.setFillColor(sf::Color(255, 255, 255, 25));
 	target.draw(bBox);
 #endif
 
@@ -74,10 +88,9 @@ void DrawableComponent::draw(sf::RenderTarget& target) const
 	port.setFillColor(sf::Color::Blue);
 	port.setOutlineColor(sf::Color(0, 0, 255, 50));
 	port.setOutlineThickness(28.0f);
-	for (uint8_t i = 0; i < data.ports.size(); ++i)
+	for (uint8_t i = 0; i < adjustedPorts.size(); ++i)
 	{
-		port.setPosition(getPort(i).x, getPort(i).y);
-		//port.setPosition(getPosition() + sf::Vector2f(data.ports[i].x, data.ports[i].y));
+		port.setPosition(sprite.getPosition() + adjustedPorts[i].position);
 		target.draw(port);
 	}
 #endif

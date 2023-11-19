@@ -2,6 +2,8 @@
 
 #include "Maths.hpp"
 
+const double Maths::Pi = 3.14159265358979323846;
+
 constexpr uint32_t Maths::gcd(uint32_t a, uint32_t b)
 {
 	//Stein algorithm
@@ -107,4 +109,9 @@ float Maths::sqaredDistance(
 	const float dx = std::max(std::max(rLeft - pX, pX - rRight), 0.0f);
 	const float dy = std::max(std::max(rTop - pY, pY - rBottom), 0.0f);
 	return dx * dx + dy * dy;
+}
+
+float Maths::toRadians(const float degrees)
+{
+	return degrees * Pi / 180.0f;
 }

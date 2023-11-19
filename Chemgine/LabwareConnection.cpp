@@ -1,18 +1,26 @@
 #include "LabwareConnection.hpp"
 
 LabwareConnection::LabwareConnection(
-	const l_size other,
+	const l_size otherComponent,
 	const uint8_t otherPort,
-	const uint8_t thisPort,
-	const uint8_t sealLevel
+	const uint8_t strength
 ) noexcept :
-	other(other),
+	otherComponent(otherComponent),
 	otherPort(otherPort),
-	thisPort(thisPort),
-	sealLevel(sealLevel)
+	strength(strength)
 {}
 
-uint8_t LabwareConnection::getSealLevel(const PortType source, const PortType destination)
+void LabwareConnection::setFree()
+{
+	otherComponent = static_cast<l_size>(-1);
+}
+
+bool LabwareConnection::isFree() const
+{
+	return otherComponent == static_cast<l_size>(-1);
+}
+
+uint8_t LabwareConnection::getStrength(const PortType source, const PortType destination)
 {
 	if (source == PortType::INLET)
 	{

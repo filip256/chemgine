@@ -80,16 +80,21 @@ public:
         sf::Text text("FPS:", font, 18);
         text.setPosition(sf::Vector2f(5.0f, window.getSize().y - 22.0f));
 
+        bool callRemoveEmptySystems = false;
+
         InHand inHand;
         DragNDropHelper dndHelper;
 
         systems.emplace_back(Flask(201));
         systems.emplace_back(Flask(201));
         systems.emplace_back(Adaptor(301));
+        systems.emplace_back(Adaptor(302));
+        systems.emplace_back(Flask(201));
         systems.emplace_back(Adaptor(301));
-        systems[0].move(sf::Vector2f(100, 100));
-        systems[1].move(sf::Vector2f(200, 200));
-        systems[2].move(sf::Vector2f(300, 300));
+        systems.emplace_back(Adaptor(302));
+
+        for(size_t i = 0; i < systems.size(); ++i)
+            systems[i].move(sf::Vector2f(100 + 75 * i, 50));
 
         //window.setFramerateLimit(300);
         window.setVerticalSyncEnabled(true);
@@ -119,37 +124,70 @@ public:
                 }
                 else if (event.type == sf::Event::MouseButtonPressed)
                 {
-                    for (size_t i = 0; i < systems.size(); ++i)
-                        if (systems[i].contains(mousePos) != LabwareSystem::npos)
-                        {
-                            inHand.set(i);
-                            dndHelper.start(mousePos);
-                        }
+                    if (event.mouseButton.button == sf::Mouse::Left)
+                    {
+                        for (size_t i = 0; i < systems.size(); ++i)
+                            if (systems[i].contains(mousePos) != LabwareSystem::npos)
+                            {
+                                inHand.set(i);
+                                dndHelper.start(mousePos);
+                                break;
+                            }
+                    }
                 }
                 else if (event.type == sf::Event::MouseButtonReleased)
                 {
-                    if (inHand.isSet())
+                    if (event.mouseButton.button == sf::Mouse::Left)
+                    {
+                        if (inHand.isSet())
+                        {
+                            for (size_t i = 0; i < systems.size(); ++i)
+                            {
+                                if (i == inHand.idx)
+                                    continue;
+                                auto ports = systems[i].findClosestPort(systems[inHand.idx], 1600.0f);
+                                if (ports.first.isValid() && LabwareSystem::canConnect(ports.first, ports.second))
+                                {
+                                    LabwareSystem::connect(ports.first, ports.second);
+                                    callRemoveEmptySystems = true;
+                                    break;
+                                }
+                            }
+
+                            inHand.unset();
+                            dndHelper.end();
+                        }
+                    }
+                    else if (event.mouseButton.button == sf::Mouse::Right)
                     {
                         for (size_t i = 0; i < systems.size(); ++i)
-                        {
-                            if (i == inHand.idx)
-                                continue;
-
-                            auto ports = systems[i].findClosestPort(systems[inHand.idx], 900.0f);
-                            if (ports.first.isValid())
+                            if (systems[i].size() > 1)
                             {
-                                LabwareSystem::connect(ports.first, ports.second);
-                                removeEmptySystems();
+                                const auto idx = systems[i].contains(mousePos);
+                                if (idx == LabwareSystem::npos)
+                                    continue;
+
+                                auto newSystems = systems[i].disconnect(idx);
+                                for (size_t j = 0; j < newSystems.size(); ++j)
+                                    systems.emplace_back(std::move(newSystems[j]));
                                 break;
                             }
-                        }
-
-                        inHand.unset();
-                        dndHelper.end();
                     }
                 }
+                else if (event.type == sf::Event::MouseWheelMoved)
+                {
+                    if (inHand.isSet())
+                        systems[inHand.idx].rotate(event.mouseWheel.delta * 2);
+                }
+
                 else if (event.type == sf::Event::Closed)
                     window.close();
+            }
+
+            if (callRemoveEmptySystems)
+            {
+                removeEmptySystems();
+                callRemoveEmptySystems = false;
             }
 
             window.clear();

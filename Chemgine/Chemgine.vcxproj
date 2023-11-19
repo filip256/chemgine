@@ -206,6 +206,7 @@
     <ClCompile Include="DrawableComponent.cpp" />
     <ClCompile Include="DataStoreAccessor.cpp" />
     <ClCompile Include="DrawableLabwareData.cpp" />
+    <ClCompile Include="DrawablePort.cpp" />
     <ClCompile Include="Flask.cpp" />
     <ClCompile Include="ContainerLabwareData.cpp" />
     <ClCompile Include="FloatValue.cpp" />
@@ -266,6 +267,7 @@
     <ClInclude Include="DrawableComponent.hpp" />
     <ClInclude Include="DataStoreAccessor.hpp" />
     <ClInclude Include="DrawableLabwareData.hpp" />
+    <ClInclude Include="DrawablePort.hpp" />
     <ClInclude Include="Flask.hpp" />
     <ClInclude Include="ContainerLabwareData.hpp" />
     <ClInclude Include="FloatValue.hpp" />

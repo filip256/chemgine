@@ -6,6 +6,8 @@
 class Maths
 {
 public:
+	static const double Pi;
+
 	static constexpr uint32_t gcd(uint32_t a, uint32_t b);
 	static constexpr uint32_t lcm(uint32_t a, uint32_t b);
 
@@ -37,4 +39,9 @@ public:
 	static float sqaredDistance(
 		const float pX, const float pY,
 		const float rLeft, const float rTop, const float rRight, const float rBottom);
+
+	/// <summary>
+	/// Converts degrees to angles.
+	/// </summary>
+	static float toRadians(const float degrees);
 };

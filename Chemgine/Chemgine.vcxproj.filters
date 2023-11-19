@@ -294,6 +294,9 @@
     <ClCompile Include="DrawableLabwareData.cpp">
       <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
+    <ClCompile Include="DrawablePort.cpp">
+      <Filter>Source Files\Labware\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -526,6 +529,9 @@
     </ClInclude>
     <ClInclude Include="DrawableLabwareData.hpp">
       <Filter>Header Files\Labware\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawablePort.hpp">
+      <Filter>Header Files\Labware\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

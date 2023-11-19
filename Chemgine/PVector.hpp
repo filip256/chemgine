@@ -36,6 +36,7 @@ public:
 	void insert(PObjT obj, const sizeT idx);
 	void insert(ObjT&& obj, const sizeT idx);
 	PObjT release(const sizeT idx);
+	PObjT release_back();
 	void erase(const sizeT idx);
 	void erase(const sizeT first, const sizeT last);
 
@@ -117,6 +118,14 @@ PVector<ObjT, sizeT>::PObjT PVector<ObjT, sizeT>::release(const sizeT idx)
 {
 	const auto temp = content[idx];
 	content.erase(content.begin() + idx);
+	return temp;
+}
+
+template<class ObjT, class sizeT>
+PVector<ObjT, sizeT>::PObjT PVector<ObjT, sizeT>::release_back()
+{
+	const auto temp = content.back();
+	content.pop_back();
 	return temp;
 }
 
