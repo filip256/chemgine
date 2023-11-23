@@ -93,7 +93,7 @@ int main()
         //MolecularStructure a("CC(=O)OC");
         //MolecularStructure b("OCC");
         //std::cout << a.print() << '\n' << b.print() << '\n';
-        //std::cout << MolecularStructure("CC1COC2CN(C)C(C)C3OCC1C23").toSMILES()<<'\n';
+        std::cout << MolecularStructure("CC1COC2CN(C)C(C)C3OCC1C23").serialize()<<'\n';
         //std::cout << MolecularStructure("C1C2CC12").toSMILES() << '\n';
     }
 

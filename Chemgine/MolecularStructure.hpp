@@ -198,7 +198,7 @@ public:
     /// in order to avoid copying unwanted branches and resolve cycles.
     /// </summary>
     /// <param name="sourceIdx">: the common component between the destination and source, where the branch starts</param>
-    /// <param name="sdMapping">: a map between the components of the source and thos of the destination.</param>
+    /// <param name="sdMapping">: a map between the components of the source and those of the destination.</param>
     /// <param name="renormalize">: if true, normalization occurs after the copy is made and sdMapping is invalidated. </param>
     static void copyBranch(
         MolecularStructure& destination,
