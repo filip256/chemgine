@@ -14,16 +14,16 @@ class ReactionData
 private:
 	const ReactionIdType id;
 	const std::string name;
-	std::vector<const Reactable*> reactants;
-	std::vector<const Reactable*> products;
+	std::vector<Reactable> reactants;
+	std::vector<Reactable> products;
 	std::unordered_map<std::pair<size_t, c_size>, std::pair<size_t, c_size>, PairHash> componentMapping;
 
-	static std::vector<const Reactable*> flatten(
-		const std::vector<std::pair<const Reactable*, uint8_t>>& list);
+	static std::vector<Reactable> flatten(
+		const std::vector<std::pair<Reactable, uint8_t>>& list);
 
 	static bool balance(
-		std::vector<std::pair<const Reactable*, uint8_t>>& reactants,
-		std::vector<std::pair<const Reactable*, uint8_t>>& products);
+		std::vector<std::pair<Reactable, uint8_t>>& reactants,
+		std::vector<std::pair<Reactable, uint8_t>>& products);
 
 
 	void enumerateReactantPairs(
@@ -51,20 +51,19 @@ public:
 	ReactionData(
 		const ReactionIdType id,
 		const std::string& name,
-		const std::vector<std::pair<const Reactable*, uint8_t>>& reactants,
-		const std::vector<std::pair<const Reactable*, uint8_t>>& products
+		const std::vector<std::pair<Reactable, uint8_t>>& reactants,
+		const std::vector<std::pair<Reactable, uint8_t>>& products
 	) noexcept;
 
 	ReactionData(const ReactionData&) = delete;
 	ReactionData(ReactionData&&) = default;
-	~ReactionData() noexcept;
 
 	bool hasAsReactant(const Molecule& molecule) const;
 
 	std::vector<Molecule> generateConcreteProducts(const std::vector<Molecule>& molecules) const;
 
-	const std::vector<const Reactable*>& getReactants() const;
-	const std::vector<const Reactable*>& getProducts() const;
+	const std::vector<Reactable>& getReactants() const;
+	const std::vector<Reactable>& getProducts() const;
 
 
 	friend class ReactionDataTable;

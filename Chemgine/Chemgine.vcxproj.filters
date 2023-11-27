@@ -156,18 +156,6 @@
     <ClCompile Include="Reactable.cpp">
       <Filter>Source Files\Reactions</Filter>
     </ClCompile>
-    <ClCompile Include="BackboneReactable.cpp">
-      <Filter>Source Files\Reactions</Filter>
-    </ClCompile>
-    <ClCompile Include="FunctionalGroupReactable.cpp">
-      <Filter>Source Files\Reactions</Filter>
-    </ClCompile>
-    <ClCompile Include="ReactableFactory.cpp">
-      <Filter>Source Files\Reactions</Filter>
-    </ClCompile>
-    <ClCompile Include="MoleculeReactable.cpp">
-      <Filter>Source Files\Reactions</Filter>
-    </ClCompile>
     <ClCompile Include="Maths.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
@@ -351,18 +339,6 @@
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
     <ClInclude Include="Reactable.hpp">
-      <Filter>Header Files\Reactions</Filter>
-    </ClInclude>
-    <ClInclude Include="BackboneReactable.hpp">
-      <Filter>Header Files\Reactions</Filter>
-    </ClInclude>
-    <ClInclude Include="FunctionalGroupReactable.hpp">
-      <Filter>Header Files\Reactions</Filter>
-    </ClInclude>
-    <ClInclude Include="ReactableFactory.hpp">
-      <Filter>Header Files\Reactions</Filter>
-    </ClInclude>
-    <ClInclude Include="MoleculeReactable.hpp">
       <Filter>Header Files\Reactions</Filter>
     </ClInclude>
     <ClInclude Include="Maths.hpp">

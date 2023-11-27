@@ -8,9 +8,9 @@
 #include "Logger.hpp"
 #include "MolecularStructure.hpp"
 #include "DataStore.hpp"
-#include "ReactableFactory.hpp"
 #include "Reactor.hpp"
 #include "BaseLabwareComponent.hpp"
+#include "Reactable.hpp"
 
 class MolecularStructureTest
 {
@@ -220,7 +220,7 @@ public:
 		Logger::enterContext();
 		const auto begin = std::chrono::steady_clock::now();
 		BaseComponent::setDataStore(store);
-		ReactableFactory::setDataStore(store);
+		Reactable::setDataStore(store);
 		Reactor::setDataStore(store);
 		Molecule::setDataStore(store);
 		BaseLabwareComponent::setDataStore(store);

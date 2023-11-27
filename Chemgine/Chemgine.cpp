@@ -8,7 +8,6 @@
 #include "CompositeComponent.hpp"
 #include "Tests.hpp"
 #include "Reactable.hpp"
-#include "ReactableFactory.hpp"
 
 #include "PVector.hpp"
 #include "Reactor.hpp"
@@ -19,6 +18,7 @@
 #include "BaseLabwareData.hpp"
 #include "BaseLabwareComponent.hpp"
 #include "LabwareSystem.hpp"
+#include "Reactable.hpp"
 
 #include "UIContext.hpp"
 
@@ -67,7 +67,7 @@ int main()
 
         DataStore store;
         BaseComponent::setDataStore(store);
-        ReactableFactory::setDataStore(store);
+        Reactable::setDataStore(store);
         Reactor::setDataStore(store);
         Molecule::setDataStore(store);
         BaseLabwareComponent::setDataStore(store);
@@ -99,8 +99,6 @@ int main()
         Logger::log("Memory leak detected: BaseComponent (" + std::to_string(BaseComponent::instanceCount) + " unreleased instances).", LogType::BAD);
     if (Bond::instanceCount != 0)
         Logger::log("Memory leak detected: Bond (" + std::to_string(Bond::instanceCount) + " unreleased instances).", LogType::BAD);
-    if (Reactable::instanceCount != 0)
-        Logger::log("Memory leak detected: Reactable (" + std::to_string(Reactable::instanceCount) + " unreleased instances).", LogType::BAD);
     if (BaseLabwareData::instanceCount != 0)
         Logger::log("Memory leak detected: BaseLabwareData (" + std::to_string(BaseLabwareData::instanceCount) + " unreleased instances).", LogType::BAD);
     if (BaseLabwareComponent::instanceCount != 0)

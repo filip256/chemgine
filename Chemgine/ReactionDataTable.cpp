@@ -1,7 +1,6 @@
 #include "ReactionDataTable.hpp"
 #include "DataHelpers.hpp"
 #include "Logger.hpp"
-#include "ReactableFactory.hpp"
 #include "Molecule.hpp"
 
 #include <fstream>
@@ -59,13 +58,12 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			continue;
 		}
 
-		const ReactableFactory factory;
-		std::vector<std::pair<const Reactable*, uint8_t>>reactantIds;
+		std::vector<std::pair<Reactable, uint8_t>>reactantIds;
 		reactantIds.reserve(reactants.size());
 		for (size_t i = 0; i < reactants.size(); ++i)
 		{
-			const auto r = factory.get(reactants[i]);
-			if (r == nullptr)
+			const auto r = Reactable::get(reactants[i]);
+			if (r.getId() == 0)
 			{
 				Logger::log("Undefined reactant '" + reactants[i] + "' in reaction with id " + std::to_string(id.result) + " skipped.", LogType::BAD);
 				continue; // TODO: add unknown into molecules and predict properties
@@ -73,12 +71,12 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			reactantIds.emplace_back(std::make_pair(r, 0));
 		}
 
-		std::vector<std::pair<const Reactable*, uint8_t>>productIds;
+		std::vector<std::pair<Reactable, uint8_t>>productIds;
 		productIds.reserve(products.size());
 		for (size_t i = 0; i < products.size(); ++i)
 		{
-			const auto r = factory.get(products[i]);
-			if (r == 0)
+			const auto r = Reactable::get(products[i]);
+			if (r.getId() == 0)
 			{
 				Logger::log("Undefined product '" + products[i] + "' in reaction with id " + std::to_string(id.result) + " skipped.", LogType::BAD);
 				continue; // TODO: add unknown into molecules and predict properties

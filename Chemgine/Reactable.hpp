@@ -10,23 +10,19 @@ class Reactable
 private:
 	static DataStoreAccessor dataAccessor;
 
-protected:
-	Reactable() noexcept;
+	const bool isGeneric;
+
+	Reactable(const ComponentIdType id, const bool isGeneric) noexcept;
 
 	const DataStore& dataStore() const;
+	const ComponentIdType id;
 
 public:
-	virtual const MolecularStructure& getStructure() const = 0;
-	virtual std::unordered_map<c_size, c_size> matchWith(const MolecularStructure& structure) const = 0;
+	const ComponentIdType getId() const;
+	const MolecularStructure& getStructure() const;
+	std::unordered_map<c_size, c_size> matchWith(const MolecularStructure& structure) const;
+
+	static Reactable get(const std::string& smiles);
 
 	static void setDataStore(const DataStore& dataStore);
-
-	friend class ReactableFactory;
-
-	// for memory leak checking 
-	static size_t instanceCount;
-#ifndef NDEBUG
-	void* operator new(const size_t count);
-	void operator delete(void* ptr);
-#endif
 };
