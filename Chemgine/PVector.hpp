@@ -39,6 +39,7 @@ public:
 	PObjT release_back();
 	void erase(const sizeT idx);
 	void erase(const sizeT first, const sizeT last);
+	void replace(const sizeT idx, PObjT obj);
 
 	sizeT size() const;
 	bool empty() const;
@@ -143,6 +144,13 @@ void PVector<ObjT, sizeT>::erase(const sizeT first, const sizeT last)
 		delete content[i];
 
 	content.erase(content.begin() + first, content.begin() + last);
+}
+
+template<class ObjT, class sizeT>
+void PVector<ObjT, sizeT>::replace(const sizeT idx, PObjT obj)
+{
+	delete content[idx];
+	content[idx] = obj;
 }
 
 template<class ObjT, class sizeT>

@@ -61,7 +61,7 @@ public:
 
 	bool hasAsReactant(const Molecule& molecule) const;
 
-	void foo(const std::vector<Molecule>& molecules) const;
+	std::vector<Molecule> generateConcreteProducts(const std::vector<Molecule>& molecules) const;
 
 	const std::vector<const Reactable*>& getReactants() const;
 	const std::vector<const Reactable*>& getProducts() const;

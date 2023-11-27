@@ -2,6 +2,8 @@
 #include "SystemMatrix.hpp"
 #include "Maths.hpp"
 #include "PairHash.hpp"
+#include "Logger.hpp"
+#include "Utils.hpp"
 
 ReactionData::ReactionData(
 	const ReactionIdType id,
@@ -119,7 +121,7 @@ bool ReactionData::mapReactantsToProducts()
 	if (reactants.size() == 0 || products.size() == 0)
 		return false;
 
-	componentMapping.reserve((reactants.size() + products.size()) * 4); // why 4? most molecules have at least 4 atoms
+	componentMapping.reserve(reactants.size() + products.size());
 	std::vector<std::unordered_set<c_size>> reactantIgnore(reactants.size()), productIgnore(products.size());
 
 	for (size_t i = 0; i < reactants.size(); ++i)
@@ -144,7 +146,10 @@ bool ReactionData::mapReactantsToProducts()
 		{
 			reactantIgnore[i].insert(p.first);
 			productIgnore[maxIdxJ].insert(p.second);
-			componentMapping.emplace(std::make_pair(std::make_pair(i, p.first), std::make_pair(maxIdxJ, p.second)));
+
+			// only save radical atoms
+			if (reactants[i]->getStructure().getComponent(p.first)->isRadicalType())
+				componentMapping.emplace(std::make_pair(std::make_pair(i, p.first), std::make_pair(maxIdxJ, p.second)));
 		}
 
 		if (reactants[i]->getStructure().componentCount() != reactantIgnore[i].size())
@@ -188,7 +193,7 @@ bool ReactionData::hasAsReactant(const Molecule& molecule) const
 {
 	for (size_t i = 0; i < reactants.size(); ++i)
 	{
-		if (molecule.data().getStructure().mapTo(reactants[i]->getStructure(), true).size() != 0)
+		if (molecule.getStructure().mapTo(reactants[i]->getStructure(), true).size() != 0)
 			return true;
 	}
 	return false;
@@ -229,11 +234,11 @@ std::vector<std::vector<std::pair<size_t, std::unordered_map<c_size, c_size>>>> 
 		allowedMatches.emplace_back();
 		for (size_t j = 0; j < molecules.size(); ++j)
 		{
-			const auto match = reactants[i]->matchWith(molecules[j].data().getStructure());
+			const auto match = reactants[i]->matchWith(molecules[j].getStructure());
 			if (match.size())
 				allowedMatches.back().emplace_back(std::make_pair(j, match));
 		}
-		if (allowedMatches.empty())
+		if (allowedMatches.back().empty())
 			return std::vector<std::vector<std::pair<size_t, std::unordered_map<c_size, c_size>>>>();
 
 		// skip repeated reactants
@@ -244,40 +249,50 @@ std::vector<std::vector<std::pair<size_t, std::unordered_map<c_size, c_size>>>> 
 	return allowedMatches;
 }
 
-void ReactionData::foo(const std::vector<Molecule>& molecules) const
+std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<Molecule>& molecules) const
 {
-	const auto mapVect = mapReactantsToMolecules(molecules);
-	if (mapVect.empty())
-		return;
+	auto x = &BaseComponent::instanceCount;
+	if (reactants.size() != molecules.size())
+		return std::vector<Molecule>();
 
-	std::unordered_set<std::pair<size_t, size_t>, PairHash> allowedPairs;
-
-	size_t reactantIdx = 0;
-	for (size_t i = 0; i < mapVect.size(); ++i)
+	// find the molecule match for each reactant
+	std::vector<std::unordered_map<c_size, c_size>> matches;
+	matches.reserve(reactants.size());
+	for (size_t i = 0; i < reactants.size(); ++i)
 	{
-		while (reactantIdx + 1 < reactants.size() && reactants[reactantIdx] == reactants[reactantIdx + 1])
-		{
-			for (size_t j = 0; j < mapVect[i].size(); ++j)
-				allowedPairs.insert(std::make_pair(reactantIdx, mapVect[i][j].first));
-			++reactantIdx;
-		}
-		for (size_t j = 0; j < mapVect[i].size(); ++j)
-			allowedPairs.insert(std::make_pair(reactantIdx, mapVect[i][j].first));
+		matches.emplace_back(Utils::reverseMap(reactants[i]->matchWith(molecules[i].getStructure())));
+		if (matches.back().empty())
+			return std::vector<Molecule>();
 	}
 
-	std::vector<std::pair<size_t, size_t>> matchAlloc;
-	matchAlloc.reserve(reactants.size());
-	std::vector<std::vector<std::pair<size_t, size_t>>> resultAlloc;
-	resultAlloc.reserve(
-		Maths::combinations(reactants.size() + allowedPairs.size() - 1, allowedPairs.size())
-	);
+	// build concrete products
+	std::vector<MolecularStructure> concreteProducts;
+	concreteProducts.reserve(products.size());
+	for (size_t i = 0; i < products.size(); ++i)
+		concreteProducts.emplace_back(std::move(products[i]->getStructure().createCopy()));
 
-	enumerateReactantPairs(molecules, allowedPairs, matchAlloc, resultAlloc);
-
-	for (size_t i = 0; i < resultAlloc.size(); ++i)
+	for (const auto& p : componentMapping)
 	{
-		//...
+		std::unordered_map<c_size, c_size> tempMap = { {matches[p.first.first].at(p.first.second), p.second.second}};
+		MolecularStructure::copyBranch(
+			concreteProducts[p.second.first],
+			molecules[p.first.first].getStructure(),
+			matches[p.first.first].at(p.first.second),
+			tempMap,
+			false,
+			Utils::extractValues(matches[p.first.first])
+		);
 	}
+
+	// normalize
+	std::vector<Molecule> result;
+	result.reserve(concreteProducts.size());
+	for (size_t i = 0; i < concreteProducts.size(); ++i)
+	{
+		concreteProducts[i].normalize();
+		result.emplace_back(std::move(concreteProducts[i]));
+	}
+	return result;
 }
 
 const std::vector<const Reactable*>& ReactionData::getReactants() const

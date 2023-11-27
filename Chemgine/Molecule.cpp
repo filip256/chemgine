@@ -34,6 +34,11 @@ const OrganicMoleculeData& Molecule::data() const
 	return dataAccessor.get().molecules.at(id);
 }
 
+const MolecularStructure& Molecule::getStructure() const
+{
+	return data().getStructure();
+}
+
 bool Molecule::operator==(const Molecule& other) const
 {
 	return this->id == other.id;

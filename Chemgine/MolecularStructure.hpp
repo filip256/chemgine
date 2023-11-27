@@ -28,13 +28,6 @@ private:
 
     std::string rToSMILES(const c_size c, c_size prev, std::vector<uint8_t>& visited, uint8_t& cycleCount) const;
 
-    /// <summary>
-    /// Normalizes the structure by ordering components and bonds in decreasing order of
-    /// component precedence.
-    /// Normalization simplifies algorithms and speeds up comparison.
-    /// Complexity: O(n_comps * n_bonds * n_bonds)
-    /// </summary>
-    void normalize();
 
     /// <summary>
     /// Returns the number of required hydrogens in order to complete the molecule.
@@ -106,8 +99,19 @@ public:
 
     MolecularStructure(const std::string& smiles);
     MolecularStructure(const std::string& serialized, const bool renormalize);
+    MolecularStructure(const BaseComponent& component) noexcept;
     MolecularStructure(MolecularStructure&& structure) = default;
     ~MolecularStructure() noexcept;
+
+    MolecularStructure& operator=(MolecularStructure&&) = default;
+
+    /// <summary>
+    /// Normalizes the structure by ordering components and bonds in decreasing order of
+    /// component precedence.
+    /// Normalization simplifies algorithms and speeds up comparison.
+    /// Complexity: O(n_comps * n_bonds * n_bonds)
+    /// </summary>
+    void normalize();
 
     const BaseComponent* getComponent(const c_size idx) const;
     std::string print(const size_t maxWidth = 100, const size_t maxHeight = 50) const;
@@ -175,6 +179,7 @@ public:
     /// <returns></returns>
     uint8_t getDegreeOf(const c_size idx) const;
 
+    MolecularStructure createCopy() const;
 
     /// <summary>
     /// Returns the first found mapping between the atoms of the pattern and the atoms of *this.
@@ -205,7 +210,8 @@ public:
         const MolecularStructure& source,
         const c_size sourceIdx,
         std::unordered_map<c_size, c_size>& sdMapping,
-        bool renormalize = true);
+        bool renormalize = true,
+        const std::unordered_set<c_size>& sourceIgnore = std::unordered_set<c_size>());
 
     /// <summary>
     /// Returns a molecule derived from pattern by adding all the substituents of instance that start from common components.
@@ -216,7 +222,8 @@ public:
     static MolecularStructure addSubstituents(
         const MolecularStructure& pattern,
         const MolecularStructure& instance,
-        std::unordered_map<c_size, c_size>& ipMap);
+        std::unordered_map<c_size, c_size>& ipMap,
+        bool renormalize = true);
 
     /// <summary>
     /// Returns true iff both structures represent the exact same molecule.

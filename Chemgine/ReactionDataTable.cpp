@@ -119,5 +119,9 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 void ReactionDataTable::findOccuringReactions(const std::vector<Molecule>& molecules) const
 {
 	for (size_t i = 0; i < table.size(); ++i)
-		table[i].foo(molecules);
+	{
+		const auto& p = table[i].generateConcreteProducts(molecules);
+		for (size_t j = 0; j < p.size(); ++j)
+			Logger::log(p[j].getStructure().print());
+	}
 }

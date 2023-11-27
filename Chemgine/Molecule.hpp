@@ -18,6 +18,8 @@ public:
 	MoleculeIdType getId() const;
 	const OrganicMoleculeData& data() const;
 
+	const MolecularStructure& getStructure() const;
+
 	bool operator==(const Molecule& other) const;
 	bool operator!=(const Molecule& other) const;
 

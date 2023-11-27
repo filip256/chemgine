@@ -6,4 +6,7 @@ Id,SMILES,Name
 205,RN(R)R,amine
 206,O=C(R)O,carboxylic acid
 207,O=C(R)OR,ester
-208,OR,alcohol
+208,OR,alcohol,
+209,OCR,alcohol,
+210,RCC,alkane
+211,RC=C,alkene

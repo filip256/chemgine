@@ -1,4 +1,6 @@
 Id,Smiles,Name
 501,O,water
 502,OC,methanol
-503,O(C)C,di-methyl-ether
+503,O(C)C,di-methyl-ether,
+211,HH,hydrogen
+212,O=O,oxygen

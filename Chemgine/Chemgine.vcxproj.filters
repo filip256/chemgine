@@ -533,6 +533,9 @@
     <ClInclude Include="DrawablePort.hpp">
       <Filter>Header Files\Labware\Components</Filter>
     </ClInclude>
+    <ClInclude Include="ContainsInterface.hpp">
+      <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv">

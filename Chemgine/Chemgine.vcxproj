@@ -264,6 +264,7 @@
     <ClInclude Include="ConcreteReaction.hpp" />
     <ClInclude Include="AdaptorData.hpp" />
     <ClInclude Include="Constants.hpp" />
+    <ClInclude Include="ContainsInterface.hpp" />
     <ClInclude Include="DrawableComponent.hpp" />
     <ClInclude Include="DataStoreAccessor.hpp" />
     <ClInclude Include="DrawableLabwareData.hpp" />

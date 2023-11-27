@@ -22,6 +22,8 @@
 
 #include "UIContext.hpp"
 
+#include "ContainsInterface.hpp"
+
 /*
 FunctionalGroup {
     CompositeComponent {
@@ -56,11 +58,6 @@ FunctionalGroup {
 }
 */
 
-
-
-
-
-
 int main()
 {
     {
@@ -81,19 +78,20 @@ int main()
             .loadReactionsData("Data/ReactionData.csv")
             .loadLabwareData("Data/LabwareData.csv");
 
-        UIContext uiContext;
-        uiContext.run();
+        //UIContext uiContext;
+        //uiContext.run();
 
-        //Reactor reactor;
-        //reactor.add(Molecule("CC(=O)O"), 1.0);
-        //reactor.add(Molecule("CCCO"), 2.0);
-        //reactor.tick();
+        Reactor reactor;
+        //reactor.add(Molecule("CCCO"), 1.0);
+        reactor.add(Molecule("CCC(=O)O"), 1.0);
+        reactor.add(Molecule("CO"), 2.0);
+        reactor.tick();
 
         //MolecularStructure a("O=C(OC)C");
         //MolecularStructure a("CC(=O)OC");
         //MolecularStructure b("OCC");
         //std::cout << a.print() << '\n' << b.print() << '\n';
-        std::cout << MolecularStructure("CC1COC2CN(C)C(C)C3OCC1C23").serialize()<<'\n';
+        //std::cout << MolecularStructure("CC1COC2CN(C)C(C)C3OCC1C23").serialize()<<'\n';
         //std::cout << MolecularStructure("C1C2CC12").toSMILES() << '\n';
     }
 

@@ -41,6 +41,13 @@ MolecularStructure::MolecularStructure(const MolecularStructure& other) noexcept
     }
 }
 
+MolecularStructure::MolecularStructure(const BaseComponent& component) noexcept
+{
+    hydrogenCount = component.data().valence;
+    components.emplace_back(component.clone());
+    bonds.emplace_back();
+}
+
 MolecularStructure::~MolecularStructure()
 {
     clear();
@@ -516,19 +523,11 @@ void MolecularStructure::clear()
         bonds.pop_back();
     }
     hydrogenCount = 0;
+}
 
-    // for freeing memory
-    //while (components.empty() == false)
-    //{
-    //    while (bonds[components.size() - 1].empty() == false)
-    //    {
-    //        delete bonds[components.size() - 1].back();
-    //        bonds[components.size() - 1].pop_back();
-    //    }
-    //    delete components.back();
-    //    components.pop_back();
-    //}
-    //hydrogenCount = 0;
+MolecularStructure MolecularStructure::createCopy() const
+{
+    return MolecularStructure(*this);
 }
 
 bool MolecularStructure::areMatching(
@@ -810,11 +809,16 @@ void MolecularStructure::copyBranch(
     const MolecularStructure& source,
     const c_size sourceIdx,
     std::unordered_map<c_size, c_size>& sdMapping,
-    bool renormalize)
+    bool renormalize,
+    const std::unordered_set<c_size>& sourceIgnore)
 {
+    // overrites radical atoms
+    if (destination.components[sdMapping[sourceIdx]]->isRadicalType())
+        destination.components.replace(sdMapping[sourceIdx], source.components[sourceIdx]->clone());
+
     std::queue<c_size> queue;
     for (c_size i = 0; i < source.bonds[sourceIdx].size(); ++i)
-        if(sdMapping.contains(source.bonds[sourceIdx][i]->other) == false)
+        if(sdMapping.contains(source.bonds[sourceIdx][i]->other) == false && sourceIgnore.contains(source.bonds[sourceIdx][i]->other) == false)
             queue.push(source.bonds[sourceIdx][i]->other);
 
     if (queue.empty())
@@ -845,7 +849,7 @@ void MolecularStructure::copyBranch(
                     source.bonds[c][i]->type)
                 );
             }
-            else
+            else if(sourceIgnore.contains(source.bonds[c][i]->other) == false)
             {
                 queue.push(source.bonds[c][i]->other);
             }
@@ -862,7 +866,8 @@ void MolecularStructure::copyBranch(
 MolecularStructure MolecularStructure::addSubstituents(
     const MolecularStructure& pattern,
     const MolecularStructure& instance,
-    std::unordered_map<c_size, c_size>& ipMap)
+    std::unordered_map<c_size, c_size>& ipMap,
+    bool renormalize)
 {
     MolecularStructure result(pattern);
 
@@ -870,7 +875,12 @@ MolecularStructure MolecularStructure::addSubstituents(
     {
         copyBranch(result, instance, p.first, ipMap, false);
     }
-    result.normalize();
+
+    if (renormalize)
+    {
+        result.normalize();
+        ipMap.clear();
+    }
 
     return result;
 }
