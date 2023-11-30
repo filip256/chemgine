@@ -90,7 +90,6 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			continue;
 		}
 
-
 		ReactionData data(id.result, line[1], reactantIds, productIds);
 		if (data.mapReactantsToProducts() == false)
 		{

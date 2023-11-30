@@ -60,6 +60,10 @@ public:
 
 	bool hasAsReactant(const Molecule& molecule) const;
 
+	/// <summary>
+	/// If the given vector of molecules matches the reactant list, it returns the resulting concrete
+	/// products, otherwise it returns an empty vector.
+	/// </summary>
 	std::vector<Molecule> generateConcreteProducts(const std::vector<Molecule>& molecules) const;
 
 	const std::vector<Reactable>& getReactants() const;

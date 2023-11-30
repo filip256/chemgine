@@ -74,6 +74,8 @@ bool ReactionData::balance(
 		}
 	}
 
+
+	//The most complex product should be fixed, not the first.
 	const auto result = system.solve();
 	if (result.empty())
 		return false;
@@ -100,6 +102,9 @@ bool ReactionData::mapReactantsToProducts()
 
 	for (size_t i = 0; i < reactants.size(); ++i)
 	{
+		if (reactants[i].getStructure().isVirtualHydrogen())
+			continue;
+
 		std::pair<std::unordered_map<c_size, c_size>, uint8_t> maxMap;
 		size_t maxIdxJ = 0;
 		for (size_t j = 0; j < products.size(); ++j)
@@ -235,7 +240,7 @@ std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<M
 	for (size_t i = 0; i < reactants.size(); ++i)
 	{
 		matches.emplace_back(Utils::reverseMap(reactants[i].matchWith(molecules[i].getStructure())));
-		if (matches.back().empty())
+		if (matches.back().empty() && reactants[i].getStructure().isVirtualHydrogen() == false)
 			return std::vector<Molecule>();
 	}
 

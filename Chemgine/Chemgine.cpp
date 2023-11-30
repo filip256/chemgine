@@ -24,6 +24,8 @@
 
 #include "ContainsInterface.hpp"
 
+#include "SystemMatrix.hpp"
+
 /*
 FunctionalGroup {
     CompositeComponent {
@@ -82,9 +84,13 @@ int main()
         //uiContext.run();
 
         Reactor reactor;
-        //reactor.add(Molecule("CCCO"), 1.0);
+        reactor.add(Molecule("HH"), 1.0);
+        reactor.add(Molecule("CC=C"), 1.0);
         reactor.add(Molecule("CCC(=O)O"), 1.0);
-        reactor.add(Molecule("CO"), 2.0);
+        reactor.add(Molecule("CC(=O)O"), 1.0);
+        reactor.add(Molecule("CCO"), 2.0);
+        reactor.add(Molecule("CCCO"), 2.0);
+        reactor.add(Molecule("C=CCO"), 2.0);
         reactor.tick();
 
         //MolecularStructure a("O=C(OC)C");

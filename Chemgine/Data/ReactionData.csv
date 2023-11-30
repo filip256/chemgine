@@ -1,6 +1,6 @@
 Id,Name,Reactants,Products,Conditions,Properties
 201,esterification,O=C(R)O;OR,O=C(R)OR;O,,
-202,dehydration,OR;OC,COR;O,,
-203,dehydration,OC,COC;O,,
-204,oxydation,RCO,RC;O=O,,
-205,hydrolysis,O=C(R)OR;O,O=C(R)O;OR,,
+202,hydrolysis,O=C(R)OR;O,O=C(R)O;OR,,
+203,dehydration,RO,ROR;O,,
+204,oxidation,RCC,HH;RC=C,,
+205,reduction,HH;RC=C,RCC,,

@@ -56,28 +56,14 @@ void Reactor::removeNegligibles()
 	}
 }
 
-
-void Reactor::generateMappingForReaction(const Reaction& reaction) const
-{
-
-}
-
 void Reactor::checkReactions()
 {
-	// TODO: find a way to remove the conversion
-	//std::vector<Molecule> molecules;
-	//molecules.reserve(content.size());
+	for (const auto& r1 : content)
+		dataAccessor.get().reactions.findOccuringReactions(std::vector<Molecule>{ r1.molecule });
 
-	//for (const auto r : content)
-	//	molecules.emplace_back(r.molecule.getId());
-
-	//dataAccessor.get().reactions.findOccuringReactions(molecules);
-
-	/*for (const auto r : content)
-		dataAccessor.get().reactions.findOccuringReactions(Molecule(r.molecule.getId()));*/
-
-	dataAccessor.get().reactions.findOccuringReactions(std::vector<Molecule>{ Molecule("CC(=O)OCCCC(=C)C"), Molecule("O") });
-	dataAccessor.get().reactions.findOccuringReactions(std::vector<Molecule>{ Molecule("CCC(=O)O"), Molecule("CCCCCCCO") });
+	for (const auto& r1 : content)
+		for (const auto& r2 : content)
+			dataAccessor.get().reactions.findOccuringReactions(std::vector<Molecule>{ r1.molecule, r2.molecule });
 }
 
 void Reactor::add(Reactor& other)

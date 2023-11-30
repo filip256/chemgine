@@ -12,11 +12,14 @@ private:
 
 public:
 	SystemMatrix() = default;
+	SystemMatrix(std::initializer_list<std::initializer_list<T>> initializer) noexcept;
 	SystemMatrix(const SystemMatrix&) = delete;
 
 	void addRow(std::vector<T>&& row, const T result);
 	void addRow(const size_t n);
 	void swapRows(const size_t x, const size_t y);
+
+	bool trySolution(const std::vector<T>& solution) const;
 
 	const std::vector<T>& operator[](const size_t idx) const;
 	std::vector<T>& operator[](const size_t idx);

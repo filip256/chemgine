@@ -57,6 +57,12 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 {
     clear();
 
+    if (smiles == "HH") // the only purely virtual molecule
+    {
+        hydrogenCount = 2;
+        return true;
+    }
+
     std::unordered_map<uint8_t, c_size> rings;
     std::stack<c_size> branches;
 
@@ -205,7 +211,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
     }
 
     const auto hCount = getHCount();
-    if(hydrogenCount == -1)
+    if(hCount == -1)
     {
         Logger::log("Valence of a component was exceeded.", LogType::BAD);
         clear();
@@ -293,6 +299,9 @@ int16_t MolecularStructure::getHCount() const
     int16_t hCount = 0;
     for (c_size i = 0; i < components.size(); ++i)
     {
+        if (components[i]->isRadicalType())
+            continue;
+
         auto v = components[i]->data().valence;
         if (bonds[i].size() > v)
             return -1;
@@ -429,6 +438,11 @@ bool MolecularStructure::isConnected() const
     return true;
 }
 
+bool MolecularStructure::isVirtualHydrogen() const
+{
+    return components.size() == 0 && hydrogenCount == 2;
+}
+
 bool MolecularStructure::areAdjacent(const c_size idxA, const c_size idxB) const
 {
     for (c_size i = 0; i < bonds[idxA].size(); ++i)
@@ -469,15 +483,15 @@ void MolecularStructure::rPrint(
                 buffer[y][x + 1] = hC;
                 rPrint(buffer, x + 2, y, bonds[c][i]->other, visited);
             }
-            else if (buffer[y - 2][x] == ' ')
-            {
-                buffer[y - 1][x] = vC;
-                rPrint(buffer, x, y - 2, bonds[c][i]->other, visited);
-            }
             else if (buffer[y][x - 2] == ' ')
             {
                 buffer[y][x - 1] = hC;
                 rPrint(buffer, x - 2, y, bonds[c][i]->other, visited);
+            }
+            else if (buffer[y - 2][x] == ' ')
+            {
+                buffer[y - 1][x] = vC;
+                rPrint(buffer, x, y - 2, bonds[c][i]->other, visited);
             }
             else if (buffer[y + 2][x] == ' ')
             {
@@ -492,12 +506,15 @@ void MolecularStructure::rPrint(
 std::string MolecularStructure::print(const size_t maxWidth, const size_t maxHeight) const
 {
     if (components.empty())
+    {
+        if (isVirtualHydrogen())
+            return std::string(maxWidth / 4, ' ') + "HÄH\n";
         return "";
+    }
 
 	std::vector<std::string> buffer(maxHeight, std::string(maxWidth, ' '));
-    size_t x = buffer[0].size() / 4, y = buffer.size() / 4;
     std::vector<uint8_t> visited(components.size(), false);
-    rPrint(buffer, x, y, 0, visited);
+    rPrint(buffer, buffer[0].size() / 4, buffer.size() / 4, 0, visited);
 
     std::string str;
     size_t i = 0;

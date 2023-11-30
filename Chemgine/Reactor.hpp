@@ -43,8 +43,6 @@ private:
 
 	static DataStoreAccessor dataAccessor;
 
-	void generateMappingForReaction(const Reaction& reaction) const;
-
 	void removeNegligibles();
 	void checkReactions();
 

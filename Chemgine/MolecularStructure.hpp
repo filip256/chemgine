@@ -163,6 +163,7 @@ public:
 
     bool isCyclic() const;
     bool isConnected() const;
+    bool isVirtualHydrogen() const;
 
     /// <summary>
     /// Checks if the two components are adjacent.
