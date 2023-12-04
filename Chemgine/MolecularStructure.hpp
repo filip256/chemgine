@@ -139,7 +139,8 @@ public:
 
     /// <summary>
     /// Checks if the molecule contains at least one radical type. 
-    /// Complexity: O(n)
+    /// Complexity: O(1)
+    /// Requires normalization
     /// </summary>
     /// <returns></returns>
     bool isComplete() const;

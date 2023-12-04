@@ -90,7 +90,43 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			continue;
 		}
 
-		ReactionData data(id.result, line[1], reactantIds, productIds);
+		// speed
+		const auto speedLine = DataHelpers::parseList(line[5], '@', true);
+		if (speedLine.size() != 2 || speedLine[0].empty() || speedLine[1].empty())
+		{
+			Logger::log("Reaction speed for the reaction with id " + std::to_string(id.result) + " is ill-defined. Skipped.", LogType::BAD);
+			continue;
+		}
+		const auto moles = DataHelpers::toUDouble(speedLine[0]);
+		if(moles.status == 0)
+		{
+			Logger::log("Reaction speed for the reaction with id " + std::to_string(id.result) + " is ill-defined. Skipped.", LogType::BAD);
+			continue;
+		}
+
+		Amount<Unit::CELSIUS> baseTemp = 0;
+		const auto temp = DataHelpers::toDouble(speedLine[1].substr(0, speedLine[1].size() - 1));
+		if (temp.status == 0)
+		{
+			Logger::log("Reaction speed for the reaction with id " + std::to_string(id.result) + " is ill-defined. Skipped.", LogType::BAD);
+			continue;
+		}
+
+		if (speedLine[1].ends_with('c') || speedLine[1].ends_with('C'))
+			baseTemp = temp.result;
+		else if (speedLine[1].ends_with('k') || speedLine[1].ends_with('K'))
+			baseTemp = Amount<Unit::KELVIN>(temp.result);
+		else if(speedLine[1].ends_with('f') || speedLine[1].ends_with('F'))
+			baseTemp = Amount<Unit::FAHRENHEIT>(temp.result);
+		else
+		{
+			Logger::log("Reaction speed for the reaction with id " + std::to_string(id.result) + " is ill-defined. Skipped.", LogType::BAD);
+			continue;
+		}
+
+
+		// create
+		ReactionData data(id.result, line[1], reactantIds, productIds, Amount<Unit::MOLE_PER_SECOND>(moles.result / 1.0), baseTemp);
 		if (data.mapReactantsToProducts() == false)
 		{
 			Logger::log("Reaction with id " + std::to_string(id.result) + " is not a valid reaction.", LogType::BAD);
@@ -113,12 +149,14 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 	return true;
 }
 
-void ReactionDataTable::findOccuringReactions(const std::vector<Molecule>& molecules) const
+std::unordered_set<ConcreteReaction, ConcreteReactionHash> ReactionDataTable::findOccuringReactions(const std::vector<Molecule>& molecules) const
 {
+	std::unordered_set<ConcreteReaction, ConcreteReactionHash> result;
 	for (size_t i = 0; i < table.size(); ++i)
 	{
 		const auto& p = table[i].generateConcreteProducts(molecules);
-		for (size_t j = 0; j < p.size(); ++j)
-			Logger::log(p[j].getStructure().print());
+		if (p.size())
+			result.insert(ConcreteReaction(table[i], molecules, p));
 	}
+	return result;
 }

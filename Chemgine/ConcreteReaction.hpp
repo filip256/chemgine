@@ -1,13 +1,39 @@
 #pragma once
 
-#include "Reaction.hpp"
+#include "ReactionData.hpp"
+#include "ReactantSet.hpp"
+
+#include <vector>
 
 class ConcreteReaction
 {
 private:
-	const Reaction baseReaction;
-	std::vector<std::pair<Molecule, uint8_t>> reactants;
-	std::vector<std::pair<Molecule, uint8_t>> products;
+	const ReactionData& baseReaction;
+	ReactantSet reactants;
+	ReactantSet products;
 
 public:
+	ConcreteReaction(
+		const ReactionData& baseReaction,
+		const std::vector<Molecule>& reactants,
+		const std::vector<Molecule>& products
+	) noexcept;
+
+	bool isEquivalent(const ConcreteReaction& other) const;
+
+	const ReactantSet& getReactants() const;
+	const ReactantSet& getProducts() const;
+
+	const ReactionData& getData() const;
+
+	bool operator==(const ConcreteReaction& other) const;
+	bool operator!=(const ConcreteReaction& other) const;
+
+	friend class ConcreteReactionHash;
+};
+
+class ConcreteReactionHash
+{
+public:
+	size_t operator() (const ConcreteReaction& reaction) const;
 };

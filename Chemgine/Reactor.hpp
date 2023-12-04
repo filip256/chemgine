@@ -3,57 +3,39 @@
 #include <unordered_set>
 
 #include "DataStoreAccessor.hpp"
-#include "Molecule.hpp"
-#include "LayerType.hpp"
 #include "ConcreteReaction.hpp"
-#include "Amount.hpp"
+#include "Reactant.hpp"
 
 class Reactor
 {
-	class Reactant
-	{
-	public:
-		const Molecule molecule;
-		const LayerType layer;
-		mutable Amount<Unit::MOLE> amount;
-		mutable bool isNew;
-
-		Reactant(
-			const Molecule& molecule,
-			const LayerType layer,
-			const Amount<Unit::MOLE> amount
-		) noexcept;
-
-		Reactant(const Reactant&) = default;
-		Reactant(Reactant&&) = default;
-
-		bool operator==(const Reactant& other) const;
-		bool operator!=(const Reactant& other) const;
-	};
-
-	class ReactantHash
-	{
-	public:
-		size_t operator() (const Reactant& reactant) const;
-	};
-
 private:
-	std::vector<ConcreteReaction> reactions;
+	double stirSpeed = 0.0;
+	Amount<Unit::CELSIUS> temperature;
+	Amount<Unit::TORR> pressure;
+
+	std::unordered_set<ConcreteReaction, ConcreteReactionHash> cachedReactions;
 	std::unordered_set<Reactant, ReactantHash> content;
 
 	static DataStoreAccessor dataAccessor;
 
 	void removeNegligibles();
-	void checkReactions();
+	void findNewReactions();
+	void runReactions();
 
 public:
-	Reactor() noexcept;
+	Reactor(
+		const Amount<Unit::CELSIUS> temperature,
+		const Amount<Unit::TORR> pressure
+	) noexcept;
 	Reactor(const Reactor&) = delete;
 	Reactor(Reactor&&) = default;
 
 	void add(Reactor& other);
 	void add(Reactor& other, const double ratio);
+	void add(const Reactant& reactant);
 	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount);
+
+	Amount<Unit::MOLE> getAmountOf(const Reactant& reactant) const;
 
 	void tick();
 

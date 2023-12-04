@@ -1,3 +1,3 @@
 #include "Constants.hpp"
 
-const double Constants::MOLAR_EXISTANCE_THRESHOLD = 0.0000001;
+const double Constants::MOLAR_EXISTANCE_THRESHOLD = 1e-2;

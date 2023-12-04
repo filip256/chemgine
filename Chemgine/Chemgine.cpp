@@ -78,20 +78,25 @@ int main()
             .loadBackbonesData("Data/BackboneData.csv")
             .loadMoleculesData("Data/OrganicMoleculeData.csv")
             .loadReactionsData("Data/ReactionData.csv")
+            .loadApproximatorsData("")
             .loadLabwareData("Data/LabwareData.csv");
 
         //UIContext uiContext;
         //uiContext.run();
 
-        Reactor reactor;
-        reactor.add(Molecule("HH"), 1.0);
-        reactor.add(Molecule("CC=C"), 1.0);
-        reactor.add(Molecule("CCC(=O)O"), 1.0);
+        Reactor reactor(20.0, 760.0);
+        //reactor.add(Molecule("HH"), 1.0);
+        //reactor.add(Molecule("CC=C"), 1.0);
+        //reactor.add(Molecule("CCC(=O)O"), 1.0);
         reactor.add(Molecule("CC(=O)O"), 1.0);
         reactor.add(Molecule("CCO"), 2.0);
-        reactor.add(Molecule("CCCO"), 2.0);
-        reactor.add(Molecule("C=CCO"), 2.0);
-        reactor.tick();
+        //reactor.add(Molecule("CCCO"), 2.0);
+        //reactor.add(Molecule("C=CCO"), 2.0);
+
+        while (true)
+        {
+            reactor.tick();
+        }
 
         //MolecularStructure a("O=C(OC)C");
         //MolecularStructure a("CC(=O)OC");

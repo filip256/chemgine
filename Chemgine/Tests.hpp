@@ -229,6 +229,7 @@ public:
 			.loadBackbonesData("Data/BackboneData.csv")
 			.loadMoleculesData("Data/OrganicMoleculeData.csv")
 			.loadReactionsData("Data/ReactionData.csv")
+			.loadApproximatorsData("")
 			.loadLabwareData("Data/LabwareData.csv");
 
 		molecularStructureTest.initialize();

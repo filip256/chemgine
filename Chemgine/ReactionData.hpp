@@ -6,14 +6,13 @@
 #include "Reactable.hpp"
 #include "PairHash.hpp"
 #include "Molecule.hpp"
+#include "Amount.hpp"
 
 typedef uint16_t ReactionIdType;
 
 class ReactionData
 {
 private:
-	const ReactionIdType id;
-	const std::string name;
 	std::vector<Reactable> reactants;
 	std::vector<Reactable> products;
 	std::unordered_map<std::pair<size_t, c_size>, std::pair<size_t, c_size>, PairHash> componentMapping;
@@ -48,11 +47,18 @@ private:
 
 
 public:
+	const ReactionIdType id;
+	const Amount<Unit::MOLE_PER_SECOND> baseSpeed;
+	const Amount<Unit::CELSIUS> baseTemperature;
+	const std::string name;
+
 	ReactionData(
 		const ReactionIdType id,
 		const std::string& name,
 		const std::vector<std::pair<Reactable, uint8_t>>& reactants,
-		const std::vector<std::pair<Reactable, uint8_t>>& products
+		const std::vector<std::pair<Reactable, uint8_t>>& products,
+		const Amount<Unit::MOLE_PER_SECOND> baseSpeed,
+		const Amount<Unit::CELSIUS> baseTemperature
 	) noexcept;
 
 	ReactionData(const ReactionData&) = delete;

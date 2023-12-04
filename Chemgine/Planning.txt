@@ -170,13 +170,15 @@ Tasks:
   ?. Implement toSMILES
 ---
   1. Implement reactor 
-  6. Implement algorithm for checking if a reaction is possible
+  DONE. Implement algorithm for checking if a reaction is possible
 ---
   DONE. Implement graph matching algorithm
   DONE. Hardcode special atom types
   2. Apply algorithm to organic molecules
-  3. Write molecule to smiles and cmiles algorithm and print to CSV files
+  DONE. Write molecule to smiles and cmiles algorithm and print to CSV files
   ?. Implement algorithm using BFS
+---
+  1. Molecular structure improvements: isNormalized field (checks for req methods), implied hydrogen clarifications
 
 
 Possible optimizations:

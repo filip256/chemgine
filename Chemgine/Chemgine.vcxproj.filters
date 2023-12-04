@@ -112,6 +112,12 @@
     <Filter Include="Resource Files\Data">
       <UniqueIdentifier>{7882107e-ae92-4adc-8e96-02ed9c88b221}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Approximators">
+      <UniqueIdentifier>{8931cf7e-e0ae-46c6-b20f-5b2d469f55ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Approximators">
+      <UniqueIdentifier>{b1083ec7-3a36-4415-a955-cfe806be11d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataStore.cpp">
@@ -166,9 +172,6 @@
       <Filter>Source Files\Reactions</Filter>
     </ClCompile>
     <ClCompile Include="Reactor.cpp">
-      <Filter>Source Files\Reactions</Filter>
-    </ClCompile>
-    <ClCompile Include="Reaction.cpp">
       <Filter>Source Files\Reactions</Filter>
     </ClCompile>
     <ClCompile Include="ConcreteReaction.cpp">
@@ -285,6 +288,21 @@
     <ClCompile Include="DrawablePort.cpp">
       <Filter>Source Files\Labware\Components</Filter>
     </ClCompile>
+    <ClCompile Include="ReactantSet.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
+    <ClCompile Include="Reactant.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicalProperties.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionalApproximator.cpp">
+      <Filter>Source Files\Approximators</Filter>
+    </ClCompile>
+    <ClCompile Include="ApproximatorDataTable.cpp">
+      <Filter>Source Files\Approximators</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -370,9 +388,6 @@
     </ClInclude>
     <ClInclude Include="Query.hpp">
       <Filter>Header Files\DataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="Reaction.hpp">
-      <Filter>Header Files\Reactions</Filter>
     </ClInclude>
     <ClInclude Include="ConcreteReaction.hpp">
       <Filter>Header Files\Reactions</Filter>
@@ -511,6 +526,21 @@
     </ClInclude>
     <ClInclude Include="ContainsInterface.hpp">
       <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="Reactant.hpp">
+      <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="ReactantSet.hpp">
+      <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicalProperties.hpp">
+      <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionalApproximator.hpp">
+      <Filter>Header Files\Approximators</Filter>
+    </ClInclude>
+    <ClInclude Include="ApproximatorDataTable.hpp">
+      <Filter>Header Files\Approximators</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

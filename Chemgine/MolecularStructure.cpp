@@ -355,11 +355,12 @@ c_size MolecularStructure::getRadicalAtomsCount() const
 
 bool MolecularStructure::isComplete() const
 {
-    // it does not search sub components
-    for (c_size i = 0; i < components.size(); ++i)
-        if (components[i]->isRadicalType())
-                return false;
-    return true;
+    return components.empty () || !components.back()->isRadicalType();
+
+    //for (c_size i = components.size(); i-- > 0;)
+    //    if (components[i]->isRadicalType())
+    //            return false;
+    //return true;
 }
 
 std::unordered_map<ComponentIdType, c_size> MolecularStructure::getComponentCountMap() const

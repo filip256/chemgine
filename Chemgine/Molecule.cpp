@@ -1,5 +1,6 @@
 #include "Molecule.hpp"
 #include "DataStore.hpp"
+#include "Amount.hpp"
 
 DataStoreAccessor Molecule::dataAccessor = DataStoreAccessor();
 

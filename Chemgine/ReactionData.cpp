@@ -9,9 +9,13 @@ ReactionData::ReactionData(
 	const ReactionIdType id,
 	const std::string& name,
 	const std::vector<std::pair<Reactable, uint8_t>>& reactants,
-	const std::vector<std::pair<Reactable, uint8_t>>& products
+	const std::vector<std::pair<Reactable, uint8_t>>& products,
+	const Amount<Unit::MOLE_PER_SECOND> baseSpeed,
+	const Amount<Unit::CELSIUS> baseTemperature
 ) noexcept :
 	id(id),
+	baseSpeed(baseSpeed),
+	baseTemperature(baseTemperature),
 	name(name),
 	reactants(flatten(reactants)),
 	products(flatten(products))
