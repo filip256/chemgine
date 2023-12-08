@@ -1,4 +1,9 @@
 Id,Smiles,Name
 501,O,water
 502,OC,methanol
-503,O(C)C,di-methyl-ether
+503,CC(=O)O,acetic acid
+504,CC(=O)OC(=O)C,acetic anhydride
+505,CC(=O)OC,methyl acetate
+506,O(C)C,di-methyl-ether
+211,HH,hydrogen
+212,O=O,oxygen

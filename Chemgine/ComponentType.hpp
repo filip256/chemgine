@@ -1,6 +1,8 @@
 #pragma once
 
-enum class ComponentType
+#include <cstdint>
+
+enum class ComponentType : uint8_t
 {
 	NONE,
 	ATOM,

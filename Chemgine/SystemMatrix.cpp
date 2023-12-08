@@ -2,39 +2,63 @@
 
 #include <iostream>
 
+template<class T>
+SystemMatrix<T>::SystemMatrix(std::initializer_list<std::initializer_list<T>> initializer) noexcept :
+    matrix(initializer.begin(), initializer.end())
+{}
+
 template <class T>
 bool SystemMatrix<T>::toREF()
 {
-    size_t cols = matrix[0].size() - 1;
-    size_t rows = cols;
+    size_t cols = matrix[0].size();
+    size_t rows = matrix.size();
 
-    for (size_t i = 0; i < rows; ++i) 
+    for (size_t i = 0; i < rows - 1; ++i) 
     {
         size_t pivotRow = i;
-        for (size_t k = i + 1; k < rows; ++k) {
-            if (std::abs(matrix[k][i]) > std::abs(matrix[pivotRow][i])) {
+        for (size_t k = i + 1; k < rows; ++k)
+            if (std::abs(matrix[k][i]) > std::abs(matrix[pivotRow][i])) 
                 pivotRow = k;
-            }
-        }
 
         if (pivotRow != i)
             swapRows(i, pivotRow);
 
-        const T pivot = matrix[i][i];
-        if (std::abs(matrix[i][i]) < 1e-10)
+        const auto pivot = matrix[i][i];
+        if (std::abs(pivot) < 1e-10)
             return false;
 
-        for (size_t j = i; j < cols + 1; ++j)
+        for (size_t j = i; j < cols; ++j)
             matrix[i][j] /= pivot;
 
-        // Eliminate non-zero elements below the pivot
+        // eliminate non-zero elements below the pivot
         for (size_t k = i + 1; k < rows; ++k) 
         {
-            const T factor = matrix[k][i];
-            for (size_t j = i; j < cols + 1; ++j) 
+            const auto factor = matrix[k][i];
+            for (size_t j = i; j < cols; ++j) 
                 matrix[k][j] -= factor * matrix[i][j];
         }
     }
+
+    // NxN systems can still be solved if one row is redundant (otherwise no solution)
+    // If such a row exists it will be bubbled to the last row and it will be null
+    // The whole last row is null if the pivot is null (in NxN systems)
+    if (cols == rows)
+    {
+        if (std::abs(matrix.back().back()) < 1e-7) // 1e-7 could introduce errors in the solution but it allows solving more systems
+        {
+            matrix.pop_back();
+            return true;
+        }
+        return false;
+    }
+
+    // last row
+    const auto pivot = matrix.back()[rows - 1];
+    if (std::abs(pivot) < 1e-10)
+        return false;
+
+    for (size_t j = rows - 1; j < cols; ++j)
+        matrix.back()[j] /= pivot;
 
     return true;
 }
@@ -58,6 +82,20 @@ void SystemMatrix<T>::swapRows(const size_t x, const size_t y)
     matrix[x].swap(matrix[y]);
 }
 
+template <class T>
+bool SystemMatrix<T>::trySolution(const std::vector<T>& solution) const
+{
+    for (size_t i = 0; i < matrix.size(); ++i)
+    {
+        T temp = 0;
+        for (size_t j = 0; j < matrix[i].size() - 1; ++j)
+            temp += matrix[i][j] * solution[j];
+
+        if (std::abs(temp - matrix[i].back()) > 1e-10)
+            return false;
+    }
+    return true;
+}
 
 template <class T>
 std::vector<T> SystemMatrix<T>::solve()

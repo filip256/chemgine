@@ -5,7 +5,7 @@
 #include "FunctionalGroupDataTable.hpp"
 #include "BackboneDataTable.hpp"
 #include "MoleculeDataTable.hpp"
-#include "Reaction.hpp"
+#include "ConcreteReaction.hpp"
 
 class ReactionDataTable :
 	public DataTable<ReactionIdType, std::string, ReactionData>
@@ -26,5 +26,9 @@ public:
 
 	bool loadFromFile(const std::string& path);
 
-	void findOccuringReactions(const std::vector<Molecule>& molecules) const;
+	/// <summary>
+	/// Finds all the occuring reactions for the given molecules. The order of molecules must match the order of the
+	/// reactants in the matching reaction.
+	/// </summary>
+	std::unordered_set<ConcreteReaction, ConcreteReactionHash> findOccuringReactions(const std::vector<Molecule>& molecules) const;
 };

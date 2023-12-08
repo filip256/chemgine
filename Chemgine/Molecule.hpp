@@ -2,6 +2,7 @@
 
 #include "DataStoreAccessor.hpp"
 #include "OrganicMoleculeData.hpp"
+#include "Amount.hpp"
 
 class Molecule
 {
@@ -9,6 +10,7 @@ private:
 	static DataStoreAccessor dataAccessor;
 
 	const MoleculeIdType id;
+	const Amount<Unit::GRAM_PER_MOLE> molarMass;
 
 public:
 	Molecule(const MoleculeIdType id) noexcept;
@@ -16,7 +18,10 @@ public:
 	Molecule(const std::string& smiles) noexcept;
 
 	MoleculeIdType getId() const;
+	Amount<Unit::GRAM_PER_MOLE> getMolarMass() const;
 	const OrganicMoleculeData& data() const;
+
+	const MolecularStructure& getStructure() const;
 
 	bool operator==(const Molecule& other) const;
 	bool operator!=(const Molecule& other) const;

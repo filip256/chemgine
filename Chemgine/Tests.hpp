@@ -8,9 +8,9 @@
 #include "Logger.hpp"
 #include "MolecularStructure.hpp"
 #include "DataStore.hpp"
-#include "ReactableFactory.hpp"
 #include "Reactor.hpp"
 #include "BaseLabwareComponent.hpp"
+#include "Reactable.hpp"
 
 class MolecularStructureTest
 {
@@ -96,13 +96,13 @@ public:
 		res["mapTo"].emplace_back(true);
 		res["=="].emplace_back(true);
 
-		setA.emplace_back(std::move(MolecularStructure("CCNC12CC(CC=C1C1=C(OC)C=CC3=C1C(C2)=CN3)C(=O)N(C)C")));
-		setB.emplace_back(std::move(MolecularStructure("RNC12CC(CC=C1C1=C(OR)C=CC3=C1C(C2)=CN3)C(=O)N(R)R")));
+		setA.emplace_back(std::move(MolecularStructure("CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C")));
+		setB.emplace_back(std::move(MolecularStructure("N(R)C14CC(CC=C1C2=C(OR)C=CC3=C2C(=C[N]3)C4)C(=O)N(R)R")));
 		res["mapTo"].emplace_back(true);
 		res["=="].emplace_back(false);
 
-		setA.emplace_back(std::move(MolecularStructure("COC1=C2C3=C(NC=C3CC3(CC(CC=C23)C(=O)N(C)C)NC(C)C)C=C1")));
-		setB.emplace_back(std::move(MolecularStructure("RNC12CC(CC=C1C1=C(OR)C=CC3=C1C(C2)=CN3)C(=O)N(R)R")));
+		setA.emplace_back(std::move(MolecularStructure("COC4=C2C1=C([N]C=C1CC3(CC(CC=C23)C(=O)N(C)C)NC(C)C)C=C4")));
+		setB.emplace_back(std::move(MolecularStructure("N(R)C14CC(CC=C1C2=C(OR)C=CC3=C2C(=C[N]3)C4)C(=O)N(R)R")));
 		res["mapTo"].emplace_back(true);
 		res["=="].emplace_back(false);
 
@@ -138,6 +138,11 @@ public:
 		setF.emplace_back(std::move(MolecularStructure("OCCC")));
 		res["addSub"].emplace_back(6);
 
+
+		setE.emplace_back(std::move(MolecularStructure("CC(=O)OR")));
+		setF.emplace_back(std::move(MolecularStructure("OCCC")));
+		res["addSub"].emplace_back(6);
+
 		setE.emplace_back(std::move(MolecularStructure("CCC(=O)O")));
 		setF.emplace_back(std::move(MolecularStructure("CC(=O)OCC")));
 		res["addSub"].emplace_back(7);
@@ -158,22 +163,22 @@ public:
 
 	void runTests()
 	{
-		//for (size_t i = 0; i < setA.size(); ++i)
-		//{
-		//	if (setA[i].mapTo(setB[i], true).size() > 0 != res["mapTo"][i])
-		//	{
-		//		Logger::log("Test failed > MolecularStructure > mapTo > #" + std::to_string(i)
-		//			+ ": expected=" + std::to_string(res["mapTo"][i]) + "\n"
-		//			+ setA[i].print() + '\n' + setB[i].print(), LogType::BAD);
-		//	}
+		for (size_t i = 0; i < setA.size(); ++i)
+		{
+			if (setA[i].mapTo(setB[i], true).size() > 0 != res["mapTo"][i])
+			{
+				Logger::log("Test failed > MolecularStructure > mapTo > #" + std::to_string(i)
+					+ ": expected=" + std::to_string(res["mapTo"][i]) + "\n"
+					+ setA[i].print() + '\n' + setB[i].print(), LogType::BAD);
+			}
 
-		//	if ((setA[i] == setB[i]) != res["=="][i])
-		//	{
-		//		Logger::log("Test failed > MolecularStructure > == > #" + std::to_string(i)
-		//			+ ": expected=" + std::to_string(res["=="][i]) + "\n"
-		//			+ setA[i].print() + '\n' + setB[i].print(), LogType::BAD);
-		//	}
-		//}
+			if ((setA[i] == setB[i]) != res["=="][i])
+			{
+				Logger::log("Test failed > MolecularStructure > == > #" + std::to_string(i)
+					+ ": expected=" + std::to_string(res["=="][i]) + "\n"
+					+ setA[i].print() + '\n' + setB[i].print(), LogType::BAD);
+			}
+		}
 
 		for (size_t i = 0; i < setC.size(); ++i)
 		{
@@ -185,20 +190,21 @@ public:
 			}
 		}
 
-		//for (size_t i = 0; i < setC.size(); ++i)
-		//{
-		//	if (MolecularStructure(setC[i].serialize(), true) != setC[i])
-		//	{
-		//		Logger::log("Test failed > MolecularStructure > serialize/deserialize > #" + std::to_string(i)
-		//			+ ": expected= true\n"
-		//			+ setC[i].print(), LogType::BAD);
-		//	}
-		//}
+		for (size_t i = 0; i < setC.size(); ++i)
+		{
+			if (MolecularStructure(setC[i].serialize(), true) != setC[i])
+			{
+				Logger::log("Test failed > MolecularStructure > serialize/deserialize > #" + std::to_string(i)
+					+ ": expected= true\n"
+					+ setC[i].print(), LogType::BAD);
+			}
+		}
 
 		for (size_t i = 0; i < setE.size(); ++i)
 		{
 			auto map = setF[i].maximalMapTo(setE[i]).first;
-			if (MolecularStructure::addSubstituents(setE[i], setF[i], map).componentCount() != res["addSub"][i])
+			const auto newMol = MolecularStructure::addSubstituents(setE[i], setF[i], map);
+			if (newMol.componentCount() != res["addSub"][i])
 			{
 				Logger::log("Test failed > MolecularStructure > addSubstituents > #" + std::to_string(i)
 					+ ": expected=" + std::to_string(res["addSub"][i]) + "\n"
@@ -220,7 +226,7 @@ public:
 		Logger::enterContext();
 		const auto begin = std::chrono::steady_clock::now();
 		BaseComponent::setDataStore(store);
-		ReactableFactory::setDataStore(store);
+		Reactable::setDataStore(store);
 		Reactor::setDataStore(store);
 		Molecule::setDataStore(store);
 		BaseLabwareComponent::setDataStore(store);
@@ -229,6 +235,7 @@ public:
 			.loadBackbonesData("Data/BackboneData.csv")
 			.loadMoleculesData("Data/OrganicMoleculeData.csv")
 			.loadReactionsData("Data/ReactionData.csv")
+			.loadApproximatorsData("")
 			.loadLabwareData("Data/LabwareData.csv");
 
 		molecularStructureTest.initialize();

@@ -188,13 +188,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Adaptor.cpp" />
+    <ClCompile Include="ApproximatorDataTable.cpp" />
     <ClCompile Include="Atom.cpp" />
     <ClCompile Include="AtomicComponent.cpp" />
     <ClCompile Include="AtomIdentifier.cpp" />
     <ClCompile Include="Backbone.cpp" />
     <ClCompile Include="BackboneData.cpp" />
     <ClCompile Include="BackboneDataTable.cpp" />
-    <ClCompile Include="BackboneReactable.cpp" />
     <ClCompile Include="BaseLabwareComponent.cpp" />
     <ClCompile Include="BaseLabwareData.cpp" />
     <ClCompile Include="BaseReactionCondition.cpp" />
@@ -210,7 +210,7 @@
     <ClCompile Include="Flask.cpp" />
     <ClCompile Include="ContainerLabwareData.cpp" />
     <ClCompile Include="FloatValue.cpp" />
-    <ClCompile Include="FunctionalGroupReactable.cpp" />
+    <ClCompile Include="FunctionalApproximator.cpp" />
     <ClCompile Include="HeatSourceData.cpp" />
     <ClCompile Include="FlaskData.cpp" />
     <ClCompile Include="LabwareConnection.cpp" />
@@ -220,12 +220,12 @@
     <ClCompile Include="LabwareSystem.cpp" />
     <ClCompile Include="Maths.cpp" />
     <ClCompile Include="MoleculeDataTable.cpp" />
-    <ClCompile Include="MoleculeReactable.cpp" />
     <ClCompile Include="Molecule.cpp" />
     <ClCompile Include="OrganicMoleculeData.cpp" />
+    <ClCompile Include="PhysicalProperties.cpp" />
     <ClCompile Include="Reactable.cpp" />
-    <ClCompile Include="ReactableFactory.cpp" />
-    <ClCompile Include="Reaction.cpp" />
+    <ClCompile Include="Reactant.cpp" />
+    <ClCompile Include="ReactantSet.cpp" />
     <ClCompile Include="ReactionData.cpp" />
     <ClCompile Include="ReactionDataTable.cpp" />
     <ClCompile Include="Reactor.cpp" />
@@ -234,6 +234,7 @@
     <ClCompile Include="Value.cpp" />
     <ClInclude Include="Adaptor.hpp" />
     <ClInclude Include="Amount.hpp" />
+    <ClInclude Include="ApproximatorDataTable.hpp" />
     <ClInclude Include="AtomicComponent.hpp" />
     <ClInclude Include="AtomIdentifier.hpp" />
     <ClCompile Include="AtomData.cpp" />
@@ -246,7 +247,6 @@
     <ClInclude Include="Backbone.hpp" />
     <ClInclude Include="BackboneData.hpp" />
     <ClInclude Include="BackboneDataTable.hpp" />
-    <ClInclude Include="BackboneReactable.hpp" />
     <ClInclude Include="BaseComponentData.hpp" />
     <ClInclude Include="BaseLabwareComponent.hpp" />
     <ClInclude Include="BaseLabwareData.hpp" />
@@ -264,6 +264,7 @@
     <ClInclude Include="ConcreteReaction.hpp" />
     <ClInclude Include="AdaptorData.hpp" />
     <ClInclude Include="Constants.hpp" />
+    <ClInclude Include="ContainsInterface.hpp" />
     <ClInclude Include="DrawableComponent.hpp" />
     <ClInclude Include="DataStoreAccessor.hpp" />
     <ClInclude Include="DrawableLabwareData.hpp" />
@@ -274,7 +275,7 @@
     <ClInclude Include="FunctionalGroup.hpp" />
     <ClInclude Include="FunctionalGroupData.hpp" />
     <ClInclude Include="FunctionalGroupDataTable.hpp" />
-    <ClInclude Include="FunctionalGroupReactable.hpp" />
+    <ClInclude Include="FunctionalApproximator.hpp" />
     <ClInclude Include="HashCombine.hpp" />
     <ClInclude Include="HeatSourceData.hpp" />
     <ClInclude Include="IndexMap.hpp" />
@@ -289,11 +290,13 @@
     <ClInclude Include="LogType.hpp" />
     <ClCompile Include="MolecularStructure.cpp" />
     <ClInclude Include="Maths.hpp" />
+    <ClInclude Include="PhysicalProperties.hpp" />
     <ClInclude Include="PortType.hpp" />
+    <ClInclude Include="Reactant.hpp" />
+    <ClInclude Include="ReactantSet.hpp" />
     <ClInclude Include="UIContext.hpp" />
     <ClInclude Include="Unit.hpp" />
     <ClInclude Include="MoleculeDataTable.hpp" />
-    <ClInclude Include="MoleculeReactable.hpp" />
     <ClInclude Include="MultiIndexMap.hpp" />
     <ClCompile Include="Result.cpp" />
     <ClInclude Include="Molecule.hpp" />
@@ -302,8 +305,6 @@
     <ClInclude Include="PVector.hpp" />
     <ClInclude Include="Query.hpp" />
     <ClInclude Include="Reactable.hpp" />
-    <ClInclude Include="ReactableFactory.hpp" />
-    <ClInclude Include="Reaction.hpp" />
     <ClInclude Include="ReactionData.hpp" />
     <ClInclude Include="ReactionDataTable.hpp" />
     <ClInclude Include="Reactor.hpp" />

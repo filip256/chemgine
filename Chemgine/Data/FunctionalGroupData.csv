@@ -1,9 +1,11 @@
 Id,SMILES,Name
 201,ROC,methoxy
 202,ROCC,ethoxy
-203,MeOC,methoxide
 204,RC,methyl
 205,RN(R)R,amine
 206,O=C(R)O,carboxylic acid
 207,O=C(R)OR,ester
 208,OR,alcohol
+211,RC=C,alkene
+212,ROR,ether
+213,RCC,ethyl

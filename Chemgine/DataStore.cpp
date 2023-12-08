@@ -38,6 +38,12 @@ DataStore& DataStore::loadReactionsData(const std::string& path)
 	return *this;
 }
 
+DataStore& DataStore::loadApproximatorsData(const std::string& path)
+{
+	approximators.loadFromFile(path);
+	return *this;
+}
+
 DataStore& DataStore::loadLabwareData(const std::string& path)
 {
 	labware.loadFromFile(path);

@@ -60,10 +60,10 @@ bool FunctionalGroupDataTable::loadFromFile(const std::string& path)
 	return true;
 }
 
-size_t FunctionalGroupDataTable::findFirst(const std::string& smiles) const
+size_t FunctionalGroupDataTable::findFirst(const MolecularStructure& structure) const
 {
 	for (size_t i = 0; i < table.size(); ++i)
-		if (table[i].getStructure() == smiles)
+		if (table[i].getStructure() == structure)
 			return i;
 
 	return npos;

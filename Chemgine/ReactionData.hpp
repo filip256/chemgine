@@ -6,24 +6,23 @@
 #include "Reactable.hpp"
 #include "PairHash.hpp"
 #include "Molecule.hpp"
+#include "Amount.hpp"
 
 typedef uint16_t ReactionIdType;
 
 class ReactionData
 {
 private:
-	const ReactionIdType id;
-	const std::string name;
-	std::vector<const Reactable*> reactants;
-	std::vector<const Reactable*> products;
+	std::vector<Reactable> reactants;
+	std::vector<Reactable> products;
 	std::unordered_map<std::pair<size_t, c_size>, std::pair<size_t, c_size>, PairHash> componentMapping;
 
-	static std::vector<const Reactable*> flatten(
-		const std::vector<std::pair<const Reactable*, uint8_t>>& list);
+	static std::vector<Reactable> flatten(
+		const std::vector<std::pair<Reactable, uint8_t>>& list);
 
 	static bool balance(
-		std::vector<std::pair<const Reactable*, uint8_t>>& reactants,
-		std::vector<std::pair<const Reactable*, uint8_t>>& products);
+		std::vector<std::pair<Reactable, uint8_t>>& reactants,
+		std::vector<std::pair<Reactable, uint8_t>>& products);
 
 
 	void enumerateReactantPairs(
@@ -48,23 +47,33 @@ private:
 
 
 public:
+	const ReactionIdType id;
+	const Amount<Unit::MOLE_PER_SECOND> baseSpeed;
+	const Amount<Unit::CELSIUS> baseTemperature;
+	const std::string name;
+
 	ReactionData(
 		const ReactionIdType id,
 		const std::string& name,
-		const std::vector<std::pair<const Reactable*, uint8_t>>& reactants,
-		const std::vector<std::pair<const Reactable*, uint8_t>>& products
+		const std::vector<std::pair<Reactable, uint8_t>>& reactants,
+		const std::vector<std::pair<Reactable, uint8_t>>& products,
+		const Amount<Unit::MOLE_PER_SECOND> baseSpeed,
+		const Amount<Unit::CELSIUS> baseTemperature
 	) noexcept;
 
 	ReactionData(const ReactionData&) = delete;
 	ReactionData(ReactionData&&) = default;
-	~ReactionData() noexcept;
 
 	bool hasAsReactant(const Molecule& molecule) const;
 
-	void foo(const std::vector<Molecule>& molecules) const;
+	/// <summary>
+	/// If the given vector of molecules matches the reactant list, it returns the resulting concrete
+	/// products, otherwise it returns an empty vector.
+	/// </summary>
+	std::vector<Molecule> generateConcreteProducts(const std::vector<Molecule>& molecules) const;
 
-	const std::vector<const Reactable*>& getReactants() const;
-	const std::vector<const Reactable*>& getProducts() const;
+	const std::vector<Reactable>& getReactants() const;
+	const std::vector<Reactable>& getProducts() const;
 
 
 	friend class ReactionDataTable;

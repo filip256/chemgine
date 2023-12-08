@@ -1,6 +1,8 @@
 #pragma once
 
-enum BondType
+#include <cstdint>
+
+enum BondType : uint8_t
 {
     NONE,
     NO_BOND,

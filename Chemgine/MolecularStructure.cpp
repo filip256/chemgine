@@ -26,7 +26,7 @@ MolecularStructure::MolecularStructure(const std::string& serialized, const bool
 }
 
 MolecularStructure::MolecularStructure(const MolecularStructure& other) noexcept :
-    hydrogenCount(other.hydrogenCount),
+    impliedHydrogenCount(other.impliedHydrogenCount),
     bonds(other.bonds.size())
 {
     this->components.reserve(other.components.size());
@@ -41,6 +41,13 @@ MolecularStructure::MolecularStructure(const MolecularStructure& other) noexcept
     }
 }
 
+MolecularStructure::MolecularStructure(const BaseComponent& component) noexcept:
+    impliedHydrogenCount(component.data().valence)
+{
+    components.emplace_back(component.clone());
+    bonds.emplace_back();
+}
+
 MolecularStructure::~MolecularStructure()
 {
     clear();
@@ -49,6 +56,12 @@ MolecularStructure::~MolecularStructure()
 bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 {
     clear();
+
+    if (smiles == "HH") // the only purely virtual molecule
+    {
+        impliedHydrogenCount = 2;
+        return true;
+    }
 
     std::unordered_map<uint8_t, c_size> rings;
     std::stack<c_size> branches;
@@ -197,18 +210,17 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
         return false;
     }
 
-    const auto hCount = getHCount();
-    if(hydrogenCount == -1)
+    const auto hCount = countImpliedHydrogens();
+    if(hCount == -1)
     {
         Logger::log("Valence of a component was exceeded.", LogType::BAD);
         clear();
         return false;
     }
-    hydrogenCount = hCount;
+    impliedHydrogenCount = hCount;
 
     return true;
 }
-
 
 void MolecularStructure::normalize()
 {
@@ -281,11 +293,14 @@ void MolecularStructure::normalize()
     }
 }
 
-int16_t MolecularStructure::getHCount() const
+int16_t MolecularStructure::countImpliedHydrogens() const
 {
     int16_t hCount = 0;
     for (c_size i = 0; i < components.size(); ++i)
     {
+        if (components[i]->isRadicalType())
+            continue;
+
         auto v = components[i]->data().valence;
         if (bonds[i].size() > v)
             return -1;
@@ -312,9 +327,9 @@ const BaseComponent* MolecularStructure::getComponent(const c_size idx) const
     return components[idx];
 }
 
-c_size MolecularStructure::getHydrogenCount() const
+c_size MolecularStructure::getImpliedHydrogenCount() const
 {
-    return hydrogenCount;
+    return impliedHydrogenCount;
 }
 
 double MolecularStructure::getMolarMass() const
@@ -324,26 +339,23 @@ double MolecularStructure::getMolarMass() const
     {
         cnt += components[i]->data().weight;
     }
-    cnt += hydrogenCount * Atom('H').data().weight;
+    cnt += impliedHydrogenCount * Atom('H').data().weight;
     return cnt;
 }
 
 c_size MolecularStructure::getRadicalAtomsCount() const
 {
     c_size cnt = 0;
-    for (c_size i = 0; i < components.size(); ++i)
-        if (components[i]->isRadicalType())
-            ++cnt;
+    c_size i = components.size();
+    while (i-- > 0 && components[i]->isRadicalType())
+        ++cnt;
+
     return cnt;
 }
 
 bool MolecularStructure::isComplete() const
 {
-    // it does not search sub components
-    for (c_size i = 0; i < components.size(); ++i)
-        if (components[i]->isRadicalType())
-                return false;
-    return true;
+    return components.empty () || !components.back()->isRadicalType();
 }
 
 std::unordered_map<ComponentIdType, c_size> MolecularStructure::getComponentCountMap() const
@@ -357,14 +369,14 @@ std::unordered_map<ComponentIdType, c_size> MolecularStructure::getComponentCoun
             result.emplace(std::move(std::make_pair(components[i]->getId(), 1)));
     }
     
-    if (hydrogenCount == 0)
+    if (impliedHydrogenCount == 0)
         return result;
 
     const auto hId = Atom("H").getId();
     if (result.contains(hId))
-        result[hId] += hydrogenCount;
+        result[hId] += impliedHydrogenCount;
     else
-        result.emplace(std::move(std::make_pair(hId, hydrogenCount)));
+        result.emplace(std::move(std::make_pair(hId, impliedHydrogenCount)));
 
     return result;
 }
@@ -422,6 +434,11 @@ bool MolecularStructure::isConnected() const
     return true;
 }
 
+bool MolecularStructure::isVirtualHydrogen() const
+{
+    return components.size() == 0 && impliedHydrogenCount == 2;
+}
+
 bool MolecularStructure::areAdjacent(const c_size idxA, const c_size idxB) const
 {
     for (c_size i = 0; i < bonds[idxA].size(); ++i)
@@ -462,15 +479,15 @@ void MolecularStructure::rPrint(
                 buffer[y][x + 1] = hC;
                 rPrint(buffer, x + 2, y, bonds[c][i]->other, visited);
             }
-            else if (buffer[y - 2][x] == ' ')
-            {
-                buffer[y - 1][x] = vC;
-                rPrint(buffer, x, y - 2, bonds[c][i]->other, visited);
-            }
             else if (buffer[y][x - 2] == ' ')
             {
                 buffer[y][x - 1] = hC;
                 rPrint(buffer, x - 2, y, bonds[c][i]->other, visited);
+            }
+            else if (buffer[y - 2][x] == ' ')
+            {
+                buffer[y - 1][x] = vC;
+                rPrint(buffer, x, y - 2, bonds[c][i]->other, visited);
             }
             else if (buffer[y + 2][x] == ' ')
             {
@@ -485,12 +502,15 @@ void MolecularStructure::rPrint(
 std::string MolecularStructure::print(const size_t maxWidth, const size_t maxHeight) const
 {
     if (components.empty())
+    {
+        if (isVirtualHydrogen())
+            return std::string(maxWidth / 4, ' ') + "HÄH\n";
         return "";
+    }
 
 	std::vector<std::string> buffer(maxHeight, std::string(maxWidth, ' '));
-    size_t x = buffer[0].size() / 4, y = buffer.size() / 4;
     std::vector<uint8_t> visited(components.size(), false);
-    rPrint(buffer, x, y, 0, visited);
+    rPrint(buffer, buffer[0].size() / 4, buffer.size() / 4, 0, visited);
 
     std::string str;
     size_t i = 0;
@@ -515,20 +535,12 @@ void MolecularStructure::clear()
         bonds.back().clear();
         bonds.pop_back();
     }
-    hydrogenCount = 0;
+    impliedHydrogenCount = 0;
+}
 
-    // for freeing memory
-    //while (components.empty() == false)
-    //{
-    //    while (bonds[components.size() - 1].empty() == false)
-    //    {
-    //        delete bonds[components.size() - 1].back();
-    //        bonds[components.size() - 1].pop_back();
-    //    }
-    //    delete components.back();
-    //    components.pop_back();
-    //}
-    //hydrogenCount = 0;
+MolecularStructure MolecularStructure::createCopy() const
+{
+    return MolecularStructure(*this);
 }
 
 bool MolecularStructure::areMatching(
@@ -805,16 +817,26 @@ std::pair<std::unordered_map<c_size, c_size>, uint8_t> MolecularStructure::maxim
 }
 
 
+void MolecularStructure::recountImpliedHydrogens()
+{
+    impliedHydrogenCount = countImpliedHydrogens();
+}
+
 void MolecularStructure::copyBranch(
     MolecularStructure& destination,
     const MolecularStructure& source,
     const c_size sourceIdx,
     std::unordered_map<c_size, c_size>& sdMapping,
-    bool renormalize)
+    bool renormalize,
+    const std::unordered_set<c_size>& sourceIgnore)
 {
+    // overwrites first matching radical atom
+    if (destination.components[sdMapping[sourceIdx]]->isRadicalType())
+        destination.components.replace(sdMapping[sourceIdx], source.components[sourceIdx]->clone());
+
     std::queue<c_size> queue;
     for (c_size i = 0; i < source.bonds[sourceIdx].size(); ++i)
-        if(sdMapping.contains(source.bonds[sourceIdx][i]->other) == false)
+        if(sdMapping.contains(source.bonds[sourceIdx][i]->other) == false && sourceIgnore.contains(source.bonds[sourceIdx][i]->other) == false)
             queue.push(source.bonds[sourceIdx][i]->other);
 
     if (queue.empty())
@@ -845,7 +867,7 @@ void MolecularStructure::copyBranch(
                     source.bonds[c][i]->type)
                 );
             }
-            else
+            else if(sourceIgnore.contains(source.bonds[c][i]->other) == false)
             {
                 queue.push(source.bonds[c][i]->other);
             }
@@ -855,6 +877,7 @@ void MolecularStructure::copyBranch(
     if (renormalize)
     {
         destination.normalize();
+        destination.recountImpliedHydrogens();
         sdMapping.clear();
     }
 }
@@ -862,7 +885,8 @@ void MolecularStructure::copyBranch(
 MolecularStructure MolecularStructure::addSubstituents(
     const MolecularStructure& pattern,
     const MolecularStructure& instance,
-    std::unordered_map<c_size, c_size>& ipMap)
+    std::unordered_map<c_size, c_size>& ipMap,
+    bool renormalize)
 {
     MolecularStructure result(pattern);
 
@@ -870,15 +894,20 @@ MolecularStructure MolecularStructure::addSubstituents(
     {
         copyBranch(result, instance, p.first, ipMap, false);
     }
-    result.normalize();
+
+    if (renormalize)
+    {
+        result.normalize();
+        result.recountImpliedHydrogens();
+        ipMap.clear();
+    }
 
     return result;
 }
 
-
 bool MolecularStructure::operator==(const MolecularStructure& other) const
 {
-    if (this->componentCount() != other.componentCount() || this->hydrogenCount != other.hydrogenCount)
+    if (this->componentCount() != other.componentCount() || this->impliedHydrogenCount != other.impliedHydrogenCount)
         return false;
 
     const auto mapping = this->mapTo(other, false);
@@ -887,7 +916,7 @@ bool MolecularStructure::operator==(const MolecularStructure& other) const
 
 bool MolecularStructure::operator!=(const MolecularStructure& other) const
 {
-    if (this->componentCount() != other.componentCount() || this->hydrogenCount != other.hydrogenCount)
+    if (this->componentCount() != other.componentCount() || this->impliedHydrogenCount != other.impliedHydrogenCount)
         return true;
 
     const auto mapping = this->mapTo(other, false);
@@ -1101,12 +1130,12 @@ bool MolecularStructure::deserialize(const std::string& str)
         return false;
     }
 
-    const auto hCount = getHCount();
-    if (hydrogenCount == -1)
+    const auto hCount = countImpliedHydrogens();
+    if (hCount == -1)
     {
         clear();
         return false;
     }
-    hydrogenCount = hCount;
+    impliedHydrogenCount = hCount;
     return true;
 }

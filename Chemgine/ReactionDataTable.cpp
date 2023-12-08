@@ -1,7 +1,6 @@
 #include "ReactionDataTable.hpp"
 #include "DataHelpers.hpp"
 #include "Logger.hpp"
-#include "ReactableFactory.hpp"
 #include "Molecule.hpp"
 
 #include <fstream>
@@ -59,13 +58,12 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			continue;
 		}
 
-		const ReactableFactory factory;
-		std::vector<std::pair<const Reactable*, uint8_t>>reactantIds;
+		std::vector<std::pair<Reactable, uint8_t>>reactantIds;
 		reactantIds.reserve(reactants.size());
 		for (size_t i = 0; i < reactants.size(); ++i)
 		{
-			const auto r = factory.get(reactants[i]);
-			if (r == nullptr)
+			const auto r = Reactable::get(reactants[i]);
+			if (r.getId() == 0)
 			{
 				Logger::log("Undefined reactant '" + reactants[i] + "' in reaction with id " + std::to_string(id.result) + " skipped.", LogType::BAD);
 				continue; // TODO: add unknown into molecules and predict properties
@@ -73,12 +71,12 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			reactantIds.emplace_back(std::make_pair(r, 0));
 		}
 
-		std::vector<std::pair<const Reactable*, uint8_t>>productIds;
+		std::vector<std::pair<Reactable, uint8_t>>productIds;
 		productIds.reserve(products.size());
 		for (size_t i = 0; i < products.size(); ++i)
 		{
-			const auto r = factory.get(products[i]);
-			if (r == 0)
+			const auto r = Reactable::get(products[i]);
+			if (r.getId() == 0)
 			{
 				Logger::log("Undefined product '" + products[i] + "' in reaction with id " + std::to_string(id.result) + " skipped.", LogType::BAD);
 				continue; // TODO: add unknown into molecules and predict properties
@@ -92,8 +90,43 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			continue;
 		}
 
+		// speed
+		const auto speedLine = DataHelpers::parseList(line[5], '@', true);
+		if (speedLine.size() != 2 || speedLine[0].empty() || speedLine[1].empty())
+		{
+			Logger::log("Reaction speed for the reaction with id " + std::to_string(id.result) + " is ill-defined. Skipped.", LogType::BAD);
+			continue;
+		}
+		const auto moles = DataHelpers::toUDouble(speedLine[0]);
+		if(moles.status == 0)
+		{
+			Logger::log("Reaction speed for the reaction with id " + std::to_string(id.result) + " is ill-defined. Skipped.", LogType::BAD);
+			continue;
+		}
 
-		ReactionData data(id.result, line[1], reactantIds, productIds);
+		Amount<Unit::CELSIUS> baseTemp = 0;
+		const auto temp = DataHelpers::toDouble(speedLine[1].substr(0, speedLine[1].size() - 1));
+		if (temp.status == 0)
+		{
+			Logger::log("Reaction speed for the reaction with id " + std::to_string(id.result) + " is ill-defined. Skipped.", LogType::BAD);
+			continue;
+		}
+
+		if (speedLine[1].ends_with('c') || speedLine[1].ends_with('C'))
+			baseTemp = temp.result;
+		else if (speedLine[1].ends_with('k') || speedLine[1].ends_with('K'))
+			baseTemp = Amount<Unit::KELVIN>(temp.result);
+		else if(speedLine[1].ends_with('f') || speedLine[1].ends_with('F'))
+			baseTemp = Amount<Unit::FAHRENHEIT>(temp.result);
+		else
+		{
+			Logger::log("Reaction speed for the reaction with id " + std::to_string(id.result) + " is ill-defined. Skipped.", LogType::BAD);
+			continue;
+		}
+
+
+		// create
+		ReactionData data(id.result, line[1], reactantIds, productIds, Amount<Unit::MOLE_PER_SECOND>(moles.result / 1.0), baseTemp);
 		if (data.mapReactantsToProducts() == false)
 		{
 			Logger::log("Reaction with id " + std::to_string(id.result) + " is not a valid reaction.", LogType::BAD);
@@ -116,8 +149,14 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 	return true;
 }
 
-void ReactionDataTable::findOccuringReactions(const std::vector<Molecule>& molecules) const
+std::unordered_set<ConcreteReaction, ConcreteReactionHash> ReactionDataTable::findOccuringReactions(const std::vector<Molecule>& molecules) const
 {
+	std::unordered_set<ConcreteReaction, ConcreteReactionHash> result;
 	for (size_t i = 0; i < table.size(); ++i)
-		table[i].foo(molecules);
+	{
+		const auto& p = table[i].generateConcreteProducts(molecules);
+		if (p.size())
+			result.insert(ConcreteReaction(table[i], molecules, p));
+	}
+	return result;
 }

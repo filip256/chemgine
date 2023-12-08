@@ -13,7 +13,7 @@
 class MolecularStructure
 {
 private:
-    uint16_t hydrogenCount = 0;
+    uint16_t impliedHydrogenCount = 0;
     PVector<const BaseComponent, c_size> components;
     std::vector<PVector<Bond, c_size>> bonds;
     //std::vector<const BaseComponent*> components;
@@ -28,21 +28,13 @@ private:
 
     std::string rToSMILES(const c_size c, c_size prev, std::vector<uint8_t>& visited, uint8_t& cycleCount) const;
 
-    /// <summary>
-    /// Normalizes the structure by ordering components and bonds in decreasing order of
-    /// component precedence.
-    /// Normalization simplifies algorithms and speeds up comparison.
-    /// Complexity: O(n_comps * n_bonds * n_bonds)
-    /// </summary>
-    void normalize();
 
     /// <summary>
     /// Returns the number of required hydrogens in order to complete the molecule.
     /// If the valences of the components aren't respected it returns -1.
     /// Complexity: O(n_comps * n_bonds)
     /// </summary>
-    /// <returns></returns>
-    int16_t getHCount() const;
+    int16_t countImpliedHydrogens() const;
 
     // basic matching
     static bool areMatching(
@@ -94,6 +86,7 @@ private:
     /// <summary>
     /// Checks if the connectivity of pattern is preserved in the target.
     /// Complexity: O(n*m*b)
+    /// </summary>
     static bool checkConnectivity(
         const MolecularStructure& target,
         const MolecularStructure& pattern,
@@ -106,8 +99,19 @@ public:
 
     MolecularStructure(const std::string& smiles);
     MolecularStructure(const std::string& serialized, const bool renormalize);
+    MolecularStructure(const BaseComponent& component) noexcept;
     MolecularStructure(MolecularStructure&& structure) = default;
     ~MolecularStructure() noexcept;
+
+    MolecularStructure& operator=(MolecularStructure&&) = default;
+
+    /// <summary>
+    /// Normalizes the structure by ordering components and bonds in decreasing order of
+    /// component precedence.
+    /// Normalization simplifies algorithms and speeds up comparison.
+    /// Complexity: O(n_comps * n_bonds * n_bonds)
+    /// </summary>
+    void normalize();
 
     const BaseComponent* getComponent(const c_size idx) const;
     std::string print(const size_t maxWidth = 100, const size_t maxHeight = 50) const;
@@ -118,29 +122,29 @@ public:
     /// <summary>
     /// Complexity: O(1)
     /// </summary>
-    /// <returns></returns>
-    c_size getHydrogenCount() const;
+    c_size getImpliedHydrogenCount() const;
 
     /// <summary>
     /// Complexity: O(n)
+    /// #Requires normalization
     /// </summary>
-    /// <returns></returns>
     c_size getRadicalAtomsCount() const;
 
     /// <summary>
     /// Complexity: O(n)
     /// </summary>
-    /// <returns></returns>
     double getMolarMass() const;
 
     /// <summary>
     /// Checks if the molecule contains at least one radical type. 
-    /// Complexity: O(n)
+    /// Complexity: O(1)
+    /// #Requires normalization
     /// </summary>
     /// <returns></returns>
     bool isComplete() const;
 
     /// <summary>
+    /// Returns a map representing a histrogram of all the components in this structure.
     /// Complexity: O(n)
     /// </summary>
     std::unordered_map<ComponentIdType, c_size> getComponentCountMap() const;
@@ -161,6 +165,11 @@ public:
     bool isConnected() const;
 
     /// <summary>
+    /// Returns true if this is a pure virtual H2 molecule.
+    /// </summary>
+    bool isVirtualHydrogen() const;
+
+    /// <summary>
     /// Checks if the two components are adjacent.
     /// Complexity: O(n)
     /// </summary>
@@ -175,6 +184,7 @@ public:
     /// <returns></returns>
     uint8_t getDegreeOf(const c_size idx) const;
 
+    MolecularStructure createCopy() const;
 
     /// <summary>
     /// Returns the first found mapping between the atoms of the pattern and the atoms of *this.
@@ -193,19 +203,22 @@ public:
         const std::unordered_set<c_size>& patternIgnore = std::unordered_set<c_size>()
     ) const;
 
+    void recountImpliedHydrogens();
+
     /// <summary>
     /// Copies the branch starting at sourceIdx from source into the destination, using the mapping
     /// in order to avoid copying unwanted branches and resolve cycles.
     /// </summary>
     /// <param name="sourceIdx">: the common component between the destination and source, where the branch starts</param>
     /// <param name="sdMapping">: a map between the components of the source and those of the destination.</param>
-    /// <param name="renormalize">: if true, normalization occurs after the copy is made and sdMapping is invalidated. </param>
+    /// <param name="renormalize">: if true, normalization and implied hydrogen recount occurs after the copy is made and sdMapping is invalidated. </param>
     static void copyBranch(
         MolecularStructure& destination,
         const MolecularStructure& source,
         const c_size sourceIdx,
         std::unordered_map<c_size, c_size>& sdMapping,
-        bool renormalize = true);
+        bool renormalize = true,
+        const std::unordered_set<c_size>& sourceIgnore = std::unordered_set<c_size>());
 
     /// <summary>
     /// Returns a molecule derived from pattern by adding all the substituents of instance that start from common components.
@@ -216,7 +229,8 @@ public:
     static MolecularStructure addSubstituents(
         const MolecularStructure& pattern,
         const MolecularStructure& instance,
-        std::unordered_map<c_size, c_size>& ipMap);
+        std::unordered_map<c_size, c_size>& ipMap,
+        bool renormalize = true);
 
     /// <summary>
     /// Returns true iff both structures represent the exact same molecule.

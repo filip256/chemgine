@@ -12,5 +12,5 @@ public:
 
 	bool loadFromFile(const std::string& path);
 
-	size_t findFirst(const std::string& smiles) const;
+	size_t findFirst(const MolecularStructure& structure) const;
 };
