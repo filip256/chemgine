@@ -5,12 +5,14 @@
 DataStoreAccessor Molecule::dataAccessor = DataStoreAccessor();
 
 Molecule::Molecule(const MoleculeIdType id) noexcept:
-	id(id)
+	id(id),
+	molarMass(dataAccessor.get().molecules.at(id).getStructure().getMolarMass())
 {
 	dataAccessor.crashIfUninitialized();
 }
 
 Molecule::Molecule(MolecularStructure&& structure) noexcept:
+	molarMass(structure.getMolarMass()),
 	id(dataAccessor.getSafe().molecules.findOrAdd(std::move(structure)))
 {
 }
@@ -28,6 +30,11 @@ void Molecule::setDataStore(const DataStore& dataStore)
 MoleculeIdType Molecule::getId() const
 {
 	return id;
+}
+
+Amount<Unit::GRAM_PER_MOLE> Molecule::getMolarMass() const
+{
+	return molarMass;
 }
 
 const OrganicMoleculeData& Molecule::data() const

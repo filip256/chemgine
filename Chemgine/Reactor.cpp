@@ -23,7 +23,12 @@ void Reactor::setDataStore(const DataStore& dataStore)
 
 void Reactor::removeNegligibles()
 {
-	std::erase_if(content, [](const auto& r) { return r.amount < Constants::MOLAR_EXISTANCE_THRESHOLD; });
+	for(const auto& r : content)
+		if (r.amount < Constants::MOLAR_EXISTANCE_THRESHOLD)
+		{
+			Logger::log("empty");
+		}
+	const size_t c = std::erase_if(content, [](const auto& r) { return r.amount < Constants::MOLAR_EXISTANCE_THRESHOLD; });
 }
 
 void Reactor::findNewReactions()
@@ -54,24 +59,41 @@ void Reactor::runReactions()
 	const auto& reactionSpeedApproximator = dataAccessor.get().approximators.at(101);
 	for (const auto& r : cachedReactions)
 	{
-		double speedCoef = 
-			r.getData().baseSpeed.asStd() *
+		auto speedCoef = 
+			r.getData().baseSpeed *
 			reactionSpeedApproximator.execute((temperature - r.getData().baseTemperature).asStd());
 		
+		if (speedCoef == 0)
+			continue;
+
 		// if there isn't enough of a reactant, adjust the speed coefficient
 		for (const auto& i : r.getReactants())
 		{
 			const auto a = getAmountOf(i);
-			if (a < i.amount * speedCoef)
-				speedCoef = (a / i.amount).asStd() * 0.8; // 0.8 = low concentration speed loss factor
+			if (a < i.amount * speedCoef.asStd())
+				speedCoef = (a / i.amount).asStd() * 1.0; // 0.8 = low concentration speed loss factor
 		}
 
+		if (speedCoef == 0)
+			continue;
+
 		for (const auto& i : r.getReactants())
-			add(Reactant(i.molecule, i.layer, i.amount * speedCoef * -1));
+			add(Reactant(i.molecule, i.layer, i.amount * speedCoef.asStd() * -1));
 		for (const auto& i : r.getProducts())
-			add(Reactant(i.molecule, i.layer, i.amount * speedCoef));
+			add(Reactant(i.molecule, i.layer, i.amount * speedCoef.asStd()));
 	}
-}   
+}  
+
+void Reactor::checkUnknownLayers()
+{
+	for (auto r : content)
+		if (r.layer == LayerType::UNKNOWN)
+		{
+			r.layer = LayerType::POLAR;
+			layerVolumes[toIndex(LayerType::POLAR)] +=
+				r.amount.to<Unit::LITER>(r.molecule.getMolarMass(), Amount<Unit::GRAM_PER_LITER>(1.0));
+		}
+}
 
 void Reactor::add(Reactor& other)
 {
@@ -106,6 +128,10 @@ void Reactor::add(Reactor& other, const double ratio)
 
 void Reactor::add(const Reactant& reactant)
 {
+	if (isRealLayer(reactant.layer))
+		layerVolumes[toIndex(reactant.layer)] +=
+			reactant.amount.to<Unit::LITER>(reactant.molecule.getMolarMass(), Amount<Unit::GRAM_PER_LITER>(1.0));
+
 	const auto temp = content.emplace(reactant);
 	if (temp.second == false)
 		temp.first->amount += reactant.amount;
@@ -115,7 +141,7 @@ void Reactor::add(const Reactant& reactant)
 
 void Reactor::add(const Molecule& molecule, const Amount<Unit::MOLE> amount)
 {
-	const auto temp = content.emplace(molecule, LayerType::POLAR, amount);
+	const auto temp = content.emplace(molecule, LayerType::UNKNOWN, amount);
 	if (temp.second == false)
 		temp.first->amount += amount;
 	else
@@ -133,4 +159,5 @@ void Reactor::tick()
 	removeNegligibles();
 	findNewReactions();
 	runReactions();
+	checkUnknownLayers();
 }

@@ -273,6 +273,7 @@ std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<M
 	for (size_t i = 0; i < concreteProducts.size(); ++i)
 	{
 		concreteProducts[i].normalize();
+		concreteProducts[i].recountImpliedHydrogens();
 		result.emplace_back(std::move(concreteProducts[i]));
 	}
 	return result;

@@ -4,11 +4,12 @@ template<class T>
 class Value
 {
 protected:
-	T value;
+	T value = 0.0;
 
 public:
 	static const T epsilon;
 
+	constexpr Value() = default;
 	constexpr Value(const T value) noexcept;
 
 	Value<T>& operator=(const Value<T>& other);

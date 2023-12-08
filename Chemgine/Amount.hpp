@@ -13,6 +13,7 @@ template<Unit UnitT>
 class Amount : public Value<double>
 {
 public:
+	constexpr inline Amount() = default;
 	constexpr inline Amount(const double value) noexcept;
 	constexpr inline Amount(const Value<double> value) noexcept;
 	constexpr inline Amount(const Amount<UnitT>&) = default;
@@ -27,15 +28,18 @@ public:
 	constexpr Amount<UnitT> operator*(const Amount<UnitT> other) const noexcept;
 	constexpr Amount<UnitT> operator/(const Amount<UnitT> other) const noexcept;
 
+	constexpr Amount<UnitT> operator+=(const Amount<UnitT> other) noexcept;
+	constexpr Amount<UnitT> operator-=(const Amount<UnitT> other) noexcept;
+
 	constexpr inline double asKilo() const noexcept;
 	constexpr inline double asStd() const noexcept;
 	constexpr inline double asMilli() const noexcept;
 	constexpr inline double asMicro() const noexcept;
 
-	template<Unit OUnitT>
-	constexpr inline Amount<OUnitT> to(const double) const noexcept = delete;
-	template<Unit OUnitT>
-	constexpr inline Amount<OUnitT> to(const double, const double) const noexcept = delete;
+	template<Unit OUnitT, Unit FactT1>
+	constexpr inline Amount<OUnitT> to(const Amount<FactT1>) const noexcept = delete;
+	template<Unit OUnitT, Unit FactT1, Unit FactT2>
+	constexpr inline Amount<OUnitT> to(const Amount<FactT1>, const Amount<FactT2>) const noexcept = delete;
 
 	constexpr inline Unit unit() const noexcept;
 	static inline std::string unitName() noexcept = delete;
@@ -74,6 +78,20 @@ template<Unit UnitT>
 constexpr Amount<UnitT> Amount<UnitT>::operator/(const Amount<UnitT> other) const noexcept
 {
 	return Amount<UnitT>(this->value / other.value);
+}
+
+template <Unit UnitT>
+constexpr Amount<UnitT> Amount<UnitT>::operator+=(const Amount<UnitT> other) noexcept
+{
+	value += other.value;
+	return *this;
+}
+
+template <Unit UnitT>
+constexpr Amount<UnitT> Amount<UnitT>::operator-=(const Amount<UnitT> other) noexcept
+{
+	value -= other.value;
+	return *this;
 }
 
 template<Unit UnitT>
@@ -138,7 +156,7 @@ constexpr Amount<Unit::CUBIC_METER>::Amount(const Amount<Unit::LITER>& liters) n
 
 template<>
 template<>
-constexpr Amount<Unit::OF_DENSITY>::Amount(const Amount<Unit::GRAM>& grams, const Amount<Unit::LITER>& liters) noexcept :
+constexpr Amount<Unit::GRAM_PER_LITER>::Amount(const Amount<Unit::GRAM>& grams, const Amount<Unit::LITER>& liters) noexcept :
 	Value<double>(grams.asStd() / liters.asMilli())
 {}
 
@@ -195,29 +213,29 @@ constexpr Amount<Unit::TORR>::Amount(const Amount<Unit::PASCAL>& p) noexcept :
 
 template<>
 template<>
-constexpr Amount<Unit::LITER> Amount<Unit::GRAM>::to(const double density) const noexcept
+constexpr Amount<Unit::LITER> Amount<Unit::GRAM>::to(const Amount<Unit::GRAM_PER_LITER> density) const noexcept
 {
-	return value * density;
+	return value * density.asStd();
 }
 template<>
 template<>
-constexpr Amount<Unit::GRAM> Amount<Unit::LITER>::to(const double density) const noexcept
+constexpr Amount<Unit::GRAM> Amount<Unit::LITER>::to(const Amount<Unit::GRAM_PER_LITER> density) const noexcept
 {
-	return value / density;
+	return value / density.asStd();
 }
 
 
 template<>
 template<>
-constexpr Amount<Unit::GRAM> Amount<Unit::MOLE>::to(const double molarMass) const noexcept
+constexpr Amount<Unit::GRAM> Amount<Unit::MOLE>::to(const Amount<Unit::GRAM_PER_MOLE> molarMass) const noexcept
 {
-	return value * molarMass;
+	return value * molarMass.asStd();
 }
 template<>
 template<>
-constexpr Amount<Unit::MOLE> Amount<Unit::GRAM>::to(const double molarMass) const noexcept
+constexpr Amount<Unit::MOLE> Amount<Unit::GRAM>::to(const Amount<Unit::GRAM_PER_MOLE> molarMass) const noexcept
 {
-	return value / molarMass;
+	return value / molarMass.asStd();
 }
 
 
@@ -227,13 +245,13 @@ constexpr Amount<Unit::MOLE> Amount<Unit::GRAM>::to(const double molarMass) cons
 
 template<>
 template<>
-constexpr Amount<Unit::LITER> Amount<Unit::MOLE>::to(const double molarMass, const double density) const noexcept
+constexpr Amount<Unit::LITER> Amount<Unit::MOLE>::to(const Amount<Unit::GRAM_PER_MOLE> molarMass, const Amount<Unit::GRAM_PER_LITER> density) const noexcept
 {
 	return this->to<Unit::GRAM>(molarMass).to<Unit::LITER>(density);
 }
 template<>
 template<>
-constexpr Amount<Unit::MOLE> Amount<Unit::LITER>::to(const double molarMass, const double density) const noexcept
+constexpr Amount<Unit::MOLE> Amount<Unit::LITER>::to(const Amount<Unit::GRAM_PER_MOLE> molarMass, const Amount<Unit::GRAM_PER_LITER> density) const noexcept
 {
 	return this->to<Unit::GRAM>(density).to<Unit::MOLE>(molarMass);
 }

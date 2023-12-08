@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_set>
+#include <array>
 
 #include "DataStoreAccessor.hpp"
 #include "ConcreteReaction.hpp"
@@ -12,6 +13,7 @@ private:
 	double stirSpeed = 0.0;
 	Amount<Unit::CELSIUS> temperature;
 	Amount<Unit::TORR> pressure;
+	std::array<Amount<Unit::LITER>, REAL_LAYER_COUNT> layerVolumes;
 
 	std::unordered_set<ConcreteReaction, ConcreteReactionHash> cachedReactions;
 	std::unordered_set<Reactant, ReactantHash> content;
@@ -21,6 +23,7 @@ private:
 	void removeNegligibles();
 	void findNewReactions();
 	void runReactions();
+	void checkUnknownLayers();
 
 public:
 	Reactor(

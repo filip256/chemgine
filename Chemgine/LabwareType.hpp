@@ -1,6 +1,8 @@
 #pragma once
 
-enum class LabwareType
+#include <cstdint>
+
+enum class LabwareType : uint8_t
 {
 	NONE,
 	FLASK,

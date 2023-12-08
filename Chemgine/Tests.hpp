@@ -138,6 +138,11 @@ public:
 		setF.emplace_back(std::move(MolecularStructure("OCCC")));
 		res["addSub"].emplace_back(6);
 
+
+		setE.emplace_back(std::move(MolecularStructure("CC(=O)OR")));
+		setF.emplace_back(std::move(MolecularStructure("OCCC")));
+		res["addSub"].emplace_back(6);
+
 		setE.emplace_back(std::move(MolecularStructure("CCC(=O)O")));
 		setF.emplace_back(std::move(MolecularStructure("CC(=O)OCC")));
 		res["addSub"].emplace_back(7);
@@ -198,7 +203,8 @@ public:
 		for (size_t i = 0; i < setE.size(); ++i)
 		{
 			auto map = setF[i].maximalMapTo(setE[i]).first;
-			if (MolecularStructure::addSubstituents(setE[i], setF[i], map).componentCount() != res["addSub"][i])
+			const auto newMol = MolecularStructure::addSubstituents(setE[i], setF[i], map);
+			if (newMol.componentCount() != res["addSub"][i])
 			{
 				Logger::log("Test failed > MolecularStructure > addSubstituents > #" + std::to_string(i)
 					+ ": expected=" + std::to_string(res["addSub"][i]) + "\n"

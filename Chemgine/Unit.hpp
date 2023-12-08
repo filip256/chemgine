@@ -1,6 +1,6 @@
 #pragma once
 
-enum class Unit
+enum class Unit : uint16_t
 {
 	UNIT,
 	LITER,
@@ -18,7 +18,7 @@ enum class Unit
 	TORR,
 	PASCAL,
 
-	OF_DENSITY,
-
-	MOLE_PER_SECOND
+	MOLE_PER_SECOND,
+	GRAM_PER_MOLE,
+	GRAM_PER_LITER
 };

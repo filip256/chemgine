@@ -178,7 +178,7 @@ Tasks:
   DONE. Write molecule to smiles and cmiles algorithm and print to CSV files
   ?. Implement algorithm using BFS
 ---
-  1. Molecular structure improvements: isNormalized field (checks for req methods), implied hydrogen clarifications
+  DONE. Molecular structure improvements: isNormalized field (checks for req methods), implied hydrogen clarifications
 
 
 Possible optimizations:

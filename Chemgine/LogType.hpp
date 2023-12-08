@@ -1,6 +1,8 @@
 #pragma once
 
-enum class LogType
+#include <cstdint>
+
+enum class LogType : uint8_t
 {
 	NONE = 0,
 	FATAL = 1,

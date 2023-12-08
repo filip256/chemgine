@@ -1,6 +1,8 @@
 #pragma once
 
-enum class PortType
+#include <cstdint>
+
+enum class PortType : uint8_t
 {
 	NONE = 0,
 	SIMPLE = 1,

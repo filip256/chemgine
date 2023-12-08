@@ -13,7 +13,7 @@
 class MolecularStructure
 {
 private:
-    uint16_t hydrogenCount = 0;
+    uint16_t impliedHydrogenCount = 0;
     PVector<const BaseComponent, c_size> components;
     std::vector<PVector<Bond, c_size>> bonds;
     //std::vector<const BaseComponent*> components;
@@ -34,8 +34,7 @@ private:
     /// If the valences of the components aren't respected it returns -1.
     /// Complexity: O(n_comps * n_bonds)
     /// </summary>
-    /// <returns></returns>
-    int16_t getHCount() const;
+    int16_t countImpliedHydrogens() const;
 
     // basic matching
     static bool areMatching(
@@ -87,6 +86,7 @@ private:
     /// <summary>
     /// Checks if the connectivity of pattern is preserved in the target.
     /// Complexity: O(n*m*b)
+    /// </summary>
     static bool checkConnectivity(
         const MolecularStructure& target,
         const MolecularStructure& pattern,
@@ -122,30 +122,29 @@ public:
     /// <summary>
     /// Complexity: O(1)
     /// </summary>
-    /// <returns></returns>
-    c_size getHydrogenCount() const;
+    c_size getImpliedHydrogenCount() const;
 
     /// <summary>
     /// Complexity: O(n)
+    /// #Requires normalization
     /// </summary>
-    /// <returns></returns>
     c_size getRadicalAtomsCount() const;
 
     /// <summary>
     /// Complexity: O(n)
     /// </summary>
-    /// <returns></returns>
     double getMolarMass() const;
 
     /// <summary>
     /// Checks if the molecule contains at least one radical type. 
     /// Complexity: O(1)
-    /// Requires normalization
+    /// #Requires normalization
     /// </summary>
     /// <returns></returns>
     bool isComplete() const;
 
     /// <summary>
+    /// Returns a map representing a histrogram of all the components in this structure.
     /// Complexity: O(n)
     /// </summary>
     std::unordered_map<ComponentIdType, c_size> getComponentCountMap() const;
@@ -164,6 +163,10 @@ public:
 
     bool isCyclic() const;
     bool isConnected() const;
+
+    /// <summary>
+    /// Returns true if this is a pure virtual H2 molecule.
+    /// </summary>
     bool isVirtualHydrogen() const;
 
     /// <summary>
@@ -200,13 +203,15 @@ public:
         const std::unordered_set<c_size>& patternIgnore = std::unordered_set<c_size>()
     ) const;
 
+    void recountImpliedHydrogens();
+
     /// <summary>
     /// Copies the branch starting at sourceIdx from source into the destination, using the mapping
     /// in order to avoid copying unwanted branches and resolve cycles.
     /// </summary>
     /// <param name="sourceIdx">: the common component between the destination and source, where the branch starts</param>
     /// <param name="sdMapping">: a map between the components of the source and those of the destination.</param>
-    /// <param name="renormalize">: if true, normalization occurs after the copy is made and sdMapping is invalidated. </param>
+    /// <param name="renormalize">: if true, normalization and implied hydrogen recount occurs after the copy is made and sdMapping is invalidated. </param>
     static void copyBranch(
         MolecularStructure& destination,
         const MolecularStructure& source,
