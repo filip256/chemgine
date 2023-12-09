@@ -10,17 +10,8 @@
 class ReactionDataTable :
 	public DataTable<ReactionIdType, std::string, ReactionData>
 {
-private:
-	const FunctionalGroupDataTable& functionalGroups;
-	const BackboneDataTable& backbones;
-	const MoleculeDataTable& molecules;
-
 public:
-	ReactionDataTable(
-		const FunctionalGroupDataTable& functionalGroups,
-		const BackboneDataTable& backbones,
-		const MoleculeDataTable& molecules
-	) noexcept;
+	ReactionDataTable() = default;
 
 	ReactionDataTable(const ReactionDataTable&) = delete;
 

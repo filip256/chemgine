@@ -195,6 +195,7 @@
     <ClCompile Include="Backbone.cpp" />
     <ClCompile Include="BackboneData.cpp" />
     <ClCompile Include="BackboneDataTable.cpp" />
+    <ClCompile Include="BaseApproximator.cpp" />
     <ClCompile Include="BaseLabwareComponent.cpp" />
     <ClCompile Include="BaseLabwareData.cpp" />
     <ClCompile Include="BaseReactionCondition.cpp" />
@@ -221,7 +222,7 @@
     <ClCompile Include="Maths.cpp" />
     <ClCompile Include="MoleculeDataTable.cpp" />
     <ClCompile Include="Molecule.cpp" />
-    <ClCompile Include="OrganicMoleculeData.cpp" />
+    <ClCompile Include="MoleculeData.cpp" />
     <ClCompile Include="PhysicalProperties.cpp" />
     <ClCompile Include="Reactable.cpp" />
     <ClCompile Include="Reactant.cpp" />
@@ -230,11 +231,14 @@
     <ClCompile Include="ReactionDataTable.cpp" />
     <ClCompile Include="Reactor.cpp" />
     <ClCompile Include="ReactorLayer.cpp" />
+    <ClCompile Include="Spline.cpp" />
+    <ClCompile Include="SplineApproximator.cpp" />
     <ClCompile Include="SystemMatrix.cpp" />
     <ClCompile Include="Value.cpp" />
     <ClInclude Include="Adaptor.hpp" />
     <ClInclude Include="Amount.hpp" />
     <ClInclude Include="ApproximatorDataTable.hpp" />
+    <ClInclude Include="ApproximatorType.hpp" />
     <ClInclude Include="AtomicComponent.hpp" />
     <ClInclude Include="AtomIdentifier.hpp" />
     <ClCompile Include="AtomData.cpp" />
@@ -247,6 +251,7 @@
     <ClInclude Include="Backbone.hpp" />
     <ClInclude Include="BackboneData.hpp" />
     <ClInclude Include="BackboneDataTable.hpp" />
+    <ClInclude Include="BaseApproximator.hpp" />
     <ClInclude Include="BaseComponentData.hpp" />
     <ClInclude Include="BaseLabwareComponent.hpp" />
     <ClInclude Include="BaseLabwareData.hpp" />
@@ -294,13 +299,15 @@
     <ClInclude Include="PortType.hpp" />
     <ClInclude Include="Reactant.hpp" />
     <ClInclude Include="ReactantSet.hpp" />
+    <ClInclude Include="Spline.hpp" />
+    <ClInclude Include="SplineApproximator.hpp" />
     <ClInclude Include="UIContext.hpp" />
     <ClInclude Include="Unit.hpp" />
     <ClInclude Include="MoleculeDataTable.hpp" />
     <ClInclude Include="MultiIndexMap.hpp" />
     <ClCompile Include="Result.cpp" />
     <ClInclude Include="Molecule.hpp" />
-    <ClInclude Include="OrganicMoleculeData.hpp" />
+    <ClInclude Include="MoleculeData.hpp" />
     <ClInclude Include="PairHash.hpp" />
     <ClInclude Include="PVector.hpp" />
     <ClInclude Include="Query.hpp" />
@@ -335,7 +342,7 @@
     <None Include="Data\BackboneData.csv" />
     <None Include="Data\FunctionalGroupData.csv" />
     <None Include="Data\LabwareData.csv" />
-    <None Include="Data\OrganicMoleculeData.csv" />
+    <None Include="Data\MoleculeData.csv" />
     <None Include="Data\ReactionData.csv" />
     <None Include="diagram.cd" />
   </ItemGroup>

@@ -26,6 +26,8 @@
 
 #include "SystemMatrix.hpp"
 
+#include "Spline.hpp"
+
 /*
 FunctionalGroup {
     CompositeComponent {
@@ -63,7 +65,6 @@ FunctionalGroup {
 int main()
 {
     {
-
 #ifndef NDEBUG
         TestManager tests;
         tests.runAll();
@@ -79,9 +80,9 @@ int main()
         store.loadAtomsData("Data/AtomData.csv")
             .loadFunctionalGroupsData("Data/FunctionalGroupData.csv")
             .loadBackbonesData("Data/BackboneData.csv")
-            .loadMoleculesData("Data/OrganicMoleculeData.csv")
-            .loadReactionsData("Data/ReactionData.csv")
             .loadApproximatorsData("")
+            .loadMoleculesData("Data/MoleculeData.csv")
+            .loadReactionsData("Data/ReactionData.csv")
             .loadLabwareData("Data/LabwareData.csv");
 
         //UIContext uiContext;
@@ -117,6 +118,8 @@ int main()
         Logger::log("Memory leak detected: BaseLabwareData (" + std::to_string(BaseLabwareData::instanceCount) + " unreleased instances).", LogType::BAD);
     if (BaseLabwareComponent::instanceCount != 0)
         Logger::log("Memory leak detected: BaseLabwareComponent (" + std::to_string(BaseLabwareComponent::instanceCount) + " unreleased instances).", LogType::BAD);
+    if (BaseApproximator::instanceCount != 0)
+        Logger::log("Memory leak detected: BaseApproximator (" + std::to_string(BaseApproximator::instanceCount) + " unreleased instances).", LogType::BAD);
 
     getchar();
     return 0;

@@ -219,7 +219,7 @@
     <ClCompile Include="MoleculeDataTable.cpp">
       <Filter>Source Files\Molecules</Filter>
     </ClCompile>
-    <ClCompile Include="OrganicMoleculeData.cpp">
+    <ClCompile Include="MoleculeData.cpp">
       <Filter>Source Files\Molecules</Filter>
     </ClCompile>
     <ClCompile Include="ContainerLabwareData.cpp">
@@ -301,6 +301,15 @@
       <Filter>Source Files\Approximators</Filter>
     </ClCompile>
     <ClCompile Include="ApproximatorDataTable.cpp">
+      <Filter>Source Files\Approximators</Filter>
+    </ClCompile>
+    <ClCompile Include="Spline.cpp">
+      <Filter>Source Files\DataStructures</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseApproximator.cpp">
+      <Filter>Source Files\Approximators</Filter>
+    </ClCompile>
+    <ClCompile Include="SplineApproximator.cpp">
       <Filter>Source Files\Approximators</Filter>
     </ClCompile>
   </ItemGroup>
@@ -449,7 +458,7 @@
     <ClInclude Include="MoleculeDataTable.hpp">
       <Filter>Header Files\Molecules</Filter>
     </ClInclude>
-    <ClInclude Include="OrganicMoleculeData.hpp">
+    <ClInclude Include="MoleculeData.hpp">
       <Filter>Header Files\Molecules</Filter>
     </ClInclude>
     <ClInclude Include="BaseLabwareData.hpp">
@@ -542,6 +551,18 @@
     <ClInclude Include="ApproximatorDataTable.hpp">
       <Filter>Header Files\Approximators</Filter>
     </ClInclude>
+    <ClInclude Include="Spline.hpp">
+      <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseApproximator.hpp">
+      <Filter>Header Files\Approximators</Filter>
+    </ClInclude>
+    <ClInclude Include="ApproximatorType.hpp">
+      <Filter>Header Files\Approximators</Filter>
+    </ClInclude>
+    <ClInclude Include="SplineApproximator.hpp">
+      <Filter>Header Files\Approximators</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv">
@@ -554,7 +575,7 @@
     <None Include="Data\BackboneData.csv">
       <Filter>Resource Files\Data</Filter>
     </None>
-    <None Include="Data\OrganicMoleculeData.csv">
+    <None Include="Data\MoleculeData.csv">
       <Filter>Resource Files\Data</Filter>
     </None>
     <None Include="Data\ReactionData.csv">

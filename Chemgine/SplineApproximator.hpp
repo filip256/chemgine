@@ -1,19 +1,18 @@
 #pragma once
 
 #include "BaseApproximator.hpp"
+#include "Spline.hpp"
 
-#include <string>
-
-class FunctionalApproximator : public BaseApproximator
+class SplineApproximator : public BaseApproximator
 {
 private:
-	double (*const function)(double);
+	const Spline<float> spline;
 
 public:
-	FunctionalApproximator(
+	SplineApproximator(
 		const ApproximatorIdType id,
 		const std::string& name,
-		double(*function)(double)
+		Spline<float>&& spline
 	) noexcept;
 
 	double execute(const double input) const override final;

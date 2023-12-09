@@ -84,7 +84,7 @@ void Reactor::runReactions()
 	}
 }  
 
-void Reactor::checkUnknownLayers()
+void Reactor::distributeUnknownLayer()
 {
 	for (auto r : content)
 		if (r.layer == LayerType::UNKNOWN)
@@ -159,5 +159,5 @@ void Reactor::tick()
 	removeNegligibles();
 	findNewReactions();
 	runReactions();
-	checkUnknownLayers();
+	distributeUnknownLayer();
 }

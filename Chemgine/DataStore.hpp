@@ -15,9 +15,10 @@ public:
 	FunctionalGroupDataTable functionalGroups;
 	BackboneDataTable backbones;
 
+	ApproximatorDataTable approximators;
+
 	mutable MoleculeDataTable molecules;
 	ReactionDataTable reactions;
-	ApproximatorDataTable approximators;
 
 	LabwareDataTable labware;
 
@@ -29,9 +30,9 @@ public:
 	DataStore& loadFunctionalGroupsData(const std::string& path);
 	DataStore& loadBackbonesData(const std::string& path);
 
+	DataStore& loadApproximatorsData(const std::string& path);
 	DataStore& loadMoleculesData(const std::string& path);
 	DataStore& loadReactionsData(const std::string& path);
-	DataStore& loadApproximatorsData(const std::string& path);
 
 	DataStore& loadLabwareData(const std::string& path);
 

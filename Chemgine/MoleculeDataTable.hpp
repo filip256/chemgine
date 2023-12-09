@@ -1,14 +1,17 @@
 #pragma once
 
 #include "DataTable.hpp"
-#include "OrganicMoleculeData.hpp"
-#include "FunctionalGroupDataTable.hpp"
+#include "MoleculeData.hpp"
+#include "ApproximatorDataTable.hpp"
 
 class MoleculeDataTable :
-	public DataTable<MoleculeIdType, std::string, OrganicMoleculeData>
+	public DataTable<MoleculeIdType, std::string, MoleculeData>
 {
+private:
+	const ApproximatorDataTable& approximators;
+
 public:
-	MoleculeDataTable() = default;
+	MoleculeDataTable(const ApproximatorDataTable& approximators) noexcept;
 	MoleculeDataTable(const MoleculeDataTable&) = delete;
 
 	bool loadFromFile(const std::string& path);

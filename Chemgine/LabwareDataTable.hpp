@@ -8,7 +8,7 @@
 class LabwareDataTable
 {
 private:
-	std::unordered_map<LabwareIdType, BaseLabwareData*> table;
+	std::unordered_map<LabwareIdType, const BaseLabwareData*> table;
 
 public:
 	LabwareDataTable() = default;

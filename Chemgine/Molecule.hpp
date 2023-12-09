@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DataStoreAccessor.hpp"
-#include "OrganicMoleculeData.hpp"
+#include "MoleculeData.hpp"
 #include "Amount.hpp"
 
 class Molecule
@@ -19,7 +19,7 @@ public:
 
 	MoleculeIdType getId() const;
 	Amount<Unit::GRAM_PER_MOLE> getMolarMass() const;
-	const OrganicMoleculeData& data() const;
+	const MoleculeData& data() const;
 
 	const MolecularStructure& getStructure() const;
 

@@ -4,6 +4,10 @@
 
 #include <fstream>
 
+MoleculeDataTable::MoleculeDataTable(const ApproximatorDataTable& approximators) noexcept :
+	approximators(approximators)
+{}
+
 
 bool MoleculeDataTable::loadFromFile(const std::string& path)
 {
@@ -48,7 +52,7 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 		if (table.emplace(
 			id.result,
 			line[1],
-			std::move(OrganicMoleculeData(id.result, line[2], line[1]))
+			std::move(MoleculeData(id.result, line[2], line[1], approximators.at(103)))
 		) == false)
 		{
 			Logger::log("Molecule with duplicate id " + std::to_string(id.result) + " skipped.", LogType::WARN);
@@ -77,6 +81,6 @@ MoleculeIdType MoleculeDataTable::findOrAdd(MolecularStructure&& structure)
 		return table[idx].id;
 
 	const auto id = getFreeId();
-	table.emplace(id, std::to_string(id), OrganicMoleculeData(id, std::move(structure)));
+	table.emplace(id, std::to_string(id), MoleculeData(id, std::move(structure), approximators.at(103)));
 	return id;
 }

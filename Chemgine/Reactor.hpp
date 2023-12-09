@@ -23,7 +23,7 @@ private:
 	void removeNegligibles();
 	void findNewReactions();
 	void runReactions();
-	void checkUnknownLayers();
+	void distributeUnknownLayer();
 
 public:
 	Reactor(

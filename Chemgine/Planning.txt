@@ -151,7 +151,7 @@ Tasks:
 ---
   DONE. Create OrganicMolecule class
   DONE. Create OrganicMolecules CSV with Id, smiles
-  DONE. Create OrganicMoleculeData with a MolecularStructure and write initilizer from SMILES
+  DONE. Create MoleculeData with a MolecularStructure and write initilizer from SMILES
 ---
   Make sure hydrogen isnt added from smiles into molecules
   ?. Implement BaseReactionCondition

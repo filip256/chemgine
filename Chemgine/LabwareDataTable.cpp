@@ -8,9 +8,7 @@
 LabwareDataTable::~LabwareDataTable() noexcept
 {
 	for (const auto& l : table)
-	{
 		delete l.second;
-	}
 }
 
 bool LabwareDataTable::loadFromFile(const std::string& path)

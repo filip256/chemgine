@@ -5,16 +5,6 @@
 
 #include <fstream>
 
-ReactionDataTable::ReactionDataTable(
-	const FunctionalGroupDataTable& functionalGroups,
-	const BackboneDataTable& backbones,
-	const MoleculeDataTable& molecules
-) noexcept :
-	functionalGroups(functionalGroups),
-	backbones(backbones),
-	molecules(molecules)
-{}
-
 bool ReactionDataTable::loadFromFile(const std::string& path)
 {
 	std::ifstream file(path);

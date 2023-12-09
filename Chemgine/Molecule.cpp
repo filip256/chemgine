@@ -37,7 +37,7 @@ Amount<Unit::GRAM_PER_MOLE> Molecule::getMolarMass() const
 	return molarMass;
 }
 
-const OrganicMoleculeData& Molecule::data() const
+const MoleculeData& Molecule::data() const
 {
 	return dataAccessor.get().molecules.at(id);
 }

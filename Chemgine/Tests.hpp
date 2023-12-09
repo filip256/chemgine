@@ -233,9 +233,9 @@ public:
 		store.loadAtomsData("Data/AtomData.csv")
 			.loadFunctionalGroupsData("Data/FunctionalGroupData.csv")
 			.loadBackbonesData("Data/BackboneData.csv")
-			.loadMoleculesData("Data/OrganicMoleculeData.csv")
-			.loadReactionsData("Data/ReactionData.csv")
 			.loadApproximatorsData("")
+			.loadMoleculesData("Data/MoleculeData.csv")
+			.loadReactionsData("Data/ReactionData.csv")
 			.loadLabwareData("Data/LabwareData.csv");
 
 		molecularStructureTest.initialize();

@@ -1,14 +1,16 @@
-#include "OrganicMoleculeData.hpp"
+#include "MoleculeData.hpp"
 #include "Logger.hpp"
 
-OrganicMoleculeData::OrganicMoleculeData(
+MoleculeData::MoleculeData(
 	const MoleculeIdType id,
 	const std::string& name,
-	const std::string& smiles
+	const std::string& smiles,
+	const BaseApproximator& densityApproximator
 ) noexcept :
 	id(id),
 	name(name),
-	structure(smiles)
+	structure(smiles),
+	densityApproximator(densityApproximator)
 {
 	if (this->structure.isComplete() == false)
 	{
@@ -16,13 +18,15 @@ OrganicMoleculeData::OrganicMoleculeData(
 	}
 }
 
-OrganicMoleculeData::OrganicMoleculeData(
+MoleculeData::MoleculeData(
 	const MoleculeIdType id,
-	MolecularStructure&& structure
+	MolecularStructure&& structure,
+	const BaseApproximator& densityApproximator
 ) noexcept :
 	id(id),
 	name("?"),
-	structure(std::move(structure))
+	structure(std::move(structure)),
+	densityApproximator(densityApproximator)
 {
 	if (this->structure.isComplete() == false)
 	{
@@ -30,7 +34,7 @@ OrganicMoleculeData::OrganicMoleculeData(
 	}
 }
 
-const MolecularStructure& OrganicMoleculeData::getStructure() const
+const MolecularStructure& MoleculeData::getStructure() const
 {
 	return structure;
 }

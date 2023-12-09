@@ -4,8 +4,9 @@ DataStore::DataStore() :
 	atoms(),
 	functionalGroups(),
 	backbones(),
-	molecules(),
-	reactions(functionalGroups, backbones, molecules)
+	approximators(),
+	molecules(approximators),
+	reactions()
 {}
 
 DataStore& DataStore::loadAtomsData(const std::string& path)

@@ -5,12 +5,11 @@ FunctionalApproximator::FunctionalApproximator(
 	const std::string& name,
 	double(*function)(double)
 ) noexcept :
-	id(id),
-	name(name),
+	BaseApproximator(id, name, ApproximatorType::FUNCTIONAL),
 	function(function)
 {}
 
-double FunctionalApproximator::execute(const double x) const
+double FunctionalApproximator::execute(const double input) const
 {
-	return function(x);
+	return function(input);
 }
