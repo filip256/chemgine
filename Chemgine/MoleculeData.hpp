@@ -2,6 +2,7 @@
 
 #include "MolecularStructure.hpp"
 #include "BaseApproximator.hpp"
+#include "Amount.hpp"
 
 #include <cstdint>
 #include <string>
@@ -37,4 +38,6 @@ public:
 	~MoleculeData() = default;
 
 	const MolecularStructure& getStructure() const;
+
+	Amount<Unit::GRAM_PER_MILLILITER> getDensityAt(const Amount<Unit::CELSIUS> temperature) const;
 };

@@ -14,6 +14,8 @@ Reactor::Reactor(
 	pressure(pressure)
 {
 	dataAccessor.crashIfUninitialized();
+	temperatureSpeedApproximator = &dataAccessor.get().approximators.at(101);
+	concentrationSpeedApproximator = &dataAccessor.get().approximators.at(102);
 }
 
 void Reactor::setDataStore(const DataStore& dataStore)
@@ -21,14 +23,28 @@ void Reactor::setDataStore(const DataStore& dataStore)
 	dataAccessor.set(dataStore);
 }
 
+void Reactor::addToLayer(const Reactant& reactant, const uint8_t revert)
+{
+	totalMoles += reactant.amount * revert;
+	layerProperties[toIndex(reactant.layer)].moles += reactant.amount * revert;
+
+	const auto vol = reactant.getVolumeAt(temperature) * revert;
+	totalVolume += vol;
+	layerProperties[toIndex(reactant.layer)].volume += vol;
+}
+
+void Reactor::removeFromLayer(const Reactant& reactant)
+{
+	addToLayer(reactant, -1);
+}
+
 void Reactor::removeNegligibles()
 {
-	for(const auto& r : content)
-		if (r.amount < Constants::MOLAR_EXISTANCE_THRESHOLD)
-		{
-			Logger::log("empty");
-		}
-	const size_t c = std::erase_if(content, [](const auto& r) { return r.amount < Constants::MOLAR_EXISTANCE_THRESHOLD; });
+	for (const auto& r : content)
+		if (isRealLayer(r.layer) && r.amount < Constants::MOLAR_EXISTANCE_THRESHOLD)
+			removeFromLayer(r);
+
+	std::erase_if(content, [](const auto& r) { return r.amount < Constants::MOLAR_EXISTANCE_THRESHOLD; });
 }
 
 void Reactor::findNewReactions()
@@ -56,12 +72,13 @@ void Reactor::findNewReactions()
 
 void Reactor::runReactions()
 {
-	const auto& reactionSpeedApproximator = dataAccessor.get().approximators.at(101);
 	for (const auto& r : cachedReactions)
 	{
-		auto speedCoef = 
+		auto speedCoef =
 			r.getData().baseSpeed *
-			reactionSpeedApproximator.execute((temperature - r.getData().baseTemperature).asStd());
+			totalVolume.asStd() *
+			temperatureSpeedApproximator->execute((temperature - r.getData().baseTemperature).asStd()) *
+			concentrationSpeedApproximator->execute((getAmountOf(r.getReactants()) / totalMoles).asStd());
 		
 		if (speedCoef == 0)
 			continue;
@@ -86,12 +103,11 @@ void Reactor::runReactions()
 
 void Reactor::distributeUnknownLayer()
 {
-	for (auto r : content)
+	for (auto& r : content)
 		if (r.layer == LayerType::UNKNOWN)
 		{
 			r.layer = LayerType::POLAR;
-			layerVolumes[toIndex(LayerType::POLAR)] +=
-				r.amount.to<Unit::LITER>(r.molecule.getMolarMass(), Amount<Unit::GRAM_PER_LITER>(1.0));
+			addToLayer(r);
 		}
 }
 
@@ -129,8 +145,7 @@ void Reactor::add(Reactor& other, const double ratio)
 void Reactor::add(const Reactant& reactant)
 {
 	if (isRealLayer(reactant.layer))
-		layerVolumes[toIndex(reactant.layer)] +=
-			reactant.amount.to<Unit::LITER>(reactant.molecule.getMolarMass(), Amount<Unit::GRAM_PER_LITER>(1.0));
+		addToLayer(reactant);
 
 	const auto temp = content.emplace(reactant);
 	if (temp.second == false)
@@ -154,10 +169,18 @@ Amount<Unit::MOLE> Reactor::getAmountOf(const Reactant& reactant) const
 	return it == content.end() ? Amount<Unit::MOLE>(0.0) : it->amount;
 }
 
+Amount<Unit::MOLE> Reactor::getAmountOf(const ReactantSet& reactantSet) const
+{
+	Amount<Unit::MOLE> s = 0.0;
+	for (const auto& r : reactantSet)
+		s += getAmountOf(r);
+	return s;
+}
+
 void Reactor::tick()
 {
 	removeNegligibles();
+	distributeUnknownLayer();
 	findNewReactions();
 	runReactions();
-	distributeUnknownLayer();
 }

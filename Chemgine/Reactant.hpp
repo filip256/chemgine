@@ -21,6 +21,8 @@ public:
 	Reactant(const Reactant&) = default;
 	Reactant(Reactant&&) = default;
 
+	Amount<Unit::LITER> getVolumeAt(const Amount<Unit::CELSIUS> temperature) const;
+
 	bool operator==(const Reactant& other) const;
 	bool operator!=(const Reactant& other) const;
 };

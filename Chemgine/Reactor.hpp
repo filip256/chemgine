@@ -6,6 +6,7 @@
 #include "DataStoreAccessor.hpp"
 #include "ConcreteReaction.hpp"
 #include "Reactant.hpp"
+#include "LayerProperties.hpp"
 
 class Reactor
 {
@@ -13,12 +14,21 @@ private:
 	double stirSpeed = 0.0;
 	Amount<Unit::CELSIUS> temperature;
 	Amount<Unit::TORR> pressure;
-	std::array<Amount<Unit::LITER>, REAL_LAYER_COUNT> layerVolumes;
+	Amount<Unit::MOLE> totalMoles;
+	Amount<Unit::LITER> totalVolume;
+
+	const BaseApproximator* temperatureSpeedApproximator = nullptr;
+	const BaseApproximator* concentrationSpeedApproximator = nullptr;
+
+	std::array<LayerProperties, REAL_LAYER_COUNT> layerProperties;
 
 	std::unordered_set<ConcreteReaction, ConcreteReactionHash> cachedReactions;
 	std::unordered_set<Reactant, ReactantHash> content;
 
 	static DataStoreAccessor dataAccessor;
+
+	void addToLayer(const Reactant& reactant, const uint8_t revert = 1.0);
+	void removeFromLayer(const Reactant& reactant);
 
 	void removeNegligibles();
 	void findNewReactions();
@@ -39,6 +49,7 @@ public:
 	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount);
 
 	Amount<Unit::MOLE> getAmountOf(const Reactant& reactant) const;
+	Amount<Unit::MOLE> getAmountOf(const ReactantSet& reactantSet) const;
 
 	void tick();
 

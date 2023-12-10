@@ -144,9 +144,6 @@
     <ClCompile Include="Value.cpp">
       <Filter>Source Files\Data\Values</Filter>
     </ClCompile>
-    <ClCompile Include="FloatValue.cpp">
-      <Filter>Source Files\Data\Values</Filter>
-    </ClCompile>
     <ClCompile Include="Molecule.cpp">
       <Filter>Source Files\Molecules</Filter>
     </ClCompile>
@@ -312,6 +309,9 @@
     <ClCompile Include="SplineApproximator.cpp">
       <Filter>Source Files\Approximators</Filter>
     </ClCompile>
+    <ClCompile Include="LayerProperties.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -343,9 +343,6 @@
     </ClInclude>
     <ClInclude Include="LogType.hpp">
       <Filter>Header Files\Logger</Filter>
-    </ClInclude>
-    <ClInclude Include="FloatValue.hpp">
-      <Filter>Header Files\Data\Values</Filter>
     </ClInclude>
     <ClInclude Include="Value.hpp">
       <Filter>Header Files\Data\Values</Filter>
@@ -562,6 +559,9 @@
     </ClInclude>
     <ClInclude Include="SplineApproximator.hpp">
       <Filter>Header Files\Approximators</Filter>
+    </ClInclude>
+    <ClInclude Include="LayerProperties.hpp">
+      <Filter>Header Files\Reactions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

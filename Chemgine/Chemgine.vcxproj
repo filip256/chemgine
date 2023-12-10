@@ -210,7 +210,6 @@
     <ClCompile Include="DrawablePort.cpp" />
     <ClCompile Include="Flask.cpp" />
     <ClCompile Include="ContainerLabwareData.cpp" />
-    <ClCompile Include="FloatValue.cpp" />
     <ClCompile Include="FunctionalApproximator.cpp" />
     <ClCompile Include="HeatSourceData.cpp" />
     <ClCompile Include="FlaskData.cpp" />
@@ -219,6 +218,7 @@
     <ClCompile Include="LabwareDataTable.cpp" />
     <ClCompile Include="LabwarePort.cpp" />
     <ClCompile Include="LabwareSystem.cpp" />
+    <ClCompile Include="LayerProperties.cpp" />
     <ClCompile Include="Maths.cpp" />
     <ClCompile Include="MoleculeDataTable.cpp" />
     <ClCompile Include="Molecule.cpp" />
@@ -276,7 +276,6 @@
     <ClInclude Include="DrawablePort.hpp" />
     <ClInclude Include="Flask.hpp" />
     <ClInclude Include="ContainerLabwareData.hpp" />
-    <ClInclude Include="FloatValue.hpp" />
     <ClInclude Include="FunctionalGroup.hpp" />
     <ClInclude Include="FunctionalGroupData.hpp" />
     <ClInclude Include="FunctionalGroupDataTable.hpp" />
@@ -291,6 +290,7 @@
     <ClInclude Include="LabwarePort.hpp" />
     <ClInclude Include="LabwareSystem.hpp" />
     <ClInclude Include="LabwareType.hpp" />
+    <ClInclude Include="LayerProperties.hpp" />
     <ClInclude Include="LayerType.hpp" />
     <ClInclude Include="LogType.hpp" />
     <ClCompile Include="MolecularStructure.cpp" />

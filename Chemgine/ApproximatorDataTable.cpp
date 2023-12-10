@@ -18,7 +18,7 @@ bool ApproximatorDataTable::loadFromFile(const std::string& path)
 		));
 
 	table.emplace(std::make_pair(102,
-		new FunctionalApproximator(102, "mconc -> rspeed_multiplier", +[](double molarConcentration) { return std::pow(2, molarConcentration / 10.0); })
+		new FunctionalApproximator(102, "mconc -> rspeed_multiplier", +[](double molarConcentration) { return std::pow(molarConcentration, 0.25); })
 	));
 
 	table.emplace(std::make_pair(103,

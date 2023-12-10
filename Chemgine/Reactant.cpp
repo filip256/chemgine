@@ -12,6 +12,11 @@ Reactant::Reactant(
 	isNew(true)
 {}
 
+Amount<Unit::LITER> Reactant::getVolumeAt(const Amount<Unit::CELSIUS> temperature) const
+{
+	return amount.to<Unit::LITER>(molecule.getMolarMass(), molecule.data().getDensityAt(temperature));
+}
+
 bool Reactant::operator== (const Reactant& other) const
 {
 	return this->molecule.getId() == other.molecule.getId();

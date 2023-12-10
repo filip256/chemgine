@@ -156,7 +156,7 @@ constexpr Amount<Unit::CUBIC_METER>::Amount(const Amount<Unit::LITER>& liters) n
 
 template<>
 template<>
-constexpr Amount<Unit::GRAM_PER_LITER>::Amount(const Amount<Unit::GRAM>& grams, const Amount<Unit::LITER>& liters) noexcept :
+constexpr Amount<Unit::GRAM_PER_MILLILITER>::Amount(const Amount<Unit::GRAM>& grams, const Amount<Unit::LITER>& liters) noexcept :
 	Value<double>(grams.asStd() / liters.asMilli())
 {}
 
@@ -213,15 +213,15 @@ constexpr Amount<Unit::TORR>::Amount(const Amount<Unit::PASCAL>& p) noexcept :
 
 template<>
 template<>
-constexpr Amount<Unit::LITER> Amount<Unit::GRAM>::to(const Amount<Unit::GRAM_PER_LITER> density) const noexcept
+constexpr Amount<Unit::LITER> Amount<Unit::GRAM>::to(const Amount<Unit::GRAM_PER_MILLILITER> density) const noexcept
 {
-	return value * density.asStd();
+	return value * density.asKilo();
 }
 template<>
 template<>
-constexpr Amount<Unit::GRAM> Amount<Unit::LITER>::to(const Amount<Unit::GRAM_PER_LITER> density) const noexcept
+constexpr Amount<Unit::GRAM> Amount<Unit::LITER>::to(const Amount<Unit::GRAM_PER_MILLILITER> density) const noexcept
 {
-	return value / density.asStd();
+	return value / density.asMilli();
 }
 
 
@@ -245,13 +245,13 @@ constexpr Amount<Unit::MOLE> Amount<Unit::GRAM>::to(const Amount<Unit::GRAM_PER_
 
 template<>
 template<>
-constexpr Amount<Unit::LITER> Amount<Unit::MOLE>::to(const Amount<Unit::GRAM_PER_MOLE> molarMass, const Amount<Unit::GRAM_PER_LITER> density) const noexcept
+constexpr Amount<Unit::LITER> Amount<Unit::MOLE>::to(const Amount<Unit::GRAM_PER_MOLE> molarMass, const Amount<Unit::GRAM_PER_MILLILITER> density) const noexcept
 {
 	return this->to<Unit::GRAM>(molarMass).to<Unit::LITER>(density);
 }
 template<>
 template<>
-constexpr Amount<Unit::MOLE> Amount<Unit::LITER>::to(const Amount<Unit::GRAM_PER_MOLE> molarMass, const Amount<Unit::GRAM_PER_LITER> density) const noexcept
+constexpr Amount<Unit::MOLE> Amount<Unit::LITER>::to(const Amount<Unit::GRAM_PER_MOLE> molarMass, const Amount<Unit::GRAM_PER_MILLILITER> density) const noexcept
 {
 	return this->to<Unit::GRAM>(density).to<Unit::MOLE>(molarMass);
 }

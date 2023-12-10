@@ -38,3 +38,8 @@ const MolecularStructure& MoleculeData::getStructure() const
 {
 	return structure;
 }
+
+Amount<Unit::GRAM_PER_MILLILITER> MoleculeData::getDensityAt(const Amount<Unit::CELSIUS> temperature) const
+{
+	return densityApproximator.execute(temperature.asStd());
+}
