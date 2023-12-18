@@ -9,7 +9,7 @@ protected:
 	MultiIndexMap<KeyT1, KeyT2, ObjT> table;
 
 	template<class T = KeyT1, typename = std::enable_if_t<std::is_integral<T>::value>>
-	T getFreeId();
+	T getFreeId() const;
 
 public:
 	DataTable() = default;
@@ -37,7 +37,7 @@ public:
 
 template<class KeyT1, class KeyT2, class ObjT>
 template<class T, typename>
-T DataTable<KeyT1, KeyT2, ObjT>::getFreeId() // needs to be defined in header
+T DataTable<KeyT1, KeyT2, ObjT>::getFreeId() const
 {
 	size_t id = 201;
 	while (table.containsKey1(id) && id != 0) ++id; // overflow protection

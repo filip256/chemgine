@@ -6,22 +6,35 @@
 
 typedef uint16_t ApproximatorIdType;
 
+class ApproximatorDataTable;
+
 class BaseApproximator
 {
 protected:
+	ApproximatorIdType id;
+
 	BaseApproximator(
 		const ApproximatorIdType id,
 		const std::string& name,
 		const ApproximatorType type
 	) noexcept;
+	BaseApproximator(const BaseApproximator&) = default;
+	BaseApproximator(BaseApproximator&&) = default;
 
 public:
-	const ApproximatorIdType id;
+	BaseApproximator(ApproximatorIdType id, BaseApproximator&& other) noexcept;
+
 	const ApproximatorType type;
 	const std::string name;
 
-	virtual double execute(const double input) const = 0;
+	ApproximatorIdType getId() const;
 
+	virtual double get(const double input) const;
+	virtual double get(const double input1, const double input2) const;
+
+	virtual BaseApproximator* clone() const = 0;
+
+	friend class ApproximatorDataTable;
 
 	// for memory leak checking 
 	static size_t instanceCount;

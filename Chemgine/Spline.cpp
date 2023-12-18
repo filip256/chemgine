@@ -6,9 +6,6 @@
 template <class T>
 Spline<T>::Spline(std::vector<std::pair<T, T>>&& points) noexcept
 {
-	if (points.size() < 2)
-		return;
-
 	std::sort(points.begin(), points.end(), [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; });
 	points.erase(std::unique(
 			points.begin(),points.end(),
@@ -43,6 +40,9 @@ size_t Spline<T>::getHigherBound(const T x) const
 template <class T>
 T Spline<T>::getLinearValueAt(const T x) const
 {
+	if (points.size() == 1)
+		return points.front().second;
+
 	size_t hb = this->getHigherBound(x);
 
 	if (hb == 0)
@@ -58,7 +58,12 @@ T Spline<T>::getLinearValueAt(const T x) const
 template <class T>
 T Spline<T>::getQuadraticValueAt(const T x) const
 {
+	if (points.size() < 3)
+		return getLinearValueAt(x);
+
 	// https://www.geeksforgeeks.org/quadratic-interpolation/
+
+
 	return 0;
 }
 

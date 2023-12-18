@@ -69,3 +69,59 @@ Result<double> DataHelpers::toUDouble(const std::string& str)
 
 	return r;
 }
+
+Result<std::pair<double, double>> DataHelpers::toPair(const std::string& str)
+{
+	const auto& pairStr = parseList(str, '@', true);
+	if (pairStr.size() != 2)
+		return Result<std::pair<double, double>>();
+
+	const auto val1 = toDouble(pairStr.front());
+	if (val1.status == 0)
+		return Result<std::pair<double, double>>();
+
+	const auto val2 = toDouble(pairStr.back());
+	if (val2.status == 0)
+		return Result<std::pair<double, double>>();
+
+	return Result<std::pair<double, double>>(std::make_pair(val1.result, val2.result));
+}
+
+Result<Amount<Unit::CELSIUS>> DataHelpers::toCelsius(const std::string& str)
+{
+	const bool missingUnit = isdigit(str.back());
+
+	const auto temp = missingUnit ?
+		DataHelpers::toDouble(str) :
+		DataHelpers::toDouble(str.substr(0, str.size() - 1));
+	if (temp.status == 0)
+		return Result<Amount<Unit::CELSIUS>>();
+
+	Amount<Unit::CELSIUS> cTemp = 0;
+	if (str.ends_with('c') || str.ends_with('C') || missingUnit)
+		cTemp = temp.result;
+	else if (str.ends_with('k') || str.ends_with('K'))
+		cTemp = Amount<Unit::KELVIN>(temp.result);
+	else if (str.ends_with('f') || str.ends_with('F'))
+		cTemp = Amount<Unit::FAHRENHEIT>(temp.result);
+
+	return Result<Amount<Unit::CELSIUS>>(cTemp);
+}
+
+Result<Spline<float>> DataHelpers::toSpline(const std::string& str)
+{
+	const auto& pointsStr = parseList(str, ';', true);
+
+	std::vector<std::pair<float, float>> points;
+	points.reserve(pointsStr.size());
+
+	for (size_t i = 0; i < pointsStr.size(); ++i)
+	{
+		const auto p = toPair(pointsStr[i]);
+		if (p.status == 0)
+			return Result<Spline<float>>();
+		points.emplace_back(p.result);
+	}
+
+	return Result<Spline<float>>(Spline(std::move(points)));
+}

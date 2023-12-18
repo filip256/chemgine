@@ -12,9 +12,12 @@ Reactant::Reactant(
 	isNew(true)
 {}
 
-Amount<Unit::LITER> Reactant::getVolumeAt(const Amount<Unit::CELSIUS> temperature) const
+Amount<Unit::LITER> Reactant::getVolumeAt(
+	const Amount<Unit::CELSIUS> temperature,
+	const Amount<Unit::TORR> pressure
+) const
 {
-	return amount.to<Unit::LITER>(molecule.getMolarMass(), molecule.data().getDensityAt(temperature));
+	return amount.to<Unit::LITER>(molecule.getMolarMass(), molecule.getDensityAt(temperature, pressure));
 }
 
 bool Reactant::operator== (const Reactant& other) const

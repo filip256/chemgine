@@ -21,6 +21,14 @@ public:
 	Amount<Unit::GRAM_PER_MOLE> getMolarMass() const;
 	const MoleculeData& data() const;
 
+	Amount<Unit::CELSIUS> getMeltingPointAt(const Amount<Unit::TORR> pressure) const;
+	Amount<Unit::CELSIUS> getBoilingPointAt(const Amount<Unit::TORR> pressure) const;
+
+	Amount<Unit::GRAM_PER_MILLILITER> getDensityAt(
+		const Amount<Unit::CELSIUS> temperature,
+		const Amount<Unit::TORR> pressure
+	) const;
+
 	const MolecularStructure& getStructure() const;
 
 	bool operator==(const Molecule& other) const;

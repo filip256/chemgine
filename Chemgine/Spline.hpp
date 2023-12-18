@@ -9,6 +9,7 @@ protected:
 	std::vector<std::pair<T, T>> points;
 
 public:
+	Spline() = default;
 	Spline(std::vector<std::pair<T, T>>&& points) noexcept;
 	Spline(std::initializer_list<std::pair<T, T>> initializer) noexcept;
 	Spline(const Spline&) = default;

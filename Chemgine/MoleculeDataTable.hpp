@@ -8,10 +8,10 @@ class MoleculeDataTable :
 	public DataTable<MoleculeIdType, std::string, MoleculeData>
 {
 private:
-	const ApproximatorDataTable& approximators;
+	ApproximatorDataTable& approximators;
 
 public:
-	MoleculeDataTable(const ApproximatorDataTable& approximators) noexcept;
+	MoleculeDataTable(ApproximatorDataTable& approximators) noexcept;
 	MoleculeDataTable(const MoleculeDataTable&) = delete;
 
 	bool loadFromFile(const std::string& path);

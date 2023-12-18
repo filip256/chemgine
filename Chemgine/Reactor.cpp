@@ -28,7 +28,7 @@ void Reactor::addToLayer(const Reactant& reactant, const uint8_t revert)
 	totalMoles += reactant.amount * revert;
 	layerProperties[toIndex(reactant.layer)].moles += reactant.amount * revert;
 
-	const auto vol = reactant.getVolumeAt(temperature) * revert;
+	const auto vol = reactant.getVolumeAt(temperature, pressure) * revert;
 	totalVolume += vol;
 	layerProperties[toIndex(reactant.layer)].volume += vol;
 }
@@ -77,8 +77,8 @@ void Reactor::runReactions()
 		auto speedCoef =
 			r.getData().baseSpeed *
 			totalVolume.asStd() *
-			temperatureSpeedApproximator->execute((temperature - r.getData().baseTemperature).asStd()) *
-			concentrationSpeedApproximator->execute((getAmountOf(r.getReactants()) / totalMoles).asStd());
+			temperatureSpeedApproximator->get((temperature - r.getData().baseTemperature).asStd()) *
+			concentrationSpeedApproximator->get((getAmountOf(r.getReactants()) / totalMoles).asStd());
 		
 		if (speedCoef == 0)
 			continue;
@@ -88,7 +88,7 @@ void Reactor::runReactions()
 		{
 			const auto a = getAmountOf(i);
 			if (a < i.amount * speedCoef.asStd())
-				speedCoef = (a / i.amount).asStd() * 1.0; // 0.8 = low concentration speed loss factor
+				speedCoef = (a / i.amount).asStd();
 		}
 
 		if (speedCoef == 0)

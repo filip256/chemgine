@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <limits>
 
 #include "Value.hpp"
 #include "Unit.hpp"
@@ -43,8 +44,19 @@ public:
 
 	constexpr inline Unit unit() const noexcept;
 	static inline std::string unitName() noexcept = delete;
+
+	static const Amount<UnitT> Unknown;
+	constexpr inline bool isUnknown() const noexcept;
 };
 
+template<Unit UnitT>
+const Amount<UnitT> Amount<UnitT>::Unknown = std::numeric_limits<double>::min();
+
+template<Unit UnitT>
+constexpr bool Amount<UnitT>::isUnknown() const noexcept
+{
+	return this->value == Amount<UnitT>::Unknown;
+}
 
 template<Unit UnitT>
 constexpr Amount<UnitT>::Amount(const double value) noexcept :

@@ -5,12 +5,18 @@ MoleculeData::MoleculeData(
 	const MoleculeIdType id,
 	const std::string& name,
 	const std::string& smiles,
-	const BaseApproximator& densityApproximator
+	const BaseApproximator& meltingPointApproximator,
+	const BaseApproximator& boilingPointApproximator,
+	const BaseApproximator& solidDensityApproximator,
+	const BaseApproximator& liquidDensityApproximator
 ) noexcept :
 	id(id),
 	name(name),
 	structure(smiles),
-	densityApproximator(densityApproximator)
+	meltingPointApproximator(meltingPointApproximator),
+	boilingPointApproximator(boilingPointApproximator),
+	solidDensityApproximator(solidDensityApproximator),
+	liquidDensityApproximator(liquidDensityApproximator)
 {
 	if (this->structure.isComplete() == false)
 	{
@@ -21,12 +27,18 @@ MoleculeData::MoleculeData(
 MoleculeData::MoleculeData(
 	const MoleculeIdType id,
 	MolecularStructure&& structure,
-	const BaseApproximator& densityApproximator
+	const BaseApproximator& meltingPointApproximator,
+	const BaseApproximator& boilingPointApproximator,
+	const BaseApproximator& solidDensityApproximator,
+	const BaseApproximator& liquidDensityApproximator
 ) noexcept :
 	id(id),
 	name("?"),
 	structure(std::move(structure)),
-	densityApproximator(densityApproximator)
+	meltingPointApproximator(meltingPointApproximator),
+	boilingPointApproximator(boilingPointApproximator),
+	solidDensityApproximator(solidDensityApproximator),
+	liquidDensityApproximator(liquidDensityApproximator)
 {
 	if (this->structure.isComplete() == false)
 	{
@@ -37,9 +49,4 @@ MoleculeData::MoleculeData(
 const MolecularStructure& MoleculeData::getStructure() const
 {
 	return structure;
-}
-
-Amount<Unit::GRAM_PER_MILLILITER> MoleculeData::getDensityAt(const Amount<Unit::CELSIUS> temperature) const
-{
-	return densityApproximator.execute(temperature.asStd());
 }

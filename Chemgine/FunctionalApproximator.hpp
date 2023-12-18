@@ -16,5 +16,7 @@ public:
 		double(*function)(double)
 	) noexcept;
 
-	double execute(const double input) const override final;
+	double get(const double input) const override final;
+
+	FunctionalApproximator* clone() const override final;
 };

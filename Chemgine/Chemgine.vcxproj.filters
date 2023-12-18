@@ -129,9 +129,6 @@
     <ClCompile Include="Logger.cpp">
       <Filter>Source Files\Logger</Filter>
     </ClCompile>
-    <ClCompile Include="Result.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
     <ClCompile Include="Bond.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
@@ -311,6 +308,15 @@
     </ClCompile>
     <ClCompile Include="LayerProperties.cpp">
       <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
+    <ClCompile Include="OffsetApproximator.cpp">
+      <Filter>Source Files\Approximators</Filter>
+    </ClCompile>
+    <ClCompile Include="SplitApproximator.cpp">
+      <Filter>Source Files\Approximators</Filter>
+    </ClCompile>
+    <ClCompile Include="Formulas.cpp">
+      <Filter>Source Files\Data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -562,6 +568,15 @@
     </ClInclude>
     <ClInclude Include="LayerProperties.hpp">
       <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="OffsetApproximator.hpp">
+      <Filter>Header Files\Approximators</Filter>
+    </ClInclude>
+    <ClInclude Include="SplitApproximator.hpp">
+      <Filter>Header Files\Approximators</Filter>
+    </ClInclude>
+    <ClInclude Include="Formulas.hpp">
+      <Filter>Header Files\Data</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

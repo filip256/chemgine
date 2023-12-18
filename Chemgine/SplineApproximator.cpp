@@ -9,7 +9,12 @@ SplineApproximator::SplineApproximator(
 	spline(std::move(spline))
 {}
 
-double SplineApproximator::execute(const double input) const
+double SplineApproximator::get(const double input) const
 {
 	return spline.getLinearValueAt(input);
+}
+
+SplineApproximator* SplineApproximator::clone() const
+{
+	return new SplineApproximator(*this);
 }

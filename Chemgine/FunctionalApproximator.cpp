@@ -9,7 +9,12 @@ FunctionalApproximator::FunctionalApproximator(
 	function(function)
 {}
 
-double FunctionalApproximator::execute(const double input) const
+double FunctionalApproximator::get(const double input) const
 {
 	return function(input);
+}
+
+FunctionalApproximator* FunctionalApproximator::clone() const
+{
+	return new FunctionalApproximator(*this);
 }

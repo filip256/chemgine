@@ -15,5 +15,7 @@ public:
 		Spline<float>&& spline
 	) noexcept;
 
-	double execute(const double input) const override final;
+	double get(const double input) const override final;
+
+	SplineApproximator* clone() const override final;
 };

@@ -210,6 +210,7 @@
     <ClCompile Include="DrawablePort.cpp" />
     <ClCompile Include="Flask.cpp" />
     <ClCompile Include="ContainerLabwareData.cpp" />
+    <ClCompile Include="Formulas.cpp" />
     <ClCompile Include="FunctionalApproximator.cpp" />
     <ClCompile Include="HeatSourceData.cpp" />
     <ClCompile Include="FlaskData.cpp" />
@@ -223,6 +224,7 @@
     <ClCompile Include="MoleculeDataTable.cpp" />
     <ClCompile Include="Molecule.cpp" />
     <ClCompile Include="MoleculeData.cpp" />
+    <ClCompile Include="OffsetApproximator.cpp" />
     <ClCompile Include="PhysicalProperties.cpp" />
     <ClCompile Include="Reactable.cpp" />
     <ClCompile Include="Reactant.cpp" />
@@ -233,6 +235,7 @@
     <ClCompile Include="ReactorLayer.cpp" />
     <ClCompile Include="Spline.cpp" />
     <ClCompile Include="SplineApproximator.cpp" />
+    <ClCompile Include="SplitApproximator.cpp" />
     <ClCompile Include="SystemMatrix.cpp" />
     <ClCompile Include="Value.cpp" />
     <ClInclude Include="Adaptor.hpp" />
@@ -276,6 +279,7 @@
     <ClInclude Include="DrawablePort.hpp" />
     <ClInclude Include="Flask.hpp" />
     <ClInclude Include="ContainerLabwareData.hpp" />
+    <ClInclude Include="Formulas.hpp" />
     <ClInclude Include="FunctionalGroup.hpp" />
     <ClInclude Include="FunctionalGroupData.hpp" />
     <ClInclude Include="FunctionalGroupDataTable.hpp" />
@@ -295,17 +299,18 @@
     <ClInclude Include="LogType.hpp" />
     <ClCompile Include="MolecularStructure.cpp" />
     <ClInclude Include="Maths.hpp" />
+    <ClInclude Include="OffsetApproximator.hpp" />
     <ClInclude Include="PhysicalProperties.hpp" />
     <ClInclude Include="PortType.hpp" />
     <ClInclude Include="Reactant.hpp" />
     <ClInclude Include="ReactantSet.hpp" />
     <ClInclude Include="Spline.hpp" />
     <ClInclude Include="SplineApproximator.hpp" />
+    <ClInclude Include="SplitApproximator.hpp" />
     <ClInclude Include="UIContext.hpp" />
     <ClInclude Include="Unit.hpp" />
     <ClInclude Include="MoleculeDataTable.hpp" />
     <ClInclude Include="MultiIndexMap.hpp" />
-    <ClCompile Include="Result.cpp" />
     <ClInclude Include="Molecule.hpp" />
     <ClInclude Include="MoleculeData.hpp" />
     <ClInclude Include="PairHash.hpp" />
