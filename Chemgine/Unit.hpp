@@ -7,9 +7,8 @@ enum class Unit : uint16_t
 	CUBIC_METER,
 	GRAM,
 	MOLE,
-	JOULE,
+
 	SECOND,
-	WATT,
 
 	CELSIUS,
 	KELVIN,
@@ -18,7 +17,12 @@ enum class Unit : uint16_t
 	TORR,
 	PASCAL,
 
+	JOULE,
+
+	WATT,
+
 	MOLE_PER_SECOND,
 	GRAM_PER_MOLE,
-	GRAM_PER_MILLILITER
+	GRAM_PER_MILLILITER,
+	JOULE_PER_MOLE
 };

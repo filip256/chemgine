@@ -1072,13 +1072,13 @@ bool MolecularStructure::deserialize(const std::string& str)
     for (c_size i = 0; i < comps.size(); ++i)
     {
         const auto id = DataHelpers::toUInt(comps[i]);
-        if (id.status == 0 || Atom::isDefined(static_cast<ComponentIdType>(id.result)) == false)
+        if (id.has_value() == false || Atom::isDefined(static_cast<ComponentIdType>(id.value())) == false)
         {
             clear();
             return false;
         }
 
-        components.emplace_back(new Atom(static_cast<ComponentIdType>(id.result)));
+        components.emplace_back(new Atom(static_cast<ComponentIdType>(id.value())));
     }
 
     for (c_size i = 1; i < tokens.size(); ++i)
@@ -1096,13 +1096,13 @@ bool MolecularStructure::deserialize(const std::string& str)
             if (std::isdigit(comps[j][0]))
             {
                 const auto id = DataHelpers::toUInt(comps[j]);
-                if (id.status == 0)
+                if (id.has_value() == false)
                 {
                     clear();
                     return false;
                 }
 
-                bonds[i - 1].emplace_back(new Bond(id.result, BondType::SINGLE));
+                bonds[i - 1].emplace_back(new Bond(id.value(), BondType::SINGLE));
             }
             else
             {
@@ -1114,13 +1114,13 @@ bool MolecularStructure::deserialize(const std::string& str)
                 }
 
                 const auto id = DataHelpers::toUInt(comps[j].substr(1));
-                if (id.status == 0)
+                if (id.has_value() == false)
                 {
                     clear();
                     return false;
                 }
 
-                  bonds[i - 1].emplace_back(new Bond(id.result, bType));
+                  bonds[i - 1].emplace_back(new Bond(id.value(), bType));
             }
         }
     }

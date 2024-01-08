@@ -51,7 +51,7 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 
 		const auto id = DataHelpers::toUInt(line[0]);
 
-		if (id.status == 0)
+		if (id.has_value() == false)
 		{
 			Logger::log("Missing id, molecule '" + line[1] + "' skipped.", LogType::BAD);
 			continue;
@@ -62,27 +62,27 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 		// boiling and melting points
 		const auto mpR = DataHelpers::toDouble(line[3]);
 		const auto bpR = DataHelpers::toDouble(line[4]);
-		const double mp = mpR.status == 0 ? 0 : mpR.result;
-		const double bp = bpR.status == 0 ? 100 : bpR.result;
+		const double mp = mpR.value_or(0);
+		const double bp = bpR.value_or(100);
 		const auto& mpA = approximators.add(OffsetApproximator(0, "", approximators.at(static_cast<ApproximatorIdType>(Approximators::TORR_TO_REL_BP)), mp));
 		const auto& bpA = approximators.add(OffsetApproximator(0, "", approximators.at(static_cast<ApproximatorIdType>(Approximators::TORR_TO_REL_BP)), bp));
 
 		// densities
 		const auto sdR = DataHelpers::toSpline(line[5]);
 		const auto ldR = DataHelpers::toSpline(line[6]);
-		Spline<float> sdS = sdR.status == 0 ? Spline<float>({ {0, 1.0f} }) : sdR.result;
-		Spline<float> ldS = ldR.status == 0 ? Spline<float>({ {0, 1.0f} }) : ldR.result;
+		Spline<float> sdS = sdR.value_or(Spline<float>({ {0, 1.0f} }));
+		Spline<float> ldS = ldR.value_or(Spline<float>({ {0, 1.0f} }));
 		const auto& sdA = approximators.add(SplineApproximator(0, "", std::move(sdS)));
 		const auto& ldA = approximators.add(SplineApproximator(0, "", std::move(ldS)));
 
 
 		if (table.emplace(
-			id.result,
+			id.value(),
 			line[1],
-			std::move(MoleculeData(id.result, line[2], line[1], mpA, bpA, sdA, ldA))
+			std::move(MoleculeData(id.value(), line[2], line[1], mpA, bpA, sdA, ldA))
 		) == false)
 		{
-			Logger::log("Molecule with duplicate id " + std::to_string(id.result) + " skipped.", LogType::WARN);
+			Logger::log("Molecule with duplicate id " + std::to_string(id.value()) + " skipped.", LogType::WARN);
 		}
 	}
 	file.close();

@@ -329,9 +329,6 @@
     <ClInclude Include="Logger.hpp">
       <Filter>Header Files\Logger</Filter>
     </ClInclude>
-    <ClInclude Include="Result.hpp">
-      <Filter>Header Files\Helpers</Filter>
-    </ClInclude>
     <ClInclude Include="Bond.hpp">
       <Filter>Header Files\Moleculars</Filter>
     </ClInclude>

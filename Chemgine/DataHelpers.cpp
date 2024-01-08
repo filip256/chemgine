@@ -18,97 +18,97 @@ std::vector<std::string> DataHelpers::parseList(const std::string& line, const c
 	return result;
 }
 
-Result<int> DataHelpers::toInt(const std::string& str)
+std::optional<int> DataHelpers::toInt(const std::string& str)
 {
 	try
 	{
-		return Result<int>(std::stoi(str));
+		return std::optional<int>(std::stoi(str));
 	}
 	catch (const std::invalid_argument&)
 	{
-		return Result<int>();
+		return std::nullopt;
 	}
 	catch (const std::out_of_range&)
 	{
-		return Result<int>();
+		return std::nullopt;
 	}
 }
 
-Result<unsigned int> DataHelpers::toUInt(const std::string& str)
+std::optional<unsigned int> DataHelpers::toUInt(const std::string& str)
 {
 	const auto r = toInt(str);
 
-	if (r.status == 0 || r.result < 0)
-		return Result<unsigned int>();
+	if (r.has_value() == false || r.value() < 0)
+		return std::nullopt;
 
-	return Result<unsigned int>(r.result);
+	return std::optional<unsigned int>(r.value());
 }
 
-Result<double> DataHelpers::toDouble(const std::string& str)
+std::optional<double> DataHelpers::toDouble(const std::string& str)
 {
 	try
 	{
-		return Result<double>(std::stod(str));
+		return std::optional<double>(std::stod(str));
 	}
 	catch (const std::invalid_argument&)
 	{
-		return Result<double>();
+		return std::nullopt;
 	}
 	catch (const std::out_of_range&)
 	{
-		return Result<double>();
+		return std::nullopt;
 	}
 }
 
-Result<double> DataHelpers::toUDouble(const std::string& str)
+std::optional<double> DataHelpers::toUDouble(const std::string& str)
 {
 	auto r = toDouble(str);
 
-	if (r.status == 0 || r.result < 0)
-		return Result<double>();
+	if (r.has_value() == false || r.value() < 0)
+		return std::nullopt;
 
 	return r;
 }
 
-Result<std::pair<double, double>> DataHelpers::toPair(const std::string& str)
+std::optional<std::pair<double, double>> DataHelpers::toPair(const std::string& str)
 {
 	const auto& pairStr = parseList(str, '@', true);
 	if (pairStr.size() != 2)
-		return Result<std::pair<double, double>>();
+		return std::nullopt;
 
 	const auto val1 = toDouble(pairStr.front());
-	if (val1.status == 0)
-		return Result<std::pair<double, double>>();
+	if (val1.has_value() == false)
+		return std::nullopt;
 
 	const auto val2 = toDouble(pairStr.back());
-	if (val2.status == 0)
-		return Result<std::pair<double, double>>();
+	if (val2.has_value() == false)
+		return std::nullopt;
 
-	return Result<std::pair<double, double>>(std::make_pair(val1.result, val2.result));
+	return std::optional<std::pair<double, double>>(std::make_pair(val1.value(), val2.value()));
 }
 
-Result<Amount<Unit::CELSIUS>> DataHelpers::toCelsius(const std::string& str)
+std::optional<Amount<Unit::CELSIUS>> DataHelpers::toCelsius(const std::string& str)
 {
 	const bool missingUnit = isdigit(str.back());
 
 	const auto temp = missingUnit ?
 		DataHelpers::toDouble(str) :
 		DataHelpers::toDouble(str.substr(0, str.size() - 1));
-	if (temp.status == 0)
-		return Result<Amount<Unit::CELSIUS>>();
+	if (temp.has_value() == false)
+		return std::nullopt;
 
 	Amount<Unit::CELSIUS> cTemp = 0;
 	if (str.ends_with('c') || str.ends_with('C') || missingUnit)
-		cTemp = temp.result;
+		cTemp = temp.value();
 	else if (str.ends_with('k') || str.ends_with('K'))
-		cTemp = Amount<Unit::KELVIN>(temp.result);
+		cTemp = Amount<Unit::KELVIN>(temp.value());
 	else if (str.ends_with('f') || str.ends_with('F'))
-		cTemp = Amount<Unit::FAHRENHEIT>(temp.result);
+		cTemp = Amount<Unit::FAHRENHEIT>(temp.value());
 
-	return Result<Amount<Unit::CELSIUS>>(cTemp);
+	return std::optional<Amount<Unit::CELSIUS>>(cTemp);
 }
 
-Result<Spline<float>> DataHelpers::toSpline(const std::string& str)
+std::optional<Spline<float>> DataHelpers::toSpline(const std::string& str)
 {
 	const auto& pointsStr = parseList(str, ';', true);
 
@@ -118,10 +118,10 @@ Result<Spline<float>> DataHelpers::toSpline(const std::string& str)
 	for (size_t i = 0; i < pointsStr.size(); ++i)
 	{
 		const auto p = toPair(pointsStr[i]);
-		if (p.status == 0)
-			return Result<Spline<float>>();
-		points.emplace_back(p.result);
+		if (p.has_value() == false)
+			return std::nullopt;
+		points.emplace_back(p.value());
 	}
 
-	return Result<Spline<float>>(Spline(std::move(points)));
+	return std::optional<Spline<float>>(Spline(std::move(points)));
 }

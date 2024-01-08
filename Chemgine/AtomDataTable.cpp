@@ -50,23 +50,23 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 		auto valence = DataHelpers::toUInt(line[4]);
 
 		if (line[3].empty())
-			weight.result = 0;
+			weight = 0;
 		if (line[4].empty())
-			valence.result = 0;
+			valence = 0;
 
-		if (id.status == 0)
+		if (id.has_value() == false)
 		{
 			Logger::log("Missing id, atom '" + line[1] + "' skipped.", LogType::BAD);
 			continue;
 		}
 
 		if (table.emplace(
-			id.result,
+			id.value(),
 			line[1],
-			std::move(AtomData(id.result, line[1], line[2], weight.result, valence.result))
+			std::move(AtomData(id.value(), line[1], line[2], weight.value(), valence.value()))
 			) == false)
 		{
-			Logger::log("Duplicate atom with id " + std::to_string(id.result) + " or symbol '" + line[1] + "' skipped.", LogType::WARN);
+			Logger::log("Duplicate atom with id " + std::to_string(id.value()) + " or symbol '" + line[1] + "' skipped.", LogType::WARN);
 		}
 	}
 	file.close();

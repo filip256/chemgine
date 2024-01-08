@@ -42,22 +42,22 @@ bool LabwareDataTable::loadFromFile(const std::string& path)
 		const auto id = DataHelpers::toUInt(line[0]);
 		const auto type = DataHelpers::toUInt(line[1]);
 
-		if (id.status == 0 || type.status == 0)
+		if (id.has_value() == false || type.has_value() == false)
 		{
 			Logger::log("Failed to load labware due to missing id or type.", LogType::BAD);
 			continue;
 		}
 
-		const auto ptr = LabwareDataFactory::get(id.result, static_cast<LabwareType>(type.result), line);
+		const auto ptr = LabwareDataFactory::get(id.value(), static_cast<LabwareType>(type.value()), line);
 		if(ptr == nullptr)
 		{
-			Logger::log("Failed to load labware with id " + std::to_string(id.result) + ".", LogType::BAD);
+			Logger::log("Failed to load labware with id " + std::to_string(id.value()) + ".", LogType::BAD);
 			continue;
 		}
 
-		if (table.emplace(id.result, ptr).second == false)
+		if (table.emplace(id.value(), ptr).second == false)
 		{
-			Logger::log("Duplicate labware with id " + std::to_string(id.result) + "skipped.", LogType::WARN);
+			Logger::log("Duplicate labware with id " + std::to_string(id.value()) + "skipped.", LogType::WARN);
 		}
 	}
 	file.close();

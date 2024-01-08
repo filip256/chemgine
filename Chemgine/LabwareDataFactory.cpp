@@ -18,7 +18,7 @@ BaseLabwareData* LabwareDataFactory::get(const LabwareIdType id, const LabwareTy
 FlaskData* LabwareDataFactory::getFlask(const LabwareIdType id,  const std::vector<std::string>& dataLine)
 {
 	const auto volume = DataHelpers::toUDouble(dataLine[3]);
-	if (volume.status == 0)
+	if (volume.has_value() == false)
 		return nullptr;
 
 	const auto portStrings = DataHelpers::parseList(dataLine[4], ';', true);
@@ -37,19 +37,19 @@ FlaskData* LabwareDataFactory::getFlask(const LabwareIdType id,  const std::vect
 		const auto y = DataHelpers::toUInt(port[2]);
 		const auto angle = DataHelpers::toUDouble(port[3]);
 
-		if (type.status == 0 || x.status == 0 || y.status == 0 || angle.status == 0)
+		if (type.has_value() == false || x.has_value() == false || y.has_value() == false || angle.has_value() == false)
 			return nullptr;
 
-		ports.emplace_back(static_cast<PortType>(type.result), x.result, y.result, angle.result);
+		ports.emplace_back(static_cast<PortType>(type.value()), x.value(), y.value(), angle.value());
 	}
 
-	return new FlaskData(id, dataLine[2], std::move(ports), volume.result, dataLine[5]);
+	return new FlaskData(id, dataLine[2], std::move(ports), volume.value(), dataLine[5]);
 }
 
 AdaptorData* LabwareDataFactory::getAdaptor(const LabwareIdType id, const std::vector<std::string>& dataLine)
 {
 	const auto volume = DataHelpers::toUDouble(dataLine[3]);
-	if (volume.status == 0)
+	if (volume.has_value() == false)
 		return nullptr;
 
 	const auto portStrings = DataHelpers::parseList(dataLine[4], ';', true);
@@ -68,11 +68,11 @@ AdaptorData* LabwareDataFactory::getAdaptor(const LabwareIdType id, const std::v
 		const auto y = DataHelpers::toUInt(port[2]);
 		const auto angle = DataHelpers::toUDouble(port[3]);
 
-		if (type.status == 0 || x.status == 0 || y.status == 0 || angle.status == 0)
+		if (type.has_value() == false || x.has_value() == false || y.has_value() == false || angle.has_value() == false)
 			return nullptr;
 
-		ports.emplace_back(static_cast<PortType>(type.result), x.result, y.result, angle.result);
+		ports.emplace_back(static_cast<PortType>(type.value()), x.value(), y.value(), angle.value());
 	}
 
-	return new AdaptorData(id, dataLine[2], std::move(ports), volume.result, dataLine[5]);
+	return new AdaptorData(id, dataLine[2], std::move(ports), volume.value(), dataLine[5]);
 }

@@ -38,19 +38,19 @@ bool BackboneDataTable::loadFromFile(const std::string& path)
 
 		const auto id = DataHelpers::toUInt(line[0]);
 
-		if (id.status == 0)
+		if (id.has_value() == false)
 		{
 			Logger::log("Missing id, backbone '" + line[1] + "' skipped.", LogType::BAD);
 			continue;
 		}
 
 		if (table.emplace(
-			id.result,
+			id.value(),
 			line[1],
-			std::move(BackboneData(id.result, line[2], line[1]))
+			std::move(BackboneData(id.value(), line[2], line[1]))
 		) == false)
 		{
-			Logger::log("Backbone with duplicate id " + std::to_string(id.result) + " skipped.", LogType::WARN);
+			Logger::log("Backbone with duplicate id " + std::to_string(id.value()) + " skipped.", LogType::WARN);
 		}
 	}
 	file.close();

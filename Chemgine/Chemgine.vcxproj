@@ -340,7 +340,6 @@
     <ClInclude Include="DataTable.hpp" />
     <ClInclude Include="Logger.hpp" />
     <ClInclude Include="MolecularStructure.hpp" />
-    <ClInclude Include="Result.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv" />

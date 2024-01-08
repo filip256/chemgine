@@ -151,8 +151,15 @@ inline std::string Amount<Unit::TORR>::unitName() noexcept { return "torr"; }
 template<>
 inline std::string Amount<Unit::PASCAL>::unitName() noexcept { return "pascal"; }
 template<>
+inline std::string Amount<Unit::JOULE>::unitName() noexcept { return "joule"; }
+template<>
 inline std::string Amount<Unit::MOLE_PER_SECOND>::unitName() noexcept { return Amount<Unit::MOLE>::unitName() + " per " + Amount<Unit::SECOND>::unitName(); }
-
+template<>
+inline std::string Amount<Unit::GRAM_PER_MOLE>::unitName() noexcept { return Amount<Unit::GRAM>::unitName() + " per " + Amount<Unit::MOLE>::unitName(); }
+template<>
+inline std::string Amount<Unit::GRAM_PER_MILLILITER>::unitName() noexcept { return Amount<Unit::GRAM>::unitName() + " per milli" + Amount<Unit::LITER>::unitName(); }
+template<>
+inline std::string Amount<Unit::JOULE_PER_MOLE>::unitName() noexcept { return Amount<Unit::JOULE>::unitName() + " per " + Amount<Unit::MOLE>::unitName(); }
 
 template<>
 template<>
@@ -170,6 +177,12 @@ template<>
 template<>
 constexpr Amount<Unit::GRAM_PER_MILLILITER>::Amount(const Amount<Unit::GRAM>& grams, const Amount<Unit::LITER>& liters) noexcept :
 	Value<double>(grams.asStd() / liters.asMilli())
+{}
+
+template<>
+template<>
+constexpr Amount<Unit::JOULE_PER_MOLE>::Amount(const Amount<Unit::JOULE>& joules, const Amount<Unit::MOLE>& moles) noexcept :
+	Value<double>(joules.asStd() / moles.asMilli())
 {}
 
 template<>
