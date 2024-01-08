@@ -13,9 +13,9 @@ Molecule::Molecule(const MoleculeIdType id) noexcept:
 }
 
 Molecule::Molecule(MolecularStructure&& structure) noexcept:
-	molarMass(structure.getMolarMass()),
 	id(dataAccessor.getSafe().molecules.findOrAdd(std::move(structure)))
 {
+	molarMass = data().getStructure().getMolarMass();
 }
 
 Molecule::Molecule(const std::string& smiles) noexcept:

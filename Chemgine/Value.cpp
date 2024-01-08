@@ -20,7 +20,7 @@ Value<T>& Value<T>::operator=(const Value<T>& other)
 }
 
 template <class T>
-bool Value<T>::operator==(const Value<T>& other) const { return std::abs(value - other.value) < epsilon; }
+bool Value<T>::operator==(const Value<T>& other) const { return std::abs(value - other.value) <= epsilon; }
 
 template <class T>
 bool Value<T>::operator!=(const Value<T>& other) const { return !(*this == other); }

@@ -21,6 +21,8 @@ public:
 	Reactant(const Reactant&) = default;
 	Reactant(Reactant&&) = default;
 
+	Amount<Unit::GRAM> getMass() const;
+
 	Amount<Unit::LITER> getVolumeAt(
 		const Amount<Unit::CELSIUS> temperature,
 		const Amount<Unit::TORR> pressure

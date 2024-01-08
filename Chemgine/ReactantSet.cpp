@@ -1,10 +1,16 @@
 #include "ReactantSet.hpp"
 
 
-ReactantSet::ReactantSet(const std::vector<Molecule>& molecules) noexcept
+ReactantSet::ReactantSet(const std::vector<Molecule>& content) noexcept
 {
-	for (size_t i = 0; i < molecules.size(); ++i)
-		add(Reactant(molecules[i], LayerType::UNKNOWN, 1.0));
+	for (size_t i = 0; i < content.size(); ++i)
+		add(Reactant(content[i], LayerType::UNKNOWN, 1.0));
+}
+
+ReactantSet::ReactantSet(const std::vector<Reactant>& content) noexcept
+{
+	for (size_t i = 0; i < content.size(); ++i)
+		add(Reactant(content[i].molecule, content[i].layer, 1.0));
 }
 
 bool ReactantSet::contains(const Reactant& reactant) const

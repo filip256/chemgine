@@ -21,5 +21,5 @@ public:
 	/// Finds all the occuring reactions for the given molecules. The order of molecules must match the order of the
 	/// reactants in the matching reaction.
 	/// </summary>
-	std::unordered_set<ConcreteReaction, ConcreteReactionHash> findOccuringReactions(const std::vector<Molecule>& molecules) const;
+	std::unordered_set<ConcreteReaction, ConcreteReactionHash> findOccuringReactions(const std::vector<Reactant>& reactants) const;
 };

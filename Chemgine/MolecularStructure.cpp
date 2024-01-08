@@ -819,7 +819,8 @@ std::pair<std::unordered_map<c_size, c_size>, uint8_t> MolecularStructure::maxim
 
 void MolecularStructure::recountImpliedHydrogens()
 {
-    impliedHydrogenCount = countImpliedHydrogens();
+    if(!isVirtualHydrogen())
+        impliedHydrogenCount = countImpliedHydrogens();
 }
 
 void MolecularStructure::copyBranch(

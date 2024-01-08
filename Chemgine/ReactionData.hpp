@@ -5,7 +5,7 @@
 #include "BaseComponentData.hpp"
 #include "Reactable.hpp"
 #include "PairHash.hpp"
-#include "Molecule.hpp"
+#include "Reactant.hpp"
 #include "Amount.hpp"
 
 typedef uint16_t ReactionIdType;
@@ -64,13 +64,13 @@ public:
 	ReactionData(const ReactionData&) = delete;
 	ReactionData(ReactionData&&) = default;
 
-	bool hasAsReactant(const Molecule& molecule) const;
+	bool hasAsReactant(const Reactant& reactant) const;
 
 	/// <summary>
 	/// If the given vector of molecules matches the reactant list, it returns the resulting concrete
 	/// products, otherwise it returns an empty vector.
 	/// </summary>
-	std::vector<Molecule> generateConcreteProducts(const std::vector<Molecule>& molecules) const;
+	std::vector<Molecule> generateConcreteProducts(const std::vector<Reactant>& molecules) const;
 
 	const std::vector<Reactable>& getReactants() const;
 	const std::vector<Reactable>& getProducts() const;

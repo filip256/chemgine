@@ -13,7 +13,8 @@ public:
 	ReactantSet() = default;
 	ReactantSet(const ReactantSet&) = delete;
 	ReactantSet(ReactantSet&&) = default;
-	ReactantSet(const std::vector<Molecule>& molecules) noexcept;
+	ReactantSet(const std::vector<Molecule>& content) noexcept;
+	ReactantSet(const std::vector<Reactant>& content) noexcept;
 
 	bool contains(const Reactant& reactant) const;
 

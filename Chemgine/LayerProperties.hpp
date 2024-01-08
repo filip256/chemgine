@@ -7,8 +7,9 @@ class Reactor;
 class LayerProperties
 {
 private:
-	Amount<Unit::LITER> volume;
 	Amount<Unit::MOLE> moles;
+	Amount<Unit::GRAM> mass;
+	Amount<Unit::LITER> volume;
 
 public:
 	LayerProperties() = default;

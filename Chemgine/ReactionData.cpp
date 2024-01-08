@@ -172,11 +172,11 @@ std::vector<Reactable> ReactionData::flatten(
 	return result;
 }
 
-bool ReactionData::hasAsReactant(const Molecule& molecule) const
+bool ReactionData::hasAsReactant(const Reactant& reactant) const
 {
 	for (size_t i = 0; i < reactants.size(); ++i)
 	{
-		if (molecule.getStructure().mapTo(reactants[i].getStructure(), true).size() != 0)
+		if (reactant.molecule.getStructure().mapTo(reactants[i].getStructure(), true).size() != 0)
 			return true;
 	}
 	return false;
@@ -232,9 +232,8 @@ std::vector<std::vector<std::pair<size_t, std::unordered_map<c_size, c_size>>>> 
 	return allowedMatches;
 }
 
-std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<Molecule>& molecules) const
+std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<Reactant>& molecules) const
 {
-	auto x = &BaseComponent::instanceCount;
 	if (reactants.size() != molecules.size())
 		return std::vector<Molecule>();
 
@@ -243,8 +242,14 @@ std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<M
 	matches.reserve(reactants.size());
 	for (size_t i = 0; i < reactants.size(); ++i)
 	{
-		matches.emplace_back(Utils::reverseMap(reactants[i].matchWith(molecules[i].getStructure())));
-		if (matches.back().empty() && reactants[i].getStructure().isVirtualHydrogen() == false)
+		if (reactants[i].getStructure().isVirtualHydrogen() && molecules[i].molecule.getStructure().isVirtualHydrogen())
+		{
+			matches.emplace_back();
+			continue;
+		}
+
+		matches.emplace_back(Utils::reverseMap(reactants[i].matchWith(molecules[i].molecule.getStructure())));
+		if (matches.back().empty())
 			return std::vector<Molecule>();
 	}
 
@@ -259,7 +264,7 @@ std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<M
 		std::unordered_map<c_size, c_size> tempMap = { {matches[p.first.first].at(p.first.second), p.second.second}};
 		MolecularStructure::copyBranch(
 			concreteProducts[p.second.first],
-			molecules[p.first.first].getStructure(),
+			molecules[p.first.first].molecule.getStructure(),
 			matches[p.first.first].at(p.first.second),
 			tempMap,
 			false,

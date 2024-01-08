@@ -15,4 +15,13 @@ public:
         hashCombine(hash, pair.second);
         return hash;
     }
+
+    template <class T1, class T2>
+    size_t operator() (const T1 first, const T2 second) const
+    {
+        size_t hash = 0;
+        hashCombine(hash, first);
+        hashCombine(hash, second);
+        return hash;
+    }
 };

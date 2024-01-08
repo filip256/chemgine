@@ -12,6 +12,11 @@ Reactant::Reactant(
 	isNew(true)
 {}
 
+Amount<Unit::GRAM> Reactant::getMass() const
+{
+	return amount.to<Unit::GRAM>(molecule.getMolarMass());
+}
+
 Amount<Unit::LITER> Reactant::getVolumeAt(
 	const Amount<Unit::CELSIUS> temperature,
 	const Amount<Unit::TORR> pressure
@@ -22,16 +27,16 @@ Amount<Unit::LITER> Reactant::getVolumeAt(
 
 bool Reactant::operator== (const Reactant& other) const
 {
-	return this->molecule.getId() == other.molecule.getId();
+	return this->layer == other.layer && this->molecule.getId() == other.molecule.getId();
 }
 
 bool Reactant::operator!= (const Reactant& other) const
 {
-	return this->molecule.getId() != other.molecule.getId();
+	return this->layer != other.layer || this->molecule.getId() != other.molecule.getId();
 }
 
 
 size_t ReactantHash::operator() (const Reactant& reactant) const
 {
-	return reactant.molecule.getId();
+	return PairHash()(reactant.molecule.getId(), toIndex(reactant.layer));
 }

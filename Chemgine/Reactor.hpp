@@ -15,6 +15,7 @@ private:
 	Amount<Unit::CELSIUS> temperature;
 	Amount<Unit::TORR> pressure;
 	Amount<Unit::MOLE> totalMoles;
+	Amount<Unit::GRAM> totalMass;
 	Amount<Unit::LITER> totalVolume;
 
 	const BaseApproximator* temperatureSpeedApproximator = nullptr;
@@ -33,7 +34,6 @@ private:
 	void removeNegligibles();
 	void findNewReactions();
 	void runReactions();
-	void distributeUnknownLayer();
 
 public:
 	Reactor(
@@ -48,8 +48,14 @@ public:
 	void add(const Reactant& reactant);
 	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount);
 
+	LayerType findLayerFor(const Reactant& reactant) const;
+
 	Amount<Unit::MOLE> getAmountOf(const Reactant& reactant) const;
 	Amount<Unit::MOLE> getAmountOf(const ReactantSet& reactantSet) const;
+
+	Amount<Unit::MOLE> getTotalMoles() const;
+	Amount<Unit::GRAM> getTotalMass() const;
+	Amount<Unit::LITER> getTotalVolume() const;
 
 	void tick();
 

@@ -10,7 +10,7 @@ private:
 	static DataStoreAccessor dataAccessor;
 
 	const MoleculeIdType id;
-	const Amount<Unit::GRAM_PER_MOLE> molarMass;
+	Amount<Unit::GRAM_PER_MOLE> molarMass;
 
 public:
 	Molecule(const MoleculeIdType id) noexcept;

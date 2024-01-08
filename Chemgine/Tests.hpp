@@ -15,6 +15,7 @@
 class MolecularStructureTest
 {
 private:
+	bool passed = true;
 	std::vector<MolecularStructure> setA, setB, setC, setD, setE, setF;
 	std::unordered_map<std::string, std::vector<uint8_t>> res;
 
@@ -170,6 +171,7 @@ public:
 				Logger::log("Test failed > MolecularStructure > mapTo > #" + std::to_string(i)
 					+ ": expected=" + std::to_string(res["mapTo"][i]) + "\n"
 					+ setA[i].print() + '\n' + setB[i].print(), LogType::BAD);
+				passed = false;
 			}
 
 			if ((setA[i] == setB[i]) != res["=="][i])
@@ -177,6 +179,7 @@ public:
 				Logger::log("Test failed > MolecularStructure > == > #" + std::to_string(i)
 					+ ": expected=" + std::to_string(res["=="][i]) + "\n"
 					+ setA[i].print() + '\n' + setB[i].print(), LogType::BAD);
+				passed = false;
 			}
 		}
 
@@ -187,6 +190,7 @@ public:
 				Logger::log("Test failed > MolecularStructure > maximalMapTo > #" + std::to_string(i)
 					+ ": expected=" + std::to_string(res["maximal"][i]) + "\n"
 					+ setC[i].print() + '\n' + setD[i].print(), LogType::BAD);
+				passed = false;
 			}
 		}
 
@@ -197,6 +201,7 @@ public:
 				Logger::log("Test failed > MolecularStructure > serialize/deserialize > #" + std::to_string(i)
 					+ ": expected= true\n"
 					+ setC[i].print(), LogType::BAD);
+				passed = false;
 			}
 		}
 
@@ -209,8 +214,61 @@ public:
 				Logger::log("Test failed > MolecularStructure > addSubstituents > #" + std::to_string(i)
 					+ ": expected=" + std::to_string(res["addSub"][i]) + "\n"
 					+ setE[i].print() + '\n' + setF[i].print(), LogType::BAD);
+				passed = false;
 			}
 		}
+	}
+
+	bool hasPassed()
+	{
+		return passed;
+	}
+};
+
+
+
+class ReactorTest
+{
+private:
+	bool passed = true;
+	Reactor* reactorA = nullptr;
+
+public:
+	void initialize()
+	{
+		reactorA = new Reactor(20.0, 760.0);
+		reactorA->add(Reactant(Molecule("HH"), LayerType::POLAR, 2.0));
+		reactorA->add(Reactant(Molecule("CC=C"), LayerType::POLAR, 2.0));
+		reactorA->add(Reactant(Molecule("CC(=O)OCC"), LayerType::POLAR, 2.0));
+		reactorA->add(Reactant(Molecule("O"), LayerType::POLAR, 3.0));
+	}
+
+	void runTests()
+	{
+		// conservation of mass
+		const auto massBefore = reactorA->getTotalMass();
+		for (size_t i = 0; i < 32; ++i)
+		{
+			reactorA->tick();
+			const auto massAfter = reactorA->getTotalMass();
+
+			if (std::abs((massAfter - massBefore).asStd()) > 1e-12)
+			{
+				Logger::log("Test failed > Reactor > mass conservation > #1: expected=" + std::to_string(massBefore.asStd()) + "   actual=" + std::to_string(massAfter.asStd()) + "\n", LogType::BAD);
+				passed = false;
+			}
+		}
+	}
+
+	bool hasPassed()
+	{
+		return passed;
+	}
+
+	~ReactorTest()
+	{
+		if (reactorA != nullptr)
+			delete reactorA;
 	}
 };
 
@@ -219,6 +277,7 @@ class TestManager
 private:
 	DataStore store;
 	MolecularStructureTest molecularStructureTest;
+	ReactorTest reactorTest;
 
 public:
 	TestManager()
@@ -239,18 +298,27 @@ public:
 			.loadLabwareData("Data/LabwareData.csv");
 
 		molecularStructureTest.initialize();
+		reactorTest.initialize();
 		const auto end = std::chrono::steady_clock::now();
 		std::cout << "Test initialization completed in " +
 			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.\n";
+
 	}
 
 	void runAll()
 	{
 		const auto begin = std::chrono::steady_clock::now();
 		molecularStructureTest.runTests();
+		reactorTest.runTests();
 		const auto end = std::chrono::steady_clock::now();
 		std::cout<<"Test execution completed in " +
 			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.\n";
+
+		if (molecularStructureTest.hasPassed())
+			Logger::log("MolecularStructure tests passed.", LogType::GOOD);
+		if (reactorTest.hasPassed())
+			Logger::log("Reactor tests passed.", LogType::GOOD);
+
 		Logger::exitContext();
 	}
 };

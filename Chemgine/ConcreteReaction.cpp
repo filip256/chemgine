@@ -3,7 +3,7 @@
 
 ConcreteReaction::ConcreteReaction(
 	const ReactionData& baseReaction,
-	const std::vector<Molecule>& reactants,
+	const std::vector<Reactant>& reactants,
 	const std::vector<Molecule>& products
 ) noexcept :
 	baseReaction(baseReaction),

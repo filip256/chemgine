@@ -88,21 +88,21 @@ int main()
         //UIContext uiContext;
         //uiContext.run();
 
-        Reactor reactor(20.0, 760.0);
-        reactor.add(Molecule("HH"), 1.0);
-        reactor.add(Molecule("CC=C"), 1.0);
-        reactor.add(Molecule("CCC(=O)O"), 3.0);
-        reactor.add(Molecule("CC(=O)O"), 2.0);
-        reactor.add(Molecule("CO"), 2.0);
-        reactor.add(Molecule("CCCO"), 2.0);
-        reactor.add(Molecule("C=CCO"), 2.0);
+        //Reactor reactor(20.0, 760.0);
+        //reactor.add(Molecule("HH"), 1.0);
+        //reactor.add(Molecule("CC=C"), 1.0);
+        //reactor.add(Molecule("CCC(=O)O"), 3.0);
+        //reactor.add(Molecule("CC(=O)O"), 2.0);
+        //reactor.add(Molecule("CO"), 2.0);
+        //reactor.add(Molecule("CCCO"), 2.0);
+        //reactor.add(Molecule("C=CCO"), 2.0);
 
-        while (true)
-        {
-            const auto begin = std::chrono::steady_clock::now();
-            reactor.tick();
-            std::cout << "Tick in: " + std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count() / 1000000.0) + "s.\n";
-        }
+        //while (true)
+        //{
+        //    const auto begin = std::chrono::steady_clock::now();
+        //    reactor.tick();
+        //    std::cout << "Tick in: " + std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count() / 1000000.0) + "s.\n";
+        //}
 
         //MolecularStructure a("O=C(OC)C");
         //MolecularStructure a("CC(=O)OC");

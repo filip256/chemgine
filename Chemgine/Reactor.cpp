@@ -28,6 +28,10 @@ void Reactor::addToLayer(const Reactant& reactant, const uint8_t revert)
 	totalMoles += reactant.amount * revert;
 	layerProperties[toIndex(reactant.layer)].moles += reactant.amount * revert;
 
+	const auto mass = reactant.getMass() * revert;
+	totalMass += mass;
+	layerProperties[toIndex(reactant.layer)].mass += mass;
+
 	const auto vol = reactant.getVolumeAt(temperature, pressure) * revert;
 	totalVolume += vol;
 	layerProperties[toIndex(reactant.layer)].volume += vol;
@@ -53,7 +57,7 @@ void Reactor::findNewReactions()
 		if (r1.isNew)
 		{
 			cachedReactions.merge(std::move(
-				dataAccessor.get().reactions.findOccuringReactions(std::vector<Molecule>{ r1.molecule })
+				dataAccessor.get().reactions.findOccuringReactions(std::vector<Reactant>{ r1 })
 			));
 		}
 
@@ -62,7 +66,7 @@ void Reactor::findNewReactions()
 		{
 			if (r1.isNew || r2.isNew)
 				cachedReactions.merge(std::move(
-					dataAccessor.get().reactions.findOccuringReactions(std::vector<Molecule>{ r1.molecule, r2.molecule })
+					dataAccessor.get().reactions.findOccuringReactions(std::vector<Reactant>{ r1, r2 })
 				));
 		}
 
@@ -97,19 +101,9 @@ void Reactor::runReactions()
 		for (const auto& i : r.getReactants())
 			add(Reactant(i.molecule, i.layer, i.amount * speedCoef.asStd() * -1));
 		for (const auto& i : r.getProducts())
-			add(Reactant(i.molecule, i.layer, i.amount * speedCoef.asStd()));
+			add(Reactant(i.molecule, findLayerFor(i), i.amount * speedCoef.asStd()));
 	}
 }  
-
-void Reactor::distributeUnknownLayer()
-{
-	for (auto& r : content)
-		if (r.layer == LayerType::UNKNOWN)
-		{
-			r.layer = LayerType::POLAR;
-			addToLayer(r);
-		}
-}
 
 void Reactor::add(Reactor& other)
 {
@@ -156,11 +150,12 @@ void Reactor::add(const Reactant& reactant)
 
 void Reactor::add(const Molecule& molecule, const Amount<Unit::MOLE> amount)
 {
-	const auto temp = content.emplace(molecule, LayerType::UNKNOWN, amount);
-	if (temp.second == false)
-		temp.first->amount += amount;
-	else
-		temp.first->isNew = true;
+	add(Reactant(molecule, LayerType::UNKNOWN, amount));
+}
+
+LayerType Reactor::findLayerFor(const Reactant& reactant) const
+{
+	return LayerType::POLAR;
 }
 
 Amount<Unit::MOLE> Reactor::getAmountOf(const Reactant& reactant) const
@@ -177,10 +172,24 @@ Amount<Unit::MOLE> Reactor::getAmountOf(const ReactantSet& reactantSet) const
 	return s;
 }
 
+Amount<Unit::MOLE> Reactor::getTotalMoles() const
+{
+	return totalMoles;
+}
+
+Amount<Unit::GRAM> Reactor::getTotalMass() const
+{
+	return totalMass;
+}
+
+Amount<Unit::LITER> Reactor::getTotalVolume() const
+{
+	return totalVolume;
+}
+
 void Reactor::tick()
 {
 	removeNegligibles();
-	distributeUnknownLayer();
 	findNewReactions();
 	runReactions();
 }

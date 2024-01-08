@@ -25,6 +25,9 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 	std::getline(file, buffer);
 	while (std::getline(file, buffer))
 	{
+		if (buffer.starts_with('#'))
+			continue;
+
 		auto line = DataHelpers::parseList(buffer, ',');
 
 		const auto id = DataHelpers::toUInt(line[0]);
@@ -112,14 +115,14 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 	return true;
 }
 
-std::unordered_set<ConcreteReaction, ConcreteReactionHash> ReactionDataTable::findOccuringReactions(const std::vector<Molecule>& molecules) const
+std::unordered_set<ConcreteReaction, ConcreteReactionHash> ReactionDataTable::findOccuringReactions(const std::vector<Reactant>& reactants) const
 {
 	std::unordered_set<ConcreteReaction, ConcreteReactionHash> result;
 	for (size_t i = 0; i < table.size(); ++i)
 	{
-		const auto& p = table[i].generateConcreteProducts(molecules);
-		if (p.size())
-			result.insert(ConcreteReaction(table[i], molecules, p));
+		const auto& products = table[i].generateConcreteProducts(reactants);
+		if (products.size())
+			result.insert(ConcreteReaction(table[i], reactants, products));
 	}
 	return result;
 }
