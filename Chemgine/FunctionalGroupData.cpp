@@ -13,3 +13,16 @@ FunctionalGroupData::FunctionalGroupData(
 		Logger::log("Complete structure with id " + std::to_string(id) + " defined as functional group.", LogType::WARN);
 	}
 }
+
+FunctionalGroupData::FunctionalGroupData(
+	const ComponentIdType id,
+	const std::string& name,
+	MolecularStructure&& structure
+) noexcept :
+	CompositeComponentData(id, name, std::move(structure))
+{
+	if (this->structure.isComplete())
+	{
+		Logger::log("Complete structure with id " + std::to_string(id) + " defined as functional group.", LogType::WARN);
+	}
+}

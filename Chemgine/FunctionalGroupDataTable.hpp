@@ -13,4 +13,6 @@ public:
 	bool loadFromFile(const std::string& path);
 
 	size_t findFirst(const MolecularStructure& structure) const;
+
+	ComponentIdType findOrAdd(MolecularStructure&& structure);
 };

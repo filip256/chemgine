@@ -179,6 +179,9 @@ Tasks:
   ?. Implement algorithm using BFS
 ---
   DONE. Molecular structure improvements: isNormalized field (checks for req methods), implied hydrogen clarifications
+---
+  1. Fix single key DataTables
+  2. Fix Reactable id clash (Molecule/Component)
 
 
 Possible optimizations:
@@ -212,6 +215,16 @@ Categorizations:
    position of the methyls. Radicals could always be brought down to the smallest index.
 
 
+   Reaction activation requirements:
+    - all reactants are present in compatible reactor layers
+         add trigger: new reactant added
+    - activation energy is reached
+         cache trigger: activation energy is within range
+    - temperature is sufficient
+         cache trigger: min react temp is reached
+    - catalysts are present
+         cache trigger: always
+         add trigger: new reactant added
 
    -----------------------------------------------------------------------------------------------------------------
 

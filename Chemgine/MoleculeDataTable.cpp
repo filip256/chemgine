@@ -75,7 +75,6 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 		const auto& sdA = approximators.add(SplineApproximator(0, "", std::move(sdS)));
 		const auto& ldA = approximators.add(SplineApproximator(0, "", std::move(ldS)));
 
-
 		if (table.emplace(
 			id.value(),
 			line[1],
@@ -103,6 +102,9 @@ size_t MoleculeDataTable::findFirst(const MolecularStructure& structure) const
 
 MoleculeIdType MoleculeDataTable::findOrAdd(MolecularStructure&& structure)
 {
+	if (structure.isEmpty())
+		return 0;
+
 	const auto idx = findFirst(structure);
 	if (idx != npos)
 		return table[idx].id;

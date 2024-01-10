@@ -14,12 +14,33 @@ std::vector<std::string> DataHelpers::parseList(const std::string& line, const c
 				result.emplace_back(std::move(line.substr(lastComma + 1, i - lastComma - 1)));
 			lastComma = i;
 		}
-	result.emplace_back(std::move(line.substr(lastComma + 1)));
+	if (ignoreEmpty == false || lastComma + 1 < line.size())
+		result.emplace_back(std::move(line.substr(lastComma + 1)));
+	return result;
+}
+
+std::vector<std::vector<std::string>> DataHelpers::parseLists(const std::string& line, const char outSep, const char inSep, const bool ignoreEmpty)
+{
+	const auto outer = parseList(line, outSep, ignoreEmpty);
+	std::vector<std::vector<std::string>> result;
+	result.reserve(outer.size());
+
+	for (size_t i = 0; i < outer.size(); ++i)
+	{
+		const auto t = parseList(outer[i], inSep, ignoreEmpty);
+
+		if(ignoreEmpty == false || t.size())
+			result.emplace_back(std::move(t));
+	}
+
 	return result;
 }
 
 std::optional<int> DataHelpers::toInt(const std::string& str)
 {
+	if (str.empty())
+		return std::nullopt;
+
 	try
 	{
 		return std::optional<int>(std::stoi(str));
@@ -46,6 +67,9 @@ std::optional<unsigned int> DataHelpers::toUInt(const std::string& str)
 
 std::optional<double> DataHelpers::toDouble(const std::string& str)
 {
+	if(str.empty())
+		return std::nullopt;
+
 	try
 	{
 		return std::optional<double>(std::stod(str));
@@ -123,5 +147,5 @@ std::optional<Spline<float>> DataHelpers::toSpline(const std::string& str)
 		points.emplace_back(p.value());
 	}
 
-	return std::optional<Spline<float>>(Spline(std::move(points)));
+	return points.empty() ? std::nullopt : std::optional<Spline<float>>(Spline(std::move(points)));
 }

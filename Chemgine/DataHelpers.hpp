@@ -11,13 +11,21 @@ class DataHelpers
 {
 public:
 	/// <summary>
-	/// Parses a string consisting of words delimited by a character  and returns a vector of these words
+	/// Parses a string consisting of tokens delimited by a separator and returns a vector of these tokens
 	/// </summary>
 	static std::vector<std::string> parseList(
 		const std::string& csvLine,
 		const char sep,
 		const bool ignoreEmpty = false);
 
+	/// <summary>
+	/// Parses a string consisting of arrays of tokens delimited by separators and returns a vector of vectors of these tokens
+	/// </summary>
+	static std::vector<std::vector<std::string>> parseLists(
+		const std::string& csvLine,
+		const char outSep,
+		const char inSep,
+		const bool ignoreEmpty = false);
 
 	/// <summary>
 	/// Converts a string to an integer

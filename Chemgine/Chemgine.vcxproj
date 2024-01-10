@@ -199,6 +199,7 @@
     <ClCompile Include="BaseLabwareComponent.cpp" />
     <ClCompile Include="BaseLabwareData.cpp" />
     <ClCompile Include="BaseReactionCondition.cpp" />
+    <ClCompile Include="Catalyst.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="CompositeComponentData.cpp" />
     <ClCompile Include="ConcreteReaction.cpp" />
@@ -259,6 +260,7 @@
     <ClInclude Include="BaseLabwareComponent.hpp" />
     <ClInclude Include="BaseLabwareData.hpp" />
     <ClInclude Include="BaseReactionCondition.hpp" />
+    <ClInclude Include="Catalyst.hpp" />
     <ClInclude Include="Collision.hpp" />
     <ClInclude Include="CompositeComponent.hpp" />
     <ClCompile Include="DataHelpers.cpp" />

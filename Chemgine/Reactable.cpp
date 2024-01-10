@@ -44,19 +44,14 @@ std::unordered_map<c_size, c_size> Reactable::matchWith(const MolecularStructure
 	return std::unordered_map<c_size, c_size>();
 }
 
-Reactable Reactable::get(const std::string& smiles)
+std::optional<Reactable> Reactable::get(const std::string& smiles)
 {
-	const MolecularStructure structure(smiles);
+	MolecularStructure structure(smiles);
+	if (structure.isEmpty())
+		return std::nullopt;
 
 	if (structure.isComplete())
-	{
-		const auto idx = dataAccessor.get().molecules.findFirst(structure);
-		return Reactable(idx == DataStore::npos ? 0 : dataAccessor.get().molecules[idx].id, false);
-	}
-	else
-	{
-		const auto idx = dataAccessor.get().functionalGroups.findFirst(structure);
-		return Reactable(idx == DataStore::npos ? 0 : dataAccessor.get().functionalGroups[idx].id, true);
-	}
+		return Reactable(dataAccessor.get().molecules.findOrAdd(std::move(structure)), false);
 
+	return Reactable(dataAccessor.get().functionalGroups.findOrAdd(std::move(structure)), true);
 }

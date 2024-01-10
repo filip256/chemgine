@@ -318,6 +318,9 @@
     <ClCompile Include="Formulas.cpp">
       <Filter>Source Files\Data</Filter>
     </ClCompile>
+    <ClCompile Include="Catalyst.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -574,6 +577,9 @@
     </ClInclude>
     <ClInclude Include="Formulas.hpp">
       <Filter>Header Files\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="Catalyst.hpp">
+      <Filter>Header Files\Reactions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

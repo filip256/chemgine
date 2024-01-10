@@ -381,6 +381,11 @@ std::unordered_map<ComponentIdType, c_size> MolecularStructure::getComponentCoun
     return result;
 }
 
+bool MolecularStructure::isEmpty() const
+{
+    return impliedHydrogenCount == 0 && components.empty();
+}
+
 c_size MolecularStructure::componentCount() const
 {
     return components.size();

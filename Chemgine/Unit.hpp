@@ -21,6 +21,8 @@ enum class Unit : uint16_t
 
 	WATT,
 
+	MOLAR_PERCENT,
+
 	MOLE_PER_SECOND,
 	GRAM_PER_MOLE,
 	GRAM_PER_MILLILITER,

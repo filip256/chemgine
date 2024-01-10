@@ -12,7 +12,7 @@ class DataStore
 {
 public:
 	AtomDataTable atoms;
-	FunctionalGroupDataTable functionalGroups;
+	mutable FunctionalGroupDataTable functionalGroups;
 	BackboneDataTable backbones;
 
 	ApproximatorDataTable approximators;

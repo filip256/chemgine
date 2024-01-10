@@ -6,6 +6,7 @@
 #include "Reactable.hpp"
 #include "PairHash.hpp"
 #include "Reactant.hpp"
+#include "Catalyst.hpp"
 #include "Amount.hpp"
 
 typedef uint16_t ReactionIdType;
@@ -15,6 +16,7 @@ class ReactionData
 private:
 	std::vector<Reactable> reactants;
 	std::vector<Reactable> products;
+	std::vector<std::vector<Catalyst>> catalysts;
 	std::unordered_map<std::pair<size_t, c_size>, std::pair<size_t, c_size>, PairHash> componentMapping;
 
 	static std::vector<Reactable> flatten(
@@ -23,7 +25,6 @@ private:
 	static bool balance(
 		std::vector<std::pair<Reactable, uint8_t>>& reactants,
 		std::vector<std::pair<Reactable, uint8_t>>& products);
-
 
 	void enumerateReactantPairs(
 		const std::vector<Molecule>& molecules,
@@ -50,6 +51,7 @@ public:
 	const ReactionIdType id;
 	const Amount<Unit::MOLE_PER_SECOND> baseSpeed;
 	const Amount<Unit::CELSIUS> baseTemperature;
+	const Amount<Unit::JOULE_PER_MOLE> activationEnergy;
 	const std::string name;
 
 	ReactionData(
@@ -57,8 +59,10 @@ public:
 		const std::string& name,
 		const std::vector<std::pair<Reactable, uint8_t>>& reactants,
 		const std::vector<std::pair<Reactable, uint8_t>>& products,
+		std::vector<std::vector<Catalyst>> && catalysts,
 		const Amount<Unit::MOLE_PER_SECOND> baseSpeed,
-		const Amount<Unit::CELSIUS> baseTemperature
+		const Amount<Unit::CELSIUS> baseTemperature,
+		const Amount<Unit::JOULE_PER_MOLE> activationEnergy
 	) noexcept;
 
 	ReactionData(const ReactionData&) = delete;
@@ -74,7 +78,7 @@ public:
 
 	const std::vector<Reactable>& getReactants() const;
 	const std::vector<Reactable>& getProducts() const;
-
+	const std::vector<std::vector<Catalyst>>& getCatalysts() const;
 
 	friend class ReactionDataTable;
 };

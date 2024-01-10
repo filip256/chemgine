@@ -39,7 +39,7 @@ template<class KeyT1, class KeyT2, class ObjT>
 template<class T, typename>
 T DataTable<KeyT1, KeyT2, ObjT>::getFreeId() const
 {
-	size_t id = 201;
+	static size_t id = 201;
 	while (table.containsKey1(id) && id != 0) ++id; // overflow protection
 	return id;
 }

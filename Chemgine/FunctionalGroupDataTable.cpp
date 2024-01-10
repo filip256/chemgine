@@ -68,3 +68,17 @@ size_t FunctionalGroupDataTable::findFirst(const MolecularStructure& structure) 
 
 	return npos;
 }
+
+ComponentIdType FunctionalGroupDataTable::findOrAdd(MolecularStructure&& structure)
+{
+	if (structure.isEmpty())
+		return 0;
+
+	const auto idx = findFirst(structure);
+	if (idx != npos)
+		return table[idx].id;
+
+	const auto id = getFreeId();
+	table.emplace(id, std::to_string(id), FunctionalGroupData(id, "?", std::move(structure)));
+	return id;
+}

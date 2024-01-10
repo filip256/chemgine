@@ -150,10 +150,15 @@ public:
     std::unordered_map<ComponentIdType, c_size> getComponentCountMap() const;
 
     /// <summary>
-    /// Hydrogens not included.
+    /// Returns true if the molecule contains no real or virtual atoms.
     /// Complexity: O(1)
     /// </summary>
-    /// <returns></returns>
+    bool isEmpty() const;
+
+    /// <summary>
+    /// Virtual hydrogens not included.
+    /// Complexity: O(1)
+    /// </summary>
     inline c_size componentCount() const;
 
     /// <summary>

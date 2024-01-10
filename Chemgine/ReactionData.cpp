@@ -10,15 +10,19 @@ ReactionData::ReactionData(
 	const std::string& name,
 	const std::vector<std::pair<Reactable, uint8_t>>& reactants,
 	const std::vector<std::pair<Reactable, uint8_t>>& products,
+	std::vector<std::vector<Catalyst>>&& catalysts,
 	const Amount<Unit::MOLE_PER_SECOND> baseSpeed,
-	const Amount<Unit::CELSIUS> baseTemperature
+	const Amount<Unit::CELSIUS> baseTemperature,
+	const Amount<Unit::JOULE_PER_MOLE> activationEnergy
 ) noexcept :
 	id(id),
 	baseSpeed(baseSpeed),
 	baseTemperature(baseTemperature),
+	activationEnergy(activationEnergy),
 	name(name),
 	reactants(flatten(reactants)),
-	products(flatten(products))
+	products(flatten(products)),
+	catalysts(std::move(catalysts))
 {}
 
 bool ReactionData::balance(
@@ -292,4 +296,9 @@ const std::vector<Reactable>& ReactionData::getReactants() const
 const std::vector<Reactable>& ReactionData::getProducts() const
 {
 	return products;
+}
+
+const std::vector<std::vector<Catalyst>>& ReactionData::getCatalysts() const
+{
+	return catalysts;
 }
