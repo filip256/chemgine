@@ -351,6 +351,8 @@
     <None Include="Data\MoleculeData.csv" />
     <None Include="Data\ReactionData.csv" />
     <None Include="diagram.cd" />
+    <None Include="Out\functionalgroups.out.csv" />
+    <None Include="Out\molecules.out.csv" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Planning.txt" />

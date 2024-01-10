@@ -118,6 +118,9 @@
     <Filter Include="Source Files\Approximators">
       <UniqueIdentifier>{b1083ec7-3a36-4415-a955-cfe806be11d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Out">
+      <UniqueIdentifier>{cdba90ba-5857-45dc-b793-4493854a7f30}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataStore.cpp">
@@ -601,6 +604,12 @@
     </None>
     <None Include="Data\LabwareData.csv">
       <Filter>Resource Files\Data</Filter>
+    </None>
+    <None Include="Out\functionalgroups.out.csv">
+      <Filter>Resource Files\Out</Filter>
+    </None>
+    <None Include="Out\molecules.out.csv">
+      <Filter>Resource Files\Out</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

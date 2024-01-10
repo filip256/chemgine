@@ -15,6 +15,7 @@ public:
 	MoleculeDataTable(const MoleculeDataTable&) = delete;
 
 	bool loadFromFile(const std::string& path);
+	bool saveToFile(const std::string& path);
 
 	size_t findFirst(const MolecularStructure& structure) const;
 

@@ -1040,6 +1040,9 @@ std::string MolecularStructure::rToSMILES(c_size c, c_size prev, std::vector<uin
 
 std::string MolecularStructure::toSMILES() const
 {
+    if (isVirtualHydrogen()) // pure virtual hydrogen
+        return "HH";
+
     std::vector<uint8_t> visited(components.size(), false);
     uint8_t cycleCount = 0;
     return rToSMILES(0, 0, visited, cycleCount);
@@ -1048,6 +1051,9 @@ std::string MolecularStructure::toSMILES() const
 
 std::string MolecularStructure::serialize() const
 {
+    if (isVirtualHydrogen()) // pure virtual hydrogen
+        return "h";
+
     std::string result;
     for (c_size i = 0; i < components.size(); ++i)
         result += std::to_string(components[i]->getId()) + ';';
@@ -1066,6 +1072,12 @@ bool MolecularStructure::deserialize(const std::string& str)
 {
     clear();
     
+    if (str == "h") // pure virtual hydrogen
+    {
+        impliedHydrogenCount = 2;
+        return true;
+    }
+
     const auto tokens = DataHelpers::parseList(str, '_');
     if (tokens.empty())
     {

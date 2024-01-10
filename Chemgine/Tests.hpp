@@ -300,9 +300,13 @@ public:
 		molecularStructureTest.initialize();
 		reactorTest.initialize();
 		const auto end = std::chrono::steady_clock::now();
-		std::cout << "Test initialization completed in " +
-			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.\n";
+		Logger::log("Test initialization completed in " +
+			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.\n");
+	}
 
+	~TestManager()
+	{
+		Logger::exitContext();
 	}
 
 	void runAll()
@@ -311,14 +315,23 @@ public:
 		molecularStructureTest.runTests();
 		reactorTest.runTests();
 		const auto end = std::chrono::steady_clock::now();
-		std::cout<<"Test execution completed in " +
-			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.\n";
+		Logger::log("Test execution completed in " +
+			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.\n");
 
 		if (molecularStructureTest.hasPassed())
 			Logger::log("MolecularStructure tests passed.", LogType::GOOD);
 		if (reactorTest.hasPassed())
 			Logger::log("Reactor tests passed.", LogType::GOOD);
+	}
 
-		Logger::exitContext();
+	void runPersist()
+	{
+		const auto begin = std::chrono::steady_clock::now();
+		store.saveFunctionalGroupsData("Out/functionalgroups.out.csv")
+			.saveMoleculesData("Out/molecules.out.csv");
+		const auto end = std::chrono::steady_clock::now();
+
+		Logger::log("Dump completed in " +
+			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.\n");
 	}
 };

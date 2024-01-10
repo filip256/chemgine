@@ -37,6 +37,9 @@ public:
 	DataStore& loadLabwareData(const std::string& path);
 
 	
+	DataStore& saveFunctionalGroupsData(const std::string& path);
+	DataStore& saveMoleculesData(const std::string& path);
+	
 
 	static constexpr size_t npos = static_cast<size_t>(-1);
 };

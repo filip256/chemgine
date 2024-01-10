@@ -66,8 +66,11 @@ int main()
 {
     {
 #ifndef NDEBUG
+    {
         TestManager tests;
         tests.runAll();
+        tests.runPersist();
+    }
 #endif
 
 
@@ -110,6 +113,9 @@ int main()
         //std::cout << a.print() << '\n' << b.print() << '\n';
         //std::cout << MolecularStructure("CC1COC2CN(C)C(C)C3OCC1C23").serialize()<<'\n';
         //std::cout << MolecularStructure("C1C2CC12").toSMILES() << '\n';
+
+        //store.saveFunctionalGroupsData("Out/functionalgroups.out.csv")
+        //    .saveMoleculesData("Out/molecules.out.csv");
     }
 
     if (BaseComponent::instanceCount != 0)

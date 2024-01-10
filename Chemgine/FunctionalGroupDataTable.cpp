@@ -60,6 +60,26 @@ bool FunctionalGroupDataTable::loadFromFile(const std::string& path)
 	return true;
 }
 
+bool FunctionalGroupDataTable::saveToFile(const std::string& path)
+{
+	std::ofstream file(path);
+
+	if (!file.is_open())
+	{
+		Logger::log("Failed to open file '" + path + "'.", LogType::BAD);
+		return false;
+	}
+
+	for (size_t i = 0; i < table.size(); ++i)
+	{
+		const auto& e = table[i];
+		file << e.id << ',' << e.getStructure().serialize() << ',' << e.name << '\n';
+	}
+
+	file.close();
+	return true;
+}
+
 size_t FunctionalGroupDataTable::findFirst(const MolecularStructure& structure) const
 {
 	for (size_t i = 0; i < table.size(); ++i)

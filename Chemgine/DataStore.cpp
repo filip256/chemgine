@@ -50,3 +50,15 @@ DataStore& DataStore::loadLabwareData(const std::string& path)
 	labware.loadFromFile(path);
 	return *this;
 }
+
+DataStore& DataStore::saveFunctionalGroupsData(const std::string& path)
+{
+	functionalGroups.saveToFile(path);
+	return *this;
+}
+
+DataStore& DataStore::saveMoleculesData(const std::string& path)
+{
+	molecules.saveToFile(path);
+	return *this;
+}
