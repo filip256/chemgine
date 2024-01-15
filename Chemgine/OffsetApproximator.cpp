@@ -2,11 +2,10 @@
 
 OffsetApproximator::OffsetApproximator(
 	const ApproximatorIdType id,
-	const std::string& name,
 	const BaseApproximator& base,
 	const double offset
 ) noexcept :
-	BaseApproximator(id, name, base.type),
+	BaseApproximator(id),
 	base(base),
 	offset(offset)
 {}

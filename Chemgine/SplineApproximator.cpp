@@ -2,10 +2,9 @@
 
 SplineApproximator::SplineApproximator(
 	const ApproximatorIdType id,
-	const std::string& name,
 	Spline<float>&& spline
 ) noexcept :
-	BaseApproximator(id, name, ApproximatorType::SPLINE),
+	BaseApproximator(id),
 	spline(std::move(spline))
 {}
 

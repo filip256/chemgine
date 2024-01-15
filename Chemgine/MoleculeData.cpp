@@ -8,7 +8,12 @@ MoleculeData::MoleculeData(
 	const BaseApproximator& meltingPointApproximator,
 	const BaseApproximator& boilingPointApproximator,
 	const BaseApproximator& solidDensityApproximator,
-	const BaseApproximator& liquidDensityApproximator
+	const BaseApproximator& liquidDensityApproximator,
+	const BaseApproximator& solidHeatCapacityApproximator,
+	const BaseApproximator& liquidHeatCapacityApproximator,
+	const BaseApproximator& fusionLatentHeatApproximator,
+	const BaseApproximator& vaporizationLatentHeatApproximator,
+	const BaseApproximator& sublimationLatentHeatApproximator
 ) noexcept :
 	id(id),
 	name(name),
@@ -16,7 +21,12 @@ MoleculeData::MoleculeData(
 	meltingPointApproximator(meltingPointApproximator),
 	boilingPointApproximator(boilingPointApproximator),
 	solidDensityApproximator(solidDensityApproximator),
-	liquidDensityApproximator(liquidDensityApproximator)
+	liquidDensityApproximator(liquidDensityApproximator),
+	solidHeatCapacityApproximator(solidHeatCapacityApproximator),
+	liquidHeatCapacityApproximator(liquidHeatCapacityApproximator),
+	fusionLatentHeatApproximator(fusionLatentHeatApproximator),
+	vaporizationLatentHeatApproximator(vaporizationLatentHeatApproximator),
+	sublimationLatentHeatApproximator(sublimationLatentHeatApproximator)
 {
 	if (this->structure.isComplete() == false)
 	{
@@ -30,7 +40,12 @@ MoleculeData::MoleculeData(
 	const BaseApproximator& meltingPointApproximator,
 	const BaseApproximator& boilingPointApproximator,
 	const BaseApproximator& solidDensityApproximator,
-	const BaseApproximator& liquidDensityApproximator
+	const BaseApproximator& liquidDensityApproximator,
+	const BaseApproximator& solidHeatCapacityApproximator,
+	const BaseApproximator& liquidHeatCapacityApproximator,
+	const BaseApproximator& fusionLatentHeatApproximator,
+	const BaseApproximator& vaporizationLatentHeatApproximator,
+	const BaseApproximator& sublimationLatentHeatApproximator
 ) noexcept :
 	id(id),
 	name("?"),
@@ -38,7 +53,12 @@ MoleculeData::MoleculeData(
 	meltingPointApproximator(meltingPointApproximator),
 	boilingPointApproximator(boilingPointApproximator),
 	solidDensityApproximator(solidDensityApproximator),
-	liquidDensityApproximator(liquidDensityApproximator)
+	liquidDensityApproximator(liquidDensityApproximator),
+	solidHeatCapacityApproximator(solidHeatCapacityApproximator),
+	liquidHeatCapacityApproximator(liquidHeatCapacityApproximator),
+	fusionLatentHeatApproximator(fusionLatentHeatApproximator),
+	vaporizationLatentHeatApproximator(vaporizationLatentHeatApproximator),
+	sublimationLatentHeatApproximator(sublimationLatentHeatApproximator)
 {
 	if (this->structure.isComplete() == false)
 	{

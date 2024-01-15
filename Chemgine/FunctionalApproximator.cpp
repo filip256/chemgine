@@ -2,10 +2,9 @@
 
 FunctionalApproximator::FunctionalApproximator(
 	const ApproximatorIdType id,
-	const std::string& name,
 	double(*function)(double)
 ) noexcept :
-	BaseApproximator(id, name, ApproximatorType::FUNCTIONAL),
+	BaseApproximator(id),
 	function(function)
 {}
 

@@ -22,6 +22,11 @@ public:
 	const BaseApproximator& boilingPointApproximator;
 	const BaseApproximator& solidDensityApproximator;
 	const BaseApproximator& liquidDensityApproximator;
+	const BaseApproximator& solidHeatCapacityApproximator;
+	const BaseApproximator& liquidHeatCapacityApproximator;
+	const BaseApproximator& fusionLatentHeatApproximator;
+	const BaseApproximator& vaporizationLatentHeatApproximator;
+	const BaseApproximator& sublimationLatentHeatApproximator;
 
 	MoleculeData(
 		const MoleculeIdType id,
@@ -30,7 +35,12 @@ public:
 		const BaseApproximator& meltingPointApproximator,
 		const BaseApproximator& boilingPointApproximator,
 		const BaseApproximator& solidDensityApproximator,
-		const BaseApproximator& liquidDensityApproximator
+		const BaseApproximator& liquidDensityApproximator,
+		const BaseApproximator& solidHeatCapacityApproximator,
+		const BaseApproximator& liquidHeatCapacityApproximator,
+		const BaseApproximator& fusionLatentHeatApproximator,
+		const BaseApproximator& vaporizationLatentHeatApproximator,
+		const BaseApproximator& sublimationLatentHeatApproximator
 	) noexcept;
 
 	MoleculeData(
@@ -39,7 +49,12 @@ public:
 		const BaseApproximator& meltingPointApproximator,
 		const BaseApproximator& boilingPointApproximator,
 		const BaseApproximator& solidDensityApproximator,
-		const BaseApproximator& liquidDensityApproximator
+		const BaseApproximator& liquidDensityApproximator,
+		const BaseApproximator& solidHeatCapacityApproximator,
+		const BaseApproximator& liquidHeatCapacityApproximator,
+		const BaseApproximator& fusionLatentHeatApproximator,
+		const BaseApproximator& vaporizationLatentHeatApproximator,
+		const BaseApproximator& sublimationLatentHeatApproximator
 	) noexcept;
 
 	MoleculeData(const MoleculeData&) = delete;

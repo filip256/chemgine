@@ -2,12 +2,11 @@
 
 SplitApproximator::SplitApproximator(
 	const ApproximatorIdType id,
-	const std::string& name,
 	const BaseApproximator& lower,
 	const BaseApproximator& higher,
 	const double threshold
 ) noexcept :
-	BaseApproximator(id, name, lower.type),
+	BaseApproximator(id),
 	lower(lower),
 	higher(higher),
 	threshold(threshold)

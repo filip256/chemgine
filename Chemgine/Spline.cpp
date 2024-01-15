@@ -27,6 +27,18 @@ size_t Spline<T>::size() const
 }
 
 template <class T>
+const std::pair<T, T>& Spline<T>::front() const
+{
+	return points.front();
+}
+
+template <class T>
+const std::pair<T, T>& Spline<T>::back() const
+{
+	return points.back();
+}
+
+template <class T>
 size_t Spline<T>::getHigherBound(const T x) const
 {
 	// considering the small number of points in most splines, binary search is probably less efficient

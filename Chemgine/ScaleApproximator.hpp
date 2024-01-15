@@ -2,20 +2,20 @@
 
 #include "BaseApproximator.hpp"
 
-class OffsetApproximator : public BaseApproximator
+class ScaleApproximator : public BaseApproximator
 {
 private:
-	const double offset;
+	const double scale;
 	const BaseApproximator& base;
 
 public:
-	OffsetApproximator(
+	ScaleApproximator(
 		const ApproximatorIdType id,
 		const BaseApproximator& base,
-		const double offset
+		const double scale
 	) noexcept;
 
 	double get(const double input) const override final;
 
-	OffsetApproximator* clone() const override final;
+	ScaleApproximator* clone() const override final;
 };

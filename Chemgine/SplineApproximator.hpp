@@ -11,7 +11,6 @@ private:
 public:
 	SplineApproximator(
 		const ApproximatorIdType id,
-		const std::string& name,
 		Spline<float>&& spline
 	) noexcept;
 

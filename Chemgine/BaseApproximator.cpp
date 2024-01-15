@@ -4,23 +4,8 @@
 
 size_t BaseApproximator::instanceCount = 0;
 
-BaseApproximator::BaseApproximator(
-	const ApproximatorIdType id,
-	const std::string& name,
-	const ApproximatorType type
-) noexcept :
-	id(id),
-	name(name),
-	type(type)
-{}
-
-BaseApproximator::BaseApproximator(
-	const ApproximatorIdType id,
-	BaseApproximator&& other
-) noexcept :
-	id(id),
-	name(std::move(other.name)),
-	type(other.type)
+BaseApproximator::BaseApproximator(const ApproximatorIdType id) noexcept :
+	id(id)
 {}
 
 ApproximatorIdType BaseApproximator::getId() const

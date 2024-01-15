@@ -12,7 +12,6 @@ private:
 public:
 	FunctionalApproximator(
 		const ApproximatorIdType id,
-		const std::string& name,
 		double(*function)(double)
 	) noexcept;
 

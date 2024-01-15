@@ -32,7 +32,6 @@ public:
 	/// Returns the squared distance between the points A and B.
 	/// </summary>
 	static float sqaredDistance(const float aX, const float aY, const float bX, const float bY);
-
 	/// <summary>
 	/// Returns the squared distance between the point P and a straight rectangle R.
 	/// </summary>
@@ -41,7 +40,13 @@ public:
 		const float rLeft, const float rTop, const float rRight, const float rBottom);
 
 	/// <summary>
+	/// Returns the <slope, intercept> pair of the linear function between the points A and B
+	/// </summary>
+	static std::pair<float, float> getSlopeAndIntercept(const float aX, const float aY, const float bX, const float bY);
+
+	/// <summary>
 	/// Converts degrees to angles.
 	/// </summary>
 	static float toRadians(const float degrees);
+
 };

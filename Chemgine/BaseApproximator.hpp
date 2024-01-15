@@ -13,20 +13,11 @@ class BaseApproximator
 protected:
 	ApproximatorIdType id;
 
-	BaseApproximator(
-		const ApproximatorIdType id,
-		const std::string& name,
-		const ApproximatorType type
-	) noexcept;
+	BaseApproximator(const ApproximatorIdType id) noexcept;
 	BaseApproximator(const BaseApproximator&) = default;
 	BaseApproximator(BaseApproximator&&) = default;
 
 public:
-	BaseApproximator(ApproximatorIdType id, BaseApproximator&& other) noexcept;
-
-	const ApproximatorType type;
-	const std::string name;
-
 	ApproximatorIdType getId() const;
 
 	virtual double get(const double input) const;

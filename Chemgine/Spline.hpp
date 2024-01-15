@@ -15,11 +15,14 @@ public:
 	Spline(const Spline&) = default;
 	Spline(Spline&&) = default;
 
+	const std::pair<T, T>& front() const;
+	const std::pair<T, T>& back() const;
 	size_t size() const;
 	size_t getHigherBound(const T x) const;
 
 	T getLinearValueAt(const T x) const;
 	T getQuadraticValueAt(const T x) const;
+
 
 	static constexpr size_t npos = static_cast<size_t>(-1);
 };

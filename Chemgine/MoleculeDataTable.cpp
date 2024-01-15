@@ -1,6 +1,7 @@
 #include "MoleculeDataTable.hpp"
 #include "DataHelpers.hpp"
 #include "OffsetApproximator.hpp"
+#include "ScaleApproximator.hpp"
 #include "SplineApproximator.hpp"
 #include "Logger.hpp"
 
@@ -33,7 +34,7 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 	{
 		auto line = DataHelpers::parseList(buffer, ',');
 
-		if (line.size() != 7)
+		if (line.size() != 12)
 		{
 			Logger::log("Incompletely defined molecule skipped.", LogType::BAD);
 			continue;
@@ -57,28 +58,36 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 			continue;
 		}
 
-		const auto& x = approximators.at(static_cast<ApproximatorIdType>(Approximators::TORR_TO_REL_BP));
-
 		// boiling and melting points
 		const auto mpR = DataHelpers::toDouble(line[3]);
 		const auto bpR = DataHelpers::toDouble(line[4]);
-		const double mp = mpR.value_or(0);
-		const double bp = bpR.value_or(100);
-		const auto& mpA = approximators.add(OffsetApproximator(0, "", approximators.at(static_cast<ApproximatorIdType>(Approximators::TORR_TO_REL_BP)), mp));
-		const auto& bpA = approximators.add(OffsetApproximator(0, "", approximators.at(static_cast<ApproximatorIdType>(Approximators::TORR_TO_REL_BP)), bp));
+		const auto& mpA = approximators.add<OffsetApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TORR_TO_REL_BP)), mpR.value_or(0));
+		const auto& bpA = approximators.add<OffsetApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TORR_TO_REL_BP)), bpR.value_or(100));
 
 		// densities
 		const auto sdR = DataHelpers::toSpline(line[5]);
 		const auto ldR = DataHelpers::toSpline(line[6]);
-		Spline<float> sdS = sdR.value_or(Spline<float>({ {0, 1.0f} }));
-		Spline<float> ldS = ldR.value_or(Spline<float>({ {0, 1.0f} }));
-		const auto& sdA = approximators.add(SplineApproximator(0, "", std::move(sdS)));
-		const auto& ldA = approximators.add(SplineApproximator(0, "", std::move(ldS)));
+		const auto& sdA = approximators.add<SplineApproximator>(sdR.value_or(Spline<float>({ {0, 1.0f} })));
+		const auto& ldA = approximators.add<SplineApproximator>(ldR.value_or(Spline<float>({ {0, 1.0f} })));
+
+		// heat capacities
+		const auto shcR = DataHelpers::toSpline(line[7]);
+		const auto lhcR = DataHelpers::toSpline(line[8]);
+		const auto& shcA = approximators.add<SplineApproximator>(shcR.value_or(Spline<float>({ {0, 36.0f} })));
+		const auto& lhcA = approximators.add<SplineApproximator>(lhcR.value_or(Spline<float>({ {40.0f, 75.24f} })));
+
+		// latent heats
+		const auto flhR = DataHelpers::toDouble(line[9]);
+		const auto vlhR = DataHelpers::toDouble(line[10]);
+		const auto slhR = DataHelpers::toDouble(line[11]);
+		const auto& flhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TEMP_DIF_TO_REL_LH)), flhR.value_or(6020.0f));
+		const auto& vlhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TEMP_DIF_TO_REL_LH)), vlhR.value_or(40700.0f));
+		const auto& slhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TEMP_DIF_TO_REL_LH)), slhR.value_or(std::numeric_limits<double>::max()));
 
 		if (table.emplace(
 			id.value(),
 			line[1],
-			std::move(MoleculeData(id.value(), line[2], line[1], mpA, bpA, sdA, ldA))
+			std::move(MoleculeData(id.value(), line[2], line[1], mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA))
 		) == false)
 		{
 			Logger::log("Molecule with duplicate id " + std::to_string(id.value()) + " skipped.", LogType::WARN);
@@ -104,7 +113,7 @@ bool MoleculeDataTable::saveToFile(const std::string& path)
 	for (size_t i = 0; i < table.size(); ++i)
 	{
 		const auto& e = table[i];
-		file << e.id << ',' << e.getStructure().serialize() << ',' << e.name << ',' << ',' << ',' << ',' << '\n';
+		file << e.id << ',' << e.getStructure().serialize() << ',' << e.name << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << '\n';
 	}
 
 	file.close();
@@ -129,12 +138,17 @@ MoleculeIdType MoleculeDataTable::findOrAdd(MolecularStructure&& structure)
 	if (idx != npos)
 		return table[idx].id;
 
-	const auto& mpA = approximators.add(OffsetApproximator(0, "", approximators.at(static_cast<ApproximatorIdType>(Approximators::TORR_TO_REL_BP)), 0));
-	const auto& bpA = approximators.add(OffsetApproximator(0, "", approximators.at(static_cast<ApproximatorIdType>(Approximators::TORR_TO_REL_BP)), 100));
-	const auto& sdA = approximators.add(SplineApproximator(0, "", Spline<float>({ {0, 1.0f} })));
-	const auto& ldA = approximators.add(SplineApproximator(0, "", Spline<float>({ {0, 1.0f} })));
+	const auto& mpA = approximators.add<OffsetApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TORR_TO_REL_BP)), 0);
+	const auto& bpA = approximators.add<OffsetApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TORR_TO_REL_BP)), 100);
+	const auto& sdA = approximators.add<SplineApproximator>(Spline<float>({ {0, 1.0f} }));
+	const auto& ldA = approximators.add<SplineApproximator>(Spline<float>({ {0, 1.0f} }));
+	const auto& shcA = approximators.add<SplineApproximator>(Spline<float>({ {0, 36.0f} }));
+	const auto& lhcA = approximators.add<SplineApproximator>(Spline<float>({ {40.0f, 75.24f} }));
+	const auto& flhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TEMP_DIF_TO_REL_LH)), 6020.0f);
+	const auto& vlhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TEMP_DIF_TO_REL_LH)), 40700.0f);
+	const auto& slhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TEMP_DIF_TO_REL_LH)), std::numeric_limits<double>::max());
 
 	const auto id = getFreeId();
-	table.emplace(id, std::to_string(id), MoleculeData(id, std::move(structure), mpA, bpA, sdA, ldA));
+	table.emplace(id, std::to_string(id), MoleculeData(id, std::move(structure), mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA));
 	return id;
 }

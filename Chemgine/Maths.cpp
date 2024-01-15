@@ -111,6 +111,12 @@ float Maths::sqaredDistance(
 	return dx * dx + dy * dy;
 }
 
+std::pair<float, float> Maths::getSlopeAndIntercept(const float aX, const float aY, const float bX, const float bY)
+{
+	const float slope = (bY - aY) / (bX - aX);
+	return std::make_pair(slope, aY - slope * aX);
+}
+
 float Maths::toRadians(const float degrees)
 {
 	return degrees * Pi / 180.0f;

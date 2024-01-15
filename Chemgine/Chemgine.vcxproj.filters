@@ -324,6 +324,15 @@
     <ClCompile Include="Catalyst.cpp">
       <Filter>Source Files\Reactions</Filter>
     </ClCompile>
+    <ClCompile Include="ScaleApproximator.cpp">
+      <Filter>Source Files\Approximators</Filter>
+    </ClCompile>
+    <ClCompile Include="ConstantApproximator.cpp">
+      <Filter>Source Files\Approximators</Filter>
+    </ClCompile>
+    <ClCompile Include="LinearApproximator.cpp">
+      <Filter>Source Files\Approximators</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -583,6 +592,15 @@
     </ClInclude>
     <ClInclude Include="Catalyst.hpp">
       <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="ScaleApproximator.hpp">
+      <Filter>Header Files\Approximators</Filter>
+    </ClInclude>
+    <ClInclude Include="ConstantApproximator.hpp">
+      <Filter>Header Files\Approximators</Filter>
+    </ClInclude>
+    <ClInclude Include="LinearApproximator.hpp">
+      <Filter>Header Files\Approximators</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

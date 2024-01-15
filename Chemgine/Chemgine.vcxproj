@@ -204,6 +204,7 @@
     <ClCompile Include="CompositeComponentData.cpp" />
     <ClCompile Include="ConcreteReaction.cpp" />
     <ClCompile Include="AdaptorData.cpp" />
+    <ClCompile Include="ConstantApproximator.cpp" />
     <ClCompile Include="Constants.cpp" />
     <ClCompile Include="DrawableComponent.cpp" />
     <ClCompile Include="DataStoreAccessor.cpp" />
@@ -221,6 +222,7 @@
     <ClCompile Include="LabwarePort.cpp" />
     <ClCompile Include="LabwareSystem.cpp" />
     <ClCompile Include="LayerProperties.cpp" />
+    <ClCompile Include="LinearApproximator.cpp" />
     <ClCompile Include="Maths.cpp" />
     <ClCompile Include="MoleculeDataTable.cpp" />
     <ClCompile Include="Molecule.cpp" />
@@ -234,6 +236,7 @@
     <ClCompile Include="ReactionDataTable.cpp" />
     <ClCompile Include="Reactor.cpp" />
     <ClCompile Include="ReactorLayer.cpp" />
+    <ClCompile Include="ScaleApproximator.cpp" />
     <ClCompile Include="Spline.cpp" />
     <ClCompile Include="SplineApproximator.cpp" />
     <ClCompile Include="SplitApproximator.cpp" />
@@ -273,6 +276,7 @@
     <ClInclude Include="CompositeComponentData.hpp" />
     <ClInclude Include="ConcreteReaction.hpp" />
     <ClInclude Include="AdaptorData.hpp" />
+    <ClInclude Include="ConstantApproximator.hpp" />
     <ClInclude Include="Constants.hpp" />
     <ClInclude Include="ContainsInterface.hpp" />
     <ClInclude Include="DrawableComponent.hpp" />
@@ -298,6 +302,7 @@
     <ClInclude Include="LabwareType.hpp" />
     <ClInclude Include="LayerProperties.hpp" />
     <ClInclude Include="LayerType.hpp" />
+    <ClInclude Include="LinearApproximator.hpp" />
     <ClInclude Include="LogType.hpp" />
     <ClCompile Include="MolecularStructure.cpp" />
     <ClInclude Include="Maths.hpp" />
@@ -306,6 +311,7 @@
     <ClInclude Include="PortType.hpp" />
     <ClInclude Include="Reactant.hpp" />
     <ClInclude Include="ReactantSet.hpp" />
+    <ClInclude Include="ScaleApproximator.hpp" />
     <ClInclude Include="Spline.hpp" />
     <ClInclude Include="SplineApproximator.hpp" />
     <ClInclude Include="SplitApproximator.hpp" />

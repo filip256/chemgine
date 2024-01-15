@@ -12,7 +12,6 @@ private:
 public:
 	SplitApproximator(
 		const ApproximatorIdType id,
-		const std::string& name,
 		const BaseApproximator& lower,
 		const BaseApproximator& higher,
 		const double threshold

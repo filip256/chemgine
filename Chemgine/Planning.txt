@@ -182,6 +182,13 @@ Tasks:
 ---
   1. Fix single key DataTables
   2. Fix Reactable id clash (Molecule/Component)
+  ?. Approximator optimizer
+---
+  1. Add heat capacity to molecules as a SplineAppx
+  2. Add latent heat(fusion and vaporization) to molecules
+  3. Add table.add<approximator>() method 
+  4. Add energy to reactors
+  5. Add tests for physiscal properties
 
 
 Possible optimizations:
@@ -225,6 +232,59 @@ Categorizations:
     - catalysts are present
          cache trigger: always
          add trigger: new reactant added
+
+
+    Physical properties:
+      - melting and boiling points:
+          They vary with pressure. Data in loaded as the bp and mp and std. pressure.
+          An offset approximator is used to get the mp and bp from the std. values and a standard relative bp approximator.
+
+          Defaults to: water.
+          Stored as: C
+
+
+      - densities:
+          For solids and liquids:
+            They vary by temperature and the variance depends on aggregation state, but not on pressure, thus:
+            spline approximators are generated for both liquid and solid densities.
+          For gasses:
+            The ideal gas law is used.
+            Perhaps a more specific approach will be used in the future.
+
+          Defaults to: water.
+          Stored as: g/ml
+
+
+      - heat capacities:
+          https://www.tec-science.com/thermodynamics/heat/specific-heat-capacity-of-water/
+          For solids:
+            Varies with themperature. Spline approximator is used.
+          For liquids:
+            Almost constant, still a spline approximation can be used. (Consider optimizing 1 and 2 value Splines to constants and functions appx.)
+          For gases:
+            https://www.tec-science.com/thermodynamics/heat/specific-heat-capacity-of-gases-at-constant-volume-or-pressure/
+            Isobaric heat capacity is used. (Most systems will be open, i.e. the volume can expand)
+            For monoatomics =5R/2, for diatomics =7R/2, for polyatomics =(degrees_of_freedom + 2)*R/2
+            For the rare cases of 'pipe bomb' reactors isochoric could be considered.
+
+          Defaults to: water.
+          Stored as: J/mol * C (molar heat capacity)
+
+
+      - latent heats:
+          For fusion, vaporization and sublimation.
+          liquefiation = -fusion, condensation = -fusion, deposition = -sublimation
+
+          It is expected that latent heats are proportional to pressure. A functional approximator can be used.
+          (?) If a substance is introduced in a reactor with a temp higher than its bp/mp, less energy is required
+          to produce state change, than when heating gradually. <=> Latent heats are inversly proportional with temperature.
+          
+          Sublimation occurs when it's latent heat < fusion latent heat.
+          Deposition occurs when deposition latent heat < condensation.
+
+          Defaults to: water.
+          Stored as: J/mol (molar latent heat)
+
 
    -----------------------------------------------------------------------------------------------------------------
 
