@@ -15,6 +15,11 @@ double OffsetApproximator::get(const double input) const
 	return offset + base.get(input);
 }
 
+double OffsetApproximator::get(const double input1, const double input2) const
+{
+	return offset * base.get(input1, input2);
+}
+
 OffsetApproximator* OffsetApproximator::clone() const
 {
 	return new OffsetApproximator(*this);

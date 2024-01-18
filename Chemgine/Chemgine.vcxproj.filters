@@ -294,9 +294,6 @@
     <ClCompile Include="PhysicalProperties.cpp">
       <Filter>Source Files\Reactions</Filter>
     </ClCompile>
-    <ClCompile Include="FunctionalApproximator.cpp">
-      <Filter>Source Files\Approximators</Filter>
-    </ClCompile>
     <ClCompile Include="ApproximatorDataTable.cpp">
       <Filter>Source Files\Approximators</Filter>
     </ClCompile>

@@ -80,9 +80,9 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 		const auto flhR = DataHelpers::toDouble(line[9]);
 		const auto vlhR = DataHelpers::toDouble(line[10]);
 		const auto slhR = DataHelpers::toDouble(line[11]);
-		const auto& flhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TEMP_DIF_TO_REL_LH)), flhR.value_or(6020.0f));
-		const auto& vlhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TEMP_DIF_TO_REL_LH)), vlhR.value_or(40700.0f));
-		const auto& slhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TEMP_DIF_TO_REL_LH)), slhR.value_or(std::numeric_limits<double>::max()));
+		const auto& flhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TDIF_TORR_TO_REL_LH)), flhR.value_or(6020.0f));
+		const auto& vlhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TDIF_TORR_TO_REL_LH)), vlhR.value_or(40700.0f));
+		const auto& slhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TDIF_TORR_TO_REL_LH)), slhR.value_or(std::numeric_limits<double>::max()));
 
 		if (table.emplace(
 			id.value(),
@@ -144,9 +144,9 @@ MoleculeIdType MoleculeDataTable::findOrAdd(MolecularStructure&& structure)
 	const auto& ldA = approximators.add<SplineApproximator>(Spline<float>({ {0, 1.0f} }));
 	const auto& shcA = approximators.add<SplineApproximator>(Spline<float>({ {0, 36.0f} }));
 	const auto& lhcA = approximators.add<SplineApproximator>(Spline<float>({ {40.0f, 75.24f} }));
-	const auto& flhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TEMP_DIF_TO_REL_LH)), 6020.0f);
-	const auto& vlhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TEMP_DIF_TO_REL_LH)), 40700.0f);
-	const auto& slhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TEMP_DIF_TO_REL_LH)), std::numeric_limits<double>::max());
+	const auto& flhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TDIF_TORR_TO_REL_LH)), 6020.0f);
+	const auto& vlhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TDIF_TORR_TO_REL_LH)), 40700.0f);
+	const auto& slhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TDIF_TORR_TO_REL_LH)), std::numeric_limits<double>::max());
 
 	const auto id = getFreeId();
 	table.emplace(id, std::to_string(id), MoleculeData(id, std::move(structure), mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA));

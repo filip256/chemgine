@@ -31,9 +31,18 @@ void ApproximatorDataTable::addPredefined()
 			+[](double torr) { return (torr - 760) * 0.045; })
 	));
 
-	table.emplace(std::make_pair(static_cast<ApproximatorIdType>(Approximators::TEMP_DIF_TO_REL_LH),
-		new FunctionalApproximator(static_cast<ApproximatorIdType>(Approximators::TEMP_DIF_TO_REL_LH),
-			+[](double tempDif) { return std::pow(1 - tempDif / 50.0f, 0.63); })    // tempDif = actTemp - bp
+	// Describes how latent heats change with temperature and pressure.
+	//  - if temperature is higher than bp/mp less heat is required
+	//  - depending on the type of lantent heat, pressure can either lower or increase it:
+	//     - pass P for expansion heats
+	//     - pass -P for compression heats
+	table.emplace(std::make_pair(static_cast<ApproximatorIdType>(Approximators::TDIF_TORR_TO_REL_LH),
+		new FunctionalApproximator(static_cast<ApproximatorIdType>(Approximators::TDIF_TORR_TO_REL_LH),
+			+[](double tempDifC, double torr) { return (std::pow(1.005, -tempDifC / 2.0) +
+				torr > 0 ? 
+					std::pow(1.001, (torr - 760) / 2.0) :
+					-1 * std::pow(1.001, (-torr - 760) / 2.0))
+			/ 2.0; })
 	));
 }
 

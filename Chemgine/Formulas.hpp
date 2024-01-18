@@ -10,4 +10,8 @@ public:
 		const Amount<Unit::PASCAL> pressure,
 		const Amount<Unit::GRAM_PER_MOLE> molarMass
 	);
+
+	static Amount<Unit::JOULE_PER_MOLE> isobaricHeatCapacity(const uint8_t degreesOfFreedom);
+
+	static Amount<Unit::JOULE_PER_MOLE> isochoricHeatCapacity(const uint8_t degreesOfFreedom);
 };

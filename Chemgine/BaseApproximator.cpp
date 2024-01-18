@@ -1,4 +1,5 @@
 #include "BaseApproximator.hpp"
+#include "Logger.hpp"
 
 #include <cassert>
 
@@ -15,13 +16,13 @@ ApproximatorIdType BaseApproximator::getId() const
 
 double BaseApproximator::get(const double input) const
 {
-	assert(("Undefined approximator method: get(double)", true));
+	Logger::fatal("Undefined approximator method: double get(double)");
 	return std::numeric_limits<double>::max();
 }
 
 double BaseApproximator::get(const double input1, const double input2) const
 {
-	assert(("Undefined approximator method: get(double, double).", true));
+	Logger::fatal("Undefined approximator method: double get(double, double)");
 	return std::numeric_limits<double>::max();
 }
 

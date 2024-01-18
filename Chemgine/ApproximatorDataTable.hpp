@@ -15,7 +15,7 @@ enum class Approximators : ApproximatorIdType
 	MCONC_TO_REL_RSPEED = 102,
 	TEMP_TO_DENSITY = 103,
 	TORR_TO_REL_BP = 104,
-	TEMP_DIF_TO_REL_LH = 105
+	TDIF_TORR_TO_REL_LH = 105
 };
 
 class ApproximatorDataTable

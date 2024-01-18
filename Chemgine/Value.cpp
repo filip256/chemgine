@@ -50,6 +50,9 @@ template <class T>
 Value<T> Value<T>::operator/(const T divisor) const { return Value<T>(value / divisor); }
 
 template <class T>
+Value<T> Value<T>::operator-() const { return Value<T>(-1 * value); }
+
+template <class T>
 Value<T>& Value<T>::operator+=(const Value<T>& other)
 {
 	value += other.value;

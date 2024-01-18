@@ -213,7 +213,6 @@
     <ClCompile Include="Flask.cpp" />
     <ClCompile Include="ContainerLabwareData.cpp" />
     <ClCompile Include="Formulas.cpp" />
-    <ClCompile Include="FunctionalApproximator.cpp" />
     <ClCompile Include="HeatSourceData.cpp" />
     <ClCompile Include="FlaskData.cpp" />
     <ClCompile Include="LabwareConnection.cpp" />

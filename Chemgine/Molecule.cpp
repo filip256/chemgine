@@ -60,10 +60,71 @@ Amount<Unit::GRAM_PER_MILLILITER> Molecule::getDensityAt(
 {
 	const auto& data = this->data();
 	return temperature < getMeltingPointAt(pressure) ?
-			data.solidDensityApproximator.get(temperature.asStd()) :
-			temperature < getBoilingPointAt(pressure) ?
-				data.liquidDensityApproximator.get(temperature.asStd()) :
-				Formulas::idealGasLaw(temperature, pressure, molarMass);
+		data.solidDensityApproximator.get(temperature.asStd()) :
+		temperature < getBoilingPointAt(pressure) ?
+			data.liquidDensityApproximator.get(temperature.asStd()) :
+			Formulas::idealGasLaw(temperature, pressure, molarMass);
+}
+
+Amount<Unit::JOULE_PER_MOLE> Molecule::getHeatCapacityAt(
+	const Amount<Unit::CELSIUS> temperature,
+	const Amount<Unit::TORR> pressure
+) const
+{
+	const auto& data = this->data();
+	return temperature < getMeltingPointAt(pressure) ?
+		data.solidHeatCapacityApproximator.get(pressure.asStd()) :
+		temperature < getBoilingPointAt(pressure) ?
+			data.liquidHeatCapacityApproximator.get(pressure.asStd()) :
+			Formulas::isobaricHeatCapacity(data.getStructure().getDegreesOfFreedom());
+}
+
+Amount<Unit::JOULE_PER_MOLE> Molecule::getFusionHeatAt(
+	const Amount<Unit::CELSIUS> temperature,
+	const Amount<Unit::TORR> pressure
+) const
+{
+	return this->data().fusionLatentHeatApproximator.get(temperature.asStd());
+}
+
+Amount<Unit::JOULE_PER_MOLE> Molecule::getVaporizationHeatAt(
+	const Amount<Unit::CELSIUS> temperature,
+	const Amount<Unit::TORR> pressure
+) const
+{
+	return this->data().vaporizationLatentHeatApproximator.get(temperature.asStd());
+}
+
+Amount<Unit::JOULE_PER_MOLE> Molecule::getSublimationHeatAt(
+	const Amount<Unit::CELSIUS> temperature,
+	const Amount<Unit::TORR> pressure
+) const
+{
+	return this->data().sublimationLatentHeatApproximator.get(temperature.asStd());
+}
+
+Amount<Unit::JOULE_PER_MOLE> Molecule::getLiquefactionHeatAt(
+	const Amount<Unit::CELSIUS> temperature,
+	const Amount<Unit::TORR> pressure
+) const
+{
+	return -getFusionHeatAt(temperature, pressure);
+}
+
+Amount<Unit::JOULE_PER_MOLE> Molecule::getCondensationHeatAt(
+	const Amount<Unit::CELSIUS> temperature,
+	const Amount<Unit::TORR> pressure
+) const
+{
+	return -getVaporizationHeatAt(temperature, pressure);
+}
+
+Amount<Unit::JOULE_PER_MOLE> Molecule::getDepositionHeatAt(
+	const Amount<Unit::CELSIUS> temperature,
+	const Amount<Unit::TORR> pressure
+) const
+{
+	return -getSublimationHeatAt(temperature, pressure);
 }
 
 const MolecularStructure& Molecule::getStructure() const

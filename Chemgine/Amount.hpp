@@ -28,6 +28,7 @@ public:
 	constexpr Amount<UnitT> operator-(const Amount<UnitT> other) const noexcept;
 	constexpr Amount<UnitT> operator*(const Amount<UnitT> other) const noexcept;
 	constexpr Amount<UnitT> operator/(const Amount<UnitT> other) const noexcept;
+	constexpr Amount<UnitT> operator-() const noexcept;
 
 	constexpr Amount<UnitT> operator+=(const Amount<UnitT> other) noexcept;
 	constexpr Amount<UnitT> operator-=(const Amount<UnitT> other) noexcept;
@@ -90,6 +91,12 @@ template<Unit UnitT>
 constexpr Amount<UnitT> Amount<UnitT>::operator/(const Amount<UnitT> other) const noexcept
 {
 	return Amount<UnitT>(this->value / other.value);
+}
+
+template<Unit UnitT>
+constexpr Amount<UnitT> Amount<UnitT>::operator-() const noexcept
+{
+	return Amount<UnitT>(-1 * this->value);
 }
 
 template <Unit UnitT>

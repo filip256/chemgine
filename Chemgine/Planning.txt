@@ -183,10 +183,11 @@ Tasks:
   1. Fix single key DataTables
   2. Fix Reactable id clash (Molecule/Component)
   ?. Approximator optimizer
+  3. Use operator* instead of value() for std::optional
 ---
-  1. Add heat capacity to molecules as a SplineAppx
-  2. Add latent heat(fusion and vaporization) to molecules
-  3. Add table.add<approximator>() method 
+  DONE. Add heat capacity to molecules as a SplineAppx
+  DONE. Add latent heat(fusion and vaporization) to molecules
+  DONE. Add table.add<approximator>() method 
   4. Add energy to reactors
   5. Add tests for physiscal properties
 
@@ -268,14 +269,16 @@ Categorizations:
             For the rare cases of 'pipe bomb' reactors isochoric could be considered.
 
           Defaults to: water.
-          Stored as: J/mol * C (molar heat capacity)
+          Stored as: J/mol (molar heat capacity)
 
 
       - latent heats:
           For fusion, vaporization and sublimation.
           liquefiation = -fusion, condensation = -fusion, deposition = -sublimation
 
-          It is expected that latent heats are proportional to pressure. A functional approximator can be used.
+          It is expected that latent heats for copression are proportional to pressure. 
+          It is expected that latent heats for expansion are inversly proportional to pressure.
+          A functional approximator can be used.
           (?) If a substance is introduced in a reactor with a temp higher than its bp/mp, less energy is required
           to produce state change, than when heating gradually. <=> Latent heats are inversly proportional with temperature.
           

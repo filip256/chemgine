@@ -343,6 +343,18 @@ double MolecularStructure::getMolarMass() const
     return cnt;
 }
 
+uint8_t MolecularStructure::getDegreesOfFreedom() const
+{
+    if (components.size() == 1) // monoatomics have 3
+        return 3;
+
+    if (components.size() == 2 || isVirtualHydrogen()) // diatomics have 5
+        return 5;
+
+    // TODO: find degreesOfFreedom for other molecules (6 is true for CH4)
+    return 6;
+}
+
 c_size MolecularStructure::getRadicalAtomsCount() const
 {
     c_size cnt = 0;

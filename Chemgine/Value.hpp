@@ -18,6 +18,7 @@ public:
 	Value<T> operator-(const Value<T>& other) const;
 	Value<T> operator*(const T scalar) const;
 	Value<T> operator/(const T divisor) const;
+	Value<T> operator-() const;
 
 	Value<T>& operator+=(const Value<T>& other);
 	Value<T>& operator-=(const Value<T>& other);

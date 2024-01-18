@@ -136,6 +136,11 @@ public:
     double getMolarMass() const;
 
     /// <summary>
+    /// Complexity: O(1) (for now)
+    /// </summary>
+    uint8_t getDegreesOfFreedom() const;
+
+    /// <summary>
     /// Checks if the molecule contains at least one radical type. 
     /// Complexity: O(1)
     /// #Requires normalization
