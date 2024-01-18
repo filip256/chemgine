@@ -84,7 +84,7 @@ Amount<Unit::JOULE_PER_MOLE> Molecule::getFusionHeatAt(
 	const Amount<Unit::TORR> pressure
 ) const
 {
-	return this->data().fusionLatentHeatApproximator.get(temperature.asStd());
+	return this->data().fusionLatentHeatApproximator.get(temperature.asStd(), -pressure.asStd());
 }
 
 Amount<Unit::JOULE_PER_MOLE> Molecule::getVaporizationHeatAt(
@@ -92,7 +92,7 @@ Amount<Unit::JOULE_PER_MOLE> Molecule::getVaporizationHeatAt(
 	const Amount<Unit::TORR> pressure
 ) const
 {
-	return this->data().vaporizationLatentHeatApproximator.get(temperature.asStd());
+	return this->data().vaporizationLatentHeatApproximator.get(temperature.asStd(), pressure.asStd());
 }
 
 Amount<Unit::JOULE_PER_MOLE> Molecule::getSublimationHeatAt(
@@ -100,7 +100,7 @@ Amount<Unit::JOULE_PER_MOLE> Molecule::getSublimationHeatAt(
 	const Amount<Unit::TORR> pressure
 ) const
 {
-	return this->data().sublimationLatentHeatApproximator.get(temperature.asStd());
+	return this->data().sublimationLatentHeatApproximator.get(temperature.asStd(), pressure.asStd());
 }
 
 Amount<Unit::JOULE_PER_MOLE> Molecule::getLiquefactionHeatAt(
@@ -108,7 +108,7 @@ Amount<Unit::JOULE_PER_MOLE> Molecule::getLiquefactionHeatAt(
 	const Amount<Unit::TORR> pressure
 ) const
 {
-	return -getFusionHeatAt(temperature, pressure);
+	return -getFusionHeatAt(temperature, pressure.asStd());
 }
 
 Amount<Unit::JOULE_PER_MOLE> Molecule::getCondensationHeatAt(
@@ -116,7 +116,7 @@ Amount<Unit::JOULE_PER_MOLE> Molecule::getCondensationHeatAt(
 	const Amount<Unit::TORR> pressure
 ) const
 {
-	return -getVaporizationHeatAt(temperature, pressure);
+	return -getVaporizationHeatAt(temperature, -pressure.asStd());
 }
 
 Amount<Unit::JOULE_PER_MOLE> Molecule::getDepositionHeatAt(
@@ -124,7 +124,7 @@ Amount<Unit::JOULE_PER_MOLE> Molecule::getDepositionHeatAt(
 	const Amount<Unit::TORR> pressure
 ) const
 {
-	return -getSublimationHeatAt(temperature, pressure);
+	return -getSublimationHeatAt(temperature, -pressure.asStd());
 }
 
 const MolecularStructure& Molecule::getStructure() const

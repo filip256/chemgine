@@ -182,8 +182,9 @@ Tasks:
 ---
   1. Fix single key DataTables
   2. Fix Reactable id clash (Molecule/Component)
-  ?. Approximator optimizer
+  DONE. Approximator optimizer
   3. Use operator* instead of value() for std::optional
+  4. Rename approximator to estimator
 ---
   DONE. Add heat capacity to molecules as a SplineAppx
   DONE. Add latent heat(fusion and vaporization) to molecules

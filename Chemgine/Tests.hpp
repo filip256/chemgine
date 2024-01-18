@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <string>
 #include <chrono>
+#include <functional>
 
 #include "Logger.hpp"
 #include "MolecularStructure.hpp"
@@ -225,8 +226,6 @@ public:
 	}
 };
 
-
-
 class ReactorTest
 {
 private:
@@ -254,7 +253,7 @@ public:
 
 			if (std::abs((massAfter - massBefore).asStd()) > 1e-12)
 			{
-				Logger::log("Test failed > Reactor > mass conservation > #1: expected=" + std::to_string(massBefore.asStd()) + "   actual=" + std::to_string(massAfter.asStd()) + "\n", LogType::BAD);
+				Logger::log("Test failed > Reactor > mass conservation: expected=" + std::to_string(massBefore.asStd()) + "   actual=" + std::to_string(massAfter.asStd()) + "\n", LogType::BAD);
 				passed = false;
 			}
 		}
@@ -272,12 +271,84 @@ public:
 	}
 };
 
+class ApproximatorTest
+{
+	class ReferenceSet
+	{
+	private:
+		const std::map<double, double> refData;
+
+	public:
+		ReferenceSet(std::initializer_list<std::pair<double, double>> initializer) noexcept :
+			refData(initializer.begin(), initializer.end())
+		{}
+
+		ReferenceSet(const ReferenceSet&) = delete;
+		ReferenceSet(ReferenceSet&&) = default;
+
+		double testAE(const double input, const double actOutput)
+		{
+			if (refData.contains(input) == false)
+			{
+				Logger::log("Missing reference data for input:" + std::to_string(input) + '\,', LogType::WARN);
+				return 0;
+			}
+
+			const auto err = abs(refData.at(input) - actOutput);
+			return err;
+		}
+
+		double testMAE(const std::function<double(double)>& appx) const
+		{
+			Logger::enterContext();
+			Logger::log("Input    |   Reference  Actual     Error");
+			double tErr = 0.0;
+			for (const auto& p : refData)
+			{	
+				const auto act = appx(p.first);
+				const auto err = abs(p.second - act);
+				tErr += err;
+
+				Logger::log(std::to_string(p.first).substr(0, 8) + " |   " + std::to_string(p.second).substr(0, 8) + "   " + std::to_string(act).substr(0, 8) + "   " + std::to_string(err));
+			}
+			Logger::log("");
+			Logger::exitContext();
+			return tErr / refData.size();
+		}
+	};
+
+private:
+	bool passed = true;
+
+	const ReferenceSet waterBpRef = ReferenceSet({ {1400, 118.1}, {1000, 107.8}, {900, 104.8}, {800, 101.4}, {760, 100}, {600, 93.3}, {500, 89.0}, {400, 83.3}, {300, 75.6}, {200, 66.5}, {100, 51.9}, {1, -16.9} });
+	const double waterBpThreshold = 2.0;
+
+public:
+
+	void runTests()
+	{
+		const Molecule water = Molecule("O");
+		const auto mae = waterBpRef.testMAE([&water](double input) {return water.getBoilingPointAt(input).asStd(); });
+		if (mae > waterBpThreshold)
+		{
+			Logger::log("Test failed > Approximator > waterBp: mae=" + std::to_string(mae) + "\n", LogType::BAD);
+			passed = false;
+		}
+	}
+
+	bool hasPassed()
+	{
+		return passed;
+	}
+};
+
 class TestManager
 {
 private:
 	DataStore store;
 	MolecularStructureTest molecularStructureTest;
 	ReactorTest reactorTest;
+	ApproximatorTest approximatorTest;
 
 public:
 	TestManager()
@@ -314,7 +385,9 @@ public:
 		const auto begin = std::chrono::steady_clock::now();
 		molecularStructureTest.runTests();
 		reactorTest.runTests();
+		approximatorTest.runTests();
 		const auto end = std::chrono::steady_clock::now();
+
 		Logger::log("Test execution completed in " +
 			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.\n");
 
@@ -322,6 +395,8 @@ public:
 			Logger::log("MolecularStructure tests passed.", LogType::GOOD);
 		if (reactorTest.hasPassed())
 			Logger::log("Reactor tests passed.", LogType::GOOD);
+		if (approximatorTest.hasPassed())
+			Logger::log("Approximator tests passed.", LogType::GOOD);
 	}
 
 	void runPersist()
