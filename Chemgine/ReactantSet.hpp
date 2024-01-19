@@ -20,8 +20,12 @@ public:
 
 	void add(const Reactant& reactant);
 
+	/// <summary>
+	/// Returns o reactant from the set.
+	/// This is equivalent to dereferencing the begin operator of the underlying unordered_set.
+	/// </summary>
+	const Reactant& any() const;
+
 	std::unordered_set<Reactant, ReactantHash>::const_iterator begin() const;
 	std::unordered_set<Reactant, ReactantHash>::const_iterator end() const;
-
-
 };

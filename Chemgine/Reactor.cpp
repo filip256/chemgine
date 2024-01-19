@@ -10,12 +10,14 @@ Reactor::Reactor(
 	const Amount<Unit::CELSIUS> temperature,
 	const Amount<Unit::TORR> pressure
 ) noexcept:
-	temperature(temperature),
-	pressure(pressure)
+	pressure(pressure),
+	layers({ {LayerType::GASEOUS, LayerProperties(temperature) }})
 {
 	dataAccessor.crashIfUninitialized();
-	temperatureSpeedApproximator = &dataAccessor.get().approximators.at(101);
-	concentrationSpeedApproximator = &dataAccessor.get().approximators.at(102);
+	temperatureSpeedApproximator = &dataAccessor.get().approximators.at(
+		static_cast<ApproximatorIdType>(Approximators::TEMP_TO_REL_RSPEED));
+	concentrationSpeedApproximator = &dataAccessor.get().approximators.at(
+		static_cast<ApproximatorIdType>(Approximators::MCONC_TO_REL_RSPEED));
 }
 
 void Reactor::setDataStore(const DataStore& dataStore)
@@ -23,18 +25,29 @@ void Reactor::setDataStore(const DataStore& dataStore)
 	dataAccessor.set(dataStore);
 }
 
+bool Reactor::tryCreateLayer(const LayerType layer)
+{
+	if (isRealLayer(layer) == false || layers.contains(layer))
+		return false;
+
+	layers.emplace(std::make_pair(layer, 0.0));
+	return true;
+}
+
 void Reactor::addToLayer(const Reactant& reactant, const uint8_t revert)
 {
+	tryCreateLayer(reactant.layer);
+
 	totalMoles += reactant.amount * revert;
-	layerProperties[toIndex(reactant.layer)].moles += reactant.amount * revert;
+	layers[reactant.layer].moles += reactant.amount * revert;
 
 	const auto mass = reactant.getMass() * revert;
 	totalMass += mass;
-	layerProperties[toIndex(reactant.layer)].mass += mass;
+	layers[reactant.layer].mass += mass;
 
-	const auto vol = reactant.getVolumeAt(temperature, pressure) * revert;
+	const auto vol = reactant.getVolume() * revert;
 	totalVolume += vol;
-	layerProperties[toIndex(reactant.layer)].volume += vol;
+	layers[reactant.layer].volume += vol;
 }
 
 void Reactor::removeFromLayer(const Reactant& reactant)
@@ -81,7 +94,7 @@ void Reactor::runReactions()
 		auto speedCoef =
 			r.getData().baseSpeed *
 			totalVolume.asStd() *
-			temperatureSpeedApproximator->get((temperature - r.getData().baseTemperature).asStd()) *
+			temperatureSpeedApproximator->get((r.getReactantTemperature() - r.getData().baseTemperature).asStd()) *
 			concentrationSpeedApproximator->get((getAmountOf(r.getReactants()) / totalMoles).asStd());
 		
 		if (speedCoef == 0)
@@ -99,58 +112,86 @@ void Reactor::runReactions()
 			continue;
 
 		for (const auto& i : r.getReactants())
-			add(Reactant(i.molecule, i.layer, i.amount * speedCoef.asStd() * -1));
+			add(Reactant(i.molecule, i.layer, i.amount * speedCoef.asStd() * -1, *this));
 		for (const auto& i : r.getProducts())
-			add(Reactant(i.molecule, findLayerFor(i), i.amount * speedCoef.asStd()));
+			add(Reactant(i.molecule, findLayerFor(i), i.amount * speedCoef.asStd(), *this));
 	}
-}  
+}
+
+LayerType Reactor::getLayerAbove(LayerType layer) const
+{
+	while(layer > LayerType::GASEOUS)
+	{
+		--layer;
+		if (layers.contains(layer))
+			return layer;
+	}
+
+	return LayerType::NONE;
+}
+
+LayerType Reactor::getLayerBelow(LayerType layer) const
+{
+	while (layer < LayerType::SOLID)
+	{
+		++layer;
+		if (layers.contains(layer))
+			return layer;
+	}
+
+	return LayerType::NONE;
+}
 
 void Reactor::add(Reactor& other)
 {
-	for (auto const& r : other.content)
-	{
-		auto const it = this->content.find(r);
-		if (it == this->content.end())
-			this->content.emplace(r);
-		else
-			it->amount += r.amount;
-	}
+	//for (auto const& r : other.content)
+	//{
+	//	auto const it = this->content.find(r);
+	//	if (it == this->content.end())
+	//		this->content.emplace(r);
+	//	else
+	//		it->amount += r.amount;
+	//}
 }
 
 void Reactor::add(Reactor& other, const double ratio)
 {
-	if (ratio >= 1.0)
-	{
-		this->add(other);
-		return;
-	}
+	//if (ratio >= 1.0)
+	//{
+	//	this->add(other);
+	//	return;
+	//}
 
-	for (auto& r : other.content)
-	{
-		auto const it = this->content.find(r);
-		if (it == this->content.end())
-			this->content.emplace(Reactant(r.molecule, r.layer, r.amount * ratio));
-		else
-			it->amount += r.amount * ratio;
-		r.amount -= r.amount * ratio;
-	}
+	//for (auto& r : other.content)
+	//{
+	//	auto const it = this->content.find(r);
+	//	if (it == this->content.end())
+	//		this->content.emplace(Reactant(r.molecule, r.layer, r.amount * ratio));
+	//	else
+	//		it->amount += r.amount * ratio;
+	//	r.amount -= r.amount * ratio;
+	//}
 }
 
 void Reactor::add(const Reactant& reactant)
 {
-	if (isRealLayer(reactant.layer))
-		addToLayer(reactant);
-
-	const auto temp = content.emplace(reactant);
+	const auto& temp = content.emplace(reactant);
 	if (temp.second == false)
 		temp.first->amount += reactant.amount;
 	else
+	{
+		temp.first->setContainer(*this);
 		temp.first->isNew = true;
+	}
+
+	addToLayer(reactant);
 }
 
 void Reactor::add(const Molecule& molecule, const Amount<Unit::MOLE> amount)
 {
-	add(Reactant(molecule, LayerType::UNKNOWN, amount));
+	auto r = Reactant(molecule, LayerType::UNKNOWN, amount, *this);
+	r.layer = findLayerFor(r);
+	add(r);
 }
 
 LayerType Reactor::findLayerFor(const Reactant& reactant) const
@@ -170,6 +211,11 @@ Amount<Unit::MOLE> Reactor::getAmountOf(const ReactantSet& reactantSet) const
 	for (const auto& r : reactantSet)
 		s += getAmountOf(r);
 	return s;
+}
+
+Amount<Unit::TORR> Reactor::getPressure() const
+{
+	return pressure;
 }
 
 Amount<Unit::MOLE> Reactor::getTotalMoles() const

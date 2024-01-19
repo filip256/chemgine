@@ -236,10 +236,10 @@ public:
 	void initialize()
 	{
 		reactorA = new Reactor(20.0, 760.0);
-		reactorA->add(Reactant(Molecule("HH"), LayerType::POLAR, 2.0));
-		reactorA->add(Reactant(Molecule("CC=C"), LayerType::POLAR, 2.0));
-		reactorA->add(Reactant(Molecule("CC(=O)OCC"), LayerType::POLAR, 2.0));
-		reactorA->add(Reactant(Molecule("O"), LayerType::POLAR, 3.0));
+		reactorA->add(Molecule("HH"), 2.0);
+		reactorA->add(Molecule("CC=C"), 2.0);
+		reactorA->add(Molecule("CC(=O)OCC"), 2.0);
+		reactorA->add(Molecule("O"), 3.0);
 	}
 
 	void runTests()

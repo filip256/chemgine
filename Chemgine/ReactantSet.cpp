@@ -10,7 +10,7 @@ ReactantSet::ReactantSet(const std::vector<Molecule>& content) noexcept
 ReactantSet::ReactantSet(const std::vector<Reactant>& content) noexcept
 {
 	for (size_t i = 0; i < content.size(); ++i)
-		add(Reactant(content[i].molecule, content[i].layer, 1.0));
+		add(Reactant(content[i].molecule, content[i].layer, 1.0, content[i].getContainer()));
 }
 
 bool ReactantSet::contains(const Reactant& reactant) const
@@ -27,6 +27,10 @@ void ReactantSet::add(const Reactant& reactant)
 		it->amount += reactant.amount;
 }
 
+const Reactant& ReactantSet::any() const
+{
+	return *content.begin();
+}
 
 std::unordered_set<Reactant, ReactantHash>::const_iterator ReactantSet::begin() const
 {

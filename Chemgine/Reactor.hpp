@@ -12,7 +12,6 @@ class Reactor
 {
 private:
 	double stirSpeed = 0.0;
-	Amount<Unit::CELSIUS> temperature;
 	Amount<Unit::TORR> pressure;
 	Amount<Unit::MOLE> totalMoles;
 	Amount<Unit::GRAM> totalMass;
@@ -21,19 +20,23 @@ private:
 	const BaseApproximator* temperatureSpeedApproximator = nullptr;
 	const BaseApproximator* concentrationSpeedApproximator = nullptr;
 
-	std::array<LayerProperties, REAL_LAYER_COUNT> layerProperties;
-
 	std::unordered_set<ConcreteReaction, ConcreteReactionHash> cachedReactions;
 	std::unordered_set<Reactant, ReactantHash> content;
 
+	std::unordered_map<LayerType, LayerProperties> layers;
+
 	static DataStoreAccessor dataAccessor;
 
+	bool tryCreateLayer(const LayerType layer);
 	void addToLayer(const Reactant& reactant, const uint8_t revert = 1.0);
 	void removeFromLayer(const Reactant& reactant);
 
 	void removeNegligibles();
 	void findNewReactions();
 	void runReactions();
+
+	LayerType getLayerAbove(LayerType layer) const;
+	LayerType getLayerBelow(LayerType layer) const;
 
 public:
 	Reactor(
@@ -53,6 +56,7 @@ public:
 	Amount<Unit::MOLE> getAmountOf(const Reactant& reactant) const;
 	Amount<Unit::MOLE> getAmountOf(const ReactantSet& reactantSet) const;
 
+	Amount<Unit::TORR> getPressure() const;
 	Amount<Unit::MOLE> getTotalMoles() const;
 	Amount<Unit::GRAM> getTotalMass() const;
 	Amount<Unit::LITER> getTotalVolume() const;
@@ -60,4 +64,6 @@ public:
 	void tick();
 
 	static void setDataStore(const DataStore& dataStore);
+
+	friend class Reactant;
 };

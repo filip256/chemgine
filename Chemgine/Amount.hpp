@@ -23,6 +23,8 @@ public:
 	constexpr inline Amount(const Amount<OUnitT>&) noexcept = delete;
 	template<Unit OUnitT1, Unit OUnitT2>
 	constexpr inline Amount(const Amount<OUnitT1>&, const Amount<OUnitT2>&) noexcept = delete;
+	template<Unit OUnitT1, Unit OUnitT2, Unit OUnitT3>
+	constexpr inline Amount(const Amount<OUnitT1>&, const Amount<OUnitT2>&, const Amount<OUnitT3>&) noexcept = delete;
 
 	constexpr Amount<UnitT> operator+(const Amount<UnitT> other) const noexcept;
 	constexpr Amount<UnitT> operator-(const Amount<UnitT> other) const noexcept;
@@ -168,6 +170,7 @@ inline std::string Amount<Unit::GRAM_PER_MILLILITER>::unitName() noexcept { retu
 template<>
 inline std::string Amount<Unit::JOULE_PER_MOLE>::unitName() noexcept { return Amount<Unit::JOULE>::unitName() + " per " + Amount<Unit::MOLE>::unitName(); }
 
+
 template<>
 template<>
 constexpr Amount<Unit::LITER>::Amount(const Amount<Unit::CUBIC_METER>& cubicMeters) noexcept :
@@ -188,8 +191,14 @@ constexpr Amount<Unit::GRAM_PER_MILLILITER>::Amount(const Amount<Unit::GRAM>& gr
 
 template<>
 template<>
+constexpr Amount<Unit::JOULE_PER_MOLE>::Amount(const Amount<Unit::JOULE>& joules) noexcept :
+	Value<double>(joules.asStd())
+{}
+
+template<>
+template<>
 constexpr Amount<Unit::JOULE_PER_MOLE>::Amount(const Amount<Unit::JOULE>& joules, const Amount<Unit::MOLE>& moles) noexcept :
-	Value<double>(joules.asStd() / moles.asMilli())
+	Value<double>(joules.asStd() / moles.asStd())
 {}
 
 template<>

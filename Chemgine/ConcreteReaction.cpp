@@ -34,6 +34,11 @@ const ReactantSet& ConcreteReaction::getProducts() const
 	return products;
 }
 
+const Amount<Unit::CELSIUS> ConcreteReaction::getReactantTemperature() const
+{
+	return reactants.any().getTemperature();
+}
+
 const ReactionData& ConcreteReaction::getData() const
 {
 	return baseReaction;

@@ -24,6 +24,8 @@ public:
 	const ReactantSet& getReactants() const;
 	const ReactantSet& getProducts() const;
 
+	const Amount<Unit::CELSIUS> getReactantTemperature() const;
+
 	const ReactionData& getData() const;
 
 	bool operator==(const ConcreteReaction& other) const;

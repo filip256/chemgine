@@ -190,7 +190,7 @@ Tasks:
   DONE. Add latent heat(fusion and vaporization) to molecules
   DONE. Add table.add<approximator>() method 
   4. Add energy to reactors
-  5. Add tests for physiscal properties
+  DONE. Add tests for approximators
 
 
 Possible optimizations:
@@ -288,6 +288,13 @@ Categorizations:
 
           Defaults to: water.
           Stored as: J/mol (molar latent heat)
+
+
+       - kinetic energy:
+           = tempInKelvin * heatCapacity
+           
+           Since temperature is distributed whithin a uniforn mixtures, the average mixture heatCapacity should be used.
+
 
 
    -----------------------------------------------------------------------------------------------------------------
