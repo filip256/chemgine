@@ -10,14 +10,16 @@ ReactionData::ReactionData(
 	const std::string& name,
 	const std::vector<std::pair<Reactable, uint8_t>>& reactants,
 	const std::vector<std::pair<Reactable, uint8_t>>& products,
-	std::vector<std::vector<Catalyst>>&& catalysts,
 	const Amount<Unit::MOLE_PER_SECOND> baseSpeed,
 	const Amount<Unit::CELSIUS> baseTemperature,
-	const Amount<Unit::JOULE_PER_MOLE> activationEnergy
+	const Amount<Unit::JOULE_PER_MOLE> reactionEnergy,
+	const Amount<Unit::JOULE_PER_MOLE> activationEnergy,
+	std::vector<std::vector<Catalyst>>&& catalysts
 ) noexcept :
 	id(id),
 	baseSpeed(baseSpeed),
 	baseTemperature(baseTemperature),
+	reactionEnergy(reactionEnergy),
 	activationEnergy(activationEnergy),
 	name(name),
 	reactants(flatten(reactants)),

@@ -30,6 +30,12 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 
 		auto line = DataHelpers::parseList(buffer, ',');
 
+		if (line.size() != 8)
+		{
+			Logger::log("Incompletely defined reaction skipped.", LogType::BAD);
+			continue;
+		}
+
 		const auto id = DataHelpers::toUInt(line[0]);
 		if (id.has_value() == false)
 		{
@@ -37,6 +43,7 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			continue;
 		}
 
+		// reactants
 		const auto reactants = DataHelpers::parseList(line[2], ';', true);
 		if (reactants.empty())
 		{
@@ -44,14 +51,6 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			continue;
 		}
 
-		const auto products = DataHelpers::parseList(line[3], ';', true);
-		if (products.empty())
-		{
-			Logger::log("Reaction without products with id " + std::to_string(id.value()) + " skipped.", LogType::BAD);
-			continue;
-		}
-
-		// reactants
 		std::vector<std::pair<Reactable, uint8_t>> reactantIds;
 		reactantIds.reserve(reactants.size());
 		for (size_t i = 0; i < reactants.size(); ++i)
@@ -66,6 +65,13 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 		}
 
 		// products
+		const auto products = DataHelpers::parseList(line[3], ';', true);
+		if (products.empty())
+		{
+			Logger::log("Reaction without products with id " + std::to_string(id.value()) + " skipped.", LogType::BAD);
+			continue;
+		}
+
 		std::vector<std::pair<Reactable, uint8_t>> productIds;
 		productIds.reserve(products.size());
 		for (size_t i = 0; i < products.size(); ++i)
@@ -85,8 +91,22 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			continue;
 		}
 
+		// speed
+		const auto speed = DataHelpers::toValueAtTemperature<Unit::MOLE_PER_SECOND>(line[4]);	
+		if(speed.has_value() == false)
+		{
+			Logger::log("Reaction speed for the reaction with id " + std::to_string(id.value()) + " is ill-defined. Skipped.", LogType::BAD);
+			continue;
+		}
+
+		//reaction energy
+		const auto reactionEnergy = DataHelpers::toDouble(line[5]);
+
+		//activation energy
+		const auto activationEnergy = DataHelpers::toUDouble(line[6]);
+
 		//catalysts
-		const auto catStr = DataHelpers::parseLists(line[4], ';', '|', true);
+		const auto catStr = DataHelpers::parseLists(line[7], ';', '|', true);
 		std::vector<std::vector<Catalyst>> catalysts;
 		catalysts.reserve(catStr.size());
 		for (size_t i = 0; i < catStr.size(); ++i)
@@ -120,24 +140,15 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			}
 		}
 
-		// speed
-		const auto speed = DataHelpers::toValueAtTemperature<Unit::MOLE_PER_SECOND>(line[5]);	
-		if(speed.has_value() == false)
-		{
-			Logger::log("Reaction speed for the reaction with id " + std::to_string(id.value()) + " is ill-defined. Skipped.", LogType::BAD);
-			continue;
-		}
-
-		//activation energy
-		const auto activation = DataHelpers::toUDouble(line[6]);
 
 		// create
 		ReactionData data(
 			id.value(), line[1],
 			reactantIds, productIds, 
-			std::move(catalysts),
 			speed.value().first, speed.value().second,
-			activation.value_or(0.0)
+			reactionEnergy.value_or(0.0),
+			activationEnergy.value_or(0.0),
+			std::move(catalysts)
 		);
 
 		if (data.mapReactantsToProducts() == false)

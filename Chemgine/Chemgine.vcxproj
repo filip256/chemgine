@@ -282,6 +282,7 @@
     <ClInclude Include="DataStoreAccessor.hpp" />
     <ClInclude Include="DrawableLabwareData.hpp" />
     <ClInclude Include="DrawablePort.hpp" />
+    <ClInclude Include="FlagField.hpp" />
     <ClInclude Include="Flask.hpp" />
     <ClInclude Include="ContainerLabwareData.hpp" />
     <ClInclude Include="Formulas.hpp" />

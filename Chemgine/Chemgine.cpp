@@ -27,6 +27,7 @@
 #include "SystemMatrix.hpp"
 
 #include "Spline.hpp"
+#include "FlagField.hpp"
 
 /*
 FunctionalGroup {
