@@ -12,12 +12,12 @@ Amount<Unit::GRAM_PER_MILLILITER> Formulas::idealGasLaw(
 	);
 }
 
-Amount<Unit::JOULE_PER_MOLE> Formulas::isobaricHeatCapacity(const uint8_t degreesOfFreedom)
+Amount<Unit::JOULE_PER_MOLE_CELSIUS> Formulas::isobaricHeatCapacity(const uint8_t degreesOfFreedom)
 {
-	return Amount<Unit::JOULE_PER_MOLE>((degreesOfFreedom + 2) * Constants::IDEAL_GAS_CONSTANT / 2.0);
+	return Amount<Unit::JOULE_PER_MOLE_CELSIUS>((degreesOfFreedom + 2) * Constants::IDEAL_GAS_CONSTANT / 2.0);
 }
 
-Amount<Unit::JOULE_PER_MOLE> Formulas::isochoricHeatCapacity(const uint8_t degreesOfFreedom)
+Amount<Unit::JOULE_PER_MOLE_CELSIUS> Formulas::isochoricHeatCapacity(const uint8_t degreesOfFreedom)
 {
-	return Amount<Unit::JOULE_PER_MOLE>(degreesOfFreedom * Constants::IDEAL_GAS_CONSTANT / 2.0);
+	return Amount<Unit::JOULE_PER_MOLE_CELSIUS>(degreesOfFreedom * Constants::IDEAL_GAS_CONSTANT / 2.0);
 }

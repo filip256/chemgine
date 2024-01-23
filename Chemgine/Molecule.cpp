@@ -66,7 +66,7 @@ Amount<Unit::GRAM_PER_MILLILITER> Molecule::getDensityAt(
 			Formulas::idealGasLaw(temperature, pressure, molarMass);
 }
 
-Amount<Unit::JOULE_PER_MOLE> Molecule::getHeatCapacityAt(
+Amount<Unit::JOULE_PER_MOLE_CELSIUS> Molecule::getHeatCapacityAt(
 	const Amount<Unit::CELSIUS> temperature,
 	const Amount<Unit::TORR> pressure
 ) const

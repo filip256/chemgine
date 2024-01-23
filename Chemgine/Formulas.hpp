@@ -11,7 +11,7 @@ public:
 		const Amount<Unit::GRAM_PER_MOLE> molarMass
 	);
 
-	static Amount<Unit::JOULE_PER_MOLE> isobaricHeatCapacity(const uint8_t degreesOfFreedom);
+	static Amount<Unit::JOULE_PER_MOLE_CELSIUS> isobaricHeatCapacity(const uint8_t degreesOfFreedom);
 
-	static Amount<Unit::JOULE_PER_MOLE> isochoricHeatCapacity(const uint8_t degreesOfFreedom);
+	static Amount<Unit::JOULE_PER_MOLE_CELSIUS> isochoricHeatCapacity(const uint8_t degreesOfFreedom);
 };

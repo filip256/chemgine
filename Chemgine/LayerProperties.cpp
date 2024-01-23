@@ -19,3 +19,8 @@ Amount<Unit::GRAM> LayerProperties::getMass() const {
 Amount<Unit::LITER> LayerProperties::getVolume() const {
     return volume;
 }
+
+bool LayerProperties::isEmpty() const
+{
+    return moles == 0.0;
+}

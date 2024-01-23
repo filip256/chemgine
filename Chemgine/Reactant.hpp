@@ -37,8 +37,9 @@ public:
 	Amount<Unit::CELSIUS> getTemperature() const;
 	Amount<Unit::GRAM> getMass() const;
 	Amount<Unit::LITER> getVolume() const;
-	Amount<Unit::JOULE_PER_MOLE> getHeatCapacity() const;
+	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getHeatCapacity() const;
 	Amount<Unit::JOULE_PER_MOLE> getKineticEnergy() const;
+	Amount<Unit::JOULE_PER_MOLE> getStandaloneKineticEnergy() const;
 
 	void setContainer(const Reactor& container) const;
 	const Reactor& getContainer() const;

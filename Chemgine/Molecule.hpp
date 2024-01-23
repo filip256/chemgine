@@ -31,7 +31,7 @@ public:
 		const Amount<Unit::TORR> pressure
 	) const;
 
-	Amount<Unit::JOULE_PER_MOLE> getHeatCapacityAt(
+	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getHeatCapacityAt(
 		const Amount<Unit::CELSIUS> temperature,
 		const Amount<Unit::TORR> pressure
 	) const;

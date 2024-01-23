@@ -39,15 +39,20 @@ Amount<Unit::LITER> Reactant::getVolume() const
 	return amount.to<Unit::LITER>(molecule.getMolarMass(), molecule.getDensityAt(getLayerProperties().getTemperature(), container->getPressure()));
 }
 
-Amount<Unit::JOULE_PER_MOLE> Reactant::getHeatCapacity() const
+Amount<Unit::JOULE_PER_MOLE_CELSIUS> Reactant::getHeatCapacity() const
 {
 	return molecule.getHeatCapacityAt(getLayerProperties().getTemperature(), container->getPressure());
 }
 
 Amount<Unit::JOULE_PER_MOLE> Reactant::getKineticEnergy() const
 {
+	return container->getLayerKineticEnergy(layer);
+}
+
+Amount<Unit::JOULE_PER_MOLE> Reactant::getStandaloneKineticEnergy() const
+{
 	const auto temp = getLayerProperties().getTemperature();
-	return molecule.getHeatCapacityAt(temp, container->getPressure()) * Amount<Unit::KELVIN>(temp).asStd();
+	return molecule.getHeatCapacityAt(temp, container->getPressure()).to<Unit::JOULE_PER_MOLE>(temp);
 }
 
 bool Reactant::operator== (const Reactant& other) const

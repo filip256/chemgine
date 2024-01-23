@@ -33,10 +33,13 @@ private:
 
 	void removeNegligibles();
 	void findNewReactions();
-	void runReactions();
+	void runReactions(const Amount<Unit::SECOND> timespan);
+	void consumePotentialEnergy();
 
 	LayerType getLayerAbove(LayerType layer) const;
 	LayerType getLayerBelow(LayerType layer) const;
+
+	void add(const Amount<Unit::JOULE> heat, const LayerType layer);
 
 public:
 	Reactor(
@@ -50,8 +53,12 @@ public:
 	void add(Reactor& other, const double ratio);
 	void add(const Reactant& reactant);
 	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount);
+	void add(const Amount<Unit::JOULE> heat);
 
 	LayerType findLayerFor(const Reactant& reactant) const;
+
+	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity(const LayerType layer) const;
+	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType layer) const;
 
 	Amount<Unit::MOLE> getAmountOf(const Reactant& reactant) const;
 	Amount<Unit::MOLE> getAmountOf(const ReactantSet& reactantSet) const;
@@ -60,6 +67,8 @@ public:
 	Amount<Unit::MOLE> getTotalMoles() const;
 	Amount<Unit::GRAM> getTotalMass() const;
 	Amount<Unit::LITER> getTotalVolume() const;
+
+	bool hasLayer(const LayerType layer) const;
 
 	void tick();
 

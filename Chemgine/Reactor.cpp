@@ -87,12 +87,12 @@ void Reactor::findNewReactions()
 		r.isNew = false;
 }
 
-void Reactor::runReactions()
+void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 {
 	for (const auto& r : cachedReactions)
 	{
 		auto speedCoef =
-			r.getData().baseSpeed *
+			r.getData().baseSpeed.to<Unit::MOLE>(timespan) *
 			totalVolume.asStd() *
 			temperatureSpeedApproximator->get((r.getReactantTemperature() - r.getData().baseTemperature).asStd()) *
 			concentrationSpeedApproximator->get((getAmountOf(r.getReactants()) / totalMoles).asStd());
@@ -115,6 +115,16 @@ void Reactor::runReactions()
 			add(Reactant(i.molecule, i.layer, i.amount * speedCoef.asStd() * -1, *this));
 		for (const auto& i : r.getProducts())
 			add(Reactant(i.molecule, findLayerFor(i), i.amount * speedCoef.asStd(), *this));
+
+		add(r.getData().reactionEnergy.to<Unit::JOULE>(speedCoef), r.getReactants().any().layer);
+	}
+}
+
+void Reactor::consumePotentialEnergy()
+{
+	for (auto& l : layers)
+	{
+		l.second.temperature += l.second.potentialEnergy.to<Unit::CELSIUS>(getLayerHeatCapacity(l.first), l.second.moles);
 	}
 }
 
@@ -123,7 +133,7 @@ LayerType Reactor::getLayerAbove(LayerType layer) const
 	while(layer > LayerType::GASEOUS)
 	{
 		--layer;
-		if (layers.contains(layer))
+		if (hasLayer(layer))
 			return layer;
 	}
 
@@ -135,11 +145,16 @@ LayerType Reactor::getLayerBelow(LayerType layer) const
 	while (layer < LayerType::SOLID)
 	{
 		++layer;
-		if (layers.contains(layer))
+		if (hasLayer(layer))
 			return layer;
 	}
 
 	return LayerType::NONE;
+}
+
+void Reactor::add(const Amount<Unit::JOULE> heat, const LayerType layer)
+{
+	layers.at(layer).potentialEnergy += heat;
 }
 
 void Reactor::add(Reactor& other)
@@ -194,9 +209,46 @@ void Reactor::add(const Molecule& molecule, const Amount<Unit::MOLE> amount)
 	add(r);
 }
 
+void Reactor::add(const Amount<Unit::JOULE> heat)
+{
+	const auto lA = getLayerAbove(LayerType::SOLID);
+	const auto& lS = layers.find(LayerType::SOLID);
+	if (lS != layers.end())
+	{
+		if (lA == LayerType::NONE)
+		{
+			lS->second.potentialEnergy += heat * 0.5;
+			layers.at(lA).potentialEnergy += heat * 0.5;
+			return;
+		}
+
+		lS->second.potentialEnergy += heat;
+		return;
+	}
+
+	layers.at(lA).potentialEnergy += heat;
+}
+
 LayerType Reactor::findLayerFor(const Reactant& reactant) const
 {
 	return LayerType::POLAR;
+}
+
+Amount<Unit::JOULE_PER_MOLE_CELSIUS> Reactor::getLayerHeatCapacity(const LayerType layer) const
+{
+	Amount<Unit::JOULE_PER_MOLE_CELSIUS> hC = 0.0;
+	for (const auto& r : content)
+	{
+		if (r.layer == layer)
+			hC += r.getHeatCapacity() * r.getMass().asStd();
+	}
+
+	return hC / layers.at(layer).getMass().asStd();
+}
+
+Amount<Unit::JOULE_PER_MOLE> Reactor::getLayerKineticEnergy(const LayerType layer) const
+{
+	return getLayerHeatCapacity(layer).to<Unit::JOULE_PER_MOLE>(layers.at(layer).temperature);
 }
 
 Amount<Unit::MOLE> Reactor::getAmountOf(const Reactant& reactant) const
@@ -233,9 +285,16 @@ Amount<Unit::LITER> Reactor::getTotalVolume() const
 	return totalVolume;
 }
 
+bool Reactor::hasLayer(const LayerType layer) const
+{
+	const auto& l = layers.find(layer);
+	return l != layers.end() && l->second.isEmpty() == false;
+}
+
 void Reactor::tick()
 {
 	removeNegligibles();
 	findNewReactions();
-	runReactions();
+	runReactions(1.0);
+	consumePotentialEnergy();
 }

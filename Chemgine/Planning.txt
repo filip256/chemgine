@@ -186,6 +186,7 @@ Tasks:
   3. Use operator* instead of value() for std::optional
   4. Rename approximator to estimator
   5. Dont use multiindex maps where not required
+  6. Add templated binary arithemtic operators to Amount, and remove .asStd() uses.
 ---
   DONE. Add heat capacity to molecules as a SplineAppx
   DONE. Add latent heat(fusion and vaporization) to molecules
@@ -271,7 +272,7 @@ Categorizations:
             For the rare cases of 'pipe bomb' reactors isochoric could be considered.
 
           Defaults to: water.
-          Stored as: J/mol (molar heat capacity)
+          Stored as: J/(mol*C) (molar heat capacity)
 
 
       - latent heats:

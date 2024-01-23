@@ -162,13 +162,15 @@ inline std::string Amount<Unit::PASCAL>::unitName() noexcept { return "pascal"; 
 template<>
 inline std::string Amount<Unit::JOULE>::unitName() noexcept { return "joule"; }
 template<>
-inline std::string Amount<Unit::MOLE_PER_SECOND>::unitName() noexcept { return Amount<Unit::MOLE>::unitName() + " per " + Amount<Unit::SECOND>::unitName(); }
+inline std::string Amount<Unit::MOLE_PER_SECOND>::unitName() noexcept { return Amount<Unit::MOLE>::unitName() + " / " + Amount<Unit::SECOND>::unitName(); }
 template<>
-inline std::string Amount<Unit::GRAM_PER_MOLE>::unitName() noexcept { return Amount<Unit::GRAM>::unitName() + " per " + Amount<Unit::MOLE>::unitName(); }
+inline std::string Amount<Unit::GRAM_PER_MOLE>::unitName() noexcept { return Amount<Unit::GRAM>::unitName() + " / " + Amount<Unit::MOLE>::unitName(); }
 template<>
-inline std::string Amount<Unit::GRAM_PER_MILLILITER>::unitName() noexcept { return Amount<Unit::GRAM>::unitName() + " per milli" + Amount<Unit::LITER>::unitName(); }
+inline std::string Amount<Unit::GRAM_PER_MILLILITER>::unitName() noexcept { return Amount<Unit::GRAM>::unitName() + " / milli" + Amount<Unit::LITER>::unitName(); }
 template<>
-inline std::string Amount<Unit::JOULE_PER_MOLE>::unitName() noexcept { return Amount<Unit::JOULE>::unitName() + " per " + Amount<Unit::MOLE>::unitName(); }
+inline std::string Amount<Unit::JOULE_PER_MOLE>::unitName() noexcept { return Amount<Unit::JOULE>::unitName() + " / " + Amount<Unit::MOLE>::unitName(); }
+template<>
+inline std::string Amount<Unit::JOULE_PER_MOLE_CELSIUS>::unitName() noexcept { return Amount<Unit::JOULE>::unitName() + " / (" + Amount<Unit::MOLE>::unitName() + " + " + Amount<Unit::CELSIUS>::unitName() + ")"; }
 
 
 template<>
@@ -199,6 +201,12 @@ template<>
 template<>
 constexpr Amount<Unit::JOULE_PER_MOLE>::Amount(const Amount<Unit::JOULE>& joules, const Amount<Unit::MOLE>& moles) noexcept :
 	Value<double>(joules.asStd() / moles.asStd())
+{}
+
+template<>
+template<>
+constexpr Amount<Unit::JOULE_PER_MOLE_CELSIUS>::Amount(const Amount<Unit::JOULE>& joules, const Amount<Unit::MOLE>& moles, const Amount<Unit::CELSIUS>& celsius) noexcept :
+	Value<double>(joules.asStd() / (moles.asStd() * celsius.asStd()))
 {}
 
 template<>
@@ -279,10 +287,39 @@ constexpr Amount<Unit::MOLE> Amount<Unit::GRAM>::to(const Amount<Unit::GRAM_PER_
 	return value / molarMass.asStd();
 }
 
+template<>
+template<>
+constexpr Amount<Unit::JOULE> Amount<Unit::JOULE_PER_MOLE>::to(const Amount<Unit::MOLE> moles) const noexcept
+{
+	return value * moles.asStd();
+}
 
+template<>
+template<>
+constexpr Amount<Unit::JOULE_PER_MOLE> Amount<Unit::JOULE_PER_MOLE_CELSIUS>::to(const Amount<Unit::CELSIUS> temperature) const noexcept
+{
+	return value * temperature.asStd();
+}
+template<>
+template<>
+constexpr Amount<Unit::JOULE_PER_MOLE_CELSIUS> Amount<Unit::JOULE_PER_MOLE>::to(const Amount<Unit::CELSIUS> temperature) const noexcept
+{
+	return value / temperature.asStd();
+}
 
+template<>
+template<>
+constexpr Amount<Unit::CELSIUS> Amount<Unit::JOULE>::to(const Amount<Unit::JOULE_PER_MOLE_CELSIUS> heatCapacity, const Amount<Unit::MOLE> moles) const noexcept
+{
+	return value / (heatCapacity.asStd() * moles.asStd());
+}
 
-
+template<>
+template<>
+constexpr Amount<Unit::MOLE> Amount<Unit::MOLE_PER_SECOND>::to(const Amount<Unit::SECOND> timespan) const noexcept
+{
+	return value / timespan.asStd();
+}
 
 template<>
 template<>
