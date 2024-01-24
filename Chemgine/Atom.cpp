@@ -4,7 +4,7 @@
 
 
 Atom::Atom(const ComponentIdType id) :
-    AtomicComponent(id, ComponentType::ATOM)
+    BaseComponent(id, ComponentType::ATOMIC)
 {
     if (dataStore().atoms.contains(id) == false)
     {
@@ -14,7 +14,7 @@ Atom::Atom(const ComponentIdType id) :
 }
 
 Atom::Atom(const std::string& symbol) :
-    AtomicComponent(0 ,ComponentType::ATOM)
+    BaseComponent(0 ,ComponentType::ATOMIC)
 {
     if (dataStore().atoms.contains(symbol) == false)
     {

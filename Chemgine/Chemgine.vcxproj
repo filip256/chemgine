@@ -188,14 +188,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Adaptor.cpp" />
-    <ClCompile Include="ApproximatorDataTable.cpp" />
+    <ClCompile Include="EstimatorDataTable.cpp" />
     <ClCompile Include="Atom.cpp" />
-    <ClCompile Include="AtomicComponent.cpp" />
-    <ClCompile Include="AtomIdentifier.cpp" />
-    <ClCompile Include="Backbone.cpp" />
-    <ClCompile Include="BackboneData.cpp" />
-    <ClCompile Include="BackboneDataTable.cpp" />
-    <ClCompile Include="BaseApproximator.cpp" />
+    <ClCompile Include="BaseEstimator.cpp" />
     <ClCompile Include="BaseLabwareComponent.cpp" />
     <ClCompile Include="BaseLabwareData.cpp" />
     <ClCompile Include="BaseReactionCondition.cpp" />
@@ -204,7 +199,7 @@
     <ClCompile Include="CompositeComponentData.cpp" />
     <ClCompile Include="ConcreteReaction.cpp" />
     <ClCompile Include="AdaptorData.cpp" />
-    <ClCompile Include="ConstantApproximator.cpp" />
+    <ClCompile Include="ConstantEstimator.cpp" />
     <ClCompile Include="Constants.cpp" />
     <ClCompile Include="DrawableComponent.cpp" />
     <ClCompile Include="DataStoreAccessor.cpp" />
@@ -221,12 +216,12 @@
     <ClCompile Include="LabwarePort.cpp" />
     <ClCompile Include="LabwareSystem.cpp" />
     <ClCompile Include="LayerProperties.cpp" />
-    <ClCompile Include="LinearApproximator.cpp" />
+    <ClCompile Include="LinearEstimator.cpp" />
     <ClCompile Include="Maths.cpp" />
     <ClCompile Include="MoleculeDataTable.cpp" />
     <ClCompile Include="Molecule.cpp" />
     <ClCompile Include="MoleculeData.cpp" />
-    <ClCompile Include="OffsetApproximator.cpp" />
+    <ClCompile Include="OffsetEstimator.cpp" />
     <ClCompile Include="PhysicalProperties.cpp" />
     <ClCompile Include="Reactable.cpp" />
     <ClCompile Include="Reactant.cpp" />
@@ -235,18 +230,16 @@
     <ClCompile Include="ReactionDataTable.cpp" />
     <ClCompile Include="Reactor.cpp" />
     <ClCompile Include="ReactorLayer.cpp" />
-    <ClCompile Include="ScaleApproximator.cpp" />
+    <ClCompile Include="ScaleEstimator.cpp" />
     <ClCompile Include="Spline.cpp" />
-    <ClCompile Include="SplineApproximator.cpp" />
-    <ClCompile Include="SplitApproximator.cpp" />
+    <ClCompile Include="SplineEstimator.cpp" />
+    <ClCompile Include="SplitEstimator.cpp" />
     <ClCompile Include="SystemMatrix.cpp" />
     <ClCompile Include="Value.cpp" />
     <ClInclude Include="Adaptor.hpp" />
     <ClInclude Include="Amount.hpp" />
-    <ClInclude Include="ApproximatorDataTable.hpp" />
-    <ClInclude Include="ApproximatorType.hpp" />
-    <ClInclude Include="AtomicComponent.hpp" />
-    <ClInclude Include="AtomIdentifier.hpp" />
+    <ClInclude Include="EstimatorDataTable.hpp" />
+    <ClInclude Include="EstimatorType.hpp" />
     <ClCompile Include="AtomData.cpp" />
     <ClCompile Include="AtomDataTable.cpp" />
     <ClCompile Include="BaseComponentData.cpp" />
@@ -254,10 +247,7 @@
     <ClCompile Include="Chemgine.cpp" />
     <ClCompile Include="BaseComponent.cpp" />
     <ClCompile Include="CompositeComponent.cpp" />
-    <ClInclude Include="Backbone.hpp" />
-    <ClInclude Include="BackboneData.hpp" />
-    <ClInclude Include="BackboneDataTable.hpp" />
-    <ClInclude Include="BaseApproximator.hpp" />
+    <ClInclude Include="BaseEstimator.hpp" />
     <ClInclude Include="BaseComponentData.hpp" />
     <ClInclude Include="BaseLabwareComponent.hpp" />
     <ClInclude Include="BaseLabwareData.hpp" />
@@ -268,14 +258,13 @@
     <ClCompile Include="DataHelpers.cpp" />
     <ClCompile Include="DataStore.cpp" />
     <ClCompile Include="DataTable.cpp" />
-    <ClCompile Include="FunctionalGroup.cpp" />
-    <ClCompile Include="FunctionalGroupData.cpp" />
-    <ClCompile Include="FunctionalGroupDataTable.cpp" />
+    <ClCompile Include="GenericMoleculeData.cpp" />
+    <ClCompile Include="GenericMoleculeDataTable.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClInclude Include="CompositeComponentData.hpp" />
     <ClInclude Include="ConcreteReaction.hpp" />
     <ClInclude Include="AdaptorData.hpp" />
-    <ClInclude Include="ConstantApproximator.hpp" />
+    <ClInclude Include="ConstantEstimator.hpp" />
     <ClInclude Include="Constants.hpp" />
     <ClInclude Include="ContainsInterface.hpp" />
     <ClInclude Include="DrawableComponent.hpp" />
@@ -286,10 +275,9 @@
     <ClInclude Include="Flask.hpp" />
     <ClInclude Include="ContainerLabwareData.hpp" />
     <ClInclude Include="Formulas.hpp" />
-    <ClInclude Include="FunctionalGroup.hpp" />
-    <ClInclude Include="FunctionalGroupData.hpp" />
-    <ClInclude Include="FunctionalGroupDataTable.hpp" />
-    <ClInclude Include="FunctionalApproximator.hpp" />
+    <ClInclude Include="GenericMoleculeData.hpp" />
+    <ClInclude Include="GenericMoleculeDataTable.hpp" />
+    <ClInclude Include="FunctionalEstimator.hpp" />
     <ClInclude Include="HashCombine.hpp" />
     <ClInclude Include="HeatSourceData.hpp" />
     <ClInclude Include="IndexMap.hpp" />
@@ -302,19 +290,20 @@
     <ClInclude Include="LabwareType.hpp" />
     <ClInclude Include="LayerProperties.hpp" />
     <ClInclude Include="LayerType.hpp" />
-    <ClInclude Include="LinearApproximator.hpp" />
+    <ClInclude Include="LinearEstimator.hpp" />
     <ClInclude Include="LogType.hpp" />
     <ClCompile Include="MolecularStructure.cpp" />
     <ClInclude Include="Maths.hpp" />
-    <ClInclude Include="OffsetApproximator.hpp" />
+    <ClInclude Include="MoleculeIdType.hpp" />
+    <ClInclude Include="OffsetEstimator.hpp" />
     <ClInclude Include="PhysicalProperties.hpp" />
     <ClInclude Include="PortType.hpp" />
     <ClInclude Include="Reactant.hpp" />
     <ClInclude Include="ReactantSet.hpp" />
-    <ClInclude Include="ScaleApproximator.hpp" />
+    <ClInclude Include="ScaleEstimator.hpp" />
     <ClInclude Include="Spline.hpp" />
-    <ClInclude Include="SplineApproximator.hpp" />
-    <ClInclude Include="SplitApproximator.hpp" />
+    <ClInclude Include="SplineEstimator.hpp" />
+    <ClInclude Include="SplitEstimator.hpp" />
     <ClInclude Include="UIContext.hpp" />
     <ClInclude Include="Unit.hpp" />
     <ClInclude Include="MoleculeDataTable.hpp" />
@@ -351,13 +340,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv" />
-    <None Include="Data\BackboneData.csv" />
-    <None Include="Data\FunctionalGroupData.csv" />
+    <None Include="Data\GenericMoleculeData.csv" />
     <None Include="Data\LabwareData.csv" />
     <None Include="Data\MoleculeData.csv" />
     <None Include="Data\ReactionData.csv" />
     <None Include="diagram.cd" />
-    <None Include="Out\functionalgroups.out.csv" />
+    <None Include="Out\genericmolecules.out.csv" />
     <None Include="Out\molecules.out.csv" />
   </ItemGroup>
   <ItemGroup>

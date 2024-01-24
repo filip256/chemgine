@@ -13,7 +13,6 @@
 #include "Reactor.hpp"
 #include "Query.hpp"
 
-
 #include "Amount.hpp"
 #include "BaseLabwareData.hpp"
 #include "BaseLabwareComponent.hpp"
@@ -28,40 +27,6 @@
 
 #include "Spline.hpp"
 #include "FlagField.hpp"
-
-/*
-FunctionalGroup {
-    CompositeComponent {
-        BaseComponent {
-            ComponentType,
-            DataStoreAccessor {
-                DataStore {
-                    AtomDataTable {
-                        DataTable { MultiIndexMap },
-                        AtomData { BaseComponentData }
-                    }
-                    FunctionalGroupDataTable {
-                        DataTable { MultiIndexMap },
-                        FunctionalGroupData {
-                            BaseComponentData,
-                            MolecularStructure {
-                                Bond{
-                                    BondType,
-                                    Atom {
-                                        AtomicComponent { BaseComponent... }
-                                        AtomData { BaseComponentData }
-                                    }
-                                },
-                                BaseComponent...
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-*/
 
 int main()
 {
@@ -82,10 +47,9 @@ int main()
         Molecule::setDataStore(store);
         BaseLabwareComponent::setDataStore(store);
         store.loadAtomsData("Data/AtomData.csv")
-            .loadFunctionalGroupsData("Data/FunctionalGroupData.csv")
-            .loadBackbonesData("Data/BackboneData.csv")
-            .loadApproximatorsData("")
+            .loadEstimatorsData("")
             .loadMoleculesData("Data/MoleculeData.csv")
+            .loadGenericMoleculesData("Data/GenericMoleculeData.csv")
             .loadReactionsData("Data/ReactionData.csv")
             .loadLabwareData("Data/LabwareData.csv");
 
@@ -115,7 +79,7 @@ int main()
         //std::cout << MolecularStructure("CC1COC2CN(C)C(C)C3OCC1C23").serialize()<<'\n';
         //std::cout << MolecularStructure("C1C2CC12").toSMILES() << '\n';
 
-        //store.saveFunctionalGroupsData("Out/functionalgroups.out.csv")
+        //store.saveGenericMoleculesData("Out/genericmolecules.out.csv")
         //    .saveMoleculesData("Out/molecules.out.csv");
     }
 
@@ -127,8 +91,8 @@ int main()
         Logger::log("Memory leak detected: BaseLabwareData (" + std::to_string(BaseLabwareData::instanceCount) + " unreleased instances).", LogType::BAD);
     if (BaseLabwareComponent::instanceCount != 0)
         Logger::log("Memory leak detected: BaseLabwareComponent (" + std::to_string(BaseLabwareComponent::instanceCount) + " unreleased instances).", LogType::BAD);
-    if (BaseApproximator::instanceCount != 0)
-        Logger::log("Memory leak detected: BaseApproximator (" + std::to_string(BaseApproximator::instanceCount) + " unreleased instances).", LogType::BAD);
+    if (BaseEstimator::instanceCount != 0)
+        Logger::log("Memory leak detected: BaseEstimator (" + std::to_string(BaseEstimator::instanceCount) + " unreleased instances).", LogType::BAD);
 
     getchar();
     return 0;

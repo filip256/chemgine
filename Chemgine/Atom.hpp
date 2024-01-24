@@ -1,10 +1,9 @@
 #pragma once
 
-#include "AtomicComponent.hpp"
 #include "AtomData.hpp"
+#include "BaseComponent.hpp"
 
-
-class Atom : public AtomicComponent
+class Atom : public BaseComponent
 {
 private:
     Atom(const Atom&) = default;

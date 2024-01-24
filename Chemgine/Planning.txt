@@ -182,18 +182,20 @@ Tasks:
 ---
   1. Fix single key DataTables
   2. Fix Reactable id clash (Molecule/Component)
-  DONE. Approximator optimizer
+  DONE. Estimator optimizer
   3. Use operator* instead of value() for std::optional
-  4. Rename approximator to estimator
-  5. Dont use multiindex maps where not required
-  6. Add templated binary arithemtic operators to Amount, and remove .asStd() uses.
+  DONE. Rename approximator to estimator
+  5. Add templated binary arithemtic operators to Amount, and remove .asStd() uses.
+  6. Add class for atom symbol (perhaps char[2/4] is enough)
+  7. Add operator<< to stream for Amounts
 ---
-  DONE. Add heat capacity to molecules as a SplineAppx
+  DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules
-  DONE. Add table.add<approximator>() method 
-  4. Add energy to reactors
-  DONE. Add tests for approximators
-
+  DONE. Add table.add<estimator>() method 
+  DONE. Add energy to reactors
+  DONE. Add tests for estimators
+  6. Add tests for reactor energy
+---
 
 Possible optimizations:
  - keep symbols as char* to avoid uneccessary constructor for 'C'
@@ -241,7 +243,7 @@ Categorizations:
     Physical properties:
       - melting and boiling points:
           They vary with pressure. Data in loaded as the bp and mp and std. pressure.
-          An offset approximator is used to get the mp and bp from the std. values and a standard relative bp approximator.
+          An offset estimator is used to get the mp and bp from the std. values and a standard relative bp estimator.
 
           Defaults to: water.
           Stored as: C
@@ -250,7 +252,7 @@ Categorizations:
       - densities:
           For solids and liquids:
             They vary by temperature and the variance depends on aggregation state, but not on pressure, thus:
-            spline approximators are generated for both liquid and solid densities.
+            spline estimators are generated for both liquid and solid densities.
           For gasses:
             The ideal gas law is used.
             Perhaps a more specific approach will be used in the future.
@@ -262,9 +264,9 @@ Categorizations:
       - heat capacities:
           https://www.tec-science.com/thermodynamics/heat/specific-heat-capacity-of-water/
           For solids:
-            Varies with themperature. Spline approximator is used.
+            Varies with themperature. Spline estimator is used.
           For liquids:
-            Almost constant, still a spline approximation can be used. (Consider optimizing 1 and 2 value Splines to constants and functions appx.)
+            Almost constant, still a spline approximation can be used. (Consider optimizing 1 and 2 value Splines to constants and functions est.)
           For gases:
             https://www.tec-science.com/thermodynamics/heat/specific-heat-capacity-of-gases-at-constant-volume-or-pressure/
             Isobaric heat capacity is used. (Most systems will be open, i.e. the volume can expand)
@@ -281,7 +283,7 @@ Categorizations:
 
           It is expected that latent heats for copression are proportional to pressure. 
           It is expected that latent heats for expansion are inversly proportional to pressure.
-          A functional approximator can be used.
+          A functional estimator can be used.
           (?) If a substance is introduced in a reactor with a temp higher than its bp/mp, less energy is required
           to produce state change, than when heating gradually. <=> Latent heats are inversly proportional with temperature.
           

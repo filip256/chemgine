@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-enum class ApproximatorType : uint8_t
+enum class EstimatorType : uint8_t
 {
 	FUNCTIONAL,
 	SPLINE,

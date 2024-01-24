@@ -2,10 +2,9 @@
 
 DataStore::DataStore() : 
 	atoms(),
-	functionalGroups(),
-	backbones(),
-	approximators(),
-	molecules(approximators),
+	genericMolecules(),
+	estimators(),
+	molecules(estimators),
 	reactions()
 {}
 
@@ -15,21 +14,15 @@ DataStore& DataStore::loadAtomsData(const std::string& path)
 	return *this;
 }
 
-DataStore& DataStore::loadFunctionalGroupsData(const std::string& path)
-{
-	functionalGroups.loadFromFile(path);
-	return *this;
-}
-
-DataStore& DataStore::loadBackbonesData(const std::string& path)
-{
-	backbones.loadFromFile(path);
-	return *this;
-}
-
 DataStore& DataStore::loadMoleculesData(const std::string& path)
 {
 	molecules.loadFromFile(path);
+	return *this;
+}
+
+DataStore& DataStore::loadGenericMoleculesData(const std::string& path)
+{
+	genericMolecules.loadFromFile(path);
 	return *this;
 }
 
@@ -39,9 +32,9 @@ DataStore& DataStore::loadReactionsData(const std::string& path)
 	return *this;
 }
 
-DataStore& DataStore::loadApproximatorsData(const std::string& path)
+DataStore& DataStore::loadEstimatorsData(const std::string& path)
 {
-	approximators.loadFromFile(path);
+	estimators.loadFromFile(path);
 	return *this;
 }
 
@@ -51,14 +44,14 @@ DataStore& DataStore::loadLabwareData(const std::string& path)
 	return *this;
 }
 
-DataStore& DataStore::saveFunctionalGroupsData(const std::string& path)
-{
-	functionalGroups.saveToFile(path);
-	return *this;
-}
-
 DataStore& DataStore::saveMoleculesData(const std::string& path)
 {
 	molecules.saveToFile(path);
+	return *this;
+}
+
+DataStore& DataStore::saveGenericMoleculesData(const std::string& path)
+{
+	genericMolecules.saveToFile(path);
 	return *this;
 }

@@ -99,7 +99,6 @@ public:
 
     MolecularStructure(const std::string& smiles);
     MolecularStructure(const std::string& serialized, const bool renormalize);
-    MolecularStructure(const BaseComponent& component) noexcept;
     MolecularStructure(MolecularStructure&& structure) = default;
     ~MolecularStructure() noexcept;
 
@@ -133,7 +132,7 @@ public:
     /// <summary>
     /// Complexity: O(n)
     /// </summary>
-    double getMolarMass() const;
+    Amount<Unit::GRAM_PER_MOLE> getMolarMass() const;
 
     /// <summary>
     /// Complexity: O(1) (for now)

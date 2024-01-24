@@ -1,14 +1,14 @@
 #include "MoleculeDataTable.hpp"
 #include "DataHelpers.hpp"
-#include "OffsetApproximator.hpp"
-#include "ScaleApproximator.hpp"
-#include "SplineApproximator.hpp"
+#include "OffsetEstimator.hpp"
+#include "ScaleEstimator.hpp"
+#include "SplineEstimator.hpp"
 #include "Logger.hpp"
 
 #include <fstream>
 
-MoleculeDataTable::MoleculeDataTable(ApproximatorDataTable& approximators) noexcept :
-	approximators(approximators)
+MoleculeDataTable::MoleculeDataTable(EstimatorDataTable& estimators) noexcept :
+	estimators(estimators)
 {}
 
 
@@ -50,7 +50,7 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 			Logger::log("Molecule name was empty. (" + line[1] + ')', LogType::WARN);
 		}
 
-		const auto id = DataHelpers::toUInt(line[0]);
+		const auto id = DataHelpers::parse<unsigned int>(line[0]);
 
 		if (id.has_value() == false)
 		{
@@ -59,35 +59,35 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 		}
 
 		// boiling and melting points
-		const auto mpR = DataHelpers::toDouble(line[3]);
-		const auto bpR = DataHelpers::toDouble(line[4]);
-		const auto& mpA = approximators.add<OffsetApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TORR_TO_REL_BP)), mpR.value_or(0));
-		const auto& bpA = approximators.add<OffsetApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TORR_TO_REL_BP)), bpR.value_or(100));
+		const auto mpR = DataHelpers::parse<double>(line[3]);
+		const auto bpR = DataHelpers::parse<double>(line[4]);
+		const auto& mpA = estimators.add<OffsetEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TORR_TO_REL_BP)), mpR.value_or(0));
+		const auto& bpA = estimators.add<OffsetEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TORR_TO_REL_BP)), bpR.value_or(100));
 
 		// densities
-		const auto sdR = DataHelpers::toSpline(line[5]);
-		const auto ldR = DataHelpers::toSpline(line[6]);
-		const auto& sdA = approximators.add<SplineApproximator>(sdR.value_or(Spline<float>({ {0, 1.0f} })));
-		const auto& ldA = approximators.add<SplineApproximator>(ldR.value_or(Spline<float>({ {0, 1.0f} })));
+		const auto sdR = DataHelpers::parse<Spline<float>>(line[5]);
+		const auto ldR = DataHelpers::parse<Spline<float>>(line[6]);
+		const auto& sdA = estimators.add<SplineEstimator>(sdR.value_or(Spline<float>({ {0, 1.0f} })));
+		const auto& ldA = estimators.add<SplineEstimator>(ldR.value_or(Spline<float>({ {0, 1.0f} })));
 
 		// heat capacities
-		const auto shcR = DataHelpers::toSpline(line[7]);
-		const auto lhcR = DataHelpers::toSpline(line[8]);
-		const auto& shcA = approximators.add<SplineApproximator>(shcR.value_or(Spline<float>({ {0, 36.0f} })));
-		const auto& lhcA = approximators.add<SplineApproximator>(lhcR.value_or(Spline<float>({ {40.0f, 75.24f} })));
+		const auto shcR = DataHelpers::parse<Spline<float>>(line[7]);
+		const auto lhcR = DataHelpers::parse<Spline<float>>(line[8]);
+		const auto& shcA = estimators.add<SplineEstimator>(shcR.value_or(Spline<float>({ {0, 36.0f} })));
+		const auto& lhcA = estimators.add<SplineEstimator>(lhcR.value_or(Spline<float>({ {40.0f, 75.24f} })));
 
 		// latent heats
-		const auto flhR = DataHelpers::toDouble(line[9]);
-		const auto vlhR = DataHelpers::toDouble(line[10]);
-		const auto slhR = DataHelpers::toDouble(line[11]);
-		const auto& flhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TDIF_TORR_TO_REL_LH)), flhR.value_or(6020.0f));
-		const auto& vlhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TDIF_TORR_TO_REL_LH)), vlhR.value_or(40700.0f));
-		const auto& slhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TDIF_TORR_TO_REL_LH)), slhR.value_or(std::numeric_limits<double>::max()));
+		const auto flhR = DataHelpers::parse<double>(line[9]);
+		const auto vlhR = DataHelpers::parse<double>(line[10]);
+		const auto slhR = DataHelpers::parse<double>(line[11]);
+		const auto& flhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), flhR.value_or(6020.0f));
+		const auto& vlhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), vlhR.value_or(40700.0f));
+		const auto& slhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), slhR.value_or(std::numeric_limits<double>::max()));
 
 		if (table.emplace(
 			id.value(),
 			line[1],
-			std::move(MoleculeData(id.value(), line[2], line[1], mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA))
+			MoleculeData(id.value(), line[2], line[1], mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA)
 		) == false)
 		{
 			Logger::log("Molecule with duplicate id " + std::to_string(id.value()) + " skipped.", LogType::WARN);
@@ -138,15 +138,15 @@ MoleculeIdType MoleculeDataTable::findOrAdd(MolecularStructure&& structure)
 	if (idx != npos)
 		return table[idx].id;
 
-	const auto& mpA = approximators.add<OffsetApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TORR_TO_REL_BP)), 0);
-	const auto& bpA = approximators.add<OffsetApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TORR_TO_REL_BP)), 100);
-	const auto& sdA = approximators.add<SplineApproximator>(Spline<float>({ {0, 1.0f} }));
-	const auto& ldA = approximators.add<SplineApproximator>(Spline<float>({ {0, 1.0f} }));
-	const auto& shcA = approximators.add<SplineApproximator>(Spline<float>({ {0, 36.0f} }));
-	const auto& lhcA = approximators.add<SplineApproximator>(Spline<float>({ {40.0f, 75.24f} }));
-	const auto& flhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TDIF_TORR_TO_REL_LH)), 6020.0f);
-	const auto& vlhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TDIF_TORR_TO_REL_LH)), 40700.0f);
-	const auto& slhA = approximators.add<ScaleApproximator>(approximators.at(static_cast<ApproximatorIdType>(Approximators::TDIF_TORR_TO_REL_LH)), std::numeric_limits<double>::max());
+	const auto& mpA = estimators.add<OffsetEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TORR_TO_REL_BP)), 0);
+	const auto& bpA = estimators.add<OffsetEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TORR_TO_REL_BP)), 100);
+	const auto& sdA = estimators.add<SplineEstimator>(Spline<float>({ {0, 1.0f} }));
+	const auto& ldA = estimators.add<SplineEstimator>(Spline<float>({ {0, 1.0f} }));
+	const auto& shcA = estimators.add<SplineEstimator>(Spline<float>({ {0, 36.0f} }));
+	const auto& lhcA = estimators.add<SplineEstimator>(Spline<float>({ {40.0f, 75.24f} }));
+	const auto& flhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), 6020.0f);
+	const auto& vlhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), 40700.0f);
+	const auto& slhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), std::numeric_limits<double>::max());
 
 	const auto id = getFreeId();
 	table.emplace(id, std::to_string(id), MoleculeData(id, std::move(structure), mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA));

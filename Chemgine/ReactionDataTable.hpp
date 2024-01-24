@@ -2,8 +2,7 @@
 
 #include "DataTable.hpp"
 #include "ReactionData.hpp"
-#include "FunctionalGroupDataTable.hpp"
-#include "BackboneDataTable.hpp"
+#include "GenericMoleculeDataTable.hpp"
 #include "MoleculeDataTable.hpp"
 #include "ConcreteReaction.hpp"
 

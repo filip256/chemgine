@@ -3,7 +3,7 @@
 
 DataStoreAccessor Reactable::dataAccessor = DataStoreAccessor();
 
-Reactable::Reactable(const ComponentIdType id, const bool isGeneric) noexcept:
+Reactable::Reactable(const MoleculeIdType id, const bool isGeneric) noexcept:
 	id(id),
 	isGeneric(isGeneric)
 {
@@ -20,16 +20,15 @@ const DataStore& Reactable::dataStore() const
 	return dataAccessor.get();
 }
 
-const ComponentIdType Reactable::getId() const
+const MoleculeIdType Reactable::getId() const
 {
 	return id;
 }
 
-
 const MolecularStructure& Reactable::getStructure() const
 {
 	if(isGeneric)
-		return dataAccessor.get().functionalGroups.at(id).getStructure();
+		return dataAccessor.get().genericMolecules.at(id).getStructure();
 
 	return dataAccessor.get().molecules.at(id).getStructure();
 }
@@ -53,5 +52,5 @@ std::optional<Reactable> Reactable::get(const std::string& smiles)
 	if (structure.isComplete())
 		return Reactable(dataAccessor.get().molecules.findOrAdd(std::move(structure)), false);
 
-	return Reactable(dataAccessor.get().functionalGroups.findOrAdd(std::move(structure)), true);
+	return Reactable(dataAccessor.get().genericMolecules.findOrAdd(std::move(structure)), true);
 }

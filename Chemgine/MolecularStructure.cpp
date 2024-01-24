@@ -41,13 +41,6 @@ MolecularStructure::MolecularStructure(const MolecularStructure& other) noexcept
     }
 }
 
-MolecularStructure::MolecularStructure(const BaseComponent& component) noexcept:
-    impliedHydrogenCount(component.data().valence)
-{
-    components.emplace_back(component.clone());
-    bonds.emplace_back();
-}
-
 MolecularStructure::~MolecularStructure()
 {
     clear();
@@ -301,15 +294,13 @@ int16_t MolecularStructure::countImpliedHydrogens() const
         if (components[i]->isRadicalType())
             continue;
 
-        auto v = components[i]->data().valence;
-        if (bonds[i].size() > v)
+        const auto d = getDegreeOf(i);
+        const auto v = static_cast<const Atom*>(components[i])->data().getFittingValence(d);
+
+        if (v == AtomData::noneValence)
             return -1;
 
-        auto cnt = getDegreeOf(i);
-        if (cnt > v)
-            return -1;
-
-        hCount += v - cnt;
+        hCount += v - d;
     }
     return hCount;
 }
@@ -332,15 +323,15 @@ c_size MolecularStructure::getImpliedHydrogenCount() const
     return impliedHydrogenCount;
 }
 
-double MolecularStructure::getMolarMass() const
+Amount<Unit::GRAM_PER_MOLE> MolecularStructure::getMolarMass() const
 {
-    double cnt = 0;
+    Amount<Unit::GRAM> cnt = 0;
     for (c_size i = 0; i < components.size(); ++i)
     {
         cnt += components[i]->data().weight;
     }
-    cnt += impliedHydrogenCount * Atom('H').data().weight;
-    return cnt;
+    cnt += Atom('H').data().weight * impliedHydrogenCount;
+    return cnt.to<Unit::GRAM_PER_MOLE>(Amount<Unit::MOLE>(1.0));
 }
 
 uint8_t MolecularStructure::getDegreesOfFreedom() const
@@ -1100,7 +1091,7 @@ bool MolecularStructure::deserialize(const std::string& str)
     auto comps = DataHelpers::parseList(tokens[0], ';');
     for (c_size i = 0; i < comps.size(); ++i)
     {
-        const auto id = DataHelpers::toUInt(comps[i]);
+        const auto id = DataHelpers::parse<unsigned int>(comps[i]);
         if (id.has_value() == false || Atom::isDefined(static_cast<ComponentIdType>(id.value())) == false)
         {
             clear();
@@ -1124,7 +1115,7 @@ bool MolecularStructure::deserialize(const std::string& str)
 
             if (std::isdigit(comps[j][0]))
             {
-                const auto id = DataHelpers::toUInt(comps[j]);
+                const auto id = DataHelpers::parse<unsigned int>(comps[j]);
                 if (id.has_value() == false)
                 {
                     clear();
@@ -1142,7 +1133,7 @@ bool MolecularStructure::deserialize(const std::string& str)
                     return false;
                 }
 
-                const auto id = DataHelpers::toUInt(comps[j].substr(1));
+                const auto id = DataHelpers::parse<unsigned int>(comps[j].substr(1));
                 if (id.has_value() == false)
                 {
                     clear();

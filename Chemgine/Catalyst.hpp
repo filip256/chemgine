@@ -14,7 +14,7 @@ private:
 public:
 	Catalyst(const Catalyst&) = default;
 
-	inline const ComponentIdType getId() const;
+	inline const MoleculeIdType getId() const;
 	inline const MolecularStructure& getStructure() const;
 	inline std::unordered_map<c_size, c_size> matchWith(const MolecularStructure& structure) const;
 

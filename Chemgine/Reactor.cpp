@@ -14,10 +14,10 @@ Reactor::Reactor(
 	layers({ {LayerType::GASEOUS, LayerProperties(temperature) }})
 {
 	dataAccessor.crashIfUninitialized();
-	temperatureSpeedApproximator = &dataAccessor.get().approximators.at(
-		static_cast<ApproximatorIdType>(Approximators::TEMP_TO_REL_RSPEED));
-	concentrationSpeedApproximator = &dataAccessor.get().approximators.at(
-		static_cast<ApproximatorIdType>(Approximators::MCONC_TO_REL_RSPEED));
+	temperatureSpeedEstimator = &dataAccessor.get().estimators.at(
+		static_cast<EstimatorIdType>(Estimators::TEMP_TO_REL_RSPEED));
+	concentrationSpeedEstimator = &dataAccessor.get().estimators.at(
+		static_cast<EstimatorIdType>(Estimators::MCONC_TO_REL_RSPEED));
 }
 
 void Reactor::setDataStore(const DataStore& dataStore)
@@ -94,8 +94,8 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 		auto speedCoef =
 			r.getData().baseSpeed.to<Unit::MOLE>(timespan) *
 			totalVolume.asStd() *
-			temperatureSpeedApproximator->get((r.getReactantTemperature() - r.getData().baseTemperature).asStd()) *
-			concentrationSpeedApproximator->get((getAmountOf(r.getReactants()) / totalMoles).asStd());
+			temperatureSpeedEstimator->get((r.getReactantTemperature() - r.getData().baseTemperature).asStd()) *
+			concentrationSpeedEstimator->get((getAmountOf(r.getReactants()) / totalMoles).asStd());
 		
 		if (speedCoef == 0)
 			continue;

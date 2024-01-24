@@ -112,14 +112,14 @@
     <Filter Include="Resource Files\Data">
       <UniqueIdentifier>{7882107e-ae92-4adc-8e96-02ed9c88b221}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Approximators">
-      <UniqueIdentifier>{8931cf7e-e0ae-46c6-b20f-5b2d469f55ce}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Approximators">
-      <UniqueIdentifier>{b1083ec7-3a36-4415-a955-cfe806be11d6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\Out">
       <UniqueIdentifier>{cdba90ba-5857-45dc-b793-4493854a7f30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Estimators">
+      <UniqueIdentifier>{8931cf7e-e0ae-46c6-b20f-5b2d469f55ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Estimators">
+      <UniqueIdentifier>{b1083ec7-3a36-4415-a955-cfe806be11d6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -192,25 +192,13 @@
     <ClCompile Include="AtomData.cpp">
       <Filter>Source Files\Moleculars\DataTypes</Filter>
     </ClCompile>
-    <ClCompile Include="BackboneData.cpp">
-      <Filter>Source Files\Moleculars\DataTypes</Filter>
-    </ClCompile>
     <ClCompile Include="BaseComponentData.cpp">
       <Filter>Source Files\Moleculars\DataTypes</Filter>
     </ClCompile>
     <ClCompile Include="CompositeComponentData.cpp">
       <Filter>Source Files\Moleculars\DataTypes</Filter>
     </ClCompile>
-    <ClCompile Include="FunctionalGroupData.cpp">
-      <Filter>Source Files\Moleculars\DataTypes</Filter>
-    </ClCompile>
     <ClCompile Include="AtomDataTable.cpp">
-      <Filter>Source Files\Moleculars\Tables</Filter>
-    </ClCompile>
-    <ClCompile Include="BackboneDataTable.cpp">
-      <Filter>Source Files\Moleculars\Tables</Filter>
-    </ClCompile>
-    <ClCompile Include="FunctionalGroupDataTable.cpp">
       <Filter>Source Files\Moleculars\Tables</Filter>
     </ClCompile>
     <ClCompile Include="MoleculeDataTable.cpp">
@@ -237,22 +225,10 @@
     <ClCompile Include="Atom.cpp">
       <Filter>Source Files\Moleculars\Components</Filter>
     </ClCompile>
-    <ClCompile Include="AtomicComponent.cpp">
-      <Filter>Source Files\Moleculars\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="AtomIdentifier.cpp">
-      <Filter>Source Files\Moleculars\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Backbone.cpp">
-      <Filter>Source Files\Moleculars\Components</Filter>
-    </ClCompile>
     <ClCompile Include="BaseComponent.cpp">
       <Filter>Source Files\Moleculars\Components</Filter>
     </ClCompile>
     <ClCompile Include="CompositeComponent.cpp">
-      <Filter>Source Files\Moleculars\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="FunctionalGroup.cpp">
       <Filter>Source Files\Moleculars\Components</Filter>
     </ClCompile>
     <ClCompile Include="BaseLabwareComponent.cpp">
@@ -294,26 +270,26 @@
     <ClCompile Include="PhysicalProperties.cpp">
       <Filter>Source Files\Reactions</Filter>
     </ClCompile>
-    <ClCompile Include="ApproximatorDataTable.cpp">
-      <Filter>Source Files\Approximators</Filter>
+    <ClCompile Include="EstimatorDataTable.cpp">
+      <Filter>Source Files\Estimators</Filter>
     </ClCompile>
     <ClCompile Include="Spline.cpp">
       <Filter>Source Files\DataStructures</Filter>
     </ClCompile>
-    <ClCompile Include="BaseApproximator.cpp">
-      <Filter>Source Files\Approximators</Filter>
+    <ClCompile Include="BaseEstimator.cpp">
+      <Filter>Source Files\Estimators</Filter>
     </ClCompile>
-    <ClCompile Include="SplineApproximator.cpp">
-      <Filter>Source Files\Approximators</Filter>
+    <ClCompile Include="SplineEstimator.cpp">
+      <Filter>Source Files\Estimators</Filter>
     </ClCompile>
     <ClCompile Include="LayerProperties.cpp">
       <Filter>Source Files\Reactions</Filter>
     </ClCompile>
-    <ClCompile Include="OffsetApproximator.cpp">
-      <Filter>Source Files\Approximators</Filter>
+    <ClCompile Include="OffsetEstimator.cpp">
+      <Filter>Source Files\Estimators</Filter>
     </ClCompile>
-    <ClCompile Include="SplitApproximator.cpp">
-      <Filter>Source Files\Approximators</Filter>
+    <ClCompile Include="SplitEstimator.cpp">
+      <Filter>Source Files\Estimators</Filter>
     </ClCompile>
     <ClCompile Include="Formulas.cpp">
       <Filter>Source Files\Data</Filter>
@@ -321,14 +297,20 @@
     <ClCompile Include="Catalyst.cpp">
       <Filter>Source Files\Reactions</Filter>
     </ClCompile>
-    <ClCompile Include="ScaleApproximator.cpp">
-      <Filter>Source Files\Approximators</Filter>
+    <ClCompile Include="ScaleEstimator.cpp">
+      <Filter>Source Files\Estimators</Filter>
     </ClCompile>
-    <ClCompile Include="ConstantApproximator.cpp">
-      <Filter>Source Files\Approximators</Filter>
+    <ClCompile Include="ConstantEstimator.cpp">
+      <Filter>Source Files\Estimators</Filter>
     </ClCompile>
-    <ClCompile Include="LinearApproximator.cpp">
-      <Filter>Source Files\Approximators</Filter>
+    <ClCompile Include="LinearEstimator.cpp">
+      <Filter>Source Files\Estimators</Filter>
+    </ClCompile>
+    <ClCompile Include="GenericMoleculeData.cpp">
+      <Filter>Source Files\Molecules</Filter>
+    </ClCompile>
+    <ClCompile Include="GenericMoleculeDataTable.cpp">
+      <Filter>Source Files\Molecules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -446,23 +428,11 @@
     <ClInclude Include="AtomData.hpp">
       <Filter>Header Files\Moleculars\DataTypes</Filter>
     </ClInclude>
-    <ClInclude Include="BackboneData.hpp">
-      <Filter>Header Files\Moleculars\DataTypes</Filter>
-    </ClInclude>
     <ClInclude Include="BaseComponentData.hpp">
       <Filter>Header Files\Moleculars\DataTypes</Filter>
     </ClInclude>
     <ClInclude Include="CompositeComponentData.hpp">
       <Filter>Header Files\Moleculars\DataTypes</Filter>
-    </ClInclude>
-    <ClInclude Include="FunctionalGroupData.hpp">
-      <Filter>Header Files\Moleculars\DataTypes</Filter>
-    </ClInclude>
-    <ClInclude Include="FunctionalGroupDataTable.hpp">
-      <Filter>Header Files\Moleculars\Tables</Filter>
-    </ClInclude>
-    <ClInclude Include="BackboneDataTable.hpp">
-      <Filter>Header Files\Moleculars\Tables</Filter>
     </ClInclude>
     <ClInclude Include="AtomDataTable.hpp">
       <Filter>Header Files\Moleculars\Tables</Filter>
@@ -494,22 +464,10 @@
     <ClInclude Include="Atom.hpp">
       <Filter>Header Files\Moleculars\Components</Filter>
     </ClInclude>
-    <ClInclude Include="AtomicComponent.hpp">
-      <Filter>Header Files\Moleculars\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="AtomIdentifier.hpp">
-      <Filter>Header Files\Moleculars\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="Backbone.hpp">
-      <Filter>Header Files\Moleculars\Components</Filter>
-    </ClInclude>
     <ClInclude Include="BaseComponent.hpp">
       <Filter>Header Files\Moleculars\Components</Filter>
     </ClInclude>
     <ClInclude Include="CompositeComponent.hpp">
-      <Filter>Header Files\Moleculars\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="FunctionalGroup.hpp">
       <Filter>Header Files\Moleculars\Components</Filter>
     </ClInclude>
     <ClInclude Include="Flask.hpp">
@@ -557,32 +515,32 @@
     <ClInclude Include="PhysicalProperties.hpp">
       <Filter>Header Files\Reactions</Filter>
     </ClInclude>
-    <ClInclude Include="FunctionalApproximator.hpp">
-      <Filter>Header Files\Approximators</Filter>
+    <ClInclude Include="FunctionalEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
     </ClInclude>
-    <ClInclude Include="ApproximatorDataTable.hpp">
-      <Filter>Header Files\Approximators</Filter>
+    <ClInclude Include="EstimatorDataTable.hpp">
+      <Filter>Header Files\Estimators</Filter>
     </ClInclude>
     <ClInclude Include="Spline.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
-    <ClInclude Include="BaseApproximator.hpp">
-      <Filter>Header Files\Approximators</Filter>
+    <ClInclude Include="BaseEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
     </ClInclude>
-    <ClInclude Include="ApproximatorType.hpp">
-      <Filter>Header Files\Approximators</Filter>
+    <ClInclude Include="EstimatorType.hpp">
+      <Filter>Header Files\Estimators</Filter>
     </ClInclude>
-    <ClInclude Include="SplineApproximator.hpp">
-      <Filter>Header Files\Approximators</Filter>
+    <ClInclude Include="SplineEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
     </ClInclude>
     <ClInclude Include="LayerProperties.hpp">
       <Filter>Header Files\Reactions</Filter>
     </ClInclude>
-    <ClInclude Include="OffsetApproximator.hpp">
-      <Filter>Header Files\Approximators</Filter>
+    <ClInclude Include="OffsetEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
     </ClInclude>
-    <ClInclude Include="SplitApproximator.hpp">
-      <Filter>Header Files\Approximators</Filter>
+    <ClInclude Include="SplitEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
     </ClInclude>
     <ClInclude Include="Formulas.hpp">
       <Filter>Header Files\Data</Filter>
@@ -590,30 +548,36 @@
     <ClInclude Include="Catalyst.hpp">
       <Filter>Header Files\Reactions</Filter>
     </ClInclude>
-    <ClInclude Include="ScaleApproximator.hpp">
-      <Filter>Header Files\Approximators</Filter>
+    <ClInclude Include="ScaleEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
     </ClInclude>
-    <ClInclude Include="ConstantApproximator.hpp">
-      <Filter>Header Files\Approximators</Filter>
+    <ClInclude Include="ConstantEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
     </ClInclude>
-    <ClInclude Include="LinearApproximator.hpp">
-      <Filter>Header Files\Approximators</Filter>
+    <ClInclude Include="LinearEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
     </ClInclude>
     <ClInclude Include="FlagField.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericMoleculeData.hpp">
+      <Filter>Header Files\Molecules</Filter>
+    </ClInclude>
+    <ClInclude Include="MoleculeIdType.hpp">
+      <Filter>Header Files\Molecules</Filter>
+    </ClInclude>
+    <ClInclude Include="GenericMoleculeDataTable.hpp">
+      <Filter>Header Files\Molecules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv">
       <Filter>Resource Files\Data</Filter>
     </None>
-    <None Include="Data\FunctionalGroupData.csv">
+    <None Include="Data\GenericMoleculeData.csv">
       <Filter>Resource Files\Data</Filter>
     </None>
     <None Include="diagram.cd" />
-    <None Include="Data\BackboneData.csv">
-      <Filter>Resource Files\Data</Filter>
-    </None>
     <None Include="Data\MoleculeData.csv">
       <Filter>Resource Files\Data</Filter>
     </None>
@@ -623,10 +587,10 @@
     <None Include="Data\LabwareData.csv">
       <Filter>Resource Files\Data</Filter>
     </None>
-    <None Include="Out\functionalgroups.out.csv">
+    <None Include="Out\molecules.out.csv">
       <Filter>Resource Files\Out</Filter>
     </None>
-    <None Include="Out\molecules.out.csv">
+    <None Include="Out\genericmolecules.out.csv">
       <Filter>Resource Files\Out</Filter>
     </None>
   </ItemGroup>

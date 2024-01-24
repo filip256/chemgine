@@ -45,9 +45,7 @@ bool BaseComponent::isCompositeType() const
 
 bool BaseComponent::isCompositeType(const BaseComponent& component)
 {
-	return 
-		component.type == ComponentType::FUNCTIONAL ||
-		component.type == ComponentType::BACKBONE;
+	return component.type == ComponentType::COMPOSITE;
 }
 
 bool BaseComponent::isRadicalType() const

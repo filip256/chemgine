@@ -1,7 +1,10 @@
 #pragma once
 
+#include "Amount.hpp"
+
 #include <cstdint>
 #include <string>
+#include <vector>
 
 typedef uint16_t ComponentIdType;
 
@@ -11,10 +14,9 @@ private:
 	uint8_t rarity = 255;
 
 public:
-	const uint8_t valence = 0;
 	const ComponentIdType id = 0;
+	const Amount<Unit::GRAM> weight = 0.0;
 	const std::string symbol, name;
-	const double weight = 0.0;
 
 	BaseComponentData();
 
@@ -22,11 +24,12 @@ public:
 		const ComponentIdType id,
 		const std::string& symbol,
 		const std::string& name,
-		const double weight,
-		const uint8_t valence,
+		const Amount<Unit::GRAM> weight,
 		const uint8_t rarity = 255);
 
 	BaseComponentData(BaseComponentData&&) noexcept = default;
+
+	virtual uint8_t getFittingValence(const uint8_t bonds) const = 0;
 
 	uint8_t getRarity() const;
 };

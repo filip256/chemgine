@@ -1,11 +1,15 @@
 #pragma once
 
+#include <vector>
 #include <unordered_map>
 #include <unordered_set>
+#include <algorithm>
 
 class Utils 
 {
 public:
+	template<class T>
+	static std::vector<T>&& toSortedSetVector(std::vector<T>&& vect);
 
 	template<class KeyT1, class KeyT2, class Obj>
 	static std::unordered_map<KeyT1, Obj> compose(
@@ -20,6 +24,15 @@ public:
 	static std::unordered_set<Obj> extractValues(
 		const std::unordered_map<Key, Obj>& map);
 };
+
+
+template<class T>
+std::vector<T>&& Utils::toSortedSetVector(std::vector<T>&& vect)
+{
+	std::sort(vect.begin(), vect.end());
+	vect.erase(std::unique(vect.begin(), vect.end()), vect.end());
+	return std::move(vect);
+}
 
 template<class KeyT1, class KeyT2, class Obj>
 std::unordered_map<KeyT1, Obj> Utils::compose(

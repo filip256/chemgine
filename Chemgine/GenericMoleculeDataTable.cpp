@@ -1,10 +1,10 @@
-#include "FunctionalGroupDataTable.hpp"
+#include "GenericMoleculeDataTable.hpp"
 #include "DataHelpers.hpp"
 #include "Logger.hpp"
 #include <fstream>
 
 
-bool FunctionalGroupDataTable::loadFromFile(const std::string& path)
+bool GenericMoleculeDataTable::loadFromFile(const std::string& path)
 {
 	std::ifstream file(path);
 
@@ -28,39 +28,35 @@ bool FunctionalGroupDataTable::loadFromFile(const std::string& path)
 
 		if (line[1].empty())
 		{
-			Logger::log("Failed to load functional group due to empty SMILES string.", LogType::BAD);
+			Logger::log("Failed to load generic molecule due to empty SMILES string.", LogType::BAD);
 			continue;
 		}
-		if (line[2].empty())
-		{
-			Logger::log("Functional group name was empty. (" + line[1] + ')', LogType::WARN);
-		}
 
-		const auto id = DataHelpers::toUInt(line[0]);
+		const auto id = DataHelpers::parse<unsigned int>(line[0]);
 
 		if (id.has_value() == false)
 		{
-			Logger::log("Missing id, functional group '" + line[1] + "' skipped.", LogType::BAD);
+			Logger::log("Missing id, generic molecule: '" + line[1] + "' skipped.", LogType::BAD);
 			continue;
 		}
 
 		if (table.emplace(
 			id.value(),
 			line[1],
-			std::move(FunctionalGroupData(id.value(), line[2], line[1]))
+			GenericMoleculeData(id.value(), line[1])
 		) == false)
 		{
-			Logger::log("Functional group with duplicate id " + std::to_string(id.value()) + " skipped.", LogType::WARN);
+			Logger::log("Generic molecule with duplicate id " + std::to_string(id.value()) + " skipped.", LogType::WARN);
 		}
 	}
 	file.close();
 
-	Logger::log("Loaded " + std::to_string(table.size()) + " functional groups.", LogType::GOOD);
+	Logger::log("Loaded " + std::to_string(table.size()) + " generic molecules.", LogType::GOOD);
 
 	return true;
 }
 
-bool FunctionalGroupDataTable::saveToFile(const std::string& path)
+bool GenericMoleculeDataTable::saveToFile(const std::string& path)
 {
 	std::ofstream file(path);
 
@@ -73,14 +69,14 @@ bool FunctionalGroupDataTable::saveToFile(const std::string& path)
 	for (size_t i = 0; i < table.size(); ++i)
 	{
 		const auto& e = table[i];
-		file << e.id << ',' << e.getStructure().serialize() << ',' << e.name << '\n';
+		file << e.id << ',' << e.getStructure().serialize() << '\n';
 	}
 
 	file.close();
 	return true;
 }
 
-size_t FunctionalGroupDataTable::findFirst(const MolecularStructure& structure) const
+size_t GenericMoleculeDataTable::findFirst(const MolecularStructure& structure) const
 {
 	for (size_t i = 0; i < table.size(); ++i)
 		if (table[i].getStructure() == structure)
@@ -89,7 +85,7 @@ size_t FunctionalGroupDataTable::findFirst(const MolecularStructure& structure) 
 	return npos;
 }
 
-ComponentIdType FunctionalGroupDataTable::findOrAdd(MolecularStructure&& structure)
+MoleculeIdType GenericMoleculeDataTable::findOrAdd(MolecularStructure&& structure)
 {
 	if (structure.isEmpty())
 		return 0;
@@ -99,6 +95,6 @@ ComponentIdType FunctionalGroupDataTable::findOrAdd(MolecularStructure&& structu
 		return table[idx].id;
 
 	const auto id = getFreeId();
-	table.emplace(id, std::to_string(id), FunctionalGroupData(id, "?", std::move(structure)));
+	table.emplace(id, std::to_string(id), GenericMoleculeData(id, std::move(structure)));
 	return id;
 }

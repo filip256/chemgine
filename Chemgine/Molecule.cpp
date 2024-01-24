@@ -45,12 +45,12 @@ const MoleculeData& Molecule::data() const
 
 Amount<Unit::CELSIUS> Molecule::getMeltingPointAt(const Amount<Unit::TORR> pressure) const
 {
-	return this->data().meltingPointApproximator.get(pressure.asStd());
+	return this->data().meltingPointEstimator.get(pressure.asStd());
 }
 
 Amount<Unit::CELSIUS> Molecule::getBoilingPointAt(const Amount<Unit::TORR> pressure) const
 {
-	return this->data().boilingPointApproximator.get(pressure.asStd());
+	return this->data().boilingPointEstimator.get(pressure.asStd());
 }
 
 Amount<Unit::GRAM_PER_MILLILITER> Molecule::getDensityAt(
@@ -60,9 +60,9 @@ Amount<Unit::GRAM_PER_MILLILITER> Molecule::getDensityAt(
 {
 	const auto& data = this->data();
 	return temperature < getMeltingPointAt(pressure) ?
-		data.solidDensityApproximator.get(temperature.asStd()) :
+		data.solidDensityEstimator.get(temperature.asStd()) :
 		temperature < getBoilingPointAt(pressure) ?
-			data.liquidDensityApproximator.get(temperature.asStd()) :
+			data.liquidDensityEstimator.get(temperature.asStd()) :
 			Formulas::idealGasLaw(temperature, pressure, molarMass);
 }
 
@@ -73,9 +73,9 @@ Amount<Unit::JOULE_PER_MOLE_CELSIUS> Molecule::getHeatCapacityAt(
 {
 	const auto& data = this->data();
 	return temperature < getMeltingPointAt(pressure) ?
-		data.solidHeatCapacityApproximator.get(pressure.asStd()) :
+		data.solidHeatCapacityEstimator.get(pressure.asStd()) :
 		temperature < getBoilingPointAt(pressure) ?
-			data.liquidHeatCapacityApproximator.get(pressure.asStd()) :
+			data.liquidHeatCapacityEstimator.get(pressure.asStd()) :
 			Formulas::isobaricHeatCapacity(data.getStructure().getDegreesOfFreedom());
 }
 
@@ -84,7 +84,7 @@ Amount<Unit::JOULE_PER_MOLE> Molecule::getFusionHeatAt(
 	const Amount<Unit::TORR> pressure
 ) const
 {
-	return this->data().fusionLatentHeatApproximator.get(temperature.asStd(), -pressure.asStd());
+	return this->data().fusionLatentHeatEstimator.get(temperature.asStd(), -pressure.asStd());
 }
 
 Amount<Unit::JOULE_PER_MOLE> Molecule::getVaporizationHeatAt(
@@ -92,7 +92,7 @@ Amount<Unit::JOULE_PER_MOLE> Molecule::getVaporizationHeatAt(
 	const Amount<Unit::TORR> pressure
 ) const
 {
-	return this->data().vaporizationLatentHeatApproximator.get(temperature.asStd(), pressure.asStd());
+	return this->data().vaporizationLatentHeatEstimator.get(temperature.asStd(), pressure.asStd());
 }
 
 Amount<Unit::JOULE_PER_MOLE> Molecule::getSublimationHeatAt(
@@ -100,7 +100,7 @@ Amount<Unit::JOULE_PER_MOLE> Molecule::getSublimationHeatAt(
 	const Amount<Unit::TORR> pressure
 ) const
 {
-	return this->data().sublimationLatentHeatApproximator.get(temperature.asStd(), pressure.asStd());
+	return this->data().sublimationLatentHeatEstimator.get(temperature.asStd(), pressure.asStd());
 }
 
 Amount<Unit::JOULE_PER_MOLE> Molecule::getLiquefactionHeatAt(

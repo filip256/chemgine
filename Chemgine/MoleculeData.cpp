@@ -5,28 +5,28 @@ MoleculeData::MoleculeData(
 	const MoleculeIdType id,
 	const std::string& name,
 	const std::string& smiles,
-	const BaseApproximator& meltingPointApproximator,
-	const BaseApproximator& boilingPointApproximator,
-	const BaseApproximator& solidDensityApproximator,
-	const BaseApproximator& liquidDensityApproximator,
-	const BaseApproximator& solidHeatCapacityApproximator,
-	const BaseApproximator& liquidHeatCapacityApproximator,
-	const BaseApproximator& fusionLatentHeatApproximator,
-	const BaseApproximator& vaporizationLatentHeatApproximator,
-	const BaseApproximator& sublimationLatentHeatApproximator
+	const BaseEstimator& meltingPointEstimator,
+	const BaseEstimator& boilingPointEstimator,
+	const BaseEstimator& solidDensityEstimator,
+	const BaseEstimator& liquidDensityEstimator,
+	const BaseEstimator& solidHeatCapacityEstimator,
+	const BaseEstimator& liquidHeatCapacityEstimator,
+	const BaseEstimator& fusionLatentHeatEstimator,
+	const BaseEstimator& vaporizationLatentHeatEstimator,
+	const BaseEstimator& sublimationLatentHeatEstimator
 ) noexcept :
 	id(id),
 	name(name),
 	structure(smiles),
-	meltingPointApproximator(meltingPointApproximator),
-	boilingPointApproximator(boilingPointApproximator),
-	solidDensityApproximator(solidDensityApproximator),
-	liquidDensityApproximator(liquidDensityApproximator),
-	solidHeatCapacityApproximator(solidHeatCapacityApproximator),
-	liquidHeatCapacityApproximator(liquidHeatCapacityApproximator),
-	fusionLatentHeatApproximator(fusionLatentHeatApproximator),
-	vaporizationLatentHeatApproximator(vaporizationLatentHeatApproximator),
-	sublimationLatentHeatApproximator(sublimationLatentHeatApproximator)
+	meltingPointEstimator(meltingPointEstimator),
+	boilingPointEstimator(boilingPointEstimator),
+	solidDensityEstimator(solidDensityEstimator),
+	liquidDensityEstimator(liquidDensityEstimator),
+	solidHeatCapacityEstimator(solidHeatCapacityEstimator),
+	liquidHeatCapacityEstimator(liquidHeatCapacityEstimator),
+	fusionLatentHeatEstimator(fusionLatentHeatEstimator),
+	vaporizationLatentHeatEstimator(vaporizationLatentHeatEstimator),
+	sublimationLatentHeatEstimator(sublimationLatentHeatEstimator)
 {
 	if (this->structure.isComplete() == false)
 	{
@@ -37,28 +37,28 @@ MoleculeData::MoleculeData(
 MoleculeData::MoleculeData(
 	const MoleculeIdType id,
 	MolecularStructure&& structure,
-	const BaseApproximator& meltingPointApproximator,
-	const BaseApproximator& boilingPointApproximator,
-	const BaseApproximator& solidDensityApproximator,
-	const BaseApproximator& liquidDensityApproximator,
-	const BaseApproximator& solidHeatCapacityApproximator,
-	const BaseApproximator& liquidHeatCapacityApproximator,
-	const BaseApproximator& fusionLatentHeatApproximator,
-	const BaseApproximator& vaporizationLatentHeatApproximator,
-	const BaseApproximator& sublimationLatentHeatApproximator
+	const BaseEstimator& meltingPointEstimator,
+	const BaseEstimator& boilingPointEstimator,
+	const BaseEstimator& solidDensityEstimator,
+	const BaseEstimator& liquidDensityEstimator,
+	const BaseEstimator& solidHeatCapacityEstimator,
+	const BaseEstimator& liquidHeatCapacityEstimator,
+	const BaseEstimator& fusionLatentHeatEstimator,
+	const BaseEstimator& vaporizationLatentHeatEstimator,
+	const BaseEstimator& sublimationLatentHeatEstimator
 ) noexcept :
 	id(id),
 	name("?"),
 	structure(std::move(structure)),
-	meltingPointApproximator(meltingPointApproximator),
-	boilingPointApproximator(boilingPointApproximator),
-	solidDensityApproximator(solidDensityApproximator),
-	liquidDensityApproximator(liquidDensityApproximator),
-	solidHeatCapacityApproximator(solidHeatCapacityApproximator),
-	liquidHeatCapacityApproximator(liquidHeatCapacityApproximator),
-	fusionLatentHeatApproximator(fusionLatentHeatApproximator),
-	vaporizationLatentHeatApproximator(vaporizationLatentHeatApproximator),
-	sublimationLatentHeatApproximator(sublimationLatentHeatApproximator)
+	meltingPointEstimator(meltingPointEstimator),
+	boilingPointEstimator(boilingPointEstimator),
+	solidDensityEstimator(solidDensityEstimator),
+	liquidDensityEstimator(liquidDensityEstimator),
+	solidHeatCapacityEstimator(solidHeatCapacityEstimator),
+	liquidHeatCapacityEstimator(liquidHeatCapacityEstimator),
+	fusionLatentHeatEstimator(fusionLatentHeatEstimator),
+	vaporizationLatentHeatEstimator(vaporizationLatentHeatEstimator),
+	sublimationLatentHeatEstimator(sublimationLatentHeatEstimator)
 {
 	if (this->structure.isComplete() == false)
 	{

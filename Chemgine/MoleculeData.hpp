@@ -1,14 +1,11 @@
 #pragma once
 
+#include "MoleculeIdType.hpp"
 #include "MolecularStructure.hpp"
-#include "BaseApproximator.hpp"
+#include "BaseEstimator.hpp"
 #include "Amount.hpp"
 
-#include <cstdint>
 #include <string>
-
-
-typedef uint32_t MoleculeIdType;
 
 class MoleculeData
 {
@@ -18,43 +15,43 @@ private:
 public:
 	const MoleculeIdType id;
 	const std::string name;
-	const BaseApproximator& meltingPointApproximator;
-	const BaseApproximator& boilingPointApproximator;
-	const BaseApproximator& solidDensityApproximator;
-	const BaseApproximator& liquidDensityApproximator;
-	const BaseApproximator& solidHeatCapacityApproximator;
-	const BaseApproximator& liquidHeatCapacityApproximator;
-	const BaseApproximator& fusionLatentHeatApproximator;
-	const BaseApproximator& vaporizationLatentHeatApproximator;
-	const BaseApproximator& sublimationLatentHeatApproximator;
+	const BaseEstimator& meltingPointEstimator;
+	const BaseEstimator& boilingPointEstimator;
+	const BaseEstimator& solidDensityEstimator;
+	const BaseEstimator& liquidDensityEstimator;
+	const BaseEstimator& solidHeatCapacityEstimator;
+	const BaseEstimator& liquidHeatCapacityEstimator;
+	const BaseEstimator& fusionLatentHeatEstimator;
+	const BaseEstimator& vaporizationLatentHeatEstimator;
+	const BaseEstimator& sublimationLatentHeatEstimator;
 
 	MoleculeData(
 		const MoleculeIdType id,
 		const std::string& name,
 		const std::string& smiles,
-		const BaseApproximator& meltingPointApproximator,
-		const BaseApproximator& boilingPointApproximator,
-		const BaseApproximator& solidDensityApproximator,
-		const BaseApproximator& liquidDensityApproximator,
-		const BaseApproximator& solidHeatCapacityApproximator,
-		const BaseApproximator& liquidHeatCapacityApproximator,
-		const BaseApproximator& fusionLatentHeatApproximator,
-		const BaseApproximator& vaporizationLatentHeatApproximator,
-		const BaseApproximator& sublimationLatentHeatApproximator
+		const BaseEstimator& meltingPointEstimator,
+		const BaseEstimator& boilingPointEstimator,
+		const BaseEstimator& solidDensityEstimator,
+		const BaseEstimator& liquidDensityEstimator,
+		const BaseEstimator& solidHeatCapacityEstimator,
+		const BaseEstimator& liquidHeatCapacityEstimator,
+		const BaseEstimator& fusionLatentHeatEstimator,
+		const BaseEstimator& vaporizationLatentHeatEstimator,
+		const BaseEstimator& sublimationLatentHeatEstimator
 	) noexcept;
 
 	MoleculeData(
 		const MoleculeIdType id,
 		MolecularStructure&& structure,
-		const BaseApproximator& meltingPointApproximator,
-		const BaseApproximator& boilingPointApproximator,
-		const BaseApproximator& solidDensityApproximator,
-		const BaseApproximator& liquidDensityApproximator,
-		const BaseApproximator& solidHeatCapacityApproximator,
-		const BaseApproximator& liquidHeatCapacityApproximator,
-		const BaseApproximator& fusionLatentHeatApproximator,
-		const BaseApproximator& vaporizationLatentHeatApproximator,
-		const BaseApproximator& sublimationLatentHeatApproximator
+		const BaseEstimator& meltingPointEstimator,
+		const BaseEstimator& boilingPointEstimator,
+		const BaseEstimator& solidDensityEstimator,
+		const BaseEstimator& liquidDensityEstimator,
+		const BaseEstimator& solidHeatCapacityEstimator,
+		const BaseEstimator& liquidHeatCapacityEstimator,
+		const BaseEstimator& fusionLatentHeatEstimator,
+		const BaseEstimator& vaporizationLatentHeatEstimator,
+		const BaseEstimator& sublimationLatentHeatEstimator
 	) noexcept;
 
 	MoleculeData(const MoleculeData&) = delete;

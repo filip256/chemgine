@@ -271,7 +271,7 @@ public:
 	}
 };
 
-class ApproximatorTest
+class EstimatorTest
 {
 	class ReferenceSet
 	{
@@ -290,7 +290,7 @@ class ApproximatorTest
 		{
 			if (refData.contains(input) == false)
 			{
-				Logger::log("Missing reference data for input:" + std::to_string(input) + '\,', LogType::WARN);
+				Logger::log("Missing reference data for input:" + std::to_string(input) + ',', LogType::WARN);
 				return 0;
 			}
 
@@ -298,14 +298,14 @@ class ApproximatorTest
 			return err;
 		}
 
-		double testMAE(const std::function<double(double)>& appx) const
+		double testMAE(const std::function<double(double)>& estimator) const
 		{
 			Logger::enterContext();
 			Logger::log("Input    |   Reference  Actual     Error");
 			double tErr = 0.0;
 			for (const auto& p : refData)
 			{	
-				const auto act = appx(p.first);
+				const auto act = estimator(p.first);
 				const auto err = abs(p.second - act);
 				tErr += err;
 
@@ -331,7 +331,7 @@ public:
 		const auto mae = waterBpRef.testMAE([&water](double input) {return water.getBoilingPointAt(input).asStd(); });
 		if (mae > waterBpThreshold)
 		{
-			Logger::log("Test failed > Approximator > waterBp: mae=" + std::to_string(mae) + "\n", LogType::BAD);
+			Logger::log("Test failed > Estimator > waterBp: mae=" + std::to_string(mae) + "\n", LogType::BAD);
 			passed = false;
 		}
 	}
@@ -348,7 +348,7 @@ private:
 	DataStore store;
 	MolecularStructureTest molecularStructureTest;
 	ReactorTest reactorTest;
-	ApproximatorTest approximatorTest;
+	EstimatorTest estimatorTest;
 
 public:
 	TestManager()
@@ -361,10 +361,9 @@ public:
 		Molecule::setDataStore(store);
 		BaseLabwareComponent::setDataStore(store);
 		store.loadAtomsData("Data/AtomData.csv")
-			.loadFunctionalGroupsData("Data/FunctionalGroupData.csv")
-			.loadBackbonesData("Data/BackboneData.csv")
-			.loadApproximatorsData("")
+			.loadEstimatorsData("")
 			.loadMoleculesData("Data/MoleculeData.csv")
+			.loadGenericMoleculesData("Data/GenericMoleculeData.csv")
 			.loadReactionsData("Data/ReactionData.csv")
 			.loadLabwareData("Data/LabwareData.csv");
 
@@ -385,7 +384,7 @@ public:
 		const auto begin = std::chrono::steady_clock::now();
 		molecularStructureTest.runTests();
 		reactorTest.runTests();
-		approximatorTest.runTests();
+		estimatorTest.runTests();
 		const auto end = std::chrono::steady_clock::now();
 
 		Logger::log("Test execution completed in " +
@@ -395,14 +394,14 @@ public:
 			Logger::log("MolecularStructure tests passed.", LogType::GOOD);
 		if (reactorTest.hasPassed())
 			Logger::log("Reactor tests passed.", LogType::GOOD);
-		if (approximatorTest.hasPassed())
-			Logger::log("Approximator tests passed.", LogType::GOOD);
+		if (estimatorTest.hasPassed())
+			Logger::log("Estimator tests passed.", LogType::GOOD);
 	}
 
 	void runPersist()
 	{
 		const auto begin = std::chrono::steady_clock::now();
-		store.saveFunctionalGroupsData("Out/functionalgroups.out.csv")
+		store.saveGenericMoleculesData("Out/genericmolecules.out.csv")
 			.saveMoleculesData("Out/molecules.out.csv");
 		const auto end = std::chrono::steady_clock::now();
 

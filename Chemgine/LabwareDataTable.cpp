@@ -39,8 +39,8 @@ bool LabwareDataTable::loadFromFile(const std::string& path)
 			continue;
 		}
 
-		const auto id = DataHelpers::toUInt(line[0]);
-		const auto type = DataHelpers::toUInt(line[1]);
+		const auto id = DataHelpers::parse<unsigned int>(line[0]);
+		const auto type = DataHelpers::parse<unsigned int>(line[1]);
 
 		if (id.has_value() == false || type.has_value() == false)
 		{

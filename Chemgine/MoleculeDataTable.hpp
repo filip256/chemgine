@@ -2,16 +2,16 @@
 
 #include "DataTable.hpp"
 #include "MoleculeData.hpp"
-#include "ApproximatorDataTable.hpp"
+#include "EstimatorDataTable.hpp"
 
 class MoleculeDataTable :
 	public DataTable<MoleculeIdType, std::string, MoleculeData>
 {
 private:
-	ApproximatorDataTable& approximators;
+	EstimatorDataTable& estimators;
 
 public:
-	MoleculeDataTable(ApproximatorDataTable& approximators) noexcept;
+	MoleculeDataTable(EstimatorDataTable& estimators) noexcept;
 	MoleculeDataTable(const MoleculeDataTable&) = delete;
 
 	bool loadFromFile(const std::string& path);

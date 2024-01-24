@@ -25,4 +25,6 @@ public:
 	~CompositeComponentData() = default;
 
 	const MolecularStructure& getStructure() const;
+
+	uint8_t getFittingValence(const uint8_t bonds) const override final;
 };

@@ -5,11 +5,13 @@
 
 void AtomDataTable::addPredefined()
 {
-	table.emplace(101, "*", std::move(AtomData(101, "*", "Any Radical", 0, 1)));
-	table.emplace(102, "R", std::move(AtomData(102, "R", "Alkyl Radical", 0, 1)));
-	table.emplace(103, "A", std::move(AtomData(103, "A", "Aromatic Radical", 0, 1)));
-	table.emplace(104, "X", std::move(AtomData(104, "X", "Halogen Radical", 0, 1)));
-	table.emplace(105, "Me", std::move(AtomData(105, "Me", "Metal Radical", 0, 1)));
+	table.emplace(101, "*", AtomData(101, "*", "Any Radical", 0, { 1 }));
+	table.emplace(102, "R", AtomData(102, "R", "Alkyl Radical", 0, { 1 }));
+	table.emplace(103, "A", AtomData(103, "A", "Aromatic Radical", 0, { 1 }));
+	table.emplace(104, "X", AtomData(104, "X", "Halogen Radical", 0, { 1 }));
+	table.emplace(105, "Me", AtomData(105, "Me", "Metal Radical", 0, { 1 }));
+
+	table.emplace(199, "H", AtomData(199, "H", "Hydrogen", 1.008, { 1 }));
 }
 
 bool AtomDataTable::loadFromFile(const std::string& path)
@@ -45,14 +47,15 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 			Logger::log("Atom name was empty. (" + line[1] + ')', LogType::WARN);
 		}
 
-		const auto id = DataHelpers::toUInt(line[0]);
-		auto weight = DataHelpers::toUDouble(line[3]);
-		auto valence = DataHelpers::toUInt(line[4]);
+		const auto id = DataHelpers::parse<unsigned int>(line[0]);
+		const auto weight = DataHelpers::parseUnsigned<double>(line[3]);
+		auto valences = DataHelpers::parseList<uint8_t>(line[4], ';', true);
 
-		if (line[3].empty())
-			weight = 0;
-		if (line[4].empty())
-			valence = 0;
+		if (valences.has_value() == false)
+		{
+			Logger::log("Atom with invalid or missing valence with id " + std::to_string(id.value()) + " skipped.", LogType::BAD);
+			continue;
+		}
 
 		if (id.has_value() == false)
 		{
@@ -63,20 +66,13 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 		if (table.emplace(
 			id.value(),
 			line[1],
-			std::move(AtomData(id.value(), line[1], line[2], weight.value(), valence.value()))
+			AtomData(id.value(), line[1], line[2], Amount<Unit::GRAM>(weight.value_or(0)), std::move(*valences))
 			) == false)
 		{
 			Logger::log("Duplicate atom with id " + std::to_string(id.value()) + " or symbol '" + line[1] + "' skipped.", LogType::WARN);
 		}
 	}
 	file.close();
-
-	if (table.containsKey2("H") == false)
-	{
-		auto id = getFreeId();
-		table.emplace(id, "H", std::move(AtomData(id, "H", "Hydrogen", 1.008, 1)));
-		Logger::log("Missing required atom 'H' created automatically with id " + std::to_string(id) + '.', LogType::WARN);
-	}
 
 	Logger::log("Loaded " + std::to_string(table.size()) + " atoms.", LogType::GOOD);
 

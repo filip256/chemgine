@@ -50,6 +50,8 @@ public:
 
 	static const Amount<UnitT> Unknown;
 	constexpr inline bool isUnknown() const noexcept;
+
+	using StorageType = double;
 };
 
 template<Unit UnitT>
@@ -285,6 +287,19 @@ template<>
 constexpr Amount<Unit::MOLE> Amount<Unit::GRAM>::to(const Amount<Unit::GRAM_PER_MOLE> molarMass) const noexcept
 {
 	return value / molarMass.asStd();
+}
+
+template<>
+template<>
+constexpr Amount<Unit::GRAM_PER_MOLE> Amount<Unit::GRAM>::to(const Amount<Unit::MOLE> moles) const noexcept
+{
+	return value / moles.asStd();
+}
+template<>
+template<>
+constexpr Amount<Unit::GRAM> Amount<Unit::GRAM_PER_MOLE>::to(const Amount<Unit::MOLE> moles) const noexcept
+{
+	return value * moles.asStd();
 }
 
 template<>

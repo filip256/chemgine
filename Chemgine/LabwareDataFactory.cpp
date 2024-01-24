@@ -17,7 +17,7 @@ BaseLabwareData* LabwareDataFactory::get(const LabwareIdType id, const LabwareTy
 
 FlaskData* LabwareDataFactory::getFlask(const LabwareIdType id,  const std::vector<std::string>& dataLine)
 {
-	const auto volume = DataHelpers::toUDouble(dataLine[3]);
+	const auto volume = DataHelpers::parseUnsigned<double>(dataLine[3]);
 	if (volume.has_value() == false)
 		return nullptr;
 
@@ -32,10 +32,10 @@ FlaskData* LabwareDataFactory::getFlask(const LabwareIdType id,  const std::vect
 		if (port.size() != 4)
 			return nullptr;
 
-		const auto type = DataHelpers::toUInt(port[0]);
-		const auto x = DataHelpers::toUInt(port[1]);
-		const auto y = DataHelpers::toUInt(port[2]);
-		const auto angle = DataHelpers::toUDouble(port[3]);
+		const auto type = DataHelpers::parse<unsigned int>(port[0]);
+		const auto x = DataHelpers::parse<unsigned int>(port[1]);
+		const auto y = DataHelpers::parse<unsigned int>(port[2]);
+		const auto angle = DataHelpers::parseUnsigned<double>(port[3]);
 
 		if (type.has_value() == false || x.has_value() == false || y.has_value() == false || angle.has_value() == false)
 			return nullptr;
@@ -48,7 +48,7 @@ FlaskData* LabwareDataFactory::getFlask(const LabwareIdType id,  const std::vect
 
 AdaptorData* LabwareDataFactory::getAdaptor(const LabwareIdType id, const std::vector<std::string>& dataLine)
 {
-	const auto volume = DataHelpers::toUDouble(dataLine[3]);
+	const auto volume = DataHelpers::parseUnsigned<double>(dataLine[3]);
 	if (volume.has_value() == false)
 		return nullptr;
 
@@ -63,10 +63,10 @@ AdaptorData* LabwareDataFactory::getAdaptor(const LabwareIdType id, const std::v
 		if (port.size() != 4)
 			return nullptr;
 
-		const auto type = DataHelpers::toUInt(port[0]);
-		const auto x = DataHelpers::toUInt(port[1]);
-		const auto y = DataHelpers::toUInt(port[2]);
-		const auto angle = DataHelpers::toUDouble(port[3]);
+		const auto type = DataHelpers::parse<unsigned int>(port[0]);
+		const auto x = DataHelpers::parse<unsigned int>(port[1]);
+		const auto y = DataHelpers::parse<unsigned int>(port[2]);
+		const auto angle = DataHelpers::parseUnsigned<double>(port[3]);
 
 		if (type.has_value() == false || x.has_value() == false || y.has_value() == false || angle.has_value() == false)
 			return nullptr;

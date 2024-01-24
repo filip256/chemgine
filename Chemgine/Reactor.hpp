@@ -17,8 +17,8 @@ private:
 	Amount<Unit::GRAM> totalMass;
 	Amount<Unit::LITER> totalVolume;
 
-	const BaseApproximator* temperatureSpeedApproximator = nullptr;
-	const BaseApproximator* concentrationSpeedApproximator = nullptr;
+	const BaseEstimator* temperatureSpeedEstimator = nullptr;
+	const BaseEstimator* concentrationSpeedEstimator = nullptr;
 
 	std::unordered_set<ConcreteReaction, ConcreteReactionHash> cachedReactions;
 	std::unordered_set<Reactant, ReactantHash> content;

@@ -36,7 +36,7 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			continue;
 		}
 
-		const auto id = DataHelpers::toUInt(line[0]);
+		const auto id = DataHelpers::parse<unsigned int>(line[0]);
 		if (id.has_value() == false)
 		{
 			Logger::log("Missing id, reaction skipped.", LogType::BAD);
@@ -92,7 +92,7 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 		}
 
 		// speed
-		const auto speed = DataHelpers::toValueAtTemperature<Unit::MOLE_PER_SECOND>(line[4]);	
+		const auto speed = DataHelpers::parsePair<Unit::MOLE_PER_SECOND, Unit::CELSIUS>(line[4]);	
 		if(speed.has_value() == false)
 		{
 			Logger::log("Reaction speed for the reaction with id " + std::to_string(id.value()) + " is ill-defined. Skipped.", LogType::BAD);
@@ -100,10 +100,10 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 		}
 
 		//reaction energy
-		const auto reactionEnergy = DataHelpers::toDouble(line[5]);
+		const auto reactionEnergy = DataHelpers::parse<double>(line[5]);
 
 		//activation energy
-		const auto activationEnergy = DataHelpers::toUDouble(line[6]);
+		const auto activationEnergy = DataHelpers::parseUnsigned<double>(line[6]);
 
 		//catalysts
 		const auto catStr = DataHelpers::parseLists(line[7], ';', '|', true);
@@ -122,7 +122,7 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 					continue;
 				}
 
-				const auto amount = DataHelpers::toUDouble(pair.back());
+				const auto amount = DataHelpers::parseUnsigned<double>(pair.back());
 				if (amount.has_value() == false)
 				{
 					Logger::log("Ill-defined catalyst '" + products[i] + "' in reaction with id " + std::to_string(id.value()) + " skipped.", LogType::BAD);

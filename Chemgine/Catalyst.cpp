@@ -5,11 +5,10 @@ Catalyst::Catalyst(const Reactable& reactable, const Amount<Unit::MOLAR_PERCENT>
 	idealAmount(idealAmount)
 {}
 
-const ComponentIdType Catalyst::getId() const
+const MoleculeIdType Catalyst::getId() const
 {
 	return reactable.getId();
 }
-
 
 const MolecularStructure& Catalyst::getStructure() const
 {

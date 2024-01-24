@@ -1,20 +1,20 @@
 #pragma once
 
-#include "BaseApproximator.hpp"
+#include "BaseEstimator.hpp"
 
-class ConstantApproximator : public BaseApproximator
+class ConstantEstimator : public BaseEstimator
 {
 private:
 	const double constant;
 
 public:
-	ConstantApproximator(
-		const ApproximatorIdType id,
+	ConstantEstimator(
+		const EstimatorIdType id,
 		const double constant
 	) noexcept;
 
 	double get(const double input) const override final;
 	double get(const double input1, const double input2) const;
 
-	ConstantApproximator* clone() const override final;
+	ConstantEstimator* clone() const override final;
 };

@@ -1,7 +1,6 @@
 #include "DataTable.hpp"
 #include "AtomData.hpp"
-#include "FunctionalGroupData.hpp"
-#include "BackboneData.hpp"
+#include "GenericMoleculeData.hpp"
 #include "MoleculeData.hpp"
 #include "ReactionData.hpp"
 
@@ -73,7 +72,6 @@ void DataTable<KeyT1, KeyT2, ObjT>::clear()
 }
 
 template class DataTable<ComponentIdType, std::string, AtomData>;
-template class DataTable<ComponentIdType, std::string, FunctionalGroupData>;
-template class DataTable<ComponentIdType, std::string, BackboneData>;
 template class DataTable<MoleculeIdType, std::string, MoleculeData>;
+template class DataTable<MoleculeIdType, std::string, GenericMoleculeData>;
 template class DataTable<ReactionIdType, std::string, ReactionData>;
