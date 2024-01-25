@@ -190,7 +190,7 @@ bool ReactionData::hasAsReactant(const Reactant& reactant) const
 
 void ReactionData::enumerateReactantPairs(
 	const std::vector<Molecule>& molecules,
-	const std::unordered_set<std::pair<size_t, size_t>, PairHash>& allowedPairs,
+	const std::unordered_set<std::pair<size_t, size_t>>& allowedPairs,
 	std::vector<std::pair<size_t, size_t>>& currentMatch,
 	std::vector<std::vector<std::pair<size_t, size_t>>>& result) const
 {

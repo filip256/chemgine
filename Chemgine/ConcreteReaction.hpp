@@ -2,6 +2,7 @@
 
 #include "ReactionData.hpp"
 #include "ReactantSet.hpp"
+#include "HashCombine.hpp"
 
 #include <vector>
 
@@ -31,11 +32,20 @@ public:
 	bool operator==(const ConcreteReaction& other) const;
 	bool operator!=(const ConcreteReaction& other) const;
 
-	friend class ConcreteReactionHash;
+	friend struct std::hash<ConcreteReaction>;
 };
 
-class ConcreteReactionHash
+
+template<>
+struct std::hash<ConcreteReaction>
 {
-public:
-	size_t operator() (const ConcreteReaction& reaction) const;
+	size_t operator() (const ConcreteReaction& reaction) const
+	{
+		size_t hash = 0;
+		for (const auto& r : reaction.reactants)
+			hashCombineWith(hash, r.molecule.getId());
+		for (const auto& p : reaction.products)
+			hashCombineWith(hash, p.molecule.getId());
+		return hash;
+	}
 };

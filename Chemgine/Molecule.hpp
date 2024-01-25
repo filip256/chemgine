@@ -66,15 +66,19 @@ public:
 		const Amount<Unit::TORR> pressure
 	) const;
 
-
 	bool operator==(const Molecule& other) const;
 	bool operator!=(const Molecule& other) const;
 
 	static void setDataStore(const DataStore& dataStore);
+
+	friend struct std::hash<Molecule>;
 };
 
-class MoleculeHash
+template<>
+struct std::hash<Molecule>
 {
-public:
-    size_t operator() (const Molecule& molecule) const;
+	size_t operator() (const Molecule& molecule) const
+	{
+		return std::hash<MoleculeIdType>()(molecule.id);
+	}
 };

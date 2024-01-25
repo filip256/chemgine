@@ -186,8 +186,9 @@ Tasks:
   3. Use operator* instead of value() for std::optional
   DONE. Rename approximator to estimator
   5. Add templated binary arithemtic operators to Amount, and remove .asStd() uses.
-  6. Add class for atom symbol (perhaps char[2/4] is enough)
+  DONE. Add class for atom symbol (perhaps char[2/4] is enough)
   7. Add operator<< to stream for Amounts
+  DONE. Specialize std::hash instead of creating Hash classes
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules

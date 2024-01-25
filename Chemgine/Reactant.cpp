@@ -1,5 +1,4 @@
 #include "Reactant.hpp"
-#include "PairHash.hpp"
 #include "Reactor.hpp"
 
 Reactant::Reactant(
@@ -78,9 +77,4 @@ const Reactor& Reactant::getContainer() const
 const LayerProperties& Reactant::getLayerProperties() const
 {
 	return container->layers.at(layer);
-}
-
-size_t ReactantHash::operator() (const Reactant& reactant) const
-{
-	return PairHash()(reactant.molecule.getId(), toIndex(reactant.layer));
 }

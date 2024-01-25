@@ -4,6 +4,7 @@
 #include "LayerType.hpp"
 #include "Amount.hpp"
 #include "LayerProperties.hpp"
+#include "HashCombine.hpp"
 
 class Reactor;
 
@@ -49,8 +50,12 @@ public:
 	bool operator!=(const Reactant& other) const;
 };
 
-class ReactantHash
+
+template<>
+struct std::hash<Reactant>
 {
-public:
-	size_t operator() (const Reactant& reactant) const;
+	size_t operator() (const Reactant& reactant) const
+	{
+		return hashCombine(reactant.molecule.getId(), toIndex(reactant.layer));
+	}
 };

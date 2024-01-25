@@ -12,7 +12,7 @@ class ReactorLayer
 private:
 	const LayerType type;
 	const Reactor& owner;
-	std::unordered_map<Molecule, double, MoleculeHash> contents;
+	std::unordered_map<Molecule, double> contents;
 
 public:
 	ReactorLayer(const Reactor& owner, const LayerType type) noexcept;

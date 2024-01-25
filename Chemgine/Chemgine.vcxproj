@@ -234,6 +234,7 @@
     <ClCompile Include="Spline.cpp" />
     <ClCompile Include="SplineEstimator.cpp" />
     <ClCompile Include="SplitEstimator.cpp" />
+    <ClCompile Include="Symbol.cpp" />
     <ClCompile Include="SystemMatrix.cpp" />
     <ClCompile Include="Value.cpp" />
     <ClInclude Include="Adaptor.hpp" />
@@ -304,6 +305,7 @@
     <ClInclude Include="Spline.hpp" />
     <ClInclude Include="SplineEstimator.hpp" />
     <ClInclude Include="SplitEstimator.hpp" />
+    <ClInclude Include="Symbol.hpp" />
     <ClInclude Include="UIContext.hpp" />
     <ClInclude Include="Unit.hpp" />
     <ClInclude Include="MoleculeDataTable.hpp" />
@@ -344,7 +346,6 @@
     <None Include="Data\LabwareData.csv" />
     <None Include="Data\MoleculeData.csv" />
     <None Include="Data\ReactionData.csv" />
-    <None Include="diagram.cd" />
     <None Include="Out\genericmolecules.out.csv" />
     <None Include="Out\molecules.out.csv" />
   </ItemGroup>

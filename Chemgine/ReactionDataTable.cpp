@@ -173,9 +173,9 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 	return true;
 }
 
-std::unordered_set<ConcreteReaction, ConcreteReactionHash> ReactionDataTable::findOccuringReactions(const std::vector<Reactant>& reactants) const
+std::unordered_set<ConcreteReaction> ReactionDataTable::findOccuringReactions(const std::vector<Reactant>& reactants) const
 {
-	std::unordered_set<ConcreteReaction, ConcreteReactionHash> result;
+	std::unordered_set<ConcreteReaction> result;
 	for (size_t i = 0; i < table.size(); ++i)
 	{
 		const auto& products = table[i].generateConcreteProducts(reactants);

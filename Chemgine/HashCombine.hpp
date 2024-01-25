@@ -1,9 +1,22 @@
 #pragma once
-
-#include <functional>
 		
-template <class T>
-inline void hashCombine(std::size_t& seed, const T& v)
+template<typename T>
+inline void hashCombineWith(size_t& prev, const T& last) noexcept
 {
-    seed ^= std::hash<T>()(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    prev ^= std::hash<T>()(last) + 0x9e3779b9 + (prev << 6) + (prev >> 2);
+}
+
+template<typename T, typename... Args>
+inline void hashCombineWith(size_t& prev, const T& first, const Args&... rest) noexcept
+{
+    hashCombineWith(prev, first);
+    hashCombineWith(prev, rest...);
+}
+
+template<typename T, typename... Args>
+inline size_t hashCombine(const T& first, const Args&... rest) noexcept
+{
+    size_t h = std::hash<T>()(first);
+    hashCombineWith(h, rest...);
+    return h;
 }

@@ -17,7 +17,7 @@ private:
 	std::vector<Reactable> reactants;
 	std::vector<Reactable> products;
 	std::vector<std::vector<Catalyst>> catalysts;
-	std::unordered_map<std::pair<size_t, c_size>, std::pair<size_t, c_size>, PairHash> componentMapping;
+	std::unordered_map<std::pair<size_t, c_size>, std::pair<size_t, c_size>> componentMapping;
 
 	static std::vector<Reactable> flatten(
 		const std::vector<std::pair<Reactable, uint8_t>>& list);
@@ -28,7 +28,7 @@ private:
 
 	void enumerateReactantPairs(
 		const std::vector<Molecule>& molecules,
-		const std::unordered_set<std::pair<size_t, size_t>, PairHash>& allowedPairs,
+		const std::unordered_set<std::pair<size_t, size_t>>& allowedPairs,
 		std::vector<std::pair<size_t, size_t>>& currentMatch,
 		std::vector<std::vector<std::pair<size_t, size_t>>>& result) const;
 
@@ -44,8 +44,6 @@ private:
 	/// </summary>
 	std::vector<std::vector<std::pair<size_t, std::unordered_map<c_size, c_size>>>> mapReactantsToMolecules(
 		const std::vector<Molecule>& molecules) const;
-
-
 
 public:
 	const ReactionIdType id;

@@ -135,9 +135,6 @@
     <ClCompile Include="Bond.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
-    <ClCompile Include="MolecularStructure.cpp">
-      <Filter>Source Files\Moleculars</Filter>
-    </ClCompile>
     <ClCompile Include="Chemgine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -312,6 +309,12 @@
     <ClCompile Include="GenericMoleculeDataTable.cpp">
       <Filter>Source Files\Molecules</Filter>
     </ClCompile>
+    <ClCompile Include="Symbol.cpp">
+      <Filter>Source Files\Moleculars</Filter>
+    </ClCompile>
+    <ClCompile Include="MolecularStructure.cpp">
+      <Filter>Source Files\Molecules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -327,9 +330,6 @@
       <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
     <ClInclude Include="BondType.hpp">
-      <Filter>Header Files\Moleculars</Filter>
-    </ClInclude>
-    <ClInclude Include="MolecularStructure.hpp">
       <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
     <ClInclude Include="ComponentType.hpp">
@@ -569,6 +569,12 @@
     <ClInclude Include="GenericMoleculeDataTable.hpp">
       <Filter>Header Files\Molecules</Filter>
     </ClInclude>
+    <ClInclude Include="Symbol.hpp">
+      <Filter>Header Files\Moleculars</Filter>
+    </ClInclude>
+    <ClInclude Include="MolecularStructure.hpp">
+      <Filter>Header Files\Molecules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv">
@@ -577,7 +583,6 @@
     <None Include="Data\GenericMoleculeData.csv">
       <Filter>Resource Files\Data</Filter>
     </None>
-    <None Include="diagram.cd" />
     <None Include="Data\MoleculeData.csv">
       <Filter>Resource Files\Data</Filter>
     </None>

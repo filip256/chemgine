@@ -10,7 +10,6 @@ protected:
 
 	CompositeComponentData(
 		const ComponentIdType id,
-		const std::string& name,
 		MolecularStructure&& structure) noexcept;
 
 	CompositeComponentData(const CompositeComponentData&) = delete;
@@ -18,7 +17,6 @@ protected:
 
 	static CompositeComponentData create(
 		const ComponentIdType id,
-		const std::string& name,
 		const std::string& smiles);
 
 public:
@@ -27,4 +25,6 @@ public:
 	const MolecularStructure& getStructure() const;
 
 	uint8_t getFittingValence(const uint8_t bonds) const override final;
+	std::string getSMILES() const override final;
+	std::string getBinaryId() const override final;
 };

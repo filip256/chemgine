@@ -7,7 +7,7 @@
 class ReactantSet
 {
 private:
-	std::unordered_set<Reactant, ReactantHash> content;
+	std::unordered_set<Reactant> content;
 
 public:
 	ReactantSet() = default;
@@ -26,6 +26,6 @@ public:
 	/// </summary>
 	const Reactant& any() const;
 
-	std::unordered_set<Reactant, ReactantHash>::const_iterator begin() const;
-	std::unordered_set<Reactant, ReactantHash>::const_iterator end() const;
+	std::unordered_set<Reactant>::const_iterator begin() const;
+	std::unordered_set<Reactant>::const_iterator end() const;
 };

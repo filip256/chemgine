@@ -141,9 +141,3 @@ bool Molecule::operator!=(const Molecule& other) const
 {
 	return this->id != other.id;
 }
-
-
-size_t MoleculeHash::operator() (const Molecule& molecule) const
-{
-	return std::hash<MoleculeIdType>()(molecule.getId());
-}

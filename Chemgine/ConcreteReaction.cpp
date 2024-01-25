@@ -1,5 +1,4 @@
 #include "ConcreteReaction.hpp"
-#include "HashCombine.hpp"
 
 ConcreteReaction::ConcreteReaction(
 	const ReactionData& baseReaction,
@@ -44,8 +43,6 @@ const ReactionData& ConcreteReaction::getData() const
 	return baseReaction;
 }
 
-
-
 bool ConcreteReaction::operator==(const ConcreteReaction& other) const
 {
 	return isEquivalent(other);
@@ -54,17 +51,4 @@ bool ConcreteReaction::operator==(const ConcreteReaction& other) const
 bool ConcreteReaction::operator!=(const ConcreteReaction& other) const
 {
 	return !isEquivalent(other);
-}
-
-
-
-
-size_t ConcreteReactionHash::operator() (const ConcreteReaction& reaction) const
-{
-	size_t hash = 0;
-	for (const auto& r : reaction.reactants)
-		hashCombine(hash, r.molecule.getId());
-	for (const auto& p : reaction.products)
-		hashCombine(hash, p.molecule.getId());
-	return hash;
 }

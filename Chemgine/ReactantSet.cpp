@@ -32,12 +32,12 @@ const Reactant& ReactantSet::any() const
 	return *content.begin();
 }
 
-std::unordered_set<Reactant, ReactantHash>::const_iterator ReactantSet::begin() const
+std::unordered_set<Reactant>::const_iterator ReactantSet::begin() const
 {
 	return content.begin();
 }
 
-std::unordered_set<Reactant, ReactantHash>::const_iterator ReactantSet::end() const
+std::unordered_set<Reactant>::const_iterator ReactantSet::end() const
 {
 	return content.end();
 }

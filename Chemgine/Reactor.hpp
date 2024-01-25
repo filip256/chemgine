@@ -20,8 +20,8 @@ private:
 	const BaseEstimator* temperatureSpeedEstimator = nullptr;
 	const BaseEstimator* concentrationSpeedEstimator = nullptr;
 
-	std::unordered_set<ConcreteReaction, ConcreteReactionHash> cachedReactions;
-	std::unordered_set<Reactant, ReactantHash> content;
+	std::unordered_set<ConcreteReaction> cachedReactions;
+	std::unordered_set<Reactant> content;
 
 	std::unordered_map<LayerType, LayerProperties> layers;
 

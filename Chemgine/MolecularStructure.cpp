@@ -469,8 +469,9 @@ void MolecularStructure::rPrint(
 
     visited[c] = true;
 
-    for(c_size i = 0; i < components[c]->data().symbol.size() && x + i < buffer[0].size(); ++i)
-        buffer[y][x + i] = components[c]->data().symbol[i];
+    const auto& symb = components[c]->data().getSMILES();
+    for(c_size i = 0; i < symb.size() && x + i < buffer[0].size(); ++i)
+        buffer[y][x + i] = symb[i];
 
     for (c_size i = 0; i < bonds[c].size(); ++i)
         if (visited[bonds[c][i]->other] == false)
@@ -950,7 +951,7 @@ std::string MolecularStructure::rToSMILES(c_size c, c_size prev, std::vector<uin
     while (true)
     {
         visited[c] = true;
-        r += components[c]->data().symbol;
+        r += components[c]->data().getSMILES();
 
         if (bonds[c].empty())
             break;
@@ -1059,7 +1060,7 @@ std::string MolecularStructure::serialize() const
 
     std::string result;
     for (c_size i = 0; i < components.size(); ++i)
-        result += std::to_string(components[i]->getId()) + ';';
+        result += components[i]->data().getBinaryId() + ';';
     result.back() = '_';
     for (c_size i = 0; i < components.size(); ++i)
     {

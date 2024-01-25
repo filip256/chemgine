@@ -3,12 +3,14 @@
 
 AtomData::AtomData(
 	const ComponentIdType id,
-	const std::string& symbol,
+	const Symbol& symbol,
 	const std::string& name,
 	const Amount<Unit::GRAM> weight,
 	std::vector<uint8_t>&& valences
 ) noexcept :
-	BaseComponentData(id, symbol, name, weight, rarityOf(symbol)),
+	BaseComponentData(id, weight, getRarityOf(symbol)),
+	symbol(symbol),
+	name(name),
 	valences(Utils::toSortedSetVector(std::move(valences)))
 {}
 
@@ -20,6 +22,11 @@ bool AtomData::hasValence(const uint8_t v) const
 	return false;
 }
 
+const std::vector<uint8_t>& AtomData::getValences() const
+{
+	return valences;
+}
+
 uint8_t AtomData::getFittingValence(const uint8_t bonds) const
 {
 	for (size_t i = 0; i < valences.size(); ++i)
@@ -28,12 +35,20 @@ uint8_t AtomData::getFittingValence(const uint8_t bonds) const
 	return AtomData::noneValence;
 }
 
-const std::vector<uint8_t>& AtomData::getValences() const
+std::string AtomData::getSMILES() const
 {
-	return valences;
+	const char* s = symbol.get2ByteRepr();
+	return std::string({ s[0], s[1] });
 }
 
-uint8_t AtomData::rarityOf(const std::string& symbol)
+std::string AtomData::getBinaryId() const
+{
+	//return std::string({ static_cast<char>(id) });
+	return std::to_string(id);
+}
+
+
+uint8_t AtomData::getRarityOf(const Symbol& symbol)
 {
 	if (symbol == "C" || symbol == "H")
 		return 1;
