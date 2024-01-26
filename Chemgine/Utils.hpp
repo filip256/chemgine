@@ -16,6 +16,10 @@ public:
 		const std::unordered_map<KeyT1, KeyT2>& map1,
 		const std::unordered_map<KeyT2, Obj>& map2);
 
+	template<class T1, class T2>
+	static std::pair<T2, T1> reversePair(
+		const std::pair<T1, T2>& pair);
+
 	template<class Key, class Obj>
 	static std::unordered_map<Obj, Key> reverseMap(
 		const std::unordered_map<Key, Obj>& map);
@@ -23,6 +27,8 @@ public:
 	template<class Key, class Obj>
 	static std::unordered_set<Obj> extractValues(
 		const std::unordered_map<Key, Obj>& map);
+
+
 };
 
 
@@ -32,6 +38,13 @@ std::vector<T>&& Utils::toSortedSetVector(std::vector<T>&& vect)
 	std::sort(vect.begin(), vect.end());
 	vect.erase(std::unique(vect.begin(), vect.end()), vect.end());
 	return std::move(vect);
+}
+
+template<class T1, class T2>
+static std::pair<T2, T1> Utils::reversePair(
+	const std::pair<T1, T2>& pair)
+{
+	return std::make_pair(pair.second, pair.first);
 }
 
 template<class KeyT1, class KeyT2, class Obj>

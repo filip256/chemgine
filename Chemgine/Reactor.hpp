@@ -38,6 +38,7 @@ private:
 
 	LayerType getLayerAbove(LayerType layer) const;
 	LayerType getLayerBelow(LayerType layer) const;
+	LayerType getClosestLayer(LayerType layer) const;
 
 	void add(const Amount<Unit::JOULE> heat, const LayerType layer);
 
@@ -57,6 +58,7 @@ public:
 
 	LayerType findLayerFor(const Reactant& reactant) const;
 
+	const LayerProperties& getLayerProperties(const LayerType layer) const;
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity(const LayerType layer) const;
 	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType layer) const;
 

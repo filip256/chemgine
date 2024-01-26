@@ -67,21 +67,21 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 		// densities
 		const auto sdR = DataHelpers::parse<Spline<float>>(line[5]);
 		const auto ldR = DataHelpers::parse<Spline<float>>(line[6]);
-		const auto& sdA = estimators.add<SplineEstimator>(sdR.value_or(Spline<float>({ {0, 1.0f} })));
-		const auto& ldA = estimators.add<SplineEstimator>(ldR.value_or(Spline<float>({ {0, 1.0f} })));
+		const auto& sdA = estimators.add<SplineEstimator>(sdR.value_or(Spline<float>({ {0, 1.0} })));
+		const auto& ldA = estimators.add<SplineEstimator>(ldR.value_or(Spline<float>({ {0, 1.0} })));
 
 		// heat capacities
 		const auto shcR = DataHelpers::parse<Spline<float>>(line[7]);
 		const auto lhcR = DataHelpers::parse<Spline<float>>(line[8]);
-		const auto& shcA = estimators.add<SplineEstimator>(shcR.value_or(Spline<float>({ {0, 36.0f} })));
-		const auto& lhcA = estimators.add<SplineEstimator>(lhcR.value_or(Spline<float>({ {40.0f, 75.24f} })));
+		const auto& shcA = estimators.add<SplineEstimator>(shcR.value_or(Spline<float>({ {36.0, 760.0} })));
+		const auto& lhcA = estimators.add<SplineEstimator>(lhcR.value_or(Spline<float>({ {75.4840232, 760.0} })));
 
 		// latent heats
 		const auto flhR = DataHelpers::parse<double>(line[9]);
 		const auto vlhR = DataHelpers::parse<double>(line[10]);
 		const auto slhR = DataHelpers::parse<double>(line[11]);
-		const auto& flhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), flhR.value_or(6020.0f));
-		const auto& vlhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), vlhR.value_or(40700.0f));
+		const auto& flhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), flhR.value_or(6020.0));
+		const auto& vlhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), vlhR.value_or(40700.0));
 		const auto& slhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), slhR.value_or(std::numeric_limits<double>::max()));
 
 		if (table.emplace(
@@ -142,8 +142,8 @@ MoleculeIdType MoleculeDataTable::findOrAdd(MolecularStructure&& structure)
 	const auto& bpA = estimators.add<OffsetEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TORR_TO_REL_BP)), 100);
 	const auto& sdA = estimators.add<SplineEstimator>(Spline<float>({ {0, 1.0f} }));
 	const auto& ldA = estimators.add<SplineEstimator>(Spline<float>({ {0, 1.0f} }));
-	const auto& shcA = estimators.add<SplineEstimator>(Spline<float>({ {0, 36.0f} }));
-	const auto& lhcA = estimators.add<SplineEstimator>(Spline<float>({ {40.0f, 75.24f} }));
+	const auto& shcA = estimators.add<SplineEstimator>(Spline<float>({ {36.0, 760.0} }));
+	const auto& lhcA = estimators.add<SplineEstimator>(Spline<float>({ {75.4840232, 760.0} }));
 	const auto& flhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), 6020.0f);
 	const auto& vlhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), 40700.0f);
 	const auto& slhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), std::numeric_limits<double>::max());

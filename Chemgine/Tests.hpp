@@ -226,51 +226,6 @@ public:
 	}
 };
 
-class ReactorTest
-{
-private:
-	bool passed = true;
-	Reactor* reactorA = nullptr;
-
-public:
-	void initialize()
-	{
-		reactorA = new Reactor(20.0, 760.0);
-		reactorA->add(Molecule("HH"), 2.0);
-		reactorA->add(Molecule("CC=C"), 2.0);
-		reactorA->add(Molecule("CC(=O)OCC"), 2.0);
-		reactorA->add(Molecule("O"), 3.0);
-	}
-
-	void runTests()
-	{
-		// conservation of mass
-		const auto massBefore = reactorA->getTotalMass();
-		for (size_t i = 0; i < 32; ++i)
-		{
-			reactorA->tick();
-			const auto massAfter = reactorA->getTotalMass();
-
-			if (std::abs((massAfter - massBefore).asStd()) > 1e-12)
-			{
-				Logger::log("Test failed > Reactor > mass conservation: expected=" + std::to_string(massBefore.asStd()) + "   actual=" + std::to_string(massAfter.asStd()) + "\n", LogType::BAD);
-				passed = false;
-			}
-		}
-	}
-
-	bool hasPassed()
-	{
-		return passed;
-	}
-
-	~ReactorTest()
-	{
-		if (reactorA != nullptr)
-			delete reactorA;
-	}
-};
-
 class EstimatorTest
 {
 	class ReferenceSet
@@ -311,9 +266,14 @@ class EstimatorTest
 
 				Logger::log(std::to_string(p.first).substr(0, 8) + " |   " + std::to_string(p.second).substr(0, 8) + "   " + std::to_string(act).substr(0, 8) + "   " + std::to_string(err));
 			}
-			Logger::log("");
+			const auto mae = tErr / refData.size();
+
+			Logger::log("---------+------------------------------------");
+			Logger::log("MAE:     |   " + std::to_string(mae).substr(0, 16));
 			Logger::exitContext();
-			return tErr / refData.size();
+			Logger::log("");
+
+			return mae;
 		}
 	};
 
@@ -331,7 +291,7 @@ public:
 		const auto mae = waterBpRef.testMAE([&water](double input) {return water.getBoilingPointAt(input).asStd(); });
 		if (mae > waterBpThreshold)
 		{
-			Logger::log("Test failed > Estimator > waterBp: mae=" + std::to_string(mae) + "\n", LogType::BAD);
+			Logger::log("Test failed > Estimator > waterBp: MAE=" + std::to_string(mae) + "\n", LogType::BAD);
 			passed = false;
 		}
 	}
@@ -341,6 +301,100 @@ public:
 		return passed;
 	}
 };
+
+class ReactorTest
+{
+private:
+	bool passed = true;
+	Reactor* reactorA = nullptr;
+	Reactor* reactorB = nullptr;
+
+	const double waterTemperatureThreshold = 0.1;
+
+	void runConservationOfMassTest()
+	{
+		const auto massBefore = reactorA->getTotalMass();
+		for (size_t i = 0; i < 32; ++i)
+		{
+			reactorA->tick();
+			const auto massAfter = reactorA->getTotalMass();
+
+			if (std::abs((massAfter - massBefore).asStd()) > 1e-10)
+			{
+				Logger::log("Test failed > Reactor > mass conservation: expected=" + std::to_string(massBefore.asStd()) + "   actual=" + std::to_string(massAfter.asStd()) + "\n", LogType::BAD);
+				passed = false;
+			}
+		}
+	}
+	void runTemperatureTest()
+	{
+		Logger::enterContext();
+		Logger::log("Input    |   Reference  Actual     Error");
+
+		const auto& layerProps = reactorB->getLayerProperties(LayerType::POLAR);
+		const auto moles = layerProps.getMoles();
+		double addedEnergy = 0.0;
+		double tErr = 0.0;
+		std::vector<std::pair<Amount<Unit::JOULE>, Amount<Unit::CELSIUS>>> batches { {0.0, 1.0 }, { 7.5, 1.1 }, { 30.19, 1.5 }, { 264.19, 5.0 }, { 754.84, 15.0 }, { 6408.59, 99.9 }, {-7465.310 , 1.0}};
+		for (size_t i = 0; i < batches.size(); ++i)
+		{
+			const auto correctedEnergy = batches[i].first * moles.asStd();
+			reactorB->add(correctedEnergy);
+			reactorB->tick();
+			addedEnergy += correctedEnergy.asStd();
+			const auto act = layerProps.getTemperature();
+			const auto err = abs((act - batches[i].second).asStd());
+			tErr += err;
+
+			Logger::log(std::to_string(addedEnergy).substr(0, 8) + " |   " + std::to_string(batches[i].second.asStd()).substr(0, 8) + "   " + std::to_string(act.asStd()).substr(0, 8) + "   " + std::to_string(err));
+		}
+		const auto mae = tErr / batches.size();
+
+		Logger::log("---------+------------------------------------");
+		Logger::log("MAE:     |   " + std::to_string(mae).substr(0, 16));
+		Logger::exitContext();
+		Logger::log("");
+
+		if (mae > waterTemperatureThreshold)
+		{
+			Logger::log("Test failed > Reactor > waterTemp: MAE=" + std::to_string(mae) + "\n", LogType::BAD);
+			passed = false;
+		}
+	}
+
+public:
+	void initialize()
+	{
+		reactorA = new Reactor(20.0, 760.0);
+		reactorA->add(Molecule("HH"), 2.0);
+		reactorA->add(Molecule("CC=C"), 2.0);
+		reactorA->add(Molecule("CC(=O)OCC"), 2.0);
+		reactorA->add(Molecule("O"), 3.0);
+
+		reactorB = new Reactor(1.0, 760.0);
+		reactorB->add(Molecule("O"), 3.0);
+	}
+
+	void runTests()
+	{
+		runConservationOfMassTest();
+		runTemperatureTest();
+	}
+
+	bool hasPassed()
+	{
+		return passed;
+	}
+
+	~ReactorTest()
+	{
+		if (reactorA != nullptr)
+			delete reactorA;
+		if (reactorB != nullptr)
+			delete reactorB;
+	}
+};
+
 
 class TestManager
 {
@@ -383,19 +437,19 @@ public:
 	{
 		const auto begin = std::chrono::steady_clock::now();
 		molecularStructureTest.runTests();
-		reactorTest.runTests();
 		estimatorTest.runTests();
+		reactorTest.runTests();
 		const auto end = std::chrono::steady_clock::now();
 
 		Logger::log("Test execution completed in " +
 			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.\n");
 
 		if (molecularStructureTest.hasPassed())
-			Logger::log("MolecularStructure tests passed.", LogType::GOOD);
-		if (reactorTest.hasPassed())
-			Logger::log("Reactor tests passed.", LogType::GOOD);
+			Logger::log("All MolecularStructure tests passed.", LogType::GOOD);
 		if (estimatorTest.hasPassed())
-			Logger::log("Estimator tests passed.", LogType::GOOD);
+			Logger::log("All Estimator tests passed.", LogType::GOOD);
+		if (reactorTest.hasPassed())
+			Logger::log("All Reactor tests passed.", LogType::GOOD);
 	}
 
 	void runPersist()

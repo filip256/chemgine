@@ -181,7 +181,7 @@ Tasks:
   DONE. Molecular structure improvements: isNormalized field (checks for req methods), implied hydrogen clarifications
 ---
   1. Fix single key DataTables
-  2. Fix Reactable id clash (Molecule/Component)
+  2. Fix Reactable id clash (Molecule/GenericMolecule)
   DONE. Estimator optimizer
   3. Use operator* instead of value() for std::optional
   DONE. Rename approximator to estimator
@@ -195,8 +195,9 @@ Tasks:
   DONE. Add table.add<estimator>() method 
   DONE. Add energy to reactors
   DONE. Add tests for estimators
-  6. Add tests for reactor energy
+  DONE. Add tests for reactor heat
 ---
+  1. Add aggregation state changes to reactors
 
 Possible optimizations:
  - keep symbols as char* to avoid uneccessary constructor for 'C'

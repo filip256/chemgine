@@ -30,7 +30,7 @@ bool Reactor::tryCreateLayer(const LayerType layer)
 	if (isRealLayer(layer) == false || layers.contains(layer))
 		return false;
 
-	layers.emplace(std::make_pair(layer, 0.0));
+	layers.emplace(std::make_pair(layer, layers.at(getClosestLayer(layer)).temperature));
 	return true;
 }
 
@@ -124,7 +124,11 @@ void Reactor::consumePotentialEnergy()
 {
 	for (auto& l : layers)
 	{
-		l.second.temperature += l.second.potentialEnergy.to<Unit::CELSIUS>(getLayerHeatCapacity(l.first), l.second.moles);
+		if (l.second.potentialEnergy != 0.0)
+		{
+			l.second.temperature += l.second.potentialEnergy.to<Unit::CELSIUS>(getLayerHeatCapacity(l.first), l.second.moles);
+			l.second.potentialEnergy = 0.0;
+		}
 	}
 }
 
@@ -147,6 +151,30 @@ LayerType Reactor::getLayerBelow(LayerType layer) const
 		++layer;
 		if (hasLayer(layer))
 			return layer;
+	}
+
+	return LayerType::NONE;
+}
+
+LayerType Reactor::getClosestLayer(LayerType layer) const
+{
+	uint8_t i = 1;
+	while (true)
+	{
+		if (layer + i == LayerType::SOLID)
+		{
+			return hasLayer(LayerType::SOLID) ? LayerType::SOLID : getLayerAbove(layer - (i - 1));
+		}
+		if (layer - i == LayerType::GASEOUS)
+		{
+			const auto l = getLayerBelow(layer + (i - 1));
+			return l != LayerType::NONE ? l : LayerType::GASEOUS;
+		}
+		if (hasLayer(layer + i))
+			return layer + i;
+		if (hasLayer(layer - i))
+			return layer - i;
+		++i;
 	}
 
 	return LayerType::NONE;
@@ -232,6 +260,11 @@ void Reactor::add(const Amount<Unit::JOULE> heat)
 LayerType Reactor::findLayerFor(const Reactant& reactant) const
 {
 	return LayerType::POLAR;
+}
+
+const LayerProperties& Reactor::getLayerProperties(const LayerType layer) const
+{
+	return layers.at(layer);
 }
 
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> Reactor::getLayerHeatCapacity(const LayerType layer) const

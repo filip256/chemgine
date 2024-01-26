@@ -32,3 +32,23 @@ static LayerType& operator--(LayerType& layer)
 {
 	return layer = static_cast<LayerType>(static_cast<uint8_t>(layer) - 1);
 }
+
+static LayerType operator+(LayerType& layer, const uint8_t x)
+{
+	return static_cast<LayerType>(static_cast<uint8_t>(layer) + x);
+}
+
+static LayerType operator-(LayerType& layer, const uint8_t x)
+{
+	return static_cast<LayerType>(static_cast<uint8_t>(layer) - x);
+}
+
+static LayerType& operator+=(LayerType& layer, const uint8_t x)
+{
+	return layer = static_cast<LayerType>(static_cast<uint8_t>(layer) + x);
+}
+
+static LayerType& operator-=(LayerType& layer, const uint8_t x)
+{
+	return layer = static_cast<LayerType>(static_cast<uint8_t>(layer) - x);
+}

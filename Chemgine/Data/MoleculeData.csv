@@ -1,5 +1,5 @@
 Id,Smiles,Name,MP,BP,SD,LD,SHC,LHC,FLH,VLH,SLH
-501,O,water,0.0,100.0,0@1.0,0@1.0,0@36.0,40.0@75.24,6020.0,40700.0,
+501,O,water,0.0,100.0,0@1.0,0@1.0,36.0@760.0,75.4840232@760.0,6020.0,40700.0,
 502,OC,methanol,,,,,,,,,
 503,CC(=O)O,acetic acid,,,,,,,,,
 504,CC(=O)OC(=O)C,acetic anhydride,,,,,,,,,

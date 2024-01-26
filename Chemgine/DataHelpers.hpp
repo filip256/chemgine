@@ -2,6 +2,7 @@
 
 #include "Amount.hpp"
 #include "Spline.hpp"
+#include "Utils.hpp"
 
 #include <vector>
 #include <string>
@@ -151,7 +152,7 @@ inline std::optional<Spline<float>> DataHelpers::parse<Spline<float>>(const std:
 		const auto p = parsePair<double, double>(pointsStr[i]);
 		if (p.has_value() == false)
 			return std::nullopt;
-		points.emplace_back(p.value());
+		points.emplace_back(Utils::reversePair(*p));
 	}
 
 	return points.empty() ? std::nullopt : std::optional<Spline<float>>(Spline(std::move(points)));
