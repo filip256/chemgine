@@ -5,13 +5,17 @@
 enum class LayerType : uint8_t
 {
 	GASEOUS,
-	POLAR,
+	LIQUEFIED_GAS,
 	NONPOLAR,
+	POLAR,
 	DENSE_NONPOLAR,
 	MOLTEN_SOLID,
 	SOLID,
 
 	REAL_LAYER_COUNT, // marks the number of real layers
+
+	FIRST = GASEOUS,
+	LAST = SOLID,
 
 	UNKNOWN,
 	NONE

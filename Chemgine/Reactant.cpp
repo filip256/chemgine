@@ -15,7 +15,7 @@ Reactant::Reactant(
 	const Molecule& molecule,
 	const LayerType layer,
 	const Amount<Unit::MOLE> amount,
-	const Reactor& container
+	const LayeredMixture& container
 ) noexcept :
 	molecule(molecule),
 	layer(layer),
@@ -54,6 +54,26 @@ Amount<Unit::JOULE_PER_MOLE> Reactant::getStandaloneKineticEnergy() const
 	return molecule.getHeatCapacityAt(temp, container->getPressure()).to<Unit::JOULE_PER_MOLE>(temp);
 }
 
+void Reactant::setContainer(const LayeredMixture& container) const
+{
+	this->container = &container;
+}
+
+const LayeredMixture* Reactant::getContainer() const
+{
+	return container;
+}
+
+const LayerProperties& Reactant::getLayerProperties() const
+{
+	return container->getLayerProperties(layer);
+}
+
+void Reactant::markAsNew() const
+{
+	isNew = true;
+}
+
 bool Reactant::operator== (const Reactant& other) const
 {
 	return this->layer == other.layer && this->molecule.getId() == other.molecule.getId();
@@ -62,19 +82,4 @@ bool Reactant::operator== (const Reactant& other) const
 bool Reactant::operator!= (const Reactant& other) const
 {
 	return this->layer != other.layer || this->molecule.getId() != other.molecule.getId();
-}
-
-void Reactant::setContainer(const Reactor& container) const
-{
-	this->container = &container;
-}
-
-const Reactor& Reactant::getContainer() const
-{
-	return *container;
-}
-
-const LayerProperties& Reactant::getLayerProperties() const
-{
-	return container->layers.at(layer);
 }

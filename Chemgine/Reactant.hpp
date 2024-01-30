@@ -6,12 +6,12 @@
 #include "LayerProperties.hpp"
 #include "HashCombine.hpp"
 
-class Reactor;
+class LayeredMixture;
 
 class Reactant
 {
 private:
-	mutable const Reactor* container = nullptr;
+	mutable const LayeredMixture* container = nullptr;
 
 public:
 	mutable bool isNew = true;
@@ -29,7 +29,7 @@ public:
 		const Molecule& molecule,
 		const LayerType layer,
 		const Amount<Unit::MOLE> amount,
-		const Reactor& container
+		const LayeredMixture& container
 	) noexcept;
 
 	Reactant(const Reactant&) = default;
@@ -42,9 +42,11 @@ public:
 	Amount<Unit::JOULE_PER_MOLE> getKineticEnergy() const;
 	Amount<Unit::JOULE_PER_MOLE> getStandaloneKineticEnergy() const;
 
-	void setContainer(const Reactor& container) const;
-	const Reactor& getContainer() const;
+	void setContainer(const LayeredMixture& container) const;
+	const LayeredMixture* getContainer() const;
 	const LayerProperties& getLayerProperties() const;
+
+	void markAsNew() const;
 
 	bool operator==(const Reactant& other) const;
 	bool operator!=(const Reactant& other) const;

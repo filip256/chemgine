@@ -121,6 +121,12 @@
     <Filter Include="Source Files\Estimators">
       <UniqueIdentifier>{b1083ec7-3a36-4415-a955-cfe806be11d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Reactions\Mixtures">
+      <UniqueIdentifier>{5375d255-a569-4c54-bf41-18d052d5d87f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Reactions\Mixtures">
+      <UniqueIdentifier>{d7610af6-8fb3-4a5e-8d6e-b9ff3e0f3a32}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataStore.cpp">
@@ -161,12 +167,6 @@
     </ClCompile>
     <ClCompile Include="DataTable.cpp">
       <Filter>Source Files\DataStructures</Filter>
-    </ClCompile>
-    <ClCompile Include="ReactorLayer.cpp">
-      <Filter>Source Files\Reactions</Filter>
-    </ClCompile>
-    <ClCompile Include="Reactor.cpp">
-      <Filter>Source Files\Reactions</Filter>
     </ClCompile>
     <ClCompile Include="ConcreteReaction.cpp">
       <Filter>Source Files\Reactions</Filter>
@@ -315,6 +315,15 @@
     <ClCompile Include="MolecularStructure.cpp">
       <Filter>Source Files\Molecules</Filter>
     </ClCompile>
+    <ClCompile Include="Reactor.cpp">
+      <Filter>Source Files\Reactions\Mixtures</Filter>
+    </ClCompile>
+    <ClCompile Include="Mixture.cpp">
+      <Filter>Source Files\Reactions\Mixtures</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiLayerMixture.cpp">
+      <Filter>Source Files\Reactions\Mixtures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -380,13 +389,7 @@
     <ClInclude Include="DataTable.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
-    <ClInclude Include="ReactorLayer.hpp">
-      <Filter>Header Files\Reactions</Filter>
-    </ClInclude>
     <ClInclude Include="LayerType.hpp">
-      <Filter>Header Files\Reactions</Filter>
-    </ClInclude>
-    <ClInclude Include="Reactor.hpp">
       <Filter>Header Files\Reactions</Filter>
     </ClInclude>
     <ClInclude Include="Query.hpp">
@@ -574,6 +577,21 @@
     </ClInclude>
     <ClInclude Include="MolecularStructure.hpp">
       <Filter>Header Files\Molecules</Filter>
+    </ClInclude>
+    <ClInclude Include="Reactor.hpp">
+      <Filter>Header Files\Reactions\Mixtures</Filter>
+    </ClInclude>
+    <ClInclude Include="Mixture.hpp">
+      <Filter>Header Files\Reactions\Mixtures</Filter>
+    </ClInclude>
+    <ClInclude Include="LayeredMixture.hpp">
+      <Filter>Header Files\Reactions\Mixtures</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiLayerMixture.hpp">
+      <Filter>Header Files\Reactions\Mixtures</Filter>
+    </ClInclude>
+    <ClInclude Include="SingleLayerMixture.hpp">
+      <Filter>Header Files\Reactions\Mixtures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

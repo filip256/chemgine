@@ -4,8 +4,9 @@
 #include <Windows.h>
 
 uint8_t Logger::contexts = 0;
-LogType Logger::severityLevel = LogType::GOOD;
+LogType Logger::severityLevel = LogType::ALL;
 std::ostream& Logger::outputStream = std::cout;
+std::vector<std::pair<LogType, std::string>> Logger::cache;
 
 void Logger::enterContext()
 {
@@ -68,6 +69,7 @@ void Logger::log(const std::string& str, const LogType type)
 #endif
 }
 
+
 void Logger::fatal(const char* str)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED);
@@ -90,5 +92,43 @@ void Logger::breakline()
 {
 #ifdef CHEM_ENABLE_LOGGING
 	outputStream << "\n.........................................................................\n\n";
+#endif
+}
+
+void Logger::logCached(const char* str, const LogType type)
+{
+#ifdef CHEM_ENABLE_LOGGING
+	if (type == LogType::FATAL)
+	{
+		fatal(str);
+		return;
+	}
+
+	cache.emplace_back(std::make_pair(type, ""));
+	for (uint8_t i = 0; i < contexts; ++i)
+		cache.back().second += "  ";
+	cache.back().second += str;
+#endif
+}
+
+void Logger::logCached(const std::string& str, const LogType type)
+{
+#ifdef CHEM_ENABLE_LOGGING
+	logCached(str.c_str(), type);
+#endif
+}
+
+void Logger::printCache()
+{
+#ifdef CHEM_ENABLE_LOGGING
+	for (size_t i = 0; i < cache.size(); ++i)
+		Logger::log(cache[i].second, cache[i].first);
+#endif
+}
+
+void Logger::clearCache()
+{
+#ifdef CHEM_ENABLE_LOGGING
+	cache.clear();
 #endif
 }

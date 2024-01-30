@@ -1,6 +1,6 @@
 #include "LayerProperties.hpp"
 
-LayerProperties::LayerProperties(Amount<Unit::CELSIUS> temperature) noexcept :
+LayerProperties::LayerProperties(const Amount<Unit::CELSIUS> temperature) noexcept :
 	temperature(temperature)
 {}
 

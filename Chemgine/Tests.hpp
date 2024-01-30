@@ -256,7 +256,7 @@ class EstimatorTest
 		double testMAE(const std::function<double(double)>& estimator) const
 		{
 			Logger::enterContext();
-			Logger::log("Input    |   Reference  Actual     Error");
+			Logger::logCached("Input    |   Reference  Actual     Error", LogType::TABLE);
 			double tErr = 0.0;
 			for (const auto& p : refData)
 			{	
@@ -264,14 +264,14 @@ class EstimatorTest
 				const auto err = abs(p.second - act);
 				tErr += err;
 
-				Logger::log(std::to_string(p.first).substr(0, 8) + " |   " + std::to_string(p.second).substr(0, 8) + "   " + std::to_string(act).substr(0, 8) + "   " + std::to_string(err));
+				Logger::logCached(std::to_string(p.first).substr(0, 8) + " |   " + std::to_string(p.second).substr(0, 8) + "   " + std::to_string(act).substr(0, 8) + "   " + std::to_string(err), LogType::TABLE);
 			}
 			const auto mae = tErr / refData.size();
 
-			Logger::log("---------+------------------------------------");
-			Logger::log("MAE:     |   " + std::to_string(mae).substr(0, 16));
+			Logger::logCached("---------+------------------------------------", LogType::TABLE);
+			Logger::logCached("MAE:     |   " + std::to_string(mae).substr(0, 16), LogType::TABLE);
 			Logger::exitContext();
-			Logger::log("");
+			Logger::logCached("", LogType::TABLE);
 
 			return mae;
 		}
@@ -281,6 +281,8 @@ private:
 	bool passed = true;
 
 	const ReferenceSet waterBpRef = ReferenceSet({ {1400, 118.1}, {1000, 107.8}, {900, 104.8}, {800, 101.4}, {760, 100}, {600, 93.3}, {500, 89.0}, {400, 83.3}, {300, 75.6}, {200, 66.5}, {100, 51.9}, {1, -16.9} });
+	const double waterDensityThreshold = 0.01;
+	const ReferenceSet waterDensityRef = ReferenceSet({ {0.0, 0.99989}, {1.0, 0.99992}, {3.0, 0.99996}, {4.0, 0.99995}, {5.0, 0.99993}, {10.0, 0.99965}, {30.0, 0.99567}, {80.0, 0.97176}, {99.0, 0.95909} });
 	const double waterBpThreshold = 2.0;
 
 public:
@@ -288,12 +290,23 @@ public:
 	void runTests()
 	{
 		const Molecule water = Molecule("O");
-		const auto mae = waterBpRef.testMAE([&water](double input) {return water.getBoilingPointAt(input).asStd(); });
+		auto mae = waterBpRef.testMAE([&water](double input) {return water.getBoilingPointAt(input).asStd(); });
 		if (mae > waterBpThreshold)
 		{
 			Logger::log("Test failed > Estimator > waterBp: MAE=" + std::to_string(mae) + "\n", LogType::BAD);
+			Logger::printCache();
 			passed = false;
 		}
+		Logger::clearCache();
+
+		mae = waterDensityRef.testMAE([&water](double input) {return water.getDensityAt(input, 760.0).asStd(); });
+		if (mae > waterDensityThreshold)
+		{
+			Logger::log("Test failed > Estimator > waterDensity: MAE=" + std::to_string(mae) + "\n", LogType::BAD);
+			Logger::printCache();
+			passed = false;
+		}
+		Logger::clearCache();
 	}
 
 	bool hasPassed()
@@ -306,10 +319,13 @@ class ReactorTest
 {
 private:
 	bool passed = true;
+	SingleLayerMixture<LayerType::GASEOUS>* atmosphere;
 	Reactor* reactorA = nullptr;
 	Reactor* reactorB = nullptr;
+	Reactor* reactorC = nullptr;
 
 	const double waterTemperatureThreshold = 0.1;
+	const double overflowLossThreshold = 0.0000001;
 
 	void runConservationOfMassTest()
 	{
@@ -329,7 +345,7 @@ private:
 	void runTemperatureTest()
 	{
 		Logger::enterContext();
-		Logger::log("Input    |   Reference  Actual     Error");
+		Logger::logCached("Input    |   Reference  Actual     Error", LogType::TABLE);
 
 		const auto& layerProps = reactorB->getLayerProperties(LayerType::POLAR);
 		const auto moles = layerProps.getMoles();
@@ -346,18 +362,49 @@ private:
 			const auto err = abs((act - batches[i].second).asStd());
 			tErr += err;
 
-			Logger::log(std::to_string(addedEnergy).substr(0, 8) + " |   " + std::to_string(batches[i].second.asStd()).substr(0, 8) + "   " + std::to_string(act.asStd()).substr(0, 8) + "   " + std::to_string(err));
+			Logger::logCached(std::to_string(addedEnergy).substr(0, 8) + " |   " + std::to_string(batches[i].second.asStd()).substr(0, 8) + "   " + std::to_string(act.asStd()).substr(0, 8) + "   " + std::to_string(err), LogType::TABLE);
 		}
 		const auto mae = tErr / batches.size();
 
-		Logger::log("---------+------------------------------------");
-		Logger::log("MAE:     |   " + std::to_string(mae).substr(0, 16));
+		Logger::logCached("---------+------------------------------------", LogType::TABLE);
+		Logger::logCached("MAE:     |   " + std::to_string(mae).substr(0, 16), LogType::TABLE);
 		Logger::exitContext();
-		Logger::log("");
+		Logger::logCached("", LogType::TABLE);
 
 		if (mae > waterTemperatureThreshold)
 		{
 			Logger::log("Test failed > Reactor > waterTemp: MAE=" + std::to_string(mae) + "\n", LogType::BAD);
+			Logger::printCache();
+			passed = false;
+		}
+		Logger::clearCache();
+	}
+	void runVolumetricTest()
+	{
+		if (reactorC->getTotalVolume() != reactorC->getMaxVolume())
+		{
+			Logger::log("Test failed > Reactor > volumetrics > total_volume: expected=" + std::to_string(reactorC->getMaxVolume().asStd()) + "   actual=" + std::to_string(reactorC->getTotalVolume().asStd()) + "\n", LogType::BAD);
+			passed = false;
+		}
+
+		reactorC->add(Molecule("O"), 700.0);
+		const auto atmBefore = atmosphere->getTotalVolume();
+		const auto reactorBefore = reactorC->getTotalVolume();
+		reactorC->tick();
+		const auto atmAfter = atmosphere->getTotalVolume();
+		const auto reactorAfter = reactorC->getTotalVolume();
+
+		auto loss = abs((atmBefore + reactorBefore - atmAfter - reactorAfter).asStd());
+		if(loss > overflowLossThreshold)
+		{
+			Logger::log("Test failed > Reactor > volumetrics > overflow: Total volume loss=" + std::to_string(loss), LogType::BAD);
+			passed = false;
+		}
+
+		loss = abs((reactorAfter - reactorC->getMaxVolume()).asStd());
+		if(loss > overflowLossThreshold)
+		{
+			Logger::log("Test failed > Reactor > volumetrics > overflow: Source volume loss=" + std::to_string(loss), LogType::BAD);
 			passed = false;
 		}
 	}
@@ -365,20 +412,29 @@ private:
 public:
 	void initialize()
 	{
-		reactorA = new Reactor(20.0, 760.0);
+		atmosphere = new SingleLayerMixture<LayerType::GASEOUS>(
+			1.0, 760.0,
+			{ { Molecule("N#N"), 78.084 }, { Molecule("O=O"), 20.946 } },
+			Amount<Unit::LITER>::Infinity, nullptr);
+
+
+		reactorA = new Reactor(*atmosphere, Amount<Unit::LITER>::Infinity);
 		reactorA->add(Molecule("HH"), 2.0);
 		reactorA->add(Molecule("CC=C"), 2.0);
 		reactorA->add(Molecule("CC(=O)OCC"), 2.0);
 		reactorA->add(Molecule("O"), 3.0);
 
-		reactorB = new Reactor(1.0, 760.0);
+		reactorB = new Reactor(*atmosphere, Amount<Unit::LITER>::Infinity);
 		reactorB->add(Molecule("O"), 3.0);
+
+		reactorC = new Reactor(*atmosphere, 20.0);
 	}
 
 	void runTests()
 	{
 		runConservationOfMassTest();
 		runTemperatureTest();
+		runVolumetricTest();
 	}
 
 	bool hasPassed()
@@ -392,6 +448,10 @@ public:
 			delete reactorA;
 		if (reactorB != nullptr)
 			delete reactorB;
+		if (reactorC != nullptr)
+			delete reactorC;
+		if (atmosphere != nullptr)
+			delete atmosphere;
 	}
 };
 

@@ -100,11 +100,34 @@ A method that receives the molecules X, R, P and a mapping between X-R and R-P a
 similar to P but containing all of the substituents from X.
 
 
-0 - 1
-1 - 5
-3 - 2
-2 - 0
+We need a basic container for reactants, no cached properties or ownership etc
+          interface for containers with layers, these can own reactants which call their getLayer() method
+             single layer, getLayer() always returns the same layer
+             multi layer, getLayer() always returns the reactant layer properties
+          a container which can perform reactions quickly, on a tick by tick basis
+          a container which can perform all reactions for a given time at once
+          a container which pushes excess contents to another container
 
+Mixture base
+StorageMixture: volumeless, update
+Atmoshpere: single layer, volumeless
+Reactor: multi layer, volume, tick
+
+         Mixture (content only, no properties)   ex. overflow buffers
+         |  \
+         |   \
+         |    LayeredMixture (abstract, provides layers interface)
+         |    |    \
+              |     \
+              |      SingleLayerMixture (owns its content, single layer, no reactivity, no max volume)   ex. the atmoshpere
+              |
+              VolumetricMixture
+            |
+            |
+            |
+             \
+              \
+               Mixture
 
 # How to check if a reaction occurs in a reactor:
    - physical conditions must match
@@ -197,8 +220,26 @@ Tasks:
   DONE. Add tests for estimators
   DONE. Add tests for reactor heat
 ---
+  DONE. Make Reactor use ReactantSet
+  DONE. Add Mixture, LayeredMixture and MultiLayerMixture classes
+  DONE. Add SingleLayerMixture class
+  DONE. Add overflow logic
+  DONE. Add tests for overflows
+  DONE. Fix 'leaky' overflow bug
+---
   1. Add aggregation state changes to reactors
-
+  2. Add tests for aggregation changes
+  3. Add solubility logic
+---
+  1. Add incompatible layer forwarding logic
+---
+  1. Finish reaction caching
+  2. Add reactor determinism test
+---
+  1. Add solubility logic
+---
+  1. Add reactors to labware components
+ 
 Possible optimizations:
  - keep symbols as char* to avoid uneccessary constructor for 'C'
  - avoid contains-then-access for maps
@@ -305,21 +346,15 @@ Categorizations:
            The energy released or absorbed by a reaction.
            Stored as: J/mol (relative to 1st product)
 
+       - solubility:
+           Solubility only makes sense inside the liquid layers, which are NONPOLAR, POLAR, DENSE_NONPOLAR, 
+
+
    -----------------------------------------------------------------------------------------------------------------
 
    LabwareData:
     - all const properties of a type of labware
     - a list of ports
-
-
-
-    BaseLabwareData
-    |
-    |- ContainerData
-    |
-    |- EquimentData
-
-
 
    Labware:
     - a labware system is a graph of components

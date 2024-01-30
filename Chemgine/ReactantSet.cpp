@@ -10,7 +10,7 @@ ReactantSet::ReactantSet(const std::vector<Molecule>& content) noexcept
 ReactantSet::ReactantSet(const std::vector<Reactant>& content) noexcept
 {
 	for (size_t i = 0; i < content.size(); ++i)
-		add(Reactant(content[i].molecule, content[i].layer, 1.0, content[i].getContainer()));
+		add(Reactant(content[i].molecule, content[i].layer, 1.0, *content[i].getContainer()));
 }
 
 bool ReactantSet::contains(const Reactant& reactant) const
@@ -20,16 +20,35 @@ bool ReactantSet::contains(const Reactant& reactant) const
 
 void ReactantSet::add(const Reactant& reactant)
 {
-	auto const it = this->content.find(reactant);
-	if (it == this->content.end())
-		this->content.emplace(reactant);
+	const auto& temp = content.emplace(reactant);
+	if (temp.second == false)
+		temp.first->amount += reactant.amount;
 	else
-		it->amount += reactant.amount;
+		temp.first->markAsNew();
 }
 
 const Reactant& ReactantSet::any() const
 {
 	return *content.begin();
+}
+
+Amount<Unit::MOLE> ReactantSet::getAmountOf(const Reactant& reactant) const
+{
+	const auto it = content.find(reactant);
+	return it == content.end() ? Amount<Unit::MOLE>(0.0) : it->amount;
+}
+
+Amount<Unit::MOLE> ReactantSet::getAmountOf(const ReactantSet& reactantSet) const
+{
+	Amount<Unit::MOLE> s = 0.0;
+	for (const auto& r : reactantSet)
+		s += getAmountOf(r);
+	return s;
+}
+
+void ReactantSet::erase(bool (*predicate)(const Reactant&))
+{
+	std::erase_if(content, predicate);
 }
 
 std::unordered_set<Reactant>::const_iterator ReactantSet::begin() const

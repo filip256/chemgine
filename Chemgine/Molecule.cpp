@@ -20,8 +20,7 @@ Molecule::Molecule(MolecularStructure&& structure) noexcept:
 
 Molecule::Molecule(const std::string& smiles) noexcept:
 	Molecule(MolecularStructure(smiles))
-{
-}
+{}
 
 void Molecule::setDataStore(const DataStore& dataStore)
 {

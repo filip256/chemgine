@@ -1,7 +1,11 @@
 #pragma once
 
 #include "Amount.hpp"
+#include "LayerType.hpp"
 
+template <LayerType L>
+class SingleLayerMixture;
+class MultiLayerMixture;
 class Reactor;
 
 class LayerProperties
@@ -15,7 +19,7 @@ private:
 	Amount<Unit::JOULE> potentialEnergy;
 
 public:
-	LayerProperties(Amount<Unit::CELSIUS> temperature = 0.0) noexcept;
+	LayerProperties(const Amount<Unit::CELSIUS> temperature = 0.0) noexcept;
 
 	Amount<Unit::CELSIUS> getTemperature() const;
 	Amount<Unit::MOLE> getMoles() const;
@@ -24,5 +28,8 @@ public:
 
 	bool isEmpty() const;
 
+	template <LayerType L>
+	friend class SingleLayerMixture;
+	friend class MultiLayerMixture;
 	friend class Reactor;
 };

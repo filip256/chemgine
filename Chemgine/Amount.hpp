@@ -50,6 +50,8 @@ public:
 
 	static const Amount<UnitT> Unknown;
 	constexpr inline bool isUnknown() const noexcept;
+	static const Amount<UnitT> Infinity;
+	constexpr inline bool isInfinity() const noexcept;
 
 	using StorageType = double;
 };
@@ -60,7 +62,16 @@ const Amount<UnitT> Amount<UnitT>::Unknown = std::numeric_limits<double>::min();
 template<Unit UnitT>
 constexpr bool Amount<UnitT>::isUnknown() const noexcept
 {
-	return this->value == Amount<UnitT>::Unknown;
+	return this->value == Amount<UnitT>::Unknown.asStd();
+}
+
+template<Unit UnitT>
+const Amount<UnitT> Amount<UnitT>::Infinity = std::numeric_limits<double>::infinity();
+
+template<Unit UnitT>
+constexpr bool Amount<UnitT>::isInfinity() const noexcept
+{
+	return this->value == Amount<UnitT>::Infinity.asStd();
 }
 
 template<Unit UnitT>

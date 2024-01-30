@@ -26,6 +26,11 @@ public:
 	/// </summary>
 	const Reactant& any() const;
 
+	Amount<Unit::MOLE> getAmountOf(const Reactant& reactant) const;
+	Amount<Unit::MOLE> getAmountOf(const ReactantSet& reactantSet) const;
+
+	void erase(bool (*predicate)(const Reactant&));
+
 	std::unordered_set<Reactant>::const_iterator begin() const;
 	std::unordered_set<Reactant>::const_iterator end() const;
 };
