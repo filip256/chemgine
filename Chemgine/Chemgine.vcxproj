@@ -188,6 +188,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Adaptor.cpp" />
+    <ClCompile Include="Atmosphere.cpp" />
+    <ClCompile Include="BaseContainer.cpp" />
+    <ClCompile Include="Context.cpp" />
     <ClCompile Include="EstimatorDataTable.cpp" />
     <ClCompile Include="Atom.cpp" />
     <ClCompile Include="BaseEstimator.cpp" />
@@ -237,9 +240,13 @@
     <ClCompile Include="SplitEstimator.cpp" />
     <ClCompile Include="Symbol.cpp" />
     <ClCompile Include="SystemMatrix.cpp" />
+    <ClCompile Include="DumpContainer.cpp" />
     <ClCompile Include="Value.cpp" />
     <ClInclude Include="Adaptor.hpp" />
     <ClInclude Include="Amount.hpp" />
+    <ClInclude Include="Atmosphere.hpp" />
+    <ClInclude Include="BaseContainer.hpp" />
+    <ClInclude Include="Context.hpp" />
     <ClInclude Include="EstimatorDataTable.hpp" />
     <ClInclude Include="EstimatorType.hpp" />
     <ClCompile Include="AtomData.cpp" />
@@ -291,7 +298,6 @@
     <ClInclude Include="LabwareSystem.hpp" />
     <ClInclude Include="LabwareType.hpp" />
     <ClInclude Include="MultiLayerMixture.hpp" />
-    <ClInclude Include="LayeredMixture.hpp" />
     <ClInclude Include="LayerProperties.hpp" />
     <ClInclude Include="LayerType.hpp" />
     <ClInclude Include="LinearEstimator.hpp" />
@@ -305,12 +311,14 @@
     <ClInclude Include="PortType.hpp" />
     <ClInclude Include="Reactant.hpp" />
     <ClInclude Include="ReactantSet.hpp" />
+    <ClInclude Include="Ref.hpp" />
     <ClInclude Include="ScaleEstimator.hpp" />
     <ClInclude Include="SingleLayerMixture.hpp" />
     <ClInclude Include="Spline.hpp" />
     <ClInclude Include="SplineEstimator.hpp" />
     <ClInclude Include="SplitEstimator.hpp" />
     <ClInclude Include="Symbol.hpp" />
+    <ClInclude Include="DumpContainer.hpp" />
     <ClInclude Include="UIContext.hpp" />
     <ClInclude Include="Unit.hpp" />
     <ClInclude Include="MoleculeDataTable.hpp" />

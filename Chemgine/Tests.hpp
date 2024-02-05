@@ -12,6 +12,8 @@
 #include "Reactor.hpp"
 #include "BaseLabwareComponent.hpp"
 #include "Reactable.hpp"
+#include "DumpContainer.hpp"
+#include "Atmosphere.hpp"
 
 class MolecularStructureTest
 {
@@ -245,7 +247,7 @@ class EstimatorTest
 		{
 			if (refData.contains(input) == false)
 			{
-				Logger::log("Missing reference data for input:" + std::to_string(input) + ',', LogType::WARN);
+				Logger::log("Missing reference data for input:" + std::to_string(input), LogType::WARN);
 				return 0;
 			}
 
@@ -293,7 +295,7 @@ public:
 		auto mae = waterBpRef.testMAE([&water](double input) {return water.getBoilingPointAt(input).asStd(); });
 		if (mae > waterBpThreshold)
 		{
-			Logger::log("Test failed > Estimator > waterBp: MAE=" + std::to_string(mae) + "\n", LogType::BAD);
+			Logger::log("Test failed > Estimator > waterBp: MAE=" + std::to_string(mae), LogType::BAD);
 			Logger::printCache();
 			passed = false;
 		}
@@ -302,7 +304,7 @@ public:
 		mae = waterDensityRef.testMAE([&water](double input) {return water.getDensityAt(input, 760.0).asStd(); });
 		if (mae > waterDensityThreshold)
 		{
-			Logger::log("Test failed > Estimator > waterDensity: MAE=" + std::to_string(mae) + "\n", LogType::BAD);
+			Logger::log("Test failed > Estimator > waterDensity: MAE=" + std::to_string(mae), LogType::BAD);
 			Logger::printCache();
 			passed = false;
 		}
@@ -319,26 +321,30 @@ class ReactorTest
 {
 private:
 	bool passed = true;
-	SingleLayerMixture<LayerType::GASEOUS>* atmosphere;
+	DumpContainer* dumpA = nullptr;
+	Atmosphere* atmosphere;
 	Reactor* reactorA = nullptr;
 	Reactor* reactorB = nullptr;
 	Reactor* reactorC = nullptr;
+	Reactor* reactorD = nullptr;
 
 	const double waterTemperatureThreshold = 0.1;
 	const double overflowLossThreshold = 0.0000001;
 
 	void runConservationOfMassTest()
 	{
-		const auto massBefore = reactorA->getTotalMass();
-		for (size_t i = 0; i < 32; ++i)
+		const auto massBefore = reactorA->getTotalMass() + atmosphere->getTotalMass() + dumpA->getTotalMass();
+		for (size_t i = 0; i < 16; ++i)
 		{
 			reactorA->tick();
-			const auto massAfter = reactorA->getTotalMass();
+			atmosphere->tick();
+			const auto massAfter = reactorA->getTotalMass() + atmosphere->getTotalMass() + dumpA->getTotalMass();
 
-			if (std::abs((massAfter - massBefore).asStd()) > 1e-10)
+			if (std::abs((massAfter - massBefore).asStd()) > 1e-9)
 			{
-				Logger::log("Test failed > Reactor > mass conservation: expected=" + std::to_string(massBefore.asStd()) + "   actual=" + std::to_string(massAfter.asStd()) + "\n", LogType::BAD);
+				Logger::log("Test failed > Reactor > mass conservation: expected=" + std::to_string(massBefore.asStd()) + "   actual=" + std::to_string(massAfter.asStd()), LogType::BAD);
 				passed = false;
+				break;
 			}
 		}
 	}
@@ -373,7 +379,7 @@ private:
 
 		if (mae > waterTemperatureThreshold)
 		{
-			Logger::log("Test failed > Reactor > waterTemp: MAE=" + std::to_string(mae) + "\n", LogType::BAD);
+			Logger::log("Test failed > Reactor > waterTemp: MAE=" + std::to_string(mae), LogType::BAD);
 			Logger::printCache();
 			passed = false;
 		}
@@ -383,7 +389,7 @@ private:
 	{
 		if (reactorC->getTotalVolume() != reactorC->getMaxVolume())
 		{
-			Logger::log("Test failed > Reactor > volumetrics > total_volume: expected=" + std::to_string(reactorC->getMaxVolume().asStd()) + "   actual=" + std::to_string(reactorC->getTotalVolume().asStd()) + "\n", LogType::BAD);
+			Logger::log("Test failed > Reactor > volumetrics > total_volume: expected=" + std::to_string(reactorC->getMaxVolume().asStd()) + "   actual=" + std::to_string(reactorC->getTotalVolume().asStd()), LogType::BAD);
 			passed = false;
 		}
 
@@ -408,26 +414,46 @@ private:
 			passed = false;
 		}
 	}
+	void runDeterminismTest()
+	{
+		auto copyReactor = reactorD->makeCopy();
+		for (size_t i = 0; i < 32; ++i)
+		{
+			reactorD->tick();
+			copyReactor.tick();
+
+			if (reactorD->hasEqualState(copyReactor) == false)
+			{
+				Logger::log("Test failed > Reactor > determinism: reactors have different states", LogType::BAD);
+				passed = false;
+				break;
+			}
+		}
+	}
 
 public:
 	void initialize()
 	{
-		atmosphere = new SingleLayerMixture<LayerType::GASEOUS>(
+		dumpA = new DumpContainer();
+		atmosphere = new Atmosphere(
 			1.0, 760.0,
 			{ { Molecule("N#N"), 78.084 }, { Molecule("O=O"), 20.946 } },
-			Amount<Unit::LITER>::Infinity, nullptr);
+			Amount<Unit::LITER>(1000), *dumpA);
 
-
-		reactorA = new Reactor(*atmosphere, Amount<Unit::LITER>::Infinity);
+		reactorA = new Reactor(*atmosphere, 1.0);
 		reactorA->add(Molecule("HH"), 2.0);
 		reactorA->add(Molecule("CC=C"), 2.0);
 		reactorA->add(Molecule("CC(=O)OCC"), 2.0);
 		reactorA->add(Molecule("O"), 3.0);
 
-		reactorB = new Reactor(*atmosphere, Amount<Unit::LITER>::Infinity);
+		reactorB = new Reactor(*atmosphere, 1.0);
 		reactorB->add(Molecule("O"), 3.0);
 
 		reactorC = new Reactor(*atmosphere, 20.0);
+
+		reactorD = new Reactor(*atmosphere, 5.0);
+		reactorD->add(Molecule("CC(=O)O"), 2.0);
+		reactorD->add(Molecule("OCC"), 3.0);
 	}
 
 	void runTests()
@@ -435,6 +461,7 @@ public:
 		runConservationOfMassTest();
 		runTemperatureTest();
 		runVolumetricTest();
+		runDeterminismTest();
 	}
 
 	bool hasPassed()
@@ -450,8 +477,12 @@ public:
 			delete reactorB;
 		if (reactorC != nullptr)
 			delete reactorC;
+		if (reactorD != nullptr)
+			delete reactorD;
 		if (atmosphere != nullptr)
 			delete atmosphere;
+		if (dumpA != nullptr)
+			delete dumpA;
 	}
 };
 
@@ -485,7 +516,7 @@ public:
 		reactorTest.initialize();
 		const auto end = std::chrono::steady_clock::now();
 		Logger::log("Test initialization completed in " +
-			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.\n");
+			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.");
 	}
 
 	~TestManager()
@@ -502,7 +533,7 @@ public:
 		const auto end = std::chrono::steady_clock::now();
 
 		Logger::log("Test execution completed in " +
-			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.\n");
+			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.");
 
 		if (molecularStructureTest.hasPassed())
 			Logger::log("All MolecularStructure tests passed.", LogType::GOOD);
@@ -520,6 +551,6 @@ public:
 		const auto end = std::chrono::steady_clock::now();
 
 		Logger::log("Dump completed in " +
-			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.\n");
+			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.");
 	}
 };

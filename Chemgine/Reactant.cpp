@@ -4,23 +4,13 @@
 Reactant::Reactant(
 	const Molecule& molecule,
 	const LayerType layer,
-	const Amount<Unit::MOLE> amount
-) noexcept :
-	molecule(molecule),
-	layer(layer),
-	amount(amount)
-{}
-
-Reactant::Reactant(
-	const Molecule& molecule,
-	const LayerType layer,
 	const Amount<Unit::MOLE> amount,
-	const LayeredMixture& container
+	const Ref<Mixture> container
 ) noexcept :
 	molecule(molecule),
 	layer(layer),
 	amount(amount),
-	container(&container)
+	container(container)
 {}
 
 Amount<Unit::CELSIUS> Reactant::getTemperature() const
@@ -54,12 +44,7 @@ Amount<Unit::JOULE_PER_MOLE> Reactant::getStandaloneKineticEnergy() const
 	return molecule.getHeatCapacityAt(temp, container->getPressure()).to<Unit::JOULE_PER_MOLE>(temp);
 }
 
-void Reactant::setContainer(const LayeredMixture& container) const
-{
-	this->container = &container;
-}
-
-const LayeredMixture* Reactant::getContainer() const
+Ref<Mixture> Reactant::getContainer() const
 {
 	return container;
 }
@@ -69,9 +54,19 @@ const LayerProperties& Reactant::getLayerProperties() const
 	return container->getLayerProperties(layer);
 }
 
-void Reactant::markAsNew() const
+Reactant Reactant::mutate(const Amount<Unit::MOLE> newAmount) const
 {
-	isNew = true;
+	return Reactant(molecule, layer, newAmount, container);
+}
+
+Reactant Reactant::mutate(const Ref<Mixture> newContainer) const
+{
+	return Reactant(molecule, layer, amount, newContainer);
+}
+
+Reactant Reactant::mutate(const Amount<Unit::MOLE> newAmount, const Ref<Mixture> newContainer) const
+{
+	return Reactant(molecule, layer, newAmount, newContainer);
 }
 
 bool Reactant::operator== (const Reactant& other) const

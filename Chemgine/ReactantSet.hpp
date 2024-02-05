@@ -4,21 +4,28 @@
 
 #include <unordered_set>
 
+class Mixture;
+
 class ReactantSet
 {
 private:
+	Ref<Mixture> container;
 	std::unordered_set<Reactant> content;
 
+	ReactantSet(const ReactantSet&) = default;
+
 public:
-	ReactantSet() = default;
-	ReactantSet(const ReactantSet&) = delete;
+	ReactantSet(const Ref<Mixture> container) noexcept;
 	ReactantSet(ReactantSet&&) = default;
 	ReactantSet(const std::vector<Molecule>& content) noexcept;
 	ReactantSet(const std::vector<Reactant>& content) noexcept;
 
+	size_t size() const;
+	void reserve(const size_t size);
+
 	bool contains(const Reactant& reactant) const;
 
-	void add(const Reactant& reactant);
+	const Reactant& add(const Reactant& reactant);
 
 	/// <summary>
 	/// Returns o reactant from the set.
@@ -33,4 +40,9 @@ public:
 
 	std::unordered_set<Reactant>::const_iterator begin() const;
 	std::unordered_set<Reactant>::const_iterator end() const;
+
+	bool operator==(const ReactantSet& other) const;
+	bool operator!=(const ReactantSet& other) const;
+
+	ReactantSet makeCopy() const;
 };

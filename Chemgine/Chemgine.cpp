@@ -93,6 +93,8 @@ int main()
         Logger::log("Memory leak detected: BaseLabwareComponent (" + std::to_string(BaseLabwareComponent::instanceCount) + " unreleased instances).", LogType::BAD);
     if (BaseEstimator::instanceCount != 0)
         Logger::log("Memory leak detected: BaseEstimator (" + std::to_string(BaseEstimator::instanceCount) + " unreleased instances).", LogType::BAD);
+    if (BaseContainer::instanceCount != 0)
+        Logger::log("Memory leak detected: BaseContainer (" + std::to_string(BaseContainer::instanceCount) + " unreleased instances).", LogType::BAD);
 
     getchar();
     return 0;

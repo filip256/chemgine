@@ -1,19 +1,20 @@
 #pragma once
 
-#include "LayeredMixture.hpp"
+#include "Mixture.hpp"
 #include "LayerProperties.hpp"
-#include "SingleLayerMixture.hpp"
+#include "Atmosphere.hpp"
+#include "Ref.hpp"
 
-class MultiLayerMixture : public LayeredMixture
+class MultiLayerMixture : public Mixture
 {
 protected:
-	Amount<Unit::TORR> pressure;
-	Amount<Unit::MOLE> totalMoles;
-	Amount<Unit::GRAM> totalMass;
-	Amount<Unit::LITER> totalVolume;
+	Amount<Unit::TORR> pressure = 0.0;
+	Amount<Unit::MOLE> totalMoles = 0.0;
+	Amount<Unit::GRAM> totalMass = 0.0;
+	Amount<Unit::LITER> totalVolume = 0.0;
 
 	const Amount<Unit::LITER> maxVolume;
-	Mixture* overflowTarget = nullptr;
+	Ref<BaseContainer> overflowTarget;
 
 	std::unordered_map<LayerType, LayerProperties> layers;
 
@@ -31,11 +32,13 @@ protected:
 	LayerType getLayerBelow(LayerType layer) const;
 	LayerType getClosestLayer(LayerType layer) const;
 
+	MultiLayerMixture(const MultiLayerMixture&) = default;
+
 public:
 	MultiLayerMixture(
-		const SingleLayerMixture<LayerType::GASEOUS>& atmosphere,
+		const Ref<Atmosphere> atmosphere,
 		const Amount<Unit::LITER> maxVolume,
-		Mixture* overflowTarget
+		const Ref<BaseContainer> overflowTarget
 	) noexcept;
 
 	void add(const Reactant& reactant) override final;
@@ -54,6 +57,6 @@ public:
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity(const LayerType layer) const override final;
 	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType layer) const override final;
 
-	void copyContentTo(Mixture* destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer) const;
-	void moveContentTo(Mixture* destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer);
+	void copyContentTo(Ref<BaseContainer> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer) const;
+	void moveContentTo(Ref<BaseContainer> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer);
 };

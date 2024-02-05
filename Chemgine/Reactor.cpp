@@ -5,10 +5,21 @@
 
 DataStoreAccessor Reactor::dataAccessor = DataStoreAccessor();
 
+Reactor::Reactor(const Reactor& other) noexcept :
+	MultiLayerMixture(other),
+	temperatureSpeedEstimator(other.temperatureSpeedEstimator),
+	concentrationSpeedEstimator(other.concentrationSpeedEstimator),
+	stirSpeed(other.stirSpeed)
+{
+	this->cachedReactions.reserve(other.cachedReactions.size());
+	for (const auto& r : other.cachedReactions)
+		this->cachedReactions.emplace(std::move(r.makeCopy()));
+}
+
 Reactor::Reactor(
-	SingleLayerMixture<LayerType::GASEOUS>& atmosphere,
+	const Ref<Atmosphere> atmosphere,
 	const Amount<Unit::LITER> maxVolume,
-	Mixture* overflowTarget
+	const Ref<BaseContainer> overflowTarget
 ) noexcept :
 	MultiLayerMixture(atmosphere, maxVolume, overflowTarget)
 {
@@ -20,10 +31,10 @@ Reactor::Reactor(
 }
 
 Reactor::Reactor(
-	SingleLayerMixture<LayerType::GASEOUS>& atmosphere,
+	const Ref<Atmosphere> atmosphere,
 	const Amount<Unit::LITER> maxVolume
 ) noexcept:
-	Reactor(atmosphere, maxVolume, &atmosphere)
+	Reactor(atmosphere, maxVolume, atmosphere)
 {}
 
 void Reactor::setDataStore(const DataStore& dataStore)
@@ -79,9 +90,9 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 			continue;
 
 		for (const auto& i : r.getReactants())
-			MultiLayerMixture::add(Reactant(i.molecule, i.layer, i.amount * speedCoef.asStd() * -1, *this));
+			MultiLayerMixture::add(i.mutate(-i.amount * speedCoef, *this));
 		for (const auto& i : r.getProducts())
-			MultiLayerMixture::add(Reactant(i.molecule, findLayerFor(i), i.amount * speedCoef.asStd(), *this));
+			MultiLayerMixture::add(i.mutate(i.amount * speedCoef, *this));
 
 		MultiLayerMixture::add(r.getData().reactionEnergy.to<Unit::JOULE>(speedCoef), r.getReactants().any().layer);
 	}
@@ -164,4 +175,34 @@ void Reactor::tick()
 	runReactions(1.0);
 	consumePotentialEnergy();
 	checkOverflow();
+}
+
+bool Reactor::hasEqualState(const Reactor& other) const
+{
+	if (this->pressure != other.pressure ||
+		this->totalMoles != other.totalMoles ||
+		this->totalMass != other.totalMass ||
+		this->totalVolume != other.totalVolume ||
+		this->stirSpeed != other.stirSpeed ||
+		this->content != other.content)
+		return false;
+
+	auto l = LayerType::FIRST;
+	while(l <= LayerType::LAST)
+	{
+		const bool hL = this->hasLayer(l);
+		if (hL != other.hasLayer(l))
+			return false;
+
+		if (hL && (this->layers.at(l) != other.layers.at(l)))
+			return false;
+		++l;
+	}
+
+	return true;
+}
+
+Reactor Reactor::makeCopy() const
+{
+	return Reactor(*this);
 }

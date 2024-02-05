@@ -1,6 +1,7 @@
 #include "Value.hpp"
 
 #include <cmath>
+#include <limits>
 
 template<class T>
 const T Value<T>::epsilon = std::numeric_limits<T>::epsilon();

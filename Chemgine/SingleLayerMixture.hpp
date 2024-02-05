@@ -1,16 +1,17 @@
 #pragma once
 
-#include "LayeredMixture.hpp"
+#include "Mixture.hpp"
 #include "LayerProperties.hpp"
 #include "Constants.hpp"
+#include "Ref.hpp"
 
 template<LayerType L>
-class SingleLayerMixture : public LayeredMixture
+class SingleLayerMixture : public Mixture
 {
 protected:
 	Amount<Unit::TORR> pressure;
 	const Amount<Unit::LITER> maxVolume;
-	Mixture* overflowTarget = nullptr;
+	Ref<BaseContainer> overflowTarget = nullptr;
 	LayerProperties layer;
 
 	void addToLayer(const Reactant& reactant, const uint8_t revert = 1.0);
@@ -19,21 +20,23 @@ protected:
 	void removeNegligibles();
 	void checkOverflow();
 
+	void scaleToVolume(const Amount<Unit::LITER> volume);
+
 public:
 	SingleLayerMixture(
 		const Amount<Unit::CELSIUS> temperature,
 		const Amount<Unit::TORR> pressure,
-		const std::vector<std::pair<Molecule, Amount<Unit::MOLE>>>& content,
+		const std::vector<std::pair<Molecule, Amount<Unit::MOLE>>>& initContent,
 		const Amount<Unit::LITER> maxVolume,
-		Mixture* overflowTarget
+		const Ref<BaseContainer> overflowTarget
 	) noexcept;
 
 	const LayerProperties& getLayerProperties() const;
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity() const;
 	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy() const;
 
-	void setOverflowTarget(Mixture* target);
-	const Mixture* getOverflowTarget() const;
+	void setOverflowTarget(const Ref<BaseContainer> target);
+	Ref<BaseContainer> getOverflowTarget() const;
 
 	void add(const Reactant& reactant) override final;
 
@@ -48,8 +51,8 @@ public:
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity(const LayerType l) const override final;
 	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType l) const override final;
 
-	void copyContentTo(Mixture* destination, const Amount<Unit::LITER> volume) const;
-	void moveContentTo(Mixture* destination, const Amount<Unit::LITER> volume);
+	void copyContentTo(const Ref<BaseContainer> destination, const Amount<Unit::LITER> volume) const;
+	void moveContentTo(const Ref<BaseContainer> destination, const Amount<Unit::LITER> volume);
 };
 
 
@@ -57,22 +60,23 @@ template<LayerType L>
 SingleLayerMixture<L>::SingleLayerMixture(
 	const Amount<Unit::CELSIUS> temperature,
 	const Amount<Unit::TORR> pressure,
-	const std::vector<std::pair<Molecule, Amount<Unit::MOLE>>>& content,
+	const std::vector<std::pair<Molecule, Amount<Unit::MOLE>>>& initContent,
 	const Amount<Unit::LITER> maxVolume,
-	Mixture* overflowTarget
+	const Ref<BaseContainer> overflowTarget
 ) noexcept :
 	layer(temperature),
 	pressure(pressure),
 	maxVolume(maxVolume),
 	overflowTarget(overflowTarget)
 {
-	for (size_t i = 0; i < content.size(); ++i)
-		add(Reactant(content[i].first, L, content[i].second));
+	for (size_t i = 0; i < initContent.size(); ++i)
+		add(Reactant(initContent[i].first, L, initContent[i].second, *this));
+	scaleToVolume(maxVolume);
 }
 
 template<LayerType L>
 void SingleLayerMixture<L>::addToLayer(const Reactant& reactant, const uint8_t revert)
-{;
+{
 	layer.moles += reactant.amount * revert;
 	layer.mass += reactant.getMass() * revert;
 	layer.volume += reactant.getVolume() * revert;
@@ -108,6 +112,16 @@ void SingleLayerMixture<L>::checkOverflow()
 }
 
 template<LayerType L>
+void SingleLayerMixture<L>::scaleToVolume(const Amount<Unit::LITER> volume)
+{
+	const auto difV = volume - layer.volume;
+	if (difV == 0.0)
+		return;
+
+	copyContentTo(*this, difV);
+}
+
+template<LayerType L>
 const LayerProperties& SingleLayerMixture<L>::getLayerProperties() const
 {
 	return layer;
@@ -126,13 +140,13 @@ Amount<Unit::JOULE_PER_MOLE> SingleLayerMixture<L>::getLayerKineticEnergy() cons
 }
 
 template<LayerType L>
-void SingleLayerMixture<L>::setOverflowTarget(Mixture* target)
+void SingleLayerMixture<L>::setOverflowTarget(const Ref<BaseContainer> target)
 {
 	overflowTarget = target;
 }
 
 template<LayerType L>
-const Mixture* SingleLayerMixture<L>::getOverflowTarget() const
+Ref<BaseContainer> SingleLayerMixture<L>::getOverflowTarget() const
 {
 	return overflowTarget;
 }
@@ -143,9 +157,8 @@ void SingleLayerMixture<L>::add(const Reactant& reactant)
 	if (reactant.layer != L)
 		return;
 
-	reactant.setContainer(*this);
-	content.add(reactant);
-	addToLayer(reactant);
+	const auto& r = content.add(reactant);
+	addToLayer(r);
 }
 
 template<LayerType L>
@@ -206,9 +219,9 @@ Amount<Unit::JOULE_PER_MOLE> SingleLayerMixture<L>::getLayerKineticEnergy(const 
 }
 
 template<LayerType L>
-void SingleLayerMixture<L>::copyContentTo(Mixture* destination, const Amount<Unit::LITER> volume) const
+void SingleLayerMixture<L>::copyContentTo(Ref<BaseContainer> destination, const Amount<Unit::LITER> volume) const
 {
-	if (destination == nullptr)
+	if (destination.isSet() == false)
 		return;
 
 	// save and use initial volume
@@ -217,12 +230,12 @@ void SingleLayerMixture<L>::copyContentTo(Mixture* destination, const Amount<Uni
 	for (const auto& r : content)
 	{
 		const auto molesToAdd = (r.amount / sourceVolume) * volume.asStd();
-		destination->add(Reactant(r.molecule, r.layer, molesToAdd));
+		destination->add(r.mutate(molesToAdd));
 	}
 }
 
 template<LayerType L>
-void SingleLayerMixture<L>::moveContentTo(Mixture* destination, Amount<Unit::LITER> volume)
+void SingleLayerMixture<L>::moveContentTo(Ref<BaseContainer> destination, Amount<Unit::LITER> volume)
 {
 	// save and use initial volume
 	const auto sourceVolume = layer.volume.asStd();
@@ -230,11 +243,12 @@ void SingleLayerMixture<L>::moveContentTo(Mixture* destination, Amount<Unit::LIT
 	if (volume > sourceVolume)
 		volume = sourceVolume;
 
+	const bool hasDestination = destination.isSet();
 	for (const auto& r : content)
 	{
 		const auto molesToAdd = (r.amount / sourceVolume) * volume.asStd();
-		if(destination != nullptr)
-			destination->add(Reactant(r.molecule, r.layer, molesToAdd));
-		add(Reactant(r.molecule, r.layer, -molesToAdd));
+		if(hasDestination)
+			destination->add(r.mutate(molesToAdd));
+		add(r.mutate(-molesToAdd));
 	}
 }

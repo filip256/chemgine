@@ -2,16 +2,16 @@
 #include "Constants.hpp"
 
 MultiLayerMixture::MultiLayerMixture(
-	const SingleLayerMixture<LayerType::GASEOUS>& atmosphere,
+	const Ref<Atmosphere> atmosphere,
 	const Amount<Unit::LITER> maxVolume,
-	Mixture* overflowTarget
+	const Ref<BaseContainer> overflowTarget
 ) noexcept :
-	layers({ { LayerType::GASEOUS, LayerProperties(atmosphere.getLayerProperties().temperature) }}),
-	pressure(atmosphere.getPressure()),
+	layers({ { LayerType::GASEOUS, LayerProperties(atmosphere->getLayerProperties().temperature) }}),
+	pressure(atmosphere->getPressure()),
 	maxVolume(maxVolume),
 	overflowTarget(overflowTarget)
 {
-	atmosphere.copyContentTo(this, maxVolume);
+	atmosphere->copyContentTo(*this, maxVolume);
 }
 
 bool MultiLayerMixture::tryCreateLayer(const LayerType layer)
@@ -20,7 +20,7 @@ bool MultiLayerMixture::tryCreateLayer(const LayerType layer)
 		return false;
 
 	const auto adjacentLayer = getClosestLayer(layer);
-	layers.emplace(std::make_pair(layer, layers.at(getClosestLayer(layer)).temperature));
+	layers.emplace(std::make_pair(layer, layers.at(adjacentLayer).temperature));
 	return true;
 }
 
@@ -161,9 +161,8 @@ LayerType MultiLayerMixture::getClosestLayer(LayerType layer) const
 
 void MultiLayerMixture::add(const Reactant& reactant)
 {
-	reactant.setContainer(*this);
-	content.add(reactant);
-	addToLayer(reactant);
+	const auto& r = content.add(reactant);
+	addToLayer(r);
 }
 
 bool MultiLayerMixture::hasLayer(const LayerType layer) const
@@ -224,9 +223,9 @@ Amount<Unit::LITER> MultiLayerMixture::getTotalVolume() const
 	return totalVolume;
 }
 
-void MultiLayerMixture::copyContentTo(Mixture* destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer) const
+void MultiLayerMixture::copyContentTo(Ref<BaseContainer> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer) const
 {
-	if (destination == nullptr || hasLayer(sourceLayer) == false)
+	if (destination.isSet() == false || hasLayer(sourceLayer) == false)
 		return;
 
 	// save and use initial volume
@@ -238,11 +237,11 @@ void MultiLayerMixture::copyContentTo(Mixture* destination, const Amount<Unit::L
 			continue;
 
 		const auto molesToAdd = (r.amount / sourceVolume) * volume.asStd();
-		destination->add(Reactant(r.molecule, r.layer, molesToAdd));
+		destination->add(r.mutate(molesToAdd));
 	}
 }
 
-void MultiLayerMixture::moveContentTo(Mixture* destination, Amount<Unit::LITER> volume, const LayerType sourceLayer)
+void MultiLayerMixture::moveContentTo(Ref<BaseContainer> destination, Amount<Unit::LITER> volume, const LayerType sourceLayer)
 {
 	if (hasLayer(sourceLayer) == false)
 		return;
@@ -253,14 +252,15 @@ void MultiLayerMixture::moveContentTo(Mixture* destination, Amount<Unit::LITER> 
 	if (volume > sourceVolume)
 		volume = sourceVolume;
 
+	const bool hasDestination = destination.isSet();
 	for (const auto& r : content)
 	{
 		if (r.layer != sourceLayer)
 			continue;
 
 		auto molesToAdd = (r.amount / sourceVolume) * volume.asStd();
-		if (destination != nullptr)
-			destination->add(Reactant(r.molecule, r.layer, molesToAdd));
-		add(Reactant(r.molecule, r.layer, -molesToAdd));
+		if (hasDestination)
+			destination->add(r.mutate(molesToAdd));
+		add(r.mutate(-molesToAdd));
 	}
 }

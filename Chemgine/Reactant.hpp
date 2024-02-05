@@ -5,13 +5,14 @@
 #include "Amount.hpp"
 #include "LayerProperties.hpp"
 #include "HashCombine.hpp"
+#include "Ref.hpp"
 
-class LayeredMixture;
+class Mixture;
 
 class Reactant
 {
 private:
-	mutable const LayeredMixture* container = nullptr;
+	const Ref<Mixture> container;
 
 public:
 	mutable bool isNew = true;
@@ -22,14 +23,8 @@ public:
 	Reactant(
 		const Molecule& molecule,
 		const LayerType layer,
-		const Amount<Unit::MOLE> amount
-	) noexcept;
-
-	Reactant(
-		const Molecule& molecule,
-		const LayerType layer,
 		const Amount<Unit::MOLE> amount,
-		const LayeredMixture& container
+		const Ref<Mixture> container = Ref<Mixture>::nullRef
 	) noexcept;
 
 	Reactant(const Reactant&) = default;
@@ -42,11 +37,12 @@ public:
 	Amount<Unit::JOULE_PER_MOLE> getKineticEnergy() const;
 	Amount<Unit::JOULE_PER_MOLE> getStandaloneKineticEnergy() const;
 
-	void setContainer(const LayeredMixture& container) const;
-	const LayeredMixture* getContainer() const;
+	Ref<Mixture> getContainer() const;
 	const LayerProperties& getLayerProperties() const;
 
-	void markAsNew() const;
+	Reactant mutate(const Amount<Unit::MOLE> newAmount) const;
+	Reactant mutate(const Ref<Mixture> newContainer) const;
+	Reactant mutate(const Amount<Unit::MOLE> newAmount, const Ref<Mixture> newContainer) const;
 
 	bool operator==(const Reactant& other) const;
 	bool operator!=(const Reactant& other) const;

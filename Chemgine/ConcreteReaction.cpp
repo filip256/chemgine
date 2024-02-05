@@ -1,5 +1,11 @@
 #include "ConcreteReaction.hpp"
 
+ConcreteReaction::ConcreteReaction(const ConcreteReaction& other) noexcept :
+	baseReaction(other.baseReaction),
+	reactants(reactants.makeCopy()),
+	products(reactants.makeCopy())
+{}
+
 ConcreteReaction::ConcreteReaction(
 	const ReactionData& baseReaction,
 	const std::vector<Reactant>& reactants,
@@ -51,4 +57,9 @@ bool ConcreteReaction::operator==(const ConcreteReaction& other) const
 bool ConcreteReaction::operator!=(const ConcreteReaction& other) const
 {
 	return !isEquivalent(other);
+}
+
+ConcreteReaction ConcreteReaction::makeCopy() const
+{
+	return ConcreteReaction(*this);
 }

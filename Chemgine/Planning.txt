@@ -100,34 +100,6 @@ A method that receives the molecules X, R, P and a mapping between X-R and R-P a
 similar to P but containing all of the substituents from X.
 
 
-We need a basic container for reactants, no cached properties or ownership etc
-          interface for containers with layers, these can own reactants which call their getLayer() method
-             single layer, getLayer() always returns the same layer
-             multi layer, getLayer() always returns the reactant layer properties
-          a container which can perform reactions quickly, on a tick by tick basis
-          a container which can perform all reactions for a given time at once
-          a container which pushes excess contents to another container
-
-Mixture base
-StorageMixture: volumeless, update
-Atmoshpere: single layer, volumeless
-Reactor: multi layer, volume, tick
-
-         Mixture (content only, no properties)   ex. overflow buffers
-         |  \
-         |   \
-         |    LayeredMixture (abstract, provides layers interface)
-         |    |    \
-              |     \
-              |      SingleLayerMixture (owns its content, single layer, no reactivity, no max volume)   ex. the atmoshpere
-              |
-              VolumetricMixture
-            |
-            |
-            |
-             \
-              \
-               Mixture
 
 # How to check if a reaction occurs in a reactor:
    - physical conditions must match
@@ -211,6 +183,8 @@ Tasks:
   5. Add templated binary arithemtic operators to Amount, and remove .asStd() uses.
   DONE. Add class for atom symbol (perhaps char[2/4] is enough)
   7. Add operator<< to stream for Amounts
+  8. Add fp precision typedefs for systems, amounts, input etc
+  9. Add base class for dynamic allocation instance counting
   DONE. Specialize std::hash instead of creating Hash classes
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
@@ -226,6 +200,7 @@ Tasks:
   DONE. Add overflow logic
   DONE. Add tests for overflows
   DONE. Fix 'leaky' overflow bug
+  DONE. Add reactor determinism test
 ---
   1. Add aggregation state changes to reactors
   2. Add tests for aggregation changes
@@ -234,11 +209,10 @@ Tasks:
   1. Add incompatible layer forwarding logic
 ---
   1. Finish reaction caching
-  2. Add reactor determinism test
----
-  1. Add solubility logic
 ---
   1. Add reactors to labware components
+---
+  1. Add Context
  
 Possible optimizations:
  - keep symbols as char* to avoid uneccessary constructor for 'C'

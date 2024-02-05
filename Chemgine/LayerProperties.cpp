@@ -24,3 +24,17 @@ bool LayerProperties::isEmpty() const
 {
     return moles == 0.0;
 }
+
+bool LayerProperties::operator==(const LayerProperties& other) const
+{
+    return this->temperature == other.temperature &&
+        this->moles == other.moles &&
+        this->mass == other.mass &&
+        this->volume == other.volume &&
+        this->potentialEnergy == other.potentialEnergy;
+}
+
+bool LayerProperties::operator!=(const LayerProperties& other) const
+{
+    return !(*this == other);
+}

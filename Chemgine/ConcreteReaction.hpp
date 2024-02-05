@@ -13,12 +13,16 @@ private:
 	ReactantSet reactants;
 	ReactantSet products;
 
+	ConcreteReaction(const ConcreteReaction& other) noexcept;
+
 public:
 	ConcreteReaction(
 		const ReactionData& baseReaction,
 		const std::vector<Reactant>& reactants,
 		const std::vector<Molecule>& products
 	) noexcept;
+
+	ConcreteReaction(ConcreteReaction&&) = default;
 
 	bool isEquivalent(const ConcreteReaction& other) const;
 
@@ -31,6 +35,8 @@ public:
 
 	bool operator==(const ConcreteReaction& other) const;
 	bool operator!=(const ConcreteReaction& other) const;
+
+	ConcreteReaction makeCopy() const;
 
 	friend struct std::hash<ConcreteReaction>;
 };

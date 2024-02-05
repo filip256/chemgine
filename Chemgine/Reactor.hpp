@@ -6,6 +6,7 @@
 #include "MultiLayerMixture.hpp"
 #include "DataStoreAccessor.hpp"
 #include "ConcreteReaction.hpp"
+#include "Atmosphere.hpp"
 
 class Reactor : public MultiLayerMixture
 {
@@ -23,19 +24,20 @@ private:
 	void runReactions(const Amount<Unit::SECOND> timespan);
 	void consumePotentialEnergy();
 
+	Reactor(const Reactor& other) noexcept;
+
 public:
 	Reactor(
-		SingleLayerMixture<LayerType::GASEOUS>& atmosphere,
+		const Ref<Atmosphere> atmosphere,
 		const Amount<Unit::LITER> maxVolume,
-		Mixture* overflowTarget
+		const Ref<BaseContainer> overflowTarget
 	) noexcept;
 
 	Reactor(
-		SingleLayerMixture<LayerType::GASEOUS>& atmosphere,
+		const Ref<Atmosphere> atmosphere,
 		const Amount<Unit::LITER> maxVolume
 	) noexcept;
 
-	Reactor(const Reactor&) = delete;
 	Reactor(Reactor&&) = default;
 
 	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount);
@@ -44,6 +46,10 @@ public:
 	void add(Reactor& other, const double ratio);
 
 	void tick();
+
+	bool hasEqualState(const Reactor& other) const;
+
+	Reactor makeCopy() const;
 
 	static void setDataStore(const DataStore& dataStore);
 

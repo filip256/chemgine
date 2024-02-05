@@ -324,6 +324,18 @@
     <ClCompile Include="MultiLayerMixture.cpp">
       <Filter>Source Files\Reactions\Mixtures</Filter>
     </ClCompile>
+    <ClCompile Include="DumpContainer.cpp">
+      <Filter>Source Files\Reactions\Mixtures</Filter>
+    </ClCompile>
+    <ClCompile Include="Atmosphere.cpp">
+      <Filter>Source Files\Reactions\Mixtures</Filter>
+    </ClCompile>
+    <ClCompile Include="Context.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseContainer.cpp">
+      <Filter>Source Files\Reactions\Mixtures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -560,9 +572,6 @@
     <ClInclude Include="LinearEstimator.hpp">
       <Filter>Header Files\Estimators</Filter>
     </ClInclude>
-    <ClInclude Include="FlagField.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GenericMoleculeData.hpp">
       <Filter>Header Files\Molecules</Filter>
     </ClInclude>
@@ -584,13 +593,28 @@
     <ClInclude Include="Mixture.hpp">
       <Filter>Header Files\Reactions\Mixtures</Filter>
     </ClInclude>
-    <ClInclude Include="LayeredMixture.hpp">
-      <Filter>Header Files\Reactions\Mixtures</Filter>
-    </ClInclude>
     <ClInclude Include="MultiLayerMixture.hpp">
       <Filter>Header Files\Reactions\Mixtures</Filter>
     </ClInclude>
     <ClInclude Include="SingleLayerMixture.hpp">
+      <Filter>Header Files\Reactions\Mixtures</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseContainer.hpp">
+      <Filter>Header Files\Reactions\Mixtures</Filter>
+    </ClInclude>
+    <ClInclude Include="DumpContainer.hpp">
+      <Filter>Header Files\Reactions\Mixtures</Filter>
+    </ClInclude>
+    <ClInclude Include="Ref.hpp">
+      <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="FlagField.hpp">
+      <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="Context.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Atmosphere.hpp">
       <Filter>Header Files\Reactions\Mixtures</Filter>
     </ClInclude>
   </ItemGroup>

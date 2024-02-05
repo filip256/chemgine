@@ -11,12 +11,12 @@ class Reactor;
 class LayerProperties
 {
 private:
-	Amount<Unit::CELSIUS> temperature;
+	Amount<Unit::CELSIUS> temperature = 0.0;
 
-	Amount<Unit::MOLE> moles;
-	Amount<Unit::GRAM> mass;
-	Amount<Unit::LITER> volume;
-	Amount<Unit::JOULE> potentialEnergy;
+	Amount<Unit::MOLE> moles = 0.0;
+	Amount<Unit::GRAM> mass = 0.0;
+	Amount<Unit::LITER> volume = 0.0;
+	Amount<Unit::JOULE> potentialEnergy = 0.0;
 
 public:
 	LayerProperties(const Amount<Unit::CELSIUS> temperature = 0.0) noexcept;
@@ -27,6 +27,9 @@ public:
 	Amount<Unit::LITER> getVolume() const;
 
 	bool isEmpty() const;
+
+	bool operator==(const LayerProperties& other) const;
+	bool operator!=(const LayerProperties& other) const;
 
 	template <LayerType L>
 	friend class SingleLayerMixture;
