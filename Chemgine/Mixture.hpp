@@ -3,6 +3,8 @@
 #include "BaseContainer.hpp"
 #include "ReactantSet.hpp"
 
+class LayerProperties;
+
 /// <summary>
 /// The simplest type of reactant container with internal storage.
 /// </summary>
@@ -12,6 +14,10 @@ protected:
 	ReactantSet content = ReactantSet(*this);
 
 	Mixture(const Mixture&) noexcept;
+
+	virtual void add(const Amount<Unit::JOULE> heat, const LayerType layer) = 0;
+
+	virtual LayerType findLayerFor(const Reactant& reactant) const = 0;
 
 public:
 	Mixture() = default;
@@ -30,7 +36,9 @@ public:
 
 	virtual const LayerProperties& getLayerProperties(const LayerType layer) const = 0;
 	virtual Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity(const LayerType layer) const = 0;
+	virtual Amount<Unit::JOULE_PER_CELSIUS> getLayerTotalHeatCapacity(const LayerType layer) const = 0;
 	virtual Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType layer) const = 0;
 
 	friend class Reactant;
+	friend class LayerProperties;
 };

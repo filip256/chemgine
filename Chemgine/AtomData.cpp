@@ -38,7 +38,7 @@ uint8_t AtomData::getFittingValence(const uint8_t bonds) const
 std::string AtomData::getSMILES() const
 {
 	const char* s = symbol.get2ByteRepr();
-	return std::string({ s[0], s[1] });
+	return s[1] != '\0' ? std::string({s[0], s[1]}) : std::string({ s[0] });
 }
 
 std::string AtomData::getBinaryId() const

@@ -140,7 +140,6 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			}
 		}
 
-
 		// create
 		ReactionData data(
 			id.value(), line[1],
@@ -168,7 +167,7 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 	}
 	file.close();
 
-	Logger::log("Loaded " + std::to_string(table.size()) + " reactions.", LogType::GOOD);
+	Logger::log("Loaded " + std::to_string(table.size()) + " reactions.", LogType::INFO);
 
 	return true;
 }

@@ -1,7 +1,7 @@
 #include "Mixture.hpp"
 
 Mixture::Mixture(const Mixture& other) noexcept:
-	content(other.content.makeCopy())
+	content(other.content.makeCopy(*this))
 {}
 
 void Mixture::add(const Reactant& reactant)

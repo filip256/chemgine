@@ -3,11 +3,12 @@
 #include "Molecule.hpp"
 #include "LayerType.hpp"
 #include "Amount.hpp"
-#include "LayerProperties.hpp"
 #include "HashCombine.hpp"
 #include "Ref.hpp"
+#include "AggregationType.hpp"
 
 class Mixture;
+class LayerProperties;
 
 class Reactant
 {
@@ -30,19 +31,34 @@ public:
 	Reactant(const Reactant&) = default;
 	Reactant(Reactant&&) = default;
 
-	Amount<Unit::CELSIUS> getTemperature() const;
 	Amount<Unit::GRAM> getMass() const;
 	Amount<Unit::LITER> getVolume() const;
+	Amount<Unit::GRAM_PER_MILLILITER> getDensity() const;
+	Amount<Unit::CELSIUS> getMeltingPoint() const;
+	Amount<Unit::CELSIUS> getBoilingPoint() const;
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getHeatCapacity() const;
 	Amount<Unit::JOULE_PER_MOLE> getKineticEnergy() const;
 	Amount<Unit::JOULE_PER_MOLE> getStandaloneKineticEnergy() const;
+	Amount<Unit::JOULE_PER_MOLE> getLiquefactionHeat() const;
+	Amount<Unit::JOULE_PER_MOLE> getFusionHeat() const;
+	Amount<Unit::JOULE_PER_MOLE> getVaporizationHeat() const;
+	Amount<Unit::JOULE_PER_MOLE> getCondensationHeat() const;
+	Amount<Unit::JOULE_PER_MOLE> getSublimationHeat() const;
+	Amount<Unit::JOULE_PER_MOLE> getDepositionHeat() const;
 
 	Ref<Mixture> getContainer() const;
 	const LayerProperties& getLayerProperties() const;
+	Amount<Unit::CELSIUS> getLayerTemperature() const;
+
+	AggregationType getAggregation() const;
+	AggregationType getAggregation(const Amount<Unit::CELSIUS> temperature) const;
 
 	Reactant mutate(const Amount<Unit::MOLE> newAmount) const;
 	Reactant mutate(const Ref<Mixture> newContainer) const;
+	Reactant mutate(const LayerType newLayer) const;
 	Reactant mutate(const Amount<Unit::MOLE> newAmount, const Ref<Mixture> newContainer) const;
+	Reactant mutate(const Amount<Unit::MOLE> newAmount, const LayerType newLayer) const;
+	Reactant mutate(const Amount<Unit::MOLE> newAmount, const Ref<Mixture> newContainer, const LayerType newLayer) const;
 
 	bool operator==(const Reactant& other) const;
 	bool operator!=(const Reactant& other) const;

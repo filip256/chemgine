@@ -7,10 +7,8 @@ DataStoreAccessor Molecule::dataAccessor = DataStoreAccessor();
 
 Molecule::Molecule(const MoleculeIdType id) noexcept:
 	id(id),
-	molarMass(dataAccessor.get().molecules.at(id).getStructure().getMolarMass())
-{
-	dataAccessor.crashIfUninitialized();
-}
+	molarMass(dataAccessor.getSafe().molecules.at(id).getStructure().getMolarMass())
+{}
 
 Molecule::Molecule(MolecularStructure&& structure) noexcept:
 	id(dataAccessor.getSafe().molecules.findOrAdd(std::move(structure)))

@@ -19,9 +19,8 @@ protected:
 	std::unordered_map<LayerType, LayerProperties> layers;
 
 	bool tryCreateLayer(const LayerType layer);
-	void addToLayer(const Reactant& reactant, const uint8_t revert = 1.0);
-	void removeFromLayer(const Reactant& reactant);
-	void add(const Amount<Unit::JOULE> heat, const LayerType layer);
+	void addToLayer(const Reactant& reactant);
+	void add(const Amount<Unit::JOULE> heat, const LayerType layer) override final;
 
 	void removeNegligibles();
 	void checkOverflow();
@@ -31,6 +30,8 @@ protected:
 	LayerType getLayerAbove(LayerType layer) const;
 	LayerType getLayerBelow(LayerType layer) const;
 	LayerType getClosestLayer(LayerType layer) const;
+
+	LayerType findLayerFor(const Reactant& reactant) const override final;
 
 	MultiLayerMixture(const MultiLayerMixture&) = default;
 
@@ -44,7 +45,6 @@ public:
 	void add(const Reactant& reactant) override final;
 
 	bool hasLayer(const LayerType layer) const;
-	LayerType findLayerFor(const Reactant& reactant) const;
 
 	Amount<Unit::LITER> getMaxVolume() const;
 
@@ -55,6 +55,7 @@ public:
 
 	const LayerProperties& getLayerProperties(const LayerType layer) const override final;
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity(const LayerType layer) const override final;
+	Amount<Unit::JOULE_PER_CELSIUS> getLayerTotalHeatCapacity(const LayerType layer) const override final;
 	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType layer) const override final;
 
 	void copyContentTo(Ref<BaseContainer> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer) const;

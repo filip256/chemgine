@@ -238,11 +238,13 @@
     <ClCompile Include="Spline.cpp" />
     <ClCompile Include="SplineEstimator.cpp" />
     <ClCompile Include="SplitEstimator.cpp" />
+    <ClCompile Include="StateNucleator.cpp" />
     <ClCompile Include="Symbol.cpp" />
     <ClCompile Include="SystemMatrix.cpp" />
     <ClCompile Include="DumpContainer.cpp" />
     <ClCompile Include="Value.cpp" />
     <ClInclude Include="Adaptor.hpp" />
+    <ClInclude Include="AggregationType.hpp" />
     <ClInclude Include="Amount.hpp" />
     <ClInclude Include="Atmosphere.hpp" />
     <ClInclude Include="BaseContainer.hpp" />
@@ -317,6 +319,7 @@
     <ClInclude Include="Spline.hpp" />
     <ClInclude Include="SplineEstimator.hpp" />
     <ClInclude Include="SplitEstimator.hpp" />
+    <ClInclude Include="StateNucleator.hpp" />
     <ClInclude Include="Symbol.hpp" />
     <ClInclude Include="DumpContainer.hpp" />
     <ClInclude Include="UIContext.hpp" />

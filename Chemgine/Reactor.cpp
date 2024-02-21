@@ -92,7 +92,10 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 		for (const auto& i : r.getReactants())
 			MultiLayerMixture::add(i.mutate(-i.amount * speedCoef, *this));
 		for (const auto& i : r.getProducts())
-			MultiLayerMixture::add(i.mutate(i.amount * speedCoef, *this));
+		{
+			const auto p = i.mutate(i.amount * speedCoef, *this);
+			MultiLayerMixture::add(p.mutate(findLayerFor(p)));
+		}
 
 		MultiLayerMixture::add(r.getData().reactionEnergy.to<Unit::JOULE>(speedCoef), r.getReactants().any().layer);
 	}
@@ -102,39 +105,30 @@ void Reactor::consumePotentialEnergy()
 {
 	for (auto& l : layers)
 	{
-		if (l.second.potentialEnergy != 0.0)
-		{
-			l.second.temperature += l.second.potentialEnergy.to<Unit::CELSIUS>(getLayerHeatCapacity(l.first), l.second.moles);
-			l.second.potentialEnergy = 0.0;
-		}
+		l.second.convertTemporaryStateReactants();
+		l.second.consumePotentialEnergy();
 	}
 }
 
 void Reactor::add(const Molecule& molecule, const Amount<Unit::MOLE> amount)
 {
 	auto r = Reactant(molecule, LayerType::UNKNOWN, amount, *this);
-	r.layer = findLayerFor(r);
-	MultiLayerMixture::add(r);
+	MultiLayerMixture::add(r.mutate(findLayerFor(r)));
 }
 
 void Reactor::add(const Amount<Unit::JOULE> heat)
 {
 	const auto lA = getLayerAbove(LayerType::SOLID);
 	const auto& lS = layers.find(LayerType::SOLID);
-	if (lS != layers.end())
-	{
-		if (lA == LayerType::NONE)
-		{
-			lS->second.potentialEnergy += heat * 0.5;
-			layers.at(lA).potentialEnergy += heat * 0.5;
-			return;
-		}
 
-		lS->second.potentialEnergy += heat;
+	if (lS == layers.end())
+	{
+		layers.at(lA).potentialEnergy += heat;
 		return;
 	}
 
-	layers.at(lA).potentialEnergy += heat;
+	lS->second.potentialEnergy += heat * 0.5;
+	layers.at(lA).potentialEnergy += heat * 0.5;
 }
 
 void Reactor::add(Reactor& other)
@@ -170,11 +164,11 @@ void Reactor::add(Reactor& other, const double ratio)
 
 void Reactor::tick()
 {
+	checkOverflow();
 	removeNegligibles();
 	findNewReactions();
 	runReactions(1.0);
 	consumePotentialEnergy();
-	checkOverflow();
 }
 
 bool Reactor::hasEqualState(const Reactor& other) const

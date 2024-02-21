@@ -49,24 +49,30 @@ public:
 	static inline std::string unitName() noexcept = delete;
 
 	static const Amount<UnitT> Unknown;
-	constexpr inline bool isUnknown() const noexcept;
 	static const Amount<UnitT> Infinity;
+	static const Amount<UnitT> Minimum;
+	static const Amount<UnitT> Maximum;
+
+	constexpr inline bool isUnknown() const noexcept;
 	constexpr inline bool isInfinity() const noexcept;
 
 	using StorageType = double;
 };
 
 template<Unit UnitT>
-const Amount<UnitT> Amount<UnitT>::Unknown = std::numeric_limits<double>::min();
+const Amount<UnitT> Amount<UnitT>::Unknown = std::numeric_limits<double>::min() - std::numeric_limits<double>::epsilon();
+template<Unit UnitT>
+const Amount<UnitT> Amount<UnitT>::Infinity = std::numeric_limits<double>::infinity();
+template<Unit UnitT>
+const Amount<UnitT> Amount<UnitT>::Minimum = std::numeric_limits<double>::min();
+template<Unit UnitT>
+const Amount<UnitT> Amount<UnitT>::Maximum = std::numeric_limits<double>::max();
 
 template<Unit UnitT>
 constexpr bool Amount<UnitT>::isUnknown() const noexcept
 {
 	return this->value == Amount<UnitT>::Unknown.asStd();
 }
-
-template<Unit UnitT>
-const Amount<UnitT> Amount<UnitT>::Infinity = std::numeric_limits<double>::infinity();
 
 template<Unit UnitT>
 constexpr bool Amount<UnitT>::isInfinity() const noexcept
@@ -183,6 +189,8 @@ inline std::string Amount<Unit::GRAM_PER_MILLILITER>::unitName() noexcept { retu
 template<>
 inline std::string Amount<Unit::JOULE_PER_MOLE>::unitName() noexcept { return Amount<Unit::JOULE>::unitName() + " / " + Amount<Unit::MOLE>::unitName(); }
 template<>
+inline std::string Amount<Unit::JOULE_PER_CELSIUS>::unitName() noexcept { return Amount<Unit::JOULE>::unitName() + " / " + Amount<Unit::CELSIUS>::unitName(); }
+template<>
 inline std::string Amount<Unit::JOULE_PER_MOLE_CELSIUS>::unitName() noexcept { return Amount<Unit::JOULE>::unitName() + " / (" + Amount<Unit::MOLE>::unitName() + " + " + Amount<Unit::CELSIUS>::unitName() + ")"; }
 
 
@@ -225,13 +233,13 @@ constexpr Amount<Unit::JOULE_PER_MOLE_CELSIUS>::Amount(const Amount<Unit::JOULE>
 template<>
 template<>
 constexpr Amount<Unit::KELVIN>::Amount(const Amount<Unit::CELSIUS>& c) noexcept :
-	Value<double>(c.asStd() - 273.15)
+	Value<double>(c.asStd() + 273.15)
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::CELSIUS>::Amount(const Amount<Unit::KELVIN>& k) noexcept :
-	Value<double>(k.asStd() + 273.15)
+	Value<double>(k.asStd() - 273.15)
 {}
 
 template<>
@@ -319,6 +327,25 @@ constexpr Amount<Unit::JOULE> Amount<Unit::JOULE_PER_MOLE>::to(const Amount<Unit
 {
 	return value * moles.asStd();
 }
+template<>
+template<>
+constexpr Amount<Unit::MOLE> Amount<Unit::JOULE_PER_MOLE>::to(const Amount<Unit::JOULE> joules) const noexcept
+{
+	return joules.asStd() / value;
+}
+
+template<>
+template<>
+constexpr Amount<Unit::JOULE> Amount<Unit::JOULE_PER_CELSIUS>::to(const Amount<Unit::CELSIUS> temperature) const noexcept
+{
+	return value * temperature.asStd();
+}
+template<>
+template<>
+constexpr Amount<Unit::CELSIUS> Amount<Unit::JOULE_PER_CELSIUS>::to(const Amount<Unit::JOULE> joules) const noexcept
+{
+	return joules.asStd() / value;
+}
 
 template<>
 template<>
@@ -335,9 +362,36 @@ constexpr Amount<Unit::JOULE_PER_MOLE_CELSIUS> Amount<Unit::JOULE_PER_MOLE>::to(
 
 template<>
 template<>
+constexpr Amount<Unit::JOULE_PER_CELSIUS> Amount<Unit::JOULE_PER_MOLE_CELSIUS>::to(const Amount<Unit::MOLE> moles) const noexcept
+{
+	return value * moles.asStd();
+}
+template<>
+template<>
+constexpr Amount<Unit::JOULE_PER_MOLE_CELSIUS> Amount<Unit::JOULE_PER_CELSIUS>::to(const Amount<Unit::MOLE> moles) const noexcept
+{
+	return value / moles.asStd();
+}
+
+template<>
+template<>
 constexpr Amount<Unit::CELSIUS> Amount<Unit::JOULE>::to(const Amount<Unit::JOULE_PER_MOLE_CELSIUS> heatCapacity, const Amount<Unit::MOLE> moles) const noexcept
 {
 	return value / (heatCapacity.asStd() * moles.asStd());
+}
+
+template<>
+template<>
+constexpr Amount<Unit::CELSIUS> Amount<Unit::JOULE>::to(const Amount<Unit::JOULE_PER_CELSIUS> heatCapacity) const noexcept
+{
+	return value / heatCapacity.asStd();
+}
+
+template<>
+template<>
+constexpr Amount<Unit::MOLE> Amount<Unit::JOULE>::to(const Amount<Unit::JOULE_PER_MOLE> latentHeat) const noexcept
+{
+	return value / latentHeat.asStd();
 }
 
 template<>

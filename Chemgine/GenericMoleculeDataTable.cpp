@@ -51,7 +51,7 @@ bool GenericMoleculeDataTable::loadFromFile(const std::string& path)
 	}
 	file.close();
 
-	Logger::log("Loaded " + std::to_string(table.size()) + " generic molecules.", LogType::GOOD);
+	Logger::log("Loaded " + std::to_string(table.size()) + " generic molecules.", LogType::INFO);
 
 	return true;
 }
@@ -93,6 +93,8 @@ MoleculeIdType GenericMoleculeDataTable::findOrAdd(MolecularStructure&& structur
 	const auto idx = findFirst(structure);
 	if (idx != npos)
 		return table[idx].id;
+
+	Logger::log("New structure discovered: \n" + structure.print(50, 10), LogType::INFO);
 
 	const auto id = getFreeId();
 	table.emplace(id, std::to_string(id), GenericMoleculeData(id, std::move(structure)));

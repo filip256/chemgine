@@ -95,7 +95,7 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 	}
 	file.close();
 
-	Logger::log("Loaded " + std::to_string(table.size()) + " molecules.", LogType::GOOD);
+	Logger::log("Loaded " + std::to_string(table.size()) + " molecules.", LogType::INFO);
 
 	return true;
 }
@@ -137,6 +137,8 @@ MoleculeIdType MoleculeDataTable::findOrAdd(MolecularStructure&& structure)
 	const auto idx = findFirst(structure);
 	if (idx != npos)
 		return table[idx].id;
+
+	Logger::log("New structure discovered: \n" + structure.print(50, 10), LogType::INFO);
 
 	const auto& mpA = estimators.add<OffsetEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TORR_TO_REL_BP)), 0);
 	const auto& bpA = estimators.add<OffsetEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TORR_TO_REL_BP)), 100);

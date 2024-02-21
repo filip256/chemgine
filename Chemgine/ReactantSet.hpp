@@ -12,7 +12,10 @@ private:
 	Ref<Mixture> container;
 	std::unordered_set<Reactant> content;
 
-	ReactantSet(const ReactantSet&) = default;
+	ReactantSet(
+		const ReactantSet& other,
+		const Ref<Mixture> newContainer
+	) noexcept;
 
 public:
 	ReactantSet(const Ref<Mixture> container) noexcept;
@@ -25,7 +28,7 @@ public:
 
 	bool contains(const Reactant& reactant) const;
 
-	const Reactant& add(const Reactant& reactant);
+	void add(const Reactant& reactant);
 
 	/// <summary>
 	/// Returns o reactant from the set.
@@ -36,6 +39,8 @@ public:
 	Amount<Unit::MOLE> getAmountOf(const Reactant& reactant) const;
 	Amount<Unit::MOLE> getAmountOf(const ReactantSet& reactantSet) const;
 
+	std::unordered_set<Reactant>::const_iterator erase(
+		const std::unordered_set<Reactant>::const_iterator it);
 	void erase(bool (*predicate)(const Reactant&));
 
 	std::unordered_set<Reactant>::const_iterator begin() const;
@@ -44,5 +49,5 @@ public:
 	bool operator==(const ReactantSet& other) const;
 	bool operator!=(const ReactantSet& other) const;
 
-	ReactantSet makeCopy() const;
+	ReactantSet makeCopy(const Ref<Mixture> newContainer) const;
 };

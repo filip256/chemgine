@@ -14,8 +14,11 @@ protected:
 	Ref<BaseContainer> overflowTarget = nullptr;
 	LayerProperties layer;
 
-	void addToLayer(const Reactant& reactant, const uint8_t revert = 1.0);
-	void removeFromLayer(const Reactant& reactant);
+	void addToLayer(const Reactant& reactant);
+
+	void add(const Amount<Unit::JOULE> heat, const LayerType l) override final;
+
+	LayerType findLayerFor(const Reactant& reactant) const override final;
 
 	void removeNegligibles();
 	void checkOverflow();
@@ -49,6 +52,7 @@ public:
 
 	const LayerProperties& getLayerProperties(const LayerType l) const override final;
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity(const LayerType l) const override final;
+	Amount<Unit::JOULE_PER_CELSIUS> getLayerTotalHeatCapacity(const LayerType layer) const override final;
 	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType l) const override final;
 
 	void copyContentTo(const Ref<BaseContainer> destination, const Amount<Unit::LITER> volume) const;
@@ -64,7 +68,7 @@ SingleLayerMixture<L>::SingleLayerMixture(
 	const Amount<Unit::LITER> maxVolume,
 	const Ref<BaseContainer> overflowTarget
 ) noexcept :
-	layer(temperature),
+	layer(*this, L, temperature),
 	pressure(pressure),
 	maxVolume(maxVolume),
 	overflowTarget(overflowTarget)
@@ -75,27 +79,58 @@ SingleLayerMixture<L>::SingleLayerMixture(
 }
 
 template<LayerType L>
-void SingleLayerMixture<L>::addToLayer(const Reactant& reactant, const uint8_t revert)
+void SingleLayerMixture<L>::addToLayer(const Reactant& reactant)
 {
-	layer.moles += reactant.amount * revert;
-	layer.mass += reactant.getMass() * revert;
-	layer.volume += reactant.getVolume() * revert;
+	layer.moles += reactant.amount;
+	layer.mass += reactant.getMass();
+	layer.volume += reactant.getVolume();
+
+	if (reactant.isNew)
+		layer.setIfNucleator(reactant);
+	else if (content.contains(reactant) == false)
+		layer.unsetIfNucleator(reactant);
 }
 
 template<LayerType L>
-void SingleLayerMixture<L>::removeFromLayer(const Reactant& reactant)
+void SingleLayerMixture<L>::add(const Amount<Unit::JOULE> heat, const LayerType l)
 {
-	addToLayer(reactant, -1);
+	if (l != L)
+		return;
+
+	layer.potentialEnergy += heat;
+}
+
+template<LayerType L>
+LayerType SingleLayerMixture<L>::findLayerFor(const Reactant& reactant) const
+{
+	return getLayer(reactant.getAggregation(layer.temperature));
 }
 
 template<LayerType L>
 void SingleLayerMixture<L>::removeNegligibles()
 {
-	for (const auto& r : content)
-		if (r.amount < Constants::MOLAR_EXISTANCE_THRESHOLD)
-			removeFromLayer(r);
+	bool removedAny = false;
+	for (auto r = content.begin(); r != content.end();)
+	{
+		if (r->amount < Constants::MOLAR_EXISTANCE_THRESHOLD)
+		{
+			const auto temp = r->mutate(-r->amount);
+			r = content.erase(r);
+			addToLayer(temp);
+			removedAny = true;
+			continue;
+		}
 
-	content.erase([](const auto& r) { return r.amount < Constants::MOLAR_EXISTANCE_THRESHOLD; });
+		++r;
+	}
+
+	if (removedAny == false)
+		return;
+
+	for (const auto& r : content)
+	{
+		layer.setIfNucleator(r);
+	}
 }
 
 template<LayerType L>
@@ -118,6 +153,8 @@ void SingleLayerMixture<L>::scaleToVolume(const Amount<Unit::LITER> volume)
 	if (difV == 0.0)
 		return;
 
+	// is copy content to self safe?
+	// YES, no realloc occurs, only the amounts change
 	copyContentTo(*this, difV);
 }
 
@@ -157,8 +194,8 @@ void SingleLayerMixture<L>::add(const Reactant& reactant)
 	if (reactant.layer != L)
 		return;
 
-	const auto& r = content.add(reactant);
-	addToLayer(r);
+	content.add(reactant);
+	addToLayer(reactant.mutate(*this));
 }
 
 template<LayerType L>
@@ -200,16 +237,13 @@ const LayerProperties& SingleLayerMixture<L>::getLayerProperties(const LayerType
 template<LayerType L>
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> SingleLayerMixture<L>::getLayerHeatCapacity(const LayerType l) const
 {
-	if (l != L)
-		return 0.0;
+	return layer.getHeatCapacity();
+}
 
-	Amount<Unit::JOULE_PER_MOLE_CELSIUS> hC = 0.0;
-	for (const auto& r : content)
-	{
-		hC += r.getHeatCapacity() * r.getMass().asStd();
-	}
-
-	return hC / layer.mass.asStd();
+template<LayerType L>
+Amount<Unit::JOULE_PER_CELSIUS> SingleLayerMixture<L>::getLayerTotalHeatCapacity(const LayerType l) const
+{
+	return layer.getTotalHeatCapacity();
 }
 
 template<LayerType L>

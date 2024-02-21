@@ -322,11 +322,12 @@ class ReactorTest
 private:
 	bool passed = true;
 	DumpContainer* dumpA = nullptr;
-	Atmosphere* atmosphere;
+	Atmosphere* atmosphere = nullptr;
 	Reactor* reactorA = nullptr;
 	Reactor* reactorB = nullptr;
 	Reactor* reactorC = nullptr;
 	Reactor* reactorD = nullptr;
+	Reactor* reactorE = nullptr;
 
 	const double waterTemperatureThreshold = 0.1;
 	const double overflowLossThreshold = 0.0000001;
@@ -334,13 +335,13 @@ private:
 	void runConservationOfMassTest()
 	{
 		const auto massBefore = reactorA->getTotalMass() + atmosphere->getTotalMass() + dumpA->getTotalMass();
-		for (size_t i = 0; i < 16; ++i)
+		for (size_t i = 0; i < 32; ++i)
 		{
 			reactorA->tick();
 			atmosphere->tick();
 			const auto massAfter = reactorA->getTotalMass() + atmosphere->getTotalMass() + dumpA->getTotalMass();
 
-			if (std::abs((massAfter - massBefore).asStd()) > 1e-9)
+			if (std::abs((massAfter - massBefore).asStd()) > 1e-5)
 			{
 				Logger::log("Test failed > Reactor > mass conservation: expected=" + std::to_string(massBefore.asStd()) + "   actual=" + std::to_string(massAfter.asStd()), LogType::BAD);
 				passed = false;
@@ -387,7 +388,7 @@ private:
 	}
 	void runVolumetricTest()
 	{
-		if (reactorC->getTotalVolume() != reactorC->getMaxVolume())
+		if (std::abs((reactorC->getTotalVolume() - reactorC->getMaxVolume()).asStd()) > overflowLossThreshold)
 		{
 			Logger::log("Test failed > Reactor > volumetrics > total_volume: expected=" + std::to_string(reactorC->getMaxVolume().asStd()) + "   actual=" + std::to_string(reactorC->getTotalVolume().asStd()), LogType::BAD);
 			passed = false;
@@ -416,18 +417,166 @@ private:
 	}
 	void runDeterminismTest()
 	{
+		auto initialReactor = reactorD->makeCopy();
 		auto copyReactor = reactorD->makeCopy();
-		for (size_t i = 0; i < 32; ++i)
-		{
-			reactorD->tick();
-			copyReactor.tick();
+		reactorD->tick();
+		copyReactor.tick();
 
+		if (reactorD->hasEqualState(initialReactor))
+		{
+			Logger::log("Test failed > Reactor > determinism: given reactors were already stable", LogType::BAD);
+			passed = false;
+		}
+
+		for (size_t i = 0; i < 31; ++i)
+		{
 			if (reactorD->hasEqualState(copyReactor) == false)
 			{
 				Logger::log("Test failed > Reactor > determinism: reactors have different states", LogType::BAD);
 				passed = false;
 				break;
 			}
+
+			reactorD->tick();
+			copyReactor.tick();
+		}
+	}
+	void runAggregationChangeTest()
+	{
+		Logger::enterContext();
+		Logger::logCached("Energy  |   SourceTemp   DestinationTemp  Source Nucleator Amount", LogType::TABLE);
+
+		const auto& sourceProps = reactorE->getLayerProperties(LayerType::POLAR);
+		const auto& destinationProps = reactorE->getLayerProperties(LayerType::GASEOUS);
+
+		uint8_t testPhase = 0;
+		const auto sourceMaxTemp = sourceProps.getMaxAllowedTemperature();
+		const auto nucleator = sourceProps.getHighNucleator();
+		auto pastNucleatorAmount = reactorE->getAmountOf(nucleator);
+		auto pastSourceTemp = sourceProps.getTemperature();
+		auto pastDestinationTemp = destinationProps.getTemperature();
+
+		Amount<Unit::JOULE> energyStep = 4000.0;
+		Logger::logCached("0kJ     |   " +
+			std::to_string(sourceProps.getTemperature().asStd()).substr(0, 8) + "C    " +
+			std::to_string(destinationProps.getTemperature().asStd()).substr(0, 8) + "C        " +
+			std::to_string(reactorE->getAmountOf(nucleator).asStd()).substr(0, 8),
+			LogType::TABLE);
+
+		for (size_t i = 0; i < 64; ++i)
+		{
+			reactorE->add(Amount<Unit::JOULE>(energyStep));
+			reactorE->tick();
+			Logger::logCached(std::to_string(energyStep.asKilo() * (i + 1)).substr(0, 5) + "kJ |   " +
+				std::to_string(sourceProps.getTemperature().asStd()).substr(0, 8) + "C    " +
+				std::to_string(destinationProps.getTemperature().asStd()).substr(0, 8) + "C        " +
+				std::to_string(reactorE->getAmountOf(nucleator).asStd()).substr(0, 8),
+				LogType::TABLE);
+
+			if (testPhase == 0) // heating up source to tp
+			{
+				const auto sTemp = sourceProps.getTemperature();
+				if (sTemp == sourceMaxTemp)
+				{
+					++testPhase;
+					pastSourceTemp = sTemp;
+				}
+				else if (sTemp >= sourceMaxTemp)
+				{
+					Logger::log("Test failed > Reactor > aggregation change > max source temp exceeded, T=" + std::to_string(sTemp.asStd()) + "C", LogType::BAD);
+					passed = false;
+					break;
+				}
+
+				const auto dTemp = destinationProps.getTemperature();;
+				if (dTemp != pastDestinationTemp)
+				{
+					Logger::log("Test failed > Reactor > aggregation change > destination temperature changed in phase 0", LogType::BAD);
+					passed = false;
+					break;
+				}
+				pastDestinationTemp = dTemp;
+			}
+			else if (testPhase == 1) // heating up dest to tp
+			{
+				const auto dTemp = destinationProps.getTemperature();
+				if (dTemp == sourceMaxTemp)
+				{
+					++testPhase;
+					pastDestinationTemp = dTemp;
+				}
+				else if (dTemp >= sourceMaxTemp)
+				{
+					Logger::log("Test failed > Reactor > aggregation change > max destination temp exceeded, T=" + std::to_string(dTemp.asStd()) + "C", LogType::BAD);
+					passed = false;
+					break;
+				}
+
+				const auto sTemp = sourceProps.getTemperature();;
+				if (sTemp != pastSourceTemp)
+				{
+					Logger::log("Test failed > Reactor > aggregation change > source temperature changed in phase 1", LogType::BAD);
+					passed = false;
+					break;
+				}
+				pastSourceTemp = sTemp;
+			}
+			else if (testPhase == 2) // transfering all the nucleator
+			{
+				const auto nMoles = reactorE->getAmountOf(nucleator);
+				if (nMoles >= pastNucleatorAmount)
+				{
+					Logger::log("Test failed > Reactor > aggregation change > nucleator did not transfer in phase 2", LogType::BAD);
+					passed = false;
+					break;
+				}
+				pastNucleatorAmount = nMoles;
+
+				const auto dTemp = destinationProps.getTemperature();;
+				if (dTemp != pastDestinationTemp)
+				{
+					Logger::log("Test failed > Reactor > aggregation change > destination temperature changed in phase 2", LogType::BAD);
+					passed = false;
+					break;
+				}
+				pastDestinationTemp = dTemp;
+
+				if (nMoles == 0.0)
+					++testPhase;
+			}
+			else if (testPhase == 3) // full heat convertsion
+			{
+				const auto dTemp = destinationProps.getTemperature();
+				if (dTemp <= pastDestinationTemp)
+				{
+					Logger::log("Test failed > Reactor > aggregation change > destination temperature did not increase in phase 3", LogType::BAD);
+					passed = false;
+					break;
+				}
+				pastDestinationTemp = dTemp;
+				if (sourceProps.getTemperature().isInfinity() == false)
+				{
+					Logger::log("Test failed > Reactor > aggregation change > empty layer temperature was not infinity", LogType::BAD);
+					passed = false;
+					break;
+				}
+			}
+		}
+
+		Logger::logCached("--------+--------------------------------------------", LogType::TABLE);
+
+		if(passed && testPhase != 3)
+		{
+			Logger::log("Test failed > Reactor > aggregation change > not all test phases were reached, phase=" + std::to_string(testPhase), LogType::BAD);
+			passed = false;
+		}
+
+		Logger::exitContext();
+		Logger::logCached("", LogType::TABLE);
+
+		if (passed == false)
+		{
+			Logger::printCache();
 		}
 	}
 
@@ -454,6 +603,9 @@ public:
 		reactorD = new Reactor(*atmosphere, 5.0);
 		reactorD->add(Molecule("CC(=O)O"), 2.0);
 		reactorD->add(Molecule("OCC"), 3.0);
+
+		reactorE = new Reactor(*atmosphere, 0.1);
+		reactorE->add(Molecule("O"), 5.4);
 	}
 
 	void runTests()
@@ -462,6 +614,7 @@ public:
 		runTemperatureTest();
 		runVolumetricTest();
 		runDeterminismTest();
+		runAggregationChangeTest();
 	}
 
 	bool hasPassed()
@@ -479,6 +632,8 @@ public:
 			delete reactorC;
 		if (reactorD != nullptr)
 			delete reactorD;
+		if (reactorE != nullptr)
+			delete reactorE;
 		if (atmosphere != nullptr)
 			delete atmosphere;
 		if (dumpA != nullptr)

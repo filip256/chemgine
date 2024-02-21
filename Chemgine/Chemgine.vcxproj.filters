@@ -97,9 +97,6 @@
     <Filter Include="Source Files\Labware\Components">
       <UniqueIdentifier>{7defd315-a4f9-4513-b498-bd99828def55}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\Textures">
-      <UniqueIdentifier>{0e36bde9-4540-44e7-b0cb-366d8d0ab939}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\External">
       <UniqueIdentifier>{85a1d6be-8a49-4102-b4e4-270c2c5415da}</UniqueIdentifier>
     </Filter>
@@ -126,6 +123,9 @@
     </Filter>
     <Filter Include="Header Files\Reactions\Mixtures">
       <UniqueIdentifier>{d7610af6-8fb3-4a5e-8d6e-b9ff3e0f3a32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Textures">
+      <UniqueIdentifier>{0e36bde9-4540-44e7-b0cb-366d8d0ab939}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -335,6 +335,9 @@
     </ClCompile>
     <ClCompile Include="BaseContainer.cpp">
       <Filter>Source Files\Reactions\Mixtures</Filter>
+    </ClCompile>
+    <ClCompile Include="StateNucleator.cpp">
+      <Filter>Source Files\Reactions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -617,6 +620,12 @@
     <ClInclude Include="Atmosphere.hpp">
       <Filter>Header Files\Reactions\Mixtures</Filter>
     </ClInclude>
+    <ClInclude Include="StateNucleator.hpp">
+      <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="AggregationType.hpp">
+      <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv">
@@ -642,9 +651,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Planning.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="Textures\jrbf500.png">
       <Filter>Resource Files\Textures</Filter>
     </Image>
@@ -653,5 +659,10 @@
     <Font Include="Fonts\font.ttf">
       <Filter>Resource Files\Fonts</Filter>
     </Font>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Planning.txt">
+      <Filter>Source Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -2,8 +2,8 @@
 
 ConcreteReaction::ConcreteReaction(const ConcreteReaction& other) noexcept :
 	baseReaction(other.baseReaction),
-	reactants(reactants.makeCopy()),
-	products(reactants.makeCopy())
+	reactants(reactants.makeCopy(Ref<Mixture>::nullRef)),
+	products(reactants.makeCopy(Ref<Mixture>::nullRef))
 {}
 
 ConcreteReaction::ConcreteReaction(
@@ -41,7 +41,7 @@ const ReactantSet& ConcreteReaction::getProducts() const
 
 const Amount<Unit::CELSIUS> ConcreteReaction::getReactantTemperature() const
 {
-	return reactants.any().getTemperature();
+	return reactants.any().getLayerTemperature();
 }
 
 const ReactionData& ConcreteReaction::getData() const

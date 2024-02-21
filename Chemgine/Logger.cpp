@@ -49,6 +49,11 @@ void Logger::log(const char* str, const LogType type)
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_RED | FOREGROUND_GREEN);
 		outputStream << "WARN:    ";
 	}
+	else if (type == LogType::INFO)
+	{
+		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+		outputStream << "INFO:    ";
+	}
 	else if (type == LogType::GOOD)
 	{
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN);
@@ -68,7 +73,6 @@ void Logger::log(const std::string& str, const LogType type)
 	log(str.c_str(), type);
 #endif
 }
-
 
 void Logger::fatal(const char* str)
 {

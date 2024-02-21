@@ -1,5 +1,13 @@
 #include "ReactantSet.hpp"
 
+ReactantSet::ReactantSet(
+	const ReactantSet& other,
+	const Ref<Mixture> newContainer
+) noexcept :
+	container(newContainer),
+	content(other.content)
+{}
+
 ReactantSet::ReactantSet(const Ref<Mixture> container) noexcept:
 	container(container)
 {}
@@ -33,15 +41,15 @@ bool ReactantSet::contains(const Reactant& reactant) const
 	return content.contains(reactant);
 }
 
-const Reactant& ReactantSet::add(const Reactant& reactant)
+void ReactantSet::add(const Reactant& reactant)
 {
 	const auto& temp = content.find(reactant);
 	if (temp != content.end())
+	{
 		temp->amount += reactant.amount;
-	else
-		content.emplace(reactant.molecule, reactant.layer, reactant.amount, container);
+	}
 
-	return reactant.mutate(container);
+	content.emplace(reactant.molecule, reactant.layer, reactant.amount, container).first;
 }
 
 const Reactant& ReactantSet::any() const
@@ -61,6 +69,12 @@ Amount<Unit::MOLE> ReactantSet::getAmountOf(const ReactantSet& reactantSet) cons
 	for (const auto& r : reactantSet)
 		s += getAmountOf(r);
 	return s;
+}
+
+std::unordered_set<Reactant>::const_iterator ReactantSet::erase(
+	const std::unordered_set<Reactant>::const_iterator it)
+{
+	return content.erase(it);
 }
 
 void ReactantSet::erase(bool (*predicate)(const Reactant&))
@@ -94,7 +108,7 @@ bool ReactantSet::operator!=(const ReactantSet& other) const
 	return false;
 }
 
-ReactantSet ReactantSet::makeCopy() const
+ReactantSet ReactantSet::makeCopy(const Ref<Mixture> newContainer) const
 {
-	return ReactantSet(*this);
+	return ReactantSet(*this, newContainer);
 }

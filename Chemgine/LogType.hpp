@@ -9,6 +9,7 @@ enum class LogType : uint8_t
 	BAD,
 	WARN,
 	GOOD,
+	INFO,
 	TABLE,
 	ALL
 };

@@ -470,7 +470,7 @@ void MolecularStructure::rPrint(
     visited[c] = true;
 
     const auto& symb = components[c]->data().getSMILES();
-    for(c_size i = 0; i < symb.size() && x + i < buffer[0].size(); ++i)
+    for(uint8_t i = 0; i < symb.size() && x + i < buffer[0].size(); ++i)
         buffer[y][x + i] = symb[i];
 
     for (c_size i = 0; i < bonds[c].size(); ++i)
@@ -519,7 +519,7 @@ std::string MolecularStructure::print(const size_t maxWidth, const size_t maxHei
 
 	std::vector<std::string> buffer(maxHeight, std::string(maxWidth, ' '));
     std::vector<uint8_t> visited(components.size(), false);
-    rPrint(buffer, buffer[0].size() / 4, buffer.size() / 4, 0, visited);
+    rPrint(buffer, buffer[0].size() / 4, buffer.size() / 2, 0, visited);
 
     std::string str;
     size_t i = 0;

@@ -20,10 +20,17 @@ public:
 	void set(T& object);
 	void unset();
 
+	Ref<T>& operator=(T& other);
+
 	inline T& get();
 	inline const T& get() const;
 	inline T* operator->();
 	inline const T* operator->() const;
+
+	template<typename R, typename... Args>
+	R operator->*(R(T::* memberFunction)(Args...));
+	template<typename R, typename... Args>
+	R operator->*(R(T::* memberFunction)(Args...) const) const;
 
 	bool operator==(const Ref<T>& other) const;
 	bool operator!=(const Ref<T>& other) const;
@@ -33,6 +40,7 @@ public:
 	template<typename U>
 	friend class Ref;
 };
+
 
 template<typename T>
 const Ref<T> Ref<T>::nullRef = Ref<T>();
@@ -67,6 +75,12 @@ void Ref<T>::unset()
 }
 
 template<typename T>
+Ref<T>& Ref<T>::operator=(T& other)
+{
+	return this->object = &other;
+}
+
+template<typename T>
 T& Ref<T>::get()
 {
 	return *object;
@@ -88,6 +102,20 @@ template<typename T>
 const T* Ref<T>::operator->() const 
 {
 	return object;
+}
+
+template<typename T>
+template<typename R, typename... Args>
+R Ref<T>::operator->*(R(T::* memberFunction)(Args...)) 
+{
+	return (object->*memberFunction)();
+}
+
+template<typename T>
+template<typename R, typename... Args>
+R Ref<T>::operator->*(R(T::* memberFunction)(Args...) const) const
+{
+	return (object->*memberFunction)();
 }
 
 template<typename T>

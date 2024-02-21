@@ -74,7 +74,7 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 	}
 	file.close();
 
-	Logger::log("Loaded " + std::to_string(table.size()) + " atoms.", LogType::GOOD);
+	Logger::log("Loaded " + std::to_string(table.size()) + " atoms.", LogType::INFO);
 
 	return true;
 }

@@ -6,7 +6,7 @@ MultiLayerMixture::MultiLayerMixture(
 	const Amount<Unit::LITER> maxVolume,
 	const Ref<BaseContainer> overflowTarget
 ) noexcept :
-	layers({ { LayerType::GASEOUS, LayerProperties(atmosphere->getLayerProperties().temperature) }}),
+	layers({ { LayerType::GASEOUS, LayerProperties(*this, LayerType::GASEOUS, atmosphere->getLayerProperties().temperature) }}),
 	pressure(atmosphere->getPressure()),
 	maxVolume(maxVolume),
 	overflowTarget(overflowTarget)
@@ -20,29 +20,31 @@ bool MultiLayerMixture::tryCreateLayer(const LayerType layer)
 		return false;
 
 	const auto adjacentLayer = getClosestLayer(layer);
-	layers.emplace(std::make_pair(layer, layers.at(adjacentLayer).temperature));
+	layers.emplace(std::make_pair(layer, LayerProperties(*this, layer, layers.at(adjacentLayer).temperature)));
 	return true;
 }
 
-void MultiLayerMixture::addToLayer(const Reactant& reactant, const uint8_t revert)
+void MultiLayerMixture::addToLayer(const Reactant& reactant)
 {
 	tryCreateLayer(reactant.layer);
 
-	totalMoles += reactant.amount * revert;
-	layers[reactant.layer].moles += reactant.amount * revert;
+	auto& layer = layers[reactant.layer];
 
-	const auto mass = reactant.getMass() * revert;
+	totalMoles += reactant.amount;
+	layer.moles += reactant.amount;
+
+	const auto mass = reactant.getMass();
 	totalMass += mass;
-	layers[reactant.layer].mass += mass;
+	layer.mass += mass;
 
-	const auto vol = reactant.getVolume() * revert;
+	const auto vol = reactant.getVolume();
 	totalVolume += vol;
-	layers[reactant.layer].volume += vol;
-}
+	layer.volume += vol;
 
-void MultiLayerMixture::removeFromLayer(const Reactant& reactant)
-{
-	addToLayer(reactant, -1);
+	if (reactant.isNew)
+		layer.setIfNucleator(reactant);
+	else if (content.contains(reactant) == false)
+		layer.unsetIfNucleator(reactant);
 }
 
 void MultiLayerMixture::add(const Amount<Unit::JOULE> heat, const LayerType layer)
@@ -52,11 +54,28 @@ void MultiLayerMixture::add(const Amount<Unit::JOULE> heat, const LayerType laye
 
 void MultiLayerMixture::removeNegligibles()
 {
-	for (const auto& r : content)
-		if (isRealLayer(r.layer) && r.amount < Constants::MOLAR_EXISTANCE_THRESHOLD)
-			removeFromLayer(r);
+	bool removedAny = false;
+	for (auto r = content.begin(); r != content.end();)
+	{
+		if (r->amount < Constants::MOLAR_EXISTANCE_THRESHOLD)
+		{
+			const auto temp = r->mutate(-r->amount);
+			r = content.erase(r);
+			addToLayer(temp);
+			removedAny = true;
+			continue;
+		}
 
-	content.erase([](const auto& r) { return r.amount < Constants::MOLAR_EXISTANCE_THRESHOLD; });
+		++r;
+	}
+
+	if (removedAny == false)
+		return;
+
+	for (const auto& r : content)
+	{
+		layers.at(r.layer).setIfNucleator(r);
+	}
 }
 
 void MultiLayerMixture::checkOverflow()
@@ -69,15 +88,15 @@ void MultiLayerMixture::checkOverflow()
 		return;
 
 	auto topLayer = getTopLayer();
-	auto topLayerProps = layers.at(topLayer);
+	auto* topLayerProps = &layers.at(topLayer);
 
-	while (overflow > topLayerProps.volume)
+	while (overflow > topLayerProps->volume)
 	{
-		overflow -= topLayerProps.volume;
-		moveContentTo(overflowTarget, topLayerProps.volume, topLayer);
+		overflow -= topLayerProps->volume;
+		moveContentTo(overflowTarget, topLayerProps->volume, topLayer);
 
 		topLayer = getTopLayer();
-		topLayerProps = layers.at(topLayer);
+		topLayerProps = &layers.at(topLayer);
 	}
 	
 	moveContentTo(overflowTarget, overflow, topLayer);
@@ -161,8 +180,8 @@ LayerType MultiLayerMixture::getClosestLayer(LayerType layer) const
 
 void MultiLayerMixture::add(const Reactant& reactant)
 {
-	const auto& r = content.add(reactant);
-	addToLayer(r);
+	content.add(reactant);
+	addToLayer(reactant.mutate(*this));
 }
 
 bool MultiLayerMixture::hasLayer(const LayerType layer) const
@@ -173,7 +192,12 @@ bool MultiLayerMixture::hasLayer(const LayerType layer) const
 
 LayerType MultiLayerMixture::findLayerFor(const Reactant& reactant) const
 {
-	return LayerType::POLAR;
+	for (const auto& l : layers)
+		if (reactant.getAggregation(l.second.temperature) == getAggregation(l.first))
+			return l.first;
+
+	const auto newAgg = reactant.getAggregation(layers.at(LayerType::GASEOUS).temperature);
+	return getLayer(newAgg);
 }
 
 Amount<Unit::LITER> MultiLayerMixture::getMaxVolume() const
@@ -188,14 +212,12 @@ const LayerProperties& MultiLayerMixture::getLayerProperties(const LayerType lay
 
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> MultiLayerMixture::getLayerHeatCapacity(const LayerType layer) const
 {
-	Amount<Unit::JOULE_PER_MOLE_CELSIUS> hC = 0.0;
-	for (const auto& r : content)
-	{
-		if (r.layer == layer)
-			hC += r.getHeatCapacity() * r.getMass().asStd();
-	}
+	return layers.at(layer).getHeatCapacity();
+}
 
-	return hC / layers.at(layer).mass.asStd();
+Amount<Unit::JOULE_PER_CELSIUS> MultiLayerMixture::getLayerTotalHeatCapacity(const LayerType layer) const
+{
+	return layers.at(layer).getTotalHeatCapacity();
 }
 
 Amount<Unit::JOULE_PER_MOLE> MultiLayerMixture::getLayerKineticEnergy(const LayerType layer) const

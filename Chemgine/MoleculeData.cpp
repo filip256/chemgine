@@ -48,7 +48,7 @@ MoleculeData::MoleculeData(
 	const BaseEstimator& sublimationLatentHeatEstimator
 ) noexcept :
 	id(id),
-	name("?"),
+	name(this->structure.print()),
 	structure(std::move(structure)),
 	meltingPointEstimator(meltingPointEstimator),
 	boilingPointEstimator(boilingPointEstimator),

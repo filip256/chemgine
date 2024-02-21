@@ -62,7 +62,7 @@ bool LabwareDataTable::loadFromFile(const std::string& path)
 	}
 	file.close();
 
-	Logger::log("Loaded " + std::to_string(table.size()) + " labware items.", LogType::GOOD);
+	Logger::log("Loaded " + std::to_string(table.size()) + " labware items.", LogType::INFO);
 
 	return true;
 }

@@ -186,6 +186,13 @@ Tasks:
   8. Add fp precision typedefs for systems, amounts, input etc
   9. Add base class for dynamic allocation instance counting
   DONE. Specialize std::hash instead of creating Hash classes
+  10. Rename LayerPorperties to Layer
+  11. Fix const Ref<>
+  12. Add reactant.moveTo(conainer/layer)
+  13. Mark temporary state in a reactant flag, remove hasTemporaryState() from layer
+  14. Cache heat capacity on a tick basis
+  15. Provide literals to Amount
+  16. Remove Amount to(x, y) with two params
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules
@@ -202,9 +209,17 @@ Tasks:
   DONE. Fix 'leaky' overflow bug
   DONE. Add reactor determinism test
 ---
-  1. Add aggregation state changes to reactors
-  2. Add tests for aggregation changes
-  3. Add solubility logic
+  DONE. Add aggregation state changes to reactors
+  DONE. Add nucleators to layers
+  DONE. Add potential energy conversion logic
+  DONE. Add temp state back conversion logic
+  DONE. Add tests for layer changes
+  DONE. Fix temp state reactants heat capacity bug
+---
+  1. Add solubility logic
+---
+  1. Add contact energetic effects
+  2. Add contact reaction logic
 ---
   1. Add incompatible layer forwarding logic
 ---
@@ -213,6 +228,13 @@ Tasks:
   1. Add reactors to labware components
 ---
   1. Add Context
+
+
+
+KNOWN BUGS:
+  FIXED. Bad molecule print for "O=C(C)OC=C".
+
+
  
 Possible optimizations:
  - keep symbols as char* to avoid uneccessary constructor for 'C'
@@ -296,7 +318,7 @@ Categorizations:
 
       - latent heats:
           For fusion, vaporization and sublimation.
-          liquefiation = -fusion, condensation = -fusion, deposition = -sublimation
+          liquefiation = -fusion, condensation = -vaporization, deposition = -sublimation
 
           It is expected that latent heats for copression are proportional to pressure. 
           It is expected that latent heats for expansion are inversly proportional to pressure.
@@ -321,8 +343,36 @@ Categorizations:
            Stored as: J/mol (relative to 1st product)
 
        - solubility:
-           Solubility only makes sense inside the liquid layers, which are NONPOLAR, POLAR, DENSE_NONPOLAR, 
+           Solubility only makes sense inside the liquid layers, which are:
+           NONPOLAR, POLAR, DENSE_NONPOLAR, LIQUEFIED_GAS and MOLTEN_SOLID
+           Each molecule should have a polar and nonpolar solubility coeficients:
+           polarity & nonpolrity.
+           (logP is not enough, perhaps dissolved_grams/liter at 20C)
+           
+           If polarity 
 
+
+    Aggregration changes:
+        - when energy is added into a reactor, it becomes potential energy
+        - potential energy is turned into temperature via avg heat capacity
+        - when temperature is equal to the lowest bp (or mp/sp) in the mixture
+          (given by nucleators) the remaining energy must be directed to changing
+          the state of the reactant with that bp, via latent heat
+        - we must know the reactant with min and max bp and mp in each layer
+          -> compute on add
+
+        - if a layer contains reactants with transition points, for their current
+          state, which are incompatible with the temperature of the layer, these 
+          reactants must be returned to their original state and the energy resulted
+          form their backward conversion be added to the potential energy of the layer
+           * if we include the incompatible reactant in the heat capacity we will add to much energy
+             if we exclude it then we might add too little (resulting in more ticks to reach)
+                !!! perhaps incompatible reactants should never count towards heat capacity, since they are already 'heated'?
+             another way is to add the energy and consume in the same time, potentially resuling in deep recursive calls
+
+
+
+          CONSIDER REMOVING THE EXISTANCE THRESHOLD
 
    -----------------------------------------------------------------------------------------------------------------
 

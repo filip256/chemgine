@@ -50,7 +50,7 @@ bool EstimatorDataTable::loadFromFile(const std::string& path)
 {
 	addPredefined();
 
-	Logger::log("Loaded " + std::to_string(table.size()) + " estimators.", LogType::GOOD);
+	Logger::log("Loaded " + std::to_string(table.size()) + " estimators.", LogType::INFO);
 	return true;
 }
 
