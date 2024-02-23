@@ -18,7 +18,6 @@ enum class Unit : uint16_t
 	PASCAL,
 
 	JOULE,
-
 	WATT,
 
 	MOLAR_PERCENT,

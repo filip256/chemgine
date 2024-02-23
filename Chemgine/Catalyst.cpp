@@ -26,7 +26,7 @@ std::optional<Catalyst> Catalyst::get(
 {
 	const auto r = Reactable::get(smiles);
 	if (r.has_value())
-		return Catalyst(r.value(), idealAmount);
+		return Catalyst(*r, idealAmount);
 
 	return std::nullopt;
 }

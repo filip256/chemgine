@@ -6,7 +6,7 @@ MultiLayerMixture::MultiLayerMixture(
 	const Amount<Unit::LITER> maxVolume,
 	const Ref<BaseContainer> overflowTarget
 ) noexcept :
-	layers({ { LayerType::GASEOUS, LayerProperties(*this, LayerType::GASEOUS, atmosphere->getLayerProperties().temperature) }}),
+	layers({ { LayerType::GASEOUS, Layer(*this, LayerType::GASEOUS, atmosphere->getLayer().temperature) }}),
 	pressure(atmosphere->getPressure()),
 	maxVolume(maxVolume),
 	overflowTarget(overflowTarget)
@@ -20,7 +20,7 @@ bool MultiLayerMixture::tryCreateLayer(const LayerType layer)
 		return false;
 
 	const auto adjacentLayer = getClosestLayer(layer);
-	layers.emplace(std::make_pair(layer, LayerProperties(*this, layer, layers.at(adjacentLayer).temperature)));
+	layers.emplace(std::make_pair(layer, Layer(*this, layer, layers.at(adjacentLayer).temperature)));
 	return true;
 }
 
@@ -87,19 +87,19 @@ void MultiLayerMixture::checkOverflow()
 	if (overflow <= 0.0)
 		return;
 
-	auto topLayer = getTopLayer();
-	auto* topLayerProps = &layers.at(topLayer);
+	auto topLayerType = getTopLayer();
+	auto* topLayer = &layers.at(topLayerType);
 
-	while (overflow > topLayerProps->volume)
+	while (overflow > topLayer->volume)
 	{
-		overflow -= topLayerProps->volume;
-		moveContentTo(overflowTarget, topLayerProps->volume, topLayer);
+		overflow -= topLayer->volume;
+		moveContentTo(overflowTarget, topLayer->volume, topLayerType);
 
-		topLayer = getTopLayer();
-		topLayerProps = &layers.at(topLayer);
+		topLayerType = getTopLayer();
+		topLayer = &layers.at(topLayerType);
 	}
 	
-	moveContentTo(overflowTarget, overflow, topLayer);
+	moveContentTo(overflowTarget, overflow, topLayerType);
 }
 
 LayerType MultiLayerMixture::getTopLayer() const
@@ -193,11 +193,11 @@ bool MultiLayerMixture::hasLayer(const LayerType layer) const
 LayerType MultiLayerMixture::findLayerFor(const Reactant& reactant) const
 {
 	for (const auto& l : layers)
-		if (reactant.getAggregation(l.second.temperature) == getAggregation(l.first))
+		if (reactant.getAggregation(l.second.temperature) == getAggregationType(l.first))
 			return l.first;
 
 	const auto newAgg = reactant.getAggregation(layers.at(LayerType::GASEOUS).temperature);
-	return getLayer(newAgg);
+	return getLayerType(newAgg);
 }
 
 Amount<Unit::LITER> MultiLayerMixture::getMaxVolume() const
@@ -205,7 +205,7 @@ Amount<Unit::LITER> MultiLayerMixture::getMaxVolume() const
 	return maxVolume;
 }
 
-const LayerProperties& MultiLayerMixture::getLayerProperties(const LayerType layer) const
+const Layer& MultiLayerMixture::getLayer(const LayerType layer) const
 {
 	return layers.at(layer);
 }
@@ -275,7 +275,7 @@ void MultiLayerMixture::moveContentTo(Ref<BaseContainer> destination, Amount<Uni
 		volume = sourceVolume;
 
 	const bool hasDestination = destination.isSet();
-	for (const auto& r : content)
+	for (auto& r : content)
 	{
 		if (r.layer != sourceLayer)
 			continue;

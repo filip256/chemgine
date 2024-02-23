@@ -4,6 +4,7 @@
 #include "LayerType.hpp"
 #include "StateNucleator.hpp"
 #include "Ref.hpp"
+#include "LayerIterator.hpp"
 
 class Mixture;
 template <LayerType L>
@@ -11,7 +12,7 @@ class SingleLayerMixture;
 class MultiLayerMixture;
 class Reactor;
 
-class LayerProperties
+class Layer
 {
 private:
 	const LayerType layerType;
@@ -42,7 +43,7 @@ private:
 	void convertTemporaryStateReactants();
 
 public:
-	LayerProperties(
+	Layer(
 		const Ref<Mixture> container = Ref<Mixture>::nullRef,
 		const LayerType layerType = LayerType::NONE,
 		const Amount<Unit::CELSIUS> temperature = 0.0
@@ -69,8 +70,11 @@ public:
 
 	void consumePotentialEnergy();
 
-	bool operator==(const LayerProperties& other) const;
-	bool operator!=(const LayerProperties& other) const;
+	bool operator==(const Layer& other) const;
+	bool operator!=(const Layer& other) const;
+
+	LayerIterator begin() const;
+	LayerIterator end() const;
 
 	template <LayerType L>
 	friend class SingleLayerMixture;

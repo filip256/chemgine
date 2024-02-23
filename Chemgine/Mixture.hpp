@@ -3,7 +3,7 @@
 #include "BaseContainer.hpp"
 #include "ReactantSet.hpp"
 
-class LayerProperties;
+class Layer;
 
 /// <summary>
 /// The simplest type of reactant container with internal storage.
@@ -34,11 +34,11 @@ public:
 	virtual Amount<Unit::GRAM> getTotalMass() const = 0;
 	virtual Amount<Unit::LITER> getTotalVolume() const = 0;
 
-	virtual const LayerProperties& getLayerProperties(const LayerType layer) const = 0;
+	virtual const Layer& getLayer(const LayerType layer) const = 0;
 	virtual Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity(const LayerType layer) const = 0;
 	virtual Amount<Unit::JOULE_PER_CELSIUS> getLayerTotalHeatCapacity(const LayerType layer) const = 0;
 	virtual Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType layer) const = 0;
 
 	friend class Reactant;
-	friend class LayerProperties;
+	friend class Layer;
 };

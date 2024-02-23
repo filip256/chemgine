@@ -31,13 +31,13 @@
 int main()
 {
     {
-#ifndef NDEBUG
+//#ifndef NDEBUG
     {
         TestManager tests;
         tests.runAll();
         tests.runPersist();
     }
-#endif
+//#endif
 
 
         DataStore store;

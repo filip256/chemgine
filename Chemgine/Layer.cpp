@@ -1,8 +1,8 @@
-#include "LayerProperties.hpp"
+#include "Layer.hpp"
 #include "Mixture.hpp"
 #include "Constants.hpp"
 
-LayerProperties::LayerProperties(
+Layer::Layer(
     const Ref<Mixture> container,
     const LayerType layerType,
     const Amount<Unit::CELSIUS> temperature
@@ -30,23 +30,23 @@ LayerProperties::LayerProperties(
     }
 }
 
-void LayerProperties::findNewLowNucleator()
+void Layer::findNewLowNucleator()
 {
     lowNucleator.unset();
-    for (const auto r : container->content)
+    for (const auto& r : container->content)
         if (r.layer == layerType && r.amount >= Constants::MOLAR_EXISTANCE_THRESHOLD)
             lowNucleator.setIfLower(r);
 }
 
-void LayerProperties::findNewHighNucleator()
+void Layer::findNewHighNucleator()
 {
     highNucleator.unset();
-    for (const auto r : container->content)
+    for (const auto& r : container->content)
         if (r.layer == layerType && r.amount >= Constants::MOLAR_EXISTANCE_THRESHOLD)
             highNucleator.setIfLower(r);
 }
 
-void LayerProperties::consumePositivePotentialEnergy()
+void Layer::consumePositivePotentialEnergy()
 {
     const auto higherAggregationLayer = getHigherAggregationLayer(layerType);
     while (isEmpty() == false)
@@ -97,7 +97,7 @@ void LayerProperties::consumePositivePotentialEnergy()
     container->add(potentialEnergy, higherAggregationLayer);
 }
 
-void LayerProperties::consumeNegativePotentialEnergy()
+void Layer::consumeNegativePotentialEnergy()
 {
     const auto lowerAggregationLayer = getLowerAggregationLayer(layerType);
     while (isEmpty() == false)
@@ -148,7 +148,7 @@ void LayerProperties::consumeNegativePotentialEnergy()
     container->add(potentialEnergy, lowerAggregationLayer);
 }
 
-Amount<Unit::JOULE> LayerProperties::getLeastEnergyDiff(const Amount<Unit::CELSIUS> target) const
+Amount<Unit::JOULE> Layer::getLeastEnergyDiff(const Amount<Unit::CELSIUS> target) const
 {
     if (target > temperature)
     {
@@ -174,7 +174,7 @@ Amount<Unit::JOULE> LayerProperties::getLeastEnergyDiff(const Amount<Unit::CELSI
         .to<Unit::JOULE>(std::max(target, transitionPoint) - temperature);
 }
 
-bool LayerProperties::hasTemporaryState(const Reactant& reactant) const
+bool Layer::hasTemporaryState(const Reactant& reactant) const
 {
     if (isLiquidLayer(layerType))
         return reactant.getBoilingPoint() < temperature || reactant.getMeltingPoint() > temperature;
@@ -184,9 +184,8 @@ bool LayerProperties::hasTemporaryState(const Reactant& reactant) const
     return reactant.getMeltingPoint() < temperature;
 }
 
-void LayerProperties::convertTemporaryStateReactants()
+void Layer::convertTemporaryStateReactants()
 {
-    // TODO: make static ckeck via templates
     // TODO: handle equal distribution with multiple temp state reactants
     //        - temp reactats with smaller diffs act towards reaching the tp of those with higher or equal diffs
     //        - each contributes proportionally to its diff * mass
@@ -261,66 +260,66 @@ void LayerProperties::convertTemporaryStateReactants()
     }
 }
 
-Amount<Unit::MOLE> LayerProperties::getMoles() const 
+Amount<Unit::MOLE> Layer::getMoles() const 
 {
     return moles;
 }
 
-Amount<Unit::GRAM> LayerProperties::getMass() const 
+Amount<Unit::GRAM> Layer::getMass() const 
 {
     return mass;
 }
 
-Amount<Unit::LITER> LayerProperties::getVolume() const 
+Amount<Unit::LITER> Layer::getVolume() const 
 {
     return volume;
 }
 
-bool LayerProperties::isEmpty() const
+bool Layer::isEmpty() const
 {
     return moles == 0.0;
 }
 
-bool LayerProperties::hasLowNucleator() const
+bool Layer::hasLowNucleator() const
 {
     return lowNucleator.isValid();
 }
 
-bool LayerProperties::hasHighNucleator() const
+bool Layer::hasHighNucleator() const
 {
     return highNucleator.isValid();
 }
 
-const Reactant& LayerProperties::getLowNucleator() const
+const Reactant& Layer::getLowNucleator() const
 {
     return lowNucleator.getReactant();
 }
 
-const Reactant& LayerProperties::getHighNucleator() const
+const Reactant& Layer::getHighNucleator() const
 {
     return highNucleator.getReactant();
 }
 
-Amount<Unit::CELSIUS> LayerProperties::getTemperature() const 
+Amount<Unit::CELSIUS> Layer::getTemperature() const 
 {
     return temperature;
 }
 
-Amount<Unit::CELSIUS> LayerProperties::getMinAllowedTemperature() const
+Amount<Unit::CELSIUS> Layer::getMinAllowedTemperature() const
 {
     return lowNucleator.isValid() ?
         lowNucleator.getTransitionPoint() :
         Amount<Unit::CELSIUS>::Minimum;
 }
 
-Amount<Unit::CELSIUS> LayerProperties::getMaxAllowedTemperature() const
+Amount<Unit::CELSIUS> Layer::getMaxAllowedTemperature() const
 {
     return highNucleator.isValid() ?
         highNucleator.getTransitionPoint() :
         Amount<Unit::CELSIUS>::Maximum;
 }
 
-Amount<Unit::JOULE_PER_MOLE_CELSIUS> LayerProperties::getHeatCapacity() const
+Amount<Unit::JOULE_PER_MOLE_CELSIUS> Layer::getHeatCapacity() const
 {
     Amount<Unit::JOULE_PER_MOLE_CELSIUS> hC = 0.0;
     Amount<Unit::GRAM> ms = 0.0;
@@ -336,7 +335,7 @@ Amount<Unit::JOULE_PER_MOLE_CELSIUS> LayerProperties::getHeatCapacity() const
     return hC / ms.asStd();
 }
 
-Amount<Unit::JOULE_PER_CELSIUS> LayerProperties::getTotalHeatCapacity() const
+Amount<Unit::JOULE_PER_CELSIUS> Layer::getTotalHeatCapacity() const
 {
     Amount<Unit::JOULE_PER_MOLE_CELSIUS> hC = 0.0;
     Amount<Unit::GRAM> ms = 0.0;
@@ -354,13 +353,13 @@ Amount<Unit::JOULE_PER_CELSIUS> LayerProperties::getTotalHeatCapacity() const
     return (hC / ms.asStd()).to<Unit::JOULE_PER_CELSIUS>(mo);
 }
 
-void LayerProperties::setIfNucleator(const Reactant& reactant)
+void Layer::setIfNucleator(const Reactant& reactant)
 {
     lowNucleator.setIfLower(reactant);
     highNucleator.setIfHigher(reactant);
 }
 
-void LayerProperties::unsetIfNucleator(const Reactant& reactant)
+void Layer::unsetIfNucleator(const Reactant& reactant)
 {
     if (lowNucleator.isSet() && lowNucleator.getReactant() == reactant)
         lowNucleator.unset();
@@ -368,7 +367,7 @@ void LayerProperties::unsetIfNucleator(const Reactant& reactant)
         highNucleator.unset();
 }
 
-void LayerProperties::consumePotentialEnergy()
+void Layer::consumePotentialEnergy()
 {
     if (potentialEnergy > 0.0)
         consumePositivePotentialEnergy();
@@ -376,7 +375,7 @@ void LayerProperties::consumePotentialEnergy()
         consumeNegativePotentialEnergy();
 }
 
-bool LayerProperties::operator==(const LayerProperties& other) const
+bool Layer::operator==(const Layer& other) const
 {
     return this->temperature == other.temperature &&
         this->moles == other.moles &&
@@ -385,7 +384,17 @@ bool LayerProperties::operator==(const LayerProperties& other) const
         this->potentialEnergy == other.potentialEnergy;
 }
 
-bool LayerProperties::operator!=(const LayerProperties& other) const
+bool Layer::operator!=(const Layer& other) const
 {
     return !(*this == other);
+}
+
+LayerIterator Layer::begin() const
+{
+    return LayerIterator(layerType, container->content.begin(), container->content.end());
+}
+
+LayerIterator Layer::end() const
+{
+    return LayerIterator(layerType, container->content.end(), container->content.end());
 }

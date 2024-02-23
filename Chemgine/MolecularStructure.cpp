@@ -1093,13 +1093,13 @@ bool MolecularStructure::deserialize(const std::string& str)
     for (c_size i = 0; i < comps.size(); ++i)
     {
         const auto id = DataHelpers::parse<unsigned int>(comps[i]);
-        if (id.has_value() == false || Atom::isDefined(static_cast<ComponentIdType>(id.value())) == false)
+        if (id.has_value() == false || Atom::isDefined(static_cast<ComponentIdType>(*id)) == false)
         {
             clear();
             return false;
         }
 
-        components.emplace_back(new Atom(static_cast<ComponentIdType>(id.value())));
+        components.emplace_back(new Atom(static_cast<ComponentIdType>(*id)));
     }
 
     for (c_size i = 1; i < tokens.size(); ++i)
@@ -1123,7 +1123,7 @@ bool MolecularStructure::deserialize(const std::string& str)
                     return false;
                 }
 
-                bonds[i - 1].emplace_back(new Bond(id.value(), BondType::SINGLE));
+                bonds[i - 1].emplace_back(new Bond(*id, BondType::SINGLE));
             }
             else
             {
@@ -1141,7 +1141,7 @@ bool MolecularStructure::deserialize(const std::string& str)
                     return false;
                 }
 
-                  bonds[i - 1].emplace_back(new Bond(id.value(), bType));
+                  bonds[i - 1].emplace_back(new Bond(*id, bType));
             }
         }
     }

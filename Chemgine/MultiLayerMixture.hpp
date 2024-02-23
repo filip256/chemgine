@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Mixture.hpp"
-#include "LayerProperties.hpp"
+#include "Layer.hpp"
 #include "Atmosphere.hpp"
 #include "Ref.hpp"
 
@@ -16,7 +16,7 @@ protected:
 	const Amount<Unit::LITER> maxVolume;
 	Ref<BaseContainer> overflowTarget;
 
-	std::unordered_map<LayerType, LayerProperties> layers;
+	std::unordered_map<LayerType, Layer> layers;
 
 	bool tryCreateLayer(const LayerType layer);
 	void addToLayer(const Reactant& reactant);
@@ -53,7 +53,7 @@ public:
 	Amount<Unit::GRAM> getTotalMass() const override final;
 	Amount<Unit::LITER> getTotalVolume() const override final;
 
-	const LayerProperties& getLayerProperties(const LayerType layer) const override final;
+	const Layer& getLayer(const LayerType layer) const override final;
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity(const LayerType layer) const override final;
 	Amount<Unit::JOULE_PER_CELSIUS> getLayerTotalHeatCapacity(const LayerType layer) const override final;
 	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType layer) const override final;

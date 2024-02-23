@@ -53,7 +53,7 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 
 		if (valences.has_value() == false)
 		{
-			Logger::log("Atom with invalid or missing valence with id " + std::to_string(id.value()) + " skipped.", LogType::BAD);
+			Logger::log("Atom with invalid or missing valence with id " + std::to_string(*id) + " skipped.", LogType::BAD);
 			continue;
 		}
 
@@ -64,12 +64,12 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 		}
 
 		if (table.emplace(
-			id.value(),
+			*id,
 			line[1],
-			AtomData(id.value(), line[1], line[2], Amount<Unit::GRAM>(weight.value_or(0)), std::move(*valences))
+			AtomData(*id, line[1], line[2], Amount<Unit::GRAM>(weight.value_or(0)), std::move(*valences))
 			) == false)
 		{
-			Logger::log("Duplicate atom with id " + std::to_string(id.value()) + " or symbol '" + line[1] + "' skipped.", LogType::WARN);
+			Logger::log("Duplicate atom with id " + std::to_string(*id) + " or symbol '" + line[1] + "' skipped.", LogType::WARN);
 		}
 	}
 	file.close();

@@ -47,7 +47,7 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 		const auto reactants = DataHelpers::parseList(line[2], ';', true);
 		if (reactants.empty())
 		{
-			Logger::log("Reaction without reactants with id " + std::to_string(id.value()) + " skipped.", LogType::BAD);
+			Logger::log("Reaction without reactants with id " + std::to_string(*id) + " skipped.", LogType::BAD);
 			continue;
 		}
 
@@ -58,17 +58,17 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			const auto r = Reactable::get(reactants[i]);
 			if (r.has_value() == false)
 			{
-				Logger::log("Ill-defined reactant '" + reactants[i] + "' in reaction with id " + std::to_string(id.value()) + " skipped.", LogType::BAD);
+				Logger::log("Ill-defined reactant '" + reactants[i] + "' in reaction with id " + std::to_string(*id) + " skipped.", LogType::BAD);
 				continue;
 			}
-			reactantIds.emplace_back(std::make_pair(r.value(), 0));
+			reactantIds.emplace_back(std::make_pair(*r, 0));
 		}
 
 		// products
 		const auto products = DataHelpers::parseList(line[3], ';', true);
 		if (products.empty())
 		{
-			Logger::log("Reaction without products with id " + std::to_string(id.value()) + " skipped.", LogType::BAD);
+			Logger::log("Reaction without products with id " + std::to_string(*id) + " skipped.", LogType::BAD);
 			continue;
 		}
 
@@ -79,15 +79,15 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			const auto r = Reactable::get(products[i]);
 			if (r.has_value() == false)
 			{
-				Logger::log("Ill-defined product '" + products[i] + "' in reaction with id " + std::to_string(id.value()) + " skipped.", LogType::BAD);
+				Logger::log("Ill-defined product '" + products[i] + "' in reaction with id " + std::to_string(*id) + " skipped.", LogType::BAD);
 				continue;
 			}
-			productIds.emplace_back(std::make_pair(r.value(), 0));
+			productIds.emplace_back(std::make_pair(*r, 0));
 		}
 
 		if (ReactionData::balance(reactantIds, productIds) == false)
 		{
-			Logger::log("Reaction with id " + std::to_string(id.value()) + " could not be balanced.", LogType::BAD);
+			Logger::log("Reaction with id " + std::to_string(*id) + " could not be balanced.", LogType::BAD);
 			continue;
 		}
 
@@ -95,7 +95,7 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 		const auto speed = DataHelpers::parsePair<Unit::MOLE_PER_SECOND, Unit::CELSIUS>(line[4]);	
 		if(speed.has_value() == false)
 		{
-			Logger::log("Reaction speed for the reaction with id " + std::to_string(id.value()) + " is ill-defined. Skipped.", LogType::BAD);
+			Logger::log("Reaction speed for the reaction with id " + std::to_string(*id) + " is ill-defined. Skipped.", LogType::BAD);
 			continue;
 		}
 
@@ -118,33 +118,33 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 				const auto pair = DataHelpers::parseList(catStr[i][j], '@', true);
 				if (pair.size() != 2)
 				{
-					Logger::log("Reaction catalyst for the reaction with id " + std::to_string(id.value()) + " is ill-defined. Catalysts skipped.", LogType::BAD);
+					Logger::log("Reaction catalyst for the reaction with id " + std::to_string(*id) + " is ill-defined. Catalysts skipped.", LogType::BAD);
 					continue;
 				}
 
 				const auto amount = DataHelpers::parseUnsigned<double>(pair.back());
 				if (amount.has_value() == false)
 				{
-					Logger::log("Ill-defined catalyst '" + products[i] + "' in reaction with id " + std::to_string(id.value()) + " skipped.", LogType::BAD);
+					Logger::log("Ill-defined catalyst '" + products[i] + "' in reaction with id " + std::to_string(*id) + " skipped.", LogType::BAD);
 					continue;
 				}
 
-				const auto c = Catalyst::get(pair.front(), amount.value());
+				const auto c = Catalyst::get(pair.front(), *amount);
 				if (c.has_value() == false)
 				{
-					Logger::log("Ill-defined catalyst '" + products[i] + "' in reaction with id " + std::to_string(id.value()) + " skipped.", LogType::BAD);
+					Logger::log("Ill-defined catalyst '" + products[i] + "' in reaction with id " + std::to_string(*id) + " skipped.", LogType::BAD);
 					continue;
 				}
 
-				catalysts.back().emplace_back(c.value());
+				catalysts.back().emplace_back(*c);
 			}
 		}
 
 		// create
 		ReactionData data(
-			id.value(), line[1],
+			*id, line[1],
 			reactantIds, productIds, 
-			speed.value().first, speed.value().second,
+			speed->first, speed->second,
 			reactionEnergy.value_or(0.0),
 			activationEnergy.value_or(0.0),
 			std::move(catalysts)
@@ -152,17 +152,17 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 
 		if (data.mapReactantsToProducts() == false)
 		{
-			Logger::log("Reaction with id " + std::to_string(id.value()) + " is not a valid reaction.", LogType::BAD);
+			Logger::log("Reaction with id " + std::to_string(*id) + " is not a valid reaction.", LogType::BAD);
 			continue;
 		}
 
 		if (table.emplace(
-			id.value(),
-			std::to_string(id.value()),
+			*id,
+			std::to_string(*id),
 			std::move(data)
 		) == false)
 		{
-			Logger::log("Reaction with duplicate id " + std::to_string(id.value()) + " skipped.", LogType::WARN);
+			Logger::log("Reaction with duplicate id " + std::to_string(*id) + " skipped.", LogType::WARN);
 		}
 	}
 	file.close();

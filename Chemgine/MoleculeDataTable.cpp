@@ -85,12 +85,12 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 		const auto& slhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), slhR.value_or(std::numeric_limits<double>::max()));
 
 		if (table.emplace(
-			id.value(),
+			*id,
 			line[1],
-			MoleculeData(id.value(), line[2], line[1], mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA)
+			MoleculeData(*id, line[2], line[1], mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA)
 		) == false)
 		{
-			Logger::log("Molecule with duplicate id " + std::to_string(id.value()) + " skipped.", LogType::WARN);
+			Logger::log("Molecule with duplicate id " + std::to_string(*id) + " skipped.", LogType::WARN);
 		}
 	}
 	file.close();

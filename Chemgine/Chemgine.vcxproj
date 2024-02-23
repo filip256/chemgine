@@ -218,8 +218,9 @@
     <ClCompile Include="LabwareDataTable.cpp" />
     <ClCompile Include="LabwarePort.cpp" />
     <ClCompile Include="LabwareSystem.cpp" />
+    <ClCompile Include="LayerIterator.cpp" />
     <ClCompile Include="MultiLayerMixture.cpp" />
-    <ClCompile Include="LayerProperties.cpp" />
+    <ClCompile Include="Layer.cpp" />
     <ClCompile Include="LinearEstimator.cpp" />
     <ClCompile Include="Maths.cpp" />
     <ClCompile Include="Mixture.cpp" />
@@ -227,7 +228,6 @@
     <ClCompile Include="Molecule.cpp" />
     <ClCompile Include="MoleculeData.cpp" />
     <ClCompile Include="OffsetEstimator.cpp" />
-    <ClCompile Include="PhysicalProperties.cpp" />
     <ClCompile Include="Reactable.cpp" />
     <ClCompile Include="Reactant.cpp" />
     <ClCompile Include="ReactantSet.cpp" />
@@ -299,8 +299,9 @@
     <ClInclude Include="LabwarePort.hpp" />
     <ClInclude Include="LabwareSystem.hpp" />
     <ClInclude Include="LabwareType.hpp" />
+    <ClInclude Include="LayerIterator.hpp" />
     <ClInclude Include="MultiLayerMixture.hpp" />
-    <ClInclude Include="LayerProperties.hpp" />
+    <ClInclude Include="Layer.hpp" />
     <ClInclude Include="LayerType.hpp" />
     <ClInclude Include="LinearEstimator.hpp" />
     <ClInclude Include="LogType.hpp" />
@@ -309,7 +310,6 @@
     <ClInclude Include="Mixture.hpp" />
     <ClInclude Include="MoleculeIdType.hpp" />
     <ClInclude Include="OffsetEstimator.hpp" />
-    <ClInclude Include="PhysicalProperties.hpp" />
     <ClInclude Include="PortType.hpp" />
     <ClInclude Include="Reactant.hpp" />
     <ClInclude Include="ReactantSet.hpp" />

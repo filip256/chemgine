@@ -50,17 +50,48 @@ Amount<Unit::CELSIUS> Molecule::getBoilingPointAt(const Amount<Unit::TORR> press
 	return this->data().boilingPointEstimator.get(pressure.asStd());
 }
 
+AggregationType Molecule::getAggregationAt(
+	const Amount<Unit::CELSIUS> temperature,
+	const Amount<Unit::TORR> pressure
+) const
+{
+	return temperature < getMeltingPointAt(pressure) ? AggregationType::SOLID :
+		temperature < getBoilingPointAt(pressure) ? AggregationType::LIQUID :
+		AggregationType::GAS;
+}
+
+Amount<Unit::GRAM_PER_MILLILITER> Molecule::getDensityAt(
+	const Amount<Unit::CELSIUS> temperature,
+	const Amount<Unit::TORR> pressure,
+	const AggregationType aggregation
+) const
+{
+	const auto& data = this->data();
+	return
+		aggregation == AggregationType::GAS ? Formulas::idealGasLaw(temperature, pressure, molarMass) :
+		aggregation == AggregationType::LIQUID ? data.liquidDensityEstimator.get(temperature.asStd()) :
+		data.solidDensityEstimator.get(temperature.asStd());
+}
+
 Amount<Unit::GRAM_PER_MILLILITER> Molecule::getDensityAt(
 	const Amount<Unit::CELSIUS> temperature,
 	const Amount<Unit::TORR> pressure
 ) const
 {
+	return getDensityAt(temperature, pressure, getAggregationAt(temperature, pressure));
+}
+
+Amount<Unit::JOULE_PER_MOLE_CELSIUS> Molecule::getHeatCapacityAt(
+	const Amount<Unit::CELSIUS> temperature,
+	const Amount<Unit::TORR> pressure,
+	const AggregationType aggregation
+) const
+{
 	const auto& data = this->data();
-	return temperature < getMeltingPointAt(pressure) ?
-		data.solidDensityEstimator.get(temperature.asStd()) :
-		temperature < getBoilingPointAt(pressure) ?
-			data.liquidDensityEstimator.get(temperature.asStd()) :
-			Formulas::idealGasLaw(temperature, pressure, molarMass);
+	return
+		aggregation == AggregationType::GAS ? Formulas::isobaricHeatCapacity(data.getStructure().getDegreesOfFreedom()) :
+		aggregation == AggregationType::LIQUID ? data.liquidHeatCapacityEstimator.get(pressure.asStd()) :
+		data.solidHeatCapacityEstimator.get(pressure.asStd());
 }
 
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> Molecule::getHeatCapacityAt(
@@ -68,12 +99,7 @@ Amount<Unit::JOULE_PER_MOLE_CELSIUS> Molecule::getHeatCapacityAt(
 	const Amount<Unit::TORR> pressure
 ) const
 {
-	const auto& data = this->data();
-	return temperature < getMeltingPointAt(pressure) ?
-		data.solidHeatCapacityEstimator.get(pressure.asStd()) :
-		temperature < getBoilingPointAt(pressure) ?
-			data.liquidHeatCapacityEstimator.get(pressure.asStd()) :
-			Formulas::isobaricHeatCapacity(data.getStructure().getDegreesOfFreedom());
+	return getHeatCapacityAt(temperature, pressure, getAggregationAt(temperature, pressure));
 }
 
 Amount<Unit::JOULE_PER_MOLE> Molecule::getFusionHeatAt(

@@ -343,7 +343,7 @@ private:
 
 			if (std::abs((massAfter - massBefore).asStd()) > 1e-5)
 			{
-				Logger::log("Test failed > Reactor > mass conservation: expected=" + std::to_string(massBefore.asStd()) + "   actual=" + std::to_string(massAfter.asStd()), LogType::BAD);
+				Logger::log("Test failed > Reactor > mass conservation: expected=" + massBefore.toString() + "   actual=" + massAfter.toString(), LogType::BAD);
 				passed = false;
 				break;
 			}
@@ -354,9 +354,9 @@ private:
 		Logger::enterContext();
 		Logger::logCached("Input    |   Reference  Actual     Error", LogType::TABLE);
 
-		const auto& layerProps = reactorB->getLayerProperties(LayerType::POLAR);
-		const auto moles = layerProps.getMoles();
-		double addedEnergy = 0.0;
+		const auto& layer = reactorB->getLayer(LayerType::POLAR);
+		const auto moles = layer.getMoles();
+		Amount<Unit::JOULE> addedEnergy = 0.0;
 		double tErr = 0.0;
 		std::vector<std::pair<Amount<Unit::JOULE>, Amount<Unit::CELSIUS>>> batches { {0.0, 1.0 }, { 7.5, 1.1 }, { 30.19, 1.5 }, { 264.19, 5.0 }, { 754.84, 15.0 }, { 6408.59, 99.9 }, {-7465.310 , 1.0}};
 		for (size_t i = 0; i < batches.size(); ++i)
@@ -364,12 +364,12 @@ private:
 			const auto correctedEnergy = batches[i].first * moles.asStd();
 			reactorB->add(correctedEnergy);
 			reactorB->tick();
-			addedEnergy += correctedEnergy.asStd();
-			const auto act = layerProps.getTemperature();
+			addedEnergy += correctedEnergy;
+			const auto act = layer.getTemperature();
 			const auto err = abs((act - batches[i].second).asStd());
 			tErr += err;
 
-			Logger::logCached(std::to_string(addedEnergy).substr(0, 8) + " |   " + std::to_string(batches[i].second.asStd()).substr(0, 8) + "   " + std::to_string(act.asStd()).substr(0, 8) + "   " + std::to_string(err), LogType::TABLE);
+			Logger::logCached(addedEnergy.toString(7) + " |   " + batches[i].second.toString(7) + "   " + act.toString(7) + "   " + std::to_string(err), LogType::TABLE);
 		}
 		const auto mae = tErr / batches.size();
 
@@ -390,7 +390,7 @@ private:
 	{
 		if (std::abs((reactorC->getTotalVolume() - reactorC->getMaxVolume()).asStd()) > overflowLossThreshold)
 		{
-			Logger::log("Test failed > Reactor > volumetrics > total_volume: expected=" + std::to_string(reactorC->getMaxVolume().asStd()) + "   actual=" + std::to_string(reactorC->getTotalVolume().asStd()), LogType::BAD);
+			Logger::log("Test failed > Reactor > volumetrics > total_volume: expected=" + reactorC->getMaxVolume().toString() + "   actual=" + reactorC->getTotalVolume().toString(), LogType::BAD);
 			passed = false;
 		}
 
@@ -446,21 +446,21 @@ private:
 		Logger::enterContext();
 		Logger::logCached("Energy  |   SourceTemp   DestinationTemp  Source Nucleator Amount", LogType::TABLE);
 
-		const auto& sourceProps = reactorE->getLayerProperties(LayerType::POLAR);
-		const auto& destinationProps = reactorE->getLayerProperties(LayerType::GASEOUS);
+		const auto& source = reactorE->getLayer(LayerType::POLAR);
+		const auto& destination = reactorE->getLayer(LayerType::GASEOUS);
 
 		uint8_t testPhase = 0;
-		const auto sourceMaxTemp = sourceProps.getMaxAllowedTemperature();
-		const auto nucleator = sourceProps.getHighNucleator();
+		const auto sourceMaxTemp = source.getMaxAllowedTemperature();
+		const auto nucleator = source.getHighNucleator();
 		auto pastNucleatorAmount = reactorE->getAmountOf(nucleator);
-		auto pastSourceTemp = sourceProps.getTemperature();
-		auto pastDestinationTemp = destinationProps.getTemperature();
+		auto pastSourceTemp = source.getTemperature();
+		auto pastDestinationTemp = destination.getTemperature();
 
 		Amount<Unit::JOULE> energyStep = 4000.0;
 		Logger::logCached("0kJ     |   " +
-			std::to_string(sourceProps.getTemperature().asStd()).substr(0, 8) + "C    " +
-			std::to_string(destinationProps.getTemperature().asStd()).substr(0, 8) + "C        " +
-			std::to_string(reactorE->getAmountOf(nucleator).asStd()).substr(0, 8),
+			source.getTemperature().toString(8) + "    " +
+			destination.getTemperature().toString(8) + "        " +
+			reactorE->getAmountOf(nucleator).toString(8),
 			LogType::TABLE);
 
 		for (size_t i = 0; i < 64; ++i)
@@ -468,14 +468,14 @@ private:
 			reactorE->add(Amount<Unit::JOULE>(energyStep));
 			reactorE->tick();
 			Logger::logCached(std::to_string(energyStep.asKilo() * (i + 1)).substr(0, 5) + "kJ |   " +
-				std::to_string(sourceProps.getTemperature().asStd()).substr(0, 8) + "C    " +
-				std::to_string(destinationProps.getTemperature().asStd()).substr(0, 8) + "C        " +
-				std::to_string(reactorE->getAmountOf(nucleator).asStd()).substr(0, 8),
+				source.getTemperature().toString(8) + "    " +
+				destination.getTemperature().toString(8) + "        " +
+				reactorE->getAmountOf(nucleator).toString(8),
 				LogType::TABLE);
 
 			if (testPhase == 0) // heating up source to tp
 			{
-				const auto sTemp = sourceProps.getTemperature();
+				const auto sTemp = source.getTemperature();
 				if (sTemp == sourceMaxTemp)
 				{
 					++testPhase;
@@ -483,12 +483,12 @@ private:
 				}
 				else if (sTemp >= sourceMaxTemp)
 				{
-					Logger::log("Test failed > Reactor > aggregation change > max source temp exceeded, T=" + std::to_string(sTemp.asStd()) + "C", LogType::BAD);
+					Logger::log("Test failed > Reactor > aggregation change > max source temp exceeded, T=" + sTemp.toString(), LogType::BAD);
 					passed = false;
 					break;
 				}
 
-				const auto dTemp = destinationProps.getTemperature();;
+				const auto dTemp = destination.getTemperature();;
 				if (dTemp != pastDestinationTemp)
 				{
 					Logger::log("Test failed > Reactor > aggregation change > destination temperature changed in phase 0", LogType::BAD);
@@ -499,7 +499,7 @@ private:
 			}
 			else if (testPhase == 1) // heating up dest to tp
 			{
-				const auto dTemp = destinationProps.getTemperature();
+				const auto dTemp = destination.getTemperature();
 				if (dTemp == sourceMaxTemp)
 				{
 					++testPhase;
@@ -507,12 +507,12 @@ private:
 				}
 				else if (dTemp >= sourceMaxTemp)
 				{
-					Logger::log("Test failed > Reactor > aggregation change > max destination temp exceeded, T=" + std::to_string(dTemp.asStd()) + "C", LogType::BAD);
+					Logger::log("Test failed > Reactor > aggregation change > max destination temp exceeded, T=" + dTemp.toString(), LogType::BAD);
 					passed = false;
 					break;
 				}
 
-				const auto sTemp = sourceProps.getTemperature();;
+				const auto sTemp = source.getTemperature();;
 				if (sTemp != pastSourceTemp)
 				{
 					Logger::log("Test failed > Reactor > aggregation change > source temperature changed in phase 1", LogType::BAD);
@@ -532,7 +532,7 @@ private:
 				}
 				pastNucleatorAmount = nMoles;
 
-				const auto dTemp = destinationProps.getTemperature();;
+				const auto dTemp = destination.getTemperature();;
 				if (dTemp != pastDestinationTemp)
 				{
 					Logger::log("Test failed > Reactor > aggregation change > destination temperature changed in phase 2", LogType::BAD);
@@ -546,7 +546,7 @@ private:
 			}
 			else if (testPhase == 3) // full heat convertsion
 			{
-				const auto dTemp = destinationProps.getTemperature();
+				const auto dTemp = destination.getTemperature();
 				if (dTemp <= pastDestinationTemp)
 				{
 					Logger::log("Test failed > Reactor > aggregation change > destination temperature did not increase in phase 3", LogType::BAD);
@@ -554,7 +554,7 @@ private:
 					break;
 				}
 				pastDestinationTemp = dTemp;
-				if (sourceProps.getTemperature().isInfinity() == false)
+				if (source.getTemperature().isInfinity() == false)
 				{
 					Logger::log("Test failed > Reactor > aggregation change > empty layer temperature was not infinity", LogType::BAD);
 					passed = false;
@@ -578,6 +578,8 @@ private:
 		{
 			Logger::printCache();
 		}
+
+		Logger::clearCache();
 	}
 
 public:

@@ -42,11 +42,12 @@ public:
 
 	template<Unit OUnitT, Unit FactT1>
 	constexpr inline Amount<OUnitT> to(const Amount<FactT1>) const noexcept = delete;
-	template<Unit OUnitT, Unit FactT1, Unit FactT2>
-	constexpr inline Amount<OUnitT> to(const Amount<FactT1>, const Amount<FactT2>) const noexcept = delete;
 
 	constexpr inline Unit unit() const noexcept;
+	static inline std::string unitSymbol() noexcept = delete;
 	static inline std::string unitName() noexcept = delete;
+	
+	inline std::string toString(const uint8_t maxDigits = 255) const noexcept;
 
 	static const Amount<UnitT> Unknown;
 	static const Amount<UnitT> Infinity;
@@ -155,6 +156,50 @@ constexpr double Amount<Unit::CUBIC_METER>::asMicro() const noexcept { return va
 template<Unit UnitT>
 constexpr Unit Amount<UnitT>::unit() const noexcept { return UnitT; }
 
+template<Unit UnitT>
+std::string Amount<UnitT>::toString(const uint8_t maxDigits) const noexcept 
+{
+	return std::to_string(value).substr(0, maxDigits) + Amount<UnitT>::unitSymbol();
+}
+
+template<>
+inline std::string Amount<Unit::UNIT>::unitSymbol() noexcept { return ""; }
+template<>
+inline std::string Amount<Unit::GRAM>::unitSymbol() noexcept { return "g"; }
+template<>
+inline std::string Amount<Unit::LITER>::unitSymbol() noexcept { return "L"; }
+template<>
+inline std::string Amount<Unit::MOLE>::unitSymbol() noexcept { return "mol"; }
+template<>
+inline std::string Amount<Unit::SECOND>::unitSymbol() noexcept { return "s"; }
+template<>
+inline std::string Amount<Unit::CUBIC_METER>::unitSymbol() noexcept { return "m3"; }
+template<>
+inline std::string Amount<Unit::CELSIUS>::unitSymbol() noexcept { return "C"; }
+template<>
+inline std::string Amount<Unit::KELVIN>::unitSymbol() noexcept { return "K"; }
+template<>
+inline std::string Amount<Unit::FAHRENHEIT>::unitSymbol() noexcept { return "F"; }
+template<>
+inline std::string Amount<Unit::TORR>::unitSymbol() noexcept { return "torr"; }
+template<>
+inline std::string Amount<Unit::PASCAL>::unitSymbol() noexcept { return "Pa"; }
+template<>
+inline std::string Amount<Unit::JOULE>::unitSymbol() noexcept { return "J"; }
+template<>
+inline std::string Amount<Unit::WATT>::unitSymbol() noexcept { return "W"; }
+template<>
+inline std::string Amount<Unit::MOLE_PER_SECOND>::unitSymbol() noexcept { return Amount<Unit::MOLE>::unitSymbol() + " / " + Amount<Unit::SECOND>::unitSymbol(); }
+template<>
+inline std::string Amount<Unit::GRAM_PER_MOLE>::unitSymbol() noexcept { return Amount<Unit::GRAM>::unitSymbol() + " / " + Amount<Unit::MOLE>::unitSymbol(); }
+template<>
+inline std::string Amount<Unit::GRAM_PER_MILLILITER>::unitSymbol() noexcept { return Amount<Unit::GRAM>::unitSymbol() + " / milli" + Amount<Unit::LITER>::unitSymbol(); }
+template<>
+inline std::string Amount<Unit::JOULE_PER_MOLE>::unitSymbol() noexcept { return Amount<Unit::JOULE>::unitSymbol() + " / " + Amount<Unit::MOLE>::unitSymbol(); }
+template<>
+inline std::string Amount<Unit::JOULE_PER_CELSIUS>::unitSymbol() noexcept { return Amount<Unit::JOULE>::unitSymbol() + " / " + Amount<Unit::CELSIUS>::unitSymbol(); }
+template<>
+inline std::string Amount<Unit::JOULE_PER_MOLE_CELSIUS>::unitSymbol() noexcept { return Amount<Unit::JOULE>::unitSymbol() + " / (" + Amount<Unit::MOLE>::unitSymbol() + " + " + Amount<Unit::CELSIUS>::unitSymbol() + ")"; }
 
 template<>
 inline std::string Amount<Unit::UNIT>::unitName() noexcept { return "unit"; }
@@ -181,6 +226,8 @@ inline std::string Amount<Unit::PASCAL>::unitName() noexcept { return "pascal"; 
 template<>
 inline std::string Amount<Unit::JOULE>::unitName() noexcept { return "joule"; }
 template<>
+inline std::string Amount<Unit::WATT>::unitName() noexcept { return "watt"; }
+template<>
 inline std::string Amount<Unit::MOLE_PER_SECOND>::unitName() noexcept { return Amount<Unit::MOLE>::unitName() + " / " + Amount<Unit::SECOND>::unitName(); }
 template<>
 inline std::string Amount<Unit::GRAM_PER_MOLE>::unitName() noexcept { return Amount<Unit::GRAM>::unitName() + " / " + Amount<Unit::MOLE>::unitName(); }
@@ -192,7 +239,6 @@ template<>
 inline std::string Amount<Unit::JOULE_PER_CELSIUS>::unitName() noexcept { return Amount<Unit::JOULE>::unitName() + " / " + Amount<Unit::CELSIUS>::unitName(); }
 template<>
 inline std::string Amount<Unit::JOULE_PER_MOLE_CELSIUS>::unitName() noexcept { return Amount<Unit::JOULE>::unitName() + " / (" + Amount<Unit::MOLE>::unitName() + " + " + Amount<Unit::CELSIUS>::unitName() + ")"; }
-
 
 template<>
 template<>
@@ -375,13 +421,6 @@ constexpr Amount<Unit::JOULE_PER_MOLE_CELSIUS> Amount<Unit::JOULE_PER_CELSIUS>::
 
 template<>
 template<>
-constexpr Amount<Unit::CELSIUS> Amount<Unit::JOULE>::to(const Amount<Unit::JOULE_PER_MOLE_CELSIUS> heatCapacity, const Amount<Unit::MOLE> moles) const noexcept
-{
-	return value / (heatCapacity.asStd() * moles.asStd());
-}
-
-template<>
-template<>
 constexpr Amount<Unit::CELSIUS> Amount<Unit::JOULE>::to(const Amount<Unit::JOULE_PER_CELSIUS> heatCapacity) const noexcept
 {
 	return value / heatCapacity.asStd();
@@ -401,15 +440,18 @@ constexpr Amount<Unit::MOLE> Amount<Unit::MOLE_PER_SECOND>::to(const Amount<Unit
 	return value / timespan.asStd();
 }
 
-template<>
-template<>
-constexpr Amount<Unit::LITER> Amount<Unit::MOLE>::to(const Amount<Unit::GRAM_PER_MOLE> molarMass, const Amount<Unit::GRAM_PER_MILLILITER> density) const noexcept
-{
-	return this->to<Unit::GRAM>(molarMass).to<Unit::LITER>(density);
-}
-template<>
-template<>
-constexpr Amount<Unit::MOLE> Amount<Unit::LITER>::to(const Amount<Unit::GRAM_PER_MOLE> molarMass, const Amount<Unit::GRAM_PER_MILLILITER> density) const noexcept
-{
-	return this->to<Unit::GRAM>(density).to<Unit::MOLE>(molarMass);
-}
+
+//    --- literals ---    //
+
+constexpr inline Amount<Unit::LITER> operator""_L(long double value) { return value; }
+constexpr inline Amount<Unit::CUBIC_METER> operator""_M3(long double value) { return value; }
+constexpr inline Amount<Unit::GRAM> operator""_g(long double value) { return value; }
+constexpr inline Amount<Unit::MOLE> operator""_mol(long double value) { return value; }
+constexpr inline Amount<Unit::SECOND> operator""_s(long double value) { return value; }
+constexpr inline Amount<Unit::CELSIUS> operator""_C(long double value) { return value; }
+constexpr inline Amount<Unit::KELVIN> operator""_K(long double value) { return value; }
+constexpr inline Amount<Unit::FAHRENHEIT> operator""_F(long double value) { return value; }
+constexpr inline Amount<Unit::TORR> operator""_torr(long double value) { return value; }
+constexpr inline Amount<Unit::PASCAL> operator""_Pa(long double value) { return value; }
+constexpr inline Amount<Unit::JOULE> operator""_J(long double value) { return value; }
+constexpr inline Amount<Unit::WATT> operator""_W(long double value) { return value; }

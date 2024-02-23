@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Mixture.hpp"
-#include "LayerProperties.hpp"
+#include "Layer.hpp"
 #include "Constants.hpp"
 #include "Ref.hpp"
 
@@ -12,7 +12,7 @@ protected:
 	Amount<Unit::TORR> pressure;
 	const Amount<Unit::LITER> maxVolume;
 	Ref<BaseContainer> overflowTarget = nullptr;
-	LayerProperties layer;
+	Layer layer;
 
 	void addToLayer(const Reactant& reactant);
 
@@ -34,7 +34,7 @@ public:
 		const Ref<BaseContainer> overflowTarget
 	) noexcept;
 
-	const LayerProperties& getLayerProperties() const;
+	const Layer& getLayer() const;
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity() const;
 	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy() const;
 
@@ -50,7 +50,7 @@ public:
 	Amount<Unit::GRAM> getTotalMass() const override final;
 	Amount<Unit::LITER> getTotalVolume() const override final;
 
-	const LayerProperties& getLayerProperties(const LayerType l) const override final;
+	const Layer& getLayer(const LayerType l) const override final;
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity(const LayerType l) const override final;
 	Amount<Unit::JOULE_PER_CELSIUS> getLayerTotalHeatCapacity(const LayerType layer) const override final;
 	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType l) const override final;
@@ -103,7 +103,7 @@ void SingleLayerMixture<L>::add(const Amount<Unit::JOULE> heat, const LayerType 
 template<LayerType L>
 LayerType SingleLayerMixture<L>::findLayerFor(const Reactant& reactant) const
 {
-	return getLayer(reactant.getAggregation(layer.temperature));
+	return getLayerType(reactant.getAggregation(layer.temperature));
 }
 
 template<LayerType L>
@@ -159,7 +159,7 @@ void SingleLayerMixture<L>::scaleToVolume(const Amount<Unit::LITER> volume)
 }
 
 template<LayerType L>
-const LayerProperties& SingleLayerMixture<L>::getLayerProperties() const
+const Layer& SingleLayerMixture<L>::getLayer() const
 {
 	return layer;
 }
@@ -167,7 +167,7 @@ const LayerProperties& SingleLayerMixture<L>::getLayerProperties() const
 template<LayerType L>
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> SingleLayerMixture<L>::getLayerHeatCapacity() const
 {
-	return getLayerProperties(L);
+	return getLayer(L);
 }
 
 template<LayerType L>
@@ -229,7 +229,7 @@ Amount<Unit::LITER> SingleLayerMixture<L>::getTotalVolume() const
 }
 
 template<LayerType L>
-const LayerProperties& SingleLayerMixture<L>::getLayerProperties(const LayerType l) const
+const Layer& SingleLayerMixture<L>::getLayer(const LayerType l) const
 {
 	return layer;
 }

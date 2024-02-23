@@ -8,12 +8,12 @@
 #include "AggregationType.hpp"
 
 class Mixture;
-class LayerProperties;
+class Layer;
 
 class Reactant
 {
 private:
-	const Ref<Mixture> container;
+	Ref<Mixture> container;
 
 public:
 	mutable bool isNew = true;
@@ -47,7 +47,7 @@ public:
 	Amount<Unit::JOULE_PER_MOLE> getDepositionHeat() const;
 
 	Ref<Mixture> getContainer() const;
-	const LayerProperties& getLayerProperties() const;
+	const Layer& getLayer() const;
 	Amount<Unit::CELSIUS> getLayerTemperature() const;
 
 	AggregationType getAggregation() const;

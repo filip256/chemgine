@@ -45,15 +45,16 @@ static inline constexpr bool isLiquidLayer(const LayerType type)
 
 static inline constexpr bool isSolidLayer(const LayerType type)
 {
-	return type == LayerType::GASEOUS;
+	return type == LayerType::SOLID;
 }
 
-inline AggregationType getAggregation(const LayerType type)
+inline AggregationType getAggregationType(const LayerType type)
 {
 	return
 		isGasLayer(type) ? AggregationType::GAS :
 		isSolidLayer(type) ? AggregationType::SOLID :
-		AggregationType::LIQUID;
+		isLiquidLayer(type) ? AggregationType::LIQUID :
+		AggregationType::NONE;
 }
 
 inline LayerType getLowerAggregationLayer(const LayerType type)
@@ -74,7 +75,7 @@ inline LayerType getHigherAggregationLayer(const LayerType type)
 	return LayerType::NONE;
 }
 
-inline LayerType getLayer(const AggregationType type)
+inline LayerType getLayerType(const AggregationType type)
 {
 	return
 		type == AggregationType::GAS ? LayerType::GASEOUS :

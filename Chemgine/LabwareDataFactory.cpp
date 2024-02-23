@@ -40,10 +40,10 @@ FlaskData* LabwareDataFactory::getFlask(const LabwareIdType id,  const std::vect
 		if (type.has_value() == false || x.has_value() == false || y.has_value() == false || angle.has_value() == false)
 			return nullptr;
 
-		ports.emplace_back(static_cast<PortType>(type.value()), x.value(), y.value(), angle.value());
+		ports.emplace_back(static_cast<PortType>(*type), *x, *y, *angle);
 	}
 
-	return new FlaskData(id, dataLine[2], std::move(ports), volume.value(), dataLine[5]);
+	return new FlaskData(id, dataLine[2], std::move(ports), *volume, dataLine[5]);
 }
 
 AdaptorData* LabwareDataFactory::getAdaptor(const LabwareIdType id, const std::vector<std::string>& dataLine)
@@ -71,8 +71,8 @@ AdaptorData* LabwareDataFactory::getAdaptor(const LabwareIdType id, const std::v
 		if (type.has_value() == false || x.has_value() == false || y.has_value() == false || angle.has_value() == false)
 			return nullptr;
 
-		ports.emplace_back(static_cast<PortType>(type.value()), x.value(), y.value(), angle.value());
+		ports.emplace_back(static_cast<PortType>(*type), *x, *y, *angle);
 	}
 
-	return new AdaptorData(id, dataLine[2], std::move(ports), volume.value(), dataLine[5]);
+	return new AdaptorData(id, dataLine[2], std::move(ports), *volume, dataLine[5]);
 }

@@ -3,6 +3,7 @@
 #include "DataStoreAccessor.hpp"
 #include "MoleculeData.hpp"
 #include "Amount.hpp"
+#include "AggregationType.hpp"
 
 class Molecule
 {
@@ -26,9 +27,26 @@ public:
 	Amount<Unit::CELSIUS> getMeltingPointAt(const Amount<Unit::TORR> pressure) const;
 	Amount<Unit::CELSIUS> getBoilingPointAt(const Amount<Unit::TORR> pressure) const;
 
+	AggregationType getAggregationAt(
+		const Amount<Unit::CELSIUS> temperature,
+		const Amount<Unit::TORR> pressure
+	) const;
+
+	Amount<Unit::GRAM_PER_MILLILITER> getDensityAt(
+		const Amount<Unit::CELSIUS> temperature,
+		const Amount<Unit::TORR> pressure,
+		const AggregationType aggregation
+	) const;
+
 	Amount<Unit::GRAM_PER_MILLILITER> getDensityAt(
 		const Amount<Unit::CELSIUS> temperature,
 		const Amount<Unit::TORR> pressure
+	) const;
+
+	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getHeatCapacityAt(
+		const Amount<Unit::CELSIUS> temperature,
+		const Amount<Unit::TORR> pressure,
+		const AggregationType aggregation
 	) const;
 
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getHeatCapacityAt(

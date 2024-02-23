@@ -169,30 +169,32 @@ Tasks:
 ---
   DONE. Implement graph matching algorithm
   DONE. Hardcode special atom types
-  2. Apply algorithm to organic molecules
   DONE. Write molecule to smiles and cmiles algorithm and print to CSV files
-  ?. Implement algorithm using BFS
+  ?. Implement algorithms iteratively
 ---
   DONE. Molecular structure improvements: isNormalized field (checks for req methods), implied hydrogen clarifications
 ---
   1. Fix single key DataTables
   2. Fix Reactable id clash (Molecule/GenericMolecule)
   DONE. Estimator optimizer
-  3. Use operator* instead of value() for std::optional
+  DONE. Use operator* instead of value() for std::optional
   DONE. Rename approximator to estimator
-  5. Add templated binary arithemtic operators to Amount, and remove .asStd() uses.
   DONE. Add class for atom symbol (perhaps char[2/4] is enough)
-  7. Add operator<< to stream for Amounts
+  5. Add templated binary arithemtic operators to Amount, and remove .asStd() uses.
+  DONE. Provide literals to Amount
+  DONE. Add .toString() to stream for Amounts
   8. Add fp precision typedefs for systems, amounts, input etc
   9. Add base class for dynamic allocation instance counting
   DONE. Specialize std::hash instead of creating Hash classes
-  10. Rename LayerPorperties to Layer
-  11. Fix const Ref<>
-  12. Add reactant.moveTo(conainer/layer)
-  13. Mark temporary state in a reactant flag, remove hasTemporaryState() from layer
-  14. Cache heat capacity on a tick basis
-  15. Provide literals to Amount
-  16. Remove Amount to(x, y) with two params
+  DONE. Rename LayerPorperties to Layer
+  DONE. Add layer iterator
+  ?. Fix const Ref<> (const Ref<> should allow non const methods on object, unlike Ref<const>)
+  13. Add reactant.moveTo(conainer/layer)
+  ?. Cache heat capacity on a tick basis
+  DONE. Remove Amount to(x, y) with two params
+  10. Use layer as aggregation, rather than checking each time (volume cacheing bugs arrise)
+  11. Add combined tests
+  12. Differentiate between true aggregation and layer aggregation
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules

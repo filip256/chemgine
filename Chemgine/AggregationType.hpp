@@ -6,5 +6,7 @@ enum class AggregationType : uint8_t
 {
 	GAS,
 	LIQUID,
-	SOLID
+	SOLID,
+
+	NONE
 };

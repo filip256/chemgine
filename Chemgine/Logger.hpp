@@ -5,9 +5,9 @@
 #include <vector>
 #include "LogType.hpp"
 
-#ifndef NDEBUG
+//#ifndef NDEBUG
 #define CHEM_ENABLE_LOGGING
-#endif
+//#endif
 
 class Logger
 {

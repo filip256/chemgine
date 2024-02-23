@@ -48,16 +48,16 @@ bool LabwareDataTable::loadFromFile(const std::string& path)
 			continue;
 		}
 
-		const auto ptr = LabwareDataFactory::get(id.value(), static_cast<LabwareType>(type.value()), line);
+		const auto ptr = LabwareDataFactory::get(*id, static_cast<LabwareType>(*type), line);
 		if(ptr == nullptr)
 		{
-			Logger::log("Failed to load labware with id " + std::to_string(id.value()) + ".", LogType::BAD);
+			Logger::log("Failed to load labware with id " + std::to_string(*id) + ".", LogType::BAD);
 			continue;
 		}
 
-		if (table.emplace(id.value(), ptr).second == false)
+		if (table.emplace(*id, ptr).second == false)
 		{
-			Logger::log("Duplicate labware with id " + std::to_string(id.value()) + "skipped.", LogType::WARN);
+			Logger::log("Duplicate labware with id " + std::to_string(*id) + "skipped.", LogType::WARN);
 		}
 	}
 	file.close();

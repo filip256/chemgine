@@ -171,11 +171,11 @@ inline std::optional<Amount<Unit::CELSIUS>> DataHelpers::parse<Unit::CELSIUS>(co
 
 	Amount<Unit::CELSIUS> cTemp = 0;
 	if (str.ends_with('c') || str.ends_with('C') || missingUnit)
-		cTemp = temp.value();
+		cTemp = *temp;
 	else if (str.ends_with('k') || str.ends_with('K'))
-		cTemp = Amount<Unit::KELVIN>(temp.value());
+		cTemp = Amount<Unit::KELVIN>(*temp);
 	else if (str.ends_with('f') || str.ends_with('F'))
-		cTemp = Amount<Unit::FAHRENHEIT>(temp.value());
+		cTemp = Amount<Unit::FAHRENHEIT>(*temp);
 
 	return std::optional<Amount<Unit::CELSIUS>>(cTemp);
 }
@@ -233,7 +233,7 @@ inline std::optional<std::pair<T1, T2>> DataHelpers::parsePair(const std::string
 	if (val2.has_value() == false)
 		return std::nullopt;
 
-	return std::optional<std::pair<T1, T2>>(std::make_pair(val1.value(), val2.value()));
+	return std::optional<std::pair<T1, T2>>(std::make_pair(*val1, *val2));
 }
 
 template <Unit U1, Unit U2>
@@ -251,5 +251,5 @@ inline std::optional<std::pair<Amount<U1>, Amount<U2>>> DataHelpers::parsePair(c
 	if (val2.has_value() == false)
 		return std::nullopt;
 
-	return std::optional<std::pair<Amount<U1>, Amount<U2>>>(std::make_pair(val1.value(), val2.value()));
+	return std::optional<std::pair<Amount<U1>, Amount<U2>>>(std::make_pair(*val1, *val2));
 }

@@ -1,6 +1,6 @@
 #include "Reactant.hpp"
 #include "Reactor.hpp"
-#include "LayerProperties.hpp"
+#include "Layer.hpp"
 
 Reactant::Reactant(
 	const Molecule& molecule,
@@ -14,7 +14,6 @@ Reactant::Reactant(
 	container(container)
 {}
 
-
 Amount<Unit::GRAM> Reactant::getMass() const
 {
 	return amount.to<Unit::GRAM>(molecule.getMolarMass());
@@ -22,12 +21,14 @@ Amount<Unit::GRAM> Reactant::getMass() const
 
 Amount<Unit::LITER> Reactant::getVolume() const
 {
-	return amount.to<Unit::LITER>(molecule.getMolarMass(), getDensity());
+	return amount
+		.to<Unit::GRAM>(molecule.getMolarMass())
+		.to<Unit::LITER>(getDensity());
 }
 
 Amount<Unit::GRAM_PER_MILLILITER> Reactant::getDensity() const
 {
-	return molecule.getDensityAt(getLayerProperties().getTemperature(), container->getPressure());
+	return molecule.getDensityAt(getLayer().getTemperature(), container->getPressure());
 }
 
 Amount<Unit::CELSIUS> Reactant::getMeltingPoint() const
@@ -42,7 +43,7 @@ Amount<Unit::CELSIUS> Reactant::getBoilingPoint() const
 
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> Reactant::getHeatCapacity() const
 {
-	return molecule.getHeatCapacityAt(getLayerProperties().getTemperature(), container->getPressure());
+	return molecule.getHeatCapacityAt(getLayer().getTemperature(), container->getPressure());
 }
 
 Amount<Unit::JOULE_PER_MOLE> Reactant::getKineticEnergy() const
@@ -52,38 +53,38 @@ Amount<Unit::JOULE_PER_MOLE> Reactant::getKineticEnergy() const
 
 Amount<Unit::JOULE_PER_MOLE> Reactant::getStandaloneKineticEnergy() const
 {
-	const auto temp = getLayerProperties().getTemperature();
+	const auto temp = getLayer().getTemperature();
 	return molecule.getHeatCapacityAt(temp, container->getPressure()).to<Unit::JOULE_PER_MOLE>(temp);
 }
 
 Amount<Unit::JOULE_PER_MOLE> Reactant::getLiquefactionHeat() const
 {
-	return molecule.getLiquefactionHeatAt(getLayerProperties().getTemperature(), container->getPressure());
+	return molecule.getLiquefactionHeatAt(getLayer().getTemperature(), container->getPressure());
 }
 
 Amount<Unit::JOULE_PER_MOLE> Reactant::getFusionHeat() const
 {
-	return molecule.getFusionHeatAt(getLayerProperties().getTemperature(), container->getPressure());
+	return molecule.getFusionHeatAt(getLayer().getTemperature(), container->getPressure());
 }
 
 Amount<Unit::JOULE_PER_MOLE> Reactant::getVaporizationHeat() const
 {
-	return molecule.getVaporizationHeatAt(getLayerProperties().getTemperature(), container->getPressure());
+	return molecule.getVaporizationHeatAt(getLayer().getTemperature(), container->getPressure());
 }
 
 Amount<Unit::JOULE_PER_MOLE> Reactant::getCondensationHeat() const
 {
-	return molecule.getCondensationHeatAt(getLayerProperties().getTemperature(), container->getPressure());
+	return molecule.getCondensationHeatAt(getLayer().getTemperature(), container->getPressure());
 }
 
 Amount<Unit::JOULE_PER_MOLE> Reactant::getSublimationHeat() const
 {
-	return molecule.getSublimationHeatAt(getLayerProperties().getTemperature(), container->getPressure());
+	return molecule.getSublimationHeatAt(getLayer().getTemperature(), container->getPressure());
 }
 
 Amount<Unit::JOULE_PER_MOLE> Reactant::getDepositionHeat() const
 {
-	return molecule.getDepositionHeatAt(getLayerProperties().getTemperature(), container->getPressure());
+	return molecule.getDepositionHeatAt(getLayer().getTemperature(), container->getPressure());
 }
 
 Ref<Mixture> Reactant::getContainer() const
@@ -91,14 +92,14 @@ Ref<Mixture> Reactant::getContainer() const
 	return container;
 }
 
-const LayerProperties& Reactant::getLayerProperties() const
+const Layer& Reactant::getLayer() const
 {
-	return container->getLayerProperties(layer);
+	return container->getLayer(layer);
 }
 
 Amount<Unit::CELSIUS> Reactant::getLayerTemperature() const
 {
-	return getLayerProperties().getTemperature();
+	return getLayer().getTemperature();
 }
 
 AggregationType Reactant::getAggregation() const
@@ -108,11 +109,7 @@ AggregationType Reactant::getAggregation() const
 
 AggregationType Reactant::getAggregation(const Amount<Unit::CELSIUS> temperature) const
 {
-	if (temperature > getBoilingPoint())
-		return AggregationType::GAS;
-	if (temperature < getMeltingPoint())
-		return AggregationType::SOLID;
-	return AggregationType::LIQUID;
+	return molecule.getAggregationAt(temperature, container->getPressure());
 }
 
 Reactant Reactant::mutate(const Amount<Unit::MOLE> newAmount) const
@@ -139,7 +136,6 @@ Reactant Reactant::mutate(const Amount<Unit::MOLE> newAmount, const LayerType ne
 {
 	return Reactant(molecule, newLayer, newAmount);
 }
-
 
 Reactant Reactant::mutate(const Amount<Unit::MOLE> newAmount, const Ref<Mixture> newContainer, const LayerType newLayer) const
 {

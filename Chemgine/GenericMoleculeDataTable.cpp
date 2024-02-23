@@ -41,12 +41,12 @@ bool GenericMoleculeDataTable::loadFromFile(const std::string& path)
 		}
 
 		if (table.emplace(
-			id.value(),
+			*id,
 			line[1],
-			GenericMoleculeData(id.value(), line[1])
+			GenericMoleculeData(*id, line[1])
 		) == false)
 		{
-			Logger::log("Generic molecule with duplicate id " + std::to_string(id.value()) + " skipped.", LogType::WARN);
+			Logger::log("Generic molecule with duplicate id " + std::to_string(*id) + " skipped.", LogType::WARN);
 		}
 	}
 	file.close();

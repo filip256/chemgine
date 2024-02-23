@@ -118,14 +118,20 @@
     <Filter Include="Source Files\Estimators">
       <UniqueIdentifier>{b1083ec7-3a36-4415-a955-cfe806be11d6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Reactions\Mixtures">
-      <UniqueIdentifier>{5375d255-a569-4c54-bf41-18d052d5d87f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Reactions\Mixtures">
-      <UniqueIdentifier>{d7610af6-8fb3-4a5e-8d6e-b9ff3e0f3a32}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\Textures">
       <UniqueIdentifier>{0e36bde9-4540-44e7-b0cb-366d8d0ab939}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Mixtures">
+      <UniqueIdentifier>{d7610af6-8fb3-4a5e-8d6e-b9ff3e0f3a32}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Mixtures\MixtureTypes">
+      <UniqueIdentifier>{9fd3e1e3-2c30-4345-9a00-b26537bc552c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mixtures">
+      <UniqueIdentifier>{5375d255-a569-4c54-bf41-18d052d5d87f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Mixtures\MixtureTypes">
+      <UniqueIdentifier>{353b0213-4565-4105-a3b6-63d474129752}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -264,9 +270,6 @@
     <ClCompile Include="Reactant.cpp">
       <Filter>Source Files\Reactions</Filter>
     </ClCompile>
-    <ClCompile Include="PhysicalProperties.cpp">
-      <Filter>Source Files\Reactions</Filter>
-    </ClCompile>
     <ClCompile Include="EstimatorDataTable.cpp">
       <Filter>Source Files\Estimators</Filter>
     </ClCompile>
@@ -278,9 +281,6 @@
     </ClCompile>
     <ClCompile Include="SplineEstimator.cpp">
       <Filter>Source Files\Estimators</Filter>
-    </ClCompile>
-    <ClCompile Include="LayerProperties.cpp">
-      <Filter>Source Files\Reactions</Filter>
     </ClCompile>
     <ClCompile Include="OffsetEstimator.cpp">
       <Filter>Source Files\Estimators</Filter>
@@ -315,29 +315,35 @@
     <ClCompile Include="MolecularStructure.cpp">
       <Filter>Source Files\Molecules</Filter>
     </ClCompile>
-    <ClCompile Include="Reactor.cpp">
-      <Filter>Source Files\Reactions\Mixtures</Filter>
-    </ClCompile>
-    <ClCompile Include="Mixture.cpp">
-      <Filter>Source Files\Reactions\Mixtures</Filter>
-    </ClCompile>
-    <ClCompile Include="MultiLayerMixture.cpp">
-      <Filter>Source Files\Reactions\Mixtures</Filter>
-    </ClCompile>
-    <ClCompile Include="DumpContainer.cpp">
-      <Filter>Source Files\Reactions\Mixtures</Filter>
-    </ClCompile>
-    <ClCompile Include="Atmosphere.cpp">
-      <Filter>Source Files\Reactions\Mixtures</Filter>
-    </ClCompile>
     <ClCompile Include="Context.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Atmosphere.cpp">
+      <Filter>Source Files\Mixtures\MixtureTypes</Filter>
+    </ClCompile>
     <ClCompile Include="BaseContainer.cpp">
-      <Filter>Source Files\Reactions\Mixtures</Filter>
+      <Filter>Source Files\Mixtures\MixtureTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mixture.cpp">
+      <Filter>Source Files\Mixtures\MixtureTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="DumpContainer.cpp">
+      <Filter>Source Files\Mixtures\MixtureTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiLayerMixture.cpp">
+      <Filter>Source Files\Mixtures\MixtureTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="Reactor.cpp">
+      <Filter>Source Files\Mixtures\MixtureTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="Layer.cpp">
+      <Filter>Source Files\Mixtures</Filter>
     </ClCompile>
     <ClCompile Include="StateNucleator.cpp">
-      <Filter>Source Files\Reactions</Filter>
+      <Filter>Source Files\Mixtures</Filter>
+    </ClCompile>
+    <ClCompile Include="LayerIterator.cpp">
+      <Filter>Source Files\Mixtures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -403,9 +409,6 @@
     </ClInclude>
     <ClInclude Include="DataTable.hpp">
       <Filter>Header Files\DataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="LayerType.hpp">
-      <Filter>Header Files\Reactions</Filter>
     </ClInclude>
     <ClInclude Include="Query.hpp">
       <Filter>Header Files\DataStructures</Filter>
@@ -530,9 +533,6 @@
     <ClInclude Include="ReactantSet.hpp">
       <Filter>Header Files\Reactions</Filter>
     </ClInclude>
-    <ClInclude Include="PhysicalProperties.hpp">
-      <Filter>Header Files\Reactions</Filter>
-    </ClInclude>
     <ClInclude Include="FunctionalEstimator.hpp">
       <Filter>Header Files\Estimators</Filter>
     </ClInclude>
@@ -550,9 +550,6 @@
     </ClInclude>
     <ClInclude Include="SplineEstimator.hpp">
       <Filter>Header Files\Estimators</Filter>
-    </ClInclude>
-    <ClInclude Include="LayerProperties.hpp">
-      <Filter>Header Files\Reactions</Filter>
     </ClInclude>
     <ClInclude Include="OffsetEstimator.hpp">
       <Filter>Header Files\Estimators</Filter>
@@ -590,24 +587,6 @@
     <ClInclude Include="MolecularStructure.hpp">
       <Filter>Header Files\Molecules</Filter>
     </ClInclude>
-    <ClInclude Include="Reactor.hpp">
-      <Filter>Header Files\Reactions\Mixtures</Filter>
-    </ClInclude>
-    <ClInclude Include="Mixture.hpp">
-      <Filter>Header Files\Reactions\Mixtures</Filter>
-    </ClInclude>
-    <ClInclude Include="MultiLayerMixture.hpp">
-      <Filter>Header Files\Reactions\Mixtures</Filter>
-    </ClInclude>
-    <ClInclude Include="SingleLayerMixture.hpp">
-      <Filter>Header Files\Reactions\Mixtures</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseContainer.hpp">
-      <Filter>Header Files\Reactions\Mixtures</Filter>
-    </ClInclude>
-    <ClInclude Include="DumpContainer.hpp">
-      <Filter>Header Files\Reactions\Mixtures</Filter>
-    </ClInclude>
     <ClInclude Include="Ref.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
@@ -618,13 +597,40 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Atmosphere.hpp">
-      <Filter>Header Files\Reactions\Mixtures</Filter>
+      <Filter>Header Files\Mixtures\MixtureTypes</Filter>
     </ClInclude>
-    <ClInclude Include="StateNucleator.hpp">
-      <Filter>Header Files\Reactions</Filter>
+    <ClInclude Include="BaseContainer.hpp">
+      <Filter>Header Files\Mixtures\MixtureTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="DumpContainer.hpp">
+      <Filter>Header Files\Mixtures\MixtureTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Mixture.hpp">
+      <Filter>Header Files\Mixtures\MixtureTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiLayerMixture.hpp">
+      <Filter>Header Files\Mixtures\MixtureTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Reactor.hpp">
+      <Filter>Header Files\Mixtures\MixtureTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="SingleLayerMixture.hpp">
+      <Filter>Header Files\Mixtures\MixtureTypes</Filter>
     </ClInclude>
     <ClInclude Include="AggregationType.hpp">
-      <Filter>Header Files\Reactions</Filter>
+      <Filter>Header Files\Mixtures</Filter>
+    </ClInclude>
+    <ClInclude Include="Layer.hpp">
+      <Filter>Header Files\Mixtures</Filter>
+    </ClInclude>
+    <ClInclude Include="LayerType.hpp">
+      <Filter>Header Files\Mixtures</Filter>
+    </ClInclude>
+    <ClInclude Include="StateNucleator.hpp">
+      <Filter>Header Files\Mixtures</Filter>
+    </ClInclude>
+    <ClInclude Include="LayerIterator.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
