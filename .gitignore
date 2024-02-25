@@ -1,4 +1,6 @@
 x64
 Debug
+Release
 .vs
 LineCounter.exe
+*.pyc

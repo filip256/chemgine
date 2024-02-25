@@ -7,29 +7,47 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Chemgine", "Chemgine\Chemgi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "old_Chemgine", "old_Chemgine\old_Chemgine.vcxproj", "{A31C4922-5DE7-474C-9314-82FC92897BD5}"
 EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "DevTools", "DevTools\DevTools.pyproj", "{D4ED113A-DBFC-4FF5-B532-B7FA2EF3FB80}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Debug|Any CPU.Build.0 = Debug|x64
 		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Debug|x64.ActiveCfg = Debug|x64
 		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Debug|x64.Build.0 = Debug|x64
 		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Debug|x86.ActiveCfg = Debug|Win32
 		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Debug|x86.Build.0 = Debug|Win32
+		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Release|Any CPU.ActiveCfg = Release|x64
+		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Release|Any CPU.Build.0 = Release|x64
 		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Release|x64.ActiveCfg = Release|x64
 		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Release|x64.Build.0 = Release|x64
 		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Release|x86.ActiveCfg = Release|Win32
 		{42282A59-FBFF-4B7D-A318-172C1F483DE7}.Release|x86.Build.0 = Release|Win32
+		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Debug|Any CPU.Build.0 = Debug|x64
 		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Debug|x64.ActiveCfg = Debug|x64
 		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Debug|x86.ActiveCfg = Debug|Win32
 		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Debug|x86.Build.0 = Debug|Win32
+		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Release|Any CPU.ActiveCfg = Release|x64
+		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Release|Any CPU.Build.0 = Release|x64
 		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Release|x64.ActiveCfg = Release|x64
 		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Release|x64.Build.0 = Release|x64
 		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Release|x86.ActiveCfg = Release|Win32
 		{A31C4922-5DE7-474C-9314-82FC92897BD5}.Release|x86.Build.0 = Release|Win32
+		{D4ED113A-DBFC-4FF5-B532-B7FA2EF3FB80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4ED113A-DBFC-4FF5-B532-B7FA2EF3FB80}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D4ED113A-DBFC-4FF5-B532-B7FA2EF3FB80}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D4ED113A-DBFC-4FF5-B532-B7FA2EF3FB80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4ED113A-DBFC-4FF5-B532-B7FA2EF3FB80}.Release|x64.ActiveCfg = Release|Any CPU
+		{D4ED113A-DBFC-4FF5-B532-B7FA2EF3FB80}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
