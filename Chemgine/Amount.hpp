@@ -10,10 +10,12 @@
 /// Stores the amount of a certain Unit and statically handles conversions between units.
 /// If a conversion between two units is used but not defined, a compilation error will occur
 /// </summary>
-template<Unit UnitT>
+template<Unit UnitT = Unit::UNIT>
 class Amount : public Value<double>
 {
 public:
+	using StorageType = double;
+
 	constexpr inline Amount() = default;
 	constexpr inline Amount(const double value) noexcept;
 	constexpr inline Amount(const Value<double> value) noexcept;
@@ -21,10 +23,6 @@ public:
 
 	template<Unit OUnitT>
 	constexpr inline Amount(const Amount<OUnitT>&) noexcept = delete;
-	template<Unit OUnitT1, Unit OUnitT2>
-	constexpr inline Amount(const Amount<OUnitT1>&, const Amount<OUnitT2>&) noexcept = delete;
-	template<Unit OUnitT1, Unit OUnitT2, Unit OUnitT3>
-	constexpr inline Amount(const Amount<OUnitT1>&, const Amount<OUnitT2>&, const Amount<OUnitT3>&) noexcept = delete;
 
 	constexpr Amount<UnitT> operator+(const Amount<UnitT> other) const noexcept;
 	constexpr Amount<UnitT> operator-(const Amount<UnitT> other) const noexcept;
@@ -34,6 +32,9 @@ public:
 
 	constexpr Amount<UnitT> operator+=(const Amount<UnitT> other) noexcept;
 	constexpr Amount<UnitT> operator-=(const Amount<UnitT> other) noexcept;
+
+	constexpr inline bool equals(const Amount<UnitT> other,
+		const StorageType epsilon = std::numeric_limits<StorageType>::epsilon()) const noexcept;
 
 	constexpr inline double asKilo() const noexcept;
 	constexpr inline double asStd() const noexcept;
@@ -56,8 +57,6 @@ public:
 
 	constexpr inline bool isUnknown() const noexcept;
 	constexpr inline bool isInfinity() const noexcept;
-
-	using StorageType = double;
 };
 
 template<Unit UnitT>
@@ -135,6 +134,12 @@ constexpr Amount<UnitT> Amount<UnitT>::operator-=(const Amount<UnitT> other) noe
 	return *this;
 }
 
+template <Unit UnitT>
+constexpr inline bool Amount<UnitT>::equals(const Amount<UnitT> other, const StorageType epsilon) const noexcept
+{
+	return (this->value - other.value) <= epsilon;
+}
+
 template<Unit UnitT>
 constexpr double Amount<UnitT>::asStd() const noexcept { return value; }
 
@@ -185,6 +190,8 @@ inline std::string Amount<Unit::TORR>::unitSymbol() noexcept { return "torr"; }
 template<>
 inline std::string Amount<Unit::PASCAL>::unitSymbol() noexcept { return "Pa"; }
 template<>
+inline std::string Amount<Unit::ATMOSPHERE>::unitSymbol() noexcept { return "atm"; }
+template<>
 inline std::string Amount<Unit::JOULE>::unitSymbol() noexcept { return "J"; }
 template<>
 inline std::string Amount<Unit::WATT>::unitSymbol() noexcept { return "W"; }
@@ -224,6 +231,8 @@ inline std::string Amount<Unit::TORR>::unitName() noexcept { return "torr"; }
 template<>
 inline std::string Amount<Unit::PASCAL>::unitName() noexcept { return "pascal"; }
 template<>
+inline std::string Amount<Unit::ATMOSPHERE>::unitName() noexcept { return "atmosphere"; }
+template<>
 inline std::string Amount<Unit::JOULE>::unitName() noexcept { return "joule"; }
 template<>
 inline std::string Amount<Unit::WATT>::unitName() noexcept { return "watt"; }
@@ -240,6 +249,9 @@ inline std::string Amount<Unit::JOULE_PER_CELSIUS>::unitName() noexcept { return
 template<>
 inline std::string Amount<Unit::JOULE_PER_MOLE_CELSIUS>::unitName() noexcept { return Amount<Unit::JOULE>::unitName() + " / (" + Amount<Unit::MOLE>::unitName() + " + " + Amount<Unit::CELSIUS>::unitName() + ")"; }
 
+
+//    --- Direct Conversions ---    //
+
 template<>
 template<>
 constexpr Amount<Unit::LITER>::Amount(const Amount<Unit::CUBIC_METER>& cubicMeters) noexcept :
@@ -254,26 +266,8 @@ constexpr Amount<Unit::CUBIC_METER>::Amount(const Amount<Unit::LITER>& liters) n
 
 template<>
 template<>
-constexpr Amount<Unit::GRAM_PER_MILLILITER>::Amount(const Amount<Unit::GRAM>& grams, const Amount<Unit::LITER>& liters) noexcept :
-	Value<double>(grams.asStd() / liters.asMilli())
-{}
-
-template<>
-template<>
 constexpr Amount<Unit::JOULE_PER_MOLE>::Amount(const Amount<Unit::JOULE>& joules) noexcept :
 	Value<double>(joules.asStd())
-{}
-
-template<>
-template<>
-constexpr Amount<Unit::JOULE_PER_MOLE>::Amount(const Amount<Unit::JOULE>& joules, const Amount<Unit::MOLE>& moles) noexcept :
-	Value<double>(joules.asStd() / moles.asStd())
-{}
-
-template<>
-template<>
-constexpr Amount<Unit::JOULE_PER_MOLE_CELSIUS>::Amount(const Amount<Unit::JOULE>& joules, const Amount<Unit::MOLE>& moles, const Amount<Unit::CELSIUS>& celsius) noexcept :
-	Value<double>(joules.asStd() / (moles.asStd() * celsius.asStd()))
 {}
 
 template<>
@@ -303,15 +297,26 @@ constexpr Amount<Unit::CELSIUS>::Amount(const Amount<Unit::FAHRENHEIT>& f) noexc
 template<>
 template<>
 constexpr Amount<Unit::FAHRENHEIT>::Amount(const Amount<Unit::KELVIN>& k) noexcept :
-	Value<double>(Amount<Unit::CELSIUS>(k))
+	Amount<Unit::FAHRENHEIT>(Amount<Unit::CELSIUS>(k))
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::KELVIN>::Amount(const Amount<Unit::FAHRENHEIT>& f) noexcept :
-	Value<double>(Amount<Unit::CELSIUS>(f))
+	Amount<Unit::KELVIN>(Amount<Unit::CELSIUS>(f))
 {}
 
+template<>
+template<>
+constexpr Amount<Unit::TORR>::Amount(const Amount<Unit::PASCAL>& p) noexcept :
+	Value<double>(p.asStd() / 133.3223684211)
+{}
+
+template<>
+template<>
+constexpr Amount<Unit::TORR>::Amount(const Amount<Unit::ATMOSPHERE>& a) noexcept :
+	Value<double>(a.asStd() * 760.0)
+{}
 
 template<>
 template<>
@@ -321,25 +326,52 @@ constexpr Amount<Unit::PASCAL>::Amount(const Amount<Unit::TORR>& t) noexcept :
 
 template<>
 template<>
-constexpr Amount<Unit::TORR>::Amount(const Amount<Unit::PASCAL>& p) noexcept :
-	Value<double>(p.asStd() / 133.3223684211)
+constexpr Amount<Unit::PASCAL>::Amount(const Amount<Unit::ATMOSPHERE>& a) noexcept :
+	Amount<Unit::PASCAL>(Amount<Unit::TORR>(a))
+{}
+
+template<>
+template<>
+constexpr Amount<Unit::ATMOSPHERE>::Amount(const Amount<Unit::TORR>& t) noexcept :
+	Value<double>(t.asStd() / 760.0)
+{}
+
+template<>
+template<>
+constexpr Amount<Unit::ATMOSPHERE>::Amount(const Amount<Unit::PASCAL>& p) noexcept :
+	Amount<Unit::ATMOSPHERE>(Amount<Unit::TORR>(p))
 {}
 
 
+//    --- Indirect Conversions ---    //
 
 template<>
 template<>
 constexpr Amount<Unit::LITER> Amount<Unit::GRAM>::to(const Amount<Unit::GRAM_PER_MILLILITER> density) const noexcept
 {
-	return value * density.asKilo();
+	return (value / density.asStd()) / 1000.0;
 }
+
 template<>
 template<>
 constexpr Amount<Unit::GRAM> Amount<Unit::LITER>::to(const Amount<Unit::GRAM_PER_MILLILITER> density) const noexcept
 {
-	return value / density.asMilli();
+	return (value * density.asStd()) * 1000.0;
 }
 
+template<>
+template<>
+constexpr Amount<Unit::GRAM_PER_MILLILITER> Amount<Unit::LITER>::to(const Amount<Unit::GRAM> grams) const noexcept
+{
+	return grams.asStd() / asMilli();
+}
+
+template<>
+template<>
+constexpr Amount<Unit::GRAM_PER_MILLILITER> Amount<Unit::GRAM>::to(const Amount<Unit::LITER> liters) const noexcept
+{
+	return value / liters.asMilli();
+}
 
 template<>
 template<>
@@ -347,6 +379,7 @@ constexpr Amount<Unit::GRAM> Amount<Unit::MOLE>::to(const Amount<Unit::GRAM_PER_
 {
 	return value * molarMass.asStd();
 }
+
 template<>
 template<>
 constexpr Amount<Unit::MOLE> Amount<Unit::GRAM>::to(const Amount<Unit::GRAM_PER_MOLE> molarMass) const noexcept
@@ -360,6 +393,7 @@ constexpr Amount<Unit::GRAM_PER_MOLE> Amount<Unit::GRAM>::to(const Amount<Unit::
 {
 	return value / moles.asStd();
 }
+
 template<>
 template<>
 constexpr Amount<Unit::GRAM> Amount<Unit::GRAM_PER_MOLE>::to(const Amount<Unit::MOLE> moles) const noexcept
@@ -369,10 +403,18 @@ constexpr Amount<Unit::GRAM> Amount<Unit::GRAM_PER_MOLE>::to(const Amount<Unit::
 
 template<>
 template<>
+constexpr Amount<Unit::MOLE> Amount<Unit::GRAM_PER_MOLE>::to(const Amount<Unit::GRAM> grams) const noexcept
+{
+	return grams.asStd() / value;
+}
+
+template<>
+template<>
 constexpr Amount<Unit::JOULE> Amount<Unit::JOULE_PER_MOLE>::to(const Amount<Unit::MOLE> moles) const noexcept
 {
 	return value * moles.asStd();
 }
+
 template<>
 template<>
 constexpr Amount<Unit::MOLE> Amount<Unit::JOULE_PER_MOLE>::to(const Amount<Unit::JOULE> joules) const noexcept
@@ -386,6 +428,7 @@ constexpr Amount<Unit::JOULE> Amount<Unit::JOULE_PER_CELSIUS>::to(const Amount<U
 {
 	return value * temperature.asStd();
 }
+
 template<>
 template<>
 constexpr Amount<Unit::CELSIUS> Amount<Unit::JOULE_PER_CELSIUS>::to(const Amount<Unit::JOULE> joules) const noexcept
@@ -395,10 +438,39 @@ constexpr Amount<Unit::CELSIUS> Amount<Unit::JOULE_PER_CELSIUS>::to(const Amount
 
 template<>
 template<>
+constexpr Amount<Unit::JOULE> Amount<Unit::WATT>::to(const Amount<Unit::SECOND> seconds) const noexcept
+{
+	return value * seconds.asStd();
+}
+
+template<>
+template<>
+constexpr Amount<Unit::SECOND> Amount<Unit::WATT>::to(const Amount<Unit::JOULE> joules) const noexcept
+{
+	return joules.asStd() / value;
+}
+
+template<>
+template<>
+constexpr Amount<Unit::WATT> Amount<Unit::JOULE>::to(const Amount<Unit::SECOND> seconds) const noexcept
+{
+	return value / seconds.asStd();
+}
+
+template<>
+template<>
+constexpr Amount<Unit::WATT> Amount<Unit::SECOND>::to(const Amount<Unit::JOULE> joules) const noexcept
+{
+	return value * joules.asStd();
+}
+
+template<>
+template<>
 constexpr Amount<Unit::JOULE_PER_MOLE> Amount<Unit::JOULE_PER_MOLE_CELSIUS>::to(const Amount<Unit::CELSIUS> temperature) const noexcept
 {
 	return value * temperature.asStd();
 }
+
 template<>
 template<>
 constexpr Amount<Unit::JOULE_PER_MOLE_CELSIUS> Amount<Unit::JOULE_PER_MOLE>::to(const Amount<Unit::CELSIUS> temperature) const noexcept
@@ -412,6 +484,7 @@ constexpr Amount<Unit::JOULE_PER_CELSIUS> Amount<Unit::JOULE_PER_MOLE_CELSIUS>::
 {
 	return value * moles.asStd();
 }
+
 template<>
 template<>
 constexpr Amount<Unit::JOULE_PER_MOLE_CELSIUS> Amount<Unit::JOULE_PER_CELSIUS>::to(const Amount<Unit::MOLE> moles) const noexcept
@@ -441,7 +514,7 @@ constexpr Amount<Unit::MOLE> Amount<Unit::MOLE_PER_SECOND>::to(const Amount<Unit
 }
 
 
-//    --- literals ---    //
+//    --- Literals ---    //
 
 constexpr inline Amount<Unit::LITER> operator""_L(long double value) { return value; }
 constexpr inline Amount<Unit::CUBIC_METER> operator""_M3(long double value) { return value; }

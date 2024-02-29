@@ -57,6 +57,7 @@ public:
 	Amount<Unit::CELSIUS> getMaxAllowedTemperature() const;
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getHeatCapacity() const;
 	Amount<Unit::JOULE_PER_CELSIUS> getTotalHeatCapacity() const;
+	Amount<Unit::JOULE_PER_MOLE> getKineticEnergy() const;
 
 	bool isEmpty() const;
 
@@ -70,8 +71,8 @@ public:
 
 	void consumePotentialEnergy();
 
-	bool operator==(const Layer& other) const;
-	bool operator!=(const Layer& other) const;
+	bool equals(const Layer& other,
+		const Amount<>::StorageType epsilon = std::numeric_limits<Amount<>::StorageType>::epsilon()) const;
 
 	LayerIterator begin() const;
 	LayerIterator end() const;

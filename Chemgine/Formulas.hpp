@@ -5,9 +5,15 @@
 class Formulas
 {
 public:
+	static Amount<Unit::LITER> idealGasLaw(
+		const Amount<Unit::KELVIN> temperature,
+		const Amount<Unit::ATMOSPHERE> pressure,
+		const Amount<Unit::MOLE> moles
+	);
+
 	static Amount<Unit::GRAM_PER_MILLILITER> idealGasLaw(
 		const Amount<Unit::KELVIN> temperature,
-		const Amount<Unit::PASCAL> pressure,
+		const Amount<Unit::ATMOSPHERE> pressure,
 		const Amount<Unit::GRAM_PER_MOLE> molarMass
 	);
 

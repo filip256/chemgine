@@ -178,6 +178,26 @@ LayerType MultiLayerMixture::getClosestLayer(LayerType layer) const
 	return LayerType::NONE;
 }
 
+bool MultiLayerMixture::areAdjacentLayers(LayerType layer1, LayerType layer2) const
+{
+	if (layer1 > layer2)
+		std::swap(layer1, layer2);
+
+	if (toIndex(layer2) - toIndex(layer1) <= 1)
+		return true;
+
+	++layer1;
+	do
+	{
+		if (hasLayer(layer1))
+			return false;
+		++layer1;
+	} 
+	while (layer1 < layer2);
+
+	return true;
+}
+
 void MultiLayerMixture::add(const Reactant& reactant)
 {
 	content.add(reactant);
@@ -222,7 +242,7 @@ Amount<Unit::JOULE_PER_CELSIUS> MultiLayerMixture::getLayerTotalHeatCapacity(con
 
 Amount<Unit::JOULE_PER_MOLE> MultiLayerMixture::getLayerKineticEnergy(const LayerType layer) const
 {
-	return getLayerHeatCapacity(layer).to<Unit::JOULE_PER_MOLE>(layers.at(layer).temperature);
+	return layers.at(layer).getKineticEnergy();
 }
 
 Amount<Unit::TORR> MultiLayerMixture::getPressure() const
@@ -247,7 +267,7 @@ Amount<Unit::LITER> MultiLayerMixture::getTotalVolume() const
 
 void MultiLayerMixture::copyContentTo(Ref<BaseContainer> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer) const
 {
-	if (destination.isSet() == false || hasLayer(sourceLayer) == false)
+	if (hasLayer(sourceLayer) == false)
 		return;
 
 	// save and use initial volume
@@ -274,15 +294,13 @@ void MultiLayerMixture::moveContentTo(Ref<BaseContainer> destination, Amount<Uni
 	if (volume > sourceVolume)
 		volume = sourceVolume;
 
-	const bool hasDestination = destination.isSet();
 	for (auto& r : content)
 	{
 		if (r.layer != sourceLayer)
 			continue;
 
 		auto molesToAdd = (r.amount / sourceVolume) * volume.asStd();
-		if (hasDestination)
-			destination->add(r.mutate(molesToAdd));
+		destination->add(r.mutate(molesToAdd));
 		add(r.mutate(-molesToAdd));
 	}
 }

@@ -353,6 +353,11 @@ Amount<Unit::JOULE_PER_CELSIUS> Layer::getTotalHeatCapacity() const
     return (hC / ms.asStd()).to<Unit::JOULE_PER_CELSIUS>(mo);
 }
 
+Amount<Unit::JOULE_PER_MOLE> Layer::getKineticEnergy() const
+{
+    return getHeatCapacity().to<Unit::JOULE_PER_MOLE>(temperature);
+}
+
 void Layer::setIfNucleator(const Reactant& reactant)
 {
     lowNucleator.setIfLower(reactant);
@@ -375,18 +380,13 @@ void Layer::consumePotentialEnergy()
         consumeNegativePotentialEnergy();
 }
 
-bool Layer::operator==(const Layer& other) const
+bool Layer::equals(const Layer& other, const Amount<>::StorageType epsilon) const
 {
-    return this->temperature == other.temperature &&
-        this->moles == other.moles &&
-        this->mass == other.mass &&
-        this->volume == other.volume &&
-        this->potentialEnergy == other.potentialEnergy;
-}
-
-bool Layer::operator!=(const Layer& other) const
-{
-    return !(*this == other);
+    return this->temperature.equals(other.temperature, epsilon) &&
+        this->potentialEnergy.equals(other.potentialEnergy, epsilon) &&
+        this->moles.equals(other.moles, epsilon) &&
+        this->mass.equals(other.mass, epsilon) &&
+        this->volume.equals(other.volume, epsilon);
 }
 
 LayerIterator Layer::begin() const

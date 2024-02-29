@@ -7,11 +7,27 @@
 #include "DataStoreAccessor.hpp"
 #include "ConcreteReaction.hpp"
 #include "Atmosphere.hpp"
+#include "FlagField.hpp"
+
+enum class TickMode : uint8_t
+{
+	ENABLE_NONE = 0,
+
+	ENABLE_OVERFLOW = 1 << 0,
+	ENABLE_NEGLIGIBLES = 1 << 1,
+	ENABLE_REACTIONS = 1 << 2,
+	ENABLE_CONDUCTION = 1 << 3,
+	ENABLE_ENERGY = 1 << 4,
+
+	ENABLE_ALL = static_cast<uint8_t>(-1)
+};
 
 class Reactor : public MultiLayerMixture
 {
 private:
 	double stirSpeed = 0.0;
+
+	FlagField<TickMode> tickMode = TickMode::ENABLE_ALL;
 
 	const BaseEstimator* temperatureSpeedEstimator = nullptr;
 	const BaseEstimator* concentrationSpeedEstimator = nullptr;
@@ -20,8 +36,12 @@ private:
 
 	static DataStoreAccessor dataAccessor;
 
+	double getInterLayerReactivityCoefficient(const Reactant& r1, const Reactant& r2) const;
+	double getInterLayerReactivityCoefficient(const ReactantSet& reactants) const;
+
 	void findNewReactions();
 	void runReactions(const Amount<Unit::SECOND> timespan);
+	void runLayerEnergyConduction(const Amount<Unit::SECOND> timespan);
 	void consumePotentialEnergy();
 
 	Reactor(const Reactor& other) noexcept;
@@ -45,9 +65,18 @@ public:
 	void add(Reactor& other);
 	void add(Reactor& other, const double ratio);
 
+	FlagField<TickMode> getTickMode() const;
+	void setTickMode(const FlagField<TickMode> mode);
 	void tick();
 
-	bool hasEqualState(const Reactor& other) const;
+	bool hasSameState(const Reactor& other,
+		const Amount<>::StorageType epsilon = std::numeric_limits<Amount<>::StorageType>::epsilon()) const;
+	bool hasSameContent(const Reactor& other,
+		const Amount<>::StorageType epsilon = std::numeric_limits<Amount<>::StorageType>::epsilon()) const;
+	bool hasSameLayers(const Reactor& other,
+		const Amount<>::StorageType epsilon = std::numeric_limits<Amount<>::StorageType>::epsilon()) const;
+	bool isSame(const Reactor& other,
+		const Amount<>::StorageType epsilon = std::numeric_limits<Amount<>::StorageType>::epsilon()) const;
 
 	Reactor makeCopy() const;
 

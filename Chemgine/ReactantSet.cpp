@@ -92,6 +92,14 @@ std::unordered_set<Reactant>::const_iterator ReactantSet::end() const
 	return content.end();
 }
 
+bool ReactantSet::equals(const ReactantSet& other, const Amount<>::StorageType epsilon) const
+{
+	for (const auto& r : content)
+		if (r.amount.equals(other.getAmountOf(r), epsilon) == false)
+			return false;
+	return true;
+}
+
 bool ReactantSet::operator==(const ReactantSet& other) const
 {
 	for (const auto& r : content)

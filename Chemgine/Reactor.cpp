@@ -9,7 +9,8 @@ Reactor::Reactor(const Reactor& other) noexcept :
 	MultiLayerMixture(other),
 	temperatureSpeedEstimator(other.temperatureSpeedEstimator),
 	concentrationSpeedEstimator(other.concentrationSpeedEstimator),
-	stirSpeed(other.stirSpeed)
+	stirSpeed(other.stirSpeed),
+	tickMode(other.tickMode)
 {
 	this->cachedReactions.reserve(other.cachedReactions.size());
 	for (const auto& r : other.cachedReactions)
@@ -40,6 +41,52 @@ Reactor::Reactor(
 void Reactor::setDataStore(const DataStore& dataStore)
 {
 	dataAccessor.set(dataStore);
+}
+
+double Reactor::getInterLayerReactivityCoefficient(const Reactant& r1, const Reactant& r2) const
+{
+	if (r1.layer == r2.layer)
+	{
+		if (isSolidLayer(r1.layer))
+			return 0.0001;
+		return 1.0;
+	}
+
+	if (MultiLayerMixture::areAdjacentLayers(r1.layer, r2.layer) == false)
+		return 0.0;
+
+	// TODO: take into account granularity, stirring, bubbling etc.
+	if (isSolidLayer(r1.layer))
+	{
+		if (isLiquidLayer(r2.layer))
+			return 0.5;   // S-L
+		return 0.01;      // S-G
+	}
+
+	if (isLiquidLayer(r1.layer))
+	{
+		if (isSolidLayer(r2.layer))
+			return 0.5;   // L-S
+		return 0.1;       // L-G
+	}
+
+
+	if (isLiquidLayer(r2.layer))
+		return 0.1;       // G-L
+	return 0.01;          // G-S
+}
+
+double Reactor::getInterLayerReactivityCoefficient(const ReactantSet& reactants) const
+{
+	double result = 1.0;
+	for (const auto& r1 : reactants)
+		for (const auto& r2 : reactants)
+		{
+			result = std::min(getInterLayerReactivityCoefficient(r1, r2), result);
+			if (result == 0.0) // early return, coef is always positive
+				return 0.0;
+		}
+	return result;
 }
 
 void Reactor::findNewReactions()
@@ -73,7 +120,8 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 			r.getData().baseSpeed.to<Unit::MOLE>(timespan) *
 			totalVolume.asStd() *
 			temperatureSpeedEstimator->get((r.getReactantTemperature() - r.getData().baseTemperature).asStd()) *
-			concentrationSpeedEstimator->get((getAmountOf(r.getReactants()) / totalMoles).asStd());
+			concentrationSpeedEstimator->get((getAmountOf(r.getReactants()) / totalMoles).asStd()) *
+			getInterLayerReactivityCoefficient(r.getReactants());
 		
 		if (speedCoef == 0)
 			continue;
@@ -82,8 +130,8 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 		for (const auto& i : r.getReactants())
 		{
 			const auto a = getAmountOf(i);
-			if (a < i.amount * speedCoef.asStd())
-				speedCoef = (a / i.amount).asStd();
+			if (a < i.amount * speedCoef)
+				speedCoef = a / i.amount;
 		}
 
 		if (speedCoef == 0)
@@ -98,6 +146,51 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 		}
 
 		MultiLayerMixture::add(r.getData().reactionEnergy.to<Unit::JOULE>(speedCoef), r.getReactants().any().layer);
+	}
+}
+
+void Reactor::runLayerEnergyConduction(const Amount<Unit::SECOND> timespan)
+{
+	// TODO: find way to determine these based on molecular composition
+	const static Amount<Unit::WATT> favourableC = 0.05;    // as relative conductivity
+	const static Amount<Unit::WATT> unfavourableC = 0.03;  // as relative conductivity
+
+	for (auto& l : layers)
+	{
+		if (const auto above = getLayerAbove(l.first); above != LayerType::NONE)
+		{
+			const auto aboveLayer = layers.at(above);
+			const auto diff = (l.second.temperature - aboveLayer.temperature);
+			if (diff == 0)
+				continue;
+
+
+			const auto diffE = diff > 0 ?
+				// molecules closer to the top ussually have more
+				// energy than the layer avg. => favour up conversion
+				l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(l.second.moles).to<Unit::JOULE>(diff) * favourableC.to<Unit::JOULE>(timespan) :
+				l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(aboveLayer.moles).to<Unit::JOULE>(diff) * unfavourableC.to<Unit::JOULE>(timespan);
+
+			MultiLayerMixture::add(diffE, above);
+			MultiLayerMixture::add(-diffE, l.first);
+		}
+
+		if (const auto below = getLayerAbove(l.first); below != LayerType::NONE)
+		{
+			const auto belowLayer = layers.at(below);
+			const auto diff = (l.second.temperature - belowLayer.temperature);
+			if (diff == 0)
+				continue;
+
+			const auto diffE = diff > 0 ?
+				// molecules closer to the bottom ussually have less
+				// energy than the layer avg. => favour down conversion
+				l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(l.second.moles).to<Unit::JOULE>(diff) * unfavourableC.to<Unit::JOULE>(timespan) :
+				l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(belowLayer.moles).to<Unit::JOULE>(diff) * favourableC.to<Unit::JOULE>(timespan);
+
+			MultiLayerMixture::add(diffE, below);
+			MultiLayerMixture::add(-diffE, l.first);
+		}
 	}
 }
 
@@ -162,25 +255,52 @@ void Reactor::add(Reactor& other, const double ratio)
 	//}
 }
 
-void Reactor::tick()
+FlagField<TickMode> Reactor::getTickMode() const
 {
-	checkOverflow();
-	removeNegligibles();
-	findNewReactions();
-	runReactions(1.0);
-	consumePotentialEnergy();
+	return tickMode;
 }
 
-bool Reactor::hasEqualState(const Reactor& other) const
+void Reactor::setTickMode(const FlagField<TickMode> mode)
 {
-	if (this->pressure != other.pressure ||
-		this->totalMoles != other.totalMoles ||
-		this->totalMass != other.totalMass ||
-		this->totalVolume != other.totalVolume ||
-		this->stirSpeed != other.stirSpeed ||
-		this->content != other.content)
-		return false;
+	tickMode.set(mode);
+}
 
+void Reactor::tick()
+{
+	if(tickMode.has(TickMode::ENABLE_OVERFLOW))
+		checkOverflow();
+
+	if (tickMode.has(TickMode::ENABLE_NEGLIGIBLES))
+		removeNegligibles();
+
+	if (tickMode.has(TickMode::ENABLE_REACTIONS))
+	{
+		findNewReactions();
+		runReactions(1.0);
+	}
+
+	if (tickMode.has(TickMode::ENABLE_CONDUCTION))
+		runLayerEnergyConduction(1.0);
+
+	if (tickMode.has(TickMode::ENABLE_ENERGY))
+		consumePotentialEnergy();
+}
+
+bool Reactor::hasSameState(const Reactor& other, const Amount<>::StorageType epsilon) const
+{
+	return this->pressure.equals(other.pressure, epsilon) &&
+		this->totalMoles.equals(other.totalMoles, epsilon) &&
+		this->totalMass.equals(other.totalMass, epsilon) &&
+		this->totalVolume.equals(other.totalVolume, epsilon);
+}
+
+bool Reactor::hasSameContent(const Reactor& other, const Amount<>::StorageType epsilon) const
+{
+	return this->content.equals(other.content, epsilon);
+}
+
+bool Reactor::hasSameLayers(const Reactor& other, const Amount<>::StorageType epsilon) const
+{
 	auto l = LayerType::FIRST;
 	while(l <= LayerType::LAST)
 	{
@@ -188,12 +308,20 @@ bool Reactor::hasEqualState(const Reactor& other) const
 		if (hL != other.hasLayer(l))
 			return false;
 
-		if (hL && (this->layers.at(l) != other.layers.at(l)))
+		if (hL && (this->layers.at(l).equals(other.layers.at(l), epsilon)) == false)
 			return false;
 		++l;
 	}
 
 	return true;
+}
+
+bool Reactor::isSame(const Reactor& other, const Amount<>::StorageType epsilon) const
+{
+	return 
+		this->hasSameState(other) &&
+		this->hasSameContent(other) &&
+		this->hasSameLayers(other);
 }
 
 Reactor Reactor::makeCopy() const

@@ -46,6 +46,9 @@ public:
 	std::unordered_set<Reactant>::const_iterator begin() const;
 	std::unordered_set<Reactant>::const_iterator end() const;
 
+	bool equals(const ReactantSet& other,
+		const Amount<>::StorageType epsilon = std::numeric_limits<Amount<>::StorageType>::epsilon()) const;
+
 	bool operator==(const ReactantSet& other) const;
 	bool operator!=(const ReactantSet& other) const;
 

@@ -4,6 +4,7 @@
 #include "Layer.hpp"
 #include "Atmosphere.hpp"
 #include "Ref.hpp"
+#include "DumpContainer.hpp"
 
 class MultiLayerMixture : public Mixture
 {
@@ -14,7 +15,7 @@ protected:
 	Amount<Unit::LITER> totalVolume = 0.0;
 
 	const Amount<Unit::LITER> maxVolume;
-	Ref<BaseContainer> overflowTarget;
+	Ref<BaseContainer> overflowTarget = DumpContainer::globalDumpContainer;
 
 	std::unordered_map<LayerType, Layer> layers;
 
@@ -30,6 +31,7 @@ protected:
 	LayerType getLayerAbove(LayerType layer) const;
 	LayerType getLayerBelow(LayerType layer) const;
 	LayerType getClosestLayer(LayerType layer) const;
+	bool areAdjacentLayers(LayerType layer1, LayerType layer2) const;
 
 	LayerType findLayerFor(const Reactant& reactant) const override final;
 

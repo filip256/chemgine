@@ -1,7 +1,7 @@
 #include "DumpContainer.hpp"
 #include "Reactant.hpp"
 
-DumpContainer DumpContainer::GlobalDumpContainer = DumpContainer();
+DumpContainer DumpContainer::globalDumpContainer = DumpContainer();
 
 void DumpContainer::add(const Reactant& reactant) 
 {

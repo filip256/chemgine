@@ -5,11 +5,11 @@
 enum class LayerType : uint8_t
 {
 	GASEOUS,
-	LIQUEFIED_GAS,
+	INORG_LIQUEFIED_GAS,
 	NONPOLAR,
 	POLAR,
 	DENSE_NONPOLAR,
-	MOLTEN_SOLID,
+	INORG_MOLTEN_SOLID,
 	SOLID,
 
 	REAL_LAYER_COUNT, // marks the number of real layers
@@ -40,7 +40,7 @@ static inline constexpr bool isGasLayer(const LayerType type)
 
 static inline constexpr bool isLiquidLayer(const LayerType type)
 {
-	return type >= LayerType::LIQUEFIED_GAS && type <= LayerType::MOLTEN_SOLID;
+	return type >= LayerType::INORG_LIQUEFIED_GAS && type <= LayerType::INORG_MOLTEN_SOLID;
 }
 
 static inline constexpr bool isSolidLayer(const LayerType type)
@@ -52,8 +52,8 @@ inline AggregationType getAggregationType(const LayerType type)
 {
 	return
 		isGasLayer(type) ? AggregationType::GAS :
-		isSolidLayer(type) ? AggregationType::SOLID :
 		isLiquidLayer(type) ? AggregationType::LIQUID :
+		isSolidLayer(type) ? AggregationType::SOLID :
 		AggregationType::NONE;
 }
 

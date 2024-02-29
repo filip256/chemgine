@@ -55,9 +55,9 @@ AggregationType Molecule::getAggregationAt(
 	const Amount<Unit::TORR> pressure
 ) const
 {
-	return temperature < getMeltingPointAt(pressure) ? AggregationType::SOLID :
-		temperature < getBoilingPointAt(pressure) ? AggregationType::LIQUID :
-		AggregationType::GAS;
+	return temperature > getBoilingPointAt(pressure) ? AggregationType::GAS :
+		temperature > getMeltingPointAt(pressure) ? AggregationType::LIQUID :
+		AggregationType::SOLID;
 }
 
 Amount<Unit::GRAM_PER_MILLILITER> Molecule::getDensityAt(

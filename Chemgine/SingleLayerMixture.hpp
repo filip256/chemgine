@@ -4,15 +4,20 @@
 #include "Layer.hpp"
 #include "Constants.hpp"
 #include "Ref.hpp"
+#include "Logger.hpp"
+#include "DumpContainer.hpp"
+
+#include <unordered_map>
 
 template<LayerType L>
 class SingleLayerMixture : public Mixture
 {
 protected:
+	Layer layer;
 	Amount<Unit::TORR> pressure;
 	const Amount<Unit::LITER> maxVolume;
-	Ref<BaseContainer> overflowTarget = nullptr;
-	Layer layer;
+	Ref<BaseContainer> overflowTarget = DumpContainer::globalDumpContainer;
+	std::unordered_map<LayerType, Ref<BaseContainer>> incompatibilityTargets;
 
 	void addToLayer(const Reactant& reactant);
 
@@ -40,6 +45,9 @@ public:
 
 	void setOverflowTarget(const Ref<BaseContainer> target);
 	Ref<BaseContainer> getOverflowTarget() const;
+	void setIncompatibilityTarget(const LayerType layerType, const Ref<BaseContainer> target);
+	void setAllIncompatibilityTargets(const Ref<BaseContainer> target);
+	Ref<BaseContainer> getIncompatibilityTarget(const LayerType layerType) const;
 
 	void add(const Reactant& reactant) override final;
 
@@ -73,6 +81,11 @@ SingleLayerMixture<L>::SingleLayerMixture(
 	maxVolume(maxVolume),
 	overflowTarget(overflowTarget)
 {
+	incompatibilityTargets.reserve(toIndex(LayerType::REAL_LAYER_COUNT) - 1);
+	for (LayerType i = LayerType::FIRST; i <= LayerType::LAST; ++i)
+		if (i != L)
+			incompatibilityTargets.emplace(std::make_pair(i, Ref(DumpContainer::globalDumpContainer)));
+
 	for (size_t i = 0; i < initContent.size(); ++i)
 		add(Reactant(initContent[i].first, L, initContent[i].second, *this));
 	scaleToVolume(maxVolume);
@@ -165,18 +178,6 @@ const Layer& SingleLayerMixture<L>::getLayer() const
 }
 
 template<LayerType L>
-Amount<Unit::JOULE_PER_MOLE_CELSIUS> SingleLayerMixture<L>::getLayerHeatCapacity() const
-{
-	return getLayer(L);
-}
-
-template<LayerType L>
-Amount<Unit::JOULE_PER_MOLE> SingleLayerMixture<L>::getLayerKineticEnergy() const
-{
-	return getLayerKineticEnergy(L);
-}
-
-template<LayerType L>
 void SingleLayerMixture<L>::setOverflowTarget(const Ref<BaseContainer> target)
 {
 	overflowTarget = target;
@@ -189,10 +190,42 @@ Ref<BaseContainer> SingleLayerMixture<L>::getOverflowTarget() const
 }
 
 template<LayerType L>
+void SingleLayerMixture<L>::setIncompatibilityTarget(const LayerType layerType, const Ref<BaseContainer> target)
+{
+	if (layerType == L)
+	{
+		Logger::log("SingleLayerMixture<" + std::to_string(toIndex(L)) + ">: tried to set incompatibility target for its own layer.", LogType::BAD);
+		return;
+	}
+
+	incompatibilityTargets.at(layerType) = target;
+}
+
+template<LayerType L>
+void SingleLayerMixture<L>::setAllIncompatibilityTargets(const Ref<BaseContainer> target)
+{
+	for (LayerType i = LayerType::FIRST; i <= LayerType::LAST; ++i)
+		if (i != L)
+			incompatibilityTargets.at(i) = target;
+}
+
+template<LayerType L>
+Ref<BaseContainer> SingleLayerMixture<L>::getIncompatibilityTarget(const LayerType layerType) const
+{
+	if (layerType == L)
+		return Ref<BaseContainer>::nullRef;
+
+	return incompatibilityTargets.at(layerType);
+}
+
+template<LayerType L>
 void SingleLayerMixture<L>::add(const Reactant& reactant)
 {
 	if (reactant.layer != L)
+	{
+		incompatibilityTargets.at(reactant.layer)->add(reactant);
 		return;
+	}
 
 	content.add(reactant);
 	addToLayer(reactant.mutate(*this));
@@ -235,6 +268,18 @@ const Layer& SingleLayerMixture<L>::getLayer(const LayerType l) const
 }
 
 template<LayerType L>
+Amount<Unit::JOULE_PER_MOLE_CELSIUS> SingleLayerMixture<L>::getLayerHeatCapacity() const
+{
+	return getLayer(L);
+}
+
+template<LayerType L>
+Amount<Unit::JOULE_PER_MOLE> SingleLayerMixture<L>::getLayerKineticEnergy() const
+{
+	return getLayerKineticEnergy(L);
+}
+
+template<LayerType L>
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> SingleLayerMixture<L>::getLayerHeatCapacity(const LayerType l) const
 {
 	return layer.getHeatCapacity();
@@ -249,15 +294,12 @@ Amount<Unit::JOULE_PER_CELSIUS> SingleLayerMixture<L>::getLayerTotalHeatCapacity
 template<LayerType L>
 Amount<Unit::JOULE_PER_MOLE> SingleLayerMixture<L>::getLayerKineticEnergy(const LayerType l) const
 {
-	return getLayerHeatCapacity(l).to<Unit::JOULE_PER_MOLE>(layer.temperature);
+	return layer.getKineticEnergy();
 }
 
 template<LayerType L>
 void SingleLayerMixture<L>::copyContentTo(Ref<BaseContainer> destination, const Amount<Unit::LITER> volume) const
 {
-	if (destination.isSet() == false)
-		return;
-
 	// save and use initial volume
 	const auto sourceVolume = layer.volume.asStd();
 
@@ -277,12 +319,10 @@ void SingleLayerMixture<L>::moveContentTo(Ref<BaseContainer> destination, Amount
 	if (volume > sourceVolume)
 		volume = sourceVolume;
 
-	const bool hasDestination = destination.isSet();
 	for (const auto& r : content)
 	{
 		const auto molesToAdd = (r.amount / sourceVolume) * volume.asStd();
-		if(hasDestination)
-			destination->add(r.mutate(molesToAdd));
+		destination->add(r.mutate(molesToAdd));
 		add(r.mutate(-molesToAdd));
 	}
 }

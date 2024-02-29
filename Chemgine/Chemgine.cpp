@@ -53,8 +53,8 @@ int main()
             .loadReactionsData("Data/ReactionData.csv")
             .loadLabwareData("Data/LabwareData.csv");
 
-        //UIContext uiContext;
-        //uiContext.run();
+        UIContext uiContext;
+        uiContext.run();
 
         //Reactor reactor(20.0, 760.0);
         //reactor.add(Molecule("HH"), 1.0);

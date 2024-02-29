@@ -1,6 +1,7 @@
 #include "Reactant.hpp"
 #include "Reactor.hpp"
 #include "Layer.hpp"
+#include "Formulas.hpp"
 
 Reactant::Reactant(
 	const Molecule& molecule,

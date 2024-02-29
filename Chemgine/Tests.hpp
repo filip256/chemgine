@@ -328,9 +328,12 @@ private:
 	Reactor* reactorC = nullptr;
 	Reactor* reactorD = nullptr;
 	Reactor* reactorE = nullptr;
+	Reactor* reactorF = nullptr;
+	SingleLayerMixture<LayerType::GASEOUS>* gasMixtureA = nullptr;
 
 	const double waterTemperatureThreshold = 0.1;
 	const double overflowLossThreshold = 0.0000001;
+	const double determinismEqualityThreshold = 0.000001;
 
 	void runConservationOfMassTest()
 	{
@@ -415,28 +418,94 @@ private:
 			passed = false;
 		}
 	}
-	void runDeterminismTest()
+	void runIncompatibleForwardingTest()
 	{
-		auto initialReactor = reactorD->makeCopy();
-		auto copyReactor = reactorD->makeCopy();
-		reactorD->tick();
-		copyReactor.tick();
+		const auto water = Reactant(Molecule("O"), LayerType::POLAR, 1.0_mol);
+		const auto oxygen = Reactant(Molecule("O=O"), LayerType::GASEOUS, 1.0_mol);
 
-		if (reactorD->hasEqualState(initialReactor))
+		gasMixtureA->add(water);
+		if (reactorF->getAmountOf(water) != water.amount)
 		{
-			Logger::log("Test failed > Reactor > determinism: given reactors were already stable", LogType::BAD);
+			Logger::log("Test failed > SingleLayerMixture > incompatible forwarding: Incompatible reactant was not forwarded.", LogType::BAD);
 			passed = false;
 		}
 
-		for (size_t i = 0; i < 31; ++i)
+		const auto molesBefore = reactorF->getTotalMoles();
+		gasMixtureA->add(oxygen);
+		if (reactorF->getTotalMoles() != molesBefore)
 		{
-			if (reactorD->hasEqualState(copyReactor) == false)
+			Logger::log("Test failed > SingleLayerMixture > incompatible forwarding: Compatible reactant was forwarded.", LogType::BAD);
+			passed = false;
+		}
+	}
+	void runDeterminismTest()
+	{
+		bool testPassed = true;
+		auto initialReactor = reactorD->makeCopy();
+		auto copyReactor = reactorD->makeCopy();
+
+		reactorD->add(10.0_J);
+		copyReactor.add(10.0_J);
+		reactorD->tick();
+		copyReactor.tick();
+
+		if (reactorD->isSame(initialReactor))
+		{
+			Logger::log("Test failed > Reactor > determinism: given reactors were already stable", LogType::BAD);
+			testPassed = false;
+			return;
+		}
+
+		for (size_t i = 0; i < 127; ++i)
+		{
+			double err = abs((reactorD->getPressure() - copyReactor.getPressure()).asStd());
+			if (err > determinismEqualityThreshold)
 			{
-				Logger::log("Test failed > Reactor > determinism: reactors have different states", LogType::BAD);
-				passed = false;
-				break;
+				Logger::log("Test failed > Reactor > determinism: reactors have different states: pressure, loss=" + std::to_string(err), LogType::BAD);
+				testPassed = false;
 			}
 
+			err = abs((reactorD->getTotalMoles() - copyReactor.getTotalMoles()).asStd());
+			if (err > determinismEqualityThreshold)
+			{
+				Logger::log("Test failed > Reactor > determinism: reactors have different states: total moles, loss=" + std::to_string(err), LogType::BAD);
+				testPassed = false;
+			}
+
+			err = abs((reactorD->getTotalMass() - copyReactor.getTotalMass()).asStd());
+			if (err > determinismEqualityThreshold)
+			{
+				Logger::log("Test failed > Reactor > determinism: reactors have different states: total mass, loss=" + std::to_string(err), LogType::BAD);
+				testPassed = false;
+			}
+
+			err = abs((reactorD->getTotalVolume() - copyReactor.getTotalVolume()).asStd());
+			if (err > determinismEqualityThreshold)
+			{
+				Logger::log("Test failed > Reactor > determinism: reactors have different states: total volume, loss=" + std::to_string(err), LogType::BAD);
+				testPassed = false;
+			}
+
+			if (reactorD->hasSameContent(copyReactor, determinismEqualityThreshold) == false)
+			{
+				Logger::log("Test failed > Reactor > determinism: reactors have different contents", LogType::BAD);
+				testPassed = false;
+			}
+
+			if (reactorD->hasSameLayers(copyReactor, determinismEqualityThreshold) == false)
+			{
+				Logger::log("Test failed > Reactor > determinism: reactors have different layers", LogType::BAD);
+				testPassed = false;
+			}
+
+			if (testPassed == false)
+			{
+				passed = false;
+				//break;
+			}
+
+			reactorD->add(10.0_J);
+			copyReactor.add(10.0_J);
 			reactorD->tick();
 			copyReactor.tick();
 		}
@@ -449,6 +518,7 @@ private:
 		const auto& source = reactorE->getLayer(LayerType::POLAR);
 		const auto& destination = reactorE->getLayer(LayerType::GASEOUS);
 
+		bool testPassed = true;
 		uint8_t testPhase = 0;
 		const auto sourceMaxTemp = source.getMaxAllowedTemperature();
 		const auto nucleator = source.getHighNucleator();
@@ -456,7 +526,7 @@ private:
 		auto pastSourceTemp = source.getTemperature();
 		auto pastDestinationTemp = destination.getTemperature();
 
-		Amount<Unit::JOULE> energyStep = 4000.0;
+		Amount<Unit::JOULE> energyStep = 6000.0;
 		Logger::logCached("0kJ     |   " +
 			source.getTemperature().toString(8) + "    " +
 			destination.getTemperature().toString(8) + "        " +
@@ -484,7 +554,7 @@ private:
 				else if (sTemp >= sourceMaxTemp)
 				{
 					Logger::log("Test failed > Reactor > aggregation change > max source temp exceeded, T=" + sTemp.toString(), LogType::BAD);
-					passed = false;
+					testPassed = false;
 					break;
 				}
 
@@ -492,7 +562,7 @@ private:
 				if (dTemp != pastDestinationTemp)
 				{
 					Logger::log("Test failed > Reactor > aggregation change > destination temperature changed in phase 0", LogType::BAD);
-					passed = false;
+					testPassed = false;
 					break;
 				}
 				pastDestinationTemp = dTemp;
@@ -508,7 +578,7 @@ private:
 				else if (dTemp >= sourceMaxTemp)
 				{
 					Logger::log("Test failed > Reactor > aggregation change > max destination temp exceeded, T=" + dTemp.toString(), LogType::BAD);
-					passed = false;
+					testPassed = false;
 					break;
 				}
 
@@ -516,7 +586,7 @@ private:
 				if (sTemp != pastSourceTemp)
 				{
 					Logger::log("Test failed > Reactor > aggregation change > source temperature changed in phase 1", LogType::BAD);
-					passed = false;
+					testPassed = false;
 					break;
 				}
 				pastSourceTemp = sTemp;
@@ -527,7 +597,7 @@ private:
 				if (nMoles >= pastNucleatorAmount)
 				{
 					Logger::log("Test failed > Reactor > aggregation change > nucleator did not transfer in phase 2", LogType::BAD);
-					passed = false;
+					testPassed = false;
 					break;
 				}
 				pastNucleatorAmount = nMoles;
@@ -536,7 +606,7 @@ private:
 				if (dTemp != pastDestinationTemp)
 				{
 					Logger::log("Test failed > Reactor > aggregation change > destination temperature changed in phase 2", LogType::BAD);
-					passed = false;
+					testPassed = false;
 					break;
 				}
 				pastDestinationTemp = dTemp;
@@ -550,14 +620,14 @@ private:
 				if (dTemp <= pastDestinationTemp)
 				{
 					Logger::log("Test failed > Reactor > aggregation change > destination temperature did not increase in phase 3", LogType::BAD);
-					passed = false;
+					testPassed = false;
 					break;
 				}
 				pastDestinationTemp = dTemp;
 				if (source.getTemperature().isInfinity() == false)
 				{
 					Logger::log("Test failed > Reactor > aggregation change > empty layer temperature was not infinity", LogType::BAD);
-					passed = false;
+					testPassed = false;
 					break;
 				}
 			}
@@ -565,18 +635,19 @@ private:
 
 		Logger::logCached("--------+--------------------------------------------", LogType::TABLE);
 
-		if(passed && testPhase != 3)
+		if(testPassed && testPhase != 3)
 		{
 			Logger::log("Test failed > Reactor > aggregation change > not all test phases were reached, phase=" + std::to_string(testPhase), LogType::BAD);
-			passed = false;
+			testPassed = false;
 		}
 
 		Logger::exitContext();
 		Logger::logCached("", LogType::TABLE);
 
-		if (passed == false)
+		if (testPassed == false)
 		{
 			Logger::printCache();
+			passed = false;
 		}
 
 		Logger::clearCache();
@@ -587,27 +658,35 @@ public:
 	{
 		dumpA = new DumpContainer();
 		atmosphere = new Atmosphere(
-			1.0, 760.0,
-			{ { Molecule("N#N"), 78.084 }, { Molecule("O=O"), 20.946 } },
-			Amount<Unit::LITER>(1000), *dumpA);
+			1.0_C, 760.0_torr,
+			{ { Molecule("N#N"), 78.084_mol }, { Molecule("O=O"), 20.946_mol } },
+			1000.0_L, *dumpA);
 
-		reactorA = new Reactor(*atmosphere, 1.0);
-		reactorA->add(Molecule("HH"), 2.0);
-		reactorA->add(Molecule("CC=C"), 2.0);
-		reactorA->add(Molecule("CC(=O)OCC"), 2.0);
-		reactorA->add(Molecule("O"), 3.0);
+		reactorA = new Reactor(*atmosphere, 1.0_L);
+		reactorA->add(Molecule("HH"), 2.0_mol);
+		reactorA->add(Molecule("CC=C"), 2.0_mol);
+		reactorA->add(Molecule("CC(=O)OCC"), 2.0_mol);
+		reactorA->add(Molecule("O"), 3.0_mol);
 
-		reactorB = new Reactor(*atmosphere, 1.0);
-		reactorB->add(Molecule("O"), 3.0);
+		reactorB = new Reactor(*atmosphere, 1.0_L);
+		reactorB->setTickMode(reactorB->getTickMode() - TickMode::ENABLE_CONDUCTION);
+		reactorB->add(Molecule("O"), 3.0_mol);
 
-		reactorC = new Reactor(*atmosphere, 20.0);
+		reactorC = new Reactor(*atmosphere, 20.0_L);
 
-		reactorD = new Reactor(*atmosphere, 5.0);
-		reactorD->add(Molecule("CC(=O)O"), 2.0);
-		reactorD->add(Molecule("OCC"), 3.0);
+		reactorD = new Reactor(*atmosphere, 5.0_L);
+		reactorD->setTickMode(reactorD->getTickMode() - TickMode::ENABLE_ENERGY);
+		reactorD->add(Molecule("CC(=O)O"), 2.0_mol);
+		reactorD->add(Molecule("OCC"), 3.0_mol);
 
-		reactorE = new Reactor(*atmosphere, 0.1);
-		reactorE->add(Molecule("O"), 5.4);
+		reactorE = new Reactor(*atmosphere, 0.1_L);
+		reactorE->setTickMode(reactorE->getTickMode() - TickMode::ENABLE_CONDUCTION);
+		reactorE->add(Molecule("O"), 5.4_mol);
+		
+		reactorF = new Reactor(*atmosphere, 1.0_L);
+		gasMixtureA = new SingleLayerMixture<LayerType::GASEOUS>(
+			1.0_C, 760.0_torr, { { Molecule("N#N"), 78.084_mol } }, 0.5_L, *dumpA);
+		gasMixtureA->setIncompatibilityTarget(LayerType::POLAR, *reactorF);
 	}
 
 	void runTests()
@@ -615,6 +694,7 @@ public:
 		runConservationOfMassTest();
 		runTemperatureTest();
 		runVolumetricTest();
+		runIncompatibleForwardingTest();
 		runDeterminismTest();
 		runAggregationChangeTest();
 	}
@@ -636,6 +716,10 @@ public:
 			delete reactorD;
 		if (reactorE != nullptr)
 			delete reactorE;
+		if (gasMixtureA != nullptr)
+			delete gasMixtureA;
+		if (reactorF != nullptr)
+			delete reactorF;
 		if (atmosphere != nullptr)
 			delete atmosphere;
 		if (dumpA != nullptr)

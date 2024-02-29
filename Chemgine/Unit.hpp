@@ -16,6 +16,7 @@ enum class Unit : uint16_t
 
 	TORR,
 	PASCAL,
+	ATMOSPHERE,
 
 	JOULE,
 	WATT,
