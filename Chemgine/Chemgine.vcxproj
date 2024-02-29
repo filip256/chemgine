@@ -211,6 +211,7 @@
     <ClCompile Include="Flask.cpp" />
     <ClCompile Include="ContainerLabwareData.cpp" />
     <ClCompile Include="Formulas.cpp" />
+    <ClCompile Include="ForwardingContainer.cpp" />
     <ClCompile Include="HeatSourceData.cpp" />
     <ClCompile Include="FlaskData.cpp" />
     <ClCompile Include="LabwareConnection.cpp" />
@@ -286,6 +287,7 @@
     <ClInclude Include="Flask.hpp" />
     <ClInclude Include="ContainerLabwareData.hpp" />
     <ClInclude Include="Formulas.hpp" />
+    <ClInclude Include="ForwardingContainer.hpp" />
     <ClInclude Include="GenericMoleculeData.hpp" />
     <ClInclude Include="GenericMoleculeDataTable.hpp" />
     <ClInclude Include="FunctionalEstimator.hpp" />

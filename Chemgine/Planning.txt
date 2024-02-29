@@ -237,7 +237,8 @@ Tasks:
 ---
   DONE. Add incompatible layer forwarding logic
   DONE. Add incompatible layer forwarding test
-  1. Add implicit forwarding container
+  DONE. Add implicit forwarding container
+  DONE. Add implicit forwarding container test
 ---
   1. Finish reaction caching
   2. Create reaction tree

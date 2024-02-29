@@ -14,6 +14,7 @@
 #include "Reactable.hpp"
 #include "DumpContainer.hpp"
 #include "Atmosphere.hpp"
+#include "ForwardingContainer.hpp"
 
 class MolecularStructureTest
 {
@@ -329,7 +330,9 @@ private:
 	Reactor* reactorD = nullptr;
 	Reactor* reactorE = nullptr;
 	Reactor* reactorF = nullptr;
+	Reactor* reactorG = nullptr;
 	SingleLayerMixture<LayerType::GASEOUS>* gasMixtureA = nullptr;
+	ForwardingContainer* forwardA = nullptr;
 
 	const double waterTemperatureThreshold = 0.1;
 	const double overflowLossThreshold = 0.0000001;
@@ -435,6 +438,26 @@ private:
 		if (reactorF->getTotalMoles() != molesBefore)
 		{
 			Logger::log("Test failed > SingleLayerMixture > incompatible forwarding: Compatible reactant was forwarded.", LogType::BAD);
+			passed = false;
+		}
+	}
+	void runImplicitForwardingTest()
+	{
+		const auto water = Reactant(Molecule("O"), LayerType::POLAR, 1.0_mol);
+		const auto oxygen = Reactant(Molecule("O=O"), LayerType::GASEOUS, 1.0_mol);
+
+		forwardA->add(water);
+		if (reactorG->getAmountOf(water) != water.amount)
+		{
+			Logger::log("Test failed > ForwardContainer: Reactant was not forwarded correctly.", LogType::BAD);
+			passed = false;
+		}
+
+		const auto molesBefore = reactorG->getTotalMoles();
+		forwardA->add(oxygen);
+		if (reactorG->getTotalMoles() != molesBefore)
+		{
+			Logger::log("Test failed > ForwardContainer: Reactant was not forwarded correctly.", LogType::BAD);
 			passed = false;
 		}
 	}
@@ -687,6 +710,14 @@ public:
 		gasMixtureA = new SingleLayerMixture<LayerType::GASEOUS>(
 			1.0_C, 760.0_torr, { { Molecule("N#N"), 78.084_mol } }, 0.5_L, *dumpA);
 		gasMixtureA->setIncompatibilityTarget(LayerType::POLAR, *reactorF);
+
+		reactorG = new Reactor(*atmosphere, 1.0_L);
+		forwardA = new ForwardingContainer(
+			{
+				{ [](const Reactant& reactant) -> bool { return reactant.molecule.getMolarMass() < 20; }, Ref<BaseContainer>(*reactorG)}
+			},
+			Ref<BaseContainer>(*dumpA)
+		);
 	}
 
 	void runTests()
@@ -695,6 +726,7 @@ public:
 		runTemperatureTest();
 		runVolumetricTest();
 		runIncompatibleForwardingTest();
+		runImplicitForwardingTest();
 		runDeterminismTest();
 		runAggregationChangeTest();
 	}
@@ -720,6 +752,10 @@ public:
 			delete gasMixtureA;
 		if (reactorF != nullptr)
 			delete reactorF;
+		if (forwardA != nullptr)
+			delete forwardA;
+		if (reactorG != nullptr)
+			delete reactorG;
 		if (atmosphere != nullptr)
 			delete atmosphere;
 		if (dumpA != nullptr)

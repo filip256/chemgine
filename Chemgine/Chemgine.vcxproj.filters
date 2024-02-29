@@ -345,6 +345,9 @@
     <ClCompile Include="LayerIterator.cpp">
       <Filter>Source Files\Mixtures</Filter>
     </ClCompile>
+    <ClCompile Include="ForwardingContainer.cpp">
+      <Filter>Source Files\Mixtures\MixtureTypes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -631,6 +634,9 @@
     </ClInclude>
     <ClInclude Include="LayerIterator.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ForwardingContainer.hpp">
+      <Filter>Header Files\Mixtures\MixtureTypes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
