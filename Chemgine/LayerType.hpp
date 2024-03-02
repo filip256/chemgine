@@ -23,8 +23,8 @@ enum class LayerType : uint8_t
 
 
 
-static inline constexpr uint8_t toIndex(const LayerType type) 
-{ 
+static inline constexpr uint8_t toIndex(const LayerType type)
+{
 	return static_cast<uint8_t>(type);
 }
 
@@ -35,7 +35,7 @@ static inline constexpr bool isRealLayer(const LayerType type)
 
 static inline constexpr bool isGasLayer(const LayerType type)
 {
-	return type == LayerType::GASEOUS; 
+	return type == LayerType::GASEOUS;
 }
 
 static inline constexpr bool isLiquidLayer(const LayerType type)
@@ -48,67 +48,17 @@ static inline constexpr bool isSolidLayer(const LayerType type)
 	return type == LayerType::SOLID;
 }
 
-inline AggregationType getAggregationType(const LayerType type)
-{
-	return
-		isGasLayer(type) ? AggregationType::GAS :
-		isLiquidLayer(type) ? AggregationType::LIQUID :
-		isSolidLayer(type) ? AggregationType::SOLID :
-		AggregationType::NONE;
-}
+AggregationType getAggregationType(const LayerType type);
+LayerType getLowerAggregationLayer(const LayerType type);
+LayerType getHigherAggregationLayer(const LayerType type);
+LayerType getLayerType(const AggregationType type,
+	const bool isNonpolar, const bool isDense);
 
-inline LayerType getLowerAggregationLayer(const LayerType type)
-{
-	if (isLiquidLayer(type))
-		return LayerType::SOLID;
-	if (isGasLayer(type))
-		return LayerType::POLAR;
-	return LayerType::NONE;
-}
+std::string getLayerName(const LayerType type);
 
-inline LayerType getHigherAggregationLayer(const LayerType type)
-{
-	if (isLiquidLayer(type))
-		return LayerType::GASEOUS;
-	if (isSolidLayer(type))
-		return LayerType::POLAR;
-	return LayerType::NONE;
-}
-
-inline LayerType getLayerType(const AggregationType type)
-{
-	return
-		type == AggregationType::GAS ? LayerType::GASEOUS :
-		type == AggregationType::SOLID ? LayerType::SOLID :
-		LayerType::POLAR; // TODO: add polarity logic
-}
-
-static LayerType& operator++(LayerType& layer)
-{
-	return layer = static_cast<LayerType>(toIndex(layer) + 1);
-}
-
-static LayerType& operator--(LayerType& layer)
-{
-	return layer = static_cast<LayerType>(toIndex(layer) - 1);
-}
-
-static LayerType operator+(LayerType& layer, const uint8_t x)
-{
-	return static_cast<LayerType>(toIndex(layer) + x);
-}
-
-static LayerType operator-(LayerType& layer, const uint8_t x)
-{
-	return static_cast<LayerType>(toIndex(layer) - x);
-}
-
-static LayerType& operator+=(LayerType& layer, const uint8_t x)
-{
-	return layer = static_cast<LayerType>(toIndex(layer) + x);
-}
-
-static LayerType& operator-=(LayerType& layer, const uint8_t x)
-{
-	return layer = static_cast<LayerType>(toIndex(layer) - x);
-}
+LayerType& operator++(LayerType& layer);
+LayerType& operator--(LayerType& layer);
+LayerType operator+(LayerType& layer, const uint8_t x);
+LayerType operator-(LayerType& layer, const uint8_t x);
+LayerType& operator+=(LayerType& layer, const uint8_t x);
+LayerType& operator-=(LayerType& layer, const uint8_t x);

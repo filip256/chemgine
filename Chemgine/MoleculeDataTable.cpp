@@ -85,7 +85,7 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 		const auto& slhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), slhR.value_or(std::numeric_limits<double>::max()));
 
 		//solubility
-		const auto hydro = DataHelpers::parseUnsigned<Unit::MOLE_RATIO>(line[12]).value_or(0.0);
+		const auto hydro = DataHelpers::parseUnsigned<Unit::MOLE_RATIO>(line[12]).value_or(1.0);
 		const auto lipo = DataHelpers::parseUnsigned<Unit::MOLE_RATIO>(line[13]).value_or(0.0);
 		const auto solR = DataHelpers::parse<Spline<float>>(line[14]);
 		const auto& solA = 
@@ -160,7 +160,7 @@ MoleculeIdType MoleculeDataTable::findOrAdd(MolecularStructure&& structure)
 	const auto& flhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), 6020.0f);
 	const auto& vlhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), 40700.0f);
 	const auto& slhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), std::numeric_limits<double>::max());
-	const auto hydro = 0.0;
+	const auto hydro = 1.0;
 	const auto lipo = 0.0;
 	const auto& solA = estimators.at(toId(BuiltinEstimator::TEMP_TO_REL_SOL));
 	const auto& henryA = estimators.add<SplineEstimator>(Spline<float>({ {1000.0, 760.0} }));

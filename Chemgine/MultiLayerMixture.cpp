@@ -223,11 +223,26 @@ bool MultiLayerMixture::hasLayer(const LayerType layer) const
 LayerType MultiLayerMixture::findLayerFor(const Reactant& reactant) const
 {
 	for (const auto& l : layers)
-		if (reactant.getAggregation(l.second.temperature) == getAggregationType(l.first))
+	{
+		const auto rAggr = reactant.getAggregation(l.second.temperature);
+		const auto lAggr = getAggregationType(l.first);
+
+		if (rAggr != lAggr)
+			continue;
+
+		if (lAggr != AggregationType::LIQUID)
 			return l.first;
 
-	const auto newAgg = reactant.getAggregation(layers.at(LayerType::GASEOUS).temperature);
-	return getLayerType(newAgg);
+		const auto polarity = reactant.molecule.getPolarity();
+		const auto density = reactant.molecule.getDensityAt(l.second.temperature, pressure);
+		return getLayerType(getAggregationType(l.first), polarity.getPartitionCoefficient() > 1.0, density > 1.0);
+	}
+
+	const auto defaultT = layers.at(LayerType::GASEOUS).temperature;
+	const auto newAgg = reactant.getAggregation(defaultT);
+	const auto polarity = reactant.molecule.getPolarity();
+	const auto density = reactant.molecule.getDensityAt(defaultT, pressure);
+	return getLayerType(newAgg, polarity.getPartitionCoefficient() > 1.0, density > 1.0);
 }
 
 Amount<Unit::LITER> MultiLayerMixture::getMaxVolume() const

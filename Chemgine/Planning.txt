@@ -82,6 +82,57 @@ In an optimized molecular structure there must be a way to specify which atoms a
     4. Solve the system formed by each eq(A) using Gaussian elimination
     5. If needed, multiply coefficients to obtain integers
 
+   Specializing reactions:
+    If all the reactants and products of a reaction are sub-structurally matched by all
+    the reactants and products of another reaction, then the first reaction is considered
+    a specialization of the second reaction. A reaction may become the specialization of
+    multiple other reactions.
+
+    A network forms between reactions and their specializations, where the most generic 
+    reactions form the first layer, user-defined concrete reactions form the final layer
+    and specialized reactions form the layers inbetween.
+
+    When querying reactions, only the first layer has to be fully parsed. If a first layer
+    reaction is found to be compatible, the search continues with its specializations,
+    stopping at the most specialized matching reaction.
+
+    If the same specialized reaction is reached from multiple inputs, duplicates must be
+    removed.
+
+    Advantages:
+        * better query complexity
+        * duplicate concrete reactions are naturally never generated
+        * specialized reactions may inherit or override properties from their parents
+        * allows for "cut" reactions to be defined
+    Disadvantages:
+        * creating the network is a complex operation, altough performed in preprocessing,
+        serialization of the networks in hot reloads should be considered
+
+    Algorithm:
+     1. read all reactions, store them as usual
+     2. create a list for storing the first layer
+     3. for every reaction X:
+            if X mathes a reaction R from the first layer:
+                for every specialization R' of R:
+                    if X matches R':
+                        continue checking the specializations R'' of R' (just like we did for R)
+                    if R' mathces X:
+                        insert X between R and R'   (X does not multiply, rather it becomes the parent of all mathing R'i)
+                    if X is equivalent with R':     (X matches R' and R' mathces X)
+                        ignore X
+                if X did not match any R':
+                    insert X as a new specialization of R
+            if a reaction R from the first layer mathes X:
+                insert X in the first layer in place of R, make R a child of X
+                (X does not multiply, rather it becomes the parent of all mathing Ri)
+            if X is equivalent to R:
+                ignore X
+                
+            (a "visited" set could be used to ensure X is not matched with and R twice, in case of potential cycles,
+            this is not required since the equivalency will be caught but it may still be a singinifant optimization,
+            especially if cycles occur early in the network)
+     4. loop through all reactions and inherit any undefined properties
+             
 
 -- Reactables --
 F. groups, backbones, atoms, organics, anorganics can all be reactants and products.
@@ -199,7 +250,7 @@ Tasks:
   !. Refactor reactants and reactant set, to use some identifiers
   DONE. Make undefinded targets equal to global dump and remove null target checks
   ?. Treat layers and container refs equally.
-  14. Add get LayerType and AggregationType name strings
+  DONE. Add get LayerType and AggregationType name strings
   15. Add more simulation-time logs
   ?. Add getPropertyAtSTP()
   DONE. Better way to mark predefined estimator ids
@@ -243,7 +294,7 @@ Tasks:
   DONE. Add implicit forwarding container
   DONE. Add implicit forwarding container test
 ---
-  1. Add liguistics
+  DONE. Add basic liguistics
 ---
   1. Finish reaction caching
   2. Create reaction tree

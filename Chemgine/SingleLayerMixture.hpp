@@ -119,7 +119,10 @@ void SingleLayerMixture<L>::add(const Amount<Unit::JOULE> heat, const LayerType 
 template<LayerType L>
 LayerType SingleLayerMixture<L>::findLayerFor(const Reactant& reactant) const
 {
-	return getLayerType(reactant.getAggregation(layer.temperature));
+	const auto newAgg = reactant.getAggregation(layer.temperature);
+	const auto polarity = reactant.molecule.getPolarity();
+	const auto density = reactant.molecule.getDensityAt(layer.temperature, pressure);
+	return getLayerType(newAgg, polarity.getPartitionCoefficient() > 1.0, density > 1.0);
 }
 
 template<LayerType L>
