@@ -297,7 +297,7 @@ int16_t MolecularStructure::countImpliedHydrogens() const
         const auto d = getDegreeOf(i);
         const auto v = static_cast<const Atom*>(components[i])->data().getFittingValence(d);
 
-        if (v == AtomData::noneValence)
+        if (v == AtomData::nullValence)
             return -1;
 
         hCount += v - d;
@@ -359,6 +359,30 @@ c_size MolecularStructure::getRadicalAtomsCount() const
 bool MolecularStructure::isComplete() const
 {
     return components.empty () || !components.back()->isRadicalType();
+}
+
+bool MolecularStructure::isOrganic() const
+{
+    const auto carbon = Atom("C");
+    const auto hydrogen = Atom("H");
+
+    for (c_size i = 0; i < components.size(); ++i)
+    {
+        if (components[i]->getId() == carbon.getId())
+        {
+            uint8_t cnt = 0;
+            for (c_size j = 0; j < bonds[i].size(); ++j)
+            {
+                if (components[bonds[i][j]->other]->getId() == hydrogen.getId())
+                    return true;
+                cnt += bonds[i][j]->getValence();
+            }
+            if (carbon.data().getFittingValence(cnt) > cnt)
+                return true;
+        }
+    }
+
+    return false;
 }
 
 std::unordered_map<ComponentIdType, c_size> MolecularStructure::getComponentCountMap() const

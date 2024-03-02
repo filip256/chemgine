@@ -41,7 +41,9 @@ public:
 
 	const Layer& getLayer() const;
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity() const;
+	Amount<Unit::JOULE_PER_CELSIUS> getLayerTotalHeatCapacity() const;
 	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy() const;
+	Polarity getLayerPolarity() const;
 
 	void setOverflowTarget(const Ref<BaseContainer> target);
 	Ref<BaseContainer> getOverflowTarget() const;
@@ -62,6 +64,7 @@ public:
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity(const LayerType l) const override final;
 	Amount<Unit::JOULE_PER_CELSIUS> getLayerTotalHeatCapacity(const LayerType layer) const override final;
 	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType l) const override final;
+	Polarity getLayerPolarity(const LayerType layer) const override final;
 
 	void copyContentTo(const Ref<BaseContainer> destination, const Amount<Unit::LITER> volume) const;
 	void moveContentTo(const Ref<BaseContainer> destination, const Amount<Unit::LITER> volume);
@@ -270,13 +273,25 @@ const Layer& SingleLayerMixture<L>::getLayer(const LayerType l) const
 template<LayerType L>
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> SingleLayerMixture<L>::getLayerHeatCapacity() const
 {
-	return getLayer(L);
+	return getLayerHeatCapacity(L);
+}
+
+template<LayerType L>
+Amount<Unit::JOULE_PER_CELSIUS> SingleLayerMixture<L>::getLayerTotalHeatCapacity() const
+{
+	return getLayerTotalHeatCapacity(L);
 }
 
 template<LayerType L>
 Amount<Unit::JOULE_PER_MOLE> SingleLayerMixture<L>::getLayerKineticEnergy() const
 {
 	return getLayerKineticEnergy(L);
+}
+
+template<LayerType L>
+Polarity SingleLayerMixture<L>::getLayerPolarity() const
+{
+	return getLayerPolarity(L);
 }
 
 template<LayerType L>
@@ -295,6 +310,12 @@ template<LayerType L>
 Amount<Unit::JOULE_PER_MOLE> SingleLayerMixture<L>::getLayerKineticEnergy(const LayerType l) const
 {
 	return layer.getKineticEnergy();
+}
+
+template<LayerType L>
+Polarity SingleLayerMixture<L>::getLayerPolarity(const LayerType l) const
+{
+	return layer.getPolarity();
 }
 
 template<LayerType L>

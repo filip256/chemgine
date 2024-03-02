@@ -200,7 +200,9 @@ Tasks:
   DONE. Make undefinded targets equal to global dump and remove null target checks
   ?. Treat layers and container refs equally.
   14. Add get LayerType and AggregationType name strings
-  15. Add more simulation time logs
+  15. Add more simulation-time logs
+  ?. Add getPropertyAtSTP()
+  DONE. Better way to mark predefined estimator ids
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules
@@ -226,9 +228,10 @@ Tasks:
 ---
   1. Add solubility logic
   DONE. Rename MOLTEN SOLID and LIQUEFIED GAS to INORGANIC
-  3. Add ORGANIC/INORGANIC trait to molecules (computed by molecular structure)
-  4. Add polarity, nonpolarity and sol. capacity to molecule data
-  5. Add getSolubilityAt methods
+  DONE. Add ORGANIC/INORGANIC type to molecules (computed by molecular structure)
+  DONE. Add polarity, nonpolarity, hasRetrogradeSolubility henryConstant estimator and temp-sol estimator to molecule data
+  DONE. Add getPartitionCoefficient() and getSolubilityAt() methods
+  6. Add solubility test
 ---
   DONE. Add contact energetic effects
   2. Add contact energetic test
@@ -239,6 +242,8 @@ Tasks:
   DONE. Add incompatible layer forwarding test
   DONE. Add implicit forwarding container
   DONE. Add implicit forwarding container test
+---
+  1. Add liguistics
 ---
   1. Finish reaction caching
   2. Create reaction tree
@@ -368,7 +373,10 @@ Categorizations:
            polarity & nonpolarity.
            (logP is not enough, perhaps dissolved_grams/liter at 20C)
            Additionally they also need a trait: ORGANIC / INORGANIC.
-           Each solvent must have a capacity for how much solute it can hold.
+
+           When a solvent already has a solute A, to compute the solubility of another solute B:
+             find the min amount of solvent that can hold the whole A and use the rest of the solvent to dissovle B
+             if there is not enough solvent, push the least soluble solute out to make room for the more soluble solute
            
            - all gasses can mix
            - no solids can mix (by may still share the same layer)
@@ -378,8 +386,27 @@ Categorizations:
            - inorganic molten solids always mix (not entirely true, by may still share the same layer)
            - organic molten solids are actually polar/nonpolar
 
-           - gasses dissolve in liquids to some extent (solubility increases with pressure and decreases with temperature)
-           - solids dissolve in liquids to some extent (solubility increase with temperature (ussually))
+           - liquids and solids dissolve in liquids based on polarity and temperature (solubility increasing/decreasing with temperature)
+           - gasses dissolve in liquids to some extent, using Henry's Law
+
+           Henry's Law states that c = p/k, where c = the conc. (mol/L) of the gas in the solvent, p = pressure (atm) and
+           k is Henry's Constant (L * atm / mol), which is different for all gasses and ussually increases with temperature => spline estimator
+           For efficiency, it should be stored as torr * mol_ratio
+
+           To compute the actual solubility of a solute in a solvent we can average the polarity and nonpolarity of the solute,
+           weighted by the logP of the solvent. In case a the solvent is very polar or nonpolar, averaging can be skipped.
+           Another more straight forward way is to use the solvent polarity and nonpolarity as weights directly. Remains to be
+           decided with way is better.
+
+       - polarity/nonpolarity:
+           The amount of solute that dissolves in a certain amount of polar/nonpolar solvent at STP.
+             0   -> immiscible
+             inf -> miscible
+           These values do not directly give the solubility of a solute in any given solvent. Rather they provide a way to
+           classify substances, similar to logP but without undefined ratio problems (0/0, inf/0 etc.). Thus, they do not
+           vary with T and P.
+
+           Stored as: mol/mol
 
 
 

@@ -32,7 +32,7 @@ uint8_t AtomData::getFittingValence(const uint8_t bonds) const
 	for (size_t i = 0; i < valences.size(); ++i)
 		if (bonds <= valences[i])
 			return valences[i];
-	return AtomData::noneValence;
+	return AtomData::nullValence;
 }
 
 std::string AtomData::getSMILES() const

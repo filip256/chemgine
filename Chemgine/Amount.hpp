@@ -10,7 +10,7 @@
 /// Stores the amount of a certain Unit and statically handles conversions between units.
 /// If a conversion between two units is used but not defined, a compilation error will occur
 /// </summary>
-template<Unit UnitT = Unit::UNIT>
+template<Unit UnitT = Unit::NONE>
 class Amount : public Value<double>
 {
 public:
@@ -54,19 +54,22 @@ public:
 	static const Amount<UnitT> Infinity;
 	static const Amount<UnitT> Minimum;
 	static const Amount<UnitT> Maximum;
+	static const Amount<UnitT> Epsilon;
 
 	constexpr inline bool isUnknown() const noexcept;
 	constexpr inline bool isInfinity() const noexcept;
 };
 
 template<Unit UnitT>
-const Amount<UnitT> Amount<UnitT>::Unknown = std::numeric_limits<double>::min() - std::numeric_limits<double>::epsilon();
+const Amount<UnitT> Amount<UnitT>::Unknown = std::numeric_limits<StorageType>::min() - std::numeric_limits<StorageType>::epsilon();
 template<Unit UnitT>
-const Amount<UnitT> Amount<UnitT>::Infinity = std::numeric_limits<double>::infinity();
+const Amount<UnitT> Amount<UnitT>::Infinity = std::numeric_limits<StorageType>::infinity();
 template<Unit UnitT>
-const Amount<UnitT> Amount<UnitT>::Minimum = std::numeric_limits<double>::min();
+const Amount<UnitT> Amount<UnitT>::Minimum = std::numeric_limits<StorageType>::min();
 template<Unit UnitT>
-const Amount<UnitT> Amount<UnitT>::Maximum = std::numeric_limits<double>::max();
+const Amount<UnitT> Amount<UnitT>::Maximum = std::numeric_limits<StorageType>::max();
+template<Unit UnitT>
+const Amount<UnitT> Amount<UnitT>::Epsilon = std::numeric_limits<StorageType>::epsilon();
 
 template<Unit UnitT>
 constexpr bool Amount<UnitT>::isUnknown() const noexcept
@@ -81,13 +84,13 @@ constexpr bool Amount<UnitT>::isInfinity() const noexcept
 }
 
 template<Unit UnitT>
-constexpr Amount<UnitT>::Amount(const double value) noexcept :
-	Value<double>(value)
+constexpr Amount<UnitT>::Amount(const StorageType value) noexcept :
+	Value<StorageType>(value)
 {}
 
 template<Unit UnitT>
-constexpr Amount<UnitT>::Amount(const Value<double> value) noexcept :
-	Value<double>(value) 
+constexpr Amount<UnitT>::Amount(const Value<StorageType> value) noexcept :
+	Value<StorageType>(value) 
 {}
 
 template<Unit UnitT>
@@ -168,7 +171,7 @@ std::string Amount<UnitT>::toString(const uint8_t maxDigits) const noexcept
 }
 
 template<>
-inline std::string Amount<Unit::UNIT>::unitSymbol() noexcept { return ""; }
+inline std::string Amount<Unit::NONE>::unitSymbol() noexcept { return ""; }
 template<>
 inline std::string Amount<Unit::GRAM>::unitSymbol() noexcept { return "g"; }
 template<>
@@ -196,20 +199,24 @@ inline std::string Amount<Unit::JOULE>::unitSymbol() noexcept { return "J"; }
 template<>
 inline std::string Amount<Unit::WATT>::unitSymbol() noexcept { return "W"; }
 template<>
-inline std::string Amount<Unit::MOLE_PER_SECOND>::unitSymbol() noexcept { return Amount<Unit::MOLE>::unitSymbol() + " / " + Amount<Unit::SECOND>::unitSymbol(); }
+inline std::string Amount<Unit::MOLE_RATIO>::unitSymbol() noexcept { return Amount<Unit::MOLE>::unitSymbol() + "/" + Amount<Unit::MOLE>::unitSymbol(); }
 template<>
-inline std::string Amount<Unit::GRAM_PER_MOLE>::unitSymbol() noexcept { return Amount<Unit::GRAM>::unitSymbol() + " / " + Amount<Unit::MOLE>::unitSymbol(); }
+inline std::string Amount<Unit::MOLE_PER_SECOND>::unitSymbol() noexcept { return Amount<Unit::MOLE>::unitSymbol() + "/" + Amount<Unit::SECOND>::unitSymbol(); }
 template<>
-inline std::string Amount<Unit::GRAM_PER_MILLILITER>::unitSymbol() noexcept { return Amount<Unit::GRAM>::unitSymbol() + " / milli" + Amount<Unit::LITER>::unitSymbol(); }
+inline std::string Amount<Unit::GRAM_PER_MOLE>::unitSymbol() noexcept { return Amount<Unit::GRAM>::unitSymbol() + "/" + Amount<Unit::MOLE>::unitSymbol(); }
 template<>
-inline std::string Amount<Unit::JOULE_PER_MOLE>::unitSymbol() noexcept { return Amount<Unit::JOULE>::unitSymbol() + " / " + Amount<Unit::MOLE>::unitSymbol(); }
+inline std::string Amount<Unit::GRAM_PER_MILLILITER>::unitSymbol() noexcept { return Amount<Unit::GRAM>::unitSymbol() + "/milli" + Amount<Unit::LITER>::unitSymbol(); }
 template<>
-inline std::string Amount<Unit::JOULE_PER_CELSIUS>::unitSymbol() noexcept { return Amount<Unit::JOULE>::unitSymbol() + " / " + Amount<Unit::CELSIUS>::unitSymbol(); }
+inline std::string Amount<Unit::JOULE_PER_MOLE>::unitSymbol() noexcept { return Amount<Unit::JOULE>::unitSymbol() + "/" + Amount<Unit::MOLE>::unitSymbol(); }
 template<>
-inline std::string Amount<Unit::JOULE_PER_MOLE_CELSIUS>::unitSymbol() noexcept { return Amount<Unit::JOULE>::unitSymbol() + " / (" + Amount<Unit::MOLE>::unitSymbol() + " + " + Amount<Unit::CELSIUS>::unitSymbol() + ")"; }
+inline std::string Amount<Unit::JOULE_PER_CELSIUS>::unitSymbol() noexcept { return Amount<Unit::JOULE>::unitSymbol() + "/" + Amount<Unit::CELSIUS>::unitSymbol(); }
+template<>
+inline std::string Amount<Unit::JOULE_PER_MOLE_CELSIUS>::unitSymbol() noexcept { return Amount<Unit::JOULE>::unitSymbol() + "/(" + Amount<Unit::MOLE>::unitSymbol() + "*" + Amount<Unit::CELSIUS>::unitSymbol() + ")"; }
+template<>
+inline std::string Amount<Unit::TORR_MOLE_RATIO>::unitSymbol() noexcept { return Amount<Unit::TORR>::unitSymbol() + "*(" + Amount<Unit::MOLE>::unitSymbol() + "/" + Amount<Unit::MOLE>::unitSymbol() + ")"; }
 
 template<>
-inline std::string Amount<Unit::UNIT>::unitName() noexcept { return "unit"; }
+inline std::string Amount<Unit::NONE>::unitName() noexcept { return "unit"; }
 template<>
 inline std::string Amount<Unit::GRAM>::unitName() noexcept { return "gram"; }
 template<>
@@ -237,6 +244,8 @@ inline std::string Amount<Unit::JOULE>::unitName() noexcept { return "joule"; }
 template<>
 inline std::string Amount<Unit::WATT>::unitName() noexcept { return "watt"; }
 template<>
+inline std::string Amount<Unit::MOLE_RATIO>::unitName() noexcept { return Amount<Unit::MOLE>::unitName() + " / " + Amount<Unit::MOLE>::unitName(); }
+template<>
 inline std::string Amount<Unit::MOLE_PER_SECOND>::unitName() noexcept { return Amount<Unit::MOLE>::unitName() + " / " + Amount<Unit::SECOND>::unitName(); }
 template<>
 inline std::string Amount<Unit::GRAM_PER_MOLE>::unitName() noexcept { return Amount<Unit::GRAM>::unitName() + " / " + Amount<Unit::MOLE>::unitName(); }
@@ -248,6 +257,8 @@ template<>
 inline std::string Amount<Unit::JOULE_PER_CELSIUS>::unitName() noexcept { return Amount<Unit::JOULE>::unitName() + " / " + Amount<Unit::CELSIUS>::unitName(); }
 template<>
 inline std::string Amount<Unit::JOULE_PER_MOLE_CELSIUS>::unitName() noexcept { return Amount<Unit::JOULE>::unitName() + " / (" + Amount<Unit::MOLE>::unitName() + " + " + Amount<Unit::CELSIUS>::unitName() + ")"; }
+template<>
+inline std::string Amount<Unit::TORR_MOLE_RATIO>::unitName() noexcept { return Amount<Unit::TORR>::unitName() + " * (" + Amount<Unit::MOLE>::unitName() + " / " + Amount<Unit::MOLE>::unitName() + ")"; }
 
 
 //    --- Direct Conversions ---    //
@@ -385,6 +396,13 @@ template<>
 constexpr Amount<Unit::MOLE> Amount<Unit::GRAM>::to(const Amount<Unit::GRAM_PER_MOLE> molarMass) const noexcept
 {
 	return value / molarMass.asStd();
+}
+
+template<>
+template<>
+constexpr Amount<Unit::MOLE> Amount<Unit::MOLE_RATIO>::to(const Amount<Unit::MOLE> moles) const noexcept
+{
+	return value * moles.asStd();
 }
 
 template<>

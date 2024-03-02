@@ -140,6 +140,20 @@ inline std::optional<Amount<U>> DataHelpers::parseUnsigned(const std::string& st
 }
 
 template <>
+inline std::optional<bool> DataHelpers::parse<bool>(const std::string& str)
+{
+	if (str.empty())
+		return std::nullopt;
+
+	if (str == "1" || str == "T" || str == "t" || str == "TRUE" || str == "true")
+		return std::optional(true);
+	if (str == "0" || str == "F" || str == "f" || str == "FALSE" || str == "false")
+		return std::optional(false);
+
+	return std::nullopt;
+}
+
+template <>
 inline std::optional<Spline<float>> DataHelpers::parse<Spline<float>>(const std::string& str)
 {
 	const auto& pointsStr = parseList(str, ';', true);

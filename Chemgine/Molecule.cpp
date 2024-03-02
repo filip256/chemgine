@@ -40,6 +40,16 @@ const MoleculeData& Molecule::data() const
 	return dataAccessor.get().molecules.at(id);
 }
 
+const MolecularStructure& Molecule::getStructure() const
+{
+	return data().getStructure();
+}
+
+Polarity Molecule::getPolarity() const
+{
+	return this->data().polarity;
+}
+
 Amount<Unit::CELSIUS> Molecule::getMeltingPointAt(const Amount<Unit::TORR> pressure) const
 {
 	return this->data().meltingPointEstimator.get(pressure.asStd());
@@ -150,9 +160,33 @@ Amount<Unit::JOULE_PER_MOLE> Molecule::getDepositionHeatAt(
 	return -getSublimationHeatAt(temperature, -pressure.asStd());
 }
 
-const MolecularStructure& Molecule::getStructure() const
+Amount<Unit::MOLE_RATIO> Molecule::getSolubilityAt(
+	const Amount<Unit::CELSIUS> temperature,
+	const Amount<Unit::TORR> pressure,
+	const Polarity& solventPolarity
+) const
 {
-	return data().getStructure();
+	const auto& solute = this->data();
+	if (this->getAggregationAt(temperature, pressure) == AggregationType::GAS)
+		return pressure.asStd() / solute.henrysConstantEstimator.get(temperature.asStd());
+
+	// Direct approach
+	//
+	const auto baseSolubility =
+		(solute.polarity.hydrophilicity * solventPolarity.hydrophilicity + solute.polarity.lipophilicity * solventPolarity.lipophilicity) /
+		(solventPolarity.hydrophilicity + solventPolarity.lipophilicity);
+
+	// Logarithmic approach
+	// 
+	//const auto logP = solventPolarity.getPartitionCoefficient().asStd();
+	//const auto phi = 2.5;
+	//const auto baseSolubility =
+	//    logP <= -phi ? solute.polarity.hydrophilicity :
+	//	  logP >= phi ? solute.polarity.lipophilicity :
+	//	  (solute.polarity.hydrophilicity * (phi - logP) + solute.polarity.lipophilicity * (phi + logP)) / (2.0 * phi);
+
+	const auto scale = solute.relativeSolubilityEstimator.get(temperature.asStd());
+	return baseSolubility * scale;
 }
 
 bool Molecule::operator==(const Molecule& other) const

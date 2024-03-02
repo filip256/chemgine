@@ -26,9 +26,9 @@ Reactor::Reactor(
 {
 	dataAccessor.crashIfUninitialized();
 	temperatureSpeedEstimator = &dataAccessor.get().estimators.at(
-		static_cast<EstimatorIdType>(Estimators::TEMP_TO_REL_RSPEED));
+		toId(BuiltinEstimator::TEMP_TO_REL_RSPEED));
 	concentrationSpeedEstimator = &dataAccessor.get().estimators.at(
-		static_cast<EstimatorIdType>(Estimators::MCONC_TO_REL_RSPEED));
+		toId(BuiltinEstimator::MCONC_TO_REL_RSPEED));
 }
 
 Reactor::Reactor(

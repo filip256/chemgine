@@ -7,9 +7,9 @@ class Catalyst
 {
 private:
 	const Reactable reactable;
-	const Amount<Unit::MOLAR_PERCENT> idealAmount;
+	const Amount<Unit::MOLE_RATIO> idealAmount;
 
-	Catalyst(const Reactable& reactable, const Amount<Unit::MOLAR_PERCENT> idealAmount) noexcept;
+	Catalyst(const Reactable& reactable, const Amount<Unit::MOLE_RATIO> idealAmount) noexcept;
 
 public:
 	Catalyst(const Catalyst&) = default;
@@ -20,5 +20,5 @@ public:
 
 	static std::optional<Catalyst> get(
 		const std::string& smiles,
-		const Amount<Unit::MOLAR_PERCENT> idealAmount);
+		const Amount<Unit::MOLE_RATIO> idealAmount);
 };

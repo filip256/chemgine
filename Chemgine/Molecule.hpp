@@ -24,6 +24,8 @@ public:
 
 	const MolecularStructure& getStructure() const;
 
+	Polarity getPolarity() const;
+
 	Amount<Unit::CELSIUS> getMeltingPointAt(const Amount<Unit::TORR> pressure) const;
 	Amount<Unit::CELSIUS> getBoilingPointAt(const Amount<Unit::TORR> pressure) const;
 
@@ -82,6 +84,12 @@ public:
 	Amount<Unit::JOULE_PER_MOLE> getDepositionHeatAt(
 		const Amount<Unit::CELSIUS> temperature,
 		const Amount<Unit::TORR> pressure
+	) const;
+
+	Amount<Unit::MOLE_RATIO> getSolubilityAt(
+		const Amount<Unit::CELSIUS> temperature,
+		const Amount<Unit::TORR> pressure,
+		const Polarity& solventPolarity
 	) const;
 
 	bool operator==(const Molecule& other) const;

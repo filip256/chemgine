@@ -348,6 +348,9 @@
     <ClCompile Include="ForwardingContainer.cpp">
       <Filter>Source Files\Mixtures\MixtureTypes</Filter>
     </ClCompile>
+    <ClCompile Include="Polarity.cpp">
+      <Filter>Source Files\Molecules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -637,6 +640,15 @@
     </ClInclude>
     <ClInclude Include="ForwardingContainer.hpp">
       <Filter>Header Files\Mixtures\MixtureTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="MoleculeType.hpp">
+      <Filter>Header Files\Molecules</Filter>
+    </ClInclude>
+    <ClInclude Include="STP.hpp">
+      <Filter>Header Files\Mixtures</Filter>
+    </ClInclude>
+    <ClInclude Include="Polarity.hpp">
+      <Filter>Header Files\Molecules</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

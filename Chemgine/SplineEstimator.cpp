@@ -8,6 +8,14 @@ SplineEstimator::SplineEstimator(
 	spline(std::move(spline))
 {}
 
+SplineEstimator::SplineEstimator(
+	const EstimatorIdType id,
+	const Spline<float>& spline
+) noexcept :
+	BaseEstimator(id),
+	spline(spline)
+{}
+
 double SplineEstimator::get(const double input) const
 {
 	return spline.getLinearValueAt(input);

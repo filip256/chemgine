@@ -5,6 +5,8 @@ MoleculeData::MoleculeData(
 	const MoleculeIdType id,
 	const std::string& name,
 	const std::string& smiles,
+	const Amount<Unit::MOLE_RATIO> hydrophilicity,
+	const Amount<Unit::MOLE_RATIO> lipophilicity,
 	const BaseEstimator& meltingPointEstimator,
 	const BaseEstimator& boilingPointEstimator,
 	const BaseEstimator& solidDensityEstimator,
@@ -13,11 +15,15 @@ MoleculeData::MoleculeData(
 	const BaseEstimator& liquidHeatCapacityEstimator,
 	const BaseEstimator& fusionLatentHeatEstimator,
 	const BaseEstimator& vaporizationLatentHeatEstimator,
-	const BaseEstimator& sublimationLatentHeatEstimator
+	const BaseEstimator& sublimationLatentHeatEstimator,
+	const BaseEstimator& relativeSolubilityEstimator,
+	const BaseEstimator& henrysConstantEstimator
 ) noexcept :
 	id(id),
-	name(name),
 	structure(smiles),
+	type(this->structure.isOrganic() ? MoleculeType::ORGANIC : MoleculeType::INORGANIC),
+	name(name),
+	polarity(hydrophilicity, lipophilicity),
 	meltingPointEstimator(meltingPointEstimator),
 	boilingPointEstimator(boilingPointEstimator),
 	solidDensityEstimator(solidDensityEstimator),
@@ -26,7 +32,9 @@ MoleculeData::MoleculeData(
 	liquidHeatCapacityEstimator(liquidHeatCapacityEstimator),
 	fusionLatentHeatEstimator(fusionLatentHeatEstimator),
 	vaporizationLatentHeatEstimator(vaporizationLatentHeatEstimator),
-	sublimationLatentHeatEstimator(sublimationLatentHeatEstimator)
+	sublimationLatentHeatEstimator(sublimationLatentHeatEstimator),
+	relativeSolubilityEstimator(relativeSolubilityEstimator),
+	henrysConstantEstimator(henrysConstantEstimator)
 {
 	if (this->structure.isComplete() == false)
 	{
@@ -37,6 +45,8 @@ MoleculeData::MoleculeData(
 MoleculeData::MoleculeData(
 	const MoleculeIdType id,
 	MolecularStructure&& structure,
+	const Amount<Unit::MOLE_RATIO> hydrophilicity,
+	const Amount<Unit::MOLE_RATIO> lipophilicity,
 	const BaseEstimator& meltingPointEstimator,
 	const BaseEstimator& boilingPointEstimator,
 	const BaseEstimator& solidDensityEstimator,
@@ -45,11 +55,15 @@ MoleculeData::MoleculeData(
 	const BaseEstimator& liquidHeatCapacityEstimator,
 	const BaseEstimator& fusionLatentHeatEstimator,
 	const BaseEstimator& vaporizationLatentHeatEstimator,
-	const BaseEstimator& sublimationLatentHeatEstimator
+	const BaseEstimator& sublimationLatentHeatEstimator,
+	const BaseEstimator& relativeSolubilityEstimator,
+	const BaseEstimator& henrysConstantEstimator
 ) noexcept :
 	id(id),
-	name(this->structure.print()),
 	structure(std::move(structure)),
+	type(this->structure.isOrganic() ? MoleculeType::ORGANIC : MoleculeType::INORGANIC),
+	name(this->structure.print()),
+	polarity(hydrophilicity, lipophilicity),
 	meltingPointEstimator(meltingPointEstimator),
 	boilingPointEstimator(boilingPointEstimator),
 	solidDensityEstimator(solidDensityEstimator),
@@ -58,7 +72,9 @@ MoleculeData::MoleculeData(
 	liquidHeatCapacityEstimator(liquidHeatCapacityEstimator),
 	fusionLatentHeatEstimator(fusionLatentHeatEstimator),
 	vaporizationLatentHeatEstimator(vaporizationLatentHeatEstimator),
-	sublimationLatentHeatEstimator(sublimationLatentHeatEstimator)
+	sublimationLatentHeatEstimator(sublimationLatentHeatEstimator),
+	relativeSolubilityEstimator(relativeSolubilityEstimator),
+	henrysConstantEstimator(henrysConstantEstimator)
 {
 	if (this->structure.isComplete() == false)
 	{

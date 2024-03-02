@@ -1,6 +1,6 @@
 #include "Catalyst.hpp"
 
-Catalyst::Catalyst(const Reactable& reactable, const Amount<Unit::MOLAR_PERCENT> idealAmount) noexcept :
+Catalyst::Catalyst(const Reactable& reactable, const Amount<Unit::MOLE_RATIO> idealAmount) noexcept :
 	reactable(reactable),
 	idealAmount(idealAmount)
 {}
@@ -22,7 +22,7 @@ std::unordered_map<c_size, c_size> Catalyst::matchWith(const MolecularStructure&
 
 std::optional<Catalyst> Catalyst::get(
 	const std::string& smiles,
-	const Amount<Unit::MOLAR_PERCENT> idealAmount)
+	const Amount<Unit::MOLE_RATIO> idealAmount)
 {
 	const auto r = Reactable::get(smiles);
 	if (r.has_value())

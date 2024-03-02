@@ -9,14 +9,19 @@
 
 #include <unordered_map>
 
-enum class Estimators : EstimatorIdType
+enum class BuiltinEstimator : EstimatorIdType
 {
 	TEMP_TO_REL_RSPEED = 101,
 	MCONC_TO_REL_RSPEED = 102,
 	TEMP_TO_DENSITY = 103,
 	TORR_TO_REL_BP = 104,
-	TDIF_TORR_TO_REL_LH = 105
+	TDIF_TORR_TO_REL_LH = 105,
+	TEMP_TO_REL_SOL = 106,
+	TEMP_TO_REL_INV_SOL = 107,
 };
+
+inline constexpr EstimatorIdType toId(const BuiltinEstimator tag);
+
 
 class EstimatorDataTable
 {

@@ -30,6 +30,15 @@ void MultiLayerMixture::addToLayer(const Reactant& reactant)
 
 	auto& layer = layers[reactant.layer];
 
+	// add polarity to layer average polarity
+	const auto polarity = reactant.molecule.getPolarity();
+	layer.polarity.hydrophilicity =
+		((layer.polarity.hydrophilicity * layer.moles.asStd()) + polarity.hydrophilicity) /
+		(layer.moles + reactant.amount).asStd();
+	layer.polarity.lipophilicity =
+		((layer.polarity.lipophilicity * layer.moles.asStd()) + polarity.lipophilicity) /
+		(layer.moles + reactant.amount).asStd();
+
 	totalMoles += reactant.amount;
 	layer.moles += reactant.amount;
 
@@ -45,6 +54,7 @@ void MultiLayerMixture::addToLayer(const Reactant& reactant)
 		layer.setIfNucleator(reactant);
 	else if (content.contains(reactant) == false)
 		layer.unsetIfNucleator(reactant);
+
 }
 
 void MultiLayerMixture::add(const Amount<Unit::JOULE> heat, const LayerType layer)
@@ -243,6 +253,11 @@ Amount<Unit::JOULE_PER_CELSIUS> MultiLayerMixture::getLayerTotalHeatCapacity(con
 Amount<Unit::JOULE_PER_MOLE> MultiLayerMixture::getLayerKineticEnergy(const LayerType layer) const
 {
 	return layers.at(layer).getKineticEnergy();
+}
+
+Polarity MultiLayerMixture::getLayerPolarity(const LayerType layer) const
+{
+	return layers.at(layer).getPolarity();
 }
 
 Amount<Unit::TORR> MultiLayerMixture::getPressure() const

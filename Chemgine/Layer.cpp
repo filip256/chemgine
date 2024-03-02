@@ -275,11 +275,6 @@ Amount<Unit::LITER> Layer::getVolume() const
     return volume;
 }
 
-bool Layer::isEmpty() const
-{
-    return moles == 0.0;
-}
-
 bool Layer::hasLowNucleator() const
 {
     return lowNucleator.isValid();
@@ -356,6 +351,16 @@ Amount<Unit::JOULE_PER_CELSIUS> Layer::getTotalHeatCapacity() const
 Amount<Unit::JOULE_PER_MOLE> Layer::getKineticEnergy() const
 {
     return getHeatCapacity().to<Unit::JOULE_PER_MOLE>(temperature);
+}
+
+Polarity Layer::getPolarity() const
+{
+    return polarity;
+}
+
+bool Layer::isEmpty() const
+{
+    return moles == 0.0;
 }
 
 void Layer::setIfNucleator(const Reactant& reactant)

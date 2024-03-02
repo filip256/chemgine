@@ -31,5 +31,5 @@ public:
 
 	static uint8_t getRarityOf(const Symbol& symbol);
 
-	static const uint8_t noneValence = static_cast<uint8_t>(-1);
+	static const uint8_t nullValence = static_cast<uint8_t>(-1);
 };

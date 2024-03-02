@@ -24,6 +24,8 @@ private:
 	Amount<Unit::LITER> volume = 0.0;
 	Amount<Unit::JOULE> potentialEnergy = 0.0;
 
+	Polarity polarity = Polarity(0.0, 0.0);
+
 	Ref<Mixture> container;
 
 	StateNucleator lowNucleator;
@@ -58,6 +60,7 @@ public:
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getHeatCapacity() const;
 	Amount<Unit::JOULE_PER_CELSIUS> getTotalHeatCapacity() const;
 	Amount<Unit::JOULE_PER_MOLE> getKineticEnergy() const;
+	Polarity getPolarity() const;
 
 	bool isEmpty() const;
 

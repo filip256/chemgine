@@ -14,6 +14,11 @@ public:
 		Spline<float>&& spline
 	) noexcept;
 
+	SplineEstimator(
+		const EstimatorIdType id,
+		const Spline<float>& spline
+	) noexcept;
+
 	double get(const double input) const override final;
 
 	SplineEstimator* clone() const override final;

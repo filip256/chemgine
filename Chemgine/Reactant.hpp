@@ -45,6 +45,7 @@ public:
 	Amount<Unit::JOULE_PER_MOLE> getCondensationHeat() const;
 	Amount<Unit::JOULE_PER_MOLE> getSublimationHeat() const;
 	Amount<Unit::JOULE_PER_MOLE> getDepositionHeat() const;
+	Amount<Unit::MOLE_RATIO> getSolubilityIn(const Polarity& solventPolarity) const;
 
 	Ref<Mixture> getContainer() const;
 	const Layer& getLayer() const;

@@ -3,6 +3,12 @@
 
 #include <cmath>
 
+constexpr EstimatorIdType toId(const BuiltinEstimator tag)
+{
+	return static_cast<EstimatorIdType>(tag);
+}
+
+
 EstimatorDataTable::~EstimatorDataTable() noexcept
 {
 	for (const auto& a : table)
@@ -11,23 +17,23 @@ EstimatorDataTable::~EstimatorDataTable() noexcept
 
 void EstimatorDataTable::addPredefined()
 {
-	table.emplace(std::make_pair(static_cast<EstimatorIdType>(Estimators::TEMP_TO_REL_RSPEED),
-		new FunctionalEstimator(static_cast<EstimatorIdType>(Estimators::TEMP_TO_REL_RSPEED),
+	table.emplace(std::make_pair(toId(BuiltinEstimator::TEMP_TO_REL_RSPEED),
+		new FunctionalEstimator(toId(BuiltinEstimator::TEMP_TO_REL_RSPEED),
 			+[](double deltaTemperature) { return std::pow(2, deltaTemperature / 10.0); })
 	));
 
-	table.emplace(std::make_pair(static_cast<EstimatorIdType>(Estimators::MCONC_TO_REL_RSPEED),
-		new FunctionalEstimator(static_cast<EstimatorIdType>(Estimators::MCONC_TO_REL_RSPEED),
+	table.emplace(std::make_pair(toId(BuiltinEstimator::MCONC_TO_REL_RSPEED),
+		new FunctionalEstimator(toId(BuiltinEstimator::MCONC_TO_REL_RSPEED),
 			+[](double molarConcentration) { return std::pow(molarConcentration, 0.25); })
 	));
 
-	table.emplace(std::make_pair(static_cast<EstimatorIdType>(Estimators::TEMP_TO_DENSITY),
-		new SplineEstimator(static_cast<EstimatorIdType>(Estimators::TEMP_TO_DENSITY),
+	table.emplace(std::make_pair(toId(BuiltinEstimator::TEMP_TO_DENSITY),
+		new SplineEstimator(toId(BuiltinEstimator::TEMP_TO_DENSITY),
 			Spline<float> {{-30.0f, 0.984f}, { -20.0f, 0.993f }, { 4.0f, 1.0f }, { 30.0f, 0.996f } })
 	));
 
-	table.emplace(std::make_pair(static_cast<EstimatorIdType>(Estimators::TORR_TO_REL_BP),
-		new FunctionalEstimator(static_cast<EstimatorIdType>(Estimators::TORR_TO_REL_BP),
+	table.emplace(std::make_pair(toId(BuiltinEstimator::TORR_TO_REL_BP),
+		new FunctionalEstimator(toId(BuiltinEstimator::TORR_TO_REL_BP),
 			+[](double torr) { return (torr - 760) * 0.045; })
 	));
 
@@ -36,13 +42,23 @@ void EstimatorDataTable::addPredefined()
 	//  - depending on the type of lantent heat, pressure can either lower or increase it:
 	//     - pass P for expansion heats
 	//     - pass -P for compression heats
-	table.emplace(std::make_pair(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH),
-		new FunctionalEstimator(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH),
+	table.emplace(std::make_pair(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH),
+		new FunctionalEstimator(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH),
 			+[](double tempDifC, double torr) { return (std::pow(1.005, -tempDifC / 2.0) +
 				torr > 0 ? 
 					std::pow(1.001, (torr - 760) / 2.0) :
 					-1 * std::pow(1.001, (-torr - 760) / 2.0))
 			/ 2.0; })
+	));
+
+	table.emplace(std::make_pair(toId(BuiltinEstimator::TEMP_TO_REL_SOL),
+		new FunctionalEstimator(toId(BuiltinEstimator::TEMP_TO_REL_SOL),
+			+[](double temp) { return temp * 0.001 + 1; })
+	));
+
+	table.emplace(std::make_pair(toId(BuiltinEstimator::TEMP_TO_REL_INV_SOL),
+		new FunctionalEstimator(toId(BuiltinEstimator::TEMP_TO_REL_INV_SOL),
+			+[](double temp) { return temp * -0.001 + 1; })
 	));
 }
 

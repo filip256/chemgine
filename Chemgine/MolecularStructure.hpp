@@ -144,8 +144,13 @@ public:
     /// Complexity: O(1)
     /// #Requires normalization
     /// </summary>
-    /// <returns></returns>
     bool isComplete() const;
+
+    /// <summary>
+    /// Checks if the molecule contains a C-H bond. 
+    /// Complexity: O(n)
+    /// </summary>
+    bool isOrganic() const;
 
     /// <summary>
     /// Returns a map representing a histrogram of all the components in this structure.

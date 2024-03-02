@@ -34,7 +34,7 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 	{
 		auto line = DataHelpers::parseList(buffer, ',');
 
-		if (line.size() != 12)
+		if (line.size() != 16)
 		{
 			Logger::log("Incompletely defined molecule skipped.", LogType::BAD);
 			continue;
@@ -61,8 +61,8 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 		// boiling and melting points
 		const auto mpR = DataHelpers::parse<double>(line[3]);
 		const auto bpR = DataHelpers::parse<double>(line[4]);
-		const auto& mpA = estimators.add<OffsetEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TORR_TO_REL_BP)), mpR.value_or(0));
-		const auto& bpA = estimators.add<OffsetEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TORR_TO_REL_BP)), bpR.value_or(100));
+		const auto& mpA = estimators.add<OffsetEstimator>(estimators.at(toId(BuiltinEstimator::TORR_TO_REL_BP)), mpR.value_or(0));
+		const auto& bpA = estimators.add<OffsetEstimator>(estimators.at(toId(BuiltinEstimator::TORR_TO_REL_BP)), bpR.value_or(100));
 
 		// densities
 		const auto sdR = DataHelpers::parse<Spline<float>>(line[5]);
@@ -80,14 +80,25 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 		const auto flhR = DataHelpers::parse<double>(line[9]);
 		const auto vlhR = DataHelpers::parse<double>(line[10]);
 		const auto slhR = DataHelpers::parse<double>(line[11]);
-		const auto& flhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), flhR.value_or(6020.0));
-		const auto& vlhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), vlhR.value_or(40700.0));
-		const auto& slhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), slhR.value_or(std::numeric_limits<double>::max()));
+		const auto& flhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), flhR.value_or(6020.0));
+		const auto& vlhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), vlhR.value_or(40700.0));
+		const auto& slhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), slhR.value_or(std::numeric_limits<double>::max()));
 
+		//solubility
+		const auto hydro = DataHelpers::parseUnsigned<Unit::MOLE_RATIO>(line[12]).value_or(0.0);
+		const auto lipo = DataHelpers::parseUnsigned<Unit::MOLE_RATIO>(line[13]).value_or(0.0);
+		const auto solR = DataHelpers::parse<Spline<float>>(line[14]);
+		const auto& solA = 
+			solR.has_value() ? estimators.add<SplineEstimator>(*solR) :
+			DataHelpers::parse<bool>(line[14]).value_or(false) ? estimators.at(toId(BuiltinEstimator::TEMP_TO_REL_INV_SOL)) :
+			estimators.at(toId(BuiltinEstimator::TEMP_TO_REL_SOL));
+		const auto& henryR = DataHelpers::parse<Spline<float>>(line[15]);
+		const auto& henryA = estimators.add<SplineEstimator>(henryR.value_or(Spline<float>({ {1000.0, 760.0} })));
+			
 		if (table.emplace(
 			*id,
 			line[1],
-			MoleculeData(*id, line[2], line[1], mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA)
+			MoleculeData(*id, line[2], line[1], hydro, lipo, mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA, solA, henryA)
 		) == false)
 		{
 			Logger::log("Molecule with duplicate id " + std::to_string(*id) + " skipped.", LogType::WARN);
@@ -113,7 +124,7 @@ bool MoleculeDataTable::saveToFile(const std::string& path)
 	for (size_t i = 0; i < table.size(); ++i)
 	{
 		const auto& e = table[i];
-		file << e.id << ',' << e.getStructure().serialize() << ',' << e.name << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << '\n';
+		file << e.id << ',' << e.getStructure().serialize() << ',' << e.name << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << '\n';
 	}
 
 	file.close();
@@ -140,17 +151,21 @@ MoleculeIdType MoleculeDataTable::findOrAdd(MolecularStructure&& structure)
 
 	Logger::log("New structure discovered: \n" + structure.print(50, 10), LogType::INFO);
 
-	const auto& mpA = estimators.add<OffsetEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TORR_TO_REL_BP)), 0);
-	const auto& bpA = estimators.add<OffsetEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TORR_TO_REL_BP)), 100);
+	const auto& mpA = estimators.add<OffsetEstimator>(estimators.at(toId(BuiltinEstimator::TORR_TO_REL_BP)), 0);
+	const auto& bpA = estimators.add<OffsetEstimator>(estimators.at(toId(BuiltinEstimator::TORR_TO_REL_BP)), 100);
 	const auto& sdA = estimators.add<SplineEstimator>(Spline<float>({ {0, 1.0f} }));
 	const auto& ldA = estimators.add<SplineEstimator>(Spline<float>({ {0, 1.0f} }));
 	const auto& shcA = estimators.add<SplineEstimator>(Spline<float>({ {36.0, 760.0} }));
 	const auto& lhcA = estimators.add<SplineEstimator>(Spline<float>({ {75.4840232, 760.0} }));
-	const auto& flhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), 6020.0f);
-	const auto& vlhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), 40700.0f);
-	const auto& slhA = estimators.add<ScaleEstimator>(estimators.at(static_cast<EstimatorIdType>(Estimators::TDIF_TORR_TO_REL_LH)), std::numeric_limits<double>::max());
+	const auto& flhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), 6020.0f);
+	const auto& vlhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), 40700.0f);
+	const auto& slhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), std::numeric_limits<double>::max());
+	const auto hydro = 0.0;
+	const auto lipo = 0.0;
+	const auto& solA = estimators.at(toId(BuiltinEstimator::TEMP_TO_REL_SOL));
+	const auto& henryA = estimators.add<SplineEstimator>(Spline<float>({ {1000.0, 760.0} }));
 
 	const auto id = getFreeId();
-	table.emplace(id, std::to_string(id), MoleculeData(id, std::move(structure), mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA));
+	table.emplace(id, std::to_string(id), MoleculeData(id, std::move(structure), hydro, lipo, mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA, solA, henryA));
 	return id;
 }
