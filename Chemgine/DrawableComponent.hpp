@@ -11,7 +11,7 @@ private:
 	std::vector<DrawablePort> adjustedPorts;
 
 protected:
-	DrawableComponent(const LabwareIdType id) noexcept;
+	DrawableComponent(const LabwareId id) noexcept;
 
 public:
 	const sf::Sprite& getSprite() const override final;

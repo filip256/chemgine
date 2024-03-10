@@ -10,7 +10,7 @@ private:
 
 public:
 	ScaleEstimator(
-		const EstimatorIdType id,
+		const EstimatorId id,
 		const BaseEstimator& base,
 		const double scale
 	) noexcept;

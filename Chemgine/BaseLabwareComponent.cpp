@@ -4,7 +4,7 @@
 size_t BaseLabwareComponent::instanceCount = 0;
 DataStoreAccessor BaseLabwareComponent::dataAccessor = DataStoreAccessor();
 
-BaseLabwareComponent::BaseLabwareComponent(const LabwareIdType id) noexcept :
+BaseLabwareComponent::BaseLabwareComponent(const LabwareId id) noexcept :
 	data(dataAccessor.getSafe().labware.at(id))
 {}
 

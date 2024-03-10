@@ -366,6 +366,9 @@
     <ClCompile Include="TextBlock.cpp">
       <Filter>Source Files\DataStructures</Filter>
     </ClCompile>
+    <ClCompile Include="ReactantRef.cpp">
+      <Filter>Source Files\Mixtures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -596,9 +599,6 @@
     <ClInclude Include="GenericMoleculeData.hpp">
       <Filter>Header Files\Molecules</Filter>
     </ClInclude>
-    <ClInclude Include="MoleculeIdType.hpp">
-      <Filter>Header Files\Molecules</Filter>
-    </ClInclude>
     <ClInclude Include="GenericMoleculeDataTable.hpp">
       <Filter>Header Files\Molecules</Filter>
     </ClInclude>
@@ -682,6 +682,12 @@
     </ClInclude>
     <ClInclude Include="SparseDirectedGraph.hpp">
       <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="MoleculeId.hpp">
+      <Filter>Header Files\Molecules</Filter>
+    </ClInclude>
+    <ClInclude Include="ReactantRef.hpp">
+      <Filter>Header Files\Mixtures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

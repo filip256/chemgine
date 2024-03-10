@@ -5,7 +5,7 @@
 size_t BaseComponent::instanceCount = 0;
 DataStoreAccessor BaseComponent::dataAccessor = DataStoreAccessor();
 
-BaseComponent::BaseComponent(const ComponentIdType id, const ComponentType type) noexcept :
+BaseComponent::BaseComponent(const ComponentId id, const ComponentType type) noexcept :
 	id(id),
 	type(type)
 {
@@ -28,7 +28,7 @@ const DataStore& BaseComponent::dataStore() const
 }
 
 
-ComponentIdType BaseComponent::getId() const
+ComponentId BaseComponent::getId() const
 {
 	return id;
 }

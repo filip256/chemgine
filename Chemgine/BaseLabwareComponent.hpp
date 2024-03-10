@@ -13,7 +13,7 @@ private:
 protected:
 	const BaseLabwareData& data;
 
-	BaseLabwareComponent(const LabwareIdType id) noexcept;
+	BaseLabwareComponent(const LabwareId id) noexcept;
 
 	const DataStore& dataStore() const;
 

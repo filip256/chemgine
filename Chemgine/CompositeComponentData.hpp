@@ -9,14 +9,14 @@ protected:
 	MolecularStructure structure;
 
 	CompositeComponentData(
-		const ComponentIdType id,
+		const ComponentId id,
 		MolecularStructure&& structure) noexcept;
 
 	CompositeComponentData(const CompositeComponentData&) = delete;
 	CompositeComponentData(CompositeComponentData&&) = default;
 
 	static CompositeComponentData create(
-		const ComponentIdType id,
+		const ComponentId id,
 		const std::string& smiles);
 
 public:

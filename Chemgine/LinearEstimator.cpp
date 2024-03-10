@@ -1,7 +1,7 @@
 #include "LinearEstimator.hpp"
 
 LinearEstimator::LinearEstimator(
-	const EstimatorIdType id,
+	const EstimatorId id,
 	const double scale,
 	const double offset
 ) noexcept :

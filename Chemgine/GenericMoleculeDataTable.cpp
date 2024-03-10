@@ -85,7 +85,7 @@ size_t GenericMoleculeDataTable::findFirst(const MolecularStructure& structure) 
 	return npos;
 }
 
-MoleculeIdType GenericMoleculeDataTable::findOrAdd(MolecularStructure&& structure)
+MoleculeId GenericMoleculeDataTable::findOrAdd(MolecularStructure&& structure)
 {
 	if (structure.isEmpty())
 		return 0;

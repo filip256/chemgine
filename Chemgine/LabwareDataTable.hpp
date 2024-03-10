@@ -8,7 +8,7 @@
 class LabwareDataTable
 {
 private:
-	std::unordered_map<LabwareIdType, const BaseLabwareData*> table;
+	std::unordered_map<LabwareId, const BaseLabwareData*> table;
 
 public:
 	LabwareDataTable() = default;
@@ -17,5 +17,5 @@ public:
 
 	bool loadFromFile(const std::string& path);
 
-	const BaseLabwareData& at(const LabwareIdType id) const;
+	const BaseLabwareData& at(const LabwareId id) const;
 };

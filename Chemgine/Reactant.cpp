@@ -3,17 +3,47 @@
 #include "Layer.hpp"
 #include "Formulas.hpp"
 
+ReactantId::ReactantId(
+	const MoleculeId moleculeId,
+	const LayerType layer
+) noexcept :
+	moleculeId(moleculeId),
+	layer(layer)
+{}
+
+ReactantId::ReactantId(const Reactant& reactant) noexcept :
+	moleculeId(reactant.molecule.getId()),
+	layer(reactant.layer)
+{}
+
+bool ReactantId::operator== (const ReactantId& other) const
+{
+	return this->layer == other.layer && this->moleculeId == other.moleculeId;
+}
+
+bool ReactantId::operator!= (const ReactantId& other) const
+{
+	return this->layer != other.layer || this->moleculeId != other.moleculeId;
+}
+
+
+
 Reactant::Reactant(
 	const Molecule& molecule,
 	const LayerType layer,
 	const Amount<Unit::MOLE> amount,
 	const Ref<Mixture> container
 ) noexcept :
-	molecule(molecule),
+	molecule(molecule), 
 	layer(layer),
 	amount(amount),
 	container(container)
 {}
+
+ReactantId Reactant::getId() const
+{
+	return *this;
+}
 
 Amount<Unit::GRAM> Reactant::getMass() const
 {
@@ -105,10 +135,10 @@ Amount<Unit::CELSIUS> Reactant::getLayerTemperature() const
 
 AggregationType Reactant::getAggregation() const
 {
-	return getAggregation(getLayerTemperature());
+	return getAggregationAt(getLayerTemperature());
 }
 
-AggregationType Reactant::getAggregation(const Amount<Unit::CELSIUS> temperature) const
+AggregationType Reactant::getAggregationAt(const Amount<Unit::CELSIUS> temperature) const
 {
 	return molecule.getAggregationAt(temperature, container->getPressure());
 }
@@ -141,14 +171,4 @@ Reactant Reactant::mutate(const Amount<Unit::MOLE> newAmount, const LayerType ne
 Reactant Reactant::mutate(const Amount<Unit::MOLE> newAmount, const Ref<Mixture> newContainer, const LayerType newLayer) const
 {
 	return Reactant(molecule, newLayer, newAmount, newContainer);
-}
-
-bool Reactant::operator== (const Reactant& other) const
-{
-	return this->layer == other.layer && this->molecule.getId() == other.molecule.getId();
-}
-
-bool Reactant::operator!= (const Reactant& other) const
-{
-	return this->layer != other.layer || this->molecule.getId() != other.molecule.getId();
 }

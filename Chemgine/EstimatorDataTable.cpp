@@ -3,9 +3,9 @@
 
 #include <cmath>
 
-constexpr EstimatorIdType toId(const BuiltinEstimator tag)
+constexpr EstimatorId toId(const BuiltinEstimator tag)
 {
-	return static_cast<EstimatorIdType>(tag);
+	return static_cast<EstimatorId>(tag);
 }
 
 
@@ -77,12 +77,12 @@ const BaseEstimator& EstimatorDataTable::add(const BaseEstimator* estimator)
 	return *estimator;
 }
 
-const BaseEstimator& EstimatorDataTable::at(const EstimatorIdType id) const
+const BaseEstimator& EstimatorDataTable::at(const EstimatorId id) const
 {
 	return *table.at(id);
 }
 
-EstimatorIdType EstimatorDataTable::getFreeId() const
+EstimatorId EstimatorDataTable::getFreeId() const
 {
 	size_t id = 201;
 	while (table.contains(id) && id != 0) ++id; // overflow protection

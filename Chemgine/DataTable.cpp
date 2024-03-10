@@ -71,7 +71,7 @@ void DataTable<KeyT1, KeyT2, ObjT>::clear()
 	table.clear();
 }
 
-template class DataTable<ComponentIdType, Symbol, AtomData>;
-template class DataTable<MoleculeIdType, std::string, MoleculeData>;
-template class DataTable<MoleculeIdType, std::string, GenericMoleculeData>;
-template class DataTable<ReactionIdType, std::string, ReactionData>;
+template class DataTable<ComponentId, Symbol, AtomData>;
+template class DataTable<MoleculeId, std::string, MoleculeData>;
+template class DataTable<MoleculeId, std::string, GenericMoleculeData>;
+template class DataTable<ReactionId, std::string, ReactionData>;

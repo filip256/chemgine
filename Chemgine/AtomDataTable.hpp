@@ -3,7 +3,7 @@
 #include "DataTable.hpp"
 #include "AtomData.hpp"
 
-class AtomDataTable : public DataTable<ComponentIdType, Symbol, AtomData>
+class AtomDataTable : public DataTable<ComponentId, Symbol, AtomData>
 {
 private:
 	void addPredefined();

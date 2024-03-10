@@ -2,6 +2,7 @@
 
 #include "LayerType.hpp"
 #include "Reactant.hpp"
+#include "ReactantSet.hpp"
 
 #include <unordered_set>
 
@@ -11,13 +12,13 @@ class LayerIterator
 {
 private:
 	const LayerType layer;
-	std::unordered_set<Reactant>::const_iterator it;
-	const std::unordered_set<Reactant>::const_iterator end;
+	ReactantSet::const_iterator it;
+	const ReactantSet::const_iterator end;
 
 	LayerIterator(
 		const LayerType layer,
-		std::unordered_set<Reactant>::const_iterator it,
-		std::unordered_set<Reactant>::const_iterator end
+		const ReactantSet::const_iterator it,
+		const ReactantSet::const_iterator end
 	) noexcept;
 
 public:

@@ -140,7 +140,7 @@ size_t MoleculeDataTable::findFirst(const MolecularStructure& structure) const
 	return npos;
 }
 
-MoleculeIdType MoleculeDataTable::findOrAdd(MolecularStructure&& structure)
+MoleculeId MoleculeDataTable::findOrAdd(MolecularStructure&& structure)
 {
 	if (structure.isEmpty())
 		return 0;

@@ -4,7 +4,7 @@
 #include "GenericMoleculeData.hpp"
 
 class GenericMoleculeDataTable :
-	public DataTable<MoleculeIdType, std::string, GenericMoleculeData>
+	public DataTable<MoleculeId, std::string, GenericMoleculeData>
 {
 public:
 	GenericMoleculeDataTable() = default;
@@ -15,5 +15,5 @@ public:
 
 	size_t findFirst(const MolecularStructure& structure) const;
 
-	MoleculeIdType findOrAdd(MolecularStructure&& structure);
+	MoleculeId findOrAdd(MolecularStructure&& structure);
 };

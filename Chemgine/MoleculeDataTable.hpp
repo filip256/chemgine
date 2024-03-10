@@ -5,7 +5,7 @@
 #include "EstimatorDataTable.hpp"
 
 class MoleculeDataTable :
-	public DataTable<MoleculeIdType, std::string, MoleculeData>
+	public DataTable<MoleculeId, std::string, MoleculeData>
 {
 private:
 	EstimatorDataTable& estimators;
@@ -19,5 +19,5 @@ public:
 
 	size_t findFirst(const MolecularStructure& structure) const;
 
-	MoleculeIdType findOrAdd(MolecularStructure&& structure);
+	MoleculeId findOrAdd(MolecularStructure&& structure);
 };

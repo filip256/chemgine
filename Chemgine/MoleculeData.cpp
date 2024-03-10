@@ -2,7 +2,7 @@
 #include "Logger.hpp"
 
 MoleculeData::MoleculeData(
-	const MoleculeIdType id,
+	const MoleculeId id,
 	const std::string& name,
 	const std::string& smiles,
 	const Amount<Unit::MOLE_RATIO> hydrophilicity,
@@ -43,7 +43,7 @@ MoleculeData::MoleculeData(
 }
 
 MoleculeData::MoleculeData(
-	const MoleculeIdType id,
+	const MoleculeId id,
 	MolecularStructure&& structure,
 	const Amount<Unit::MOLE_RATIO> hydrophilicity,
 	const Amount<Unit::MOLE_RATIO> lipophilicity,

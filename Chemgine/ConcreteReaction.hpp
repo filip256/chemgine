@@ -48,9 +48,9 @@ struct std::hash<ConcreteReaction>
 	size_t operator() (const ConcreteReaction& reaction) const
 	{
 		size_t hash = 0;
-		for (const auto& r : reaction.reactants)
+		for (const auto& [_, r] : reaction.reactants)
 			hashCombineWith(hash, r.molecule.getId());
-		for (const auto& p : reaction.products)
+		for (const auto& [_, p] : reaction.products)
 			hashCombineWith(hash, p.molecule.getId());
 		return hash;
 	}

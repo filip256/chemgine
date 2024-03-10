@@ -7,7 +7,7 @@
 #include "ReactionNetwork.hpp"
 
 class ReactionDataTable :
-	public DataTable<ReactionIdType, std::string, ReactionData>
+	public DataTable<ReactionId, std::string, ReactionData>
 {
 private:
 	ReactionNetwork network;

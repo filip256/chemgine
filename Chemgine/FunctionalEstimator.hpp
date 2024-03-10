@@ -12,7 +12,7 @@ private:
 
 public:
 	FunctionalEstimator(
-		const EstimatorIdType id,
+		const EstimatorId id,
 		double(*function)(InArgs...)
 	) noexcept;
 
@@ -24,7 +24,7 @@ public:
 
 template <typename... InArgs>
 FunctionalEstimator<InArgs...>::FunctionalEstimator(
-	const EstimatorIdType id,
+	const EstimatorId id,
 	double(*function)(InArgs...)
 ) noexcept :
 	BaseEstimator(id),

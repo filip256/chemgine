@@ -2,7 +2,7 @@
 
 #include "DataStoreAccessor.hpp"
 #include "MolecularStructure.hpp"
-#include "MoleculeIdType.hpp"
+#include "MoleculeId.hpp"
 
 #include <optional>
 
@@ -14,14 +14,14 @@ private:
 	static DataStoreAccessor dataAccessor;
 
 	const bool isGeneric;
-	const MoleculeIdType id;
+	const MoleculeId id;
 
-	Reactable(const MoleculeIdType id, const bool isGeneric) noexcept;
+	Reactable(const MoleculeId id, const bool isGeneric) noexcept;
 
 	const DataStore& dataStore() const;
 
 public:
-	const MoleculeIdType getId() const;
+	const MoleculeId getId() const;
 	const MolecularStructure& getStructure() const;
 
 	std::unordered_map<c_size, c_size> matchWith(const MolecularStructure& structure) const;

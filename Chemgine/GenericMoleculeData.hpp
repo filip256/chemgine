@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MoleculeIdType.hpp"
+#include "MoleculeId.hpp"
 #include "MolecularStructure.hpp"
 
 class GenericMoleculeData
@@ -9,14 +9,14 @@ private:
 	MolecularStructure structure;
 
 public:
-	const MoleculeIdType id;
+	const MoleculeId id;
 
 	GenericMoleculeData(
-		const MoleculeIdType id,
+		const MoleculeId id,
 		const std::string& smiles) noexcept;
 
 	GenericMoleculeData(
-		const MoleculeIdType id,
+		const MoleculeId id,
 		MolecularStructure&& structure) noexcept;
 
 	GenericMoleculeData(const GenericMoleculeData&) = delete;

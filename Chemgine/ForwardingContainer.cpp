@@ -3,7 +3,7 @@
 ForwardingContainer::ForwardingContainer(
 	std::initializer_list<ForwardingRule> forwardingRules,
 	Ref<BaseContainer> defaultTarget
-) noexcept:
+) noexcept :
 	forwardingRules(forwardingRules),
 	defaultTarget(defaultTarget)
 {}
@@ -11,7 +11,7 @@ ForwardingContainer::ForwardingContainer(
 ForwardingContainer::ForwardingContainer(
 	const std::vector<ForwardingRule>& forwardingRules,
 	Ref<BaseContainer> defaultTarget
-) noexcept:
+) noexcept :
 	forwardingRules(forwardingRules),
 	defaultTarget(defaultTarget)
 {}

@@ -2,7 +2,7 @@
 
 #include "Reactant.hpp"
 
-#include <unordered_set>
+#include <unordered_map>
 
 class Mixture;
 
@@ -10,7 +10,7 @@ class ReactantSet
 {
 private:
 	Ref<Mixture> container;
-	std::unordered_set<Reactant> content;
+	std::unordered_map<ReactantId, Reactant> reactants;
 
 	ReactantSet(
 		const ReactantSet& other,
@@ -20,13 +20,17 @@ private:
 public:
 	ReactantSet(const Ref<Mixture> container) noexcept;
 	ReactantSet(ReactantSet&&) = default;
-	ReactantSet(const std::vector<Molecule>& content) noexcept;
-	ReactantSet(const std::vector<Reactant>& content) noexcept;
+	ReactantSet(const std::vector<Molecule>& reactants) noexcept;
+	ReactantSet(const std::vector<Reactant>& reactants) noexcept;
+
+	using pairT = std::pair<ReactantId, Reactant>;
+	using const_iterator = std::unordered_map<ReactantId, Reactant>::const_iterator;
+	using iterator = std::unordered_map<ReactantId, Reactant>::iterator;
 
 	size_t size() const;
 	void reserve(const size_t size);
 
-	bool contains(const Reactant& reactant) const;
+	bool contains(const ReactantId& reactantId) const;
 
 	void add(const Reactant& reactant);
 
@@ -36,15 +40,16 @@ public:
 	/// </summary>
 	const Reactant& any() const;
 
-	Amount<Unit::MOLE> getAmountOf(const Reactant& reactant) const;
+	Amount<Unit::MOLE> getAmountOf(const ReactantId& reactantId) const;
 	Amount<Unit::MOLE> getAmountOf(const ReactantSet& reactantSet) const;
 
-	std::unordered_set<Reactant>::const_iterator erase(
-		const std::unordered_set<Reactant>::const_iterator it);
-	void erase(bool (*predicate)(const Reactant&));
+	iterator erase(const iterator it);
+	void erase(bool (*predicate)(const pairT&));
 
-	std::unordered_set<Reactant>::const_iterator begin() const;
-	std::unordered_set<Reactant>::const_iterator end() const;
+	const_iterator begin() const;
+	iterator begin();
+	const_iterator end() const;
+	iterator end();
 
 	bool equals(const ReactantSet& other,
 		const Amount<>::StorageType epsilon = std::numeric_limits<Amount<>::StorageType>::epsilon()) const;

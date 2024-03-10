@@ -235,6 +235,7 @@
     <ClCompile Include="Polarity.cpp" />
     <ClCompile Include="Reactable.cpp" />
     <ClCompile Include="Reactant.cpp" />
+    <ClCompile Include="ReactantRef.cpp" />
     <ClCompile Include="ReactantSet.cpp" />
     <ClCompile Include="ReactionData.cpp" />
     <ClCompile Include="ReactionDataTable.cpp" />
@@ -310,6 +311,7 @@
     <ClInclude Include="LabwareType.hpp" />
     <ClInclude Include="LayerIterator.hpp" />
     <ClInclude Include="Linguistics.hpp" />
+    <ClInclude Include="MoleculeId.hpp" />
     <ClInclude Include="MoleculeType.hpp" />
     <ClInclude Include="MultiLayerMixture.hpp" />
     <ClInclude Include="Layer.hpp" />
@@ -319,11 +321,11 @@
     <ClCompile Include="MolecularStructure.cpp" />
     <ClInclude Include="Maths.hpp" />
     <ClInclude Include="Mixture.hpp" />
-    <ClInclude Include="MoleculeIdType.hpp" />
     <ClInclude Include="OffsetEstimator.hpp" />
     <ClInclude Include="Polarity.hpp" />
     <ClInclude Include="PortType.hpp" />
     <ClInclude Include="Reactant.hpp" />
+    <ClInclude Include="ReactantRef.hpp" />
     <ClInclude Include="ReactantSet.hpp" />
     <ClInclude Include="ReactionNetwork.hpp" />
     <ClInclude Include="Ref.hpp" />

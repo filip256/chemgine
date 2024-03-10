@@ -9,7 +9,7 @@ private:
 
 public:
 	ConstantEstimator(
-		const EstimatorIdType id,
+		const EstimatorId id,
 		const double constant
 	) noexcept;
 

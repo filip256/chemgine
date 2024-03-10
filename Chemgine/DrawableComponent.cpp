@@ -2,7 +2,7 @@
 #include "Collision.hpp"
 #include "DrawableLabwareData.hpp"
 
-DrawableComponent::DrawableComponent(const LabwareIdType id) noexcept :
+DrawableComponent::DrawableComponent(const LabwareId id) noexcept :
 	BaseLabwareComponent(id),
 	sprite(static_cast<const DrawableLabwareData&>(data).texture)
 {

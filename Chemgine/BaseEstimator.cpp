@@ -5,11 +5,11 @@
 
 size_t BaseEstimator::instanceCount = 0;
 
-BaseEstimator::BaseEstimator(const EstimatorIdType id) noexcept :
+BaseEstimator::BaseEstimator(const EstimatorId id) noexcept :
 	id(id)
 {}
 
-EstimatorIdType BaseEstimator::getId() const
+EstimatorId BaseEstimator::getId() const
 {
 	return id;
 }

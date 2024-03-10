@@ -11,7 +11,7 @@ private:
 
 public:
 	SplitEstimator(
-		const EstimatorIdType id,
+		const EstimatorId id,
 		const BaseEstimator& lower,
 		const BaseEstimator& higher,
 		const double threshold

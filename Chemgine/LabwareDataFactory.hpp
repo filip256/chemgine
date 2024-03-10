@@ -9,8 +9,8 @@
 
 class LabwareDataFactory
 {
-	static FlaskData* getFlask(const LabwareIdType id, const std::vector<std::string>& dataLine);
-	static AdaptorData* getAdaptor(const LabwareIdType id, const std::vector<std::string>& dataLine);
+	static FlaskData* getFlask(const LabwareId id, const std::vector<std::string>& dataLine);
+	static AdaptorData* getAdaptor(const LabwareId id, const std::vector<std::string>& dataLine);
 
 public:
 
@@ -18,5 +18,5 @@ public:
 	/// Allocates the right type of LabwareData and returns a pointer to it or nullptr if the operation fails.
 	/// LabwareDataFactory does not own the LabwareDatas created in this manner.
 	/// </summary>
-	static BaseLabwareData* get(const LabwareIdType id, const LabwareType type, const std::vector<std::string>& dataLine);
+	static BaseLabwareData* get(const LabwareId id, const LabwareType type, const std::vector<std::string>& dataLine);
 };

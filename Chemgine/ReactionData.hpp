@@ -10,7 +10,7 @@
 #include "Amount.hpp"
 #include "Ref.hpp"
 
-typedef uint16_t ReactionIdType;
+typedef uint16_t ReactionId;
 
 class ReactionData
 {
@@ -49,7 +49,7 @@ private:
 		const std::vector<Molecule>& molecules) const;
 
 public:
-	const ReactionIdType id;
+	const ReactionId id;
 	const Amount<Unit::MOLE_PER_SECOND> baseSpeed;
 	const Amount<Unit::CELSIUS> baseTemperature;
 	const Amount<Unit::JOULE_PER_MOLE> reactionEnergy;
@@ -57,7 +57,7 @@ public:
 	const std::string name;
 
 	ReactionData(
-		const ReactionIdType id,
+		const ReactionId id,
 		const std::string& name,
 		const std::vector<std::pair<Reactable, uint8_t>>& reactants,
 		const std::vector<std::pair<Reactable, uint8_t>>& products,

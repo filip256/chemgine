@@ -156,7 +156,7 @@ public:
     /// Returns a map representing a histrogram of all the components in this structure.
     /// Complexity: O(n)
     /// </summary>
-    std::unordered_map<ComponentIdType, c_size> getComponentCountMap() const;
+    std::unordered_map<ComponentId, c_size> getComponentCountMap() const;
 
     /// <summary>
     /// Returns true if the molecule contains no real or virtual atoms.

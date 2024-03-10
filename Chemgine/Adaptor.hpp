@@ -6,7 +6,7 @@
 class Adaptor : public DrawableComponent
 {
 public:
-	Adaptor(const LabwareIdType id) noexcept;
+	Adaptor(const LabwareId id) noexcept;
 
 	const AdaptorData& getData() const override final;
 

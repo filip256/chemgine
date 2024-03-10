@@ -2,7 +2,7 @@
 #include "Logger.hpp"
 
 CompositeComponentData::CompositeComponentData(
-	const ComponentIdType id,
+	const ComponentId id,
 	MolecularStructure&& structure
 ) noexcept :
 	BaseComponentData(id, structure.getMolarMass().to<Unit::GRAM>(Amount<Unit::MOLE>(1.0)), structure.getRadicalAtomsCount()),
@@ -30,7 +30,7 @@ std::string CompositeComponentData::getBinaryId() const
 }
 
 CompositeComponentData CompositeComponentData::create(
-	const ComponentIdType id,
+	const ComponentId id,
 	const std::string& smiles
 )
 {

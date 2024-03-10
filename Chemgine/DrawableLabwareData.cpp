@@ -2,7 +2,7 @@
 #include "Collision.hpp"
 
 DrawableLabwareData::DrawableLabwareData(
-	const LabwareIdType id,
+	const LabwareId id,
 	const std::string& name,
 	std::vector<LabwarePort>&& ports,
 	const std::string& textureFile,

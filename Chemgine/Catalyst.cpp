@@ -5,7 +5,7 @@ Catalyst::Catalyst(const Reactable& reactable, const Amount<Unit::MOLE_RATIO> id
 	idealAmount(idealAmount)
 {}
 
-const MoleculeIdType Catalyst::getId() const
+const MoleculeId Catalyst::getId() const
 {
 	return reactable.getId();
 }

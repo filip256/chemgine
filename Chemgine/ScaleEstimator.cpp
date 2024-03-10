@@ -1,7 +1,7 @@
 #include "ScaleEstimator.hpp"
 
 ScaleEstimator::ScaleEstimator(
-	const EstimatorIdType id,
+	const EstimatorId id,
 	const BaseEstimator& base,
 	const double scale
 ) noexcept :

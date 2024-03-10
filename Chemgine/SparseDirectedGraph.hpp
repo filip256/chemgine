@@ -81,7 +81,7 @@ template<class NodeT>
 SparseDirectedGraph<NodeT>::NeighbourIterator::NeighbourIterator(
 	const SparseDirectedGraph<NodeT>& owner,
 	const size_t node
-) noexcept:
+) noexcept :
 	owner(owner),
 	edges(owner.edges[node]),
 	i(edges.size() - 1)

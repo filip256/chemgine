@@ -10,12 +10,12 @@ private:
 
 public:
 	SplineEstimator(
-		const EstimatorIdType id,
+		const EstimatorId id,
 		Spline<float>&& spline
 	) noexcept;
 
 	SplineEstimator(
-		const EstimatorIdType id,
+		const EstimatorId id,
 		const Spline<float>& spline
 	) noexcept;
 

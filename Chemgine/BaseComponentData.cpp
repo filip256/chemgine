@@ -3,7 +3,7 @@
 BaseComponentData::BaseComponentData() {}
 
 BaseComponentData::BaseComponentData(
-	const ComponentIdType id,
+	const ComponentId id,
 	const Amount<Unit::GRAM> weight,
 	const uint8_t rarity
 ) :

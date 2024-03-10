@@ -4,21 +4,21 @@
 
 #include <string>
 
-typedef uint16_t EstimatorIdType;
+typedef uint16_t EstimatorId;
 
 class EstimatorDataTable;
 
 class BaseEstimator
 {
 protected:
-	EstimatorIdType id;
+	EstimatorId id;
 
-	BaseEstimator(const EstimatorIdType id) noexcept;
+	BaseEstimator(const EstimatorId id) noexcept;
 	BaseEstimator(const BaseEstimator&) = default;
 	BaseEstimator(BaseEstimator&&) = default;
 
 public:
-	EstimatorIdType getId() const;
+	EstimatorId getId() const;
 
 	virtual double get(const double input) const;
 	virtual double get(const double input1, const double input2) const;

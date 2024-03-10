@@ -7,18 +7,18 @@
 #include "LabwareType.hpp"
 #include "LabwarePort.hpp"
 
-typedef uint32_t LabwareIdType;
+typedef uint32_t LabwareId;
 
 class BaseLabwareData
 {
 public:
-	const LabwareIdType id;
+	const LabwareId id;
 	const LabwareType type;
 	const std::string name;
 	const std::vector<LabwarePort> ports;
 
 	BaseLabwareData(
-		const LabwareIdType id,
+		const LabwareId id,
 		const std::string& name,
 		std::vector<LabwarePort>&& ports,
 		const LabwareType type

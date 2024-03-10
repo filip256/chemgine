@@ -10,15 +10,15 @@ class Molecule
 private:
 	static DataStoreAccessor dataAccessor;
 
-	const MoleculeIdType id;
+	const MoleculeId id;
 	Amount<Unit::GRAM_PER_MOLE> molarMass;
 
 public:
-	Molecule(const MoleculeIdType id) noexcept;
+	Molecule(const MoleculeId id) noexcept;
 	Molecule(MolecularStructure&& structure) noexcept;
 	Molecule(const std::string& smiles) noexcept;
 
-	MoleculeIdType getId() const;
+	MoleculeId getId() const;
 	Amount<Unit::GRAM_PER_MOLE> getMolarMass() const;
 	const MoleculeData& data() const;
 
@@ -105,6 +105,6 @@ struct std::hash<Molecule>
 {
 	size_t operator() (const Molecule& molecule) const
 	{
-		return std::hash<MoleculeIdType>()(molecule.id);
+		return std::hash<MoleculeId>()(molecule.id);
 	}
 };

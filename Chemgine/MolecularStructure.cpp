@@ -385,9 +385,9 @@ bool MolecularStructure::isOrganic() const
     return false;
 }
 
-std::unordered_map<ComponentIdType, c_size> MolecularStructure::getComponentCountMap() const
+std::unordered_map<ComponentId, c_size> MolecularStructure::getComponentCountMap() const
 {
-    std::unordered_map<ComponentIdType, c_size> result;
+    std::unordered_map<ComponentId, c_size> result;
     for (c_size i = 0; i < components.size(); ++i)
     {
         if (result.contains(components[i]->getId()))
@@ -1117,13 +1117,13 @@ bool MolecularStructure::deserialize(const std::string& str)
     for (c_size i = 0; i < comps.size(); ++i)
     {
         const auto id = DataHelpers::parse<unsigned int>(comps[i]);
-        if (id.has_value() == false || Atom::isDefined(static_cast<ComponentIdType>(*id)) == false)
+        if (id.has_value() == false || Atom::isDefined(static_cast<ComponentId>(*id)) == false)
         {
             clear();
             return false;
         }
 
-        components.emplace_back(new Atom(static_cast<ComponentIdType>(*id)));
+        components.emplace_back(new Atom(static_cast<ComponentId>(*id)));
     }
 
     for (c_size i = 1; i < tokens.size(); ++i)

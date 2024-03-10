@@ -26,6 +26,8 @@ public:
 	void add(const Reactant& reactant) override;
 	void add(const Mixture& other);
 
+	const ReactantSet& getContent() const;
+
 	Amount<Unit::MOLE> getAmountOf(const Reactant& reactant) const;
 	Amount<Unit::MOLE> getAmountOf(const ReactantSet& reactantSet) const;
 
@@ -40,6 +42,5 @@ public:
 	virtual Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType layer) const = 0;
 	virtual Polarity getLayerPolarity(const LayerType layer) const = 0;
 
-	friend class Reactant;
 	friend class Layer;
 };

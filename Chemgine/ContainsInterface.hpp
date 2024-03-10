@@ -53,7 +53,7 @@ ContainsInterface<KeyT, ObjT>::ContainsInterface(const std::unordered_set<KeyT>&
 {}
 
 template<class KeyT, class ObjT>
-ContainsInterface<KeyT, ObjT>::ContainsInterface(const std::map<KeyT, ObjT>& map) noexcept:
+ContainsInterface<KeyT, ObjT>::ContainsInterface(const std::map<KeyT, ObjT>& map) noexcept :
 	type(3),
 	container(map)
 {}

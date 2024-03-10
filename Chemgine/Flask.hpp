@@ -6,7 +6,7 @@
 class Flask : public DrawableComponent
 {
 public:
-	Flask(const LabwareIdType id) noexcept;
+	Flask(const LabwareId id) noexcept;
 
 	const FlaskData& getData() const override final;
 

@@ -9,7 +9,7 @@
 
 #include <unordered_map>
 
-enum class BuiltinEstimator : EstimatorIdType
+enum class BuiltinEstimator : EstimatorId
 {
 	TEMP_TO_REL_RSPEED = 101,
 	MCONC_TO_REL_RSPEED = 102,
@@ -20,15 +20,15 @@ enum class BuiltinEstimator : EstimatorIdType
 	TEMP_TO_REL_INV_SOL = 107,
 };
 
-inline constexpr EstimatorIdType toId(const BuiltinEstimator tag);
+inline constexpr EstimatorId toId(const BuiltinEstimator tag);
 
 
 class EstimatorDataTable
 {
 private:
-	std::unordered_map<EstimatorIdType, const BaseEstimator*> table;
+	std::unordered_map<EstimatorId, const BaseEstimator*> table;
 
-	EstimatorIdType getFreeId() const;
+	EstimatorId getFreeId() const;
 
 	void addPredefined();
 	const BaseEstimator& add(const BaseEstimator* estimator);
@@ -46,11 +46,11 @@ public:
 	/// </summary>
 	template <typename EstT, typename... Args, typename = std::enable_if_t<
 		std::is_base_of_v<BaseEstimator, EstT> &&
-		std::is_constructible_v<EstT, EstimatorIdType, Args...>>>
+		std::is_constructible_v<EstT, EstimatorId, Args...>>>
 	const BaseEstimator& add(Args&&... args);
 	//  and they still ask why I use C++...
 
-	const BaseEstimator& at(const EstimatorIdType id) const;
+	const BaseEstimator& at(const EstimatorId id) const;
 };
 
 

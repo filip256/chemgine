@@ -6,7 +6,7 @@ class FlaskData : public ContainerLabwareData
 {
 public:
 	FlaskData(
-		const LabwareIdType id,
+		const LabwareId id,
 		const std::string& name,
 		std::vector<LabwarePort>&& ports,
 		const Amount<Unit::LITER> volume,

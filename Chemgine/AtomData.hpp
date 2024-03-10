@@ -12,7 +12,7 @@ private:
 
 public:
 	AtomData(
-		const ComponentIdType id,
+		const ComponentId id,
 		const Symbol& symbol,
 		const std::string& name,
 		const Amount<Unit::GRAM> weight,

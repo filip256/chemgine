@@ -5,18 +5,18 @@
 
 DataStoreAccessor Molecule::dataAccessor = DataStoreAccessor();
 
-Molecule::Molecule(const MoleculeIdType id) noexcept:
+Molecule::Molecule(const MoleculeId id) noexcept :
 	id(id),
 	molarMass(dataAccessor.getSafe().molecules.at(id).getStructure().getMolarMass())
 {}
 
-Molecule::Molecule(MolecularStructure&& structure) noexcept:
+Molecule::Molecule(MolecularStructure&& structure) noexcept :
 	id(dataAccessor.getSafe().molecules.findOrAdd(std::move(structure)))
 {
 	molarMass = data().getStructure().getMolarMass();
 }
 
-Molecule::Molecule(const std::string& smiles) noexcept:
+Molecule::Molecule(const std::string& smiles) noexcept :
 	Molecule(MolecularStructure(smiles))
 {}
 
@@ -25,7 +25,7 @@ void Molecule::setDataStore(const DataStore& dataStore)
 	dataAccessor.set(dataStore);
 }
 
-MoleculeIdType Molecule::getId() const
+MoleculeId Molecule::getId() const
 {
 	return id;
 }

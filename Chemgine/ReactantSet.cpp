@@ -5,96 +5,105 @@ ReactantSet::ReactantSet(
 	const Ref<Mixture> newContainer
 ) noexcept :
 	container(newContainer),
-	content(other.content)
+	reactants(other.reactants)
 {}
 
-ReactantSet::ReactantSet(const Ref<Mixture> container) noexcept:
+ReactantSet::ReactantSet(const Ref<Mixture> container) noexcept :
 	container(container)
 {}
 
-ReactantSet::ReactantSet(const std::vector<Molecule>& content) noexcept:
+ReactantSet::ReactantSet(const std::vector<Molecule>& reactants) noexcept :
 	container(Ref<Mixture>::nullRef)
 {
-	for (size_t i = 0; i < content.size(); ++i)
-		add(Reactant(content[i], LayerType::UNKNOWN, 1.0));
+	for (size_t i = 0; i < reactants.size(); ++i)
+		add(Reactant(reactants[i], LayerType::UNKNOWN, 1.0));
 }
 
-ReactantSet::ReactantSet(const std::vector<Reactant>& content) noexcept:
-	container(content.empty() ? Ref<Mixture>::nullRef : content.front().getContainer())
+ReactantSet::ReactantSet(const std::vector<Reactant>& reactants) noexcept :
+	container(reactants.empty() ? Ref<Mixture>::nullRef : reactants.front().getContainer())
 {
-	for (size_t i = 0; i < content.size(); ++i)
-		add(content[i].mutate(1.0));
+	for (size_t i = 0; i < reactants.size(); ++i)
+		add(reactants[i].mutate(1.0_mol));
 }
 
 size_t ReactantSet::size() const
 {
-	return content.size();
+	return reactants.size();
 }
 
 void ReactantSet::reserve(const size_t size)
 {
-	content.reserve(size);
+	reactants.reserve(size);
 }
 
-bool ReactantSet::contains(const Reactant& reactant) const
+bool ReactantSet::contains(const ReactantId& reactantId) const
 {
-	return content.contains(reactant);
+	return reactants.contains(reactantId);
 }
 
 void ReactantSet::add(const Reactant& reactant)
 {
-	const auto& temp = content.find(reactant);
-	if (temp != content.end())
+	const auto& temp = reactants.find(reactant.getId());
+	if (temp != reactants.end())
 	{
-		temp->amount += reactant.amount;
+		temp->second.amount += reactant.amount;
 	}
 
-	content.emplace(reactant.molecule, reactant.layer, reactant.amount, container).first;
+	reactants.emplace(std::make_pair(reactant.getId(), reactant.mutate(container)));
 }
 
 const Reactant& ReactantSet::any() const
 {
-	return *content.begin();
+	return reactants.begin()->second;
 }
 
-Amount<Unit::MOLE> ReactantSet::getAmountOf(const Reactant& reactant) const
+Amount<Unit::MOLE> ReactantSet::getAmountOf(const ReactantId& reactantId) const
 {
-	const auto it = content.find(reactant);
-	return it == content.end() ? Amount<Unit::MOLE>(0.0) : it->amount;
+	const auto it = reactants.find(reactantId);
+	return it == reactants.end() ? Amount<Unit::MOLE>(0.0) : it->second.amount;
 }
 
 Amount<Unit::MOLE> ReactantSet::getAmountOf(const ReactantSet& reactantSet) const
 {
 	Amount<Unit::MOLE> s = 0.0;
 	for (const auto& r : reactantSet)
-		s += getAmountOf(r);
+		s += getAmountOf(r.first);
 	return s;
 }
 
-std::unordered_set<Reactant>::const_iterator ReactantSet::erase(
-	const std::unordered_set<Reactant>::const_iterator it)
+ReactantSet::iterator ReactantSet::erase(const ReactantSet::iterator it)
 {
-	return content.erase(it);
+	return reactants.erase(it);
 }
 
-void ReactantSet::erase(bool (*predicate)(const Reactant&))
+void ReactantSet::erase(bool (*predicate)(const ReactantSet::pairT&))
 {
-	std::erase_if(content, predicate);
+	std::erase_if(reactants, predicate);
 }
 
-std::unordered_set<Reactant>::const_iterator ReactantSet::begin() const
+ReactantSet::const_iterator ReactantSet::begin() const
 {
-	return content.begin();
+	return reactants.begin();
 }
 
-std::unordered_set<Reactant>::const_iterator ReactantSet::end() const
+ReactantSet::iterator ReactantSet::begin()
 {
-	return content.end();
+	return reactants.begin();
+}
+
+ReactantSet::const_iterator ReactantSet::end() const
+{
+	return reactants.end();
+}
+
+ReactantSet::iterator ReactantSet::end()
+{
+	return reactants.end();
 }
 
 bool ReactantSet::equals(const ReactantSet& other, const Amount<>::StorageType epsilon) const
 {
-	for (const auto& r : content)
+	for (const auto& [_, r] : reactants)
 		if (r.amount.equals(other.getAmountOf(r), epsilon) == false)
 			return false;
 	return true;
@@ -102,7 +111,7 @@ bool ReactantSet::equals(const ReactantSet& other, const Amount<>::StorageType e
 
 bool ReactantSet::operator==(const ReactantSet& other) const
 {
-	for (const auto& r : content)
+	for (const auto& [_, r] : reactants)
 		if (r.amount != other.getAmountOf(r))
 			return false;
 	return true;
@@ -110,7 +119,7 @@ bool ReactantSet::operator==(const ReactantSet& other) const
 
 bool ReactantSet::operator!=(const ReactantSet& other) const
 {
-	for (const auto& r : content)
+	for (const auto& [_, r] : reactants)
 		if (r.amount != other.getAmountOf(r))
 			return true;
 	return false;

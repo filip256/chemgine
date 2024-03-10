@@ -6,7 +6,7 @@ Layer::Layer(
     const Ref<Mixture> container,
     const LayerType layerType,
     const Amount<Unit::CELSIUS> temperature
-) noexcept:
+) noexcept :
     container(container),
     layerType(layerType),
 	temperature(temperature)
@@ -33,7 +33,7 @@ Layer::Layer(
 void Layer::findNewLowNucleator()
 {
     lowNucleator.unset();
-    for (const auto& r : container->content)
+    for (const auto& [_, r] : container->content)
         if (r.layer == layerType && r.amount >= Constants::MOLAR_EXISTANCE_THRESHOLD)
             lowNucleator.setIfLower(r);
 }
@@ -41,7 +41,7 @@ void Layer::findNewLowNucleator()
 void Layer::findNewHighNucleator()
 {
     highNucleator.unset();
-    for (const auto& r : container->content)
+    for (const auto& [_, r] : container->content)
         if (r.layer == layerType && r.amount >= Constants::MOLAR_EXISTANCE_THRESHOLD)
             highNucleator.setIfLower(r);
 }
@@ -191,7 +191,7 @@ void Layer::convertTemporaryStateReactants()
     //        - each contributes proportionally to its diff * mass
     if (isLiquidLayer(layerType))
     {
-        for (const auto& r : container->content)
+        for (const auto& [_, r] : container->content)
         {
             if (r.layer != layerType)
                 continue;
@@ -222,7 +222,7 @@ void Layer::convertTemporaryStateReactants()
     }
     else if (isGasLayer(layerType))
     {
-        for (const auto& r : container->content)
+        for (const auto& [_, r] : container->content)
         {
             if (r.layer != layerType)
                 continue;
@@ -241,7 +241,7 @@ void Layer::convertTemporaryStateReactants()
     }
     else if (isSolidLayer(layerType))
     {
-        for (const auto& r : container->content)
+        for (const auto& [_, r] : container->content)
         {
             if (r.layer != layerType)
                 continue;
@@ -318,7 +318,7 @@ Amount<Unit::JOULE_PER_MOLE_CELSIUS> Layer::getHeatCapacity() const
 {
     Amount<Unit::JOULE_PER_MOLE_CELSIUS> hC = 0.0;
     Amount<Unit::GRAM> ms = 0.0;
-    for (const auto& r : container->content)
+    for (const auto& [_, r] : container->content)
     {
         if (r.layer == layerType && hasTemporaryState(r) == false)
         {
@@ -335,7 +335,7 @@ Amount<Unit::JOULE_PER_CELSIUS> Layer::getTotalHeatCapacity() const
     Amount<Unit::JOULE_PER_MOLE_CELSIUS> hC = 0.0;
     Amount<Unit::GRAM> ms = 0.0;
     Amount<Unit::MOLE> mo = 0.0;
-    for (const auto& r : container->content)
+    for (const auto& [_, r] : container->content)
     {
         if (r.layer == layerType && hasTemporaryState(r) == false)
         {
@@ -371,9 +371,9 @@ void Layer::setIfNucleator(const Reactant& reactant)
 
 void Layer::unsetIfNucleator(const Reactant& reactant)
 {
-    if (lowNucleator.isSet() && lowNucleator.getReactant() == reactant)
+    if (lowNucleator.isSet() && lowNucleator.getReactant().molecule == reactant.molecule)
         lowNucleator.unset();
-    if (highNucleator.isSet() && highNucleator.getReactant() == reactant)
+    if (highNucleator.isSet() && highNucleator.getReactant().molecule == reactant.molecule)
         highNucleator.unset();
 }
 

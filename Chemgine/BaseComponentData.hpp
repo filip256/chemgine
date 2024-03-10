@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-typedef uint16_t ComponentIdType;
+typedef uint16_t ComponentId;
 
 class BaseComponentData
 {
@@ -14,13 +14,13 @@ private:
 	uint8_t rarity = 255;
 
 public:
-	const ComponentIdType id = 0;
+	const ComponentId id = 0;
 	const Amount<Unit::GRAM> weight = 0.0;
 
 	BaseComponentData();
 
 	BaseComponentData(
-		const ComponentIdType id,
+		const ComponentId id,
 		const Amount<Unit::GRAM> weight,
 		const uint8_t rarity = 255);
 

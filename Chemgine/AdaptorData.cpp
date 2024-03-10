@@ -1,7 +1,7 @@
 #include "AdaptorData.hpp"
 
 AdaptorData::AdaptorData(
-	const LabwareIdType id,
+	const LabwareId id,
 	const std::string& name,
 	std::vector<LabwarePort>&& ports,
 	const Amount<Unit::LITER> volume,

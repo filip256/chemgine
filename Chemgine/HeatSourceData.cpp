@@ -1,7 +1,7 @@
 #include "HeatSourceData.hpp"
 
 //HeatSourceData::HeatSourceData(
-//	const LabwareIdType id,
+//	const LabwareId id,
 //	const std::string& name,
 //	const Amount<Unit::WATT> realEnergy,
 //	const LabwareType type

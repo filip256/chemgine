@@ -1,7 +1,7 @@
 #include "OffsetEstimator.hpp"
 
 OffsetEstimator::OffsetEstimator(
-	const EstimatorIdType id,
+	const EstimatorId id,
 	const BaseEstimator& base,
 	const double offset
 ) noexcept :

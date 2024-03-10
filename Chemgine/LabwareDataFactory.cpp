@@ -1,7 +1,7 @@
 #include "LabwareDataFactory.hpp"
 #include "DataHelpers.hpp"
 
-BaseLabwareData* LabwareDataFactory::get(const LabwareIdType id, const LabwareType type, const std::vector<std::string>& dataLine)
+BaseLabwareData* LabwareDataFactory::get(const LabwareId id, const LabwareType type, const std::vector<std::string>& dataLine)
 {
 	switch (type)
 	{
@@ -15,7 +15,7 @@ BaseLabwareData* LabwareDataFactory::get(const LabwareIdType id, const LabwareTy
 }
 
 
-FlaskData* LabwareDataFactory::getFlask(const LabwareIdType id,  const std::vector<std::string>& dataLine)
+FlaskData* LabwareDataFactory::getFlask(const LabwareId id,  const std::vector<std::string>& dataLine)
 {
 	const auto volume = DataHelpers::parseUnsigned<double>(dataLine[3]);
 	if (volume.has_value() == false)
@@ -46,7 +46,7 @@ FlaskData* LabwareDataFactory::getFlask(const LabwareIdType id,  const std::vect
 	return new FlaskData(id, dataLine[2], std::move(ports), *volume, dataLine[5]);
 }
 
-AdaptorData* LabwareDataFactory::getAdaptor(const LabwareIdType id, const std::vector<std::string>& dataLine)
+AdaptorData* LabwareDataFactory::getAdaptor(const LabwareId id, const std::vector<std::string>& dataLine)
 {
 	const auto volume = DataHelpers::parseUnsigned<double>(dataLine[3]);
 	if (volume.has_value() == false)

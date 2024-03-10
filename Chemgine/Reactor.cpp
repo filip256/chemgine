@@ -34,7 +34,7 @@ Reactor::Reactor(
 Reactor::Reactor(
 	const Ref<Atmosphere> atmosphere,
 	const Amount<Unit::LITER> maxVolume
-) noexcept:
+) noexcept :
 	Reactor(atmosphere, maxVolume, atmosphere)
 {}
 
@@ -79,8 +79,8 @@ double Reactor::getInterLayerReactivityCoefficient(const Reactant& r1, const Rea
 double Reactor::getInterLayerReactivityCoefficient(const ReactantSet& reactants) const
 {
 	double result = 1.0;
-	for (const auto& r1 : reactants)
-		for (const auto& r2 : reactants)
+	for (const auto& [_, r1] : reactants)
+		for (const auto& [_, r2] : reactants)
 		{
 			result = std::min(getInterLayerReactivityCoefficient(r1, r2), result);
 			if (result == 0.0) // early return, coef is always positive
@@ -91,7 +91,7 @@ double Reactor::getInterLayerReactivityCoefficient(const ReactantSet& reactants)
 
 void Reactor::findNewReactions()
 {
-	for (const auto& r1 : content)
+	for (const auto& [_, r1] : content)
 		if (r1.isNew)
 		{
 			cachedReactions.merge(std::move(
@@ -99,8 +99,8 @@ void Reactor::findNewReactions()
 			));
 		}
 
-	for (const auto& r1 : content)
-		for (const auto& r2 : content)
+	for (const auto& [_, r1] : content)
+		for (const auto& [_, r2] : content)
 		{
 			if (r1.isNew || r2.isNew)
 				cachedReactions.merge(std::move(
@@ -108,7 +108,7 @@ void Reactor::findNewReactions()
 				));
 		}
 
-	for (const auto& r : content)
+	for (auto& [_, r] : content)
 		r.isNew = false;
 }
 
@@ -127,7 +127,7 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 			continue;
 
 		// if there isn't enough of a reactant, adjust the speed coefficient
-		for (const auto& i : r.getReactants())
+		for (const auto& [_, i] : r.getReactants())
 		{
 			const auto a = getAmountOf(i);
 			if (a < i.amount * speedCoef)
@@ -137,9 +137,9 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 		if (speedCoef == 0)
 			continue;
 
-		for (const auto& i : r.getReactants())
+		for (const auto& [_, i] : r.getReactants())
 			MultiLayerMixture::add(i.mutate(-i.amount * speedCoef, *this));
-		for (const auto& i : r.getProducts())
+		for (const auto& [_, i] : r.getProducts())
 		{
 			const auto p = i.mutate(i.amount * speedCoef, *this);
 			MultiLayerMixture::add(p.mutate(findLayerFor(p)));

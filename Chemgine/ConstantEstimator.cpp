@@ -1,7 +1,7 @@
 #include "ConstantEstimator.hpp"
 
 ConstantEstimator::ConstantEstimator(
-	const EstimatorIdType id,
+	const EstimatorId id,
 	const double constant
 ) noexcept :
 	BaseEstimator(id),

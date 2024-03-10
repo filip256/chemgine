@@ -3,7 +3,7 @@
 #include "Logger.hpp"
 
 
-Atom::Atom(const ComponentIdType id) :
+Atom::Atom(const ComponentId id) :
     BaseComponent(id, ComponentType::ATOMIC)
 {
     if (dataStore().atoms.contains(id) == false)
@@ -38,7 +38,7 @@ bool Atom::isRadicalType() const
     return dataStore().atoms.at(id).weight == 0;
 }
 
-bool Atom::isDefined(const ComponentIdType id)
+bool Atom::isDefined(const ComponentId id)
 {
     return getDataStore().atoms.contains(id);
 }
@@ -61,9 +61,9 @@ uint8_t Atom::getPrecedence() const
     return data().getRarity();
 }
 
-std::unordered_map<ComponentIdType, c_size> Atom::getComponentCountMap() const
+std::unordered_map<ComponentId, c_size> Atom::getComponentCountMap() const
 {
-    return std::unordered_map<ComponentIdType, c_size> {std::make_pair(id, 1)};
+    return std::unordered_map<ComponentId, c_size> {std::make_pair(id, 1)};
 }
 
 Atom* Atom::clone() const

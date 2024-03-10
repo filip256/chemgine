@@ -2,4 +2,4 @@
 
 #include <cstdint>
 
-typedef uint32_t MoleculeIdType;
+typedef uint32_t MoleculeId;

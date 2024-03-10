@@ -3,7 +3,7 @@
 
 DataStoreAccessor Reactable::dataAccessor = DataStoreAccessor();
 
-Reactable::Reactable(const MoleculeIdType id, const bool isGeneric) noexcept:
+Reactable::Reactable(const MoleculeId id, const bool isGeneric) noexcept :
 	id(id),
 	isGeneric(isGeneric)
 {
@@ -20,7 +20,7 @@ const DataStore& Reactable::dataStore() const
 	return dataAccessor.get();
 }
 
-const MoleculeIdType Reactable::getId() const
+const MoleculeId Reactable::getId() const
 {
 	return id;
 }

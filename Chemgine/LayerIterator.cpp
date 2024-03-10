@@ -2,8 +2,8 @@
 
 LayerIterator::LayerIterator(
 	const LayerType layer,
-	const std::unordered_set<Reactant>::const_iterator it,
-    const std::unordered_set<Reactant>::const_iterator end
+	const ReactantSet::const_iterator it,
+    const ReactantSet::const_iterator end
 ) noexcept :
 	layer(layer),
 	it(it),
@@ -12,17 +12,17 @@ LayerIterator::LayerIterator(
 
 const Reactant& LayerIterator::operator*() const 
 {
-    return *it;
+    return it->second;
 }
 
 const Reactant* LayerIterator::operator->() const 
 {
-    return &(*it);
+    return &(it->second);
 }
 
 LayerIterator& LayerIterator::operator++()
 {
-    while(it != end && it->layer != layer)
+    while(it != end && it->first.layer != layer)
         ++it;
     return *this;
 }

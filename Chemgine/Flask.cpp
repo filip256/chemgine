@@ -1,7 +1,7 @@
 #include "Flask.hpp"
 #include "DataStore.hpp"
 
-Flask::Flask(const LabwareIdType id) noexcept :
+Flask::Flask(const LabwareId id) noexcept :
 	DrawableComponent(id)
 {}
 

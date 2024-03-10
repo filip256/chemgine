@@ -258,6 +258,8 @@ Tasks:
   DONE. Better way to mark predefined estimator ids
   16. Make reaction tree methods iterative
   17. Consider avoiding reparsing reactions in the tree (in case of cycles)
+  DONE. Rename IdType to just Id
+  18. Create a class for initContent, perhaps MoleculeSet
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules
@@ -307,9 +309,8 @@ Tasks:
   DONE. Add logic for finding concrete reactions
   4. Add logic for reaction property inheritance
 ---
-  1. Split reactants into Id <Molecule + Layer> and properties
-  2. Make reactant set acctually use a map Id -> properties
-  3. Find a way to reference a reactant directly
+  DONE. Split reactants into Id <Molecule + Layer> and properties
+  DONE. Make reactant set acctually use a map Id -> properties
 ---
   1. Add xml parser
 ---

@@ -1,7 +1,7 @@
 #include "SplitEstimator.hpp"
 
 SplitEstimator::SplitEstimator(
-	const EstimatorIdType id,
+	const EstimatorId id,
 	const BaseEstimator& lower,
 	const BaseEstimator& higher,
 	const double threshold

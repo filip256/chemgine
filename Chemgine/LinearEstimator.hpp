@@ -10,7 +10,7 @@ private:
 public:
 	LinearEstimator(
 		const 
-		EstimatorIdType id,
+		EstimatorId id,
 		const double scale,
 		const double offset
 	) noexcept;

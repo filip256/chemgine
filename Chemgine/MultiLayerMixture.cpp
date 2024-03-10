@@ -54,7 +54,6 @@ void MultiLayerMixture::addToLayer(const Reactant& reactant)
 		layer.setIfNucleator(reactant);
 	else if (content.contains(reactant) == false)
 		layer.unsetIfNucleator(reactant);
-
 }
 
 void MultiLayerMixture::add(const Amount<Unit::JOULE> heat, const LayerType layer)
@@ -67,9 +66,9 @@ void MultiLayerMixture::removeNegligibles()
 	bool removedAny = false;
 	for (auto r = content.begin(); r != content.end();)
 	{
-		if (r->amount < Constants::MOLAR_EXISTANCE_THRESHOLD)
+		if (r->second.amount < Constants::MOLAR_EXISTANCE_THRESHOLD)
 		{
-			const auto temp = r->mutate(-r->amount);
+			const auto temp = r->second.mutate(-r->second.amount);
 			r = content.erase(r);
 			addToLayer(temp);
 			removedAny = true;
@@ -82,7 +81,7 @@ void MultiLayerMixture::removeNegligibles()
 	if (removedAny == false)
 		return;
 
-	for (const auto& r : content)
+	for (const auto& [_, r] : content)
 	{
 		layers.at(r.layer).setIfNucleator(r);
 	}
@@ -224,7 +223,7 @@ LayerType MultiLayerMixture::findLayerFor(const Reactant& reactant) const
 {
 	for (const auto& l : layers)
 	{
-		const auto rAggr = reactant.getAggregation(l.second.temperature);
+		const auto rAggr = reactant.getAggregationAt(l.second.temperature);
 		const auto lAggr = getAggregationType(l.first);
 
 		if (rAggr != lAggr)
@@ -239,7 +238,7 @@ LayerType MultiLayerMixture::findLayerFor(const Reactant& reactant) const
 	}
 
 	const auto defaultT = layers.at(LayerType::GASEOUS).temperature;
-	const auto newAgg = reactant.getAggregation(defaultT);
+	const auto newAgg = reactant.getAggregationAt(defaultT);
 	const auto polarity = reactant.molecule.getPolarity();
 	const auto density = reactant.molecule.getDensityAt(defaultT, pressure);
 	return getLayerType(newAgg, polarity.getPartitionCoefficient() > 1.0, density > 1.0);
@@ -303,7 +302,7 @@ void MultiLayerMixture::copyContentTo(Ref<BaseContainer> destination, const Amou
 	// save and use initial volume
 	const auto sourceVolume = layers.at(sourceLayer).volume.asStd();
 
-	for (const auto& r : content)
+	for (const auto& [_, r] : content)
 	{
 		if (r.layer != sourceLayer)
 			continue;
@@ -324,7 +323,7 @@ void MultiLayerMixture::moveContentTo(Ref<BaseContainer> destination, Amount<Uni
 	if (volume > sourceVolume)
 		volume = sourceVolume;
 
-	for (auto& r : content)
+	for (auto& [_, r] : content)
 	{
 		if (r.layer != sourceLayer)
 			continue;

@@ -9,7 +9,7 @@ private:
     Atom(const Atom&) = default;
 
 public:
-    Atom(const ComponentIdType id);
+    Atom(const ComponentId id);
     Atom(const std::string& symbol);
     Atom(const char symbol);
     Atom(Atom&& atom) noexcept = default;
@@ -19,13 +19,13 @@ public:
 
     bool isRadicalType() const override final;
 
-    static bool isDefined(const ComponentIdType id);
+    static bool isDefined(const ComponentId id);
     static bool isDefined(const std::string& symbol);
     static bool isDefined(const char symbol);
 
     uint8_t getPrecedence() const override final;
 
-    std::unordered_map<ComponentIdType, c_size> getComponentCountMap() const override final;
+    std::unordered_map<ComponentId, c_size> getComponentCountMap() const override final;
 
     Atom* clone() const override final;
 };

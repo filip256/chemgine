@@ -3,7 +3,7 @@
 size_t BaseLabwareData::instanceCount = 0;
 
 BaseLabwareData::BaseLabwareData(
-	const LabwareIdType id,
+	const LabwareId id,
 	const std::string& name,
 	std::vector<LabwarePort>&& ports,
 	const LabwareType type

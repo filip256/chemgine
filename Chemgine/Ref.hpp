@@ -46,13 +46,13 @@ template<typename T>
 const Ref<T> Ref<T>::nullRef = Ref<T>();
 
 template<typename T>
-Ref<T>::Ref(T& object) noexcept:
+Ref<T>::Ref(T& object) noexcept :
 	object(&object)
 {}
 
 template<typename T>
 template<typename D, typename>
-Ref<T>::Ref(const Ref<D>& other) noexcept:
+Ref<T>::Ref(const Ref<D>& other) noexcept :
 	Ref<T>(static_cast<T&>(*other.object))
 {}
 

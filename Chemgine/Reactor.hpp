@@ -81,6 +81,4 @@ public:
 	Reactor makeCopy() const;
 
 	static void setDataStore(const DataStore& dataStore);
-
-	friend class Reactant;
 };

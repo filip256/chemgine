@@ -1,6 +1,6 @@
 #include "Adaptor.hpp"
 
-Adaptor::Adaptor(const LabwareIdType id) noexcept :
+Adaptor::Adaptor(const LabwareId id) noexcept :
 	DrawableComponent(id)
 {}
 

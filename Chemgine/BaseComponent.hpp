@@ -13,10 +13,10 @@ private:
 	static DataStoreAccessor dataAccessor;
 
 protected:
-	mutable ComponentIdType id;
+	mutable ComponentId id;
 	const ComponentType type;
 
-	BaseComponent(const ComponentIdType id, const ComponentType type) noexcept;
+	BaseComponent(const ComponentId id, const ComponentType type) noexcept;
 
 	/// <summary>
 	/// Similar to the static getDataStore but assumes that the null check has been done by the constructor
@@ -29,7 +29,7 @@ public:
 
 	virtual const BaseComponentData& data() const = 0;
 
-	ComponentIdType getId() const;
+	ComponentId getId() const;
 
 	bool isAtomicType() const;
 	bool isCompositeType() const;
@@ -56,7 +56,7 @@ public:
 
 	virtual uint8_t getPrecedence() const = 0;
 
-	virtual std::unordered_map<ComponentIdType, c_size> getComponentCountMap() const = 0;
+	virtual std::unordered_map<ComponentId, c_size> getComponentCountMap() const = 0;
 
 	virtual BaseComponent* clone() const = 0;
 

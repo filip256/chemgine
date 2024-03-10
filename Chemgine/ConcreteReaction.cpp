@@ -18,12 +18,12 @@ ConcreteReaction::ConcreteReaction(
 
 bool ConcreteReaction::isEquivalent(const ConcreteReaction& other) const
 {
-	for (const auto& r : this->reactants)
+	for (const auto& [_, r] : this->reactants)
 		if (other.reactants.contains(r) == false)
 			return false;
 
-	for (const auto& r : this->products)
-		if (other.products.contains(r) == false)
+	for (const auto& [_, p] : this->products)
+		if (other.products.contains(p) == false)
 			return false;
 
 	return true;

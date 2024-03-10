@@ -7,6 +7,36 @@
 #include "Ref.hpp"
 #include "AggregationType.hpp"
 
+class Reactant;
+
+class ReactantId
+{
+public:
+	const LayerType layer;
+	const MoleculeId moleculeId;
+
+	ReactantId(
+		const MoleculeId moleculeId,
+		const LayerType layer
+	) noexcept;
+	ReactantId(const Reactant&) noexcept;
+	ReactantId(const ReactantId& reactant) = default;
+
+	bool operator==(const ReactantId& other) const;
+	bool operator!=(const ReactantId& other) const;
+};
+
+template<>
+struct std::hash<ReactantId>
+{
+	size_t operator() (const ReactantId& id) const
+	{
+		return hashCombine(id.moleculeId, toIndex(id.layer));
+	}
+};
+
+
+
 class Mixture;
 class Layer;
 
@@ -16,10 +46,10 @@ private:
 	Ref<Mixture> container;
 
 public:
-	mutable bool isNew = true;
-	mutable LayerType layer;
+	bool isNew = true;
+	const LayerType layer;
 	const Molecule molecule;
-	mutable Amount<Unit::MOLE> amount;
+	Amount<Unit::MOLE> amount;
 
 	Reactant(
 		const Molecule& molecule,
@@ -30,6 +60,8 @@ public:
 
 	Reactant(const Reactant&) = default;
 	Reactant(Reactant&&) = default;
+
+	ReactantId getId() const;
 
 	Amount<Unit::GRAM> getMass() const;
 	Amount<Unit::LITER> getVolume() const;
@@ -52,7 +84,7 @@ public:
 	Amount<Unit::CELSIUS> getLayerTemperature() const;
 
 	AggregationType getAggregation() const;
-	AggregationType getAggregation(const Amount<Unit::CELSIUS> temperature) const;
+	AggregationType getAggregationAt(const Amount<Unit::CELSIUS> temperature) const;
 
 	Reactant mutate(const Amount<Unit::MOLE> newAmount) const;
 	Reactant mutate(const Ref<Mixture> newContainer) const;
@@ -60,17 +92,4 @@ public:
 	Reactant mutate(const Amount<Unit::MOLE> newAmount, const Ref<Mixture> newContainer) const;
 	Reactant mutate(const Amount<Unit::MOLE> newAmount, const LayerType newLayer) const;
 	Reactant mutate(const Amount<Unit::MOLE> newAmount, const Ref<Mixture> newContainer, const LayerType newLayer) const;
-
-	bool operator==(const Reactant& other) const;
-	bool operator!=(const Reactant& other) const;
-};
-
-
-template<>
-struct std::hash<Reactant>
-{
-	size_t operator() (const Reactant& reactant) const
-	{
-		return hashCombine(reactant.molecule.getId(), toIndex(reactant.layer));
-	}
 };

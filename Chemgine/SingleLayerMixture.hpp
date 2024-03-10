@@ -119,7 +119,7 @@ void SingleLayerMixture<L>::add(const Amount<Unit::JOULE> heat, const LayerType 
 template<LayerType L>
 LayerType SingleLayerMixture<L>::findLayerFor(const Reactant& reactant) const
 {
-	const auto newAgg = reactant.getAggregation(layer.temperature);
+	const auto newAgg = reactant.getAggregationAt(layer.temperature);
 	const auto polarity = reactant.molecule.getPolarity();
 	const auto density = reactant.molecule.getDensityAt(layer.temperature, pressure);
 	return getLayerType(newAgg, polarity.getPartitionCoefficient() > 1.0, density > 1.0);
@@ -131,9 +131,9 @@ void SingleLayerMixture<L>::removeNegligibles()
 	bool removedAny = false;
 	for (auto r = content.begin(); r != content.end();)
 	{
-		if (r->amount < Constants::MOLAR_EXISTANCE_THRESHOLD)
+		if (r->second.amount < Constants::MOLAR_EXISTANCE_THRESHOLD)
 		{
-			const auto temp = r->mutate(-r->amount);
+			const auto temp = r->second.mutate(-r->second.amount);
 			r = content.erase(r);
 			addToLayer(temp);
 			removedAny = true;
@@ -327,7 +327,7 @@ void SingleLayerMixture<L>::copyContentTo(Ref<BaseContainer> destination, const 
 	// save and use initial volume
 	const auto sourceVolume = layer.volume.asStd();
 
-	for (const auto& r : content)
+	for (const auto& [_, r] : content)
 	{
 		const auto molesToAdd = (r.amount / sourceVolume) * volume.asStd();
 		destination->add(r.mutate(molesToAdd));
@@ -343,7 +343,7 @@ void SingleLayerMixture<L>::moveContentTo(Ref<BaseContainer> destination, Amount
 	if (volume > sourceVolume)
 		volume = sourceVolume;
 
-	for (const auto& r : content)
+	for (const auto& [_, r] : content)
 	{
 		const auto molesToAdd = (r.amount / sourceVolume) * volume.asStd();
 		destination->add(r.mutate(molesToAdd));

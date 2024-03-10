@@ -2,7 +2,7 @@
 #include "Logger.hpp"
 
 GenericMoleculeData::GenericMoleculeData(
-	const MoleculeIdType id,
+	const MoleculeId id,
 	const std::string& smiles
 ) noexcept :
 	id(id),
@@ -15,9 +15,9 @@ GenericMoleculeData::GenericMoleculeData(
 }
 
 GenericMoleculeData::GenericMoleculeData(
-	const MoleculeIdType id,
+	const MoleculeId id,
 	MolecularStructure&& structure
-) noexcept:
+) noexcept :
 	id(id),
 	structure(std::move(structure))
 {

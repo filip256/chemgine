@@ -6,7 +6,7 @@
 #include "Utils.hpp"
 
 ReactionData::ReactionData(
-	const ReactionIdType id,
+	const ReactionId id,
 	const std::string& name,
 	const std::vector<std::pair<Reactable, uint8_t>>& reactants,
 	const std::vector<std::pair<Reactable, uint8_t>>& products,
@@ -36,7 +36,7 @@ bool ReactionData::balance(
 
 	SystemMatrix<float> system;
 	const size_t syslen = reactants.size() + products.size() - 1;
-	std::unordered_map<ComponentIdType, size_t> sysmap;
+	std::unordered_map<ComponentId, size_t> sysmap;
 
 	for (size_t i = 0; i < reactants.size(); ++i)
 	{

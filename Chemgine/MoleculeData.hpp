@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MoleculeIdType.hpp"
+#include "MoleculeId.hpp"
 #include "MolecularStructure.hpp"
 #include "BaseEstimator.hpp"
 #include "Amount.hpp"
@@ -15,7 +15,7 @@ private:
 	MolecularStructure structure;
 
 public:
-	const MoleculeIdType id;
+	const MoleculeId id;
 	const MoleculeType type;
 	const std::string name;
 
@@ -39,7 +39,7 @@ public:
 
 
 	MoleculeData(
-		const MoleculeIdType id,
+		const MoleculeId id,
 		const std::string& name,
 		const std::string& smiles,
 		const Amount<Unit::MOLE_RATIO> hydrophilicity,
@@ -58,7 +58,7 @@ public:
 	) noexcept;
 
 	MoleculeData(
-		const MoleculeIdType id,
+		const MoleculeId id,
 		MolecularStructure&& structure,
 		const Amount<Unit::MOLE_RATIO> hydrophilicity,
 		const Amount<Unit::MOLE_RATIO> lipophilicity,

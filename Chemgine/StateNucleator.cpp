@@ -4,7 +4,7 @@
 StateNucleator::StateNucleator(
 	Amount<Unit::CELSIUS>(Reactant::* getTransitionPointCB)() const,
 	Amount<Unit::JOULE_PER_MOLE>(Reactant::* getTransitionHeatCB)() const
-) noexcept:
+) noexcept :
 	getTransitionPointCB(getTransitionPointCB),
 	getTransitionHeatCB(getTransitionHeatCB)
 {}
