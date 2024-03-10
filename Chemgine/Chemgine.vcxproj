@@ -191,6 +191,7 @@
     <ClCompile Include="AggregationType.cpp" />
     <ClCompile Include="Atmosphere.cpp" />
     <ClCompile Include="BaseContainer.cpp" />
+    <ClCompile Include="ContentInitializer.cpp" />
     <ClCompile Include="Context.cpp" />
     <ClCompile Include="EstimatorDataTable.cpp" />
     <ClCompile Include="Atom.cpp" />
@@ -312,6 +313,7 @@
     <ClInclude Include="LayerIterator.hpp" />
     <ClInclude Include="Linguistics.hpp" />
     <ClInclude Include="MoleculeId.hpp" />
+    <ClInclude Include="ContentInitializer.hpp" />
     <ClInclude Include="MoleculeType.hpp" />
     <ClInclude Include="MultiLayerMixture.hpp" />
     <ClInclude Include="Layer.hpp" />

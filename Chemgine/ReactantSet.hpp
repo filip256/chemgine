@@ -19,9 +19,9 @@ private:
 
 public:
 	ReactantSet(const Ref<Mixture> container) noexcept;
-	ReactantSet(ReactantSet&&) = default;
 	ReactantSet(const std::vector<Molecule>& reactants) noexcept;
 	ReactantSet(const std::vector<Reactant>& reactants) noexcept;
+	ReactantSet(ReactantSet&&) = default;
 
 	using pairT = std::pair<ReactantId, Reactant>;
 	using const_iterator = std::unordered_map<ReactantId, Reactant>::const_iterator;
@@ -33,6 +33,7 @@ public:
 	bool contains(const ReactantId& reactantId) const;
 
 	void add(const Reactant& reactant);
+	void add(const ReactantSet& other);
 
 	/// <summary>
 	/// Returns o reactant from the set.

@@ -248,8 +248,8 @@ Tasks:
   10. Use layer as aggregation, rather than checking each time (volume cacheing bugs arrise)
   11. Add combined tests
   DONE. Differentiate between true aggregation and layer aggregation
-  13. Find the cause of the slight determinism losses when running energy
-  !. Refactor reactants and reactant set, to use some identifiers
+  DONE. Fix the slight determinism losses when running energy
+  DONE. Refactor reactants and reactant set, to use some identifiers
   DONE. Make undefinded targets equal to global dump and remove null target checks
   ?. Treat layers and container refs equally.
   DONE. Add get LayerType and AggregationType name strings
@@ -259,7 +259,8 @@ Tasks:
   16. Make reaction tree methods iterative
   17. Consider avoiding reparsing reactions in the tree (in case of cycles)
   DONE. Rename IdType to just Id
-  18. Create a class for initContent, perhaps MoleculeSet
+  DONE. Create a class for initContent
+  18. Rename DataTable to Repository
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules
@@ -312,7 +313,9 @@ Tasks:
   DONE. Split reactants into Id <Molecule + Layer> and properties
   DONE. Make reactant set acctually use a map Id -> properties
 ---
-  1. Add xml parser
+  1. Build and link boost
+  1. Add bin parser/printer
+  ?. Add xml parser/printer
 ---
   1. Add reactors to labware components
 ---
@@ -330,7 +333,7 @@ KNOWN BUGS:
 Possible optimizations:
  - keep symbols as char* to avoid uneccessary constructor for 'C'
  - avoid contains-then-access for maps
- - const fields in data objects need to be copied (not moved) on reallocation because of const
+ - const fields in data objects need to be copied (git stt moved) on reallocation because of const
 
 Categorizations:
  - When a categorization is done with a backbone or f. group, it is applied globally to all other

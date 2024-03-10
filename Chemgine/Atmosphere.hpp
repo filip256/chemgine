@@ -10,7 +10,7 @@ public:
 	Atmosphere(
 		const Amount<Unit::CELSIUS> temperature,
 		const Amount<Unit::TORR> pressure,
-		const std::vector<std::pair<Molecule, Amount<Unit::MOLE>>>& initContent,
+		const ContentInitializer& contentInitializer,
 		const Amount<Unit::LITER> maxVolume,
 		const Ref<BaseContainer> overflowTarget
 	) noexcept;

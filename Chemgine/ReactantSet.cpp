@@ -4,9 +4,11 @@ ReactantSet::ReactantSet(
 	const ReactantSet& other,
 	const Ref<Mixture> newContainer
 ) noexcept :
-	container(newContainer),
-	reactants(other.reactants)
-{}
+	container(newContainer)
+{
+	reactants.reserve(other.reactants.size());
+	add(other);
+}
 
 ReactantSet::ReactantSet(const Ref<Mixture> container) noexcept :
 	container(container)
@@ -50,6 +52,12 @@ void ReactantSet::add(const Reactant& reactant)
 	}
 
 	reactants.emplace(std::make_pair(reactant.getId(), reactant.mutate(container)));
+}
+
+void ReactantSet::add(const ReactantSet& other)
+{
+	for (const auto& [_, r] : other.reactants)
+		add(r);
 }
 
 const Reactant& ReactantSet::any() const

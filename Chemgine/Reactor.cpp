@@ -116,6 +116,8 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 {
 	for (const auto& r : cachedReactions)
 	{
+		const auto x = r.getReactantTemperature();
+
 		auto speedCoef =
 			r.getData().baseSpeed.to<Unit::MOLE>(timespan) *
 			totalVolume.asStd() *
@@ -175,7 +177,7 @@ void Reactor::runLayerEnergyConduction(const Amount<Unit::SECOND> timespan)
 			MultiLayerMixture::add(-diffE, l.first);
 		}
 
-		if (const auto below = getLayerAbove(l.first); below != LayerType::NONE)
+		if (const auto below = getLayerBelow(l.first); below != LayerType::NONE)
 		{
 			const auto belowLayer = layers.at(below);
 			const auto diff = (l.second.temperature - belowLayer.temperature);

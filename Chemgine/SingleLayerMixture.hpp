@@ -6,6 +6,7 @@
 #include "Ref.hpp"
 #include "Logger.hpp"
 #include "DumpContainer.hpp"
+#include "ContentInitializer.hpp"
 
 #include <unordered_map>
 
@@ -34,7 +35,7 @@ public:
 	SingleLayerMixture(
 		const Amount<Unit::CELSIUS> temperature,
 		const Amount<Unit::TORR> pressure,
-		const std::vector<std::pair<Molecule, Amount<Unit::MOLE>>>& initContent,
+		const ContentInitializer& contentInitializer,
 		const Amount<Unit::LITER> maxVolume,
 		const Ref<BaseContainer> overflowTarget
 	) noexcept;
@@ -75,7 +76,7 @@ template<LayerType L>
 SingleLayerMixture<L>::SingleLayerMixture(
 	const Amount<Unit::CELSIUS> temperature,
 	const Amount<Unit::TORR> pressure,
-	const std::vector<std::pair<Molecule, Amount<Unit::MOLE>>>& initContent,
+	const ContentInitializer& contentInitializer,
 	const Amount<Unit::LITER> maxVolume,
 	const Ref<BaseContainer> overflowTarget
 ) noexcept :
@@ -89,8 +90,8 @@ SingleLayerMixture<L>::SingleLayerMixture(
 		if (i != L)
 			incompatibilityTargets.emplace(std::make_pair(i, Ref(DumpContainer::globalDumpContainer)));
 
-	for (size_t i = 0; i < initContent.size(); ++i)
-		add(Reactant(initContent[i].first, L, initContent[i].second, *this));
+	for (const auto [m, a] : contentInitializer)
+		add(Reactant(m, L, a, *this));
 	scaleToVolume(maxVolume);
 }
 

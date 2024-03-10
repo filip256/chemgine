@@ -336,7 +336,7 @@ private:
 
 	const double waterTemperatureThreshold = 0.1;
 	const double overflowLossThreshold = 0.0000001;
-	const double determinismEqualityThreshold = 0.000001;
+	const double determinismEqualityThreshold = std::numeric_limits<double>::epsilon();
 
 	void runConservationOfMassTest()
 	{
@@ -698,7 +698,7 @@ public:
 		reactorC = new Reactor(*atmosphere, 20.0_L);
 
 		reactorD = new Reactor(*atmosphere, 5.0_L);
-		reactorD->setTickMode(reactorD->getTickMode() - TickMode::ENABLE_ENERGY);
+		reactorD->setTickMode(reactorD->getTickMode());
 		reactorD->add(Molecule("CC(=O)O"), 2.0_mol);
 		reactorD->add(Molecule("OCC"), 3.0_mol);
 
