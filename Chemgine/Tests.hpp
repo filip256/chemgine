@@ -789,6 +789,8 @@ public:
 			.loadReactionsData("Data/ReactionData.csv")
 			.loadLabwareData("Data/LabwareData.csv");
 
+		std::cout << '\n' << store.reactions.getNetwork().print() << '\n';
+
 		molecularStructureTest.initialize();
 		reactorTest.initialize();
 		const auto end = std::chrono::steady_clock::now();

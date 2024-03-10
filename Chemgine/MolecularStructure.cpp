@@ -770,10 +770,10 @@ bool MolecularStructure::checkConnectivity(
 
 std::unordered_map<c_size, c_size> MolecularStructure::mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const
 {
-    if (pattern.componentCount() == 0 || this->componentCount() == 0)
+    if (pattern.componentCount() == 0 || this->componentCount() == 0)    // TODO: could a molecule match a patter larger than itself?
         return std::unordered_map<c_size, c_size>();
 
-    // should start with a non radical type
+    // should start with a non radical type     TODO: remove, normalization is done anyway
     c_size pStart = 0;
     while (pStart < pattern.componentCount() && pattern.components[pStart]->isRadicalType())
         ++pStart;

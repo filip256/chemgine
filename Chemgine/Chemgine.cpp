@@ -27,16 +27,18 @@
 
 #include "Spline.hpp"
 #include "FlagField.hpp"
+#include "UndirectedGraph.hpp"
+#include "TextBlock.hpp"
 
 int main()
 {
     {
 //#ifndef NDEBUG
-    {
-        TestManager tests;
-        tests.runAll();
-        tests.runPersist();
-    }
+        {
+            TestManager tests;
+            tests.runAll();
+            tests.runPersist();
+        }
 //#endif
 
 
@@ -53,8 +55,13 @@ int main()
             .loadReactionsData("Data/ReactionData.csv")
             .loadLabwareData("Data/LabwareData.csv");
 
-        UIContext uiContext;
-        uiContext.run();
+        //UIContext uiContext;
+        //uiContext.run();
+
+        //const auto& ra = store.reactions.at(201);
+        //const auto& rb = store.reactions.at(207);
+
+        //std::cout<<rb.isSpecializationOf(ra)<<'\n';
 
         //Reactor reactor(20.0, 760.0);
         //reactor.add(Molecule("HH"), 1.0);

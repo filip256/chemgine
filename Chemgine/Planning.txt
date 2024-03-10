@@ -127,9 +127,11 @@ In an optimized molecular structure there must be a way to specify which atoms a
                 (X does not multiply, rather it becomes the parent of all mathing Ri)
             if X is equivalent to R:
                 ignore X
-                
+            
+            always remeber the place of the first inserion of X and link the next insertions of X to that one
+
             (a "visited" set could be used to ensure X is not matched with and R twice, in case of potential cycles,
-            this is not required since the equivalency will be caught but it may still be a singinifant optimization,
+            this is not required since the equivalency will be caught but it may still be a singnificant optimization,
             especially if cycles occur early in the network)
      4. loop through all reactions and inherit any undefined properties
              
@@ -254,6 +256,8 @@ Tasks:
   15. Add more simulation-time logs
   ?. Add getPropertyAtSTP()
   DONE. Better way to mark predefined estimator ids
+  16. Make reaction tree methods iterative
+  17. Consider avoiding reparsing reactions in the tree (in case of cycles)
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules
@@ -297,8 +301,17 @@ Tasks:
   DONE. Add basic liguistics
 ---
   1. Finish reaction caching
-  2. Create reaction tree
-  3. Add reaction xml parser
+---
+  DONE. Create reaction tree
+  DONE. Add method for comparing reactions
+  DONE. Add logic for finding concrete reactions
+  4. Add logic for reaction property inheritance
+---
+  1. Split reactants into Id <Molecule + Layer> and properties
+  2. Make reactant set acctually use a map Id -> properties
+  3. Find a way to reference a reactant directly
+---
+  1. Add xml parser
 ---
   1. Add reactors to labware components
 ---
@@ -308,6 +321,8 @@ Tasks:
 
 KNOWN BUGS:
   FIXED. Bad molecule print for "O=C(C)OC=C".
+  FIXED. Exception while parsing reaction: 209,dehydration,RCO,RCOCR;O,1.0@20C,,0.0,
+  FIXED. Error while parsing reactions: 212,hydrolysis,O=C(R)OCC;O,O=C(R)O;OCC,,,, and 212,hydrolysis,O=C(CC)OR;O,O=C(CC)O;OR,,,,
 
 
  
@@ -430,11 +445,11 @@ Categorizations:
              if there is not enough solvent, push the least soluble solute out to make room for the more soluble solute
            
            - all gasses can mix
-           - no solids can mix (by may still share the same layer)
+           - no solids can mix (but may still share the same layer)
            - liquids mix based on polarity
-           - inorganic liquified gasses always mix (not entirely true, by may still share the same layer)
+           - inorganic liquified gasses always mix (not entirely true, but may still share the same layer)
            - organic liquified gasses are actually polar/nonpolar
-           - inorganic molten solids always mix (not entirely true, by may still share the same layer)
+           - inorganic molten solids always mix (not entirely true, but may still share the same layer)
            - organic molten solids are actually polar/nonpolar
 
            - liquids and solids dissolve in liquids based on polarity and temperature (solubility increasing/decreasing with temperature)
@@ -495,3 +510,21 @@ Categorizations:
    BaseLabComponent:
     - an object that can have some adjacent components and defines the flow between these components
     - have a tick function that defines their effect
+
+
+
+
+
+
+
+
+
+    -----------------------------------------------------------------------------------------------------------------
+
+            react<{gugyug, huahsimdasdu, asdhi}:{hiashud, asygduam, sdguya}>
+        [
+	        <id:        #123>
+	        <density:   spline<C:g/L>[1.0:10.0, 2.0K:15.0]>
+	        <speed:     1.0mol/s>
+	        <catalysts: {syga, dhsiahdim}>
+        ]

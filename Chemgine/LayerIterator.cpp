@@ -29,10 +29,10 @@ LayerIterator& LayerIterator::operator++()
 
 bool LayerIterator::operator==(const LayerIterator& other) const 
 {
-    return it == other.it;
+    return this->it == other.it;
 }
 
 bool LayerIterator::operator!=(const LayerIterator& other) const 
 {
-    return it != other.it;
+    return this->it != other.it;
 }

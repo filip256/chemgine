@@ -92,12 +92,8 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 		}
 
 		// speed
-		const auto speed = DataHelpers::parsePair<Unit::MOLE_PER_SECOND, Unit::CELSIUS>(line[4]);	
-		if(speed.has_value() == false)
-		{
-			Logger::log("Reaction speed for the reaction with id " + std::to_string(*id) + " is ill-defined. Skipped.", LogType::BAD);
-			continue;
-		}
+		const auto speed = DataHelpers::parsePair<Unit::MOLE_PER_SECOND, Unit::CELSIUS>(line[4])
+			.value_or(std::make_pair(1.0, 20.0));
 
 		//reaction energy
 		const auto reactionEnergy = DataHelpers::parse<double>(line[5]);
@@ -144,7 +140,7 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 		ReactionData data(
 			*id, line[1],
 			reactantIds, productIds, 
-			speed->first, speed->second,
+			speed.first, speed.second,
 			reactionEnergy.value_or(0.0),
 			activationEnergy.value_or(0.0),
 			std::move(catalysts)
@@ -169,17 +165,18 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 
 	Logger::log("Loaded " + std::to_string(table.size()) + " reactions.", LogType::INFO);
 
+	for (size_t i = 0; i < table.size(); ++i)
+		network.insert(table[i]);
+
 	return true;
+}
+
+const ReactionNetwork& ReactionDataTable::getNetwork() const
+{
+	return network;
 }
 
 std::unordered_set<ConcreteReaction> ReactionDataTable::findOccuringReactions(const std::vector<Reactant>& reactants) const
 {
-	std::unordered_set<ConcreteReaction> result;
-	for (size_t i = 0; i < table.size(); ++i)
-	{
-		const auto& products = table[i].generateConcreteProducts(reactants);
-		if (products.size())
-			result.insert(ConcreteReaction(table[i], reactants, products));
-	}
-	return result;
+	return network.getConcreteReactions(reactants);
 }

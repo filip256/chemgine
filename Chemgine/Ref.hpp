@@ -20,7 +20,7 @@ public:
 	void set(T& object);
 	void unset();
 
-	Ref<T>& operator=(T& other);
+	Ref<T>& operator=(Ref<T> other);
 
 	inline T& get();
 	inline const T& get() const;
@@ -75,9 +75,10 @@ void Ref<T>::unset()
 }
 
 template<typename T>
-Ref<T>& Ref<T>::operator=(T& other)
+Ref<T>& Ref<T>::operator=(Ref<T> other)
 {
-	return this->object = &other;
+	this->object = other.object;
+	return *this;
 }
 
 template<typename T>

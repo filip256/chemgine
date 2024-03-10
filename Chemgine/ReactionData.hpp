@@ -8,16 +8,19 @@
 #include "Reactant.hpp"
 #include "Catalyst.hpp"
 #include "Amount.hpp"
+#include "Ref.hpp"
 
 typedef uint16_t ReactionIdType;
 
 class ReactionData
 {
 private:
+	Ref<const ReactionData> baseReaction = Ref<ReactionData>::nullRef;
 	std::vector<Reactable> reactants;
 	std::vector<Reactable> products;
 	std::vector<std::vector<Catalyst>> catalysts;
 	std::unordered_map<std::pair<size_t, c_size>, std::pair<size_t, c_size>> componentMapping;
+	
 
 	static std::vector<Reactable> flatten(
 		const std::vector<std::pair<Reactable, uint8_t>>& list);
@@ -69,16 +72,31 @@ public:
 	ReactionData(ReactionData&&) = default;
 
 	bool hasAsReactant(const Reactant& reactant) const;
-
+	
 	/// <summary>
-	/// If the given vector of molecules matches the reactant list, it returns the resulting concrete
-	/// products, otherwise it returns an empty vector.
+	/// Tries to map the i-th molecule in the given vector with i-th reactant of the reaction.
+	/// If successful, a non-empty vector of atom maps is returned.
 	/// </summary>
-	std::vector<Molecule> generateConcreteProducts(const std::vector<Reactant>& molecules) const;
+	std::vector<std::unordered_map<c_size, c_size>> generateConcreteMatches(const std::vector<Reactant>& molecules) const;
+	/// <summary>
+	/// Generetates the concrete products of the reaction for the given molecules, using the matches
+	/// resulted from generateConcreteMatches(const std::vector<Reactant>&).
+	/// </summary>
+	std::vector<Molecule> generateConcreteProducts(
+		const std::vector<Reactant>& molecules,
+		const std::vector<std::unordered_map<c_size, c_size>>& matches) const;
 
 	const std::vector<Reactable>& getReactants() const;
 	const std::vector<Reactable>& getProducts() const;
 	const std::vector<std::vector<Catalyst>>& getCatalysts() const;
+
+	bool isSpecializationOf(const ReactionData& other) const;
+	bool isGeneralizationOf(const ReactionData& other) const;
+	bool isEquivalentTo(const ReactionData& other) const;
+
+	void setBaseReaction(const ReactionData& reaction);
+
+	std::string getHRTag() const;
 
 	friend class ReactionDataTable;
 };

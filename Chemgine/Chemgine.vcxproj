@@ -238,6 +238,7 @@
     <ClCompile Include="ReactantSet.cpp" />
     <ClCompile Include="ReactionData.cpp" />
     <ClCompile Include="ReactionDataTable.cpp" />
+    <ClCompile Include="ReactionNetwork.cpp" />
     <ClCompile Include="Reactor.cpp" />
     <ClCompile Include="ScaleEstimator.cpp" />
     <ClCompile Include="Spline.cpp" />
@@ -247,6 +248,7 @@
     <ClCompile Include="Symbol.cpp" />
     <ClCompile Include="SystemMatrix.cpp" />
     <ClCompile Include="DumpContainer.cpp" />
+    <ClCompile Include="TextBlock.cpp" />
     <ClCompile Include="Value.cpp" />
     <ClInclude Include="Adaptor.hpp" />
     <ClInclude Include="AggregationType.hpp" />
@@ -254,6 +256,7 @@
     <ClInclude Include="Atmosphere.hpp" />
     <ClInclude Include="BaseContainer.hpp" />
     <ClInclude Include="Context.hpp" />
+    <ClInclude Include="DirectedGraph.hpp" />
     <ClInclude Include="EstimatorDataTable.hpp" />
     <ClInclude Include="EstimatorType.hpp" />
     <ClCompile Include="AtomData.cpp" />
@@ -322,9 +325,11 @@
     <ClInclude Include="PortType.hpp" />
     <ClInclude Include="Reactant.hpp" />
     <ClInclude Include="ReactantSet.hpp" />
+    <ClInclude Include="ReactionNetwork.hpp" />
     <ClInclude Include="Ref.hpp" />
     <ClInclude Include="ScaleEstimator.hpp" />
     <ClInclude Include="SingleLayerMixture.hpp" />
+    <ClInclude Include="SparseDirectedGraph.hpp" />
     <ClInclude Include="Spline.hpp" />
     <ClInclude Include="SplineEstimator.hpp" />
     <ClInclude Include="SplitEstimator.hpp" />
@@ -332,7 +337,9 @@
     <ClInclude Include="STP.hpp" />
     <ClInclude Include="Symbol.hpp" />
     <ClInclude Include="DumpContainer.hpp" />
+    <ClInclude Include="TextBlock.hpp" />
     <ClInclude Include="UIContext.hpp" />
+    <ClInclude Include="UndirectedGraph.hpp" />
     <ClInclude Include="Unit.hpp" />
     <ClInclude Include="MoleculeDataTable.hpp" />
     <ClInclude Include="MultiIndexMap.hpp" />

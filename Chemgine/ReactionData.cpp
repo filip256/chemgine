@@ -93,10 +93,10 @@ bool ReactionData::balance(
 	const auto intCoef = Maths::integerCoefficient(result);
 
 	for (size_t i = 0; i < reactants.size(); ++i)
-		reactants[i].second = result[i] * intCoef;
+		reactants[i].second = std::roundf(result[i] * intCoef);
 	products[0].second = intCoef;
 	for (size_t i = 1; i < products.size(); ++i)
-		products[i].second = result[reactants.size() + i - 1] *intCoef;
+		products[i].second = std::roundf(result[reactants.size() + i - 1] *intCoef);
 
 	return true;
 }
@@ -238,10 +238,11 @@ std::vector<std::vector<std::pair<size_t, std::unordered_map<c_size, c_size>>>> 
 	return allowedMatches;
 }
 
-std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<Reactant>& molecules) const
+std::vector<std::unordered_map<c_size, c_size>> ReactionData::generateConcreteMatches(
+	const std::vector<Reactant>& molecules) const
 {
 	if (reactants.size() != molecules.size())
-		return std::vector<Molecule>();
+		return {};
 
 	// find the molecule match for each reactant
 	std::vector<std::unordered_map<c_size, c_size>> matches;
@@ -256,8 +257,16 @@ std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<R
 
 		matches.emplace_back(Utils::reverseMap(reactants[i].matchWith(molecules[i].molecule.getStructure())));
 		if (matches.back().empty())
-			return std::vector<Molecule>();
+			return {};
 	}
+	return matches;
+}
+
+std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<Reactant>& molecules,
+	const std::vector<std::unordered_map<c_size, c_size>>& matches) const
+{
+	if (matches.size() != reactants.size())
+		return std::vector<Molecule>();
 
 	// build concrete products
 	std::vector<MolecularStructure> concreteProducts;
@@ -303,4 +312,117 @@ const std::vector<Reactable>& ReactionData::getProducts() const
 const std::vector<std::vector<Catalyst>>& ReactionData::getCatalysts() const
 {
 	return catalysts;
+}
+
+bool ReactionData::isSpecializationOf(const ReactionData& other) const
+{
+	// check reactants
+	std::vector<uint8_t> used(other.reactants.size(), false);
+	for (size_t i = 0; i < this->reactants.size(); ++i)
+	{
+		bool matchFound = false;
+		for (size_t j = 0; j < other.reactants.size(); ++j)
+		{
+			if (used[j])
+				continue;
+
+			if (other.reactants[j].matchWith(this->reactants[i]).size())
+			{
+				matchFound = true;
+				used[j] = true;
+				break;
+			}
+		}
+
+		if (matchFound == false)
+			return false;
+	}
+
+	// check products
+	used = std::vector<uint8_t>(other.products.size(), false);
+	for (size_t i = 0; i < this->products.size(); ++i)
+	{
+		bool matchFound = false;
+		for (size_t j = 0; j < other.products.size(); ++j)
+		{
+			if (used[j])
+				continue;
+
+			if (other.products[j].matchWith(this->products[i]).size())
+			{
+				matchFound = true;
+				used[j] = true;
+				break;
+			}
+		}
+
+		if (matchFound == false)
+			return false;
+	}
+
+	return true;
+}
+
+bool ReactionData::isGeneralizationOf(const ReactionData& other) const
+{
+	return other.isSpecializationOf(*this);
+}
+
+bool ReactionData::isEquivalentTo(const ReactionData& other) const
+{
+	// check reactants
+	std::vector<uint8_t> used(other.reactants.size(), false);
+	for (size_t i = 0; i < this->reactants.size(); ++i)
+	{
+		bool matchFound = false;
+		for (size_t j = 0; j < other.reactants.size(); ++j)
+		{
+			if (used[j])
+				continue;
+
+			if (other.reactants[j] == this->reactants[i])
+			{
+				matchFound = true;
+				used[j] = true;
+				break;
+			}
+		}
+
+		if (matchFound == false)
+			return false;
+	}
+
+	// check products
+	used = std::vector<uint8_t>(other.products.size(), false);
+	for (size_t i = 0; i < this->products.size(); ++i)
+	{
+		bool matchFound = false;
+		for (size_t j = 0; j < other.products.size(); ++j)
+		{
+			if (used[j])
+				continue;
+
+			if (other.products[j] == this->products[i])
+			{
+				matchFound = true;
+				used[j] = true;
+				break;
+			}
+		}
+
+		if (matchFound == false)
+			return false;
+	}
+
+	return true;
+}
+
+void ReactionData::setBaseReaction(const ReactionData& reaction)
+{
+	baseReaction = reaction;
+}
+
+std::string ReactionData::getHRTag() const
+{
+	return '<' + std::to_string(id) + ':' + name + '>';
 }

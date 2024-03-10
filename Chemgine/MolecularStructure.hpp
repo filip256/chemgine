@@ -95,7 +95,7 @@ private:
     MolecularStructure(const MolecularStructure& other) noexcept;
 
 public:
-    constexpr static c_size npos = static_cast<c_size>(-1);
+    static constexpr c_size npos = static_cast<c_size>(-1);
 
     MolecularStructure(const std::string& smiles);
     MolecularStructure(const std::string& serialized, const bool renormalize);

@@ -94,8 +94,6 @@ MoleculeIdType GenericMoleculeDataTable::findOrAdd(MolecularStructure&& structur
 	if (idx != npos)
 		return table[idx].id;
 
-	Logger::log("New structure discovered: \n" + structure.print(50, 10), LogType::INFO);
-
 	const auto id = getFreeId();
 	table.emplace(id, std::to_string(id), GenericMoleculeData(id, std::move(structure)));
 	return id;

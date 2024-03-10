@@ -39,12 +39,12 @@ bool SystemMatrix<T>::toREF()
         }
     }
 
-    // NxN systems can still be solved if one row is redundant (otherwise no solution)
+    // Overdetermined systems can still be solved if one row is redundant (otherwise no solution)
     // If such a row exists it will be bubbled to the last row and it will be null
     // The whole last row is null if the pivot is null (in NxN systems)
-    if (cols == rows)
+    if (cols <= rows)
     {
-        if (std::abs(matrix.back().back()) < 1e-7) // 1e-7 could introduce errors in the solution but it allows solving more systems
+        if (std::abs(matrix.back().back()) < 1e-5) // 1e-5 could introduce errors in the solution but it allows solving more systems
         {
             matrix.pop_back();
             return true;
