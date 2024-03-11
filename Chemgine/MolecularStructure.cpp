@@ -37,7 +37,7 @@ MolecularStructure::MolecularStructure(const MolecularStructure& other) noexcept
     {
         this->bonds[i].reserve(other.bonds[i].size());
         for (size_t j = 0; j < other.bonds[i].size(); ++j)
-            this->bonds[i].emplace_back(new Bond(*other.bonds[i][j]));
+            this->bonds[i].emplace_back(other.bonds[i][j]);
     }
 }
 
@@ -81,12 +81,12 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
                 return false;
             }
 
-            bonds.emplace_back(std::vector<Bond*>());
+            bonds.emplace_back(std::vector<Bond>());
 
             if (prev != npos)
             {
-                bonds[prev].emplace_back(new Bond(components.size() - 1, bondType));
-                bonds[bonds.size() - 1].emplace_back(new Bond(prev, bondType));
+                bonds[prev].emplace_back(Bond(components.size() - 1, bondType));
+                bonds[bonds.size() - 1].emplace_back(Bond(prev, bondType));
                 bondType = BondType::SINGLE;
             }
 
@@ -137,12 +137,12 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             }
             
             components.emplace_back(new Atom(smiles.substr(i + 1, t - i - 1)));
-            bonds.emplace_back(std::vector<Bond*>());
+            bonds.emplace_back(std::vector<Bond>());
 
             if (prev != npos)
             {
-                bonds[prev].emplace_back(new Bond(components.size() - 1, bondType));
-                bonds[bonds.size() - 1].emplace_back(new Bond(prev, bondType));
+                bonds[prev].emplace_back(Bond(components.size() - 1, bondType));
+                bonds[bonds.size() - 1].emplace_back(Bond(prev, bondType));
                 bondType = BondType::SINGLE;
             }
 
@@ -163,8 +163,8 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             uint8_t label = smiles[i + 1] * 10 + smiles[i + 2] - 11 * '0';
             if (rings.contains(label))
             {
-                bonds[rings[label]].emplace_back(new Bond(components.size() - 1, bondType));
-                bonds[components.size() - 1].emplace_back(new Bond(rings[label], bondType));
+                bonds[rings[label]].emplace_back(Bond(components.size() - 1, bondType));
+                bonds[components.size() - 1].emplace_back(Bond(rings[label], bondType));
                 bondType = BondType::SINGLE;
             }
             else
@@ -181,8 +181,8 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             uint8_t label = smiles[i] - '0';
             if (rings.contains(label))
             {
-                bonds[rings[label]].emplace_back(new Bond(components.size() - 1, bondType));
-                bonds[components.size() - 1].emplace_back(new Bond(rings[label], bondType));
+                bonds[rings[label]].emplace_back(Bond(components.size() - 1, bondType));
+                bonds[components.size() - 1].emplace_back(Bond(rings[label], bondType));
             }
             else
             {
@@ -220,7 +220,7 @@ void MolecularStructure::normalize()
     if (components.size() <= 1)
         return;
 
-    std::vector<const BaseComponent*> copy(components.data());
+    std::vector<const BaseComponent*> copy(components);
     std::vector<c_size> map(components.size(), npos);
 
 
@@ -248,7 +248,7 @@ void MolecularStructure::normalize()
 
     for (c_size i = 0; i < bonds.size(); ++i)
         for (c_size j = 0; j < bonds[i].size(); ++j)
-            bonds[i][j]->other = map[bonds[i][j]->other];
+            bonds[i][j].other = map[bonds[i][j].other];
 
     for (c_size i = 0; i < components.size(); ++i)
     {
@@ -276,7 +276,7 @@ void MolecularStructure::normalize()
             int j = i - 1;
             auto k = bonds[b][i];
             while (j >= 0 &&
-                components[bonds[b][j]->other]->getPrecedence() < components[k->other]->getPrecedence())
+                components[bonds[b][j].other]->getPrecedence() < components[k.other]->getPrecedence())
             {
                 bonds[b][j + 1] = bonds[b][j];
                 --j;
@@ -309,7 +309,7 @@ uint8_t MolecularStructure::getDegreeOf(const c_size idx) const
 {
     uint8_t cnt = 0;
     for (c_size i = 0; i < bonds[idx].size(); ++i)
-        cnt += bonds[idx][i]->getValence();
+        cnt += bonds[idx][i].getValence();
     return cnt;
 }
 
@@ -373,9 +373,9 @@ bool MolecularStructure::isOrganic() const
             uint8_t cnt = 0;
             for (c_size j = 0; j < bonds[i].size(); ++j)
             {
-                if (components[bonds[i][j]->other]->getId() == hydrogen.getId())
+                if (components[bonds[i][j].other]->getId() == hydrogen.getId())
                     return true;
-                cnt += bonds[i][j]->getValence();
+                cnt += bonds[i][j].getValence();
             }
             if (carbon.data().getFittingValence(cnt) > cnt)
                 return true;
@@ -450,8 +450,8 @@ bool MolecularStructure::isConnected() const
         visited[c] = true;
 
         for(c_size i = 0; i < bonds[c].size(); ++i)
-            if (visited[bonds[c][i]->other] == false) 
-                queue.push(bonds[c][i]->other);
+            if (visited[bonds[c][i].other] == false) 
+                queue.push(bonds[c][i].other);
 
         if (queue.empty())
             break;
@@ -474,7 +474,7 @@ bool MolecularStructure::isVirtualHydrogen() const
 bool MolecularStructure::areAdjacent(const c_size idxA, const c_size idxB) const
 {
     for (c_size i = 0; i < bonds[idxA].size(); ++i)
-        if (idxB == bonds[idxA][i]->other)
+        if (idxB == bonds[idxA][i].other)
             return true;
     return false;
 }
@@ -498,34 +498,34 @@ void MolecularStructure::rPrint(
         buffer[y][x + i] = symb[i];
 
     for (c_size i = 0; i < bonds[c].size(); ++i)
-        if (visited[bonds[c][i]->other] == false)
+        if (visited[bonds[c][i].other] == false)
         {
             char vC = '³', hC = 'Ä';
-            if (bonds[c][i]->type == BondType::DOUBLE)
+            if (bonds[c][i].getType() == BondType::DOUBLE)
                 vC = 'º', hC = 'Í';
-            else if (bonds[c][i]->type == BondType::TRIPLE)
+            else if (bonds[c][i].getType() == BondType::TRIPLE)
                 vC = 'ð', hC = 'ð';
 
 
             if (buffer[y][x + 2] == ' ')
             {
                 buffer[y][x + 1] = hC;
-                rPrint(buffer, x + 2, y, bonds[c][i]->other, visited);
+                rPrint(buffer, x + 2, y, bonds[c][i].other, visited);
             }
             else if (buffer[y][x - 2] == ' ')
             {
                 buffer[y][x - 1] = hC;
-                rPrint(buffer, x - 2, y, bonds[c][i]->other, visited);
+                rPrint(buffer, x - 2, y, bonds[c][i].other, visited);
             }
             else if (buffer[y - 2][x] == ' ')
             {
                 buffer[y - 1][x] = vC;
-                rPrint(buffer, x, y - 2, bonds[c][i]->other, visited);
+                rPrint(buffer, x, y - 2, bonds[c][i].other, visited);
             }
             else if (buffer[y + 2][x] == ' ')
             {
                 buffer[y + 1][x] = vC;
-                rPrint(buffer, x, y + 2, bonds[c][i]->other, visited);
+                rPrint(buffer, x, y + 2, bonds[c][i].other, visited);
             }
             else
                 break;
@@ -559,14 +559,13 @@ std::string MolecularStructure::print(const size_t maxWidth, const size_t maxHei
     return str;
 }
 
-
 void MolecularStructure::clear()
 {
-    components.clear();
-    while (bonds.size())
+    while (components.empty() == false)
     {
-        bonds.back().clear();
-        bonds.pop_back();
+        bonds[components.size() - 1].clear();
+        delete components.back();
+        components.pop_back();
     }
     impliedHydrogenCount = 0;
 }
@@ -594,7 +593,7 @@ bool MolecularStructure::areMatching(
     const Bond& nextB, const MolecularStructure& b,
     const bool escapeRadicalTypes)
 {
-    if (nextA.type != nextB.type)
+    if (nextA.getType() != nextB.getType())
         return false;
 
     // escape radical types
@@ -610,8 +609,8 @@ bool MolecularStructure::areMatching(
     std::array<int8_t, 5> counts{ 0 };
     for (c_size i = 0; i < a.bonds[nextA.other].size(); ++i)
     {
-        ++counts[a.bonds[nextA.other][i]->getValence()];
-        --counts[b.bonds[nextB.other][i]->getValence()];
+        ++counts[a.bonds[nextA.other][i].getValence()];
+        --counts[b.bonds[nextB.other][i].getValence()];
     }
     for (uint8_t i = 0; i < counts.size(); ++i)
         if (counts[i] != 0)
@@ -629,9 +628,9 @@ uint8_t MolecularStructure::getBondSimilarity(
     std::array<int8_t, 5> counts{ 0 };
 
     for (c_size i = 0; i < a.bonds[idxA].size(); ++i)
-        ++counts[a.bonds[idxA][i]->getValence()];
+        ++counts[a.bonds[idxA][i].getValence()];
     for (c_size i = 0; i < b.bonds[idxB].size(); ++i)
-        --counts[b.bonds[idxB][i]->getValence()];
+        --counts[b.bonds[idxB][i].getValence()];
 
     for (uint8_t i = 0; i < counts.size(); ++i)
         score -= counts[i] * scorePerBond;
@@ -643,7 +642,7 @@ uint8_t MolecularStructure::maximalSimilarity(
     const Bond& nextA, const MolecularStructure& a,
     const Bond& nextB, const MolecularStructure& b)
 {
-    if (nextA.type != nextB.type)
+    if (nextA.getType() != nextB.getType())
         return 0;
 
     if (BaseComponent::areEqual(*a.components[nextA.other], *(b.components[nextB.other])) == false)
@@ -664,7 +663,7 @@ bool MolecularStructure::DFSCompare(
 
     for (c_size i = 0; i < b.bonds[idxB].size(); ++i)
     {
-        const Bond& next = *b.bonds[idxB][i];
+        const Bond& next = b.bonds[idxB][i];
         if (visitedB[next.other])
         {
             // here we could mark the nodes contained in cycles
@@ -674,11 +673,11 @@ bool MolecularStructure::DFSCompare(
         bool matchFound = false;
         for (c_size j = 0; j < a.bonds[idxA].size(); ++j)
         {
-            if (mapping.contains(a.bonds[idxA][j]->other) ||  // do not reuse already mapped nodes
-                areMatching(*a.bonds[idxA][j], a, next, b, escapeRadicalTypes) == false)
+            if (mapping.contains(a.bonds[idxA][j].other) ||  // do not reuse already mapped nodes
+                areMatching(a.bonds[idxA][j], a, next, b, escapeRadicalTypes) == false)
                 continue;
 
-            if (DFSCompare(a.bonds[idxA][j]->other, a, next.other, b, visitedB, mapping, escapeRadicalTypes))
+            if (DFSCompare(a.bonds[idxA][j].other, a, next.other, b, visitedB, mapping, escapeRadicalTypes))
             {
                 matchFound = true;
                 break;
@@ -686,7 +685,7 @@ bool MolecularStructure::DFSCompare(
             
             // revert wrong branch
             visitedB[next.other] = false;
-            mapping.erase(a.bonds[idxA][j]->other);
+            mapping.erase(a.bonds[idxA][j].other);
         }
 
         if (matchFound == false)
@@ -711,7 +710,7 @@ std::pair<std::unordered_map<c_size, c_size>, uint8_t> MolecularStructure::DFSMa
 
     for (c_size i = 0; i < b.bonds[idxB].size(); ++i)
     {
-        const Bond& next = *b.bonds[idxB][i];
+        const Bond& next = b.bonds[idxB][i];
         if (mappedB.contains(next.other))
         {
             continue;
@@ -723,17 +722,17 @@ std::pair<std::unordered_map<c_size, c_size>, uint8_t> MolecularStructure::DFSMa
         std::unordered_set<c_size> maxMappedB;
         for (c_size j = 0; j < a.bonds[idxA].size(); ++j)
         {
-            if (mappedA.contains(a.bonds[idxA][j]->other)) // do not reuse already mapped nodes
+            if (mappedA.contains(a.bonds[idxA][j].other)) // do not reuse already mapped nodes
                 continue;
 
-            const auto score = maximalSimilarity(*a.bonds[idxA][j], a, next, b);
+            const auto score = maximalSimilarity(a.bonds[idxA][j], a, next, b);
             if (score == 0)
                 continue;
 
             // reversing bad branches isn't possible here, so copies are needed :(
             auto mappedACopy = mappedA;
             auto mappedBCopy = mappedB;
-            auto subMap = DFSMaximal(a.bonds[idxA][j]->other, a, mappedACopy, next.other, b, mappedBCopy);
+            auto subMap = DFSMaximal(a.bonds[idxA][j].other, a, mappedACopy, next.other, b, mappedBCopy);
             if (subMap.first.size() > maxMapping.first.size() ||
                (subMap.first.size() == maxMapping.first.size() && score > maxMapping.second))
             {
@@ -866,12 +865,15 @@ void MolecularStructure::copyBranch(
 {
     // overwrites first matching radical atom
     if (destination.components[sdMapping[sourceIdx]]->isRadicalType())
-        destination.components.replace(sdMapping[sourceIdx], source.components[sourceIdx]->clone());
+    {
+        delete destination.components[sdMapping[sourceIdx]];
+        destination.components[sdMapping[sourceIdx]] = source.components[sourceIdx]->clone();
+    }
 
     std::queue<c_size> queue;
     for (c_size i = 0; i < source.bonds[sourceIdx].size(); ++i)
-        if(sdMapping.contains(source.bonds[sourceIdx][i]->other) == false && sourceIgnore.contains(source.bonds[sourceIdx][i]->other) == false)
-            queue.push(source.bonds[sourceIdx][i]->other);
+        if(sdMapping.contains(source.bonds[sourceIdx][i].other) == false && sourceIgnore.contains(source.bonds[sourceIdx][i].other) == false)
+            queue.push(source.bonds[sourceIdx][i].other);
 
     if (queue.empty())
         return;
@@ -884,26 +886,26 @@ void MolecularStructure::copyBranch(
         // add current node
         sdMapping.insert(std::make_pair(c, destination.components.size()));
         destination.components.emplace_back(source.components[c]->clone());
-        destination.bonds.emplace_back(std::vector<Bond*>());
+        destination.bonds.emplace_back(std::vector<Bond>());
 
         // add bonds to existing nodes and queue non-existing nodes
         for (c_size i = 0; i < source.bonds[c].size(); ++i)
         {
-            if (sdMapping.contains(source.bonds[c][i]->other))
+            if (sdMapping.contains(source.bonds[c][i].other))
             {
-                destination.bonds.back().emplace_back(new Bond(
-                    sdMapping.at(source.bonds[c][i]->other),
-                    source.bonds[c][i]->type)
+                destination.bonds.back().emplace_back(Bond(
+                    sdMapping.at(source.bonds[c][i].other),
+                    source.bonds[c][i].getType())
                 );
 
-                destination.bonds[sdMapping.at(source.bonds[c][i]->other)].emplace_back(new Bond(
+                destination.bonds[sdMapping.at(source.bonds[c][i].other)].emplace_back(Bond(
                     destination.components.size() - 1,
-                    source.bonds[c][i]->type)
+                    source.bonds[c][i].getType())
                 );
             }
-            else if(sourceIgnore.contains(source.bonds[c][i]->other) == false)
+            else if(sourceIgnore.contains(source.bonds[c][i].other) == false)
             {
-                queue.push(source.bonds[c][i]->other);
+                queue.push(source.bonds[c][i].other);
             }
         }
     }
@@ -982,10 +984,10 @@ std::string MolecularStructure::rToSMILES(c_size c, c_size prev, std::vector<uin
 
         if (bonds[c].size() == 1)
         {
-            if (visited[bonds[c][0]->other] == false)
+            if (visited[bonds[c][0].other] == false)
             {
-                r += Bond::toSMILES(bonds[c][0]->type);
-                c = bonds[c][0]->other;
+                r += Bond::toSMILES(bonds[c][0].getType());
+                c = bonds[c][0].other;
             }
             else
                 break;
@@ -994,17 +996,17 @@ std::string MolecularStructure::rToSMILES(c_size c, c_size prev, std::vector<uin
         {
             for (c_size i = 0; i < bonds[c].size() - 1; ++i)
             {
-                if (bonds[c][i]->other == prev)
+                if (bonds[c][i].other == prev)
                     continue;
 
-                if (visited[bonds[c][i]->other] == false)
+                if (visited[bonds[c][i].other] == false)
                 {
                     const auto cc = cycleCount;
-                    const auto temp = rToSMILES(bonds[c][i]->other, c, visited, cycleCount);
+                    const auto temp = rToSMILES(bonds[c][i].other, c, visited, cycleCount);
                     if (cc == cycleCount)
-                        r += '(' + Bond::toSMILES(bonds[c][i]->type) + temp + ')';
+                        r += '(' + Bond::toSMILES(bonds[c][i].getType()) + temp + ')';
                     else
-                        r += Bond::toSMILES(bonds[c][i]->type) + temp;
+                        r += Bond::toSMILES(bonds[c][i].getType()) + temp;
                 }
                 else
                 {
@@ -1014,10 +1016,10 @@ std::string MolecularStructure::rToSMILES(c_size c, c_size prev, std::vector<uin
                 }
             }
 
-            if (visited[bonds[c].back()->other] == false)
+            if (visited[bonds[c].back().other] == false)
             {
-                r += Bond::toSMILES(bonds[c].back()->type);
-                c = bonds[c].back()->other;
+                r += Bond::toSMILES(bonds[c].back().getType());
+                c = bonds[c].back().other;
             }
             else
                 break;
@@ -1039,10 +1041,10 @@ std::string MolecularStructure::rToSMILES(c_size c, c_size prev, std::vector<uin
         r += components[c]->data().symbol;
         if (bonds[c].size() == 1)
         {
-            if (visited[bonds[c][0]->other] == false)
+            if (visited[bonds[c][0].other] == false)
             {
-                r += Bond::toSMILES(bonds[c][0]->type);
-                c = bonds[c][0]->other;
+                r += Bond::toSMILES(bonds[c][0].getType());
+                c = bonds[c][0].other;
             }
             else
                 break;
@@ -1055,12 +1057,12 @@ std::string MolecularStructure::rToSMILES(c_size c, c_size prev, std::vector<uin
         {
             for (c_size i = 0; i < bonds[c].size() - 1; ++i)
             {
-                if (visited[bonds[c][i]->other] == false && bonds[c][i]->other != c)
+                if (visited[bonds[c][i].other] == false && bonds[c][i].other != c)
                 {
-                    r += '(' + Bond::toSMILES(bonds[c][i]->type) + rToSMILES(bonds[c][i]->other, visited) + ')';
+                    r += '(' + Bond::toSMILES(bonds[c][i].getType()) + rToSMILES(bonds[c][i].other, visited) + ')';
                 }
             }
-            r += Bond::toSMILES(bonds[c].back()->type) + rToSMILES(bonds[c].back()->other, visited);
+            r += Bond::toSMILES(bonds[c].back().getType()) + rToSMILES(bonds[c].back().other, visited);
         }
     }
     return r;*/
@@ -1089,7 +1091,7 @@ std::string MolecularStructure::serialize() const
     for (c_size i = 0; i < components.size(); ++i)
     {
         for (c_size j = 0; j < bonds[i].size(); ++j)
-            result += bonds[i][j]->toSMILES() + std::to_string(bonds[i][j]->other) + ';';
+            result += bonds[i][j].toSMILES() + std::to_string(bonds[i][j].other) + ';';
         result.back() = '_';
     }
     result.pop_back();
@@ -1129,7 +1131,7 @@ bool MolecularStructure::deserialize(const std::string& str)
     for (c_size i = 1; i < tokens.size(); ++i)
     {
         comps = DataHelpers::parseList(tokens[i], ';');
-        bonds.emplace_back(std::vector<Bond*>());
+        bonds.emplace_back(std::vector<Bond>());
         for (c_size j = 0; j < comps.size(); ++j)
         {
             if (comps[j].empty())
@@ -1147,7 +1149,7 @@ bool MolecularStructure::deserialize(const std::string& str)
                     return false;
                 }
 
-                bonds[i - 1].emplace_back(new Bond(*id, BondType::SINGLE));
+                bonds[i - 1].emplace_back(Bond(*id, BondType::SINGLE));
             }
             else
             {
@@ -1165,7 +1167,7 @@ bool MolecularStructure::deserialize(const std::string& str)
                     return false;
                 }
 
-                  bonds[i - 1].emplace_back(new Bond(*id, bType));
+                  bonds[i - 1].emplace_back(Bond(*id, bType));
             }
         }
     }

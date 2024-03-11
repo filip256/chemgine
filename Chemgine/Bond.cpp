@@ -8,6 +8,11 @@ Bond::Bond(const c_size other, const BondType type) :
 	type(type)
 {}
 
+BondType Bond::getType() const
+{
+	return type;
+}
+
 uint8_t Bond::getValence() const
 {
 	return Bond::getValence(type);
