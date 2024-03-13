@@ -34,7 +34,7 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 	{
 		auto line = DataHelpers::parseList(buffer, ',');
 
-		if (line.size() != 16)
+		if (line.size() != 17)
 		{
 			Logger::log("Incompletely defined molecule skipped.", LogType::BAD);
 			continue;
@@ -95,10 +95,13 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 		const auto& henryR = DataHelpers::parse<Spline<float>>(line[15]);
 		const auto& henryA = estimators.add<SplineEstimator>(henryR.value_or(Spline<float>({ {1000.0, 760.0} })));
 			
+		//color
+		const auto color = DataHelpers::parse<Color>(line[16]).value_or(Color(0, 255, 255, 100));
+
 		if (table.emplace(
 			*id,
 			line[1],
-			MoleculeData(*id, line[2], line[1], hydro, lipo, mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA, solA, henryA)
+			MoleculeData(*id, line[2], line[1], hydro, lipo, color, mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA, solA, henryA)
 		) == false)
 		{
 			Logger::log("Molecule with duplicate id " + std::to_string(*id) + " skipped.", LogType::WARN);
@@ -124,7 +127,7 @@ bool MoleculeDataTable::saveToFile(const std::string& path)
 	for (size_t i = 0; i < table.size(); ++i)
 	{
 		const auto& e = table[i];
-		file << e.id << ',' << e.getStructure().serialize() << ',' << e.name << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << '\n';
+		file << e.id << ',' << e.getStructure().serialize() << ',' << e.name << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << '\n';
 	}
 
 	file.close();
@@ -164,8 +167,9 @@ MoleculeId MoleculeDataTable::findOrAdd(MolecularStructure&& structure)
 	const auto lipo = 0.0;
 	const auto& solA = estimators.at(toId(BuiltinEstimator::TEMP_TO_REL_SOL));
 	const auto& henryA = estimators.add<SplineEstimator>(Spline<float>({ {1000.0, 760.0} }));
+	const auto color = Color(0, 255, 255, 100);
 
 	const auto id = getFreeId();
-	table.emplace(id, std::to_string(id), MoleculeData(id, std::move(structure), hydro, lipo, mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA, solA, henryA));
+	table.emplace(id, std::to_string(id), MoleculeData(id, std::move(structure), hydro, lipo, color, mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA, solA, henryA));
 	return id;
 }

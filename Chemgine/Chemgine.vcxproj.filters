@@ -372,6 +372,9 @@
     <ClCompile Include="ContentInitializer.cpp">
       <Filter>Source Files\Mixtures</Filter>
     </ClCompile>
+    <ClCompile Include="Color.cpp">
+      <Filter>Source Files\Data\Values</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -694,6 +697,9 @@
     </ClInclude>
     <ClInclude Include="ContentInitializer.hpp">
       <Filter>Header Files\Mixtures</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.hpp">
+      <Filter>Header Files\Data\Values</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

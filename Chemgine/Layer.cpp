@@ -358,6 +358,38 @@ Polarity Layer::getPolarity() const
     return polarity;
 }
 
+Color Layer::getColor() const
+{
+    if (isEmpty())
+        return Color();
+
+    float div = 0.0;
+    float red = 0.0, green = 0.0, blue = 0.0;
+    for (const auto& [_, r] : container->content)
+    {
+        if (r.layer == layerType)
+        {
+            const auto color = r.molecule.getColor();
+            const auto amount = r.amount.asStd();
+            red += color.r * color.a * amount;
+            green += color.g * color.a * amount;
+            blue += color.b * color.a * amount;
+            div += color.a * amount;
+        }
+    }
+
+    const uint8_t alpha =
+        isGasLayer(layerType) ? 50 :
+        isLiquidLayer(layerType) ? 150 :
+        255;
+
+    return Color(
+        static_cast<uint8_t>(red / div),
+        static_cast<uint8_t>(green / div),
+        static_cast<uint8_t>(blue / div),
+        alpha);
+}
+
 bool Layer::isEmpty() const
 {
     return moles == 0.0;

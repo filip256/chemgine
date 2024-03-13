@@ -6,6 +6,7 @@
 #include "Amount.hpp"
 #include "MoleculeType.hpp"
 #include "Polarity.hpp"
+#include "Color.hpp"
 
 #include <string>
 
@@ -20,6 +21,8 @@ public:
 	const std::string name;
 
 	const Polarity polarity;
+
+	const Color color;
 
 	const BaseEstimator& meltingPointEstimator;
 	const BaseEstimator& boilingPointEstimator;
@@ -44,6 +47,7 @@ public:
 		const std::string& smiles,
 		const Amount<Unit::MOLE_RATIO> hydrophilicity,
 		const Amount<Unit::MOLE_RATIO> lipophilicity,
+		const Color color,
 		const BaseEstimator& meltingPointEstimator,
 		const BaseEstimator& boilingPointEstimator,
 		const BaseEstimator& solidDensityEstimator,
@@ -62,6 +66,7 @@ public:
 		MolecularStructure&& structure,
 		const Amount<Unit::MOLE_RATIO> hydrophilicity,
 		const Amount<Unit::MOLE_RATIO> lipophilicity,
+		const Color color,
 		const BaseEstimator& meltingPointEstimator,
 		const BaseEstimator& boilingPointEstimator,
 		const BaseEstimator& solidDensityEstimator,

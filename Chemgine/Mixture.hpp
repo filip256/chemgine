@@ -41,6 +41,7 @@ public:
 	virtual Amount<Unit::JOULE_PER_CELSIUS> getLayerTotalHeatCapacity(const LayerType layer) const = 0;
 	virtual Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType layer) const = 0;
 	virtual Polarity getLayerPolarity(const LayerType layer) const = 0;
+	virtual Color getLayerColor(const LayerType layer) const = 0;
 
 	friend class Layer;
 };

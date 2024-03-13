@@ -3,6 +3,7 @@
 #include "Amount.hpp"
 #include "Spline.hpp"
 #include "Utils.hpp"
+#include "Color.hpp"
 
 #include <vector>
 #include <string>
@@ -151,6 +152,19 @@ inline std::optional<bool> DataHelpers::parse<bool>(const std::string& str)
 		return std::optional(false);
 
 	return std::nullopt;
+}
+
+template <>
+inline std::optional<Color> DataHelpers::parse<Color>(const std::string& str)
+{
+	if (str.empty())
+		return std::nullopt;
+
+	const auto rgba = parseList<uint8_t>(str, ':', true);
+	if (rgba.has_value() == false || rgba->size() != 4)
+		return std::nullopt;
+
+	return Color((*rgba)[0], (*rgba)[1], (*rgba)[2], (*rgba)[3]);
 }
 
 template <>

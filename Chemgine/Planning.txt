@@ -261,6 +261,7 @@ Tasks:
   DONE. Rename IdType to just Id
   DONE. Create a class for initContent
   18. Rename DataTable to Repository
+  19. Use std:: for cstdint types
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules
@@ -313,11 +314,12 @@ Tasks:
   DONE. Split reactants into Id <Molecule + Layer> and properties
   DONE. Make reactant set acctually use a map Id -> properties
 ---
+  1. Add reactors to labware components
+  DONE. Add color field to molecules and layers
+  3. Create visual representation of a labware component
+---
   1. Build and link boost
   1. Add bin parser/printer
-  ?. Add xml parser/printer
----
-  1. Add reactors to labware components
 ---
   1. Add Context
 

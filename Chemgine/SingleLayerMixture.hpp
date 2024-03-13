@@ -45,6 +45,7 @@ public:
 	Amount<Unit::JOULE_PER_CELSIUS> getLayerTotalHeatCapacity() const;
 	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy() const;
 	Polarity getLayerPolarity() const;
+	Color getLayerColor() const;
 
 	void setOverflowTarget(const Ref<BaseContainer> target);
 	Ref<BaseContainer> getOverflowTarget() const;
@@ -66,6 +67,7 @@ public:
 	Amount<Unit::JOULE_PER_CELSIUS> getLayerTotalHeatCapacity(const LayerType layer) const override final;
 	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType l) const override final;
 	Polarity getLayerPolarity(const LayerType layer) const override final;
+	Color getLayerColor(const LayerType layer) const override final;
 
 	void copyContentTo(const Ref<BaseContainer> destination, const Amount<Unit::LITER> volume) const;
 	void moveContentTo(const Ref<BaseContainer> destination, const Amount<Unit::LITER> volume);
@@ -299,6 +301,12 @@ Polarity SingleLayerMixture<L>::getLayerPolarity() const
 }
 
 template<LayerType L>
+Color SingleLayerMixture<L>::getLayerColor() const
+{
+	return getLayerColor(L);
+}
+
+template<LayerType L>
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> SingleLayerMixture<L>::getLayerHeatCapacity(const LayerType l) const
 {
 	return layer.getHeatCapacity();
@@ -320,6 +328,12 @@ template<LayerType L>
 Polarity SingleLayerMixture<L>::getLayerPolarity(const LayerType l) const
 {
 	return layer.getPolarity();
+}
+
+template<LayerType L>
+Color SingleLayerMixture<L>::getLayerColor(const LayerType l) const
+{
+	return layer.getColor();
 }
 
 template<LayerType L>

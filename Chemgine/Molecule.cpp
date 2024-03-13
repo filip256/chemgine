@@ -50,6 +50,11 @@ Polarity Molecule::getPolarity() const
 	return this->data().polarity;
 }
 
+Color Molecule::getColor() const
+{
+	return this->data().color;
+}
+
 Amount<Unit::CELSIUS> Molecule::getMeltingPointAt(const Amount<Unit::TORR> pressure) const
 {
 	return this->data().meltingPointEstimator.get(pressure.asStd());

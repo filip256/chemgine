@@ -61,6 +61,7 @@ public:
 	Amount<Unit::JOULE_PER_CELSIUS> getTotalHeatCapacity() const;
 	Amount<Unit::JOULE_PER_MOLE> getKineticEnergy() const;
 	Polarity getPolarity() const;
+	Color getColor() const;
 
 	bool isEmpty() const;
 

@@ -274,6 +274,11 @@ Polarity MultiLayerMixture::getLayerPolarity(const LayerType layer) const
 	return layers.at(layer).getPolarity();
 }
 
+Color MultiLayerMixture::getLayerColor(const LayerType layer) const
+{
+	return layers.at(layer).getColor();
+}
+
 Amount<Unit::TORR> MultiLayerMixture::getPressure() const
 {
 	return pressure;

@@ -25,6 +25,7 @@ public:
 	const MolecularStructure& getStructure() const;
 
 	Polarity getPolarity() const;
+	Color getColor() const;
 
 	Amount<Unit::CELSIUS> getMeltingPointAt(const Amount<Unit::TORR> pressure) const;
 	Amount<Unit::CELSIUS> getBoilingPointAt(const Amount<Unit::TORR> pressure) const;
