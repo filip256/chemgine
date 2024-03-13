@@ -17,7 +17,7 @@ public:
 	const sf::Sprite& getSprite() const override final;
 	sf::Sprite& getSprite() override final;
 	const sf::Vector2f& getPosition() const override final;
-	const sf::Vector2f& getAdjustedPosition() const override final;
+	const sf::Vector2f getAdjustedPosition() const override final;
 	void setPosition(const sf::Vector2f& position) override final;
 	float getRotation() const override final;
 	void setRotation(const float angle) override final;

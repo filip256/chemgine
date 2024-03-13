@@ -28,7 +28,7 @@ public:
 	virtual const sf::Sprite& getSprite() const = 0;
 	virtual sf::Sprite& getSprite() = 0;
 	virtual const sf::Vector2f& getPosition() const = 0;
-	virtual const sf::Vector2f& getAdjustedPosition() const = 0;
+	virtual const sf::Vector2f getAdjustedPosition() const = 0;
 	virtual void setPosition(const sf::Vector2f& position) = 0;
 	virtual float getRotation() const = 0;
 	virtual void setRotation(const float angle) = 0;

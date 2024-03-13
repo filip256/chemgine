@@ -1,6 +1,5 @@
 #include "Bond.hpp"
 
-
 size_t Bond::instanceCount = 0;
 
 Bond::Bond(const c_size other, const BondType type) :

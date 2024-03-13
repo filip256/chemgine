@@ -60,6 +60,7 @@ public:
 
 	virtual BaseComponent* clone() const = 0;
 
+
 	// for memory leak checking 
 	static size_t instanceCount;
 #ifndef NDEBUG

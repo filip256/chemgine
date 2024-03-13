@@ -28,7 +28,7 @@ const sf::Vector2f& DrawableComponent::getPosition() const
 	return sprite.getPosition();
 }
 
-const sf::Vector2f& DrawableComponent::getAdjustedPosition() const
+const sf::Vector2f DrawableComponent::getAdjustedPosition() const
 {
 	return sprite.getPosition() - sprite.getOrigin();
 }
