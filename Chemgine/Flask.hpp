@@ -23,6 +23,4 @@ public:
 	void tick();
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;
-
-	Flask* clone() const override final;
 };

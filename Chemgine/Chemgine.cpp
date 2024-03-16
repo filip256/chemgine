@@ -42,7 +42,6 @@ int main()
         }
 //#endif
 
-
         DataStore store;
         BaseComponent::setDataStore(store);
         Reactable::setDataStore(store);

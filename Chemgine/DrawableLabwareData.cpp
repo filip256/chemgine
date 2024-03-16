@@ -12,5 +12,5 @@ DrawableLabwareData::DrawableLabwareData(
 	BaseLabwareData(id, name, std::move(ports), type)
 {
 	Collision::createTextureAndBitmask(texture, textureFile);
-	fillTexture = ShapeFill::createFillTexture(texture, 0);
+	fillTexture = ShapeFillTexture(texture, 0, hasMultiLayerStorage(type));
 }

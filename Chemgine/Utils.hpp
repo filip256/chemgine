@@ -28,7 +28,13 @@ public:
 	static std::unordered_set<Obj> extractValues(
 		const std::unordered_map<Key, Obj>& map);
 
+	template<class T1, class T2>
+	static std::vector<T1> extractFirst(
+		const std::vector<std::pair<T1, T2>>& vector);
 
+	template<class T1, class T2>
+	static std::vector<T2> extractSecond(
+		const std::vector<std::pair<T1, T2>>& vector);
 };
 
 
@@ -88,5 +94,33 @@ static std::unordered_set<Obj> Utils::extractValues(
 	{
 		result.insert(p.second);
 	}
+	return result;
+}
+
+template<class T1, class T2>
+static std::vector<T1> Utils::extractFirst(
+	const std::vector<std::pair<T1, T2>>& vector)
+{
+	std::vector<T1> result;
+	result.reserve(vector.size());
+
+	const auto s = vector.size();
+	for (size_t i = 0; i < s; ++i)
+		result.push_back(vector[i].first);
+
+	return result;
+}
+
+template<class T1, class T2>
+static std::vector<T2> Utils::extractSecond(
+	const std::vector<std::pair<T1, T2>>& vector)
+{
+	std::vector<T2> result;
+	result.reserve(vector.size());
+
+	const auto s = vector.size();
+	for (size_t i = 0; i < s; ++i)
+		result.push_back(vector[i].second);
+
 	return result;
 }

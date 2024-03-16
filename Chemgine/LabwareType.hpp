@@ -15,3 +15,11 @@ enum class LabwareType : uint8_t
 	STIRRER,
 	HEATER_STIRRER
 };
+
+static inline constexpr bool hasMultiLayerStorage(const LabwareType type)
+{
+	return 
+		type == LabwareType::FLASK ||
+		type == LabwareType::SEP_FUNNEL ||
+		type == LabwareType::DROP_FUNNEL;
+}

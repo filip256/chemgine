@@ -264,8 +264,9 @@ Tasks:
   19. Use std:: for cstdint types
   DONE. Use map instead of unordered_map for storing layers (=> 34.5% sim-time perf. improvement!)
   20. Consider switching LayerType to iterators where possible, within the containers
-  21. Try to remove clone from labware components, or add clone without content
+  DONE. Remove clone from labware components, or add clone without content
   DONE. Use sfDrawable as drawable labware component's base
+  DONE. Add spline lossy optimization
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules
@@ -321,7 +322,7 @@ Tasks:
   DONE. Add reactors to labware components
   DONE. Add color field to molecules and layers
   DONE. Create FillShape and add to components
-  2. Take texture width into account for volume
+  DONE. Add volumetric scaling to flasks
   3. Create visual representation of labware components
 ---
   1. Build and link boost

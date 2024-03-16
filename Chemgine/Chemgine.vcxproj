@@ -246,6 +246,7 @@
     <ClCompile Include="Reactor.cpp" />
     <ClCompile Include="ScaleEstimator.cpp" />
     <ClCompile Include="ShapeFill.cpp" />
+    <ClCompile Include="ShapeFillTexture.cpp" />
     <ClCompile Include="Spline.cpp" />
     <ClCompile Include="SplineEstimator.cpp" />
     <ClCompile Include="SplitEstimator.cpp" />
@@ -338,6 +339,7 @@
     <ClInclude Include="Ref.hpp" />
     <ClInclude Include="ScaleEstimator.hpp" />
     <ClInclude Include="ShapeFill.hpp" />
+    <ClInclude Include="ShapeFillTexture.hpp" />
     <ClInclude Include="SingleLayerMixture.hpp" />
     <ClInclude Include="SparseDirectedGraph.hpp" />
     <ClInclude Include="Spline.hpp" />

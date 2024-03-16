@@ -1,11 +1,11 @@
 #include "ShapeFill.hpp"
-#include "Collision.hpp"
 #include "Maths.hpp"
 
 #include <cmath>
 
-ShapeFill::ShapeFill(const sf::Texture& texture) noexcept :
-	sprite(texture)
+ShapeFill::ShapeFill(const ShapeFillTexture& texture) noexcept :
+	texture(texture),
+	sprite(texture.getTexture())
 {
 	sprite.setOrigin(sprite.getLocalBounds().getSize() / 2.0f);
 }
@@ -37,8 +37,14 @@ void ShapeFill::setColor(const sf::Color& color) const
 	sprite.setColor(color);
 }
 
-void ShapeFill::setDrawSection(const float start, const float end, const sf::Color& color) const
+void ShapeFill::setDrawSection(float start, float end, const sf::Color& color) const
 {
+	if (texture.hasVolumetricScaling())
+	{
+		start = texture.getRelativeHeightAt(start);
+		end = texture.getRelativeHeightAt(end);
+	}
+
 	const auto size = sprite.getTexture()->getSize();
 	const auto topCut = size.y * (1.0f - end);
 	sprite.setTextureRect(sf::IntRect(0, topCut, size.x, size.y * (end - start)));
@@ -55,42 +61,4 @@ void ShapeFill::setDrawSection(const float start, const float end, const sf::Col
 void ShapeFill::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	target.draw(sprite);
-}
-
-sf::Texture ShapeFill::createFillTexture(
-	const sf::Texture& source,
-	const uint8_t alphaThreshold)
-{
-	const auto& mask = Collision::getTextureMask(source);
-	const auto size = source.getSize();
-
-	sf::Image img;
-	img.create(size.x, size.y, sf::Color::Transparent);
-
-	for (uint32_t i = 0; i < size.y; ++i)
-	{
-		uint32_t l = 0;
-		while (++l < size.x && mask[i * size.x + l] <= alphaThreshold);
-
-		uint32_t r = size.x;
-		while (--r > l && mask[i * size.x + r] <= alphaThreshold);
-
-		for (uint32_t j = l; j < r; ++j)
-			img.setPixel(j, i, sf::Color::White);
-	}
-
-	for (uint32_t j = 0; j < size.x; ++j)
-	{
-		uint32_t t = 0;
-		while (++t < size.y && mask[t * size.x + j] <= alphaThreshold)
-			img.setPixel(j, t, sf::Color::Transparent);
-
-		uint32_t b = size.y;
-		while (--b > t && mask[b * size.x + j] <= alphaThreshold)
-			img.setPixel(j, b, sf::Color::Transparent);
-	}
-
-	sf::Texture temp;
-	temp.loadFromImage(img);
-	return temp;
 }

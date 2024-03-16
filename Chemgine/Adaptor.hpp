@@ -20,6 +20,4 @@ public:
 	const AdaptorData& getData() const override final;
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;
-
-	Adaptor* clone() const override final;
 };

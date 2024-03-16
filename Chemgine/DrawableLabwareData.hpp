@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BaseLabwareData.hpp"
-#include "SFML/Graphics.hpp"
+#include "ShapeFillTexture.hpp"
 
 class DrawableLabwareData : public BaseLabwareData
 {
@@ -16,5 +16,5 @@ protected:
 
 public:
 	sf::Texture texture;
-	sf::Texture fillTexture;
+	ShapeFillTexture fillTexture;
 };

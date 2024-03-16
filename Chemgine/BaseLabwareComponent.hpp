@@ -45,8 +45,6 @@ public:
 	virtual bool contains(const sf::Vector2f& point) const = 0;
 	virtual bool intersects(const BaseLabwareComponent& other) const = 0;
 
-	virtual BaseLabwareComponent* clone() const = 0;
-
 
 	// for memory leak checking
 	static size_t instanceCount;

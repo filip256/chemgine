@@ -387,6 +387,9 @@
     <ClCompile Include="ColorCast.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="ShapeFillTexture.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -718,6 +721,9 @@
     </ClInclude>
     <ClInclude Include="LayerContentIterator.hpp">
       <Filter>Header Files\Mixtures</Filter>
+    </ClInclude>
+    <ClInclude Include="ShapeFillTexture.hpp">
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

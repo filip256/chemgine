@@ -44,8 +44,3 @@ void Flask::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 	DrawableComponent::draw(target, states);
 }
-
-Flask* Flask::clone() const
-{
-	return new Flask(*this);
-}

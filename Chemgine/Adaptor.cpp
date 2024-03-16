@@ -27,8 +27,3 @@ void Adaptor::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 	DrawableComponent::draw(target, states);
 }
-
-Adaptor* Adaptor::clone() const
-{
-	return new Adaptor(*this);
-}
