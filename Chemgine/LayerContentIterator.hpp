@@ -4,31 +4,29 @@
 #include "Reactant.hpp"
 #include "ReactantSet.hpp"
 
-#include <unordered_set>
-
 class Layer;
 
-class LayerIterator
+class LayerContentIterator
 {
 private:
 	const LayerType layer;
 	ReactantSet::const_iterator it;
 	const ReactantSet::const_iterator end;
 
-	LayerIterator(
+	LayerContentIterator(
 		const LayerType layer,
 		const ReactantSet::const_iterator it,
 		const ReactantSet::const_iterator end
 	) noexcept;
 
 public:
-	LayerIterator(const LayerIterator&) = default;
+	LayerContentIterator(const LayerContentIterator&) = default;
 
 	const Reactant& operator*() const;
 	const Reactant* operator->() const;
-	LayerIterator& operator++();
-	bool operator==(const LayerIterator& other) const;
-	bool operator!=(const LayerIterator& other) const;
+	LayerContentIterator& operator++();
+	bool operator==(const LayerContentIterator& other) const;
+	bool operator!=(const LayerContentIterator& other) const;
 
 	friend class Layer;
 };

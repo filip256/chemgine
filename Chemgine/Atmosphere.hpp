@@ -5,6 +5,7 @@
 class Atmosphere : public SingleLayerMixture<LayerType::GASEOUS>
 {
 private:
+	Atmosphere(const Atmosphere& other) noexcept;
 
 public:
 	Atmosphere(
@@ -16,4 +17,8 @@ public:
 	) noexcept;
 
 	void tick();
+
+	Atmosphere createSubatmosphere(const Amount<Unit::LITER> maxVolume);
+
+	Atmosphere makeCopy() const;
 };

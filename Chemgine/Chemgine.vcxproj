@@ -192,6 +192,7 @@
     <ClCompile Include="Atmosphere.cpp" />
     <ClCompile Include="BaseContainer.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="ColorCast.cpp" />
     <ClCompile Include="ContentInitializer.cpp" />
     <ClCompile Include="Context.cpp" />
     <ClCompile Include="EstimatorDataTable.cpp" />
@@ -222,7 +223,7 @@
     <ClCompile Include="LabwareDataTable.cpp" />
     <ClCompile Include="LabwarePort.cpp" />
     <ClCompile Include="LabwareSystem.cpp" />
-    <ClCompile Include="LayerIterator.cpp" />
+    <ClCompile Include="LayerContentIterator.cpp" />
     <ClCompile Include="LayerType.cpp" />
     <ClCompile Include="Linguistics.cpp" />
     <ClCompile Include="MultiLayerMixture.cpp" />
@@ -244,6 +245,7 @@
     <ClCompile Include="ReactionNetwork.cpp" />
     <ClCompile Include="Reactor.cpp" />
     <ClCompile Include="ScaleEstimator.cpp" />
+    <ClCompile Include="ShapeFill.cpp" />
     <ClCompile Include="Spline.cpp" />
     <ClCompile Include="SplineEstimator.cpp" />
     <ClCompile Include="SplitEstimator.cpp" />
@@ -259,6 +261,7 @@
     <ClInclude Include="Atmosphere.hpp" />
     <ClInclude Include="BaseContainer.hpp" />
     <ClInclude Include="Color.hpp" />
+    <ClInclude Include="ColorCast.hpp" />
     <ClInclude Include="Context.hpp" />
     <ClInclude Include="DirectedGraph.hpp" />
     <ClInclude Include="EstimatorDataTable.hpp" />
@@ -312,7 +315,7 @@
     <ClInclude Include="LabwarePort.hpp" />
     <ClInclude Include="LabwareSystem.hpp" />
     <ClInclude Include="LabwareType.hpp" />
-    <ClInclude Include="LayerIterator.hpp" />
+    <ClInclude Include="LayerContentIterator.hpp" />
     <ClInclude Include="Linguistics.hpp" />
     <ClInclude Include="MoleculeId.hpp" />
     <ClInclude Include="ContentInitializer.hpp" />
@@ -334,6 +337,7 @@
     <ClInclude Include="ReactionNetwork.hpp" />
     <ClInclude Include="Ref.hpp" />
     <ClInclude Include="ScaleEstimator.hpp" />
+    <ClInclude Include="ShapeFill.hpp" />
     <ClInclude Include="SingleLayerMixture.hpp" />
     <ClInclude Include="SparseDirectedGraph.hpp" />
     <ClInclude Include="Spline.hpp" />

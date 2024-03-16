@@ -4,7 +4,7 @@
 #include "LayerType.hpp"
 #include "StateNucleator.hpp"
 #include "Ref.hpp"
-#include "LayerIterator.hpp"
+#include "LayerContentIterator.hpp"
 
 class Mixture;
 template <LayerType L>
@@ -44,12 +44,15 @@ private:
 	bool hasTemporaryState(const Reactant& reactant) const;
 	void convertTemporaryStateReactants();
 
+	Layer(const Layer&) = default;
+
 public:
 	Layer(
 		const Ref<Mixture> container = Ref<Mixture>::nullRef,
 		const LayerType layerType = LayerType::NONE,
 		const Amount<Unit::CELSIUS> temperature = 0.0
 	) noexcept;
+	Layer(Layer&&) = default;
 
 	Amount<Unit::MOLE> getMoles() const;
 	Amount<Unit::GRAM> getMass() const;
@@ -78,8 +81,10 @@ public:
 	bool equals(const Layer& other,
 		const Amount<>::StorageType epsilon = std::numeric_limits<Amount<>::StorageType>::epsilon()) const;
 
-	LayerIterator begin() const;
-	LayerIterator end() const;
+	LayerContentIterator begin() const;
+	LayerContentIterator end() const;
+
+	Layer makeCopy(const Ref<Mixture> newContainer) const;
 
 	template <LayerType L>
 	friend class SingleLayerMixture;

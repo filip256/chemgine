@@ -1,4 +1,4 @@
-﻿ // THIS IS AN ALTERED VERSION OF THE ORIGINAL FILE !
+﻿ // THIS IS AN ALTERED VERSION OF THE ORIGINAL FILE
 
 /*
  * File:   collision.cpp
@@ -13,9 +13,8 @@
 
 namespace Collision
 {
-	using TextureMask = std::vector<sf::Uint8>;
-
-	static sf::Uint8 getPixel(const TextureMask& mask, const sf::Texture& tex, uint32_t x, uint32_t y) {
+	static sf::Uint8 getPixel(const TextureMask& mask, const sf::Texture& tex, uint32_t x, uint32_t y) 
+	{
 		if (x > tex.getSize().x || y > tex.getSize().y)
 			return 0;
 
@@ -25,7 +24,8 @@ namespace Collision
 	class BitmaskRegistry
 	{
 	public:
-		auto& create(const sf::Texture& tex, const sf::Image& img) {
+		auto& create(const sf::Texture& tex, const sf::Image& img)
+		{
 			auto mask = TextureMask(tex.getSize().y * tex.getSize().x);
 
 			for (uint32_t y = 0; y < tex.getSize().y; ++y)
@@ -38,7 +38,8 @@ namespace Collision
 			return (bitmasks[&tex] = std::move(mask));
 		}
 
-		auto& get(const sf::Texture& tex) {
+		auto& get(const sf::Texture& tex) 
+		{
 			auto pair = bitmasks.find(&tex);
 			if (pair == bitmasks.end())
 			{
@@ -54,12 +55,14 @@ namespace Collision
 
 	// Gets global instance of BitmaskRegistry.
 	// "static" to make sure this function doesn't leak to other source file
-	static BitmaskRegistry& bitmasks() {
+	static BitmaskRegistry& bitmasks() 
+	{
 		static BitmaskRegistry instance;
 		return instance;
 	}
 
-	bool singlePixelTest(const sf::Sprite& sprite, const sf::Vector2f& mousePosition, sf::Uint8 alphaLimit) {
+	bool singlePixelTest(const sf::Sprite& sprite, const sf::Vector2f& mousePosition, sf::Uint8 alphaLimit) 
+	{
 		if (!sprite.getGlobalBounds().contains(mousePosition.x, mousePosition.y))
 			return false;
 
@@ -74,7 +77,8 @@ namespace Collision
 		return false;
 	}
 
-	bool pixelPerfectTest(const sf::Sprite& sprite1, const sf::Sprite& sprite2, sf::Uint8 alphaLimit) {
+	bool pixelPerfectTest(const sf::Sprite& sprite1, const sf::Sprite& sprite2, sf::Uint8 alphaLimit) 
+	{
 		sf::FloatRect intersection;
 		if (!sprite1.getGlobalBounds().intersects(sprite2.getGlobalBounds(), intersection))
 			return false;
@@ -174,7 +178,8 @@ namespace Collision
 		}
 	};
 
-	bool boundingBoxTest(const sf::Sprite& sprite1, const sf::Sprite& sprite2) {
+	bool boundingBoxTest(const sf::Sprite& sprite1, const sf::Sprite& sprite2) 
+	{
 		auto OBB1 = OrientedBoundingBox(sprite1);
 		auto OBB2 = OrientedBoundingBox(sprite2);
 
@@ -200,5 +205,10 @@ namespace Collision
 				return false;
 		}
 		return true;
+	}
+
+	const TextureMask& getTextureMask(const sf::Texture& tex) 
+	{
+		return bitmasks().get(tex);
 	}
 }

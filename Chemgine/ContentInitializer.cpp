@@ -9,6 +9,13 @@ ContentInitializer::ContentInitializer(
         this->content.emplace(i);
 }
 
+ContentInitializer::ContentInitializer(const ReactantSet& content) noexcept
+{
+    this->content.reserve(content.size());
+    for (const auto& [_, i] : content)
+        this->content.emplace(i.molecule, i.amount);
+}
+
 size_t ContentInitializer::size() const 
 {
     return content.size();

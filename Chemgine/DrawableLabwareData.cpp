@@ -1,5 +1,6 @@
 #include "DrawableLabwareData.hpp"
 #include "Collision.hpp"
+#include "ShapeFill.hpp"
 
 DrawableLabwareData::DrawableLabwareData(
 	const LabwareId id,
@@ -11,4 +12,5 @@ DrawableLabwareData::DrawableLabwareData(
 	BaseLabwareData(id, name, std::move(ports), type)
 {
 	Collision::createTextureAndBitmask(texture, textureFile);
+	fillTexture = ShapeFill::createFillTexture(texture, 0);
 }

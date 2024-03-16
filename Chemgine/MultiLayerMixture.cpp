@@ -1,16 +1,29 @@
 #include "MultiLayerMixture.hpp"
 #include "Constants.hpp"
 
+MultiLayerMixture::MultiLayerMixture(const MultiLayerMixture& other) noexcept :
+	Mixture(other),
+	pressure(other.pressure),
+	totalMoles(other.totalMoles),
+	totalMass(other.totalMass),
+	totalVolume(other.totalVolume),
+	maxVolume(other.maxVolume),
+	overflowTarget(other.overflowTarget)
+{
+	for (const auto& l : other.layers)
+		this->layers.emplace(std::make_pair(l.first, l.second.makeCopy(*this)));
+}
+
 MultiLayerMixture::MultiLayerMixture(
 	const Ref<Atmosphere> atmosphere,
 	const Amount<Unit::LITER> maxVolume,
 	const Ref<BaseContainer> overflowTarget
 ) noexcept :
-	layers({ { LayerType::GASEOUS, Layer(*this, LayerType::GASEOUS, atmosphere->getLayer().temperature) }}),
 	pressure(atmosphere->getPressure()),
 	maxVolume(maxVolume),
 	overflowTarget(overflowTarget)
 {
+	layers.emplace(LayerType::GASEOUS, Layer(*this, LayerType::GASEOUS, atmosphere->getLayer().temperature));
 	atmosphere->copyContentTo(*this, maxVolume);
 }
 
@@ -113,75 +126,76 @@ void MultiLayerMixture::checkOverflow()
 
 LayerType MultiLayerMixture::getTopLayer() const
 {
-	auto l = LayerType::FIRST;
-	while (l <= LayerType::LAST)
-	{
-		if (hasLayer(l))
-			return l;
-		++l;
-	}
+	for (auto l = layers.cbegin(); l != layers.cend(); ++l)
+		if (l->second.isEmpty() == false)
+			return l->first;
+
 	return LayerType::NONE;
 }
 
 LayerType MultiLayerMixture::getBottomLayer() const
 {
-	auto l = LayerType::LAST;
-	while (l > LayerType::FIRST)
-	{
-		if (hasLayer(l))
-			return l;
-		--l;
-	}
-
-	if (hasLayer(LayerType::FIRST)) // overflow protection
-		return  LayerType::FIRST;
+	for (auto l = layers.crbegin(); l != layers.crend(); ++l)
+		if (l->second.isEmpty() == false)
+			return l->first;
 
 	return LayerType::NONE;
 }
 
 LayerType MultiLayerMixture::getLayerAbove(LayerType layer) const
 {
-	while (layer > LayerType::FIRST)
-	{
-		--layer;
-		if (hasLayer(layer))
-			return layer;
-	}
+	auto l = std::map<LayerType, Layer>::const_reverse_iterator(layers.lower_bound(layer));
+	if (l != layers.crend() && l->first == layer)
+		++l;
+
+	for (; l != layers.crend(); ++l)
+		if (l->second.isEmpty() == false)
+			return l->first;
 
 	return LayerType::NONE;
 }
 
 LayerType MultiLayerMixture::getLayerBelow(LayerType layer) const
 {
-	while (layer < LayerType::LAST)
-	{
-		++layer;
-		if (hasLayer(layer))
-			return layer;
-	}
+	for (auto l = layers.upper_bound(layer); l != layers.cend(); ++l)
+		if (l->second.isEmpty() == false)
+			return l->first;
 
 	return LayerType::NONE;
 }
 
 LayerType MultiLayerMixture::getClosestLayer(LayerType layer) const
 {
-	uint8_t i = 1;
-	while (true)
+	if (layers.empty())
+		return LayerType::NONE;
+
+	auto l = layers.lower_bound(layer);	
+	auto below = (l != layers.cend() && l->first == layer) ? std::next(l) : l;
+	auto above = std::map<LayerType, Layer>::const_reverse_iterator(l);
+
+	while (below != layers.cend() && above != layers.crend())
 	{
-		if (layer + i == LayerType::LAST)
-		{
-			return hasLayer(LayerType::LAST) ? LayerType::LAST : getLayerAbove(layer - (i - 1));
-		}
-		if (layer - i == LayerType::FIRST)
-		{
-			const auto l = getLayerBelow(layer + (i - 1));
-			return l != LayerType::NONE ? l : LayerType::FIRST;
-		}
-		if (hasLayer(layer + i))
-			return layer + i;
-		if (hasLayer(layer - i))
-			return layer - i;
-		++i;
+		if (below->second.isEmpty() == false)
+			return below->first;
+		if (above->second.isEmpty() == false)
+			return above->first;
+
+		++below;
+		++above;
+	}
+
+	while (below != layers.cend())
+	{
+		if (below->second.isEmpty() == false)
+			return below->first;
+		++below;
+	}
+
+	while (above != layers.crend())
+	{
+		if (above->second.isEmpty() == false)
+			return above->first;
+		++above;
 	}
 
 	return LayerType::NONE;
@@ -195,28 +209,7 @@ bool MultiLayerMixture::areAdjacentLayers(LayerType layer1, LayerType layer2) co
 	if (toIndex(layer2) - toIndex(layer1) <= 1)
 		return true;
 
-	++layer1;
-	do
-	{
-		if (hasLayer(layer1))
-			return false;
-		++layer1;
-	} 
-	while (layer1 < layer2);
-
-	return true;
-}
-
-void MultiLayerMixture::add(const Reactant& reactant)
-{
-	content.add(reactant);
-	addToLayer(reactant.mutate(*this));
-}
-
-bool MultiLayerMixture::hasLayer(const LayerType layer) const
-{
-	const auto& l = layers.find(layer);
-	return l != layers.end() && l->second.isEmpty() == false;
+	return getLayerBelow(layer2) == layer1;
 }
 
 LayerType MultiLayerMixture::findLayerFor(const Reactant& reactant) const
@@ -244,6 +237,18 @@ LayerType MultiLayerMixture::findLayerFor(const Reactant& reactant) const
 	return getLayerType(newAgg, polarity.getPartitionCoefficient() > 1.0, density > 1.0);
 }
 
+void MultiLayerMixture::add(const Reactant& reactant)
+{
+	content.add(reactant);
+	addToLayer(reactant.mutate(*this));
+}
+
+bool MultiLayerMixture::hasLayer(const LayerType layer) const
+{
+	const auto& l = layers.find(layer);
+	return l != layers.cend() && l->second.isEmpty() == false;
+}
+
 Amount<Unit::LITER> MultiLayerMixture::getMaxVolume() const
 {
 	return maxVolume;
@@ -252,6 +257,11 @@ Amount<Unit::LITER> MultiLayerMixture::getMaxVolume() const
 const Layer& MultiLayerMixture::getLayer(const LayerType layer) const
 {
 	return layers.at(layer);
+}
+
+Amount<Unit::CELSIUS> MultiLayerMixture::getLayerTemperature(const LayerType layer) const
+{
+	return layers.at(layer).temperature;
 }
 
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> MultiLayerMixture::getLayerHeatCapacity(const LayerType layer) const
@@ -299,6 +309,26 @@ Amount<Unit::LITER> MultiLayerMixture::getTotalVolume() const
 	return totalVolume;
 }
 
+MultiLayerMixture::LayerDownIterator MultiLayerMixture::getLayersDownBegin() const
+{
+	return layers.cbegin();
+}
+
+MultiLayerMixture::LayerDownIterator MultiLayerMixture::getLayersDownEnd() const
+{
+	return layers.cend();
+}
+
+MultiLayerMixture::LayerUpIterator MultiLayerMixture::getLayersUpBegin() const
+{
+	return layers.crbegin();
+}
+
+MultiLayerMixture::LayerUpIterator MultiLayerMixture::getLayersUpEnd() const
+{
+	return layers.crend();
+}
+
 void MultiLayerMixture::copyContentTo(Ref<BaseContainer> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer) const
 {
 	if (hasLayer(sourceLayer) == false)
@@ -337,4 +367,9 @@ void MultiLayerMixture::moveContentTo(Ref<BaseContainer> destination, Amount<Uni
 		destination->add(r.mutate(molesToAdd));
 		add(r.mutate(-molesToAdd));
 	}
+}
+
+MultiLayerMixture MultiLayerMixture::makeCopy() const
+{
+	return MultiLayerMixture(*this);
 }

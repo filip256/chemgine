@@ -42,6 +42,8 @@ it freely, subject to the following restrictions:
 
 namespace Collision 
 {
+	using TextureMask = std::vector<sf::Uint8>;
+
 	//////
 	/// Test for a collision between two sprites by comparing the alpha values of overlapping pixels
 	/// Supports scaling and rotation
@@ -87,4 +89,6 @@ namespace Collision
 	/// Supports scaling and rotation
 	//////
 	bool boundingBoxTest(const sf::Sprite& sprite1, const sf::Sprite& sprite2);
+
+	const TextureMask& getTextureMask(const sf::Texture& tex);
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Molecule.hpp"
+#include "ReactantSet.hpp"
 
 #include <unordered_map>
 
@@ -15,6 +16,7 @@ public:
 	ContentInitializer(
 		std::initializer_list<std::pair<Molecule, Amount<Unit::MOLE>>> content
 	) noexcept;
+	ContentInitializer(const ReactantSet& content) noexcept;
 	ContentInitializer() = default;
 	ContentInitializer(ContentInitializer&&) = default;
 

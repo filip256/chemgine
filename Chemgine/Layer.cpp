@@ -426,12 +426,23 @@ bool Layer::equals(const Layer& other, const Amount<>::StorageType epsilon) cons
         this->volume.equals(other.volume, epsilon);
 }
 
-LayerIterator Layer::begin() const
+LayerContentIterator Layer::begin() const
 {
-    return LayerIterator(layerType, container->content.begin(), container->content.end());
+    return LayerContentIterator(layerType, container->content.begin(), container->content.end());
 }
 
-LayerIterator Layer::end() const
+LayerContentIterator Layer::end() const
 {
-    return LayerIterator(layerType, container->content.end(), container->content.end());
+    return LayerContentIterator(layerType, container->content.end(), container->content.end());
+}
+
+Layer Layer::makeCopy(const Ref<Mixture> newContainer) const
+{
+    auto temp = Layer(*this);
+    temp.container = newContainer;
+    if (temp.lowNucleator.isSet())
+        temp.lowNucleator.setReactant(temp.lowNucleator.getReactant().mutate(newContainer));
+    if (temp.highNucleator.isSet())
+        temp.highNucleator.setReactant(temp.highNucleator.getReactant().mutate(newContainer));
+    return temp;
 }

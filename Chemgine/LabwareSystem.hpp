@@ -37,7 +37,7 @@ public:
 	friend class LabwareSystem;
 };
 
-class LabwareSystem
+class LabwareSystem : public sf::Drawable
 {
 private:
 	PVector<BaseLabwareComponent, l_size> components;
@@ -46,8 +46,6 @@ private:
 	sf::FloatRect boundingBox = sf::FloatRect(
 		std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
 		-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
-
-	LabwareSystem(BaseLabwareComponent* component) noexcept;
 
 	BaseLabwareComponent* releaseComponent(const l_size componentIdx);
 	LabwareSystem releaseSection(
@@ -68,8 +66,8 @@ private:
 	void recomputePositions(const l_size current, const uint8_t currentPort);
 
 public:
+	LabwareSystem(BaseLabwareComponent* component) noexcept;
 	LabwareSystem() = default;
-	LabwareSystem(const BaseLabwareComponent& component) noexcept;
 	LabwareSystem(const LabwareSystem&) = delete;
 	LabwareSystem(LabwareSystem&&) noexcept = default;
 	~LabwareSystem() = default;
@@ -77,8 +75,6 @@ public:
 	LabwareSystem& operator=(LabwareSystem&&) = default;
 
 	l_size size() const;
-
-	void add(const BaseLabwareComponent& component);
 
 	void move(const sf::Vector2f& offset);
 	void rotate(const float angle, const l_size center = 0);
@@ -125,7 +121,7 @@ public:
 	/// </summary>
 	std::vector<LabwareSystem> disconnect(const l_size componentIdx);
 
-	void draw(sf::RenderTarget& target) const;
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	constexpr static const l_size npos = PVector<BaseLabwareComponent, l_size>::npos;
 

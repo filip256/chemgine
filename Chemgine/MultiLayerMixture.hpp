@@ -6,6 +6,8 @@
 #include "Ref.hpp"
 #include "DumpContainer.hpp"
 
+#include <map>
+
 class MultiLayerMixture : public Mixture
 {
 protected:
@@ -17,7 +19,7 @@ protected:
 	const Amount<Unit::LITER> maxVolume;
 	Ref<BaseContainer> overflowTarget = DumpContainer::globalDumpContainer;
 
-	std::unordered_map<LayerType, Layer> layers;
+	std::map<LayerType, Layer> layers;
 
 	bool tryCreateLayer(const LayerType layer);
 	void addToLayer(const Reactant& reactant);
@@ -35,7 +37,7 @@ protected:
 
 	LayerType findLayerFor(const Reactant& reactant) const override final;
 
-	MultiLayerMixture(const MultiLayerMixture&) = default;
+	MultiLayerMixture(const MultiLayerMixture&) noexcept;
 
 public:
 	MultiLayerMixture(
@@ -56,12 +58,23 @@ public:
 	Amount<Unit::LITER> getTotalVolume() const override final;
 
 	const Layer& getLayer(const LayerType layer) const override final;
+	Amount<Unit::CELSIUS> getLayerTemperature(const LayerType layer) const override final;
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity(const LayerType layer) const override final;
 	Amount<Unit::JOULE_PER_CELSIUS> getLayerTotalHeatCapacity(const LayerType layer) const override final;
 	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType layer) const override final;
 	Polarity getLayerPolarity(const LayerType layer) const override final;
 	Color getLayerColor(const LayerType layer) const override final;
 
+	using LayerDownIterator = std::map<LayerType, Layer>::const_iterator;
+	LayerDownIterator getLayersDownBegin() const;
+	LayerDownIterator getLayersDownEnd() const;
+
+	using LayerUpIterator = std::map<LayerType, Layer>::const_reverse_iterator;
+	LayerUpIterator getLayersUpBegin() const;
+	LayerUpIterator getLayersUpEnd() const;
+
 	void copyContentTo(Ref<BaseContainer> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer) const;
 	void moveContentTo(Ref<BaseContainer> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer);
+
+	MultiLayerMixture makeCopy() const;
 };

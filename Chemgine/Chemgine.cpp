@@ -56,8 +56,8 @@ int main()
             .loadReactionsData("Data/ReactionData.csv")
             .loadLabwareData("Data/LabwareData.csv");
 
-        //UIContext uiContext;
-        //uiContext.run();
+        UIContext uiContext;
+        uiContext.run();
 
         //const auto& ra = store.reactions.at(201);
         //const auto& rb = store.reactions.at(207);

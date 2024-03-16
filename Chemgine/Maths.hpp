@@ -48,5 +48,4 @@ public:
 	/// Converts degrees to angles.
 	/// </summary>
 	static float toRadians(const float degrees);
-
 };

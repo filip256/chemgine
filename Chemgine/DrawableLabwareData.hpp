@@ -16,4 +16,5 @@ protected:
 
 public:
 	sf::Texture texture;
+	sf::Texture fillTexture;
 };

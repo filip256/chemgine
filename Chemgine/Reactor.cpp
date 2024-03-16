@@ -6,7 +6,7 @@
 DataStoreAccessor Reactor::dataAccessor = DataStoreAccessor();
 
 Reactor::Reactor(const Reactor& other) noexcept :
-	MultiLayerMixture(other),
+	MultiLayerMixture(static_cast<const MultiLayerMixture&>(other).makeCopy()),
 	temperatureSpeedEstimator(other.temperatureSpeedEstimator),
 	concentrationSpeedEstimator(other.concentrationSpeedEstimator),
 	stirSpeed(other.stirSpeed),

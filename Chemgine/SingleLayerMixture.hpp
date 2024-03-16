@@ -31,6 +31,8 @@ protected:
 
 	void scaleToVolume(const Amount<Unit::LITER> volume);
 
+	SingleLayerMixture(const SingleLayerMixture& other) noexcept;
+
 public:
 	SingleLayerMixture(
 		const Amount<Unit::CELSIUS> temperature,
@@ -41,6 +43,7 @@ public:
 	) noexcept;
 
 	const Layer& getLayer() const;
+	Amount<Unit::CELSIUS> getLayerTemperature() const;
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity() const;
 	Amount<Unit::JOULE_PER_CELSIUS> getLayerTotalHeatCapacity() const;
 	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy() const;
@@ -63,6 +66,7 @@ public:
 	Amount<Unit::LITER> getTotalVolume() const override final;
 
 	const Layer& getLayer(const LayerType l) const override final;
+	Amount<Unit::CELSIUS> getLayerTemperature(const LayerType l) const override final;
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity(const LayerType l) const override final;
 	Amount<Unit::JOULE_PER_CELSIUS> getLayerTotalHeatCapacity(const LayerType layer) const override final;
 	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType l) const override final;
@@ -71,8 +75,20 @@ public:
 
 	void copyContentTo(const Ref<BaseContainer> destination, const Amount<Unit::LITER> volume) const;
 	void moveContentTo(const Ref<BaseContainer> destination, const Amount<Unit::LITER> volume);
+
+	SingleLayerMixture<L> makeCopy() const;
 };
 
+
+
+template<LayerType L>
+SingleLayerMixture<L>::SingleLayerMixture(const SingleLayerMixture& other) noexcept :
+	layer(other.layer.makeCopy(*this)),
+	pressure(other.pressure),
+	maxVolume(other.maxVolume),
+	overflowTarget(other.overflowTarget),
+	incompatibilityTargets(other.incompatibilityTargets)
+{}
 
 template<LayerType L>
 SingleLayerMixture<L>::SingleLayerMixture(
@@ -277,6 +293,12 @@ const Layer& SingleLayerMixture<L>::getLayer(const LayerType l) const
 }
 
 template<LayerType L>
+Amount<Unit::CELSIUS> SingleLayerMixture<L>::getLayerTemperature() const
+{
+	return getLayerHeatTemperature(L);
+}
+
+template<LayerType L>
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> SingleLayerMixture<L>::getLayerHeatCapacity() const
 {
 	return getLayerHeatCapacity(L);
@@ -304,6 +326,12 @@ template<LayerType L>
 Color SingleLayerMixture<L>::getLayerColor() const
 {
 	return getLayerColor(L);
+}
+
+template<LayerType L>
+Amount<Unit::CELSIUS> SingleLayerMixture<L>::getLayerTemperature(const LayerType l) const
+{
+	return layer.temperature;
 }
 
 template<LayerType L>
@@ -364,4 +392,10 @@ void SingleLayerMixture<L>::moveContentTo(Ref<BaseContainer> destination, Amount
 		destination->add(r.mutate(molesToAdd));
 		add(r.mutate(-molesToAdd));
 	}
+}
+
+template<LayerType L>
+SingleLayerMixture<L> SingleLayerMixture<L>::makeCopy() const
+{
+	return SingleLayerMixture<L>(*this);
 }

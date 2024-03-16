@@ -20,6 +20,11 @@ const ReactantSet& Mixture::getContent() const
 	return content;
 }
 
+ContentInitializer Mixture::getContentInitializer() const
+{
+	return ContentInitializer(content);
+}
+
 Amount<Unit::MOLE> Mixture::getAmountOf(const Reactant& reactant) const
 {
 	return content.getAmountOf(reactant);

@@ -85,13 +85,21 @@ public:
         InHand inHand;
         DragNDropHelper dndHelper;
 
-        systems.emplace_back(Flask(201));
-        systems.emplace_back(Flask(201));
-        systems.emplace_back(Adaptor(301));
-        systems.emplace_back(Adaptor(302));
-        systems.emplace_back(Flask(201));
-        systems.emplace_back(Adaptor(301));
-        systems.emplace_back(Adaptor(302));
+        Atmosphere atmosphere(
+            1.0_C, 760.0_torr,
+            { { Molecule("N#N"), 78.084_mol }, { Molecule("O=O"), 20.946_mol } },
+            1000.0_L, DumpContainer::globalDumpContainer);
+
+        auto flask = new Flask(201, atmosphere);
+        flask->add(Molecule("CC(=O)OH"), 1.0_mol);
+        flask->tick();
+        systems.emplace_back(flask);
+        systems.emplace_back(new Flask(201, atmosphere));
+        systems.emplace_back(new Adaptor(301, atmosphere));
+        systems.emplace_back(new Adaptor(302, atmosphere));
+        systems.emplace_back(new Flask(201, atmosphere));
+        systems.emplace_back(new Adaptor(301, atmosphere));
+        systems.emplace_back(new Adaptor(302, atmosphere));
 
         for(size_t i = 0; i < systems.size(); ++i)
             systems[i].move(sf::Vector2f(100 + 75 * i, 50));
@@ -193,7 +201,7 @@ public:
             window.clear();
 
             for(size_t i = 0; i < systems.size(); ++i)
-                systems[i].draw(window);
+                window.draw(systems[i]);
             window.draw(text);
 
             window.display();

@@ -91,7 +91,7 @@ void ReactantSet::erase(bool (*predicate)(const ReactantSet::pairT&))
 
 ReactantSet::const_iterator ReactantSet::begin() const
 {
-	return reactants.begin();
+	return reactants.cbegin();
 }
 
 ReactantSet::iterator ReactantSet::begin()
@@ -101,7 +101,7 @@ ReactantSet::iterator ReactantSet::begin()
 
 ReactantSet::const_iterator ReactantSet::end() const
 {
-	return reactants.end();
+	return reactants.cend();
 }
 
 ReactantSet::iterator ReactantSet::end()

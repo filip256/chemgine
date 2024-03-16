@@ -262,6 +262,10 @@ Tasks:
   DONE. Create a class for initContent
   18. Rename DataTable to Repository
   19. Use std:: for cstdint types
+  DONE. Use map instead of unordered_map for storing layers (=> 34.5% sim-time perf. improvement!)
+  20. Consider switching LayerType to iterators where possible, within the containers
+  21. Try to remove clone from labware components, or add clone without content
+  DONE. Use sfDrawable as drawable labware component's base
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules
@@ -314,9 +318,11 @@ Tasks:
   DONE. Split reactants into Id <Molecule + Layer> and properties
   DONE. Make reactant set acctually use a map Id -> properties
 ---
-  1. Add reactors to labware components
+  DONE. Add reactors to labware components
   DONE. Add color field to molecules and layers
-  3. Create visual representation of a labware component
+  DONE. Create FillShape and add to components
+  2. Take texture width into account for volume
+  3. Create visual representation of labware components
 ---
   1. Build and link boost
   1. Add bin parser/printer

@@ -4,9 +4,12 @@
 
 DrawableComponent::DrawableComponent(const LabwareId id) noexcept :
 	BaseLabwareComponent(id),
-	sprite(static_cast<const DrawableLabwareData&>(data).texture)
+	sprite(static_cast<const DrawableLabwareData&>(data).texture),
+	fill(static_cast<const DrawableLabwareData&>(data).fillTexture)
 {
 	sprite.setOrigin(sprite.getLocalBounds().getSize() / 2.0f);
+
+	fill.setColor(sf::Color::Green);
 
 	adjustedPorts.reserve(data.ports.size());
 	for (uint8_t i = 0; i < data.ports.size(); ++i)
@@ -36,6 +39,13 @@ const sf::Vector2f DrawableComponent::getAdjustedPosition() const
 void DrawableComponent::setPosition(const sf::Vector2f& position)
 {
 	sprite.setPosition(position);
+	fill.setPosition(position);
+}
+
+void DrawableComponent::move(const sf::Vector2f& offset)
+{
+	sprite.move(offset);
+	fill.move(offset);
 }
 
 float DrawableComponent::getRotation() const
@@ -48,6 +58,7 @@ void DrawableComponent::setRotation(const float angle)
 	for (uint8_t i = 0; i < adjustedPorts.size(); ++i)
 		adjustedPorts[i].rotate(angle);
 	sprite.setRotation(angle);
+	fill.setRotation(angle);
 }
 
 const sf::Vector2f& DrawableComponent::getOrigin() const
@@ -71,7 +82,7 @@ const std::vector<DrawablePort>& DrawableComponent::getPorts() const
 }
 
 
-void DrawableComponent::draw(sf::RenderTarget& target) const
+void DrawableComponent::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 #ifndef NDEBUG
 	sf::RectangleShape bBox(sprite.getGlobalBounds().getSize());

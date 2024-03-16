@@ -2,6 +2,7 @@
 
 #include "BaseContainer.hpp"
 #include "ReactantSet.hpp"
+#include "ContentInitializer.hpp"
 
 class Layer;
 
@@ -27,6 +28,7 @@ public:
 	void add(const Mixture& other);
 
 	const ReactantSet& getContent() const;
+	ContentInitializer getContentInitializer() const;
 
 	Amount<Unit::MOLE> getAmountOf(const Reactant& reactant) const;
 	Amount<Unit::MOLE> getAmountOf(const ReactantSet& reactantSet) const;
@@ -37,6 +39,7 @@ public:
 	virtual Amount<Unit::LITER> getTotalVolume() const = 0;
 
 	virtual const Layer& getLayer(const LayerType layer) const = 0;
+	virtual Amount<Unit::CELSIUS> getLayerTemperature(const LayerType l) const = 0;
 	virtual Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity(const LayerType layer) const = 0;
 	virtual Amount<Unit::JOULE_PER_CELSIUS> getLayerTotalHeatCapacity(const LayerType layer) const = 0;
 	virtual Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType layer) const = 0;

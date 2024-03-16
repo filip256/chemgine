@@ -133,6 +133,12 @@
     <Filter Include="Source Files\Mixtures\MixtureTypes">
       <UniqueIdentifier>{353b0213-4565-4105-a3b6-63d474129752}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Graphics">
+      <UniqueIdentifier>{30b79908-636c-495c-9fb1-d0a7d98a3647}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics">
+      <UniqueIdentifier>{fdbd94f5-df48-49cb-9dcb-7cd3c7e739e6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataStore.cpp">
@@ -342,7 +348,7 @@
     <ClCompile Include="StateNucleator.cpp">
       <Filter>Source Files\Mixtures</Filter>
     </ClCompile>
-    <ClCompile Include="LayerIterator.cpp">
+    <ClCompile Include="LayerContentIterator.cpp">
       <Filter>Source Files\Mixtures</Filter>
     </ClCompile>
     <ClCompile Include="ForwardingContainer.cpp">
@@ -374,6 +380,12 @@
     </ClCompile>
     <ClCompile Include="Color.cpp">
       <Filter>Source Files\Data\Values</Filter>
+    </ClCompile>
+    <ClCompile Include="ShapeFill.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ColorCast.cpp">
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -656,9 +668,6 @@
     <ClInclude Include="StateNucleator.hpp">
       <Filter>Header Files\Mixtures</Filter>
     </ClInclude>
-    <ClInclude Include="LayerIterator.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ForwardingContainer.hpp">
       <Filter>Header Files\Mixtures\MixtureTypes</Filter>
     </ClInclude>
@@ -700,6 +709,15 @@
     </ClInclude>
     <ClInclude Include="Color.hpp">
       <Filter>Header Files\Data\Values</Filter>
+    </ClInclude>
+    <ClInclude Include="ShapeFill.hpp">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorCast.hpp">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="LayerContentIterator.hpp">
+      <Filter>Header Files\Mixtures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

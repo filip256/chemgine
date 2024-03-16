@@ -61,11 +61,6 @@ LabwareSystem::LabwareSystem(BaseLabwareComponent* component) noexcept
 	add(component);
 }
 
-LabwareSystem::LabwareSystem(const BaseLabwareComponent& component) noexcept
-{
-	add(component);
-}
-
 l_size LabwareSystem::size() const
 {
 	return components.size();
@@ -124,11 +119,6 @@ void LabwareSystem::add(PortIdentifier& srcPort, PortIdentifier& destPort)
 		LabwareConnection::getStrength(dest.components[translatedComponent]->getPort(srcPort.portIdx).type, destPort->type));
 }
 
-void LabwareSystem::add(const BaseLabwareComponent& component)
-{
-	add(component.clone());
-}
-
 void LabwareSystem::clearBoundry()
 {
 	boundingBox = sf::FloatRect(
@@ -173,7 +163,7 @@ bool LabwareSystem::isOnBoundry(const sf::FloatRect& box) const
 		box.top + box.height >= boundingBox.top + boundingBox.height;
 }
 
-void LabwareSystem::draw(sf::RenderTarget& target) const
+void LabwareSystem::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 #ifndef NDEBUG
 	sf::RectangleShape bBox(boundingBox.getSize());
@@ -183,7 +173,7 @@ void LabwareSystem::draw(sf::RenderTarget& target) const
 #endif
 
 	for (l_size i = 0; i < components.size(); ++i)
-		components[i]->draw(target);
+		target.draw(*components[i]);
 }
 
 void LabwareSystem::move(const sf::Vector2f& offset)
@@ -192,7 +182,7 @@ void LabwareSystem::move(const sf::Vector2f& offset)
 	boundingBox.top += offset.y;
 
 	for (l_size i = 0; i < components.size(); ++i)
-		components[i]->getSprite().move(offset);
+		components[i]->move(offset);
 }
 
 void LabwareSystem::recomputePositions(const l_size parent, const uint8_t parentPort)
