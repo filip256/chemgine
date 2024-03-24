@@ -3,6 +3,8 @@
 #include "BaseLabwareData.hpp"
 #include "DataStoreAccessor.hpp"
 #include "DrawablePort.hpp"
+#include "Molecule.hpp"
+#include "Mixture.hpp"
 #include "SFML/Graphics.hpp"
 
 class BaseLabwareComponent : public sf::Drawable
@@ -24,7 +26,8 @@ public:
 
 	static void setDataStore(const DataStore& dataStore);
 
-	bool isContainerType() const;
+	bool isFlaskType() const;
+	virtual bool isContainerType() const;
 
 	virtual const BaseLabwareData& getData() const = 0;
 	virtual const sf::Sprite& getSprite() const = 0;
@@ -45,6 +48,10 @@ public:
 	virtual bool contains(const sf::Vector2f& point) const = 0;
 	virtual bool intersects(const BaseLabwareComponent& other) const = 0;
 
+	virtual void tick(const Amount<Unit::SECOND> timespan);
+
+	template<typename L, typename = std::enable_if<std::is_base_of_v<BaseLabwareComponent, L>>>
+	Ref<L> as();
 
 	// for memory leak checking
 	static size_t instanceCount;
@@ -53,3 +60,10 @@ public:
 	void operator delete(void* ptr);
 #endif
 };
+
+
+template<typename L, typename>
+Ref<L> BaseLabwareComponent::as()
+{
+	return Ref(*this).as<L>();
+}

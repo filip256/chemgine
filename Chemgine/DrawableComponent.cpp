@@ -4,16 +4,20 @@
 
 DrawableComponent::DrawableComponent(const LabwareId id) noexcept :
 	BaseLabwareComponent(id),
-	sprite(static_cast<const DrawableLabwareData&>(data).texture),
-	fill(static_cast<const DrawableLabwareData&>(data).fillTexture)
+	sprite(getData().texture)
 {
-	sprite.setOrigin(sprite.getLocalBounds().getSize() / 2.0f);
-
-	fill.setColor(sf::Color::Green);
+	const auto txScale = getData().textureScale;
+	sprite.setScale(sf::Vector2f(txScale, txScale));
+	sprite.setOrigin(sprite.getGlobalBounds().getSize() / 2.0f);
 
 	adjustedPorts.reserve(data.ports.size());
 	for (uint8_t i = 0; i < data.ports.size(); ++i)
-		adjustedPorts.emplace_back(data.ports[i], sprite.getOrigin());
+		adjustedPorts.emplace_back(data.ports[i], sprite.getOrigin(), txScale);
+}
+
+const DrawableLabwareData& DrawableComponent::getData() const
+{
+	return static_cast<const DrawableLabwareData&>(data);
 }
 
 const sf::Sprite& DrawableComponent::getSprite() const
@@ -39,13 +43,11 @@ const sf::Vector2f DrawableComponent::getAdjustedPosition() const
 void DrawableComponent::setPosition(const sf::Vector2f& position)
 {
 	sprite.setPosition(position);
-	fill.setPosition(position);
 }
 
 void DrawableComponent::move(const sf::Vector2f& offset)
 {
 	sprite.move(offset);
-	fill.move(offset);
 }
 
 float DrawableComponent::getRotation() const
@@ -58,7 +60,6 @@ void DrawableComponent::setRotation(const float angle)
 	for (uint8_t i = 0; i < adjustedPorts.size(); ++i)
 		adjustedPorts[i].rotate(angle);
 	sprite.setRotation(angle);
-	fill.setRotation(angle);
 }
 
 const sf::Vector2f& DrawableComponent::getOrigin() const
@@ -97,8 +98,8 @@ void DrawableComponent::draw(sf::RenderTarget& target, sf::RenderStates states) 
 	sf::CircleShape port(2.0f, 16);
 	port.setOrigin(sf::Vector2f(1.0f, 1.0f));
 	port.setFillColor(sf::Color::Blue);
-	port.setOutlineColor(sf::Color(0, 0, 255, 50));
-	port.setOutlineThickness(28.0f);
+	//port.setOutlineColor(sf::Color(0, 0, 255, 50));
+	//port.setOutlineThickness(28.0f);
 	for (uint8_t i = 0; i < adjustedPorts.size(); ++i)
 	{
 		port.setPosition(sprite.getPosition() + adjustedPorts[i].position);

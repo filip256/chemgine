@@ -31,4 +31,7 @@ public:
 	bool operator<=(const Value<T>& other) const;
 	bool operator>(const Value<T>& other) const;
 	bool operator>=(const Value<T>& other) const;
+
+	constexpr bool oveflowsOnAdd(const Value<T>& other) const noexcept;
+	constexpr bool oveflowsOnMultiply(const Value<T>& other) const noexcept;
 };

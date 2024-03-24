@@ -55,7 +55,7 @@ public:
 		const Molecule& molecule,
 		const LayerType layer,
 		const Amount<Unit::MOLE> amount,
-		const Ref<Mixture> container = Ref<Mixture>::nullRef
+		const Ref<Mixture> container = nullRef
 	) noexcept;
 
 	Reactant(const Reactant&) = default;

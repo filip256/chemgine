@@ -16,7 +16,7 @@ public:
 class ForwardingContainer : public BaseContainer
 {
 private:
-	Ref<BaseContainer> defaultTarget = DumpContainer::globalDumpContainer;
+	Ref<BaseContainer> defaultTarget = DumpContainer::GlobalDumpContainer;
 	std::vector<ForwardingRule> forwardingRules;
 
 public:

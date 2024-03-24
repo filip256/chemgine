@@ -1,9 +1,10 @@
 #pragma once
 
 #include "BaseLabwareComponent.hpp"
-#include "SFML/Graphics.hpp"
+#include "DrawableLabwareData.hpp"
 #include "DrawablePort.hpp"
 #include "ShapeFill.hpp"
+#include "SFML/Graphics.hpp"
 
 class DrawableComponent : public BaseLabwareComponent
 {
@@ -12,19 +13,19 @@ private:
 	std::vector<DrawablePort> adjustedPorts;
 
 protected:
-	ShapeFill fill;
-
 	DrawableComponent(const LabwareId id) noexcept;
 
 public:
+	const DrawableLabwareData& getData() const override;
+
 	const sf::Sprite& getSprite() const override final;
 	sf::Sprite& getSprite() override final;
 	const sf::Vector2f& getPosition() const override final;
 	const sf::Vector2f getAdjustedPosition() const override final;
-	void setPosition(const sf::Vector2f& position) override final;
-	void move(const sf::Vector2f& offset) override final;
+	void setPosition(const sf::Vector2f& position) override;
+	void move(const sf::Vector2f& offset) override;
 	float getRotation() const override final;
-	void setRotation(const float angle) override final;
+	void setRotation(const float angle) override;
 	const sf::Vector2f& getOrigin() const override final;
 	sf::FloatRect getBounds() const override final;
 

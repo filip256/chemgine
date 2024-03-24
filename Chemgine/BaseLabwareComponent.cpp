@@ -11,7 +11,7 @@ BaseLabwareComponent::BaseLabwareComponent(const LabwareId id) noexcept :
 
 const DataStore& BaseLabwareComponent::dataStore() const
 {
-	return dataAccessor.get();
+	return dataAccessor.getSafe();
 }
 
 void BaseLabwareComponent::setDataStore(const DataStore& dataStore)
@@ -19,10 +19,18 @@ void BaseLabwareComponent::setDataStore(const DataStore& dataStore)
 	dataAccessor.set(dataStore);
 }
 
+bool BaseLabwareComponent::isFlaskType() const
+{
+	return data.type == LabwareType::FLASK;
+}
+
 bool BaseLabwareComponent::isContainerType() const
 {
-	return data.type == LabwareType::FLASK || data.type == LabwareType::ADAPTOR;
+	return false;
 }
+
+void BaseLabwareComponent::tick(const Amount<Unit::SECOND> timespan)
+{}
 
 #ifndef NDEBUG
 void* BaseLabwareComponent::operator new(const size_t count)

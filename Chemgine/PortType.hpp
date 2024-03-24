@@ -9,5 +9,6 @@ enum class PortType : uint8_t
 	INLET = 2,
 	OUTLET = 3,
 	DROPPER = 4,
-	HOSE = 5
+	HOSE = 5,
+	CONTACT = 6
 };

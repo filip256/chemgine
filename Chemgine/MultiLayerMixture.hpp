@@ -3,7 +3,6 @@
 #include "Mixture.hpp"
 #include "Layer.hpp"
 #include "Atmosphere.hpp"
-#include "Ref.hpp"
 #include "DumpContainer.hpp"
 
 #include <map>
@@ -17,7 +16,7 @@ protected:
 	Amount<Unit::LITER> totalVolume = 0.0;
 
 	const Amount<Unit::LITER> maxVolume;
-	Ref<BaseContainer> overflowTarget = DumpContainer::globalDumpContainer;
+	Ref<BaseContainer> overflowTarget = DumpContainer::GlobalDumpContainer;
 
 	std::map<LayerType, Layer> layers;
 
@@ -47,6 +46,8 @@ public:
 	) noexcept;
 
 	void add(const Reactant& reactant) override final;
+	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount) override;
+	void add(const Amount<Unit::JOULE> heat) override;
 
 	bool hasLayer(const LayerType layer) const;
 
@@ -64,6 +65,9 @@ public:
 	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType layer) const override final;
 	Polarity getLayerPolarity(const LayerType layer) const override final;
 	Color getLayerColor(const LayerType layer) const override final;
+
+	Ref<BaseContainer> getOverflowTarget() const override final;
+	void setOverflowTarget(const Ref<BaseContainer> target) override final;
 
 	using LayerDownIterator = std::map<LayerType, Layer>::const_iterator;
 	LayerDownIterator getLayersDownBegin() const;

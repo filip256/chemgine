@@ -333,6 +333,7 @@ private:
 	Reactor* reactorG = nullptr;
 	SingleLayerMixture<LayerType::GASEOUS>* gasMixtureA = nullptr;
 	ForwardingContainer* forwardA = nullptr;
+	const Amount<Unit::SECOND> tickTimespan = 1.0_s;
 
 	const double waterTemperatureThreshold = 0.1;
 	const double overflowLossThreshold = 0.0000001;
@@ -343,8 +344,8 @@ private:
 		const auto massBefore = reactorA->getTotalMass() + atmosphere->getTotalMass() + dumpA->getTotalMass();
 		for (size_t i = 0; i < 32; ++i)
 		{
-			reactorA->tick();
-			atmosphere->tick();
+			reactorA->tick(tickTimespan);
+			atmosphere->tick(tickTimespan);
 			const auto massAfter = reactorA->getTotalMass() + atmosphere->getTotalMass() + dumpA->getTotalMass();
 
 			if (std::abs((massAfter - massBefore).asStd()) > 1e-5)
@@ -369,7 +370,7 @@ private:
 		{
 			const auto correctedEnergy = batches[i].first * moles.asStd();
 			reactorB->add(correctedEnergy);
-			reactorB->tick();
+			reactorB->tick(tickTimespan);
 			addedEnergy += correctedEnergy;
 			const auto act = layer.getTemperature();
 			const auto err = abs((act - batches[i].second).asStd());
@@ -403,7 +404,7 @@ private:
 		reactorC->add(Molecule("O"), 700.0);
 		const auto atmBefore = atmosphere->getTotalVolume();
 		const auto reactorBefore = reactorC->getTotalVolume();
-		reactorC->tick();
+		reactorC->tick(tickTimespan);
 		const auto atmAfter = atmosphere->getTotalVolume();
 		const auto reactorAfter = reactorC->getTotalVolume();
 
@@ -469,8 +470,8 @@ private:
 
 		reactorD->add(10.0_J);
 		copyReactor.add(10.0_J);
-		reactorD->tick();
-		copyReactor.tick();
+		reactorD->tick(tickTimespan);
+		copyReactor.tick(tickTimespan);
 
 		if (reactorD->isSame(initialReactor))
 		{
@@ -529,8 +530,8 @@ private:
 
 			reactorD->add(10.0_J);
 			copyReactor.add(10.0_J);
-			reactorD->tick();
-			copyReactor.tick();
+			reactorD->tick(tickTimespan);
+			copyReactor.tick(tickTimespan);
 		}
 	}
 	void runAggregationChangeTest()
@@ -559,7 +560,7 @@ private:
 		for (size_t i = 0; i < 64; ++i)
 		{
 			reactorE->add(Amount<Unit::JOULE>(energyStep));
-			reactorE->tick();
+			reactorE->tick(tickTimespan);
 			Logger::logCached(std::to_string(energyStep.asKilo() * (i + 1)).substr(0, 5) + "kJ |   " +
 				source.getTemperature().toString(8) + "    " +
 				destination.getTemperature().toString(8) + "        " +

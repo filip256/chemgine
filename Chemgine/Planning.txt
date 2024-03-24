@@ -267,6 +267,10 @@ Tasks:
   DONE. Remove clone from labware components, or add clone without content
   DONE. Use sfDrawable as drawable labware component's base
   DONE. Add spline lossy optimization
+  DONE. Add overflow check to dumps
+  21. Add object for Molecule-Amount pairs
+  22. Spread system ticks across multiple frames
+  DONE. Add nullRef type instead of Ref<T>::nullRef
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules
@@ -323,7 +327,13 @@ Tasks:
   DONE. Add color field to molecules and layers
   DONE. Create FillShape and add to components
   DONE. Add volumetric scaling to flasks
-  3. Create visual representation of labware components
+  DONE. Add lab and lab atmosphere
+  DONE. Add tick to labs, systems, and components
+  DONE. Add heatsources
+  DONE. Add scale to labware components
+  DONE. Add display reactor properies
+  2. Create mixture network behind labware systems
+  3. Add particle system
 ---
   1. Build and link boost
   1. Add bin parser/printer

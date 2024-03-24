@@ -4,16 +4,16 @@
 
 enum class LabwareType : uint8_t
 {
-	NONE,
-	FLASK,
-	ADAPTOR,
-	CONDENSER,
-	FUNNEL,
-	SEP_FUNNEL,
-	DROP_FUNNEL,
-	HEATER,
-	STIRRER,
-	HEATER_STIRRER
+	NONE = 0,
+	FLASK = 1,
+	ADAPTOR = 2,
+	CONDENSER = 3,
+	FUNNEL = 4,
+	SEP_FUNNEL = 5,
+	DROP_FUNNEL = 6,
+	HEATSOURCE = 7,
+	STIRRE = 8,
+	HEATER_STIRRER = 9
 };
 
 static inline constexpr bool hasMultiLayerStorage(const LabwareType type)

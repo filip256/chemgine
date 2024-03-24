@@ -60,14 +60,14 @@ public:
 
 	Reactor(Reactor&&) = default;
 
-	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount);
-	void add(const Amount<Unit::JOULE> heat);
+	void add(const Amount<Unit::JOULE> heat) override final;
+	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount) override;
 	void add(Reactor& other);
 	void add(Reactor& other, const double ratio);
 
 	FlagField<TickMode> getTickMode() const;
 	void setTickMode(const FlagField<TickMode> mode);
-	void tick();
+	void tick(const Amount<Unit::SECOND> timespan);
 
 	bool hasSameState(const Reactor& other,
 		const Amount<>::StorageType epsilon = std::numeric_limits<Amount<>::StorageType>::epsilon()) const;

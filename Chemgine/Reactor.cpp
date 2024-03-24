@@ -205,25 +205,14 @@ void Reactor::consumePotentialEnergy()
 	}
 }
 
-void Reactor::add(const Molecule& molecule, const Amount<Unit::MOLE> amount)
-{
-	auto r = Reactant(molecule, LayerType::UNKNOWN, amount, *this);
-	MultiLayerMixture::add(r.mutate(findLayerFor(r)));
-}
-
 void Reactor::add(const Amount<Unit::JOULE> heat)
 {
-	const auto lA = getLayerAbove(LayerType::SOLID);
-	const auto& lS = layers.find(LayerType::SOLID);
+	MultiLayerMixture::add(heat);
+}
 
-	if (lS == layers.end())
-	{
-		layers.at(lA).potentialEnergy += heat;
-		return;
-	}
-
-	lS->second.potentialEnergy += heat * 0.5;
-	layers.at(lA).potentialEnergy += heat * 0.5;
+void Reactor::add(const Molecule& molecule, const Amount<Unit::MOLE> amount)
+{
+	MultiLayerMixture::add(molecule, amount);
 }
 
 void Reactor::add(Reactor& other)
@@ -267,7 +256,7 @@ void Reactor::setTickMode(const FlagField<TickMode> mode)
 	tickMode.set(mode);
 }
 
-void Reactor::tick()
+void Reactor::tick(const Amount<Unit::SECOND> timespan)
 {
 	if(tickMode.has(TickMode::ENABLE_OVERFLOW))
 		checkOverflow();
@@ -278,11 +267,11 @@ void Reactor::tick()
 	if (tickMode.has(TickMode::ENABLE_REACTIONS))
 	{
 		findNewReactions();
-		runReactions(1.0);
+		runReactions(timespan);
 	}
 
 	if (tickMode.has(TickMode::ENABLE_CONDUCTION))
-		runLayerEnergyConduction(1.0);
+		runLayerEnergyConduction(timespan);
 
 	if (tickMode.has(TickMode::ENABLE_ENERGY))
 		consumePotentialEnergy();

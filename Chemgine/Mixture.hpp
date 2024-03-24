@@ -3,6 +3,7 @@
 #include "BaseContainer.hpp"
 #include "ReactantSet.hpp"
 #include "ContentInitializer.hpp"
+#include "Ref.hpp"
 
 class Layer;
 
@@ -26,6 +27,8 @@ public:
 
 	void add(const Reactant& reactant) override;
 	void add(const Mixture& other);
+	virtual void add(const Molecule& molecule, const Amount<Unit::MOLE> amount);
+	virtual void add(const Amount<Unit::JOULE> heat) = 0;
 
 	const ReactantSet& getContent() const;
 	ContentInitializer getContentInitializer() const;
@@ -45,6 +48,9 @@ public:
 	virtual Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType layer) const = 0;
 	virtual Polarity getLayerPolarity(const LayerType layer) const = 0;
 	virtual Color getLayerColor(const LayerType layer) const = 0;
+
+	virtual Ref<BaseContainer> getOverflowTarget() const = 0;
+	virtual void setOverflowTarget(const Ref<BaseContainer> target) = 0;
 
 	friend class Layer;
 };

@@ -7,10 +7,11 @@ DrawableLabwareData::DrawableLabwareData(
 	const std::string& name,
 	std::vector<LabwarePort>&& ports,
 	const std::string& textureFile,
+	const float textureScale,
 	const LabwareType type
 ) noexcept :
-	BaseLabwareData(id, name, std::move(ports), type)
+	BaseLabwareData(id, name, std::move(ports), type),
+	textureScale(textureScale)
 {
 	Collision::createTextureAndBitmask(texture, textureFile);
-	fillTexture = ShapeFillTexture(texture, 0, hasMultiLayerStorage(type));
 }

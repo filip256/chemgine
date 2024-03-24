@@ -1,15 +1,13 @@
 #pragma once
 
-#include "DrawableComponent.hpp"
+#include "ContainerComponent.hpp"
 #include "FlaskData.hpp"
 #include "Reactor.hpp"
 
-class Flask : public DrawableComponent
+class Flask : public ContainerComponent<Reactor>
 {
 private:
-	Reactor content;
-
-	Flask(const Flask& other) noexcept;
+	Flask(const Flask& other) = default;
 
 public:
 	Flask(
@@ -18,9 +16,6 @@ public:
 	) noexcept;
 
 	const FlaskData& getData() const override final;
-
-	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount);
-	void tick();
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;
 };

@@ -5,6 +5,7 @@
 
 #include "Value.hpp"
 #include "Unit.hpp"
+#include "Linguistics.hpp"
 
 /// <summary>
 /// Stores the amount of a certain Unit and statically handles conversions between units.
@@ -58,6 +59,9 @@ public:
 
 	constexpr inline bool isUnknown() const noexcept;
 	constexpr inline bool isInfinity() const noexcept;
+
+	constexpr bool oveflowsOnAdd(const Amount<UnitT> other) const noexcept;
+	constexpr bool oveflowsOnMultiply(const Amount<UnitT> other) const noexcept;
 };
 
 template<Unit UnitT>
@@ -81,6 +85,18 @@ template<Unit UnitT>
 constexpr bool Amount<UnitT>::isInfinity() const noexcept
 {
 	return this->value == Amount<UnitT>::Infinity.asStd();
+}
+
+template<Unit UnitT>
+constexpr bool Amount<UnitT>::oveflowsOnAdd(const Amount<UnitT> other) const noexcept
+{
+	return Value<StorageType>::oveflowsOnAdd(other);
+}
+
+template<Unit UnitT>
+constexpr bool Amount<UnitT>::oveflowsOnMultiply(const Amount<UnitT> other) const noexcept
+{
+	return Value<StorageType>::oveflowsOnMultiply(other);
 }
 
 template<Unit UnitT>
@@ -167,7 +183,9 @@ constexpr Unit Amount<UnitT>::unit() const noexcept { return UnitT; }
 template<Unit UnitT>
 std::string Amount<UnitT>::toString(const uint8_t maxDigits) const noexcept 
 {
-	return std::to_string(value).substr(0, maxDigits) + Amount<UnitT>::unitSymbol();
+	auto str = std::to_string(value);
+	Linguistics::formatFloatingPoint(str, maxDigits);
+	return str + ' ' + Amount<UnitT>::unitSymbol();
 }
 
 template<>

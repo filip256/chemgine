@@ -191,10 +191,12 @@
     <ClCompile Include="AggregationType.cpp" />
     <ClCompile Include="Atmosphere.cpp" />
     <ClCompile Include="BaseContainer.cpp" />
+    <ClCompile Include="BaseContainerComponent.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="ColorCast.cpp" />
     <ClCompile Include="ContentInitializer.cpp" />
     <ClCompile Include="Context.cpp" />
+    <ClCompile Include="EquipmentComponent.cpp" />
     <ClCompile Include="EstimatorDataTable.cpp" />
     <ClCompile Include="Atom.cpp" />
     <ClCompile Include="BaseEstimator.cpp" />
@@ -216,8 +218,10 @@
     <ClCompile Include="ContainerLabwareData.cpp" />
     <ClCompile Include="Formulas.cpp" />
     <ClCompile Include="ForwardingContainer.cpp" />
-    <ClCompile Include="HeatSourceData.cpp" />
+    <ClCompile Include="Heatsource.cpp" />
+    <ClCompile Include="HeatsourceData.cpp" />
     <ClCompile Include="FlaskData.cpp" />
+    <ClCompile Include="Lab.cpp" />
     <ClCompile Include="LabwareConnection.cpp" />
     <ClCompile Include="LabwareDataFactory.cpp" />
     <ClCompile Include="LabwareDataTable.cpp" />
@@ -236,6 +240,7 @@
     <ClCompile Include="MoleculeData.cpp" />
     <ClCompile Include="OffsetEstimator.cpp" />
     <ClCompile Include="Polarity.cpp" />
+    <ClCompile Include="PropertyPane.cpp" />
     <ClCompile Include="Reactable.cpp" />
     <ClCompile Include="Reactant.cpp" />
     <ClCompile Include="ReactantRef.cpp" />
@@ -261,10 +266,13 @@
     <ClInclude Include="Amount.hpp" />
     <ClInclude Include="Atmosphere.hpp" />
     <ClInclude Include="BaseContainer.hpp" />
+    <ClInclude Include="BaseContainerComponent.hpp" />
     <ClInclude Include="Color.hpp" />
     <ClInclude Include="ColorCast.hpp" />
+    <ClInclude Include="ContainerComponent.hpp" />
     <ClInclude Include="Context.hpp" />
     <ClInclude Include="DirectedGraph.hpp" />
+    <ClInclude Include="EquipmentComponent.hpp" />
     <ClInclude Include="EstimatorDataTable.hpp" />
     <ClInclude Include="EstimatorType.hpp" />
     <ClCompile Include="AtomData.cpp" />
@@ -307,9 +315,11 @@
     <ClInclude Include="GenericMoleculeDataTable.hpp" />
     <ClInclude Include="FunctionalEstimator.hpp" />
     <ClInclude Include="HashCombine.hpp" />
-    <ClInclude Include="HeatSourceData.hpp" />
+    <ClInclude Include="Heatsource.hpp" />
+    <ClInclude Include="HeatsourceData.hpp" />
     <ClInclude Include="IndexMap.hpp" />
     <ClInclude Include="FlaskData.hpp" />
+    <ClInclude Include="Lab.hpp" />
     <ClInclude Include="LabwareConnection.hpp" />
     <ClInclude Include="LabwareDataFactory.hpp" />
     <ClInclude Include="LabwareDataTable.hpp" />
@@ -332,6 +342,7 @@
     <ClInclude Include="OffsetEstimator.hpp" />
     <ClInclude Include="Polarity.hpp" />
     <ClInclude Include="PortType.hpp" />
+    <ClInclude Include="PropertyPane.hpp" />
     <ClInclude Include="Reactant.hpp" />
     <ClInclude Include="ReactantRef.hpp" />
     <ClInclude Include="ReactantSet.hpp" />
@@ -369,6 +380,7 @@
     <ClInclude Include="Tests.hpp" />
     <ClInclude Include="Utils.hpp" />
     <ClInclude Include="Value.hpp" />
+    <ClInclude Include="VectorUtils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Atom.hpp" />

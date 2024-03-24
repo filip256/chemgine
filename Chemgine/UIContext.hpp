@@ -1,16 +1,23 @@
 #pragma once
 
 #include "SFML/Graphics.hpp"
-#include "LabwareSystem.hpp"
+#include "Lab.hpp"
 #include "Flask.hpp"
 #include "Logger.hpp"
 #include "Adaptor.hpp"
+#include "Heatsource.hpp"
+#include "PropertyPane.hpp"
 
 class UIContext
 {
 private:
 	sf::RenderWindow window = sf::RenderWindow(sf::VideoMode(1200, 800), "Chemgine");
-    std::vector<LabwareSystem> systems;
+    Lab lab;
+
+    sf::Font font;
+
+    bool drawPropertyPane = false;
+    MixturePropertyPane propertyPane = MixturePropertyPane(font);
 
     class InHand
     {
@@ -64,19 +71,12 @@ private:
 
 public:
 
-    void removeEmptySystems()
-    {
-        for (size_t i = systems.size(); i-- > 0;)
-            if(systems[i].size() == 0)
-                systems.erase(systems.begin() + i);
-    }
-
 	void run()
 	{
         Logger::enterContext();
 
-        sf::Font font;
         font.loadFromFile("./Fonts/font.ttf");
+
         sf::Text text("FPS:", font, 18);
         text.setPosition(sf::Vector2f(5.0f, window.getSize().y - 22.0f));
 
@@ -85,29 +85,24 @@ public:
         InHand inHand;
         DragNDropHelper dndHelper;
 
-        Atmosphere atmosphere(
-            1.0_C, 760.0_torr,
-            { { Molecule("N#N"), 78.084_mol }, { Molecule("O=O"), 20.946_mol } },
-            1000.0_L, DumpContainer::globalDumpContainer);
+        auto& flask1 = lab.add<Flask>(201);
+        lab.add<Adaptor>(301);
+        lab.add<Adaptor>(302);
+        auto& flask2 = lab.add<Flask>(201);
+        lab.add<Adaptor>(301);
+        lab.add<Adaptor>(302);
+        lab.add<Heatsource>(401);
 
-        auto flask = new Flask(201, atmosphere);
-        flask->add(Molecule("CC(=O)OH"), 1.0_mol);
-        flask->tick();
-        systems.emplace_back(flask);
-        systems.emplace_back(new Flask(201, atmosphere));
-        systems.emplace_back(new Adaptor(301, atmosphere));
-        systems.emplace_back(new Adaptor(302, atmosphere));
-        systems.emplace_back(new Flask(201, atmosphere));
-        systems.emplace_back(new Adaptor(301, atmosphere));
-        systems.emplace_back(new Adaptor(302, atmosphere));
+        flask1.add(Molecule("CC(=O)O"), 4.0_mol);
+        flask2.add(Molecule("O"), 10.0_mol);
 
-        for(size_t i = 0; i < systems.size(); ++i)
-            systems[i].move(sf::Vector2f(100 + 75 * i, 50));
+        for(size_t i = 0; i < lab.getSystemCount(); ++i)
+            lab.getSystem(i).move(sf::Vector2f(100 + 75 * i, 50));
 
         //window.setFramerateLimit(300);
         window.setVerticalSyncEnabled(true);
-        size_t fCount = 0;
-        sf::Clock clock;
+        size_t frameCount = 0;
+        sf::Clock frameClock, tickClock;
         while (window.isOpen())
         {
             sf::Event event;
@@ -119,14 +114,13 @@ public:
                     if (inHand.isSet())
                     {
                         const auto delta = dndHelper.getDelta(mousePos);
-                        systems[inHand.idx].move(delta);
-                        for (size_t i = 0; i < systems.size(); ++i)
-                            if (i != inHand.idx && systems[i].intersects(systems[inHand.idx]))
-                            {
-                                systems[inHand.idx].move(-delta);
-                                sf::Mouse::setPosition(static_cast<sf::Vector2i>(mousePos - delta), window);
-                                break;
-                            }
+                        auto& inHandSys = lab.getSystem(inHand.idx);
+                        inHandSys.move(delta);
+                        if (lab.anyIntersects(inHand.idx) != Lab::npos)
+                        {
+                            inHandSys.move(-delta);
+                            sf::Mouse::setPosition(static_cast<sf::Vector2i>(mousePos - delta), window);
+                        }
                         dndHelper.resetOrigin(mousePos);
                     }
                 }
@@ -134,13 +128,11 @@ public:
                 {
                     if (event.mouseButton.button == sf::Mouse::Left)
                     {
-                        for (size_t i = 0; i < systems.size(); ++i)
-                            if (systems[i].contains(mousePos) != LabwareSystem::npos)
-                            {
-                                inHand.set(i);
-                                dndHelper.start(mousePos);
-                                break;
-                            }
+                        if (const size_t sys = lab.getSystemAt(mousePos); sys != Lab::npos)
+                        {
+                            inHand.set(sys);
+                            dndHelper.start(mousePos);
+                        }
                     }
                 }
                 else if (event.type == sf::Event::MouseButtonReleased)
@@ -149,18 +141,7 @@ public:
                     {
                         if (inHand.isSet())
                         {
-                            for (size_t i = 0; i < systems.size(); ++i)
-                            {
-                                if (i == inHand.idx)
-                                    continue;
-                                auto ports = systems[i].findClosestPort(systems[inHand.idx], 1600.0f);
-                                if (ports.first.isValid() && LabwareSystem::canConnect(ports.first, ports.second))
-                                {
-                                    LabwareSystem::connect(ports.first, ports.second);
-                                    callRemoveEmptySystems = true;
-                                    break;
-                                }
-                            }
+                            callRemoveEmptySystems |= lab.tryConnect(inHand.idx, 1600.f);
 
                             inHand.unset();
                             dndHelper.end();
@@ -168,24 +149,32 @@ public:
                     }
                     else if (event.mouseButton.button == sf::Mouse::Right)
                     {
-                        for (size_t i = 0; i < systems.size(); ++i)
-                            if (systems[i].size() > 1)
-                            {
-                                const auto idx = systems[i].contains(mousePos);
-                                if (idx == LabwareSystem::npos)
-                                    continue;
-
-                                auto newSystems = systems[i].disconnect(idx);
-                                for (size_t j = 0; j < newSystems.size(); ++j)
-                                    systems.emplace_back(std::move(newSystems[j]));
-                                break;
-                            }
+                        lab.tryDissconnect(mousePos);
                     }
                 }
                 else if (event.type == sf::Event::MouseWheelMoved)
                 {
                     if (inHand.isSet())
-                        systems[inHand.idx].rotate(event.mouseWheel.delta * 2);
+                        lab.getSystem(inHand.idx).rotate(event.mouseWheel.delta * 2);
+                }
+                else if (event.type == sf::Event::KeyPressed)
+                {
+                    if (event.key.code == sf::Keyboard::Key::LControl)
+                    {
+                        if (const auto sys = lab.getSystemComponentAt(mousePos); sys.first != Lab::npos)
+                        {
+                            const auto& comp = lab.getSystem(sys.first).getComponent(sys.second);
+                            propertyPane.setSubject(comp);
+                            drawPropertyPane = true;
+                        }
+                    }
+                }
+                else if (event.type == sf::Event::KeyReleased)
+                {
+                    if (event.key.code == sf::Keyboard::Key::LControl)
+                    {
+                        drawPropertyPane = false;
+                    }
                 }
 
                 else if (event.type == sf::Event::Closed)
@@ -194,27 +183,33 @@ public:
 
             if (callRemoveEmptySystems)
             {
-                removeEmptySystems();
+                lab.removeEmptySystems();
                 callRemoveEmptySystems = false;
             }
 
-            window.clear();
-
-            for(size_t i = 0; i < systems.size(); ++i)
-                window.draw(systems[i]);
-            window.draw(text);
-
-            window.display();
-
-            if ((fCount & 3) == 0)
+            if (const auto timespan = tickClock.getElapsedTime().asSeconds(); timespan >= 0.01)
             {
-                text.setString("FPS:" + std::to_string(static_cast<int>(
-                    4000000.0f / clock.getElapsedTime().asMicroseconds()
-                    )));
-                clock.restart();
+                flask2.add(100.0_J);
+                lab.tick(timespan);
+                tickClock.restart();
             }
 
-            ++fCount;
+            window.clear();
+            window.draw(lab);
+            if (drawPropertyPane)
+                window.draw(propertyPane);
+            window.draw(text);
+            window.display();
+
+            if ((frameCount & 3) == 0)
+            {
+                text.setString("FPS:" + std::to_string(static_cast<int>(
+                    4000000.0f / frameClock.getElapsedTime().asMicroseconds()
+                    )));
+                frameClock.restart();
+            }
+
+            ++frameCount;
         }
 
         Logger::exitContext();

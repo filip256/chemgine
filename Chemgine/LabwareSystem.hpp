@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BaseLabwareComponent.hpp"
-#include "PVector.hpp"
 #include "SizeTypedefs.hpp"
 #include "LabwareConnection.hpp"
 #include "SFML/Graphics.hpp"
@@ -37,10 +36,11 @@ public:
 	friend class LabwareSystem;
 };
 
+
 class LabwareSystem : public sf::Drawable
 {
 private:
-	PVector<BaseLabwareComponent, l_size> components;
+	std::vector<BaseLabwareComponent*> components;
 	std::vector<std::vector<LabwareConnection>> connections;
 
 	sf::FloatRect boundingBox = sf::FloatRect(
@@ -51,6 +51,7 @@ private:
 	LabwareSystem releaseSection(
 		const l_size componentIdx, const uint8_t portIdx,
 		std::vector<l_size>& toRemove);
+
 	void add(BaseLabwareComponent* component);
 	static void add(PortIdentifier& otherPort, PortIdentifier& thisPort);
 
@@ -70,11 +71,14 @@ public:
 	LabwareSystem() = default;
 	LabwareSystem(const LabwareSystem&) = delete;
 	LabwareSystem(LabwareSystem&&) noexcept = default;
-	~LabwareSystem() = default;
+	~LabwareSystem() noexcept;
 
 	LabwareSystem& operator=(LabwareSystem&&) = default;
 
 	l_size size() const;
+
+	const BaseLabwareComponent& getComponent(const size_t idx) const;
+	BaseLabwareComponent& getComponent(const size_t idx);
 
 	void move(const sf::Vector2f& offset);
 	void rotate(const float angle, const l_size center = 0);
@@ -121,9 +125,11 @@ public:
 	/// </summary>
 	std::vector<LabwareSystem> disconnect(const l_size componentIdx);
 
+	void tick(const Amount<Unit::SECOND> timespan);
+
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-	constexpr static const l_size npos = PVector<BaseLabwareComponent, l_size>::npos;
+	constexpr static const l_size npos = static_cast<l_size>(-1);
 
 	friend class PortIdentifier;
 };

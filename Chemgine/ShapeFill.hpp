@@ -12,7 +12,10 @@ private:
 	mutable sf::Sprite sprite;
 
 public:
-	ShapeFill(const ShapeFillTexture& texture) noexcept;
+	ShapeFill(
+		const ShapeFillTexture& texture,
+		const float scale
+	) noexcept;
 
 	void setPosition(const sf::Vector2f& position);
 	void move(const sf::Vector2f& offset);

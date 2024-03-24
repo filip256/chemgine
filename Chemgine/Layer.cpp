@@ -93,8 +93,11 @@ void Layer::consumePositivePotentialEnergy()
         findNewHighNucleator();
     }
 
+    if(higherAggregationLayer != LayerType::NONE)
+        container->add(potentialEnergy, higherAggregationLayer);
+
+    potentialEnergy = 0.0;
     temperature = Amount<Unit::CELSIUS>::Infinity;
-    container->add(potentialEnergy, higherAggregationLayer);
 }
 
 void Layer::consumeNegativePotentialEnergy()
@@ -144,8 +147,11 @@ void Layer::consumeNegativePotentialEnergy()
         findNewLowNucleator();
     }
 
+    if (lowerAggregationLayer != LayerType::NONE)
+        container->add(potentialEnergy, lowerAggregationLayer);
+
+    potentialEnergy = 0.0;
     temperature = Amount<Unit::CELSIUS>::Infinity;
-    container->add(potentialEnergy, lowerAggregationLayer);
 }
 
 Amount<Unit::JOULE> Layer::getLeastEnergyDiff(const Amount<Unit::CELSIUS> target) const
@@ -260,6 +266,11 @@ void Layer::convertTemporaryStateReactants()
     }
 }
 
+LayerType Layer::getType() const
+{
+    return layerType;
+}
+
 Amount<Unit::MOLE> Layer::getMoles() const 
 {
     return moles;
@@ -364,7 +375,7 @@ Color Layer::getColor() const
         return Color();
 
     float div = 0.0;
-    float red = 0.0, green = 0.0, blue = 0.0;
+    float red = 0.0, green = 0.0, blue = 0.0, alpha = 0.0;
     for (const auto& [_, r] : container->content)
     {
         if (r.layer == layerType)
@@ -374,20 +385,22 @@ Color Layer::getColor() const
             red += color.r * color.a * amount;
             green += color.g * color.a * amount;
             blue += color.b * color.a * amount;
+            alpha += color.a * color.a * amount;
             div += color.a * amount;
         }
     }
 
-    const uint8_t alpha =
-        isGasLayer(layerType) ? 50 :
-        isLiquidLayer(layerType) ? 150 :
-        255;
+    alpha /= div;
+    alpha =
+        isGasLayer(layerType) ? (alpha * 50) / 255 :
+        isLiquidLayer(layerType) ? (alpha * 150) / 255 :
+        alpha;
 
     return Color(
         static_cast<uint8_t>(red / div),
         static_cast<uint8_t>(green / div),
         static_cast<uint8_t>(blue / div),
-        alpha);
+        static_cast<uint8_t>(alpha));
 }
 
 bool Layer::isEmpty() const

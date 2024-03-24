@@ -3,9 +3,13 @@
 
 #include <cmath>
 
-DrawablePort::DrawablePort(const LabwarePort& port, const sf::Vector2f& origin) noexcept :
+DrawablePort::DrawablePort(
+	const LabwarePort& port,
+	const sf::Vector2f& origin,
+	const float scale
+) noexcept :
 	type(port.type),
-	position(port.x - origin.x, port.y - origin.y),
+	position((port.x - origin.x) * scale, (port.y - origin.y) * scale),
 	angle(port.angle)
 {}
 

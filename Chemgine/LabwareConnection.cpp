@@ -63,5 +63,8 @@ uint8_t LabwareConnection::getStrength(const PortType source, const PortType des
 	if (destination == PortType::DROPPER)
 		return 0;
 
+	if (source == PortType::CONTACT && destination == PortType::CONTACT)
+		return 255;
+
 	return 0;
 }

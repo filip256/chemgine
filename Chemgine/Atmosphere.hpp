@@ -15,10 +15,13 @@ public:
 		const Amount<Unit::LITER> maxVolume,
 		const Ref<BaseContainer> overflowTarget
 	) noexcept;
+	Atmosphere(Atmosphere&&) = default;
 
-	void tick();
+	void tick(const Amount<Unit::SECOND> timespan);
 
 	Atmosphere createSubatmosphere(const Amount<Unit::LITER> maxVolume);
 
 	Atmosphere makeCopy() const;
+
+	static Atmosphere createDefaultAtmosphere();
 };

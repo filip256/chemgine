@@ -16,5 +16,5 @@ public:
 
 	Amount<Unit::GRAM> getTotalMass() const;
 
-	static DumpContainer globalDumpContainer;
+	static DumpContainer GlobalDumpContainer;
 };

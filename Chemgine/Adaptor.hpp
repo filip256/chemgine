@@ -1,15 +1,13 @@
 #pragma once
 
-#include "DrawableComponent.hpp"
+#include "ContainerComponent.hpp"
 #include "AdaptorData.hpp"
 #include "Atmosphere.hpp"
 
-class Adaptor : public DrawableComponent
+class Adaptor : public ContainerComponent<Atmosphere>
 {
 private:
-	Atmosphere content;
-
-	Adaptor(const Adaptor& other) noexcept;
+	Adaptor(const Adaptor& other) = default;
 
 public:
 	Adaptor(

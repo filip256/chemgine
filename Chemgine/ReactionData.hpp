@@ -15,7 +15,7 @@ typedef uint16_t ReactionId;
 class ReactionData
 {
 private:
-	Ref<const ReactionData> baseReaction = Ref<ReactionData>::nullRef;
+	Ref<const ReactionData> baseReaction = nullRef;
 	std::vector<Reactable> reactants;
 	std::vector<Reactable> products;
 	std::vector<std::vector<Catalyst>> catalysts;

@@ -243,6 +243,27 @@ void MultiLayerMixture::add(const Reactant& reactant)
 	addToLayer(reactant.mutate(*this));
 }
 
+void MultiLayerMixture::add(const Molecule& molecule, const Amount<Unit::MOLE> amount)
+{
+	const auto r = Reactant(molecule, LayerType::UNKNOWN, amount, *this);
+	add(r.mutate(findLayerFor(r)));
+}
+
+void MultiLayerMixture::add(const Amount<Unit::JOULE> heat)
+{
+	const auto lA = getLayerAbove(LayerType::SOLID);
+	const auto& lS = layers.find(LayerType::SOLID);
+
+	if (lS == layers.end())
+	{
+		layers.at(lA).potentialEnergy += heat;
+		return;
+	}
+
+	lS->second.potentialEnergy += heat * 0.5;
+	layers.at(lA).potentialEnergy += heat * 0.5;
+}
+
 bool MultiLayerMixture::hasLayer(const LayerType layer) const
 {
 	const auto& l = layers.find(layer);
@@ -287,6 +308,16 @@ Polarity MultiLayerMixture::getLayerPolarity(const LayerType layer) const
 Color MultiLayerMixture::getLayerColor(const LayerType layer) const
 {
 	return layers.at(layer).getColor();
+}
+
+Ref<BaseContainer> MultiLayerMixture::getOverflowTarget() const
+{
+	return overflowTarget;
+}
+
+void MultiLayerMixture::setOverflowTarget(const Ref<BaseContainer> target)
+{
+	overflowTarget = target;
 }
 
 Amount<Unit::TORR> MultiLayerMixture::getPressure() const

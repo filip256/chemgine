@@ -81,6 +81,33 @@ Value<T>& Value<T>::operator/=(const T divisor)
 	return *this;
 }
 
+template <class T>
+constexpr bool Value<T>::oveflowsOnAdd(const Value<T>& other) const noexcept
+{
+	return
+		this->value > 0.0 && other.value > 0.0 ?
+		this->value > std::numeric_limits<T>::max() - other.value :
+	this->value < 0.0 && other.value < 0.0 ?
+		this->value < std::numeric_limits<T>::min() - other.value :
+		false;
+}
+
+template <class T>
+constexpr bool Value<T>::oveflowsOnMultiply(const Value<T>& other) const noexcept
+{
+	return
+		this->value > 0.0 ? (
+			other.value > 0.0 ?
+			this->value > std::numeric_limits<T>::max() / other.value :
+			this->value > std::numeric_limits<T>::min() / other.value
+		) : (
+		other.value > 0.0 ?
+			this->value < std::numeric_limits<T>::min() / other.value :
+			this->value < std::numeric_limits<T>::max() / other.value
+		);
+}
+
+
 template class Value<float>;
 template class Value<double>;
 template class Value<long double>;

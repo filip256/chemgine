@@ -15,6 +15,11 @@ void Mixture::add(const Mixture& other)
 		add(r);
 }
 
+void Mixture::add(const Molecule& molecule, const Amount<Unit::MOLE> amount)
+{
+	add(Reactant(molecule, LayerType::UNKNOWN, amount, *this));
+}
+
 const ReactantSet& Mixture::getContent() const
 {
 	return content;

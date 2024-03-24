@@ -1,6 +1,8 @@
 #include "LabwareSystem.hpp"
 #include "ContainerLabwareData.hpp"
 #include "Maths.hpp"
+#include "ContainerComponent.hpp"
+#include "Flask.hpp"
 
 #include <queue>
 
@@ -61,9 +63,28 @@ LabwareSystem::LabwareSystem(BaseLabwareComponent* component) noexcept
 	add(component);
 }
 
+LabwareSystem::~LabwareSystem() noexcept
+{
+	while (components.size())
+	{
+		delete components.back();
+		components.pop_back();
+	}
+}
+
 l_size LabwareSystem::size() const
 {
 	return components.size();
+}
+
+const BaseLabwareComponent& LabwareSystem::getComponent(const size_t idx) const
+{
+	return *components[idx];
+}
+
+BaseLabwareComponent& LabwareSystem::getComponent(const size_t idx)
+{
+	return *components[idx];
 }
 
 void LabwareSystem::add(BaseLabwareComponent* component)
@@ -79,6 +100,17 @@ void LabwareSystem::add(PortIdentifier& srcPort, PortIdentifier& destPort)
 	LabwareSystem& dest = destPort.getSystem();
 	LabwareSystem& src = srcPort.getSystem();
 
+	if (auto flask = destPort.getComponent().as<Flask>())
+	{
+		if (auto target = srcPort.getComponent().as<BaseContainerComponent>())
+			flask->setOverflowTarget(target.get());
+	}
+	else if (auto flask = srcPort.getComponent().as<Flask>())
+	{
+		if (auto target = destPort.getComponent().as<BaseContainerComponent>())
+			flask->setOverflowTarget(target.get());
+	}
+
 	srcPort.getComponent().setRotation(destPort->angle - srcPort->angle + destPort.getComponent().getRotation());
 	srcPort.getComponent().setPosition(destPort->position - srcPort->position + destPort.getComponent().getPosition());
 
@@ -93,7 +125,9 @@ void LabwareSystem::add(PortIdentifier& srcPort, PortIdentifier& destPort)
 
 	while (src.size())
 	{
-		dest.components.emplace_back(src.components.release_back());
+		dest.components.emplace_back(src.components.back());
+		src.components.pop_back();
+
 		dest.addToBoundry(dest.components.back()->getBounds());
 
 		dest.connections.emplace_back(std::move(src.connections.back()));
@@ -161,6 +195,12 @@ bool LabwareSystem::isOnBoundry(const sf::FloatRect& box) const
 	return box.left <= boundingBox.left || box.top <= boundingBox.top ||
 		box.left + box.width >= boundingBox.left + boundingBox.width ||
 		box.top + box.height >= boundingBox.top + boundingBox.height;
+}
+
+void LabwareSystem::tick(const Amount<Unit::SECOND> timespan)
+{
+	for (l_size i = 0; i < components.size(); ++i)
+		components[i]->tick(timespan);
 }
 
 void LabwareSystem::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -263,9 +303,6 @@ std::pair<PortIdentifier, float> LabwareSystem::findClosestPort(const sf::Vector
 
 	for (l_size i = 0; i < components.size(); ++i)
 	{
-		if (components[i]->isContainerType() == false)
-			continue;
-
 		const auto& ports = components[i]->getPorts();
 		const auto& offset = components[i]->getPosition();
 
@@ -316,7 +353,9 @@ BaseLabwareComponent* LabwareSystem::releaseComponent(const l_size componentIdx)
 	if(components.size() == 1)
 	{
 		clearBoundry();
-		return components.release(componentIdx);
+		const auto temp = components[componentIdx];
+		components.erase(components.begin() + componentIdx);
+		return temp;
 	}
 
 	// decrement connection ports before idx
@@ -351,7 +390,8 @@ BaseLabwareComponent* LabwareSystem::releaseComponent(const l_size componentIdx)
 	}
 	connections.pop_back();
 
-	const auto freeComponent = components.release(componentIdx);
+	const auto freeComponent = components[componentIdx];
+	components.erase(components.begin() + componentIdx);
 
 	// maintain bounding box
 	removeFromBoundry(freeComponent->getBounds());
@@ -429,56 +469,71 @@ std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
 	std::vector<LabwareSystem> result;
 
 	l_size diff = 0;
+	sf::Vector2f push(0.0f, 0.0f);
 	if (components.size() > 2)
 	{
 		std::vector<l_size> toRemove;
 		bool skippedFirst = false;
 		for (uint8_t i = 0; i < connections[componentIdx].size(); ++i)
-			if (connections[componentIdx][i].isFree() == false)
+		{
+			const auto& c = connections[componentIdx][i];
+			if (c.isFree())
+				continue;
+
+			const float angle = Maths::toRadians(
+				components[c.otherComponent - diff]->getPort(c.otherPort).angle +
+				components[c.otherComponent - diff]->getRotation() - 90.0f);
+
+			push.x += (components[componentIdx]->getPosition().x < components[c.otherComponent - diff]->getPosition().x ?
+				1.0f : -1.0f) * std::cosf(angle);
+			push.y += (components[componentIdx]->getPosition().y < components[c.otherComponent - diff]->getPosition().y ?
+				1.0f : -1.0f) * std::sinf(angle);
+
+			// one of the sub-sections can remain in this 
+			if (skippedFirst == false)
 			{
-				// one of the sub-sections can remain in this 
-				if (skippedFirst == false)
-				{
-					skippedFirst = true;
-					continue;
-				}
-				result.emplace_back(std::move(releaseSection(componentIdx, i, toRemove)));
-				if (result.back().size() == 1)
-					result.back().rotate(0.0f);
+				skippedFirst = true;
+				continue;
 			}
+			result.emplace_back(std::move(releaseSection(componentIdx, i, toRemove)));
+			if (result.back().size() == 1)
+				result.back().rotate(0.0f);
+		}
 
 		// components and connections are moved away but cannot be erased until the end because of indexes
-		std::sort(toRemove.begin(), toRemove.end(), std::greater<>());
 		for (l_size i = 0; i < toRemove.size(); ++i)
 		{
 			if (toRemove[i] < componentIdx)
 				++diff;
-			components.release(toRemove[i]);
+			components.erase(components.begin() + toRemove[i]);
 			connections.erase(connections.begin() + toRemove[i]);
 		}
 	}
-
-	sf::Vector2f push(0.0f, 20.0f);
-	/*for (auto& c : connections[componentIdx - diff])
+	else
 	{
-		if (c.isFree())
-			continue;
+		for (auto& c : connections[componentIdx - diff])
+		{
+			if (c.isFree())
+				continue;
 
-		const float angle = Maths::toRadians(
-			components[c.otherComponent - diff]->getPort(c.otherPort).angle +
-			components[c.otherComponent - diff]->getRotation() - 90.0f);
+			const float angle = Maths::toRadians(
+				components[c.otherComponent - diff]->getPort(c.otherPort).angle +
+				components[c.otherComponent - diff]->getRotation() - 90.0f);
 
-		push.x += (components[componentIdx]->getPosition().x < components[c.otherComponent - diff]->getPosition().x ?
-			1.0f : -1.0f) * std::cosf(angle);
-		push.y += (components[componentIdx]->getPosition().y < components[c.otherComponent - diff]->getPosition().y ?
-			1.0f : -1.0f) * std::sinf(angle);
+			push.x += (components[componentIdx]->getPosition().x < components[c.otherComponent - diff]->getPosition().x ?
+				1.0f : -1.0f) * std::cosf(angle);
+			push.y += (components[componentIdx]->getPosition().y < components[c.otherComponent - diff]->getPosition().y ?
+				1.0f : -1.0f) * std::sinf(angle);
+			break;
+		}
 	}
+
 	push.x = push.x * 20.0f;
-	push.y = push.y * 20.0f;*/
+	push.y = push.y * 20.0f;
 
 	auto temp = releaseComponent(componentIdx - diff);
 	temp->setRotation(0.0f);
-	temp->getSprite().move(push);
+	temp->move(push);
 
 	if (components.size() == 1)
 	{

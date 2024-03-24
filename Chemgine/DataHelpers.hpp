@@ -4,6 +4,7 @@
 #include "Spline.hpp"
 #include "Utils.hpp"
 #include "Color.hpp"
+#include "LabwarePort.hpp"
 
 #include <vector>
 #include <string>
@@ -21,6 +22,9 @@ public:
 	static std::optional<Amount<U>> parse(const std::string& str);
 	template <Unit U>
 	static std::optional<Amount<U>> parseUnsigned(const std::string& str);
+
+	template <typename E, typename = std::enable_if_t<std::is_enum_v<E>>>
+	static std::optional<E> parseEnum(const std::string& str);
 
 	template <typename T>
 	static std::optional<std::vector<T>> parseList(
@@ -92,6 +96,26 @@ inline std::optional<uint8_t> DataHelpers::parse<uint8_t>(const std::string& str
 }
 
 template <>
+inline std::optional<float> DataHelpers::parse<float>(const std::string& str)
+{
+	if (str.empty())
+		return std::nullopt;
+
+	try
+	{
+		return std::optional<float>(std::stof(str));
+	}
+	catch (const std::invalid_argument&)
+	{
+		return std::nullopt;
+	}
+	catch (const std::out_of_range&)
+	{
+		return std::nullopt;
+	}
+}
+
+template <>
 inline std::optional<double> DataHelpers::parse<double>(const std::string& str)
 {
 	if (str.empty())
@@ -109,6 +133,17 @@ inline std::optional<double> DataHelpers::parse<double>(const std::string& str)
 	{
 		return std::nullopt;
 	}
+}
+
+template <>
+inline std::optional<float> DataHelpers::parseUnsigned<float>(const std::string& str)
+{
+	auto r = parse<float>(str);
+
+	if (r.has_value() == false || *r < 0)
+		return std::nullopt;
+
+	return r;
 }
 
 template <>
@@ -187,6 +222,25 @@ inline std::optional<Spline<float>> DataHelpers::parse<Spline<float>>(const std:
 }
 
 template <>
+inline std::optional<LabwarePort> DataHelpers::parse<LabwarePort>(const std::string& str)
+{
+	const auto port = DataHelpers::parseList(str, ':', true);
+
+	if (port.size() != 4)
+		return std::nullopt;
+
+	const auto type = DataHelpers::parseEnum<PortType>(port[0]);
+	const auto x = DataHelpers::parse<unsigned int>(port[1]);
+	const auto y = DataHelpers::parse<unsigned int>(port[2]);
+	const auto angle = DataHelpers::parseUnsigned<double>(port[3]);
+
+	if (type.has_value() == false || x.has_value() == false || y.has_value() == false || angle.has_value() == false)
+		return std::nullopt;
+
+	return LabwarePort(*type, *x, *y, *angle);
+}
+
+template <>
 inline std::optional<Amount<Unit::CELSIUS>> DataHelpers::parse<Unit::CELSIUS>(const std::string& str)
 {
 	const bool missingUnit = isdigit(str.back());
@@ -208,7 +262,12 @@ inline std::optional<Amount<Unit::CELSIUS>> DataHelpers::parse<Unit::CELSIUS>(co
 	return std::optional<Amount<Unit::CELSIUS>>(cTemp);
 }
 
-
+template <typename E, typename>
+inline std::optional<E> DataHelpers::parseEnum(const std::string& str)
+{
+	const auto val = parse<std::underlying_type_t<E>>(str);
+	return val.has_value() ? std::make_optional(static_cast<E>(*val)) : std::nullopt;
+}
 
 template <typename T>
 std::optional<std::vector<T>> DataHelpers::parseList(

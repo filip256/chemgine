@@ -40,7 +40,7 @@ bool LabwareDataTable::loadFromFile(const std::string& path)
 		}
 
 		const auto id = DataHelpers::parse<unsigned int>(line[0]);
-		const auto type = DataHelpers::parse<unsigned int>(line[1]);
+		const auto type = DataHelpers::parseEnum<LabwareType>(line[1]);
 
 		if (id.has_value() == false || type.has_value() == false)
 		{
@@ -48,7 +48,7 @@ bool LabwareDataTable::loadFromFile(const std::string& path)
 			continue;
 		}
 
-		const auto ptr = LabwareDataFactory::get(*id, static_cast<LabwareType>(*type), line);
+		const auto ptr = LabwareDataFactory::get(*id, *type, line);
 		if(ptr == nullptr)
 		{
 			Logger::log("Failed to load labware with id " + std::to_string(*id) + ".", LogType::BAD);

@@ -228,7 +228,7 @@
     <ClCompile Include="LabwarePort.cpp">
       <Filter>Source Files\Labware</Filter>
     </ClCompile>
-    <ClCompile Include="HeatSourceData.cpp">
+    <ClCompile Include="HeatsourceData.cpp">
       <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
     <ClCompile Include="Atom.cpp">
@@ -390,6 +390,21 @@
     <ClCompile Include="ShapeFillTexture.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Lab.cpp">
+      <Filter>Source Files\Labware</Filter>
+    </ClCompile>
+    <ClCompile Include="PropertyPane.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="EquipmentComponent.cpp">
+      <Filter>Source Files\Labware\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Heatsource.cpp">
+      <Filter>Source Files\Labware\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseContainerComponent.cpp">
+      <Filter>Source Files\Labware\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -521,7 +536,7 @@
     <ClInclude Include="LabwarePort.hpp">
       <Filter>Header Files\Labware</Filter>
     </ClInclude>
-    <ClInclude Include="HeatSourceData.hpp">
+    <ClInclude Include="HeatsourceData.hpp">
       <Filter>Header Files\Labware\DataTypes</Filter>
     </ClInclude>
     <ClInclude Include="BaseLabwareComponent.hpp">
@@ -723,6 +738,27 @@
       <Filter>Header Files\Mixtures</Filter>
     </ClInclude>
     <ClInclude Include="ShapeFillTexture.hpp">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Lab.hpp">
+      <Filter>Header Files\Labware</Filter>
+    </ClInclude>
+    <ClInclude Include="PropertyPane.hpp">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ContainerComponent.hpp">
+      <Filter>Header Files\Labware\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="EquipmentComponent.hpp">
+      <Filter>Header Files\Labware\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Heatsource.hpp">
+      <Filter>Header Files\Labware\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseContainerComponent.hpp">
+      <Filter>Header Files\Labware\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorUtils.hpp">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>

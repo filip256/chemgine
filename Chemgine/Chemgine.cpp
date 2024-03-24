@@ -10,7 +10,6 @@
 #include "Tests.hpp"
 #include "Reactable.hpp"
 
-#include "PVector.hpp"
 #include "Reactor.hpp"
 #include "Query.hpp"
 
@@ -30,6 +29,7 @@
 #include "FlagField.hpp"
 #include "UndirectedGraph.hpp"
 #include "TextBlock.hpp"
+#include "Linguistics.hpp"
 
 int main()
 {
@@ -57,6 +57,7 @@ int main()
 
         UIContext uiContext;
         uiContext.run();
+
 
         //const auto& ra = store.reactions.at(201);
         //const auto& rb = store.reactions.at(207);

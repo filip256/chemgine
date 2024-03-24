@@ -1,5 +1,14 @@
 #pragma once
 
+class NullRefType
+{
+public:
+	explicit constexpr NullRefType (int) {}
+};
+
+constexpr NullRefType nullRef(0);
+
+
 template<typename T>
 class Ref
 {
@@ -7,9 +16,11 @@ private:
 	T* object = nullptr;
 
 	Ref() = default;
+	Ref(T* object) noexcept;
 
 public:
 	Ref(T& object) noexcept;
+	Ref(NullRefType) noexcept;
 	Ref(const Ref&) = default;
 
 	template<typename D, typename = 
@@ -19,6 +30,9 @@ public:
 	bool isSet() const;
 	void set(T& object);
 	void unset();
+
+	template<typename D>
+	Ref<D> as() const;
 
 	Ref<T>& operator=(Ref<T> other);
 
@@ -35,7 +49,10 @@ public:
 	bool operator==(const Ref<T>& other) const;
 	bool operator!=(const Ref<T>& other) const;
 
-	const static Ref<T> nullRef;
+	explicit operator bool() const noexcept
+	{
+		return object != nullptr;
+	}
 
 	template<typename U>
 	friend class Ref;
@@ -43,11 +60,18 @@ public:
 
 
 template<typename T>
-const Ref<T> Ref<T>::nullRef = Ref<T>();
+Ref<T>::Ref(T* object) noexcept :
+	object(object)
+{}
 
 template<typename T>
 Ref<T>::Ref(T& object) noexcept :
 	object(&object)
+{}
+
+template<typename T>
+Ref<T>::Ref(NullRefType) noexcept :
+	object(nullptr)
 {}
 
 template<typename T>
@@ -72,6 +96,13 @@ template<typename T>
 void Ref<T>::unset() 
 {
 	object = nullptr;
+}
+
+template<typename T>
+template<typename D>
+Ref<D> Ref<T>::as() const
+{
+	return Ref<D>(dynamic_cast<D*>(object));
 }
 
 template<typename T>

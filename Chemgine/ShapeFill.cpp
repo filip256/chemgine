@@ -3,11 +3,15 @@
 
 #include <cmath>
 
-ShapeFill::ShapeFill(const ShapeFillTexture& texture) noexcept :
+ShapeFill::ShapeFill(
+	const ShapeFillTexture& texture,
+	const float scale
+) noexcept :
 	texture(texture),
 	sprite(texture.getTexture())
 {
-	sprite.setOrigin(sprite.getLocalBounds().getSize() / 2.0f);
+	sprite.setScale(sf::Vector2f(scale, scale));
+	sprite.setOrigin(sprite.getGlobalBounds().getSize() / 2.0f);
 }
 
 void ShapeFill::setPosition(const sf::Vector2f& position)
@@ -39,6 +43,9 @@ void ShapeFill::setColor(const sf::Color& color) const
 
 void ShapeFill::setDrawSection(float start, float end, const sf::Color& color) const
 {
+	start = std::max(start, 0.0f);
+	end = std::min(end, 1.0f);
+
 	if (texture.hasVolumetricScaling())
 	{
 		start = texture.getRelativeHeightAt(start);
@@ -51,8 +58,8 @@ void ShapeFill::setDrawSection(float start, float end, const sf::Color& color) c
 
 	const auto rotation = Maths::toRadians(sprite.getRotation());
 	sprite.setPosition(sf::Vector2f(
-		originPosition.x - std::sinf(rotation) * topCut,
-		originPosition.y + std::cosf(rotation) * topCut
+		originPosition.x - std::sinf(rotation) * topCut * sprite.getScale().y,
+		originPosition.y + std::cosf(rotation) * topCut * sprite.getScale().y
 	));
 
 	sprite.setColor(color);

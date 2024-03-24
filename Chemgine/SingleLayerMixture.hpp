@@ -17,7 +17,7 @@ protected:
 	Layer layer;
 	Amount<Unit::TORR> pressure;
 	const Amount<Unit::LITER> maxVolume;
-	Ref<BaseContainer> overflowTarget = DumpContainer::globalDumpContainer;
+	Ref<BaseContainer> overflowTarget = DumpContainer::GlobalDumpContainer;
 	std::unordered_map<LayerType, Ref<BaseContainer>> incompatibilityTargets;
 
 	void addToLayer(const Reactant& reactant);
@@ -50,13 +50,15 @@ public:
 	Polarity getLayerPolarity() const;
 	Color getLayerColor() const;
 
-	void setOverflowTarget(const Ref<BaseContainer> target);
-	Ref<BaseContainer> getOverflowTarget() const;
+	Ref<BaseContainer> getOverflowTarget() const override final;
+	void setOverflowTarget(const Ref<BaseContainer> target) override final;
 	void setIncompatibilityTarget(const LayerType layerType, const Ref<BaseContainer> target);
 	void setAllIncompatibilityTargets(const Ref<BaseContainer> target);
 	Ref<BaseContainer> getIncompatibilityTarget(const LayerType layerType) const;
 
 	void add(const Reactant& reactant) override final;
+	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount) override final;
+	void add(const Amount<Unit::JOULE> heat) override final;
 
 	Amount<Unit::LITER> getMaxVolume() const;
 
@@ -78,7 +80,6 @@ public:
 
 	SingleLayerMixture<L> makeCopy() const;
 };
-
 
 
 template<LayerType L>
@@ -106,7 +107,7 @@ SingleLayerMixture<L>::SingleLayerMixture(
 	incompatibilityTargets.reserve(toIndex(LayerType::REAL_LAYER_COUNT) - 1);
 	for (LayerType i = LayerType::FIRST; i <= LayerType::LAST; ++i)
 		if (i != L)
-			incompatibilityTargets.emplace(std::make_pair(i, Ref(DumpContainer::globalDumpContainer)));
+			incompatibilityTargets.emplace(std::make_pair(i, Ref(DumpContainer::GlobalDumpContainer)));
 
 	for (const auto [m, a] : contentInitializer)
 		add(Reactant(m, L, a, *this));
@@ -203,15 +204,15 @@ const Layer& SingleLayerMixture<L>::getLayer() const
 }
 
 template<LayerType L>
-void SingleLayerMixture<L>::setOverflowTarget(const Ref<BaseContainer> target)
-{
-	overflowTarget = target;
-}
-
-template<LayerType L>
 Ref<BaseContainer> SingleLayerMixture<L>::getOverflowTarget() const
 {
 	return overflowTarget;
+}
+
+template<LayerType L>
+void SingleLayerMixture<L>::setOverflowTarget(const Ref<BaseContainer> target)
+{
+	overflowTarget = target;
 }
 
 template<LayerType L>
@@ -254,6 +255,18 @@ void SingleLayerMixture<L>::add(const Reactant& reactant)
 
 	content.add(reactant);
 	addToLayer(reactant.mutate(*this));
+}
+
+template<LayerType L>
+void SingleLayerMixture<L>::add(const Molecule& molecule, const Amount<Unit::MOLE> amount)
+{
+	add(Reactant(molecule, L, amount, *this));
+}
+
+template<LayerType L>
+void SingleLayerMixture<L>::add(const Amount<Unit::JOULE> heat)
+{
+	add(heat, L);
 }
 
 template<LayerType L>

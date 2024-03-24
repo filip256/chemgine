@@ -48,12 +48,13 @@ private:
 
 public:
 	Layer(
-		const Ref<Mixture> container = Ref<Mixture>::nullRef,
+		const Ref<Mixture> container = nullRef,
 		const LayerType layerType = LayerType::NONE,
 		const Amount<Unit::CELSIUS> temperature = 0.0
 	) noexcept;
 	Layer(Layer&&) = default;
 
+	LayerType getType() const;
 	Amount<Unit::MOLE> getMoles() const;
 	Amount<Unit::GRAM> getMass() const;
 	Amount<Unit::LITER> getVolume() const;
