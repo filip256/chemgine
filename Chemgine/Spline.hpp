@@ -40,5 +40,9 @@ public:
 	/// </summary>
 	void compress(const T maxLinearError);
 
+	bool isEquivalent(const Spline<T>& other,
+		const T epsilon = std::numeric_limits<T>::epsilon()
+	) const;
+
 	static constexpr size_t npos = static_cast<size_t>(-1);
 };

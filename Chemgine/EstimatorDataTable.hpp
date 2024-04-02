@@ -66,6 +66,13 @@ const BaseEstimator& EstimatorDataTable::add(Args&&... args)
 template <>
 inline const BaseEstimator& EstimatorDataTable::add<SplineEstimator, Spline<float>>(Spline<float>&& spline)
 {
+	float compFactor = 0.0001f;
+	while (spline.size() > 100 && compFactor <= 0.1f)
+	{
+		spline.compress(compFactor);
+		compFactor *= 10;
+	}
+
 	if (spline.size() == 1)
 		return add<ConstantEstimator>(spline.front().second);
 

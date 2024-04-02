@@ -38,6 +38,8 @@ public:
 
 	inline T& get();
 	inline const T& get() const;
+	inline T& operator*();
+	inline const T& operator*() const;
 	inline T* operator->();
 	inline const T* operator->() const;
 
@@ -120,6 +122,18 @@ T& Ref<T>::get()
 
 template<typename T>
 const T& Ref<T>::get() const
+{
+	return *object;
+}
+
+template<typename T>
+T& Ref<T>::operator*()
+{
+	return *object;
+}
+
+template<typename T>
+const T& Ref<T>::operator*() const
 {
 	return *object;
 }

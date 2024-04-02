@@ -2,6 +2,7 @@
 #include "Logger.hpp"
 
 #include <cassert>
+#include <typeinfo>
 
 size_t BaseEstimator::instanceCount = 0;
 
@@ -25,6 +26,12 @@ double BaseEstimator::get(const double input1, const double input2) const
 	Logger::fatal("Undefined estimator method: double get(double, double)");
 	return std::numeric_limits<double>::max();
 }
+
+bool BaseEstimator::isEquivalent(const BaseEstimator& other, const double epsilon) const
+{
+	return typeid(*this) == typeid(other);
+}
+
 
 #ifndef NDEBUG
 void* BaseEstimator::operator new(const size_t count)

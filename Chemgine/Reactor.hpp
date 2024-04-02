@@ -70,13 +70,13 @@ public:
 	void tick(const Amount<Unit::SECOND> timespan);
 
 	bool hasSameState(const Reactor& other,
-		const Amount<>::StorageType epsilon = std::numeric_limits<Amount<>::StorageType>::epsilon()) const;
+		const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
 	bool hasSameContent(const Reactor& other,
-		const Amount<>::StorageType epsilon = std::numeric_limits<Amount<>::StorageType>::epsilon()) const;
+		const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
 	bool hasSameLayers(const Reactor& other,
-		const Amount<>::StorageType epsilon = std::numeric_limits<Amount<>::StorageType>::epsilon()) const;
+		const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
 	bool isSame(const Reactor& other,
-		const Amount<>::StorageType epsilon = std::numeric_limits<Amount<>::StorageType>::epsilon()) const;
+		const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
 
 	Reactor makeCopy() const;
 

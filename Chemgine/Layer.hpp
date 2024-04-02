@@ -80,7 +80,7 @@ public:
 	void consumePotentialEnergy();
 
 	bool equals(const Layer& other,
-		const Amount<>::StorageType epsilon = std::numeric_limits<Amount<>::StorageType>::epsilon()) const;
+		const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
 
 	LayerContentIterator begin() const;
 	LayerContentIterator end() const;

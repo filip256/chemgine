@@ -3,6 +3,7 @@
 #include "Maths.hpp"
 #include "ContainerComponent.hpp"
 #include "Flask.hpp"
+#include "Heatsource.hpp"
 
 #include <queue>
 
@@ -109,6 +110,17 @@ void LabwareSystem::add(PortIdentifier& srcPort, PortIdentifier& destPort)
 	{
 		if (auto target = destPort.getComponent().as<BaseContainerComponent>())
 			flask->setOverflowTarget(target.get());
+	}
+	
+	if (auto heatsource = destPort.getComponent().as<Heatsource>())
+	{
+		if (auto target = srcPort.getComponent().as<BaseContainerComponent>())
+			heatsource->setTarget(target.get());
+	}
+	else if (auto heatsource = srcPort.getComponent().as<Heatsource>())
+	{
+		if (auto target = destPort.getComponent().as<BaseContainerComponent>())
+			heatsource->setTarget(target.get());
 	}
 
 	srcPort.getComponent().setRotation(destPort->angle - srcPort->angle + destPort.getComponent().getRotation());

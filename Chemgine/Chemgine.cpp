@@ -58,6 +58,7 @@ int main()
         UIContext uiContext;
         uiContext.run();
 
+        //std::cout << MolecularStructure("OC1C2CC12").toSMILES() << '\n';
 
         //const auto& ra = store.reactions.at(201);
         //const auto& rb = store.reactions.at(207);

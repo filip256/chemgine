@@ -16,9 +16,9 @@ public:
 
     BondType getType() const;
     uint8_t getValence() const;
-    std::string toSMILES() const;
+    std::string getSMILES() const;
 
-    static std::string toSMILES(const BondType type);
+    static std::string getSMILES(const BondType type);
     static BondType fromSMILES(const char symbol);
     static uint8_t getValence(const BondType type);
 
@@ -30,4 +30,3 @@ public:
     void operator delete(void* ptr);
 #endif
 };
-

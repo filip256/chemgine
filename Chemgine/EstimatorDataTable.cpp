@@ -72,7 +72,13 @@ bool EstimatorDataTable::loadFromFile(const std::string& path)
 
 const BaseEstimator& EstimatorDataTable::add(const BaseEstimator* estimator)
 {
-	// TODO: Check if estimator already exists and return that instance instead
+	const auto it = std::find_if(table.cbegin(), table.cend(), [estimator](const auto& e) {
+		return e.second->isEquivalent(*estimator);
+	});
+
+	if (it != table.end())
+		return *it->second;
+
 	table.emplace(std::make_pair(estimator->id, estimator));
 	return *estimator;
 }

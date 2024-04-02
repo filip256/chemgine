@@ -18,5 +18,9 @@ public:
 	double get(const double input) const override final;
 	double get(const double input1, const double input2) const override final;
 
+	bool isEquivalent(const BaseEstimator& other,
+		const double epsilon = std::numeric_limits<double>::epsilon()
+	) const override final;
+
 	OffsetEstimator* clone() const override final;
 };

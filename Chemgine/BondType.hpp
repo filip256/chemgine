@@ -5,7 +5,7 @@
 enum BondType : uint8_t
 {
     NONE,
-    NO_BOND,
+    NON_BOND,
     IONIC,
     SINGLE,
     DOUBLE,

@@ -65,7 +65,7 @@ MoleculeData::MoleculeData(
 	id(id),
 	structure(std::move(structure)),
 	type(this->structure.isOrganic() ? MoleculeType::ORGANIC : MoleculeType::INORGANIC),
-	name(this->structure.print()),
+	name(this->structure.toSMILES()),
 	polarity(hydrophilicity, lipophilicity),
 	color(color),
 	meltingPointEstimator(meltingPointEstimator),

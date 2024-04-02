@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 #include <unordered_map>
 #include <unordered_set>
 #include <stack>
@@ -23,8 +24,17 @@ private:
         const c_size c,
         std::vector<uint8_t>& visited) const;
 
-    std::string rToSMILES(const c_size c, c_size prev, std::vector<uint8_t>& visited, uint8_t& cycleCount) const;
+    static void insertCycleHeads(
+        std::string& smiles,
+        const std::vector<size_t>& insertPositions,
+        const std::map<c_size, uint8_t>& cycleHeads);
 
+    std::string rToSMILES(
+        c_size c, c_size prev,
+        std::vector<size_t>& insertPositions,
+        uint8_t& cycleCount,
+        std::map<c_size, uint8_t>& cycleHeads,
+        const size_t insertOffset) const;
 
     /// <summary>
     /// Returns the number of required hydrogens in order to complete the molecule.

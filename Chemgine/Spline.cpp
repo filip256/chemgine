@@ -118,4 +118,13 @@ void Spline<T>::compress(const T maxLinearError)
 	points.shrink_to_fit();
 }
 
+template <class T>
+bool Spline<T>::isEquivalent(const Spline<T>& other, const T epsilon) const
+{
+	for (size_t i = 0; i < this->points.size(); ++i)
+		if (std::abs(this->points[i].second - other.getLinearValueAt(this->points[i].first)) > epsilon)
+			return false;
+	return true;
+}
+
 template class Spline<float>;

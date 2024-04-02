@@ -30,6 +30,7 @@ public:
 	virtual const BaseComponentData& data() const = 0;
 
 	ComponentId getId() const;
+	std::string getSMILES() const;
 
 	bool isAtomicType() const;
 	bool isCompositeType() const;

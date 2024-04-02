@@ -23,9 +23,14 @@ public:
 	virtual double get(const double input) const;
 	virtual double get(const double input1, const double input2) const;
 
+	virtual bool isEquivalent(const BaseEstimator& other,
+		const double epsilon = std::numeric_limits<double>::epsilon()
+	) const;
+
 	virtual BaseEstimator* clone() const = 0;
 
 	friend class EstimatorDataTable;
+
 
 	// for memory leak checking 
 	static size_t instanceCount;

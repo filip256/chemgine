@@ -20,7 +20,7 @@ class MolecularStructureTest
 {
 private:
 	bool passed = true;
-	std::vector<MolecularStructure> setA, setB, setC, setD, setE, setF;
+	std::vector<MolecularStructure> setA, setB, setC, setD, setE, setF, setG;
 	std::unordered_map<std::string, std::vector<uint8_t>> res;
 
 public:
@@ -164,6 +164,16 @@ public:
 		setF.emplace_back(std::move(MolecularStructure("C1CCC1O")));
 		res["addSub"].emplace_back(6);
 
+		setG.emplace_back(std::move(MolecularStructure("C1CCC1")));
+		setG.emplace_back(std::move(MolecularStructure("C1C(C)C(C)C1")));
+		setG.emplace_back(std::move(MolecularStructure("C1C(O)C(C)C1")));
+		setG.emplace_back(std::move(MolecularStructure("CC(=O)C")));
+		setG.emplace_back(std::move(MolecularStructure("CC(=O)OC(=O)C")));
+		setG.emplace_back(std::move(MolecularStructure("C1CC12CC2")));
+		setG.emplace_back(std::move(MolecularStructure("C1C(O)CC12CC2")));
+		setG.emplace_back(std::move(MolecularStructure("OC1(CC1)C")));
+		setG.emplace_back(std::move(MolecularStructure("OC1C2CC12")));
+		setG.emplace_back(std::move(MolecularStructure("CC2CCCC(C1CCCCC1)C2")));
 	}
 
 	void runTests()
@@ -198,13 +208,24 @@ public:
 			}
 		}
 
-		for (size_t i = 0; i < setC.size(); ++i)
+		for (size_t i = 0; i < setG.size(); ++i)
 		{
-			if (MolecularStructure(setC[i].serialize(), true) != setC[i])
+			if (MolecularStructure(setG[i].serialize(), true) != setG[i])
 			{
 				Logger::log("Test failed > MolecularStructure > serialize/deserialize > #" + std::to_string(i)
 					+ ": expected= true\n"
-					+ setC[i].print(), LogType::BAD);
+					+ setG[i].print(), LogType::BAD);
+				passed = false;
+			}
+		}
+
+		for (size_t i = 0; i < setG.size(); ++i)
+		{
+			if (MolecularStructure(setG[i].toSMILES()) != setG[i])
+			{
+				Logger::log("Test failed > MolecularStructure > SMILES > #" + std::to_string(i)
+					+ ": expected= true\n"
+					+ setG[i].print(), LogType::BAD);
 				passed = false;
 			}
 		}

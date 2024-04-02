@@ -127,7 +127,7 @@ bool MoleculeDataTable::saveToFile(const std::string& path)
 	for (size_t i = 0; i < table.size(); ++i)
 	{
 		const auto& e = table[i];
-		file << e.id << ',' << e.getStructure().serialize() << ',' << e.name << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << '\n';
+		file << e.id << ',' << e.getStructure().toSMILES() << ',' << e.name << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << '\n';
 	}
 
 	file.close();

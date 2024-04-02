@@ -127,7 +127,7 @@ public:
 
 	void tick(const Amount<Unit::SECOND> timespan);
 
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;
 
 	constexpr static const l_size npos = static_cast<l_size>(-1);
 

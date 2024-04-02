@@ -493,7 +493,7 @@ void MolecularStructure::rPrint(
 
     visited[c] = true;
 
-    const auto& symb = components[c]->data().getSMILES();
+    const auto& symb = components[c]->getSMILES();
     for(uint8_t i = 0; i < symb.size() && x + i < buffer[0].size(); ++i)
         buffer[y][x + i] = symb[i];
 
@@ -969,119 +969,167 @@ bool MolecularStructure::operator!=(const std::string& other) const
     return *this != MolecularStructure(other);
 }
 
-
-
-std::string MolecularStructure::rToSMILES(c_size c, c_size prev, std::vector<uint8_t>& visited, uint8_t& cycleCount) const
+void MolecularStructure::insertCycleHeads(
+    std::string& smiles,
+    const std::vector<size_t>& insertPositions,
+    const std::map<c_size, uint8_t>& cycleHeads
+)
 {
-    std::string r;
+    for (auto h = cycleHeads.crbegin(); h != cycleHeads.crend(); ++h)
+        smiles.insert(insertPositions[h->first], std::to_string(h->second));
+}
+
+std::string MolecularStructure::rToSMILES(
+    c_size c, c_size prev,
+    std::vector<size_t>& insertPositions,
+    uint8_t& cycleCount,
+    std::map<c_size, uint8_t>& cycleHeads,
+    const size_t insertOffset) const
+{
+    std::string smiles;
     while (true)
     {
-        visited[c] = true;
-        r += components[c]->data().getSMILES();
+        smiles += components[c]->getSMILES();
+        insertPositions[c] = insertOffset + smiles.size();
 
-        if (bonds[c].empty())
-            break;
+        if (bonds[c].size() <= 1)  // C-C-C     end of chain, only neighbour == prev
+            break;                 //     ^
 
-        if (bonds[c].size() == 1)
-        {
-            if (visited[bonds[c][0].other] == false)
+        if (bonds[c].size() == 2)   // C-C-C
+        {                           //   ^
+            const Bond& bondToNext = bonds[c].front().other != prev ?
+                bonds[c].front() :
+                bonds[c].back();
+
+            if (insertPositions[bondToNext.other] != std::string::npos)  // cycle end
             {
-                r += Bond::toSMILES(bonds[c][0].getType());
-                c = bonds[c][0].other;
+                const auto [_, newHead] = cycleHeads.emplace(std::make_pair(bondToNext.other, cycleCount));
+                smiles += std::to_string(cycleCount);
+
+                if (newHead)
+                    ++cycleCount;
+
+                break;
             }
             else
-                break;
-        }
-        else
-        {
-            for (c_size i = 0; i < bonds[c].size() - 1; ++i)
             {
-                if (bonds[c][i].other == prev)
+                smiles += bondToNext.getSMILES();
+                prev = c;
+                c = bondToNext.other;
+            }
+
+            continue;
+        }
+                                                                //   C
+        for (c_size i = 0; i < bonds[c].size() - 1; ++i)        //   |
+        {                                                       // C-C-C
+            if (bonds[c][i].other == prev)                      //   ^
+                continue;
+
+            if (insertPositions[bonds[c][i].other] != std::string::npos)     // cycle end
+            {
+                if (smiles.back() == ')')
                     continue;
 
-                if (visited[bonds[c][i].other] == false)
+                const auto [_, newHead] = cycleHeads.emplace(std::make_pair(bonds[c][i].other, cycleCount));
+                smiles += std::to_string(cycleCount);
+
+                if (newHead)
+                    ++cycleCount;
+            }
+            else
+            {
+                if (bonds[c].size() >= 4)
                 {
-                    const auto cc = cycleCount;
-                    const auto temp = rToSMILES(bonds[c][i].other, c, visited, cycleCount);
-                    if (cc == cycleCount)
-                        r += '(' + Bond::toSMILES(bonds[c][i].getType()) + temp + ')';
-                    else
-                        r += Bond::toSMILES(bonds[c][i].getType()) + temp;
+                    const auto temp = rToSMILES(bonds[c][i].other, c, insertPositions, cycleCount, cycleHeads, insertOffset + smiles.size() + 1);
+                    smiles += '(' + bonds[c][i].getSMILES() + temp + ')';
                 }
                 else
                 {
-                    ++cycleCount;
-                    r = std::to_string(cycleCount) + r;
-                    r += std::to_string(cycleCount);
+                    const auto before = cycleCount;
+                    const auto temp = rToSMILES(bonds[c][i].other, c, insertPositions, cycleCount, cycleHeads, insertOffset + smiles.size());
+                    if (cycleCount == before || bonds[c].size() >= 4)
+                        smiles += '(' + bonds[c][i].getSMILES() + temp + ')';
+                    else
+                        smiles += bonds[c][i].getSMILES() + temp;
                 }
             }
-
-            if (visited[bonds[c].back().other] == false)
-            {
-                r += Bond::toSMILES(bonds[c].back().getType());
-                c = bonds[c].back().other;
-            }
-            else
-                break;
         }
-    }
-    return r;
 
-    /*std::string r;
-    while (true)
-    {
-        if (visited[c])
-        {
-            r = "1" + r;
-            r += "1";
-            break;
-        }
-        visited[c] = true;
-
-        r += components[c]->data().symbol;
-        if (bonds[c].size() == 1)
-        {
-            if (visited[bonds[c][0].other] == false)
-            {
-                r += Bond::toSMILES(bonds[c][0].getType());
-                c = bonds[c][0].other;
-            }
-            else
-                break;
-        }
-        else if (bonds[c].empty())
+        if (insertPositions[bonds[c].back().other] != std::string::npos)  // cycle end
         {
             break;
         }
         else
         {
-            for (c_size i = 0; i < bonds[c].size() - 1; ++i)
-            {
-                if (visited[bonds[c][i].other] == false && bonds[c][i].other != c)
-                {
-                    r += '(' + Bond::toSMILES(bonds[c][i].getType()) + rToSMILES(bonds[c][i].other, visited) + ')';
-                }
-            }
-            r += Bond::toSMILES(bonds[c].back().getType()) + rToSMILES(bonds[c].back().other, visited);
+            smiles += bonds[c].back().getSMILES();
+            prev = c;
+            c = bonds[c].back().other;
         }
     }
-    return r;*/
+    return smiles;
 }
 
 std::string MolecularStructure::toSMILES() const
 {
-    if (isVirtualHydrogen()) // pure virtual hydrogen
+    if (components.empty())
+        return "";
+
+    if (isVirtualHydrogen())
         return "HH";
 
-    std::vector<uint8_t> visited(components.size(), false);
-    uint8_t cycleCount = 0;
-    return rToSMILES(0, 0, visited, cycleCount);
-}
+    std::vector<size_t> insertPositions(components.size(), std::string::npos);
+    uint8_t cycleCount = 1;
+    std::map<c_size, uint8_t> cycleHeads;
+    std::string smiles;
 
+    smiles += components.front()->getSMILES();
+    insertPositions.front() = smiles.size();
+
+    if (bonds.front().empty())
+        return smiles;
+
+    if (bonds.front().size() == 1)
+    {
+        smiles += bonds.front().front().getSMILES();
+        smiles += rToSMILES(bonds.front().front().other, 0, insertPositions, cycleCount, cycleHeads, smiles.size());
+        insertCycleHeads(smiles, insertPositions, cycleHeads);
+        return smiles;
+    }
+
+    for (c_size i = 0; i < bonds.front().size() - 1; ++i)
+    {        
+        const auto before = cycleCount;
+        const auto temp = rToSMILES(bonds.front()[i].other, 0, insertPositions, cycleCount, cycleHeads, smiles.size());
+        if(cycleCount == before)
+            smiles += '(' + bonds.front()[i].getSMILES() + temp + ')';
+        else
+            smiles += bonds.front()[i].getSMILES() + temp;
+    }
+
+    if (insertPositions[bonds.front().back().other] != std::string::npos)  // cycle end
+    {
+        //const auto [_, newHead] = cycleHeads.emplace(std::make_pair(bonds.front().back().other, cycleCount));
+        //cycleHeads.emplace(std::make_pair(0, cycleCount));
+        //smiles += std::to_string(cycleCount);
+
+        insertCycleHeads(smiles, insertPositions, cycleHeads);
+        return smiles;
+    }
+    else
+    {
+        smiles += bonds.front().back().getSMILES();
+        const auto temp = rToSMILES(bonds.front().back().other, 0, insertPositions, cycleCount, cycleHeads, smiles.size());
+        smiles += bonds.front().back().getSMILES() + temp;
+    }
+
+    insertCycleHeads(smiles, insertPositions, cycleHeads);
+    return smiles;
+}
 
 std::string MolecularStructure::serialize() const
 {
-    if (isVirtualHydrogen()) // pure virtual hydrogen
+    if (isVirtualHydrogen())
         return "h";
 
     std::string result;
@@ -1091,7 +1139,7 @@ std::string MolecularStructure::serialize() const
     for (c_size i = 0; i < components.size(); ++i)
     {
         for (c_size j = 0; j < bonds[i].size(); ++j)
-            result += bonds[i][j].toSMILES() + std::to_string(bonds[i][j].other) + ';';
+            result += bonds[i][j].getSMILES() + std::to_string(bonds[i][j].other) + ';';
         result.back() = '_';
     }
     result.pop_back();

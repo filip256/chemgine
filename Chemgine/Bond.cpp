@@ -17,16 +17,16 @@ uint8_t Bond::getValence() const
 	return Bond::getValence(type);
 }
 
-std::string Bond::toSMILES() const
+std::string Bond::getSMILES() const
 {
-	return toSMILES(type);
+	return getSMILES(type);
 }
 
-std::string Bond::toSMILES(const BondType type)
+std::string Bond::getSMILES(const BondType type)
 {
 	switch (type)
 	{
-	case BondType::NO_BOND:
+	case BondType::NON_BOND:
 		return ".";
 	case BondType::SINGLE:
 		return "";
@@ -48,7 +48,7 @@ BondType Bond::fromSMILES(const char symbol)
 	switch (symbol)
 	{
 	case '.':
-		return BondType::NO_BOND;
+		return BondType::NON_BOND;
 	case '-':
 		return BondType::SINGLE;
 	case '=':

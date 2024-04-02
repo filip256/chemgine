@@ -1,11 +1,21 @@
 #include "ColorCast.hpp"
 
-Color colorCast(const sf::Color& color)
+const Color& colorCast(const sf::Color& color)
 {
-    return Color(color.r, color.g, color.b, color.a);
+    return reinterpret_cast<const Color&>(color);
 }
 
-sf::Color colorCast(const Color& color)
+Color& colorCast(sf::Color& color)
 {
-    return sf::Color(color.r, color.g, color.b, color.a);
+    return reinterpret_cast<Color&>(color);
+}
+
+const sf::Color& colorCast(const Color& color)
+{
+    return reinterpret_cast<const sf::Color&>(color);
+}
+
+sf::Color& colorCast(Color& color)
+{
+    return reinterpret_cast<sf::Color&>(color);
 }

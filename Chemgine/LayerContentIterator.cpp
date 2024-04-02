@@ -8,7 +8,10 @@ LayerContentIterator::LayerContentIterator(
 	layer(layer),
 	it(it),
     end(end)
-{}
+{
+    while (this->it != end && this->it->first.layer != layer)
+        ++(this->it);
+}
 
 const Reactant& LayerContentIterator::operator*() const 
 {
@@ -22,6 +25,7 @@ const Reactant* LayerContentIterator::operator->() const
 
 LayerContentIterator& LayerContentIterator::operator++()
 {
+    ++it;
     while(it != end && it->first.layer != layer)
         ++it;
     return *this;

@@ -5,11 +5,11 @@
 
 void AtomDataTable::addPredefined()
 {
-	table.emplace(101, "*", AtomData(101, "*", "Any Radical", 0, { 1 }));
-	table.emplace(102, "R", AtomData(102, "R", "Alkyl Radical", 0, { 1 }));
-	table.emplace(103, "A", AtomData(103, "A", "Aromatic Radical", 0, { 1 }));
-	table.emplace(104, "X", AtomData(104, "X", "Halogen Radical", 0, { 1 }));
-	table.emplace(105, "Me", AtomData(105, "Me", "Metal Radical", 0, { 1 }));
+	table.emplace(101, "*", AtomData(101, "*", "any radical", 0, { 1 }));
+	table.emplace(102, "R", AtomData(102, "R", "alkyl radical", 0, { 1 }));
+	table.emplace(103, "A", AtomData(103, "A", "aromatic radical", 0, { 1 }));
+	table.emplace(104, "X", AtomData(104, "X", "halogen radical", 0, { 1 }));
+	table.emplace(105, "Me", AtomData(105, "Me", "metal radical", 0, { 1 }));
 
 	table.emplace(199, "H", AtomData(199, "H", "Hydrogen", 1.008, { 1 }));
 }

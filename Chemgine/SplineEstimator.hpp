@@ -21,5 +21,9 @@ public:
 
 	double get(const double input) const override final;
 
+	bool isEquivalent(const BaseEstimator& other,
+		const double epsilon = std::numeric_limits<double>::epsilon()
+	) const override final;
+
 	SplineEstimator* clone() const override final;
 };

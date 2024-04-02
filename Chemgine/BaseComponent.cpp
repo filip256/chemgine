@@ -33,6 +33,11 @@ ComponentId BaseComponent::getId() const
 	return id;
 }
 
+std::string BaseComponent::getSMILES() const
+{
+	return data().getSMILES();
+}
+
 bool BaseComponent::isAtomicType() const
 {
 	return !BaseComponent::isCompositeType(*this);

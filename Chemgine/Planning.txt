@@ -271,6 +271,10 @@ Tasks:
   21. Add object for Molecule-Amount pairs
   22. Spread system ticks across multiple frames
   DONE. Add nullRef type instead of Ref<T>::nullRef
+  23. Rename normalization to canonicalization
+  24. Remove MolecularStructure.mapTo(setB[i], false), only mapTo(setB[i], true) is needed
+  25. Add catalysts to specialization tree
+  26. Add DynamicAmount
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules
@@ -339,6 +343,10 @@ Tasks:
   1. Add bin parser/printer
 ---
   1. Add Context
+---
+  1. Add user define-able radical atoms
+---
+  1. Add user defineable specific bond properties
 
 
 
@@ -544,6 +552,13 @@ Categorizations:
 
     -----------------------------------------------------------------------------------------------------------------
 
+
+    Potential serialization formats:
+
+    Amount:
+        
+
+
             react<{gugyug, huahsimdasdu, asdhi}:{hiashud, asygduam, sdguya}>
         [
 	        <id:        #123>
@@ -551,3 +566,8 @@ Categorizations:
 	        <speed:     1.0mol/s>
 	        <catalysts: {syga, dhsiahdim}>
         ]
+
+
+
+Amount<T> -> DynAmount{T}
+DynAmount{T1} -> DynAmount{T2}
