@@ -6,7 +6,7 @@
 
 typedef uint16_t EstimatorId;
 
-class EstimatorDataTable;
+class EstimatorRepository;
 
 class BaseEstimator
 {
@@ -29,7 +29,7 @@ public:
 
 	virtual BaseEstimator* clone() const = 0;
 
-	friend class EstimatorDataTable;
+	friend class EstimatorRepository;
 
 
 	// for memory leak checking 

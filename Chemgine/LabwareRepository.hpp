@@ -5,15 +5,15 @@
 
 #include "BaseLabwareData.hpp"
 
-class LabwareDataTable
+class LabwareRepository
 {
 private:
 	std::unordered_map<LabwareId, const BaseLabwareData*> table;
 
 public:
-	LabwareDataTable() = default;
-	LabwareDataTable(const LabwareDataTable&) = delete;
-	~LabwareDataTable() noexcept;
+	LabwareRepository() = default;
+	LabwareRepository(const LabwareRepository&) = delete;
+	~LabwareRepository() noexcept;
 
 	bool loadFromFile(const std::string& path);
 

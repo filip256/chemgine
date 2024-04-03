@@ -64,6 +64,7 @@ public:
 	constexpr bool oveflowsOnMultiply(const Amount<UnitT> other) const noexcept;
 };
 
+
 template<Unit UnitT>
 const Amount<UnitT> Amount<UnitT>::Unknown = std::numeric_limits<StorageType>::min() - std::numeric_limits<StorageType>::epsilon();
 template<Unit UnitT>

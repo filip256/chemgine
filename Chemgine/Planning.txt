@@ -227,7 +227,7 @@ Tasks:
 ---
   DONE. Molecular structure improvements: isNormalized field (checks for req methods), implied hydrogen clarifications
 ---
-  1. Fix single key DataTables
+  1. Fix single key Repositorys
   2. Fix Reactable id clash (Molecule/GenericMolecule)
   DONE. Estimator optimizer
   DONE. Use operator* instead of value() for std::optional
@@ -260,7 +260,7 @@ Tasks:
   17. Consider avoiding reparsing reactions in the tree (in case of cycles)
   DONE. Rename IdType to just Id
   DONE. Create a class for initContent
-  18. Rename DataTable to Repository
+  DONE. Rename Repository to Repository
   19. Use std:: for cstdint types
   DONE. Use map instead of unordered_map for storing layers (=> 34.5% sim-time perf. improvement!)
   20. Consider switching LayerType to iterators where possible, within the containers
@@ -271,10 +271,13 @@ Tasks:
   21. Add object for Molecule-Amount pairs
   22. Spread system ticks across multiple frames
   DONE. Add nullRef type instead of Ref<T>::nullRef
-  23. Rename normalization to canonicalization
+  DONE. Rename normalization to canonicalization
   24. Remove MolecularStructure.mapTo(setB[i], false), only mapTo(setB[i], true) is needed
   25. Add catalysts to specialization tree
-  26. Add DynamicAmount
+  DONE. Add id parser
+  DONE. Add DynamicAmount
+  DONE. Add duplicate estimator filtering
+  26. Add unit splines
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules
@@ -384,7 +387,7 @@ Categorizations:
 
  - Bonds to composite components need vector of ohter for deep ceonnections
 
- - System needed for normalizing radicals on symetric cycles, p-xylene must be p-xylene no mater the
+ - System needed for canonicalizing radicals on symetric cycles, p-xylene must be p-xylene no mater the
    position of the methyls. Radicals could always be brought down to the smallest index.
 
 

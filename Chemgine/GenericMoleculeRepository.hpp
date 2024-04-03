@@ -1,14 +1,14 @@
 #pragma once
 
-#include "DataTable.hpp"
+#include "Repository.hpp"
 #include "GenericMoleculeData.hpp"
 
-class GenericMoleculeDataTable :
-	public DataTable<MoleculeId, std::string, GenericMoleculeData>
+class GenericMoleculeRepository :
+	public Repository<MoleculeId, std::string, GenericMoleculeData>
 {
 public:
-	GenericMoleculeDataTable() = default;
-	GenericMoleculeDataTable(const GenericMoleculeDataTable&) = delete;
+	GenericMoleculeRepository() = default;
+	GenericMoleculeRepository(const GenericMoleculeRepository&) = delete;
 
 	bool loadFromFile(const std::string& path);
 	bool saveToFile(const std::string& path);

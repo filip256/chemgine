@@ -1,10 +1,10 @@
-#include "GenericMoleculeDataTable.hpp"
+#include "GenericMoleculeRepository.hpp"
 #include "DataHelpers.hpp"
 #include "Logger.hpp"
 #include <fstream>
 
 
-bool GenericMoleculeDataTable::loadFromFile(const std::string& path)
+bool GenericMoleculeRepository::loadFromFile(const std::string& path)
 {
 	std::ifstream file(path);
 
@@ -25,15 +25,13 @@ bool GenericMoleculeDataTable::loadFromFile(const std::string& path)
 	while (std::getline(file, buffer))
 	{
 		auto line = DataHelpers::parseList(buffer, ',');
-
 		if (line[1].empty())
 		{
 			Logger::log("Failed to load generic molecule due to empty SMILES string.", LogType::BAD);
 			continue;
 		}
 
-		const auto id = DataHelpers::parse<unsigned int>(line[0]);
-
+		const auto id = DataHelpers::parseId<MoleculeId>(line[0]);
 		if (id.has_value() == false)
 		{
 			Logger::log("Missing id, generic molecule: '" + line[1] + "' skipped.", LogType::BAD);
@@ -56,7 +54,7 @@ bool GenericMoleculeDataTable::loadFromFile(const std::string& path)
 	return true;
 }
 
-bool GenericMoleculeDataTable::saveToFile(const std::string& path)
+bool GenericMoleculeRepository::saveToFile(const std::string& path)
 {
 	std::ofstream file(path);
 
@@ -69,14 +67,14 @@ bool GenericMoleculeDataTable::saveToFile(const std::string& path)
 	for (size_t i = 0; i < table.size(); ++i)
 	{
 		const auto& e = table[i];
-		file << e.id << ',' << e.getStructure().serialize() << '\n';
+		file << '#' << e.id << ',' << e.getStructure().serialize() << '\n';
 	}
 
 	file.close();
 	return true;
 }
 
-size_t GenericMoleculeDataTable::findFirst(const MolecularStructure& structure) const
+size_t GenericMoleculeRepository::findFirst(const MolecularStructure& structure) const
 {
 	for (size_t i = 0; i < table.size(); ++i)
 		if (table[i].getStructure() == structure)
@@ -85,7 +83,7 @@ size_t GenericMoleculeDataTable::findFirst(const MolecularStructure& structure) 
 	return npos;
 }
 
-MoleculeId GenericMoleculeDataTable::findOrAdd(MolecularStructure&& structure)
+MoleculeId GenericMoleculeRepository::findOrAdd(MolecularStructure&& structure)
 {
 	if (structure.isEmpty())
 		return 0;

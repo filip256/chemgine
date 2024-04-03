@@ -1,4 +1,4 @@
-#include "EstimatorDataTable.hpp"
+#include "EstimatorRepository.hpp"
 #include "Logger.hpp"
 
 #include <cmath>
@@ -9,13 +9,13 @@ constexpr EstimatorId toId(const BuiltinEstimator tag)
 }
 
 
-EstimatorDataTable::~EstimatorDataTable() noexcept
+EstimatorRepository::~EstimatorRepository() noexcept
 {
 	for (const auto& a : table)
 		delete a.second;
 }
 
-void EstimatorDataTable::addPredefined()
+void EstimatorRepository::addPredefined()
 {
 	table.emplace(std::make_pair(toId(BuiltinEstimator::TEMP_TO_REL_RSPEED),
 		new FunctionalEstimator(toId(BuiltinEstimator::TEMP_TO_REL_RSPEED),
@@ -62,7 +62,7 @@ void EstimatorDataTable::addPredefined()
 	));
 }
 
-bool EstimatorDataTable::loadFromFile(const std::string& path)
+bool EstimatorRepository::loadFromFile(const std::string& path)
 {
 	addPredefined();
 
@@ -70,7 +70,7 @@ bool EstimatorDataTable::loadFromFile(const std::string& path)
 	return true;
 }
 
-const BaseEstimator& EstimatorDataTable::add(const BaseEstimator* estimator)
+const BaseEstimator& EstimatorRepository::add(const BaseEstimator* estimator)
 {
 	const auto it = std::find_if(table.cbegin(), table.cend(), [estimator](const auto& e) {
 		return e.second->isEquivalent(*estimator);
@@ -83,12 +83,12 @@ const BaseEstimator& EstimatorDataTable::add(const BaseEstimator* estimator)
 	return *estimator;
 }
 
-const BaseEstimator& EstimatorDataTable::at(const EstimatorId id) const
+const BaseEstimator& EstimatorRepository::at(const EstimatorId id) const
 {
 	return *table.at(id);
 }
 
-EstimatorId EstimatorDataTable::getFreeId() const
+EstimatorId EstimatorRepository::getFreeId() const
 {
 	size_t id = 201;
 	while (table.contains(id) && id != 0) ++id; // overflow protection

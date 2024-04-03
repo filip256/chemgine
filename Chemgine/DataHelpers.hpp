@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Amount.hpp"
+#include "DynamicAmount.hpp"
 #include "Spline.hpp"
 #include "Utils.hpp"
 #include "Color.hpp"
@@ -15,9 +15,9 @@ class DataHelpers
 {
 public:
 	template <typename T>
-	static std::optional<T> parse(const std::string& str) = delete;
-	template <typename T>
-	static std::optional<T> parseUnsigned(const std::string& str) = delete;
+	static std::optional<T> parse(const std::string& str);
+	template <typename T, typename = std::enable_if_t<std::is_arithmetic_v<T>>>
+	static std::optional<T> parseUnsigned(const std::string& str);
 	template <Unit U>
 	static std::optional<Amount<U>> parse(const std::string& str);
 	template <Unit U>
@@ -47,19 +47,22 @@ public:
 	static std::optional<std::pair<T1,T2>> parsePair(const std::string& str);
 	template <Unit U1, Unit U2>
 	static std::optional<std::pair<Amount<U1>, Amount<U2>>> parsePair(const std::string& str);
+
+	template <typename T>
+	static std::optional<T> parseId(const std::string& str);
 };
 
 
 
 template <>
-inline std::optional<int> DataHelpers::parse<int>(const std::string& str)
+inline std::optional<int64_t> DataHelpers::parse<int64_t>(const std::string& str)
 {
 	if (str.empty())
 		return std::nullopt;
 
 	try
 	{
-		return std::optional<int>(std::stoi(str));
+		return std::optional<int64_t>(std::stoll(str));
 	}
 	catch (const std::invalid_argument&)
 	{
@@ -82,18 +85,6 @@ inline std::optional<unsigned int> DataHelpers::parse<unsigned int>(const std::s
 	return std::optional<unsigned int>(*r);
 }
 
-template <>
-inline std::optional<uint8_t> DataHelpers::parse<uint8_t>(const std::string& str)
-{
-	const auto r = parse<int>(str);
-
-	if (r.has_value() == false ||
-		*r < std::numeric_limits<uint8_t>::min() ||
-		*r > std::numeric_limits<uint8_t>::max())
-		return std::nullopt;
-
-	return std::optional<uint8_t>(*r);
-}
 
 template <>
 inline std::optional<float> DataHelpers::parse<float>(const std::string& str)
@@ -135,6 +126,39 @@ inline std::optional<double> DataHelpers::parse<double>(const std::string& str)
 	}
 }
 
+template <typename T>
+inline std::optional<T> DataHelpers::parse(const std::string& str)
+{
+	const auto r = parse<int64_t>(str);
+
+	if (r.has_value() == false ||
+		*r < std::numeric_limits<T>::min() ||
+		*r > std::numeric_limits<T>::max())
+		return std::nullopt;
+
+	return std::optional<T>(*r);
+}
+
+template <>
+inline std::optional<uint64_t> DataHelpers::parseUnsigned<uint64_t>(const std::string& str)
+{
+	if (str.empty())
+		return std::nullopt;
+
+	try
+	{
+		return std::optional<int64_t>(std::stoull(str));
+	}
+	catch (const std::invalid_argument&)
+	{
+		return std::nullopt;
+	}
+	catch (const std::out_of_range&)
+	{
+		return std::nullopt;
+	}
+}
+
 template <>
 inline std::optional<float> DataHelpers::parseUnsigned<float>(const std::string& str)
 {
@@ -157,12 +181,46 @@ inline std::optional<double> DataHelpers::parseUnsigned<double>(const std::strin
 	return r;
 }
 
+template <typename T, typename>
+inline std::optional<T> DataHelpers::parseUnsigned(const std::string& str)
+{
+	const auto r = parseUnsigned<uint64_t>(str);
+
+	if (r.has_value() == false ||
+		*r < std::numeric_limits<T>::min() ||
+		*r > std::numeric_limits<T>::max())
+		return std::nullopt;
+
+	return std::optional<T>(*r);
+}
+
 template<Unit U>
 inline std::optional<Amount<U>> DataHelpers::parse(const std::string& str)
 {
-	const auto r = parse<typename Amount<U>::StorageType>(str);
-	if (r.has_value())
-		return Amount<U>(*r);
+	const auto pair = parseList(str, '_', true);
+
+	if (pair.size() == 1)
+	{
+		const auto val = parse<Amount<>::StorageType>(pair.front());
+		return val.has_value() ? 
+			std::optional(Amount<U>(*val)) :
+			std::nullopt;
+	}
+
+	if (pair.size() == 2)
+	{
+		const auto val = parse<Amount<>::StorageType>(pair.front());
+		if (val.has_value() == false)
+			return std::nullopt;
+
+
+		const auto unit = DynamicAmount::getUnitFromSymbol(pair.back());
+		if (unit.has_value() == false)
+			return std::nullopt;
+
+		return DynamicAmount(*val, *unit).to<U>();
+	}
+
 	return std::nullopt;
 }
 
@@ -240,28 +298,6 @@ inline std::optional<LabwarePort> DataHelpers::parse<LabwarePort>(const std::str
 	return LabwarePort(*type, *x, *y, *angle);
 }
 
-template <>
-inline std::optional<Amount<Unit::CELSIUS>> DataHelpers::parse<Unit::CELSIUS>(const std::string& str)
-{
-	const bool missingUnit = isdigit(str.back());
-
-	const auto temp = missingUnit ?
-		DataHelpers::parse<double>(str) :
-		DataHelpers::parse<double>(str.substr(0, str.size() - 1));
-	if (temp.has_value() == false)
-		return std::nullopt;
-
-	Amount<Unit::CELSIUS> cTemp = 0;
-	if (str.ends_with('c') || str.ends_with('C') || missingUnit)
-		cTemp = *temp;
-	else if (str.ends_with('k') || str.ends_with('K'))
-		cTemp = Amount<Unit::KELVIN>(*temp);
-	else if (str.ends_with('f') || str.ends_with('F'))
-		cTemp = Amount<Unit::FAHRENHEIT>(*temp);
-
-	return std::optional<Amount<Unit::CELSIUS>>(cTemp);
-}
-
 template <typename E, typename>
 inline std::optional<E> DataHelpers::parseEnum(const std::string& str)
 {
@@ -302,9 +338,6 @@ std::optional<std::vector<T>> DataHelpers::parseList(
 	return result;
 }
 
-
-
-
 template <typename T1, typename T2>
 inline std::optional<std::pair<T1, T2>> DataHelpers::parsePair(const std::string& str)
 {
@@ -339,4 +372,13 @@ inline std::optional<std::pair<Amount<U1>, Amount<U2>>> DataHelpers::parsePair(c
 		return std::nullopt;
 
 	return std::optional<std::pair<Amount<U1>, Amount<U2>>>(std::make_pair(*val1, *val2));
+}
+
+template <typename T>
+static std::optional<T> DataHelpers::parseId(const std::string& str)
+{
+	if (str.empty() || str.front() != '#')
+		return std::nullopt;
+	
+	return parseUnsigned<T>(str.substr(1));
 }

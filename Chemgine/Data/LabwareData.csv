@@ -1,5 +1,5 @@
 Id,Type,Name,,
-201,1,RBF,0.5,2:31:9:0;6:31:90:0,./Textures/jrbf500.png,1.0
-301,2,3-way Adaptor,0.05,3:6:58:0;3:36:33:290,./Textures/3way.png,1.0
-302,2,Distillation Adaptor,0.05,2:11:9:282;3:39:55:0,./Textures/disthead.png,1.0
-401,7,Hotplate,1000.0,6:41:10:0,./Textures/hotplate_sh2.png,1.0
+#201,1,RBF,0.5,2:31:9:0;6:31:90:0,./Textures/jrbf500.png,1.0
+#301,2,3-way Adaptor,0.05,3:6:58:0;3:36:33:290,./Textures/3way.png,1.0
+#302,2,Distillation Adaptor,0.05,2:11:9:282;3:39:55:0,./Textures/disthead.png,1.0
+#401,7,Hotplate,1000.0,6:41:10:0,./Textures/hotplate_sh2.png,1.0

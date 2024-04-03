@@ -54,7 +54,7 @@ void ShapeFill::setDrawSection(float start, float end, const sf::Color& color) c
 
 	const auto size = sprite.getTexture()->getSize();
 	const auto topCut = size.y * (1.0f - end);
-	sprite.setTextureRect(sf::IntRect(0, topCut, size.x, size.y * (end - start)));
+	sprite.setTextureRect(sf::IntRect(0, topCut, size.x, std::ceilf(size.y * (end - start))));
 
 	const auto rotation = Maths::toRadians(sprite.getRotation());
 	sprite.setPosition(sf::Vector2f(

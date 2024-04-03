@@ -67,9 +67,6 @@
     <Filter Include="Header Files\Moleculars\DataTypes">
       <UniqueIdentifier>{2ee84778-3045-46d1-8355-771b31313044}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Moleculars\Tables">
-      <UniqueIdentifier>{b63ad8de-a52f-4a96-a26c-248f6927db75}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Labware\DataTypes">
       <UniqueIdentifier>{01a269aa-c302-41e8-8b7e-08865afae803}</UniqueIdentifier>
     </Filter>
@@ -78,9 +75,6 @@
     </Filter>
     <Filter Include="Source Files\Moleculars\DataTypes">
       <UniqueIdentifier>{c6872c67-ea05-4b0f-b063-90d2d69b2acb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Moleculars\Tables">
-      <UniqueIdentifier>{7fd23ded-219b-4150-80cc-1f7fcf93e82d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Labware\DataTypes">
       <UniqueIdentifier>{f420b4a8-ab21-4b49-b67a-86b5224a49e5}</UniqueIdentifier>
@@ -139,6 +133,12 @@
     <Filter Include="Source Files\Graphics">
       <UniqueIdentifier>{fdbd94f5-df48-49cb-9dcb-7cd3c7e739e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Moleculars\Repositories">
+      <UniqueIdentifier>{b63ad8de-a52f-4a96-a26c-248f6927db75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Moleculars\Repositories">
+      <UniqueIdentifier>{7fd23ded-219b-4150-80cc-1f7fcf93e82d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataStore.cpp">
@@ -177,7 +177,7 @@
     <ClCompile Include="Maths.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="DataTable.cpp">
+    <ClCompile Include="Repository.cpp">
       <Filter>Source Files\DataStructures</Filter>
     </ClCompile>
     <ClCompile Include="ConcreteReaction.cpp">
@@ -189,10 +189,10 @@
     <ClCompile Include="LabwareDataFactory.cpp">
       <Filter>Source Files\Labware</Filter>
     </ClCompile>
-    <ClCompile Include="LabwareDataTable.cpp">
+    <ClCompile Include="LabwareRepository.cpp">
       <Filter>Source Files\Labware</Filter>
     </ClCompile>
-    <ClCompile Include="ReactionDataTable.cpp">
+    <ClCompile Include="ReactionRepository.cpp">
       <Filter>Source Files\Reactions</Filter>
     </ClCompile>
     <ClCompile Include="ReactionData.cpp">
@@ -207,10 +207,10 @@
     <ClCompile Include="CompositeComponentData.cpp">
       <Filter>Source Files\Moleculars\DataTypes</Filter>
     </ClCompile>
-    <ClCompile Include="AtomDataTable.cpp">
-      <Filter>Source Files\Moleculars\Tables</Filter>
+    <ClCompile Include="AtomRepository.cpp">
+      <Filter>Source Files\Moleculars\Repositories</Filter>
     </ClCompile>
-    <ClCompile Include="MoleculeDataTable.cpp">
+    <ClCompile Include="MoleculeRepository.cpp">
       <Filter>Source Files\Molecules</Filter>
     </ClCompile>
     <ClCompile Include="MoleculeData.cpp">
@@ -276,7 +276,7 @@
     <ClCompile Include="Reactant.cpp">
       <Filter>Source Files\Reactions</Filter>
     </ClCompile>
-    <ClCompile Include="EstimatorDataTable.cpp">
+    <ClCompile Include="EstimatorRepository.cpp">
       <Filter>Source Files\Estimators</Filter>
     </ClCompile>
     <ClCompile Include="Spline.cpp">
@@ -312,7 +312,7 @@
     <ClCompile Include="GenericMoleculeData.cpp">
       <Filter>Source Files\Molecules</Filter>
     </ClCompile>
-    <ClCompile Include="GenericMoleculeDataTable.cpp">
+    <ClCompile Include="GenericMoleculeRepository.cpp">
       <Filter>Source Files\Molecules</Filter>
     </ClCompile>
     <ClCompile Include="Symbol.cpp">
@@ -405,6 +405,9 @@
     <ClCompile Include="BaseContainerComponent.cpp">
       <Filter>Source Files\Labware\Components</Filter>
     </ClCompile>
+    <ClCompile Include="DynamicAmount.cpp">
+      <Filter>Source Files\Data\Values</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -467,7 +470,7 @@
     <ClInclude Include="PVector.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
-    <ClInclude Include="DataTable.hpp">
+    <ClInclude Include="Repository.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
     <ClInclude Include="Query.hpp">
@@ -497,13 +500,13 @@
     <ClInclude Include="LabwareDataFactory.hpp">
       <Filter>Header Files\Labware</Filter>
     </ClInclude>
-    <ClInclude Include="LabwareDataTable.hpp">
+    <ClInclude Include="LabwareRepository.hpp">
       <Filter>Header Files\Labware</Filter>
     </ClInclude>
     <ClInclude Include="ReactionData.hpp">
       <Filter>Header Files\Reactions</Filter>
     </ClInclude>
-    <ClInclude Include="ReactionDataTable.hpp">
+    <ClInclude Include="ReactionRepository.hpp">
       <Filter>Header Files\Reactions</Filter>
     </ClInclude>
     <ClInclude Include="AtomData.hpp">
@@ -515,10 +518,10 @@
     <ClInclude Include="CompositeComponentData.hpp">
       <Filter>Header Files\Moleculars\DataTypes</Filter>
     </ClInclude>
-    <ClInclude Include="AtomDataTable.hpp">
-      <Filter>Header Files\Moleculars\Tables</Filter>
+    <ClInclude Include="AtomRepository.hpp">
+      <Filter>Header Files\Moleculars\Repositories</Filter>
     </ClInclude>
-    <ClInclude Include="MoleculeDataTable.hpp">
+    <ClInclude Include="MoleculeRepository.hpp">
       <Filter>Header Files\Molecules</Filter>
     </ClInclude>
     <ClInclude Include="MoleculeData.hpp">
@@ -596,7 +599,7 @@
     <ClInclude Include="FunctionalEstimator.hpp">
       <Filter>Header Files\Estimators</Filter>
     </ClInclude>
-    <ClInclude Include="EstimatorDataTable.hpp">
+    <ClInclude Include="EstimatorRepository.hpp">
       <Filter>Header Files\Estimators</Filter>
     </ClInclude>
     <ClInclude Include="Spline.hpp">
@@ -635,7 +638,7 @@
     <ClInclude Include="GenericMoleculeData.hpp">
       <Filter>Header Files\Molecules</Filter>
     </ClInclude>
-    <ClInclude Include="GenericMoleculeDataTable.hpp">
+    <ClInclude Include="GenericMoleculeRepository.hpp">
       <Filter>Header Files\Molecules</Filter>
     </ClInclude>
     <ClInclude Include="Symbol.hpp">
@@ -760,6 +763,9 @@
     </ClInclude>
     <ClInclude Include="VectorUtils.hpp">
       <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicAmount.hpp">
+      <Filter>Header Files\Data\Values</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

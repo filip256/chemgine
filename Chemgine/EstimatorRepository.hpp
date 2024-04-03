@@ -23,7 +23,7 @@ enum class BuiltinEstimator : EstimatorId
 inline constexpr EstimatorId toId(const BuiltinEstimator tag);
 
 
-class EstimatorDataTable
+class EstimatorRepository
 {
 private:
 	std::unordered_map<EstimatorId, const BaseEstimator*> table;
@@ -34,9 +34,9 @@ private:
 	const BaseEstimator& add(const BaseEstimator* estimator);
 
 public:
-	EstimatorDataTable() = default;
-	EstimatorDataTable(const EstimatorDataTable&) = delete;
-	~EstimatorDataTable() noexcept;
+	EstimatorRepository() = default;
+	EstimatorRepository(const EstimatorRepository&) = delete;
+	~EstimatorRepository() noexcept;
 
 	bool loadFromFile(const std::string& path);
 	
@@ -55,7 +55,7 @@ public:
 
 
 template <typename EstT, typename... Args, typename>
-const BaseEstimator& EstimatorDataTable::add(Args&&... args)
+const BaseEstimator& EstimatorRepository::add(Args&&... args)
 {
 	const auto id = getFreeId();
 	const auto* estimator = new EstT(id, std::forward<Args>(args)...);
@@ -64,7 +64,7 @@ const BaseEstimator& EstimatorDataTable::add(Args&&... args)
 
 // --- Estimator optimizers:
 template <>
-inline const BaseEstimator& EstimatorDataTable::add<SplineEstimator, Spline<float>>(Spline<float>&& spline)
+inline const BaseEstimator& EstimatorRepository::add<SplineEstimator, Spline<float>>(Spline<float>&& spline)
 {
 	float compFactor = 0.0001f;
 	while (spline.size() > 100 && compFactor <= 0.1f)
@@ -90,7 +90,7 @@ inline const BaseEstimator& EstimatorDataTable::add<SplineEstimator, Spline<floa
 }
 
 template <>
-inline const BaseEstimator& EstimatorDataTable::add<LinearEstimator, double, double>(double&& scale, double&& offset)
+inline const BaseEstimator& EstimatorRepository::add<LinearEstimator, double, double>(double&& scale, double&& offset)
 {
 	if (scale - 1.0 < std::numeric_limits<double>::epsilon())
 		return add<ConstantEstimator>(offset);

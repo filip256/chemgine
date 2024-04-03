@@ -287,12 +287,12 @@ std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<R
 		);
 	}
 
-	// normalize
+	// canonicalize
 	std::vector<Molecule> result;
 	result.reserve(concreteProducts.size());
 	for (size_t i = 0; i < concreteProducts.size(); ++i)
 	{
-		concreteProducts[i].normalize();
+		concreteProducts[i].canonicalize();
 		concreteProducts[i].recountImpliedHydrogens();
 		result.emplace_back(std::move(concreteProducts[i]));
 	}

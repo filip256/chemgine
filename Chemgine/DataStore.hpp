@@ -1,24 +1,24 @@
 #pragma once
 
-#include "AtomDataTable.hpp"
-#include "GenericMoleculeDataTable.hpp"
-#include "MoleculeDataTable.hpp"
-#include "ReactionDataTable.hpp"
-#include "LabwareDataTable.hpp"
-#include "EstimatorDataTable.hpp"
+#include "AtomRepository.hpp"
+#include "GenericMoleculeRepository.hpp"
+#include "MoleculeRepository.hpp"
+#include "ReactionRepository.hpp"
+#include "LabwareRepository.hpp"
+#include "EstimatorRepository.hpp"
 
 class DataStore
 {
 public:
-	AtomDataTable atoms;
+	AtomRepository atoms;
 
-	EstimatorDataTable estimators;
+	EstimatorRepository estimators;
 
-	mutable MoleculeDataTable molecules;
-	mutable GenericMoleculeDataTable genericMolecules;
-	ReactionDataTable reactions;
+	mutable MoleculeRepository molecules;
+	mutable GenericMoleculeRepository genericMolecules;
+	ReactionRepository reactions;
 
-	LabwareDataTable labware;
+	LabwareRepository labware;
 
 
 	DataStore();

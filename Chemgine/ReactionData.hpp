@@ -98,5 +98,5 @@ public:
 
 	std::string getHRTag() const;
 
-	friend class ReactionDataTable;
+	friend class ReactionRepository;
 };

@@ -14,15 +14,15 @@ MolecularStructure::MolecularStructure(const std::string& smiles)
         Logger::log("Molecule initialized with ill-formed smiles: \"" + smiles + "\".", LogType::BAD);
         return;
     }
-    normalize();
+    canonicalize();
 }
 
-MolecularStructure::MolecularStructure(const std::string& serialized, const bool renormalize)
+MolecularStructure::MolecularStructure(const std::string& serialized, const bool canonicalize)
 {
     deserialize(serialized);
 
-    if(renormalize)
-        normalize();
+    if(canonicalize)
+        this->canonicalize();
 }
 
 MolecularStructure::MolecularStructure(const MolecularStructure& other) noexcept :
@@ -215,7 +215,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
     return true;
 }
 
-void MolecularStructure::normalize()
+void MolecularStructure::canonicalize()
 {
     if (components.size() <= 1)
         return;
@@ -772,7 +772,7 @@ std::unordered_map<c_size, c_size> MolecularStructure::mapTo(const MolecularStru
     if (pattern.componentCount() == 0 || this->componentCount() == 0)    // TODO: could a molecule match a patter larger than itself?
         return std::unordered_map<c_size, c_size>();
 
-    // should start with a non radical type     TODO: remove, normalization is done anyway
+    // should start with a non radical type     TODO: remove, canonicalization is done anyway
     c_size pStart = 0;
     while (pStart < pattern.componentCount() && pattern.components[pStart]->isRadicalType())
         ++pStart;
@@ -860,7 +860,7 @@ void MolecularStructure::copyBranch(
     const MolecularStructure& source,
     const c_size sourceIdx,
     std::unordered_map<c_size, c_size>& sdMapping,
-    bool renormalize,
+    bool canonicalize,
     const std::unordered_set<c_size>& sourceIgnore)
 {
     // overwrites first matching radical atom
@@ -910,9 +910,9 @@ void MolecularStructure::copyBranch(
         }
     }
 
-    if (renormalize)
+    if (canonicalize)
     {
-        destination.normalize();
+        destination.canonicalize();
         destination.recountImpliedHydrogens();
         sdMapping.clear();
     }
@@ -922,7 +922,7 @@ MolecularStructure MolecularStructure::addSubstituents(
     const MolecularStructure& pattern,
     const MolecularStructure& instance,
     std::unordered_map<c_size, c_size>& ipMap,
-    bool renormalize)
+    bool canonicalize)
 {
     MolecularStructure result(pattern);
 
@@ -931,9 +931,9 @@ MolecularStructure MolecularStructure::addSubstituents(
         copyBranch(result, instance, p.first, ipMap, false);
     }
 
-    if (renormalize)
+    if (canonicalize)
     {
-        result.normalize();
+        result.canonicalize();
         result.recountImpliedHydrogens();
         ipMap.clear();
     }

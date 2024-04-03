@@ -1,11 +1,11 @@
-#include "ReactionDataTable.hpp"
+#include "ReactionRepository.hpp"
 #include "DataHelpers.hpp"
 #include "Logger.hpp"
 #include "Molecule.hpp"
 
 #include <fstream>
 
-bool ReactionDataTable::loadFromFile(const std::string& path)
+bool ReactionRepository::loadFromFile(const std::string& path)
 {
 	std::ifstream file(path);
 
@@ -25,7 +25,7 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 	std::getline(file, buffer);
 	while (std::getline(file, buffer))
 	{
-		if (buffer.starts_with('#'))
+		if (buffer.starts_with('\\'))
 			continue;
 
 		auto line = DataHelpers::parseList(buffer, ',');
@@ -36,7 +36,7 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 			continue;
 		}
 
-		const auto id = DataHelpers::parse<unsigned int>(line[0]);
+		const auto id = DataHelpers::parseId<ReactionId>(line[0]);
 		if (id.has_value() == false)
 		{
 			Logger::log("Missing id, reaction skipped.", LogType::BAD);
@@ -171,12 +171,12 @@ bool ReactionDataTable::loadFromFile(const std::string& path)
 	return true;
 }
 
-const ReactionNetwork& ReactionDataTable::getNetwork() const
+const ReactionNetwork& ReactionRepository::getNetwork() const
 {
 	return network;
 }
 
-std::unordered_set<ConcreteReaction> ReactionDataTable::findOccuringReactions(const std::vector<Reactant>& reactants) const
+std::unordered_set<ConcreteReaction> ReactionRepository::findOccuringReactions(const std::vector<Reactant>& reactants) const
 {
 	return network.getConcreteReactions(reactants);
 }

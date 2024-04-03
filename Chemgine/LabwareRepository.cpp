@@ -1,17 +1,17 @@
-#include "LabwareDataTable.hpp"
+#include "LabwareRepository.hpp"
 #include "DataHelpers.hpp"
 #include "LabwareDataFactory.hpp"
 #include "Logger.hpp"
 
 #include <fstream>
 
-LabwareDataTable::~LabwareDataTable() noexcept
+LabwareRepository::~LabwareRepository() noexcept
 {
 	for (const auto& l : table)
 		delete l.second;
 }
 
-bool LabwareDataTable::loadFromFile(const std::string& path)
+bool LabwareRepository::loadFromFile(const std::string& path)
 {
 	std::ifstream file(path);
 
@@ -39,7 +39,7 @@ bool LabwareDataTable::loadFromFile(const std::string& path)
 			continue;
 		}
 
-		const auto id = DataHelpers::parse<unsigned int>(line[0]);
+		const auto id = DataHelpers::parseId<LabwareId>(line[0]);
 		const auto type = DataHelpers::parseEnum<LabwareType>(line[1]);
 
 		if (id.has_value() == false || type.has_value() == false)
@@ -67,8 +67,7 @@ bool LabwareDataTable::loadFromFile(const std::string& path)
 	return true;
 }
 
-
-const BaseLabwareData& LabwareDataTable::at(const LabwareId id) const
+const BaseLabwareData& LabwareRepository::at(const LabwareId id) const
 {
 	return *table.at(id);
 }

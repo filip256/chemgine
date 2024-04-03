@@ -105,19 +105,18 @@ public:
     static constexpr c_size npos = static_cast<c_size>(-1);
 
     MolecularStructure(const std::string& smiles);
-    MolecularStructure(const std::string& serialized, const bool renormalize);
+    MolecularStructure(const std::string& serialized, const bool canonicalize);
     MolecularStructure(MolecularStructure&& structure) = default;
     ~MolecularStructure() noexcept;
 
     MolecularStructure& operator=(MolecularStructure&&) = default;
 
     /// <summary>
-    /// Normalizes the structure by ordering components and bonds in decreasing order of
-    /// component precedence.
+    /// Sorts components and bonds in decreasing order of component precedence.
     /// Normalization simplifies algorithms and speeds up comparison.
     /// Complexity: O(n_comps * n_bonds * n_bonds)
     /// </summary>
-    void normalize();
+    void canonicalize();
 
     const BaseComponent* getComponent(const c_size idx) const;
     std::string print(const size_t maxWidth = 100, const size_t maxHeight = 50) const;
@@ -132,7 +131,7 @@ public:
 
     /// <summary>
     /// Complexity: O(n)
-    /// #Requires normalization
+    /// #Requires canonicalization
     /// </summary>
     c_size getRadicalAtomsCount() const;
 
@@ -149,7 +148,7 @@ public:
     /// <summary>
     /// Checks if the molecule contains at least one radical type. 
     /// Complexity: O(1)
-    /// #Requires normalization
+    /// #Requires canonicalization
     /// </summary>
     bool isComplete() const;
 
@@ -232,13 +231,13 @@ public:
     /// </summary>
     /// <param name="sourceIdx">: the common component between the destination and source, where the branch starts</param>
     /// <param name="sdMapping">: a map between the components of the source and those of the destination.</param>
-    /// <param name="renormalize">: if true, normalization and implied hydrogen recount occurs after the copy is made and sdMapping is invalidated. </param>
+    /// <param name="canonicalize">: if true, canonicalization and implied hydrogen recount occurs after the copy is made and sdMapping is invalidated. </param>
     static void copyBranch(
         MolecularStructure& destination,
         const MolecularStructure& source,
         const c_size sourceIdx,
         std::unordered_map<c_size, c_size>& sdMapping,
-        bool renormalize = true,
+        bool canonicalize = true,
         const std::unordered_set<c_size>& sourceIgnore = std::unordered_set<c_size>());
 
     /// <summary>
@@ -251,7 +250,7 @@ public:
         const MolecularStructure& pattern,
         const MolecularStructure& instance,
         std::unordered_map<c_size, c_size>& ipMap,
-        bool renormalize = true);
+        bool canonicalize = true);
 
     /// <summary>
     /// Returns true iff both structures represent the exact same molecule.

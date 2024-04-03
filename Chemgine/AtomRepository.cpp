@@ -1,9 +1,9 @@
-#include "AtomDataTable.hpp"
+#include "AtomRepository.hpp"
 #include "DataHelpers.hpp"
 #include "Logger.hpp"
 #include <fstream>
 
-void AtomDataTable::addPredefined()
+void AtomRepository::addPredefined()
 {
 	table.emplace(101, "*", AtomData(101, "*", "any radical", 0, { 1 }));
 	table.emplace(102, "R", AtomData(102, "R", "alkyl radical", 0, { 1 }));
@@ -14,7 +14,7 @@ void AtomDataTable::addPredefined()
 	table.emplace(199, "H", AtomData(199, "H", "Hydrogen", 1.008, { 1 }));
 }
 
-bool AtomDataTable::loadFromFile(const std::string& path)
+bool AtomRepository::loadFromFile(const std::string& path)
 {
 	std::ifstream file(path);
 
@@ -47,19 +47,19 @@ bool AtomDataTable::loadFromFile(const std::string& path)
 			Logger::log("Atom name was empty. (" + line[1] + ')', LogType::WARN);
 		}
 
-		const auto id = DataHelpers::parse<unsigned int>(line[0]);
-		const auto weight = DataHelpers::parseUnsigned<double>(line[3]);
-		auto valences = DataHelpers::parseList<uint8_t>(line[4], ';', true);
-
-		if (valences.has_value() == false)
-		{
-			Logger::log("Atom with invalid or missing valence with id " + std::to_string(*id) + " skipped.", LogType::BAD);
-			continue;
-		}
-
+		const auto id = DataHelpers::parseId<ComponentId>(line[0]);
 		if (id.has_value() == false)
 		{
 			Logger::log("Missing id, atom '" + line[1] + "' skipped.", LogType::BAD);
+			continue;
+		}
+
+		const auto weight = DataHelpers::parseUnsigned<double>(line[3]);
+
+		auto valences = DataHelpers::parseList<uint8_t>(line[4], ';', true);
+		if (valences.has_value() == false)
+		{
+			Logger::log("Atom with invalid or missing valence with id " + std::to_string(*id) + " skipped.", LogType::BAD);
 			continue;
 		}
 

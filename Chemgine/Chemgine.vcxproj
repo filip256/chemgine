@@ -103,6 +103,7 @@
       <AdditionalIncludeDirectories>..\SFML-32\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -124,6 +125,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <AdditionalIncludeDirectories>..\SFML-64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -149,6 +151,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -176,6 +179,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <AdditionalIncludeDirectories>..\SFML-64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OmitFramePointers>true</OmitFramePointers>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -196,8 +200,9 @@
     <ClCompile Include="ColorCast.cpp" />
     <ClCompile Include="ContentInitializer.cpp" />
     <ClCompile Include="Context.cpp" />
+    <ClCompile Include="DynamicAmount.cpp" />
     <ClCompile Include="EquipmentComponent.cpp" />
-    <ClCompile Include="EstimatorDataTable.cpp" />
+    <ClCompile Include="EstimatorRepository.cpp" />
     <ClCompile Include="Atom.cpp" />
     <ClCompile Include="BaseEstimator.cpp" />
     <ClCompile Include="BaseLabwareComponent.cpp" />
@@ -224,7 +229,7 @@
     <ClCompile Include="Lab.cpp" />
     <ClCompile Include="LabwareConnection.cpp" />
     <ClCompile Include="LabwareDataFactory.cpp" />
-    <ClCompile Include="LabwareDataTable.cpp" />
+    <ClCompile Include="LabwareRepository.cpp" />
     <ClCompile Include="LabwarePort.cpp" />
     <ClCompile Include="LabwareSystem.cpp" />
     <ClCompile Include="LayerContentIterator.cpp" />
@@ -235,7 +240,7 @@
     <ClCompile Include="LinearEstimator.cpp" />
     <ClCompile Include="Maths.cpp" />
     <ClCompile Include="Mixture.cpp" />
-    <ClCompile Include="MoleculeDataTable.cpp" />
+    <ClCompile Include="MoleculeRepository.cpp" />
     <ClCompile Include="Molecule.cpp" />
     <ClCompile Include="MoleculeData.cpp" />
     <ClCompile Include="OffsetEstimator.cpp" />
@@ -246,7 +251,7 @@
     <ClCompile Include="ReactantRef.cpp" />
     <ClCompile Include="ReactantSet.cpp" />
     <ClCompile Include="ReactionData.cpp" />
-    <ClCompile Include="ReactionDataTable.cpp" />
+    <ClCompile Include="ReactionRepository.cpp" />
     <ClCompile Include="ReactionNetwork.cpp" />
     <ClCompile Include="Reactor.cpp" />
     <ClCompile Include="ScaleEstimator.cpp" />
@@ -272,11 +277,12 @@
     <ClInclude Include="ContainerComponent.hpp" />
     <ClInclude Include="Context.hpp" />
     <ClInclude Include="DirectedGraph.hpp" />
+    <ClInclude Include="DynamicAmount.hpp" />
     <ClInclude Include="EquipmentComponent.hpp" />
-    <ClInclude Include="EstimatorDataTable.hpp" />
+    <ClInclude Include="EstimatorRepository.hpp" />
     <ClInclude Include="EstimatorType.hpp" />
     <ClCompile Include="AtomData.cpp" />
-    <ClCompile Include="AtomDataTable.cpp" />
+    <ClCompile Include="AtomRepository.cpp" />
     <ClCompile Include="BaseComponentData.cpp" />
     <ClCompile Include="Bond.cpp" />
     <ClCompile Include="Chemgine.cpp" />
@@ -292,9 +298,9 @@
     <ClInclude Include="CompositeComponent.hpp" />
     <ClCompile Include="DataHelpers.cpp" />
     <ClCompile Include="DataStore.cpp" />
-    <ClCompile Include="DataTable.cpp" />
+    <ClCompile Include="Repository.cpp" />
     <ClCompile Include="GenericMoleculeData.cpp" />
-    <ClCompile Include="GenericMoleculeDataTable.cpp" />
+    <ClCompile Include="GenericMoleculeRepository.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClInclude Include="CompositeComponentData.hpp" />
     <ClInclude Include="ConcreteReaction.hpp" />
@@ -312,7 +318,7 @@
     <ClInclude Include="Formulas.hpp" />
     <ClInclude Include="ForwardingContainer.hpp" />
     <ClInclude Include="GenericMoleculeData.hpp" />
-    <ClInclude Include="GenericMoleculeDataTable.hpp" />
+    <ClInclude Include="GenericMoleculeRepository.hpp" />
     <ClInclude Include="FunctionalEstimator.hpp" />
     <ClInclude Include="HashCombine.hpp" />
     <ClInclude Include="Heatsource.hpp" />
@@ -322,7 +328,7 @@
     <ClInclude Include="Lab.hpp" />
     <ClInclude Include="LabwareConnection.hpp" />
     <ClInclude Include="LabwareDataFactory.hpp" />
-    <ClInclude Include="LabwareDataTable.hpp" />
+    <ClInclude Include="LabwareRepository.hpp" />
     <ClInclude Include="LabwarePort.hpp" />
     <ClInclude Include="LabwareSystem.hpp" />
     <ClInclude Include="LabwareType.hpp" />
@@ -364,7 +370,7 @@
     <ClInclude Include="UIContext.hpp" />
     <ClInclude Include="UndirectedGraph.hpp" />
     <ClInclude Include="Unit.hpp" />
-    <ClInclude Include="MoleculeDataTable.hpp" />
+    <ClInclude Include="MoleculeRepository.hpp" />
     <ClInclude Include="MultiIndexMap.hpp" />
     <ClInclude Include="Molecule.hpp" />
     <ClInclude Include="MoleculeData.hpp" />
@@ -373,7 +379,7 @@
     <ClInclude Include="Query.hpp" />
     <ClInclude Include="Reactable.hpp" />
     <ClInclude Include="ReactionData.hpp" />
-    <ClInclude Include="ReactionDataTable.hpp" />
+    <ClInclude Include="ReactionRepository.hpp" />
     <ClInclude Include="Reactor.hpp" />
     <ClInclude Include="SizeTypedefs.hpp" />
     <ClInclude Include="SystemMatrix.hpp" />
@@ -385,14 +391,14 @@
   <ItemGroup>
     <ClInclude Include="Atom.hpp" />
     <ClInclude Include="AtomData.hpp" />
-    <ClInclude Include="AtomDataTable.hpp" />
+    <ClInclude Include="AtomRepository.hpp" />
     <ClInclude Include="Bond.hpp" />
     <ClInclude Include="BondType.hpp" />
     <ClInclude Include="BaseComponent.hpp" />
     <ClInclude Include="ComponentType.hpp" />
     <ClInclude Include="DataHelpers.hpp" />
     <ClInclude Include="DataStore.hpp" />
-    <ClInclude Include="DataTable.hpp" />
+    <ClInclude Include="Repository.hpp" />
     <ClInclude Include="Logger.hpp" />
     <ClInclude Include="MolecularStructure.hpp" />
   </ItemGroup>

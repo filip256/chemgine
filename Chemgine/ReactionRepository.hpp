@@ -1,21 +1,21 @@
 #pragma once
 
-#include "DataTable.hpp"
+#include "Repository.hpp"
 #include "ReactionData.hpp"
-#include "GenericMoleculeDataTable.hpp"
-#include "MoleculeDataTable.hpp"
+#include "GenericMoleculeRepository.hpp"
+#include "MoleculeRepository.hpp"
 #include "ReactionNetwork.hpp"
 
-class ReactionDataTable :
-	public DataTable<ReactionId, std::string, ReactionData>
+class ReactionRepository :
+	public Repository<ReactionId, std::string, ReactionData>
 {
 private:
 	ReactionNetwork network;
 
 public:
-	ReactionDataTable() = default;
+	ReactionRepository() = default;
 
-	ReactionDataTable(const ReactionDataTable&) = delete;
+	ReactionRepository(const ReactionRepository&) = delete;
 
 	bool loadFromFile(const std::string& path);
 

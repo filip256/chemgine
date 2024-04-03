@@ -30,6 +30,7 @@
 #include "UndirectedGraph.hpp"
 #include "TextBlock.hpp"
 #include "Linguistics.hpp"
+#include "DynamicAmount.hpp"
 
 int main()
 {

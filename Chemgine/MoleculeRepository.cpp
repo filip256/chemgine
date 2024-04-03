@@ -1,4 +1,4 @@
-#include "MoleculeDataTable.hpp"
+#include "MoleculeRepository.hpp"
 #include "DataHelpers.hpp"
 #include "OffsetEstimator.hpp"
 #include "ScaleEstimator.hpp"
@@ -7,12 +7,12 @@
 
 #include <fstream>
 
-MoleculeDataTable::MoleculeDataTable(EstimatorDataTable& estimators) noexcept :
+MoleculeRepository::MoleculeRepository(EstimatorRepository& estimators) noexcept :
 	estimators(estimators)
 {}
 
 
-bool MoleculeDataTable::loadFromFile(const std::string& path)
+bool MoleculeRepository::loadFromFile(const std::string& path)
 {
 	std::ifstream file(path);
 
@@ -50,8 +50,7 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 			Logger::log("Molecule name was empty. (" + line[1] + ')', LogType::WARN);
 		}
 
-		const auto id = DataHelpers::parse<unsigned int>(line[0]);
-
+		const auto id = DataHelpers::parseId<MoleculeId>(line[0]);
 		if (id.has_value() == false)
 		{
 			Logger::log("Missing id, molecule '" + line[1] + "' skipped.", LogType::BAD);
@@ -114,7 +113,7 @@ bool MoleculeDataTable::loadFromFile(const std::string& path)
 	return true;
 }
 
-bool MoleculeDataTable::saveToFile(const std::string& path)
+bool MoleculeRepository::saveToFile(const std::string& path)
 {
 	std::ofstream file(path);
 
@@ -127,14 +126,14 @@ bool MoleculeDataTable::saveToFile(const std::string& path)
 	for (size_t i = 0; i < table.size(); ++i)
 	{
 		const auto& e = table[i];
-		file << e.id << ',' << e.getStructure().toSMILES() << ',' << e.name << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << '\n';
+		file << '#' << e.id << ',' << e.getStructure().toSMILES() << ',' << e.name << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << '\n';
 	}
 
 	file.close();
 	return true;
 }
 
-size_t MoleculeDataTable::findFirst(const MolecularStructure& structure) const
+size_t MoleculeRepository::findFirst(const MolecularStructure& structure) const
 {
 	for (size_t i = 0; i < table.size(); ++i)
 		if (table[i].getStructure() == structure)
@@ -143,7 +142,7 @@ size_t MoleculeDataTable::findFirst(const MolecularStructure& structure) const
 	return npos;
 }
 
-MoleculeId MoleculeDataTable::findOrAdd(MolecularStructure&& structure)
+MoleculeId MoleculeRepository::findOrAdd(MolecularStructure&& structure)
 {
 	if (structure.isEmpty())
 		return 0;
