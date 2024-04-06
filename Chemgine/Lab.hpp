@@ -31,6 +31,8 @@ public:
 	size_t getSystemCount() const;
 	const LabwareSystem& getSystem(const size_t idx) const;
 	LabwareSystem& getSystem(const size_t idx);
+	const Atmosphere& getAtmosphere() const;
+	Atmosphere& getAtmosphere();
 
 	size_t getSystemAt(const sf::Vector2f& point) const;
 	std::pair<size_t, l_size> getSystemComponentAt(const sf::Vector2f& point) const;
@@ -64,6 +66,6 @@ CompT& Lab::add(Args&&... args)
 	else
 		temp = new CompT(std::forward<Args>(args)..., atmosphere);
 
-	systems.emplace_back(temp);
+	systems.emplace_back(temp, *this);
 	return *temp;
 }

@@ -140,7 +140,7 @@ void MixturePropertyPane::draw(sf::RenderTarget& target, sf::RenderStates states
 {
 	target.draw(title);
 
-	if (subject->isContainerType() == false)
+	if (subject->isContainer() == false)
 		return;
 
 	const auto& container = static_cast<const BaseContainerComponent*>(&subject.get())->getContent();
@@ -171,7 +171,7 @@ void MixturePropertyPane::draw(sf::RenderTarget& target, sf::RenderStates states
 	target.draw(propertyName);
 	target.draw(propertyValue);
 
-	if (const auto contentCast = Ref(container).as<const MultiLayerMixture>())
+	if (const auto contentCast = Ref(container).cast<const MultiLayerMixture>())
 	{
 		propertyName.move(sf::Vector2f(0.0f, 16.0f));
 		propertyName.setString("Layers:");

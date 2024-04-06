@@ -26,8 +26,10 @@ public:
 
 	static void setDataStore(const DataStore& dataStore);
 
-	bool isFlaskType() const;
-	virtual bool isContainerType() const;
+	bool isFlask() const;
+	bool isAdaptor() const;
+	bool isHeatsource() const;
+	virtual bool isContainer() const;
 
 	virtual const BaseLabwareData& getData() const = 0;
 	virtual const sf::Sprite& getSprite() const = 0;
@@ -48,10 +50,15 @@ public:
 	virtual bool contains(const sf::Vector2f& point) const = 0;
 	virtual bool intersects(const BaseLabwareComponent& other) const = 0;
 
+	virtual bool tryConnect(BaseLabwareComponent& other);
+	virtual void disconnect(const Ref<BaseContainer> dump, const BaseLabwareComponent& other);
+
 	virtual void tick(const Amount<Unit::SECOND> timespan);
 
 	template<typename L, typename = std::enable_if<std::is_base_of_v<BaseLabwareComponent, L>>>
-	Ref<L> as();
+	L& as();
+	template<typename L, typename = std::enable_if<std::is_base_of_v<BaseLabwareComponent, L>>>
+	Ref<L> cast();
 
 	// for memory leak checking
 	static size_t instanceCount;
@@ -61,9 +68,15 @@ public:
 #endif
 };
 
-
 template<typename L, typename>
-Ref<L> BaseLabwareComponent::as()
+L& BaseLabwareComponent::as()
 {
 	return Ref(*this).as<L>();
+}
+
+
+template<typename L, typename>
+Ref<L> BaseLabwareComponent::cast()
+{
+	return Ref(*this).cast<L>();
 }

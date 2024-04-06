@@ -32,7 +32,9 @@ public:
 	void unset();
 
 	template<typename D>
-	Ref<D> as() const;
+	D& as() const;
+	template<typename D>
+	Ref<D> cast() const;
 
 	Ref<T>& operator=(Ref<T> other);
 
@@ -102,7 +104,14 @@ void Ref<T>::unset()
 
 template<typename T>
 template<typename D>
-Ref<D> Ref<T>::as() const
+D& Ref<T>::as() const
+{
+	return static_cast<D&>(*object);
+}
+
+template<typename T>
+template<typename D>
+Ref<D> Ref<T>::cast() const
 {
 	return Ref<D>(dynamic_cast<D*>(object));
 }

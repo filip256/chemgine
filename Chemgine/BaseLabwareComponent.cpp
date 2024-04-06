@@ -19,15 +19,33 @@ void BaseLabwareComponent::setDataStore(const DataStore& dataStore)
 	dataAccessor.set(dataStore);
 }
 
-bool BaseLabwareComponent::isFlaskType() const
+bool BaseLabwareComponent::isFlask() const
 {
 	return data.type == LabwareType::FLASK;
 }
 
-bool BaseLabwareComponent::isContainerType() const
+bool BaseLabwareComponent::isAdaptor() const
+{
+	return data.type == LabwareType::ADAPTOR;
+}
+
+bool BaseLabwareComponent::isHeatsource() const
+{
+	return data.type == LabwareType::HEATSOURCE;
+}
+
+bool BaseLabwareComponent::isContainer() const
 {
 	return false;
 }
+
+bool BaseLabwareComponent::tryConnect(BaseLabwareComponent& other)
+{
+	return false;
+}
+
+void BaseLabwareComponent::disconnect(Ref<BaseContainer> dump, const BaseLabwareComponent& other)
+{}
 
 void BaseLabwareComponent::tick(const Amount<Unit::SECOND> timespan)
 {}

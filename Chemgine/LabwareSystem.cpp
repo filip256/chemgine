@@ -4,6 +4,7 @@
 #include "ContainerComponent.hpp"
 #include "Flask.hpp"
 #include "Heatsource.hpp"
+#include "Lab.hpp"
 
 #include <queue>
 
@@ -59,7 +60,12 @@ const DrawablePort* PortIdentifier::operator->() const
 
 
 
-LabwareSystem::LabwareSystem(BaseLabwareComponent* component) noexcept
+LabwareSystem::LabwareSystem(Lab& lab) noexcept :
+	lab(lab)
+{}
+
+LabwareSystem::LabwareSystem(BaseLabwareComponent* component, Lab& lab) noexcept :
+	LabwareSystem(lab)
 {
 	add(component);
 }
@@ -98,71 +104,56 @@ void LabwareSystem::add(BaseLabwareComponent* component)
 
 void LabwareSystem::add(PortIdentifier& srcPort, PortIdentifier& destPort)
 {
-	LabwareSystem& dest = destPort.getSystem();
-	LabwareSystem& src = srcPort.getSystem();
+	auto& srcSys = srcPort.getSystem();
+	auto& srcComp = srcPort.getComponent();
+	auto& destSys = destPort.getSystem();
+	auto& destComp = destPort.getComponent();
 
-	if (auto flask = destPort.getComponent().as<Flask>())
+	bool connectionSuccess = srcComp.tryConnect(destComp);
+	connectionSuccess |= destComp.tryConnect(srcComp);   // make sure both are called
+	if (connectionSuccess == false)
+		Logger::log("LabwareSystem: Port-supported connection resulted in no connection between components.", LogType::WARN);
+
+	srcComp.setRotation(destPort->angle - srcPort->angle + destPort.getComponent().getRotation());
+	srcComp.setPosition(destPort->position - srcPort->position + destPort.getComponent().getPosition());
+
+	for (uint8_t i = 0; i < srcSys.connections[srcPort.componentIdx].size(); ++i)
+		if (srcSys.connections[srcPort.componentIdx][i].isFree() == false)
+			srcSys.recomputePositions(srcPort.componentIdx, i);
+
+	const l_size destSize = destSys.size();
+	const l_size srcSize = srcSys.size();
+	destSys.components.reserve(destSize + srcSize);
+	destSys.connections.reserve(destSize + srcSize);
+
+	while (srcSys.size())
 	{
-		if (auto target = srcPort.getComponent().as<BaseContainerComponent>())
-			flask->setOverflowTarget(target.get());
-	}
-	else if (auto flask = srcPort.getComponent().as<Flask>())
-	{
-		if (auto target = destPort.getComponent().as<BaseContainerComponent>())
-			flask->setOverflowTarget(target.get());
-	}
-	
-	if (auto heatsource = destPort.getComponent().as<Heatsource>())
-	{
-		if (auto target = srcPort.getComponent().as<BaseContainerComponent>())
-			heatsource->setTarget(target.get());
-	}
-	else if (auto heatsource = srcPort.getComponent().as<Heatsource>())
-	{
-		if (auto target = destPort.getComponent().as<BaseContainerComponent>())
-			heatsource->setTarget(target.get());
-	}
+		destSys.components.emplace_back(srcSys.components.back());
+		srcSys.components.pop_back();
 
-	srcPort.getComponent().setRotation(destPort->angle - srcPort->angle + destPort.getComponent().getRotation());
-	srcPort.getComponent().setPosition(destPort->position - srcPort->position + destPort.getComponent().getPosition());
+		destSys.addToBoundry(destSys.components.back()->getBounds());
 
-	for (uint8_t i = 0; i < src.connections[srcPort.componentIdx].size(); ++i)
-		if (src.connections[srcPort.componentIdx][i].isFree() == false)
-			src.recomputePositions(srcPort.componentIdx, i);
+		destSys.connections.emplace_back(std::move(srcSys.connections.back()));
+		srcSys.connections.pop_back();
 
-	const l_size destSize = dest.size();
-	const l_size srcSize = src.size();
-	dest.components.reserve(destSize + srcSize);
-	dest.connections.reserve(destSize + srcSize);
-
-	while (src.size())
-	{
-		dest.components.emplace_back(src.components.back());
-		src.components.pop_back();
-
-		dest.addToBoundry(dest.components.back()->getBounds());
-
-		dest.connections.emplace_back(std::move(src.connections.back()));
-		src.connections.pop_back();
-
-		for (uint8_t j = 0; j < dest.connections.back().size(); ++j)
-			if (dest.connections.back()[j].isFree() == false)
+		for (uint8_t j = 0; j < destSys.connections.back().size(); ++j)
+			if (destSys.connections.back()[j].isFree() == false)
 			{
-				dest.connections.back()[j].otherComponent =
-					srcSize - dest.connections.back()[j].otherComponent - 1 + destSize;
+				destSys.connections.back()[j].otherComponent =
+					srcSize - destSys.connections.back()[j].otherComponent - 1 + destSize;
 			}
 	}
 
 	const auto translatedComponent = srcSize - srcPort.componentIdx - 1 + destSize;
-	dest.connections[destPort.componentIdx][destPort.portIdx] = LabwareConnection(
+	destSys.connections[destPort.componentIdx][destPort.portIdx] = LabwareConnection(
 		translatedComponent,
 		srcPort.portIdx,
-		LabwareConnection::getStrength(destPort->type, dest.components[translatedComponent]->getPort(srcPort.portIdx).type));
+		LabwareConnection::getStrength(destPort->type, destSys.components[translatedComponent]->getPort(srcPort.portIdx).type));
 
-	dest.connections[translatedComponent][srcPort.portIdx] = LabwareConnection(
+	destSys.connections[translatedComponent][srcPort.portIdx] = LabwareConnection(
 		destPort.componentIdx,
 		destPort.portIdx,
-		LabwareConnection::getStrength(dest.components[translatedComponent]->getPort(srcPort.portIdx).type, destPort->type));
+		LabwareConnection::getStrength(destSys.components[translatedComponent]->getPort(srcPort.portIdx).type, destPort->type));
 }
 
 void LabwareSystem::clearBoundry()
@@ -416,7 +407,7 @@ LabwareSystem LabwareSystem::releaseSection(const l_size componentIdx, const uin
 	const auto first = this->connections[componentIdx][portIdx].otherComponent;
 	this->connections[componentIdx][portIdx].setFree();
 
-	LabwareSystem newSystem;
+	LabwareSystem newSystem(*lab);
 	std::queue<std::pair<l_size, l_size>> queue;
 
 	// first component
@@ -492,6 +483,9 @@ std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
 			if (c.isFree())
 				continue;
 
+			components[componentIdx]->disconnect(lab->getAtmosphere(), *components[c.otherComponent]);
+			components[c.otherComponent]->disconnect(lab->getAtmosphere(), *components[componentIdx]);
+
 			const float angle = Maths::toRadians(
 				components[c.otherComponent - diff]->getPort(c.otherPort).angle +
 				components[c.otherComponent - diff]->getRotation() - 90.0f);
@@ -523,18 +517,21 @@ std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
 	}
 	else
 	{
-		for (auto& c : connections[componentIdx - diff])
+		for (auto& c : connections[componentIdx])
 		{
 			if (c.isFree())
 				continue;
 
-			const float angle = Maths::toRadians(
-				components[c.otherComponent - diff]->getPort(c.otherPort).angle +
-				components[c.otherComponent - diff]->getRotation() - 90.0f);
+			components[componentIdx]->disconnect(lab->getAtmosphere(), *components[c.otherComponent]);
+			components[c.otherComponent]->disconnect(lab->getAtmosphere(), *components[componentIdx]);
 
-			push.x += (components[componentIdx]->getPosition().x < components[c.otherComponent - diff]->getPosition().x ?
+			const float angle = Maths::toRadians(
+				components[c.otherComponent]->getPort(c.otherPort).angle +
+				components[c.otherComponent]->getRotation() - 90.0f);
+
+			push.x += (components[componentIdx]->getPosition().x < components[c.otherComponent]->getPosition().x ?
 				1.0f : -1.0f) * std::cosf(angle);
-			push.y += (components[componentIdx]->getPosition().y < components[c.otherComponent - diff]->getPosition().y ?
+			push.y += (components[componentIdx]->getPosition().y < components[c.otherComponent]->getPosition().y ?
 				1.0f : -1.0f) * std::sinf(angle);
 			break;
 		}
@@ -553,6 +550,6 @@ std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
 		boundingBox = components.back()->getBounds();
 	}
 
-	result.emplace_back(std::move(LabwareSystem(temp)));
+	result.emplace_back(LabwareSystem(temp, *lab));
 	return result;
 }

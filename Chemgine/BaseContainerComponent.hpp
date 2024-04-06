@@ -13,7 +13,7 @@ protected:
 public:
 	const ContainerLabwareData& getData() const override;
 
-	bool isContainerType() const override final;
+	bool isContainer() const override final;
 
 	void setPosition(const sf::Vector2f& position) override final;
 	void move(const sf::Vector2f& offset) override final;

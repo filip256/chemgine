@@ -37,9 +37,13 @@ public:
 };
 
 
+
+class Lab;
+
 class LabwareSystem : public sf::Drawable
 {
 private:
+	Ref<Lab> lab;
 	std::vector<BaseLabwareComponent*> components;
 	std::vector<std::vector<LabwareConnection>> connections;
 
@@ -67,10 +71,10 @@ private:
 	void recomputePositions(const l_size current, const uint8_t currentPort);
 
 public:
-	LabwareSystem(BaseLabwareComponent* component) noexcept;
-	LabwareSystem() = default;
+	LabwareSystem(Lab& lab) noexcept;
+	LabwareSystem(BaseLabwareComponent* component, Lab& lab) noexcept;
 	LabwareSystem(const LabwareSystem&) = delete;
-	LabwareSystem(LabwareSystem&&) noexcept = default;
+	LabwareSystem(LabwareSystem&&) = default;
 	~LabwareSystem() noexcept;
 
 	LabwareSystem& operator=(LabwareSystem&&) = default;
@@ -89,7 +93,6 @@ public:
 	bool isFree(const l_size componentIdx, const uint8_t portIdx) const;
 
 	l_size findFirst() const;
-
 
 	/// <summary>
 	/// Finds the closest port to a given point and returns a pair of the port and the squared distance

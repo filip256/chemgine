@@ -212,6 +212,9 @@ Ref<BaseContainer> SingleLayerMixture<L>::getOverflowTarget() const
 template<LayerType L>
 void SingleLayerMixture<L>::setOverflowTarget(const Ref<BaseContainer> target)
 {
+	if (this == &*target)
+		Logger::log("Mixture: Overflow target set to self.", LogType::WARN);
+
 	overflowTarget = target;
 }
 
@@ -220,9 +223,12 @@ void SingleLayerMixture<L>::setIncompatibilityTarget(const LayerType layerType, 
 {
 	if (layerType == L)
 	{
-		Logger::log("SingleLayerMixture<" + std::to_string(toIndex(L)) + ">: tried to set incompatibility target for its own layer.", LogType::BAD);
+		Logger::log("SingleLayerMixture<" + std::to_string(toIndex(L)) + ">: Tried to set incompatibility target for its own layer.", LogType::BAD);
 		return;
 	}
+
+	if (this == &*target)
+		Logger::log("SingleLayerMixture<" + std::to_string(toIndex(L)) + ">: Incompatibility target set to self.", LogType::WARN);
 
 	incompatibilityTargets.at(layerType) = target;
 }
@@ -230,6 +236,9 @@ void SingleLayerMixture<L>::setIncompatibilityTarget(const LayerType layerType, 
 template<LayerType L>
 void SingleLayerMixture<L>::setAllIncompatibilityTargets(const Ref<BaseContainer> target)
 {
+	if (this == &*target)
+		Logger::log("SingleLayerMixture<" + std::to_string(toIndex(L)) + ">: Incompatibility target set to self.", LogType::WARN);
+
 	for (LayerType i = LayerType::FIRST; i <= LayerType::LAST; ++i)
 		if (i != L)
 			incompatibilityTargets.at(i) = target;

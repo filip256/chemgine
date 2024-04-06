@@ -28,7 +28,6 @@ public:
 	void add(const Reactant& reactant) override;
 	void add(const Mixture& other);
 	virtual void add(const Molecule& molecule, const Amount<Unit::MOLE> amount);
-	virtual void add(const Amount<Unit::JOULE> heat) = 0;
 
 	const ReactantSet& getContent() const;
 	ContentInitializer getContentInitializer() const;

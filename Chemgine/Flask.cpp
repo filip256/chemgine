@@ -14,6 +14,22 @@ const FlaskData& Flask::getData() const
 	return static_cast<const FlaskData&>(data);
 }
 
+bool Flask::tryConnect(BaseLabwareComponent& other)
+{
+	if (other.isContainer())
+	{
+		this->setOverflowTarget(other.as<BaseContainerComponent&>());
+		return true;
+	}
+
+	return false;
+}
+
+void Flask::disconnect(const Ref<BaseContainer> dump, const BaseLabwareComponent& other)
+{
+	this->setOverflowTarget(dump);
+}
+
 void Flask::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	float lastSection = 0.0f;

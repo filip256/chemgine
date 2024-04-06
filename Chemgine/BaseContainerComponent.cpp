@@ -10,7 +10,7 @@ const ContainerLabwareData& BaseContainerComponent::getData() const
 	return static_cast<const ContainerLabwareData&>(data);
 }
 
-bool BaseContainerComponent::isContainerType() const
+bool BaseContainerComponent::isContainer() const
 {
 	return true;
 }

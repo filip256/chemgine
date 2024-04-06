@@ -23,6 +23,13 @@ void ForwardingContainer::add(const Reactant& reactant)
 			forwardingRules[i].target->add(reactant);
 }
 
+void ForwardingContainer::add(Amount<Unit::JOULE> energy)
+{
+	energy /= forwardingRules.size();
+	for (size_t i = 0; i < forwardingRules.size(); ++i)
+		forwardingRules[i].target->add(energy);
+}
+
 void ForwardingContainer::addRule(ForwardingRule rule)
 {
 	forwardingRules.push_back(rule);

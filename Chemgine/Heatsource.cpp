@@ -1,7 +1,11 @@
 #include "Heatsource.hpp"
 
-Heatsource::Heatsource(const LabwareId id) noexcept :
-	EquipmentComponent(id)
+Heatsource::Heatsource(
+	const LabwareId id,
+	Atmosphere& atmosphere
+) noexcept :
+	EquipmentComponent(id),
+	target(atmosphere)
 {}
 
 const HeatsourceData& Heatsource::getData() const
@@ -9,7 +13,7 @@ const HeatsourceData& Heatsource::getData() const
 	return static_cast<const HeatsourceData&>(data);
 }
 
-void Heatsource::setTarget(const Ref<Mixture> target)
+void Heatsource::setTarget(const Ref<BaseContainer> target)
 {
 	this->target = target;
 }
@@ -17,6 +21,22 @@ void Heatsource::setTarget(const Ref<Mixture> target)
 void Heatsource::setTarget(BaseContainerComponent& target)
 {
 	this->target = target.getContent();
+}
+
+bool Heatsource::tryConnect(BaseLabwareComponent& other)
+{
+	if (other.isContainer())
+	{
+		this->setTarget(other.as<BaseContainerComponent&>());
+		return true;
+	}
+
+	return false;
+}
+
+void Heatsource::disconnect(const Ref<BaseContainer> dump, const BaseLabwareComponent& other)
+{
+	this->setTarget(dump);
 }
 
 void Heatsource::tick(const Amount<Unit::SECOND> timespan)

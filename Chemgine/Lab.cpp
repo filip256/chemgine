@@ -36,6 +36,16 @@ LabwareSystem& Lab::getSystem(const size_t idx)
 	return systems[idx];
 }
 
+const Atmosphere& Lab::getAtmosphere() const
+{
+	return atmosphere;
+}
+
+Atmosphere& Lab::getAtmosphere()
+{
+	return atmosphere;
+}
+
 size_t Lab::getSystemAt(const sf::Vector2f& point) const
 {
 	for (size_t i = 0; i < systems.size(); ++i)
@@ -130,7 +140,7 @@ void Lab::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	const auto screenSize = target.getSize();
 	atmosphereOverlay.setSize(sf::Vector2f(screenSize.x, screenSize.y));
 	atmosphereOverlay.setFillColor(colorCast(atmosphere.getLayerColor()));
-	//target.draw(atmosphereOverlay);
+	target.draw(atmosphereOverlay);
 
 	for (size_t i = 0; i < systems.size(); ++i)
 		target.draw(systems[i]);
