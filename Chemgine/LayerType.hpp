@@ -1,36 +1,36 @@
 #pragma once
 
 #include "AggregationType.hpp"
+#include "Maths.hpp"
 
 enum class LayerType : uint8_t
 {
-	GASEOUS,
-	INORG_LIQUEFIED_GAS,
-	NONPOLAR,
-	POLAR,
-	DENSE_NONPOLAR,
-	INORG_MOLTEN_SOLID,
-	SOLID,
+	NONE = 0,
 
-	REAL_LAYER_COUNT, // marks the number of real layers
+	GASEOUS = 1 << 0,
+	INORG_LIQUEFIED_GAS = 1 << 1,
+	NONPOLAR = 1 << 2,
+	POLAR = 1 << 3,
+	DENSE_NONPOLAR = 1 << 4,
+	INORG_MOLTEN_SOLID = 1 << 5,
+	SOLID = 1 << 6,
+
+	ANY = 255,
 
 	FIRST = GASEOUS,
 	LAST = SOLID,
-
-	UNKNOWN,
-	NONE
 };
 
 
 
 static inline constexpr uint8_t toIndex(const LayerType type)
 {
-	return static_cast<uint8_t>(type);
+	return Maths::ilog2(static_cast<uint8_t>(type));
 }
 
 static inline constexpr bool isRealLayer(const LayerType type)
 {
-	return toIndex(type) < toIndex(LayerType::REAL_LAYER_COUNT);
+	return type >= LayerType::FIRST && type <= LayerType::LAST;
 }
 
 static inline constexpr bool isGasLayer(const LayerType type)
@@ -48,6 +48,11 @@ static inline constexpr bool isSolidLayer(const LayerType type)
 	return type == LayerType::SOLID;
 }
 
+static inline constexpr bool getLayerCount()
+{
+	return toIndex(LayerType::LAST);
+}
+
 AggregationType getAggregationType(const LayerType type);
 LayerType getLowerAggregationLayer(const LayerType type);
 LayerType getHigherAggregationLayer(const LayerType type);
@@ -58,7 +63,3 @@ std::string getLayerName(const LayerType type);
 
 LayerType& operator++(LayerType& layer);
 LayerType& operator--(LayerType& layer);
-LayerType operator+(LayerType& layer, const uint8_t x);
-LayerType operator-(LayerType& layer, const uint8_t x);
-LayerType& operator+=(LayerType& layer, const uint8_t x);
-LayerType& operator-=(LayerType& layer, const uint8_t x);

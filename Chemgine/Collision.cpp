@@ -123,6 +123,20 @@ namespace Collision
 		return true;
 	}
 
+	SizedTextureMask createBitmask(const std::string& filename)
+	{
+		auto img = sf::Image();
+		img.loadFromFile(filename);
+
+		TextureMask mask(img.getSize().y * img.getSize().x);
+		for (uint32_t y = 0; y < img.getSize().y; ++y)
+		{
+			for (uint32_t x = 0; x < img.getSize().x; ++x)
+				mask[x + y * img.getSize().x] = img.getPixel(x, y).a;
+		}
+		return std::make_pair(mask, img.getSize());
+	}
+
 	sf::Vector2f getSpriteCenter(const sf::Sprite& sprite)
 	{
 		auto AABB = sprite.getGlobalBounds();

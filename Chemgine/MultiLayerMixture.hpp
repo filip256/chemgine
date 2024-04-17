@@ -66,6 +66,8 @@ public:
 	Polarity getLayerPolarity(const LayerType layer) const override final;
 	Color getLayerColor(const LayerType layer) const override final;
 
+	bool isEmpty() const override final;
+
 	Ref<BaseContainer> getOverflowTarget() const override final;
 	void setOverflowTarget(const Ref<BaseContainer> target) override final;
 

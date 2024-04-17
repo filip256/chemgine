@@ -18,13 +18,12 @@ public:
 	const Amount<Unit::GRAM> weight = 0.0;
 
 	BaseComponentData();
-
 	BaseComponentData(
 		const ComponentId id,
 		const Amount<Unit::GRAM> weight,
 		const uint8_t rarity = 255);
-
-	BaseComponentData(BaseComponentData&&) noexcept = default;
+	BaseComponentData(BaseComponentData&&) = default;
+	virtual ~BaseComponentData() = default;
 
 	virtual uint8_t getFittingValence(const uint8_t bonds) const = 0;
 	virtual std::string getSMILES() const = 0;

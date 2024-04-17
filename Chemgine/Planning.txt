@@ -278,11 +278,13 @@ Tasks:
   DONE. Add DynamicAmount
   DONE. Add duplicate estimator filtering
   26. Add unit splines
-  27. Add symbol parser
+  DONE. Add symbol parser
   DONE. Add flag iterator
-  28. Inherit iterators from std::iterator<std::forward_iterator_tag, T>
-  29. Make layer types powers of two (try remove operator++, link to task #20)
-  30. Add specialized terget methods to Adaptors
+  DONE. Make layer types powers of two (try remove operator++, link to task #20)
+  30. Add specialized target methods to Adaptors
+  31. Implment custom collision and bitmasks
+  32. Add class names to logs (using typeid or smthing)
+  DONE. Add unit prefix parsing
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules
@@ -345,7 +347,7 @@ Tasks:
   DONE. Add scale to labware components
   DONE. Add display reactor properies
   DONE. Create mixture network behind labware systems
-  2. Add condenser
+  DONE. Add condenser
   3. Add particle system
   4. Add reactor raise flags
 ---

@@ -6,9 +6,6 @@
 
 class Adaptor : public ContainerComponent<Atmosphere>
 {
-private:
-	Adaptor(const Adaptor& other) = default;
-
 public:
 	Adaptor(
 		const LabwareId id,
@@ -19,6 +16,4 @@ public:
 
 	bool tryConnect(BaseLabwareComponent& other) override final;
 	void disconnect(const Ref<BaseContainer> dump, const BaseLabwareComponent& other) override final;
-
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;
 };

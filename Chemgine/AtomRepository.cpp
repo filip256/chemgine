@@ -37,21 +37,23 @@ bool AtomRepository::loadFromFile(const std::string& path)
 	{
 		auto line = DataHelpers::parseList(buffer, ',');
 
-		if (line[1].empty())
-		{
-			Logger::log("Failed to load atom due to empty symbol string.", LogType::BAD);
-			continue;
-		}
-		if (line[2].empty())
-		{
-			Logger::log("Atom name was empty. (" + line[1] + ')', LogType::WARN);
-		}
-
 		const auto id = DataHelpers::parseId<ComponentId>(line[0]);
 		if (id.has_value() == false)
 		{
-			Logger::log("Missing id, atom '" + line[1] + "' skipped.", LogType::BAD);
+			Logger::log("Missing id, atom skipped.", LogType::BAD);
 			continue;
+		}
+
+		const auto symbol = DataHelpers::parse<Symbol>(line[1]);
+		if (symbol.has_value() == false)
+		{
+			Logger::log("Missing or invalid symbol: \"" + line[1] + "\", atom skipped.", LogType::BAD);
+			continue;
+		}
+
+		if (line[2].empty())
+		{
+			Logger::log("Atom name was empty. (" + line[1] + ')', LogType::WARN);
 		}
 
 		const auto weight = DataHelpers::parseUnsigned<double>(line[3]);
@@ -66,7 +68,7 @@ bool AtomRepository::loadFromFile(const std::string& path)
 		if (table.emplace(
 			*id,
 			line[1],
-			AtomData(*id, line[1], line[2], Amount<Unit::GRAM>(weight.value_or(0)), std::move(*valences))
+			AtomData(*id, *symbol, line[2], Amount<Unit::GRAM>(weight.value_or(0)), std::move(*valences))
 			) == false)
 		{
 			Logger::log("Duplicate atom with id " + std::to_string(*id) + " or symbol '" + line[1] + "' skipped.", LogType::WARN);

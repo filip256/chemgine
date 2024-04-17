@@ -43,6 +43,7 @@ it freely, subject to the following restrictions:
 namespace Collision 
 {
 	using TextureMask = std::vector<sf::Uint8>;
+	using SizedTextureMask = std::pair<TextureMask, sf::Vector2u>;
 
 	//////
 	/// Test for a collision between two sprites by comparing the alpha values of overlapping pixels
@@ -76,6 +77,8 @@ namespace Collision
 	/// The function returns false if the file could not be opened for some reason
 	//////
 	bool createTextureAndBitmask(sf::Texture& loadInto, const std::string& filename);
+
+	std::pair<TextureMask, sf::Vector2u> createBitmask(const std::string& filename);
 
 	//////
 	/// Test for collision using circle collision detection

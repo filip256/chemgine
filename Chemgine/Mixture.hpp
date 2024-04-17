@@ -48,6 +48,8 @@ public:
 	virtual Polarity getLayerPolarity(const LayerType layer) const = 0;
 	virtual Color getLayerColor(const LayerType layer) const = 0;
 
+	virtual bool isEmpty() const = 0;
+
 	virtual Ref<BaseContainer> getOverflowTarget() const = 0;
 	virtual void setOverflowTarget(const Ref<BaseContainer> target) = 0;
 

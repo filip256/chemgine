@@ -24,8 +24,7 @@ protected:
 	const DataStore& dataStore() const;
 
 public:
-	~BaseComponent() noexcept = default;
-
+	virtual ~BaseComponent() = default;
 
 	virtual const BaseComponentData& data() const = 0;
 

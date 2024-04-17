@@ -6,6 +6,7 @@
 #include "Logger.hpp"
 #include "Adaptor.hpp"
 #include "Heatsource.hpp"
+#include "Condenser.hpp"
 #include "PropertyPane.hpp"
 
 class UIContext
@@ -92,6 +93,7 @@ public:
         lab.add<Adaptor>(301);
         lab.add<Adaptor>(302);
         lab.add<Heatsource>(401);
+        lab.add<Condenser>(501);
 
         flask1.add(Molecule("CC(=O)O"), 4.0_mol);
         flask2.add(Molecule("O"), 10.0_mol);

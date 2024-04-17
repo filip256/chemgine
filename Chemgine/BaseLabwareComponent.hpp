@@ -22,12 +22,13 @@ protected:
 public:
 	const LabwareId id;
 
-	~BaseLabwareComponent() noexcept = default;
+	virtual ~BaseLabwareComponent() = default;
 
 	static void setDataStore(const DataStore& dataStore);
 
 	bool isFlask() const;
 	bool isAdaptor() const;
+	bool isCondenser() const;
 	bool isHeatsource() const;
 	virtual bool isContainer() const;
 

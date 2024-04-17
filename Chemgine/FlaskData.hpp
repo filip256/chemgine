@@ -2,7 +2,7 @@
 
 #include "ContainerLabwareData.hpp"
 
-class FlaskData : public ContainerLabwareData
+class FlaskData : public ContainerLabwareData<1>
 {
 public:
 	FlaskData(

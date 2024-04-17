@@ -29,6 +29,11 @@ bool BaseLabwareComponent::isAdaptor() const
 	return data.type == LabwareType::ADAPTOR;
 }
 
+bool BaseLabwareComponent::isCondenser() const
+{
+	return data.type == LabwareType::CONDENSER;
+}
+
 bool BaseLabwareComponent::isHeatsource() const
 {
 	return data.type == LabwareType::HEATSOURCE;

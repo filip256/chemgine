@@ -21,6 +21,9 @@ enum class Unit : uint16_t
 	JOULE,
 	WATT,
 
+	METER,
+	PER_METER,
+
 	MOLE_RATIO,
 
 	MOLE_PER_SECOND,

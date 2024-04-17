@@ -1,7 +1,7 @@
 #include "Adaptor.hpp"
 #include "DataStore.hpp"
-#include "ColorCast.hpp"
 #include "Flask.hpp"
+#include "Condenser.hpp"
 
 Adaptor::Adaptor(
 	const LabwareId id,
@@ -17,15 +17,22 @@ const AdaptorData& Adaptor::getData() const
 
 bool Adaptor::tryConnect(BaseLabwareComponent& other)
 {
+	auto& container = getContent<0>();
 	if (other.isFlask())
 	{
-		this->container.setAllIncompatibilityTargets(other.as<Flask&>().getContent());
+		container.setAllIncompatibilityTargets(other.as<Flask&>().getContent());
 		return true;
 	}
 
 	if (other.isAdaptor())
 	{
-		this->container.setOverflowTarget(other.as<Adaptor&>().getContent());
+		container.setOverflowTarget(other.as<Adaptor&>().getContent());
+		return true;
+	}
+
+	if (other.isCondenser())
+	{
+		container.setOverflowTarget(other.as<Condenser&>().getContent());
 		return true;
 	}
 
@@ -34,17 +41,10 @@ bool Adaptor::tryConnect(BaseLabwareComponent& other)
 
 void Adaptor::disconnect(const Ref<BaseContainer> dump, const BaseLabwareComponent& other)
 {
+	auto& container = getContent<0>();
 	if (other.isFlask())
-		this->container.setAllIncompatibilityTargets(dump);
+		container.setAllIncompatibilityTargets(dump);
 
 	if (other.isAdaptor())
-		this->container.setOverflowTarget(dump);
-}
-
-void Adaptor::draw(sf::RenderTarget& target, sf::RenderStates states) const
-{
-	fill.setColor(colorCast(container.getLayerColor()));
-	target.draw(fill);
-
-	ContainerComponent::draw(target, states);
+		container.setOverflowTarget(dump);
 }

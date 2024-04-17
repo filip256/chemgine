@@ -2,7 +2,7 @@
 
 #include "ContainerLabwareData.hpp"
 
-class AdaptorData : public ContainerLabwareData
+class AdaptorData : public ContainerLabwareData<1>
 {
 public:
 	AdaptorData(

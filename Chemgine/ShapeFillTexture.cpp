@@ -2,67 +2,67 @@
 #include "Collision.hpp"
 
 ShapeFillTexture::ShapeFillTexture(
-	const sf::Texture& source,
+	const Collision::SizedTextureMask& textureMask,
 	const uint8_t alphaThreshold,
 	const bool enableVolumetricScaling
 ) noexcept :
-	texture(new sf::Texture())
+	texture(std::make_unique<sf::Texture>())
 {
-	const auto& mask = Collision::getTextureMask(source);
-	const auto size = source.getSize();
+	const auto& mask = textureMask.first;
+	const auto maskSize = textureMask.second;
 
 	sf::Image img;
-	img.create(size.x, size.y, sf::Color::Transparent);
+	img.create(maskSize.x, maskSize.y, sf::Color::Transparent);
 
 	// build pixel-wise volume for every texture line
 	uint32_t totalSetPixels = 0;
-	std::vector<std::pair<float, float>> pixels(size.y + 1, { 0.0f, 0.0f });
+	std::vector<std::pair<float, float>> pixels(maskSize.y + 1, { 0.0f, 0.0f });
 
-	for (uint32_t i = 0; i < size.y; ++i)
+	for (uint32_t i = 0; i < maskSize.y; ++i)
 	{
 		uint32_t l = 0;
-		while (++l < size.x && mask[i * size.x + l] <= alphaThreshold);
+		while (++l < maskSize.x && mask[i * maskSize.x + l] <= alphaThreshold);
 
-		uint32_t r = size.x;
-		while (--r > l && mask[i * size.x + r] <= alphaThreshold);
+		uint32_t r = maskSize.x;
+		while (--r > l && mask[i * maskSize.x + r] <= alphaThreshold);
 
 		for (uint32_t j = l; j < r; ++j)
 		{
 			img.setPixel(j, i, sf::Color::White);
-			++pixels[size.y - i].first;
+			++pixels[maskSize.y - i].first;
 			++totalSetPixels;
 		}
 	}
 
-	for (uint32_t j = 0; j < size.x; ++j)
+	for (uint32_t j = 0; j < maskSize.x; ++j)
 	{
 		uint32_t t = 0;
-		while (++t < size.y && mask[t * size.x + j] <= alphaThreshold)
+		while (++t < maskSize.y && mask[t * maskSize.x + j] <= alphaThreshold)
 		{
 			if (img.getPixel(j, t) == sf::Color::Transparent)
 				continue;
 
 			img.setPixel(j, t, sf::Color::Transparent);
-			--pixels[size.y - t].first;
+			--pixels[maskSize.y - t].first;
 		}
 
-		uint32_t b = size.y;
-		while (--b > t && mask[b * size.x + j] <= alphaThreshold)
+		uint32_t b = maskSize.y;
+		while (--b > t && mask[b * maskSize.x + j] <= alphaThreshold)
 		{
 			if (img.getPixel(j, b) == sf::Color::Transparent)
 				continue;
 
 			img.setPixel(j, b, sf::Color::Transparent);
-			--pixels[size.y - b].first;
+			--pixels[maskSize.y - b].first;
 		}
 	}
 
 	if (enableVolumetricScaling)
 	{
-		for (size_t i = 1; i < size.y; ++i)
+		for (size_t i = 1; i < maskSize.y; ++i)
 		{
 			pixels[i].first = pixels[i].first / static_cast<float>(totalSetPixels) + pixels[i - 1].first;
-			pixels[i].second = i / static_cast<float>(size.y);
+			pixels[i].second = i / static_cast<float>(maskSize.y);
 		}
 		pixels.back().first = 1.0f;
 		pixels.back().second = 1.0f;
@@ -72,6 +72,27 @@ ShapeFillTexture::ShapeFillTexture(
 
 	texture->loadFromImage(img);
 }
+
+ShapeFillTexture::ShapeFillTexture(
+	const sf::Texture& source,
+	const uint8_t alphaThreshold,
+	const bool enableVolumetricScaling
+) noexcept :
+	ShapeFillTexture(
+		std::make_pair(Collision::getTextureMask(source), source.getSize()),
+		alphaThreshold, enableVolumetricScaling)
+{}
+
+ShapeFillTexture::ShapeFillTexture(
+	const std::string& sourceFile,
+	const uint8_t alphaThreshold,
+	const bool enableVolumetricScaling
+) noexcept :
+	ShapeFillTexture(
+		Collision::createBitmask(sourceFile),
+		alphaThreshold, enableVolumetricScaling)
+{}
+
 
 ShapeFillTexture& ShapeFillTexture::operator=(ShapeFillTexture&& other) noexcept
 {

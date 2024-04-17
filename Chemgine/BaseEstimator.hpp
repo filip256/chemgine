@@ -18,6 +18,8 @@ protected:
 	BaseEstimator(BaseEstimator&&) = default;
 
 public:
+	virtual ~BaseEstimator() = default;
+
 	EstimatorId getId() const;
 
 	virtual double get(const double input) const;

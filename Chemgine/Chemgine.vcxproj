@@ -198,6 +198,8 @@
     <ClCompile Include="BaseContainerComponent.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="ColorCast.cpp" />
+    <ClCompile Include="Condenser.cpp" />
+    <ClCompile Include="CondenserData.cpp" />
     <ClCompile Include="ContentInitializer.cpp" />
     <ClCompile Include="Context.cpp" />
     <ClCompile Include="DynamicAmount.cpp" />
@@ -220,7 +222,6 @@
     <ClCompile Include="DrawableLabwareData.cpp" />
     <ClCompile Include="DrawablePort.cpp" />
     <ClCompile Include="Flask.cpp" />
-    <ClCompile Include="ContainerLabwareData.cpp" />
     <ClCompile Include="Formulas.cpp" />
     <ClCompile Include="ForwardingContainer.cpp" />
     <ClCompile Include="Heatsource.cpp" />
@@ -274,7 +275,10 @@
     <ClInclude Include="BaseContainerComponent.hpp" />
     <ClInclude Include="Color.hpp" />
     <ClInclude Include="ColorCast.hpp" />
+    <ClInclude Include="Condenser.hpp" />
+    <ClInclude Include="CondenserData.hpp" />
     <ClInclude Include="ContainerComponent.hpp" />
+    <ClInclude Include="BaseContainerLabwareData.hpp" />
     <ClInclude Include="Context.hpp" />
     <ClInclude Include="DirectedGraph.hpp" />
     <ClInclude Include="DynamicAmount.hpp" />
@@ -415,7 +419,13 @@
     <Text Include="Planning.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Textures\3way.png" />
+    <Image Include="Textures\disthead.png" />
+    <Image Include="Textures\hotplate_sh2.png" />
     <Image Include="Textures\jrbf500.png" />
+    <Image Include="Textures\liebig300.png" />
+    <Image Include="Textures\liebig300_cf.png" />
+    <Image Include="Textures\liebig300_f.png" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="Fonts\font.ttf" />

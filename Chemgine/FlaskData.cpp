@@ -1,5 +1,7 @@
 #include "FlaskData.hpp"
 
+#include <iostream>
+
 FlaskData::FlaskData(
 	const LabwareId id,
 	const std::string& name,

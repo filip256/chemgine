@@ -423,12 +423,12 @@ namespace data
 	};
 
 	//base for data tables
-	template<class T> class DataTable
+	template<class T> class Repository
 	{
 	protected:
 		std::map<std::string, T> _table;
 	public:
-		DataTable() : _table()
+		Repository() : _table()
 		{
 
 		}
@@ -441,15 +441,15 @@ namespace data
 		}
 	};
 
-	class IonDataTable : public DataTable<IonData>
+	class IonRepository : public Repository<IonData>
 	{
 	public:
-		IonDataTable() : DataTable()
+		IonRepository() : Repository()
 		{
 			
 		}
 
-		IonDataTable(const IonDataTable&) = delete;
+		IonRepository(const IonRepository&) = delete;
 
 		const StatusCode<> loadFromFile(const std::string& dataFile)
 		{
@@ -498,15 +498,15 @@ namespace data
 		inline const bool isPolyatomic(const std::string& id) const { return _table.at(id)._isPolyatomic; }
 	};
 
-	class SubstanceDataTable : public DataTable<SubstanceData>
+	class SubstanceRepository : public Repository<SubstanceData>
 	{
 	public:
-		SubstanceDataTable() : DataTable()
+		SubstanceRepository() : Repository()
 		{
 
 		}
 
-		SubstanceDataTable(const SubstanceDataTable&) = delete;
+		SubstanceRepository(const SubstanceRepository&) = delete;
 
 		const StatusCode<> loadFromFile(const std::string& dataFile)
 		{
@@ -666,7 +666,7 @@ namespace chem
 	class Ion
 	{
 		std::string _id;
-		static const data::IonDataTable* _dataRef;
+		static const data::IonRepository* _dataRef;
 
 	public:
 		//copies data from the datastore to internal member properties
@@ -693,21 +693,21 @@ namespace chem
 			return -1;
 		}
 
-		static void initialize(const data::IonDataTable* dataRef)
+		static void initialize(const data::IonRepository* dataRef)
 		{
 			_dataRef = dataRef;
 		}
 
 	};
-	const data::IonDataTable* Ion::_dataRef = nullptr;
+	const data::IonRepository* Ion::_dataRef = nullptr;
 
 	class Substance
 	{
 	protected:
 		//statically store the location of data tables
 		//no longer needed to pass table references on constructors but a call to initialize is needed before using the class
-		static const data::SubstanceDataTable* _substanceRef;
-		static const data::IonDataTable* _ionRef;
+		static const data::SubstanceRepository* _substanceRef;
+		static const data::IonRepository* _ionRef;
 
 		std::string _id;
 		util::Quantity _amount; //only stored as moles
@@ -882,14 +882,14 @@ namespace chem
 			std::cout <<_id;
 		}
 
-		static void initialize(const data::IonDataTable* ionRef, const data::SubstanceDataTable* substanceRef)
+		static void initialize(const data::IonRepository* ionRef, const data::SubstanceRepository* substanceRef)
 		{
 			_ionRef = ionRef;
 			_substanceRef = substanceRef;
 		}
 	};
-	const data::SubstanceDataTable* InorganicSubstance::_substanceRef = nullptr;
-	const data::IonDataTable* InorganicSubstance::_ionRef = nullptr;
+	const data::SubstanceRepository* InorganicSubstance::_substanceRef = nullptr;
+	const data::IonRepository* InorganicSubstance::_ionRef = nullptr;
 
 	const std::array<int, 4> balanceBinaryReaction(const InorganicSubstance& reactant1, const InorganicSubstance& reactant2, const InorganicSubstance* product1)
 	{
@@ -2054,9 +2054,9 @@ int main()
 	//std::cout << files::createChecksum("InorganicSubst.csv");
 
 	// ENERGY TEST
-	//data::IonDataTable datac;
+	//data::IonRepository datac;
 	//std::cout << datac.loadFromFile("Atoms.csv").message << '\n';
-	//data::SubstanceDataTable datas;
+	//data::SubstanceRepository datas;
 	//std::cout << datas.loadFromFile("testTable.csv").message << '\n';
 	//chem::Ion::initialize(&datac);
 	//chem::InorganicSubstance::initialize(&datac, &datas);
@@ -2068,7 +2068,7 @@ int main()
 	//std::cout << "heatC: " << layer.heatCapacity() << ' '<<layer.temperature()<<'\n';
 
 	//ION TEST
-	/*data::IonDataTable datac;
+	/*data::IonRepository datac;
 	std::cout<<datac.loadFromFile("Atoms.csv").message<<'\n';
 	std::cout << datac.getData().size() << '\n';
 
@@ -2079,9 +2079,9 @@ int main()
 	std::cout << subst.isWellFormed();*/
 
 	//INORGANIC SUBST TEST
-	/*data::IonDataTable datac;
+	/*data::IonRepository datac;
 	std::cout << datac.loadFromFile("Atoms.csv").message << '\n';
-	data::SubstanceDataTable datas;
+	data::SubstanceRepository datas;
 	std::cout << datas.loadFromFile("InorganicSubst.csv").message << '\n';
 	chem::Ion::initialize(&datac);
 	chem::InorganicSubstance::initialize(&datac, &datas);
@@ -2089,9 +2089,9 @@ int main()
 	subst.printName();*/
 	{
 		//MIXTURE TEST
-		data::IonDataTable datac;
+		data::IonRepository datac;
 		std::cout << datac.loadFromFile("Atoms.csv").message << '\n';
-		data::SubstanceDataTable datas;
+		data::SubstanceRepository datas;
 		std::cout << datas.loadFromFile("testTable.csv").message << '\n';
 		chem::Ion::initialize(&datac);
 		chem::InorganicSubstance::initialize(&datac, &datas);
@@ -2133,7 +2133,7 @@ int main()
 	std::cout<<files::verifyChecksum(in).message;
 	in.close();*/
 
-	//data::IonDataTable table(std::string("Atoms.csv"));
+	//data::IonRepository table(std::string("Atoms.csv"));
 
 	//table.print();
 

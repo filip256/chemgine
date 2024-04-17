@@ -10,6 +10,8 @@ class Reactant;
 class BaseContainer
 {
 public:
+	virtual ~BaseContainer() = default;
+
 	virtual void add(const Reactant& reactant) = 0;
 	virtual void add(const Amount<Unit::JOULE> energy) = 0;
 

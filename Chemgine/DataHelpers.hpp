@@ -3,6 +3,7 @@
 #include "DynamicAmount.hpp"
 #include "Spline.hpp"
 #include "Utils.hpp"
+#include "Symbol.hpp"
 #include "Color.hpp"
 #include "LabwarePort.hpp"
 
@@ -198,28 +199,18 @@ template<Unit U>
 inline std::optional<Amount<U>> DataHelpers::parse(const std::string& str)
 {
 	const auto pair = parseList(str, '_', true);
+	if (pair.empty())
+		return std::nullopt;
+
+	const auto val = parse<Amount<>::StorageType>(pair.front());
+	if (val.has_value() == false)
+		return std::nullopt;
 
 	if (pair.size() == 1)
-	{
-		const auto val = parse<Amount<>::StorageType>(pair.front());
-		return val.has_value() ? 
-			std::optional(Amount<U>(*val)) :
-			std::nullopt;
-	}
+		return Amount<U>(*val);
 
 	if (pair.size() == 2)
-	{
-		const auto val = parse<Amount<>::StorageType>(pair.front());
-		if (val.has_value() == false)
-			return std::nullopt;
-
-
-		const auto unit = DynamicAmount::getUnitFromSymbol(pair.back());
-		if (unit.has_value() == false)
-			return std::nullopt;
-
-		return DynamicAmount(*val, *unit).to<U>();
-	}
+		return DynamicAmount::get<U>(*val, pair.back());
 
 	return std::nullopt;
 }
@@ -227,10 +218,10 @@ inline std::optional<Amount<U>> DataHelpers::parse(const std::string& str)
 template<Unit U>
 inline std::optional<Amount<U>> DataHelpers::parseUnsigned(const std::string& str)
 {
-	const auto r = parseUnsigned<typename Amount<U>::StorageType>(str);
-	if (r.has_value())
-		return Amount<U>(*r);
-	return std::nullopt;
+	const auto r = parse<U>(str);
+	return r.has_value() && *r >= 0.0 ?
+		std::optional(r) :
+		std::nullopt;
 }
 
 template <>
@@ -245,6 +236,15 @@ inline std::optional<bool> DataHelpers::parse<bool>(const std::string& str)
 		return std::optional(false);
 
 	return std::nullopt;
+}
+
+template <>
+inline std::optional<Symbol> DataHelpers::parse<Symbol>(const std::string& str)
+{
+	if (str.size() != 1 && str.size() != 2)
+		return std::nullopt;
+
+	return Symbol(str);
 }
 
 template <>

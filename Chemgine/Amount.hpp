@@ -218,6 +218,10 @@ inline std::string Amount<Unit::JOULE>::unitSymbol() noexcept { return "J"; }
 template<>
 inline std::string Amount<Unit::WATT>::unitSymbol() noexcept { return "W"; }
 template<>
+inline std::string Amount<Unit::METER>::unitSymbol() noexcept { return "m"; }
+template<>
+inline std::string Amount<Unit::PER_METER>::unitSymbol() noexcept { return "/" + Amount<Unit::METER>::unitSymbol(); }
+template<>
 inline std::string Amount<Unit::MOLE_RATIO>::unitSymbol() noexcept { return Amount<Unit::MOLE>::unitSymbol() + "/" + Amount<Unit::MOLE>::unitSymbol(); }
 template<>
 inline std::string Amount<Unit::MOLE_PER_SECOND>::unitSymbol() noexcept { return Amount<Unit::MOLE>::unitSymbol() + "/" + Amount<Unit::SECOND>::unitSymbol(); }
@@ -262,6 +266,10 @@ template<>
 inline std::string Amount<Unit::JOULE>::unitName() noexcept { return "joule"; }
 template<>
 inline std::string Amount<Unit::WATT>::unitName() noexcept { return "watt"; }
+template<>
+inline std::string Amount<Unit::METER>::unitName() noexcept { return "meter"; }
+template<>
+inline std::string Amount<Unit::PER_METER>::unitName() noexcept { return "/" + Amount<Unit::METER>::unitName(); }
 template<>
 inline std::string Amount<Unit::MOLE_RATIO>::unitName() noexcept { return Amount<Unit::MOLE>::unitName() + " / " + Amount<Unit::MOLE>::unitName(); }
 template<>
@@ -554,7 +562,7 @@ constexpr Amount<Unit::MOLE> Amount<Unit::MOLE_PER_SECOND>::to(const Amount<Unit
 //    --- Literals ---    //
 
 constexpr inline Amount<Unit::LITER> operator""_L(long double value) { return value; }
-constexpr inline Amount<Unit::CUBIC_METER> operator""_M3(long double value) { return value; }
+constexpr inline Amount<Unit::CUBIC_METER> operator""_m3(long double value) { return value; }
 constexpr inline Amount<Unit::GRAM> operator""_g(long double value) { return value; }
 constexpr inline Amount<Unit::MOLE> operator""_mol(long double value) { return value; }
 constexpr inline Amount<Unit::SECOND> operator""_s(long double value) { return value; }
@@ -565,3 +573,4 @@ constexpr inline Amount<Unit::TORR> operator""_torr(long double value) { return 
 constexpr inline Amount<Unit::PASCAL> operator""_Pa(long double value) { return value; }
 constexpr inline Amount<Unit::JOULE> operator""_J(long double value) { return value; }
 constexpr inline Amount<Unit::WATT> operator""_W(long double value) { return value; }
+constexpr inline Amount<Unit::METER> operator""_m(long double value) { return value; }

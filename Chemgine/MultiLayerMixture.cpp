@@ -245,7 +245,7 @@ void MultiLayerMixture::add(const Reactant& reactant)
 
 void MultiLayerMixture::add(const Molecule& molecule, const Amount<Unit::MOLE> amount)
 {
-	const auto r = Reactant(molecule, LayerType::UNKNOWN, amount, *this);
+	const auto r = Reactant(molecule, LayerType::NONE, amount, *this);
 	add(r.mutate(findLayerFor(r)));
 }
 
@@ -308,6 +308,11 @@ Polarity MultiLayerMixture::getLayerPolarity(const LayerType layer) const
 Color MultiLayerMixture::getLayerColor(const LayerType layer) const
 {
 	return layers.at(layer).getColor();
+}
+
+bool MultiLayerMixture::isEmpty() const
+{
+	return totalMoles == 0.0_mol;
 }
 
 Ref<BaseContainer> MultiLayerMixture::getOverflowTarget() const

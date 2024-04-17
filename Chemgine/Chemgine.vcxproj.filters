@@ -216,9 +216,6 @@
     <ClCompile Include="MoleculeData.cpp">
       <Filter>Source Files\Molecules</Filter>
     </ClCompile>
-    <ClCompile Include="ContainerLabwareData.cpp">
-      <Filter>Source Files\Labware\DataTypes</Filter>
-    </ClCompile>
     <ClCompile Include="BaseLabwareData.cpp">
       <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
@@ -408,6 +405,12 @@
     <ClCompile Include="DynamicAmount.cpp">
       <Filter>Source Files\Data\Values</Filter>
     </ClCompile>
+    <ClCompile Include="CondenserData.cpp">
+      <Filter>Source Files\Labware\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="Condenser.cpp">
+      <Filter>Source Files\Labware\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -528,9 +531,6 @@
       <Filter>Header Files\Molecules</Filter>
     </ClInclude>
     <ClInclude Include="BaseLabwareData.hpp">
-      <Filter>Header Files\Labware\DataTypes</Filter>
-    </ClInclude>
-    <ClInclude Include="ContainerLabwareData.hpp">
       <Filter>Header Files\Labware\DataTypes</Filter>
     </ClInclude>
     <ClInclude Include="FlaskData.hpp">
@@ -767,6 +767,18 @@
     <ClInclude Include="DynamicAmount.hpp">
       <Filter>Header Files\Data\Values</Filter>
     </ClInclude>
+    <ClInclude Include="ContainerLabwareData.hpp">
+      <Filter>Header Files\Labware\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="CondenserData.hpp">
+      <Filter>Header Files\Labware\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Condenser.hpp">
+      <Filter>Header Files\Labware\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseContainerLabwareData.hpp">
+      <Filter>Header Files\Labware\DataTypes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv">
@@ -793,6 +805,24 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\jrbf500.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="Textures\3way.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="Textures\disthead.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="Textures\hotplate_sh2.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="Textures\liebig300.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="Textures\liebig300_cf.png">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
+    <Image Include="Textures\liebig300_f.png">
       <Filter>Resource Files\Textures</Filter>
     </Image>
   </ItemGroup>

@@ -88,6 +88,10 @@ std::string DynamicAmount::getUnitSymbol(const Unit unit)
         return Amount<Unit::JOULE>::unitSymbol();
     case Unit::WATT:
         return Amount<Unit::WATT>::unitSymbol();
+    case Unit::METER:
+        return Amount<Unit::METER>::unitSymbol();
+    case Unit::PER_METER:
+        return Amount<Unit::PER_METER>::unitSymbol();
     case Unit::MOLE_RATIO:
         return Amount<Unit::MOLE_RATIO>::unitSymbol();
     case Unit::MOLE_PER_SECOND:
@@ -143,6 +147,10 @@ std::string DynamicAmount::getUnitName(const Unit unit)
         return Amount<Unit::JOULE>::unitName();
     case Unit::WATT:
         return Amount<Unit::WATT>::unitName();
+    case Unit::METER:
+        return Amount<Unit::METER>::unitName();
+    case Unit::PER_METER:
+        return Amount<Unit::PER_METER>::unitName();
     case Unit::MOLE_RATIO:
         return Amount<Unit::MOLE_RATIO>::unitName();
     case Unit::MOLE_PER_SECOND:
@@ -184,6 +192,8 @@ std::optional<Unit> DynamicAmount::getUnitFromSymbol(const std::string& symbol)
         {DynamicAmount::getUnitSymbol(Unit::ATMOSPHERE), Unit::ATMOSPHERE},
         {DynamicAmount::getUnitSymbol(Unit::JOULE), Unit::JOULE},
         {DynamicAmount::getUnitSymbol(Unit::WATT), Unit::WATT},
+        {DynamicAmount::getUnitSymbol(Unit::METER), Unit::METER},
+        {DynamicAmount::getUnitSymbol(Unit::PER_METER), Unit::PER_METER},
         {DynamicAmount::getUnitSymbol(Unit::MOLE_RATIO), Unit::MOLE_RATIO},
         {DynamicAmount::getUnitSymbol(Unit::MOLE_PER_SECOND), Unit::MOLE_PER_SECOND},
         {DynamicAmount::getUnitSymbol(Unit::GRAM_PER_MOLE), Unit::GRAM_PER_MOLE},
@@ -198,4 +208,31 @@ std::optional<Unit> DynamicAmount::getUnitFromSymbol(const std::string& symbol)
     return it != symbolToUnitMap.cend() ?
         std::optional(it->second) :
         std::nullopt;
+}
+
+std::optional<DynamicAmount> DynamicAmount::get(const StorageType value, const std::string& symbol)
+{
+    auto unit = DynamicAmount::getUnitFromSymbol(symbol);
+    if (unit.has_value())
+        return DynamicAmount(value, *unit);
+    
+    unit = DynamicAmount::getUnitFromSymbol(symbol.substr(1));
+    if (unit.has_value() == false)
+        return std::nullopt;
+    
+    const StorageType multiplier = *unit == Unit::CUBIC_METER ?
+        1000000.0 :
+        1000.0;
+    
+    switch (symbol.front())
+    {
+    case 'k':
+        return DynamicAmount(value * multiplier, *unit);
+    case 'm':
+        return DynamicAmount(value / multiplier, *unit);
+    case 'u':
+        return DynamicAmount(value / (multiplier * multiplier), *unit);
+    default:
+        return std::nullopt;
+    }
 }

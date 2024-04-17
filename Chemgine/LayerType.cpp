@@ -57,8 +57,6 @@ std::string getLayerName(const LayerType type)
 		return "inorganic molten solid";
 	case LayerType::SOLID:
 		return "solid";
-	case LayerType::UNKNOWN:
-		return "unknown";
 	default:
 		return "?";
 	}
@@ -66,30 +64,10 @@ std::string getLayerName(const LayerType type)
 
 LayerType& operator++(LayerType& layer)
 {
-	return layer = static_cast<LayerType>(toIndex(layer) + 1);
+	return layer = static_cast<LayerType>(static_cast<uint8_t>(layer) << 1);
 }
 
 LayerType& operator--(LayerType& layer)
 {
-	return layer = static_cast<LayerType>(toIndex(layer) - 1);
-}
-
-LayerType operator+(LayerType& layer, const uint8_t x)
-{
-	return static_cast<LayerType>(toIndex(layer) + x);
-}
-
-LayerType operator-(LayerType& layer, const uint8_t x)
-{
-	return static_cast<LayerType>(toIndex(layer) - x);
-}
-
-LayerType& operator+=(LayerType& layer, const uint8_t x)
-{
-	return layer = static_cast<LayerType>(toIndex(layer) + x);
-}
-
-LayerType& operator-=(LayerType& layer, const uint8_t x)
-{
-	return layer = static_cast<LayerType>(toIndex(layer) - x);
+	return layer = static_cast<LayerType>(static_cast<uint8_t>(layer) >> 1);
 }

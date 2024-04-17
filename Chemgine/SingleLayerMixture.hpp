@@ -7,6 +7,7 @@
 #include "Logger.hpp"
 #include "DumpContainer.hpp"
 #include "ContentInitializer.hpp"
+#include "FlagField.hpp"
 
 #include <unordered_map>
 
@@ -53,6 +54,7 @@ public:
 	Ref<BaseContainer> getOverflowTarget() const override final;
 	void setOverflowTarget(const Ref<BaseContainer> target) override final;
 	void setIncompatibilityTarget(const LayerType layerType, const Ref<BaseContainer> target);
+	void setIncompatibilityTargets(const FlagField<LayerType> layerTypes, const Ref<BaseContainer> target);
 	void setAllIncompatibilityTargets(const Ref<BaseContainer> target);
 	Ref<BaseContainer> getIncompatibilityTarget(const LayerType layerType) const;
 
@@ -74,6 +76,8 @@ public:
 	Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType l) const override final;
 	Polarity getLayerPolarity(const LayerType layer) const override final;
 	Color getLayerColor(const LayerType layer) const override final;
+
+	bool isEmpty() const override final;
 
 	void copyContentTo(const Ref<BaseContainer> destination, const Amount<Unit::LITER> volume) const;
 	void moveContentTo(const Ref<BaseContainer> destination, const Amount<Unit::LITER> volume);
@@ -104,7 +108,7 @@ SingleLayerMixture<L>::SingleLayerMixture(
 	maxVolume(maxVolume),
 	overflowTarget(overflowTarget)
 {
-	incompatibilityTargets.reserve(toIndex(LayerType::REAL_LAYER_COUNT) - 1);
+	incompatibilityTargets.reserve(getLayerCount());
 	for (LayerType i = LayerType::FIRST; i <= LayerType::LAST; ++i)
 		if (i != L)
 			incompatibilityTargets.emplace(std::make_pair(i, Ref(DumpContainer::GlobalDumpContainer)));
@@ -234,14 +238,16 @@ void SingleLayerMixture<L>::setIncompatibilityTarget(const LayerType layerType, 
 }
 
 template<LayerType L>
+void SingleLayerMixture<L>::setIncompatibilityTargets(const FlagField<LayerType> layerTypes, const Ref<BaseContainer> target)
+{
+	for (auto l = layerTypes.begin(); l != layerTypes.end(); ++l)
+		setIncompatibilityTarget(*l, target);
+}
+
+template<LayerType L>
 void SingleLayerMixture<L>::setAllIncompatibilityTargets(const Ref<BaseContainer> target)
 {
-	if (this == &*target)
-		Logger::log("SingleLayerMixture<" + std::to_string(toIndex(L)) + ">: Incompatibility target set to self.", LogType::WARN);
-
-	for (LayerType i = LayerType::FIRST; i <= LayerType::LAST; ++i)
-		if (i != L)
-			incompatibilityTargets.at(i) = target;
+	setIncompatibilityTargets(FlagField<LayerType>::All - L, target);
 }
 
 template<LayerType L>
@@ -384,6 +390,12 @@ template<LayerType L>
 Color SingleLayerMixture<L>::getLayerColor(const LayerType l) const
 {
 	return layer.getColor();
+}
+
+template<LayerType L>
+bool SingleLayerMixture<L>::isEmpty() const
+{
+	return layer.moles == 0.0_mol;
 }
 
 template<LayerType L>

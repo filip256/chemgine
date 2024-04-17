@@ -35,6 +35,10 @@ public:
 
 	template<Unit UnitT>
 	static inline std::optional<DynamicAmount> cast(const Amount<UnitT> amount, const Unit target) = delete;
+
+	static std::optional<DynamicAmount> get(const StorageType value, const std::string& symbol);
+	template<Unit UnitT>
+	static std::optional<Amount<UnitT>> get(const StorageType value, const std::string& symbol);
 };
 
 
@@ -76,7 +80,7 @@ inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::CUBIC
 	case Unit::LITER:
 		return Amount<Unit::LITER>(amount);
 	default:
-		std::nullopt;
+		return std::nullopt;
 	}
 }
 
@@ -104,7 +108,7 @@ inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::KELVI
 	case Unit::FAHRENHEIT:
 		return Amount<Unit::FAHRENHEIT>(amount);
 	default:
-		std::nullopt;
+		return std::nullopt;
 	}
 }
 
@@ -162,4 +166,13 @@ inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::ATMOS
 	default:
 		std::nullopt;
 	}
+}
+
+template<Unit UnitT>
+static std::optional<Amount<UnitT>> DynamicAmount::get(const StorageType value, const std::string& symbol)
+{
+	const auto temp = DynamicAmount::get(value, symbol);
+	return temp.has_value() ?
+		std::optional(temp->to<UnitT>()) :
+		std::nullopt;
 }

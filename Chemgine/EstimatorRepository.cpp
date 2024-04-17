@@ -77,7 +77,10 @@ const BaseEstimator& EstimatorRepository::add(const BaseEstimator* estimator)
 	});
 
 	if (it != table.end())
+	{
+		delete estimator;
 		return *it->second;
+	}
 
 	table.emplace(std::make_pair(estimator->id, estimator));
 	return *estimator;

@@ -18,7 +18,7 @@ ReactantSet::ReactantSet(const std::vector<Molecule>& reactants) noexcept :
 	container(nullRef)
 {
 	for (size_t i = 0; i < reactants.size(); ++i)
-		add(Reactant(reactants[i], LayerType::UNKNOWN, 1.0));
+		add(Reactant(reactants[i], LayerType::NONE, 1.0));
 }
 
 ReactantSet::ReactantSet(const std::vector<Reactant>& reactants) noexcept :

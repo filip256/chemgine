@@ -2,6 +2,7 @@
 
 #include "SFML/Graphics.hpp"
 #include "Spline.hpp"
+#include "Collision.hpp"
 
 #include <memory>
 
@@ -13,10 +14,23 @@ private:
 
 public:
 	ShapeFillTexture(
+		const Collision::SizedTextureMask& textureMask,
+		const uint8_t alphaThreshold,
+		const bool enableVolumetricScaling
+	) noexcept;
+
+	ShapeFillTexture(
 		const sf::Texture& source,
 		const uint8_t alphaThreshold,
 		const bool enableVolumetricScaling
 	) noexcept;
+
+	ShapeFillTexture(
+		const std::string& sourceFile,
+		const uint8_t alphaThreshold,
+		const bool enableVolumetricScaling
+	) noexcept;
+
 	ShapeFillTexture() = default;
 	ShapeFillTexture(const ShapeFillTexture&) = delete;
 	ShapeFillTexture(ShapeFillTexture&& other) = default;

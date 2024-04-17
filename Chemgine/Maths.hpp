@@ -48,4 +48,13 @@ public:
 	/// Converts degrees to angles.
 	/// </summary>
 	static float toRadians(const float degrees);
+
+	/// <summary>
+	/// Returns the int-casted log2 of a value.
+	/// Useful for finding the number of used bits by the value.
+	/// </summary>
+	static constexpr std::uint8_t ilog2(const int64_t v)
+	{
+		return v ? 1 + ilog2(v >> 1) : -1;
+	}
 };

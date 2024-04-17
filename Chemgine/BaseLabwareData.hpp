@@ -25,6 +25,7 @@ public:
 	) noexcept;
 	BaseLabwareData(const BaseLabwareData&) = delete;
 	BaseLabwareData(BaseLabwareData&&) = default;
+	virtual ~BaseLabwareData() = default;
 
 	// for memory leak checking 
 	static size_t instanceCount;

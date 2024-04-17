@@ -3,6 +3,7 @@
 #include "BaseLabwareData.hpp"
 #include "FlaskData.hpp"
 #include "AdaptorData.hpp"
+#include "CondenserData.hpp"
 #include "HeatsourceData.hpp"
 
 #include <vector>
@@ -12,6 +13,7 @@ class LabwareDataFactory
 {
 	static FlaskData* getFlaskData(const LabwareId id, const std::vector<std::string>& dataLine);
 	static AdaptorData* getAdaptorData(const LabwareId id, const std::vector<std::string>& dataLine);
+	static CondenserData* getCondenserData(const LabwareId id, const std::vector<std::string>& dataLine);
 	static HeatsourceData* getHeatsourceData(const LabwareId id, const std::vector<std::string>& dataLine);
 
 public:

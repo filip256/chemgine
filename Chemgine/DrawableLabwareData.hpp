@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BaseLabwareData.hpp"
-#include "ShapeFillTexture.hpp"
+#include "SFML/Graphics/Texture.hpp"
 
 class DrawableLabwareData : public BaseLabwareData
 {
