@@ -85,7 +85,7 @@ public:
 	BaseLabwareComponent& getComponent(const size_t idx);
 
 	void move(const sf::Vector2f& offset);
-	void rotate(const float angle, const l_size center = 0);
+	void rotate(const Amount<Unit::DEGREE> angle, const l_size center = 0);
 
 	l_size contains(const sf::Vector2f& point) const;
 	bool intersects(const LabwareSystem& other) const;

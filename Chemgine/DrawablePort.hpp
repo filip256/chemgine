@@ -7,8 +7,8 @@ class DrawablePort
 {
 public:
 	const PortType type;
-	const float angle;
-	float rotationAngle = 0.0f;
+	const Amount<Unit::DEGREE> angle;
+	Amount<Unit::DEGREE> rotationAngle = 0.0f;
 	sf::Vector2f position;
 
 	DrawablePort(
@@ -17,5 +17,5 @@ public:
 		const float scale = 1.0f
 	) noexcept;
 
-	void rotate(const float angle);
+	void rotate(const Amount<Unit::DEGREE> angle);
 };

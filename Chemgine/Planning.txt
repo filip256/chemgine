@@ -285,6 +285,7 @@ Tasks:
   31. Implment custom collision and bitmasks
   32. Add class names to logs (using typeid or smthing)
   DONE. Add unit prefix parsing
+  DONE. Add DEGREE and RADIAN units, remove toRandians()
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules
@@ -348,8 +349,10 @@ Tasks:
   DONE. Add display reactor properies
   DONE. Create mixture network behind labware systems
   DONE. Add condenser
-  3. Add particle system
+  DONE. Add particle system
   4. Add reactor raise flags
+---
+  1. Support user defined radical atoms
 ---
   1. Build and link boost
   1. Add bin parser/printer

@@ -245,6 +245,8 @@
     <ClCompile Include="Molecule.cpp" />
     <ClCompile Include="MoleculeData.cpp" />
     <ClCompile Include="OffsetEstimator.cpp" />
+    <ClCompile Include="RandomizedParticle.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Polarity.cpp" />
     <ClCompile Include="PropertyPane.cpp" />
     <ClCompile Include="Reactable.cpp" />
@@ -267,6 +269,7 @@
     <ClCompile Include="DumpContainer.cpp" />
     <ClCompile Include="TextBlock.cpp" />
     <ClCompile Include="Value.cpp" />
+    <ClCompile Include="Vapour.cpp" />
     <ClInclude Include="Adaptor.hpp" />
     <ClInclude Include="AggregationType.hpp" />
     <ClInclude Include="Amount.hpp" />
@@ -350,6 +353,8 @@
     <ClInclude Include="Maths.hpp" />
     <ClInclude Include="Mixture.hpp" />
     <ClInclude Include="OffsetEstimator.hpp" />
+    <ClInclude Include="RandomizedParticle.hpp" />
+    <ClInclude Include="ParticleSystem.hpp" />
     <ClInclude Include="Polarity.hpp" />
     <ClInclude Include="PortType.hpp" />
     <ClInclude Include="PropertyPane.hpp" />
@@ -390,6 +395,7 @@
     <ClInclude Include="Tests.hpp" />
     <ClInclude Include="Utils.hpp" />
     <ClInclude Include="Value.hpp" />
+    <ClInclude Include="Vapour.hpp" />
     <ClInclude Include="VectorUtils.hpp" />
   </ItemGroup>
   <ItemGroup>

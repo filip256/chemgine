@@ -139,6 +139,12 @@
     <Filter Include="Source Files\Moleculars\Repositories">
       <UniqueIdentifier>{7fd23ded-219b-4150-80cc-1f7fcf93e82d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Graphics\Particles">
+      <UniqueIdentifier>{f5c42b78-3687-4c0b-854d-565270cd843f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\Particles">
+      <UniqueIdentifier>{f922ff8a-3fc4-47ae-bfb3-80d2466c3180}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataStore.cpp">
@@ -410,6 +416,15 @@
     </ClCompile>
     <ClCompile Include="Condenser.cpp">
       <Filter>Source Files\Labware\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Source Files\Graphics\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="Vapour.cpp">
+      <Filter>Source Files\Graphics\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="RandomizedParticle.cpp">
+      <Filter>Source Files\Graphics\Particles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -778,6 +793,15 @@
     </ClInclude>
     <ClInclude Include="BaseContainerLabwareData.hpp">
       <Filter>Header Files\Labware\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="RandomizedParticle.hpp">
+      <Filter>Header Files\Graphics\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.hpp">
+      <Filter>Header Files\Graphics\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="Vapour.hpp">
+      <Filter>Header Files\Graphics\Particles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

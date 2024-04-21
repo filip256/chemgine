@@ -8,6 +8,7 @@
 #include "Heatsource.hpp"
 #include "Condenser.hpp"
 #include "PropertyPane.hpp"
+#include "Vapour.hpp"
 
 class UIContext
 {
@@ -101,6 +102,8 @@ public:
         for(size_t i = 0; i < lab.getSystemCount(); ++i)
             lab.getSystem(i).move(sf::Vector2f(100 + 75 * i, 50));
 
+        Vapour vapour(50, sf::Vector2f(500.0f, 500.0f), sf::Color(255, 255, 255, 10), 0.0_o, 0.7f, 0.5f);
+
         //window.setFramerateLimit(300);
         window.setVerticalSyncEnabled(true);
         size_t frameCount = 0;
@@ -193,11 +196,13 @@ public:
             {
                 //flask2.add(100.0_J);
                 lab.tick(timespan);
+                vapour.tick(timespan);
                 tickClock.restart();
             }
 
             window.clear();
             window.draw(lab);
+            window.draw(vapour);
             if (drawPropertyPane)
                 window.draw(propertyPane);
             window.draw(text);

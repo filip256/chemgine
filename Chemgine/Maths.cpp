@@ -1,8 +1,7 @@
-#include <algorithm>
-
 #include "Maths.hpp"
 
-const double Maths::Pi = 3.14159265358979323846;
+#include <algorithm>
+#include <numbers>
 
 constexpr uint32_t Maths::gcd(uint32_t a, uint32_t b)
 {
@@ -115,9 +114,4 @@ std::pair<float, float> Maths::getSlopeAndIntercept(const float aX, const float 
 {
 	const float slope = (bY - aY) / (bX - aX);
 	return std::make_pair(slope, aY - slope * aX);
-}
-
-float Maths::toRadians(const float degrees)
-{
-	return degrees * Pi / 180.0f;
 }

@@ -24,8 +24,8 @@ public:
 	const sf::Vector2f getAdjustedPosition() const override final;
 	void setPosition(const sf::Vector2f& position) override;
 	void move(const sf::Vector2f& offset) override;
-	float getRotation() const override final;
-	void setRotation(const float angle) override;
+	Amount<Unit::DEGREE> getRotation() const override final;
+	void setRotation(const Amount<Unit::DEGREE> angle) override;
 	const sf::Vector2f& getOrigin() const override final;
 	sf::FloatRect getBounds() const override final;
 

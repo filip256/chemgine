@@ -68,7 +68,7 @@ inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::LITER
 	case Unit::CUBIC_METER:
 		return Amount<Unit::CUBIC_METER>(amount);
 	default:
-		std::nullopt;
+		return std::nullopt;
 	}
 }
 
@@ -94,7 +94,7 @@ inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::CELSI
 	case Unit::FAHRENHEIT:
 		return Amount<Unit::FAHRENHEIT>(amount);
 	default:
-		std::nullopt;
+		return std::nullopt;
 	}
 }
 
@@ -122,7 +122,7 @@ inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::FAHRE
 	case Unit::KELVIN:
 		return Amount<Unit::KELVIN>(amount);
 	default:
-		std::nullopt;
+		return std::nullopt;
 	}
 }
 
@@ -136,7 +136,7 @@ inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::TORR>
 	case Unit::ATMOSPHERE:
 		return Amount<Unit::ATMOSPHERE>(amount);
 	default:
-		std::nullopt;
+		return std::nullopt;
 	}
 }
 
@@ -150,7 +150,7 @@ inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::PASCA
 	case Unit::ATMOSPHERE:
 		return Amount<Unit::ATMOSPHERE>(amount);
 	default:
-		std::nullopt;
+		return std::nullopt;
 	}
 }
 
@@ -164,7 +164,31 @@ inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::ATMOS
 	case Unit::PASCAL:
 		return Amount<Unit::PASCAL>(amount);
 	default:
-		std::nullopt;
+		return std::nullopt;
+	}
+}
+
+template<>
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::DEGREE> amount, const Unit target)
+{
+	switch (target)
+	{
+	case Unit::RADIAN:
+		return Amount<Unit::RADIAN>(amount);
+	default:
+		return std::nullopt;
+	}
+}
+
+template<>
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::RADIAN> amount, const Unit target)
+{
+	switch (target)
+	{
+	case Unit::DEGREE:
+		return Amount<Unit::DEGREE>(amount);
+	default:
+		return std::nullopt;
 	}
 }
 

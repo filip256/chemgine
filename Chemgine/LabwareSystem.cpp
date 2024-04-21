@@ -1,5 +1,4 @@
 #include "LabwareSystem.hpp"
-#include "Maths.hpp"
 #include "ContainerComponent.hpp"
 #include "Flask.hpp"
 #include "Heatsource.hpp"
@@ -211,11 +210,11 @@ void LabwareSystem::draw(sf::RenderTarget& target, sf::RenderStates states) cons
 	sf::RectangleShape bBox(boundingBox.getSize());
 	bBox.setPosition(boundingBox.getPosition());
 	bBox.setFillColor(sf::Color(255, 255, 255, 25));
-	target.draw(bBox);
+	target.draw(bBox, states);
 #endif
 
 	for (l_size i = 0; i < components.size(); ++i)
-		target.draw(*components[i]);
+		target.draw(*components[i], states);
 }
 
 void LabwareSystem::move(const sf::Vector2f& offset)
@@ -248,7 +247,7 @@ void LabwareSystem::recomputePositions(const l_size parent, const uint8_t parent
 			recomputePositions(current, i);
 }
 
-void LabwareSystem::rotate(const float angle, const l_size center)
+void LabwareSystem::rotate(const Amount<Unit::DEGREE> angle, const l_size center)
 {
 	components[center]->setRotation(angle + components[center]->getRotation());
 	for (uint8_t i = 0; i < connections[center].size(); ++i)
@@ -485,14 +484,13 @@ std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
 			components[componentIdx]->disconnect(lab->getAtmosphere(), *components[c.otherComponent]);
 			components[c.otherComponent]->disconnect(lab->getAtmosphere(), *components[componentIdx]);
 
-			const float angle = Maths::toRadians(
-				components[c.otherComponent - diff]->getPort(c.otherPort).angle +
-				components[c.otherComponent - diff]->getRotation() - 90.0f);
+			const Amount<Unit::RADIAN> angle = components[c.otherComponent - diff]->getPort(c.otherPort).angle +
+				components[c.otherComponent - diff]->getRotation() - 90.0_o;
 
 			push.x += (components[componentIdx]->getPosition().x < components[c.otherComponent - diff]->getPosition().x ?
-				1.0f : -1.0f) * std::cosf(angle);
+				1.0f : -1.0f) * std::cosf(angle.asStd());
 			push.y += (components[componentIdx]->getPosition().y < components[c.otherComponent - diff]->getPosition().y ?
-				1.0f : -1.0f) * std::sinf(angle);
+				1.0f : -1.0f) * std::sinf(angle.asStd());
 
 			// one of the sub-sections can remain in this 
 			if (skippedFirst == false)
@@ -524,14 +522,13 @@ std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
 			components[componentIdx]->disconnect(lab->getAtmosphere(), *components[c.otherComponent]);
 			components[c.otherComponent]->disconnect(lab->getAtmosphere(), *components[componentIdx]);
 
-			const float angle = Maths::toRadians(
-				components[c.otherComponent]->getPort(c.otherPort).angle +
-				components[c.otherComponent]->getRotation() - 90.0f);
+			const Amount<Unit::RADIAN> angle = components[c.otherComponent]->getPort(c.otherPort).angle +
+				components[c.otherComponent]->getRotation() - 90.0_o;
 
 			push.x += (components[componentIdx]->getPosition().x < components[c.otherComponent]->getPosition().x ?
-				1.0f : -1.0f) * std::cosf(angle);
+				1.0f : -1.0f) * std::cosf(angle.asStd());
 			push.y += (components[componentIdx]->getPosition().y < components[c.otherComponent]->getPosition().y ?
-				1.0f : -1.0f) * std::sinf(angle);
+				1.0f : -1.0f) * std::sinf(angle.asStd());
 			break;
 		}
 	}

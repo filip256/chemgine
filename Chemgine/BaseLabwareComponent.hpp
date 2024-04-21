@@ -39,8 +39,8 @@ public:
 	virtual const sf::Vector2f getAdjustedPosition() const = 0;
 	virtual void setPosition(const sf::Vector2f& position) = 0;
 	virtual void move(const sf::Vector2f& offset) = 0;
-	virtual float getRotation() const = 0;
-	virtual void setRotation(const float angle) = 0;
+	virtual Amount<Unit::DEGREE> getRotation() const = 0;
+	virtual void setRotation(const Amount<Unit::DEGREE> angle) = 0;
 	virtual const sf::Vector2f& getOrigin() const = 0;
 	virtual sf::FloatRect getBounds() const = 0;
 

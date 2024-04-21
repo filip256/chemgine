@@ -36,6 +36,10 @@ std::optional<DynamicAmount> DynamicAmount::to(const Unit target) const
         return DynamicAmount::cast(Amount<Unit::PASCAL>(value), target);
     case Unit::ATMOSPHERE:
         return DynamicAmount::cast(Amount<Unit::ATMOSPHERE>(value), target);
+    case Unit::DEGREE:
+        return DynamicAmount::cast(Amount<Unit::DEGREE>(value), target);
+    case Unit::RADIAN:
+        return DynamicAmount::cast(Amount<Unit::RADIAN>(value), target);
     default:
         return std::nullopt;
     }
@@ -90,6 +94,12 @@ std::string DynamicAmount::getUnitSymbol(const Unit unit)
         return Amount<Unit::WATT>::unitSymbol();
     case Unit::METER:
         return Amount<Unit::METER>::unitSymbol();
+    case Unit::DEGREE:
+        return Amount<Unit::DEGREE>::unitSymbol();
+    case Unit::RADIAN:
+        return Amount<Unit::RADIAN>::unitSymbol();
+    case Unit::PER_SECOND:
+        return Amount<Unit::PER_SECOND>::unitSymbol();
     case Unit::PER_METER:
         return Amount<Unit::PER_METER>::unitSymbol();
     case Unit::MOLE_RATIO:
@@ -149,6 +159,12 @@ std::string DynamicAmount::getUnitName(const Unit unit)
         return Amount<Unit::WATT>::unitName();
     case Unit::METER:
         return Amount<Unit::METER>::unitName();
+    case Unit::DEGREE:
+        return Amount<Unit::DEGREE>::unitName();
+    case Unit::RADIAN:
+        return Amount<Unit::RADIAN>::unitName();
+    case Unit::PER_SECOND:
+        return Amount<Unit::PER_SECOND>::unitName();
     case Unit::PER_METER:
         return Amount<Unit::PER_METER>::unitName();
     case Unit::MOLE_RATIO:
@@ -193,6 +209,9 @@ std::optional<Unit> DynamicAmount::getUnitFromSymbol(const std::string& symbol)
         {DynamicAmount::getUnitSymbol(Unit::JOULE), Unit::JOULE},
         {DynamicAmount::getUnitSymbol(Unit::WATT), Unit::WATT},
         {DynamicAmount::getUnitSymbol(Unit::METER), Unit::METER},
+        {DynamicAmount::getUnitSymbol(Unit::DEGREE), Unit::DEGREE},
+        {DynamicAmount::getUnitSymbol(Unit::RADIAN), Unit::RADIAN},
+        {DynamicAmount::getUnitSymbol(Unit::PER_SECOND), Unit::PER_SECOND},
         {DynamicAmount::getUnitSymbol(Unit::PER_METER), Unit::PER_METER},
         {DynamicAmount::getUnitSymbol(Unit::MOLE_RATIO), Unit::MOLE_RATIO},
         {DynamicAmount::getUnitSymbol(Unit::MOLE_PER_SECOND), Unit::MOLE_PER_SECOND},

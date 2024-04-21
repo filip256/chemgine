@@ -1,5 +1,4 @@
 #include "DrawablePort.hpp"
-#include "Maths.hpp"
 
 #include <cmath>
 
@@ -13,13 +12,13 @@ DrawablePort::DrawablePort(
 	angle(port.angle)
 {}
 
-void DrawablePort::rotate(const float angle)
+void DrawablePort::rotate(const Amount<Unit::DEGREE> angle)
 {
 	const auto tempX = position.x;
-	const auto deltaRad = Maths::toRadians(angle - rotationAngle);
+	const  Amount<Unit::RADIAN> deltaRad = angle - rotationAngle;
 
-	position.x = position.x * std::cosf(deltaRad) - position.y * std::sinf(deltaRad);
-	position.y = tempX * std::sinf(deltaRad) + position.y * std::cosf(deltaRad);
+	position.x = position.x * std::cosf(deltaRad.asStd()) - position.y * std::sinf(deltaRad.asStd());
+	position.y = tempX * std::sinf(deltaRad.asStd()) + position.y * std::cosf(deltaRad.asStd());
 
 	rotationAngle = angle;
 }

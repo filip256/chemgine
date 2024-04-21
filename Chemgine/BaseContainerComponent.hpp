@@ -38,7 +38,7 @@ void inline BaseContainerComponent::draw<Atmosphere>(
 	sf::RenderTarget& target, const sf::RenderStates& states)
 {
 	fill.setColor(colorCast(container.getLayerColor()));
-	target.draw(fill);
+	target.draw(fill, states);
 }
 
 template<>
@@ -53,6 +53,6 @@ void inline BaseContainerComponent::draw<Reactor>(
 		fill.setDrawSection(lastSection, lastSection + layerSection, colorCast(l->second.getColor()));
 		lastSection += layerSection;
 
-		target.draw(fill);
+		target.draw(fill, states);
 	}
 }

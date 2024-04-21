@@ -9,6 +9,7 @@ enum class Unit : uint16_t
 	MOLE,
 
 	SECOND,
+	PER_SECOND,
 
 	CELSIUS,
 	KELVIN,
@@ -23,6 +24,9 @@ enum class Unit : uint16_t
 
 	METER,
 	PER_METER,
+
+	DEGREE,
+	RADIAN,
 
 	MOLE_RATIO,
 

@@ -57,7 +57,7 @@ void Layer::consumePositivePotentialEnergy()
         if (highNucleator.isNull())
         {
             temperature += potentialEnergy.to<Unit::CELSIUS>(hC);
-            potentialEnergy = 0.0;
+            potentialEnergy = 0.0_J;
             return;
         }
 
@@ -67,7 +67,7 @@ void Layer::consumePositivePotentialEnergy()
         if (reqE >= potentialEnergy)
         {
             temperature += potentialEnergy.to<Unit::CELSIUS>(hC);
-            potentialEnergy = 0.0;
+            potentialEnergy = 0.0_J;
             return;
         }
         temperature = maxT;
@@ -82,7 +82,7 @@ void Layer::consumePositivePotentialEnergy()
         {
             container->add(nucleator.mutate(convMoles, higherAggregationLayer));
             container->add(nucleator.mutate(-convMoles));
-            potentialEnergy = 0.0;
+            potentialEnergy = 0.0_J;
             return;
         }
         container->add(nucleator.mutate(maxMoles, higherAggregationLayer));
@@ -96,7 +96,7 @@ void Layer::consumePositivePotentialEnergy()
     if(higherAggregationLayer != LayerType::NONE)
         container->add(potentialEnergy, higherAggregationLayer);
 
-    potentialEnergy = 0.0;
+    potentialEnergy = 0.0_J;
     temperature = Amount<Unit::CELSIUS>::Infinity;
 }
 
@@ -111,7 +111,7 @@ void Layer::consumeNegativePotentialEnergy()
         if (lowNucleator.isNull())
         {
             temperature += potentialEnergy.to<Unit::CELSIUS>(hC);
-            potentialEnergy = 0.0;
+            potentialEnergy = 0.0_J;
             return;
         }
 
@@ -121,7 +121,7 @@ void Layer::consumeNegativePotentialEnergy()
         if (reqE <= potentialEnergy)
         {
             temperature += potentialEnergy.to<Unit::CELSIUS>(hC);
-            potentialEnergy = 0.0;
+            potentialEnergy = 0.0_J;
             return;
         }
         temperature = minT;
@@ -136,7 +136,7 @@ void Layer::consumeNegativePotentialEnergy()
         {
             container->add(nucleator.mutate(convMoles, lowerAggregationLayer));
             container->add(nucleator.mutate(-convMoles));
-            potentialEnergy = 0.0;
+            potentialEnergy = 0.0_J;
             return;
         }
         container->add(nucleator.mutate(maxMoles, lowerAggregationLayer));
@@ -150,7 +150,7 @@ void Layer::consumeNegativePotentialEnergy()
     if (lowerAggregationLayer != LayerType::NONE)
         container->add(potentialEnergy, lowerAggregationLayer);
 
-    potentialEnergy = 0.0;
+    potentialEnergy = 0.0_J;
     temperature = Amount<Unit::CELSIUS>::Infinity;
 }
 
@@ -328,7 +328,7 @@ Amount<Unit::CELSIUS> Layer::getMaxAllowedTemperature() const
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> Layer::getHeatCapacity() const
 {
     Amount<Unit::JOULE_PER_MOLE_CELSIUS> hC = 0.0;
-    Amount<Unit::GRAM> ms = 0.0;
+    Amount<Unit::GRAM> ms = 0.0_g;
     for (const auto& [_, r] : container->content)
     {
         if (r.layer == layerType && hasTemporaryState(r) == false)
@@ -344,8 +344,8 @@ Amount<Unit::JOULE_PER_MOLE_CELSIUS> Layer::getHeatCapacity() const
 Amount<Unit::JOULE_PER_CELSIUS> Layer::getTotalHeatCapacity() const
 {
     Amount<Unit::JOULE_PER_MOLE_CELSIUS> hC = 0.0;
-    Amount<Unit::GRAM> ms = 0.0;
-    Amount<Unit::MOLE> mo = 0.0;
+    Amount<Unit::GRAM> ms = 0.0_g;
+    Amount<Unit::MOLE> mo = 0.0_mol;
     for (const auto& [_, r] : container->content)
     {
         if (r.layer == layerType && hasTemporaryState(r) == false)

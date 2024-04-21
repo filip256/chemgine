@@ -49,7 +49,7 @@ public:
 
 	void setPosition(const sf::Vector2f& position) override final;
 	void move(const sf::Vector2f& offset) override final;
-	void setRotation(const float angle) override final;
+	void setRotation(const Amount<Unit::DEGREE> angle) override final;
 
 	constexpr const Mixture& getContent() const override final;
 	constexpr Mixture& getContent() override final;
@@ -131,7 +131,7 @@ void ContainerComponent<Args...>::move(const sf::Vector2f& offset)
 }
 
 template<typename... Args>
-void ContainerComponent<Args...>::setRotation(const float angle)
+void ContainerComponent<Args...>::setRotation(const Amount<Unit::DEGREE> angle)
 {
 	std::for_each(fills.begin(), fills.end(),
 		[angle](auto& f) { f.setRotation(angle); });

@@ -2,12 +2,11 @@
 
 #include <cstdint>
 #include <vector>
+#include <type_traits>
 
 class Maths
 {
 public:
-	static const double Pi;
-
 	static constexpr uint32_t gcd(uint32_t a, uint32_t b);
 	static constexpr uint32_t lcm(uint32_t a, uint32_t b);
 
@@ -45,16 +44,17 @@ public:
 	static std::pair<float, float> getSlopeAndIntercept(const float aX, const float aY, const float bX, const float bY);
 
 	/// <summary>
-	/// Converts degrees to angles.
-	/// </summary>
-	static float toRadians(const float degrees);
-
-	/// <summary>
 	/// Returns the int-casted log2 of a value.
 	/// Useful for finding the number of used bits by the value.
 	/// </summary>
 	static constexpr std::uint8_t ilog2(const int64_t v)
 	{
 		return v ? 1 + ilog2(v >> 1) : -1;
+	}
+
+	template <typename T, typename = std::enable_if<std::is_arithmetic_v<T>>>
+	static constexpr T clamp(const T value, const T min, const T max)
+	{
+		return std::max(std::min(value, max), min);
 	}
 };

@@ -290,7 +290,7 @@ inline std::optional<LabwarePort> DataHelpers::parse<LabwarePort>(const std::str
 	const auto type = DataHelpers::parseEnum<PortType>(port[0]);
 	const auto x = DataHelpers::parse<unsigned int>(port[1]);
 	const auto y = DataHelpers::parse<unsigned int>(port[2]);
-	const auto angle = DataHelpers::parseUnsigned<double>(port[3]);
+	const auto angle = DataHelpers::parseUnsigned<Unit::DEGREE>(port[3]);
 
 	if (type.has_value() == false || x.has_value() == false || y.has_value() == false || angle.has_value() == false)
 		return std::nullopt;

@@ -2,6 +2,8 @@
 
 #include <string>
 #include <limits>
+#include <cmath>
+#include <numbers>
 
 #include "Value.hpp"
 #include "Unit.hpp"
@@ -18,8 +20,7 @@ public:
 	using StorageType = double;
 
 	constexpr inline Amount() = default;
-	constexpr inline Amount(const double value) noexcept;
-	constexpr inline Amount(const Value<double> value) noexcept;
+	constexpr inline Amount(const StorageType value) noexcept;
 	constexpr inline Amount(const Amount<UnitT>&) = default;
 
 	template<Unit OUnitT>
@@ -37,10 +38,10 @@ public:
 	constexpr inline bool equals(const Amount<UnitT> other,
 		const StorageType epsilon = std::numeric_limits<StorageType>::epsilon()) const noexcept;
 
-	constexpr inline double asKilo() const noexcept;
-	constexpr inline double asStd() const noexcept;
-	constexpr inline double asMilli() const noexcept;
-	constexpr inline double asMicro() const noexcept;
+	constexpr inline StorageType asKilo() const noexcept;
+	constexpr inline StorageType asStd() const noexcept;
+	constexpr inline StorageType asMilli() const noexcept;
+	constexpr inline StorageType asMicro() const noexcept;
 
 	template<Unit OUnitT, Unit FactT1>
 	constexpr inline Amount<OUnitT> to(const Amount<FactT1>) const noexcept = delete;
@@ -106,11 +107,6 @@ constexpr Amount<UnitT>::Amount(const StorageType value) noexcept :
 {}
 
 template<Unit UnitT>
-constexpr Amount<UnitT>::Amount(const Value<StorageType> value) noexcept :
-	Value<StorageType>(value) 
-{}
-
-template<Unit UnitT>
 constexpr Amount<UnitT> Amount<UnitT>::operator+(const Amount<UnitT> other) const noexcept
 {
 	return Amount<UnitT>(this->value + other.value);
@@ -161,22 +157,22 @@ constexpr inline bool Amount<UnitT>::equals(const Amount<UnitT> other, const Sto
 }
 
 template<Unit UnitT>
-constexpr double Amount<UnitT>::asStd() const noexcept { return value; }
+constexpr Amount<>::StorageType Amount<UnitT>::asStd() const noexcept { return value; }
 
 template<Unit UnitT>
-constexpr double Amount<UnitT>::asKilo() const noexcept { return value / 1000.0; }
+constexpr Amount<>::StorageType Amount<UnitT>::asKilo() const noexcept { return value / 1000.0; }
 template<>
-constexpr double Amount<Unit::CUBIC_METER>::asKilo() const noexcept { return value / 1000000000.0; }
+constexpr Amount<>::StorageType Amount<Unit::CUBIC_METER>::asKilo() const noexcept { return value / 1000000000.0; }
 
 template<Unit UnitT>
-constexpr double Amount<UnitT>::asMilli() const noexcept { return value * 1000.0; }
+constexpr Amount<>::StorageType Amount<UnitT>::asMilli() const noexcept { return value * 1000.0; }
 template<>
-constexpr double Amount<Unit::CUBIC_METER>::asMilli() const noexcept { return value * 1000000000.0; }
+constexpr Amount<>::StorageType Amount<Unit::CUBIC_METER>::asMilli() const noexcept { return value * 1000000000.0; }
 
 template<Unit UnitT>
-constexpr double Amount<UnitT>::asMicro() const noexcept { return value * 1000000.0; }
+constexpr Amount<>::StorageType Amount<UnitT>::asMicro() const noexcept { return value * 1000000.0; }
 template<>
-constexpr double Amount<Unit::CUBIC_METER>::asMicro() const noexcept { return value * 1000000000000000000.0; }
+constexpr Amount<>::StorageType Amount<Unit::CUBIC_METER>::asMicro() const noexcept { return value * 1000000000000000000.0; }
 
 template<Unit UnitT>
 constexpr Unit Amount<UnitT>::unit() const noexcept { return UnitT; }
@@ -219,6 +215,12 @@ template<>
 inline std::string Amount<Unit::WATT>::unitSymbol() noexcept { return "W"; }
 template<>
 inline std::string Amount<Unit::METER>::unitSymbol() noexcept { return "m"; }
+template<>
+inline std::string Amount<Unit::DEGREE>::unitSymbol() noexcept { return "°"; }
+template<>
+inline std::string Amount<Unit::RADIAN>::unitSymbol() noexcept { return "rad"; }
+template<>
+inline std::string Amount<Unit::PER_SECOND>::unitSymbol() noexcept { return "/" + Amount<Unit::SECOND>::unitSymbol(); }
 template<>
 inline std::string Amount<Unit::PER_METER>::unitSymbol() noexcept { return "/" + Amount<Unit::METER>::unitSymbol(); }
 template<>
@@ -269,6 +271,12 @@ inline std::string Amount<Unit::WATT>::unitName() noexcept { return "watt"; }
 template<>
 inline std::string Amount<Unit::METER>::unitName() noexcept { return "meter"; }
 template<>
+inline std::string Amount<Unit::DEGREE>::unitName() noexcept { return "degree"; }
+template<>
+inline std::string Amount<Unit::RADIAN>::unitName() noexcept { return "radian"; }
+template<>
+inline std::string Amount<Unit::PER_SECOND>::unitName() noexcept { return "/" + Amount<Unit::SECOND>::unitName(); }
+template<>
 inline std::string Amount<Unit::PER_METER>::unitName() noexcept { return "/" + Amount<Unit::METER>::unitName(); }
 template<>
 inline std::string Amount<Unit::MOLE_RATIO>::unitName() noexcept { return Amount<Unit::MOLE>::unitName() + " / " + Amount<Unit::MOLE>::unitName(); }
@@ -287,49 +295,48 @@ inline std::string Amount<Unit::JOULE_PER_MOLE_CELSIUS>::unitName() noexcept { r
 template<>
 inline std::string Amount<Unit::TORR_MOLE_RATIO>::unitName() noexcept { return Amount<Unit::TORR>::unitName() + " * (" + Amount<Unit::MOLE>::unitName() + " / " + Amount<Unit::MOLE>::unitName() + ")"; }
 
-
 //    --- Direct Conversions ---    //
 
 template<>
 template<>
 constexpr Amount<Unit::LITER>::Amount(const Amount<Unit::CUBIC_METER>& cubicMeters) noexcept :
-	Value<double>(cubicMeters.asStd() * 1000.0)
+	Value<Amount<>::StorageType>(cubicMeters.asStd() * 1000.0)
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::CUBIC_METER>::Amount(const Amount<Unit::LITER>& liters) noexcept :
-	Value<double>(liters.asStd() / 1000.0)
+	Value<Amount<>::StorageType>(liters.asStd() / 1000.0)
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::JOULE_PER_MOLE>::Amount(const Amount<Unit::JOULE>& joules) noexcept :
-	Value<double>(joules.asStd())
+	Value<Amount<>::StorageType>(joules.asStd())
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::KELVIN>::Amount(const Amount<Unit::CELSIUS>& c) noexcept :
-	Value<double>(c.asStd() + 273.15)
+	Value<Amount<>::StorageType>(c.asStd() + 273.15)
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::CELSIUS>::Amount(const Amount<Unit::KELVIN>& k) noexcept :
-	Value<double>(k.asStd() - 273.15)
+	Value<Amount<>::StorageType>(k.asStd() - 273.15)
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::FAHRENHEIT>::Amount(const Amount<Unit::CELSIUS>& c) noexcept :
-	Value<double>(c.asStd() * (9.0 / 5.0) + 32)
+	Value<Amount<>::StorageType>(c.asStd() * (9.0 / 5.0) + 32)
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::CELSIUS>::Amount(const Amount<Unit::FAHRENHEIT>& f) noexcept :
-	Value<double>(f.asStd() * (5.0 / 9.0) - 32)
+	Value<Amount<>::StorageType>(f.asStd() * (5.0 / 9.0) - 32)
 {}
 
 template<>
@@ -347,19 +354,19 @@ constexpr Amount<Unit::KELVIN>::Amount(const Amount<Unit::FAHRENHEIT>& f) noexce
 template<>
 template<>
 constexpr Amount<Unit::TORR>::Amount(const Amount<Unit::PASCAL>& p) noexcept :
-	Value<double>(p.asStd() / 133.3223684211)
+	Value<Amount<>::StorageType>(p.asStd() / 133.3223684211)
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::TORR>::Amount(const Amount<Unit::ATMOSPHERE>& a) noexcept :
-	Value<double>(a.asStd() * 760.0)
+	Value<Amount<>::StorageType>(a.asStd() * 760.0)
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::PASCAL>::Amount(const Amount<Unit::TORR>& t) noexcept :
-	Value<double>(t.asStd() * 133.3223684211)
+	Value<Amount<>::StorageType>(t.asStd() * 133.3223684211)
 {}
 
 template<>
@@ -371,7 +378,7 @@ constexpr Amount<Unit::PASCAL>::Amount(const Amount<Unit::ATMOSPHERE>& a) noexce
 template<>
 template<>
 constexpr Amount<Unit::ATMOSPHERE>::Amount(const Amount<Unit::TORR>& t) noexcept :
-	Value<double>(t.asStd() / 760.0)
+	Value<Amount<>::StorageType>(t.asStd() / 760.0)
 {}
 
 template<>
@@ -380,8 +387,34 @@ constexpr Amount<Unit::ATMOSPHERE>::Amount(const Amount<Unit::PASCAL>& p) noexce
 	Amount<Unit::ATMOSPHERE>(Amount<Unit::TORR>(p))
 {}
 
+template<>
+template<>
+constexpr Amount<Unit::DEGREE>::Amount(const Amount<Unit::RADIAN>& radians) noexcept :
+	Amount<Unit::DEGREE>(radians.asStd() * (180.0 / std::numbers::pi_v<StorageType>))
+{}
+
+template<>
+template<>
+constexpr Amount<Unit::RADIAN>::Amount(const Amount<Unit::DEGREE>& degrees) noexcept :
+	Amount<Unit::RADIAN>(degrees.asStd() * (std::numbers::pi_v<StorageType> / 180.0))
+{}
+
 
 //    --- Indirect Conversions ---    //
+
+template<>
+template<>
+constexpr Amount<Unit::NONE> Amount<Unit::PER_SECOND>::to(const Amount<Unit::SECOND> timespan) const noexcept
+{
+	return value * timespan.asStd();
+}
+
+template<>
+template<>
+constexpr Amount<Unit::NONE> Amount<Unit::PER_METER>::to(const Amount<Unit::METER> distance) const noexcept
+{
+	return value * distance.asStd();
+}
 
 template<>
 template<>
@@ -574,3 +607,5 @@ constexpr inline Amount<Unit::PASCAL> operator""_Pa(long double value) { return 
 constexpr inline Amount<Unit::JOULE> operator""_J(long double value) { return value; }
 constexpr inline Amount<Unit::WATT> operator""_W(long double value) { return value; }
 constexpr inline Amount<Unit::METER> operator""_m(long double value) { return value; }
+constexpr inline Amount<Unit::DEGREE> operator""_o(long double value) { return value; }
+constexpr inline Amount<Unit::RADIAN> operator""_rad(long double value) { return value; }

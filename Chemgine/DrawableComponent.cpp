@@ -50,16 +50,16 @@ void DrawableComponent::move(const sf::Vector2f& offset)
 	sprite.move(offset);
 }
 
-float DrawableComponent::getRotation() const
+Amount<Unit::DEGREE> DrawableComponent::getRotation() const
 {
 	return sprite.getRotation();
 }
 
-void DrawableComponent::setRotation(const float angle)
+void DrawableComponent::setRotation(const Amount<Unit::DEGREE> angle)
 {
 	for (uint8_t i = 0; i < adjustedPorts.size(); ++i)
 		adjustedPorts[i].rotate(angle);
-	sprite.setRotation(angle);
+	sprite.setRotation(angle.asStd());
 }
 
 const sf::Vector2f& DrawableComponent::getOrigin() const
@@ -89,10 +89,10 @@ void DrawableComponent::draw(sf::RenderTarget& target, sf::RenderStates states) 
 	sf::RectangleShape bBox(sprite.getGlobalBounds().getSize());
 	bBox.setPosition(sprite.getGlobalBounds().getPosition());
 	bBox.setFillColor(sf::Color(255, 255, 255, 25));
-	target.draw(bBox);
+	target.draw(bBox, states);
 #endif
 
-	target.draw(sprite);
+	target.draw(sprite, states);
 
 #ifndef NDEBUG
 	sf::CircleShape port(2.0f, 16);
@@ -103,7 +103,7 @@ void DrawableComponent::draw(sf::RenderTarget& target, sf::RenderStates states) 
 	for (uint8_t i = 0; i < adjustedPorts.size(); ++i)
 	{
 		port.setPosition(sprite.getPosition() + adjustedPorts[i].position);
-		target.draw(port);
+		target.draw(port, states);
 	}
 #endif
 }

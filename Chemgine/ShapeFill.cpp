@@ -1,6 +1,4 @@
 #include "ShapeFill.hpp"
-#include "Maths.hpp"
-
 #include <cmath>
 
 ShapeFill::ShapeFill(
@@ -31,9 +29,9 @@ void ShapeFill::setScale(const sf::Vector2f& scale)
 	sprite.setScale(scale);
 }
 
-void ShapeFill::setRotation(const float angle)
+void ShapeFill::setRotation(const Amount<Unit::DEGREE> angle)
 {
-	sprite.setRotation(angle);
+	sprite.setRotation(angle.asStd());
 }
 
 void ShapeFill::setColor(const sf::Color& color) const
@@ -56,10 +54,10 @@ void ShapeFill::setDrawSection(float start, float end, const sf::Color& color) c
 	const auto topCut = size.y * (1.0f - end);
 	sprite.setTextureRect(sf::IntRect(0, topCut, size.x, std::ceilf(size.y * (end - start))));
 
-	const auto rotation = Maths::toRadians(sprite.getRotation());
+	const Amount<Unit::RADIAN> rotation = Amount<Unit::DEGREE>(sprite.getRotation());
 	sprite.setPosition(sf::Vector2f(
-		originPosition.x - std::sinf(rotation) * topCut * sprite.getScale().y,
-		originPosition.y + std::cosf(rotation) * topCut * sprite.getScale().y
+		originPosition.x - std::sinf(rotation.asStd()) * topCut * sprite.getScale().y,
+		originPosition.y + std::cosf(rotation.asStd()) * topCut * sprite.getScale().y
 	));
 
 	sprite.setColor(color);
@@ -67,5 +65,5 @@ void ShapeFill::setDrawSection(float start, float end, const sf::Color& color) c
 
 void ShapeFill::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
-	target.draw(sprite);
+	target.draw(sprite, states);
 }

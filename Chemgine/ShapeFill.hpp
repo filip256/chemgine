@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ShapeFillTexture.hpp"
+#include "Amount.hpp"
 
 #include <utility>
 
@@ -20,7 +21,7 @@ public:
 	void setPosition(const sf::Vector2f& position);
 	void move(const sf::Vector2f& offset);
 	void setScale(const sf::Vector2f& scale);
-	void setRotation(const float angle);
+	void setRotation(const Amount<Unit::DEGREE> angle);
 	void setColor(const sf::Color& color) const;
 	void setDrawSection(float start, float end, const sf::Color& color) const;
 

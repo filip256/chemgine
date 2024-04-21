@@ -140,8 +140,8 @@ void Lab::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	const auto screenSize = target.getSize();
 	atmosphereOverlay.setSize(sf::Vector2f(screenSize.x, screenSize.y));
 	atmosphereOverlay.setFillColor(colorCast(atmosphere.getLayerColor()));
-	target.draw(atmosphereOverlay);
+	target.draw(atmosphereOverlay, states);
 
 	for (size_t i = 0; i < systems.size(); ++i)
-		target.draw(systems[i]);
+		target.draw(systems[i], states);
 }

@@ -146,7 +146,7 @@ Amount<Unit::JOULE_PER_MOLE> Molecule::getLiquefactionHeatAt(
 	const Amount<Unit::TORR> pressure
 ) const
 {
-	return -getFusionHeatAt(temperature, pressure.asStd());
+	return -getFusionHeatAt(temperature, pressure);
 }
 
 Amount<Unit::JOULE_PER_MOLE> Molecule::getCondensationHeatAt(
@@ -154,7 +154,7 @@ Amount<Unit::JOULE_PER_MOLE> Molecule::getCondensationHeatAt(
 	const Amount<Unit::TORR> pressure
 ) const
 {
-	return -getVaporizationHeatAt(temperature, -pressure.asStd());
+	return -getVaporizationHeatAt(temperature, -pressure);
 }
 
 Amount<Unit::JOULE_PER_MOLE> Molecule::getDepositionHeatAt(
@@ -162,7 +162,7 @@ Amount<Unit::JOULE_PER_MOLE> Molecule::getDepositionHeatAt(
 	const Amount<Unit::TORR> pressure
 ) const
 {
-	return -getSublimationHeatAt(temperature, -pressure.asStd());
+	return -getSublimationHeatAt(temperature, -pressure);
 }
 
 Amount<Unit::MOLE_RATIO> Molecule::getSolubilityAt(
