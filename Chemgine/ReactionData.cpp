@@ -14,7 +14,7 @@ ReactionData::ReactionData(
 	const Amount<Unit::CELSIUS> baseTemperature,
 	const Amount<Unit::JOULE_PER_MOLE> reactionEnergy,
 	const Amount<Unit::JOULE_PER_MOLE> activationEnergy,
-	std::vector<std::vector<Catalyst>>&& catalysts
+	std::vector<Catalyst>&& catalysts
 ) noexcept :
 	id(id),
 	baseSpeed(baseSpeed),
@@ -309,7 +309,7 @@ const std::vector<Reactable>& ReactionData::getProducts() const
 	return products;
 }
 
-const std::vector<std::vector<Catalyst>>& ReactionData::getCatalysts() const
+const std::vector<Catalyst>& ReactionData::getCatalysts() const
 {
 	return catalysts;
 }
@@ -326,7 +326,7 @@ bool ReactionData::isSpecializationOf(const ReactionData& other) const
 			if (used[j])
 				continue;
 
-			if (other.reactants[j].matchWith(this->reactants[i]).size())
+			if (other.reactants[j].matchesWith(this->reactants[i]))
 			{
 				matchFound = true;
 				used[j] = true;
@@ -348,7 +348,29 @@ bool ReactionData::isSpecializationOf(const ReactionData& other) const
 			if (used[j])
 				continue;
 
-			if (other.products[j].matchWith(this->products[i]).size())
+			if (other.products[j].matchesWith(this->products[i]))
+			{
+				matchFound = true;
+				used[j] = true;
+				break;
+			}
+		}
+
+		if (matchFound == false)
+			return false;
+	}
+
+	// check catalysts
+	used = std::vector<uint8_t>(this->catalysts.size(), false);
+	for (size_t i = 0; i < other.catalysts.size(); ++i)
+	{
+		bool matchFound = false;
+		for (size_t j = 0; j < this->catalysts.size(); ++j)
+		{
+			if (used[j])
+				continue;
+
+			if (other.catalysts[i].matchesWith(this->catalysts[j]))
 			{
 				matchFound = true;
 				used[j] = true;
@@ -370,6 +392,11 @@ bool ReactionData::isGeneralizationOf(const ReactionData& other) const
 
 bool ReactionData::isEquivalentTo(const ReactionData& other) const
 {
+	if (this->reactants.size() != other.reactants.size() ||
+		this->products.size() != other.products.size() ||
+		this->catalysts.size() != other.catalysts.size())
+		return false;
+
 	// check reactants
 	std::vector<uint8_t> used(other.reactants.size(), false);
 	for (size_t i = 0; i < this->reactants.size(); ++i)
@@ -403,6 +430,29 @@ bool ReactionData::isEquivalentTo(const ReactionData& other) const
 				continue;
 
 			if (other.products[j] == this->products[i])
+			{
+				matchFound = true;
+				used[j] = true;
+				break;
+			}
+		}
+
+		if (matchFound == false)
+			return false;
+	}
+
+
+	// check catalysts
+	used = std::vector<uint8_t>(this->catalysts.size(), false);
+	for (size_t i = 0; i < other.catalysts.size(); ++i)
+	{
+		bool matchFound = false;
+		for (size_t j = 0; j < this->catalysts.size(); ++j)
+		{
+			if (used[j])
+				continue;
+
+			if (other.catalysts[i] == this->catalysts[j])
 			{
 				matchFound = true;
 				used[j] = true;

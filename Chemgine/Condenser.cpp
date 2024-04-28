@@ -6,7 +6,7 @@ Condenser::Condenser(
 	const LabwareId id,
 	Atmosphere& atmosphere
 ) noexcept :
-	ContainerComponent(id, atmosphere)
+	ContainerComponent(id, LabwareType::CONDENSER, atmosphere)
 {
 	getContent<1>().add(Molecule("O"), 10.0_mol);
 }

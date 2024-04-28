@@ -1,7 +1,10 @@
 #include "BaseContainerComponent.hpp"
 
-BaseContainerComponent::BaseContainerComponent(const LabwareId id) noexcept :
-	DrawableComponent(id)
+BaseContainerComponent::BaseContainerComponent(
+	const LabwareId id,
+	const LabwareType type
+) noexcept :
+	DrawableComponent(id, type)
 {}
 
 const BaseContainerLabwareData& BaseContainerComponent::getData() const

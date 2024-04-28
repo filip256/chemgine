@@ -273,7 +273,7 @@ Tasks:
   DONE. Add nullRef type instead of Ref<T>::nullRef
   DONE. Rename normalization to canonicalization
   24. Remove MolecularStructure.mapTo(setB[i], false), only mapTo(setB[i], true) is needed
-  25. Add catalysts to specialization tree
+  DONE. Add catalysts to specialization tree
   DONE. Add id parser
   DONE. Add DynamicAmount
   DONE. Add duplicate estimator filtering
@@ -286,6 +286,8 @@ Tasks:
   32. Add class names to logs (using typeid or smthing)
   DONE. Add unit prefix parsing
   DONE. Add DEGREE and RADIAN units, remove toRandians()
+  DONE. Add labware id-type check
+  33. Add multiple overflow targets
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules

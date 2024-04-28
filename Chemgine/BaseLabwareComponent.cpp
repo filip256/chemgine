@@ -1,13 +1,20 @@
 #include "BaseLabwareComponent.hpp"
 #include "DataStore.hpp"
+#include "Logger.hpp"
 
 size_t BaseLabwareComponent::instanceCount = 0;
 DataStoreAccessor BaseLabwareComponent::dataAccessor = DataStoreAccessor();
 
-BaseLabwareComponent::BaseLabwareComponent(const LabwareId id) noexcept :
+BaseLabwareComponent::BaseLabwareComponent(
+	const LabwareId id,
+	const LabwareType type
+) noexcept :
 	id(id),
 	data(dataAccessor.getSafe().labware.at(id))
-{}
+{
+	if (type != data.type)
+		Logger::fatal("Labware component given by id: " + std::to_string(id) + " does not match the requested component type.");
+}
 
 const DataStore& BaseLabwareComponent::dataStore() const
 {

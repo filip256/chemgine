@@ -192,11 +192,13 @@ inline std::string Amount<Unit::GRAM>::unitSymbol() noexcept { return "g"; }
 template<>
 inline std::string Amount<Unit::LITER>::unitSymbol() noexcept { return "L"; }
 template<>
+inline std::string Amount<Unit::CUBIC_METER>::unitSymbol() noexcept { return "m3"; }
+template<>
+inline std::string Amount<Unit::DROP>::unitSymbol() noexcept { return "drops"; }
+template<>
 inline std::string Amount<Unit::MOLE>::unitSymbol() noexcept { return "mol"; }
 template<>
 inline std::string Amount<Unit::SECOND>::unitSymbol() noexcept { return "s"; }
-template<>
-inline std::string Amount<Unit::CUBIC_METER>::unitSymbol() noexcept { return "m3"; }
 template<>
 inline std::string Amount<Unit::CELSIUS>::unitSymbol() noexcept { return "C"; }
 template<>
@@ -247,11 +249,13 @@ inline std::string Amount<Unit::GRAM>::unitName() noexcept { return "gram"; }
 template<>
 inline std::string Amount<Unit::LITER>::unitName() noexcept { return "liter"; }
 template<>
+inline std::string Amount<Unit::CUBIC_METER>::unitName() noexcept { return "cubic meter"; }
+template<>
+inline std::string Amount<Unit::DROP>::unitName() noexcept { return "drops"; }
+template<>
 inline std::string Amount<Unit::MOLE>::unitName() noexcept { return "mole"; }
 template<>
 inline std::string Amount<Unit::SECOND>::unitName() noexcept { return "second"; }
-template<>
-inline std::string Amount<Unit::CUBIC_METER>::unitName() noexcept { return "cubic meter"; }
 template<>
 inline std::string Amount<Unit::CELSIUS>::unitName() noexcept { return "celsius"; }
 template<>
@@ -305,8 +309,32 @@ constexpr Amount<Unit::LITER>::Amount(const Amount<Unit::CUBIC_METER>& cubicMete
 
 template<>
 template<>
+constexpr Amount<Unit::LITER>::Amount(const Amount<Unit::DROP>& drops) noexcept :
+	Value<Amount<>::StorageType>(drops.asStd() / 20000.0)
+{}
+
+template<>
+template<>
 constexpr Amount<Unit::CUBIC_METER>::Amount(const Amount<Unit::LITER>& liters) noexcept :
 	Value<Amount<>::StorageType>(liters.asStd() / 1000.0)
+{}
+
+template<>
+template<>
+constexpr Amount<Unit::CUBIC_METER>::Amount(const Amount<Unit::DROP>& drops) noexcept :
+	Amount<Unit::CUBIC_METER>(Amount<Unit::LITER>(drops))
+{}
+
+template<>
+template<>
+constexpr Amount<Unit::DROP>::Amount(const Amount<Unit::LITER>& liters) noexcept :
+	Value<Amount<>::StorageType>(liters.asStd() * 20000.0)
+{}
+
+template<>
+template<>
+constexpr Amount<Unit::DROP>::Amount(const Amount<Unit::CUBIC_METER>& cubicMeters) noexcept :
+	Amount<Unit::DROP>(Amount<Unit::LITER>(cubicMeters))
 {}
 
 template<>

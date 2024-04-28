@@ -7,7 +7,7 @@ Adaptor::Adaptor(
 	const LabwareId id,
 	Atmosphere& atmosphere
 ) noexcept :
-	ContainerComponent(id, atmosphere)
+	ContainerComponent(id, LabwareType::ADAPTOR, atmosphere)
 {}
 
 const AdaptorData& Adaptor::getData() const

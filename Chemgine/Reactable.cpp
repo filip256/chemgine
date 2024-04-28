@@ -48,6 +48,11 @@ std::unordered_map<c_size, c_size> Reactable::matchWith(const Reactable& other) 
 	return this->matchWith(other.getStructure());
 }
 
+bool Reactable::matchesWith(const Reactable& other) const
+{
+	return this->matchWith(other).size();
+}
+
 bool Reactable::operator==(const Reactable& other) const
 {
 	return this->getStructure() == other.getStructure();
@@ -55,7 +60,7 @@ bool Reactable::operator==(const Reactable& other) const
 
 bool Reactable::operator!=(const Reactable& other) const
 {
-	return this->getStructure() != other.getStructure();;
+	return this->getStructure() != other.getStructure();
 }
 
 std::optional<Reactable> Reactable::get(const std::string& smiles)

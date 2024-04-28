@@ -96,44 +96,39 @@ bool ReactionRepository::loadFromFile(const std::string& path)
 			.value_or(std::make_pair(1.0, 20.0));
 
 		//reaction energy
-		const auto reactionEnergy = DataHelpers::parse<double>(line[5]);
+		const auto reactionEnergy = DataHelpers::parse<Unit::JOULE_PER_MOLE>(line[5]);
 
 		//activation energy
-		const auto activationEnergy = DataHelpers::parseUnsigned<double>(line[6]);
+		const auto activationEnergy = DataHelpers::parseUnsigned<Unit::JOULE_PER_MOLE>(line[6]);
 
 		//catalysts
-		const auto catStr = DataHelpers::parseLists(line[7], ';', '|', true);
-		std::vector<std::vector<Catalyst>> catalysts;
+		const auto catStr = DataHelpers::parseList(line[7], ';', true);
+		std::vector<Catalyst> catalysts;
 		catalysts.reserve(catStr.size());
 		for (size_t i = 0; i < catStr.size(); ++i)
 		{
-			catalysts.emplace_back();
-			catalysts.back().reserve(catStr[i].size());
-			for (size_t j = 0; j < catStr[i].size(); ++j)
+			const auto pair = DataHelpers::parseList(catStr[i], '@', true);
+			if (pair.size() != 2)
 			{
-				const auto pair = DataHelpers::parseList(catStr[i][j], '@', true);
-				if (pair.size() != 2)
-				{
-					Logger::log("Reaction catalyst for the reaction with id " + std::to_string(*id) + " is ill-defined. Catalysts skipped.", LogType::BAD);
-					continue;
-				}
-
-				const auto amount = DataHelpers::parseUnsigned<double>(pair.back());
-				if (amount.has_value() == false)
-				{
-					Logger::log("Ill-defined catalyst '" + products[i] + "' in reaction with id " + std::to_string(*id) + " skipped.", LogType::BAD);
-					continue;
-				}
-
-				const auto c = Catalyst::get(pair.front(), *amount);
-				if (c.has_value() == false)
-				{
-					Logger::log("Ill-defined catalyst '" + products[i] + "' in reaction with id " + std::to_string(*id) + " skipped.", LogType::BAD);
-					continue;
-				}
-
-				catalysts.back().emplace_back(*c);
+				Logger::log("Reaction catalyst for the reaction with id " + std::to_string(*id) + " is ill-defined. Catalysts skipped.", LogType::BAD);
+				continue;
 			}
+
+			const auto amount = DataHelpers::parseUnsigned<Unit::MOLE_RATIO>(pair.back());
+			if (amount.has_value() == false)
+			{
+				Logger::log("Ill-defined catalyst '" + catStr[i] + "' in reaction with id " + std::to_string(*id) + " skipped.", LogType::BAD);
+				continue;
+			}
+
+			const auto c = Catalyst::get(pair.front(), *amount);
+			if (c.has_value() == false)
+			{
+				Logger::log("Ill-defined catalyst '" + catStr[i] + "' in reaction with id " + std::to_string(*id) + " skipped.", LogType::BAD);
+				continue;
+			}
+
+			catalysts.emplace_back(*c);
 		}
 
 		// create

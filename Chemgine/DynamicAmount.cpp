@@ -24,6 +24,8 @@ std::optional<DynamicAmount> DynamicAmount::to(const Unit target) const
         return DynamicAmount::cast(Amount<Unit::LITER>(value), target);
     case Unit::CUBIC_METER:
         return DynamicAmount::cast(Amount<Unit::CUBIC_METER>(value), target);
+    case Unit::DROP:
+        return DynamicAmount::cast(Amount<Unit::DROP>(value), target);
     case Unit::CELSIUS:
         return DynamicAmount::cast(Amount<Unit::CELSIUS>(value), target);
     case Unit::KELVIN:
@@ -70,6 +72,8 @@ std::string DynamicAmount::getUnitSymbol(const Unit unit)
         return Amount<Unit::LITER>::unitSymbol();
     case Unit::CUBIC_METER:
         return Amount<Unit::CUBIC_METER>::unitSymbol();
+    case Unit::DROP:
+        return Amount<Unit::DROP>::unitSymbol();
     case Unit::GRAM:
         return Amount<Unit::GRAM>::unitSymbol();
     case Unit::MOLE:
@@ -135,6 +139,8 @@ std::string DynamicAmount::getUnitName(const Unit unit)
         return Amount<Unit::LITER>::unitName();
     case Unit::CUBIC_METER:
         return Amount<Unit::CUBIC_METER>::unitName();
+    case Unit::DROP:
+        return Amount<Unit::DROP>::unitName();
     case Unit::GRAM:
         return Amount<Unit::GRAM>::unitName();
     case Unit::MOLE:
@@ -197,6 +203,7 @@ std::optional<Unit> DynamicAmount::getUnitFromSymbol(const std::string& symbol)
         {DynamicAmount::getUnitSymbol(Unit::NONE), Unit::NONE},
         {DynamicAmount::getUnitSymbol(Unit::LITER), Unit::LITER},
         {DynamicAmount::getUnitSymbol(Unit::CUBIC_METER), Unit::CUBIC_METER},
+        {DynamicAmount::getUnitSymbol(Unit::DROP), Unit::DROP},
         {DynamicAmount::getUnitSymbol(Unit::GRAM), Unit::GRAM},
         {DynamicAmount::getUnitSymbol(Unit::MOLE), Unit::MOLE},
         {DynamicAmount::getUnitSymbol(Unit::SECOND), Unit::SECOND},

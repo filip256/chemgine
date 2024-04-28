@@ -1,6 +1,6 @@
 Id,Name,Reactants,Products,Speed,Energy,Activation,Catalysts
 #201,esterification,O=C(R)O;OR,O=C(R)OR;O,100.0_mol@20_C,100.0,0.0,
-\#202,hydrolysis,O=C(R)OR;O,O=C(R)O;OR,0.1_mol@20_C,,0.0,
+#202,hydrolysis,O=C(R)OR;O,O=C(R)O;OR,0.1_mol@20_C,,0.0,
 #203,dehydration,RO,ROR;O,1.0_mol@20_C,,0.0,
 #204,oxidation,RCC,HH;RC=C,1.0_mol@20_C,,0.0,
 #205,reduction,HH;RC=C,RCC,1.0_mol@20_C,,0.0,
@@ -13,3 +13,7 @@ Id,Name,Reactants,Products,Speed,Energy,Activation,Catalysts
 #212,hydrolysis,O=C(R)OCC;O,O=C(R)O;OCC,,,,
 #213,hydrolysis,O=C(CC)OR;O,O=C(CC)O;OR,,,,
 #214,dehydration,RCO,RCOCR;O,,,,
+#215,dehydration,RO,ROR;O,1.0_mol@20_C,,0.0,O=C(R)OR@0.5
+#216,dehydration,RO,ROR;O,1.0_mol@20_C,,0.0,O=C(CC)OC@0.5
+#217,dehydration,RO,ROR;O,1.0_mol@20_C,,0.0,O=C(CC)OC@0.7
+#218,dehydration,RO,ROR;O,1.0_mol@20_C,,0.0,O=C(CC)OC@0.5;N(R)@0.3

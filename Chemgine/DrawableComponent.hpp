@@ -13,7 +13,10 @@ private:
 	std::vector<DrawablePort> adjustedPorts;
 
 protected:
-	DrawableComponent(const LabwareId id) noexcept;
+	DrawableComponent(
+		const LabwareId id,
+		const LabwareType type
+	) noexcept;
 
 public:
 	const DrawableLabwareData& getData() const override;

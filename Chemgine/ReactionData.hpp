@@ -18,10 +18,9 @@ private:
 	Ref<const ReactionData> baseReaction = nullRef;
 	std::vector<Reactable> reactants;
 	std::vector<Reactable> products;
-	std::vector<std::vector<Catalyst>> catalysts;
+	std::vector<Catalyst> catalysts;
 	std::unordered_map<std::pair<size_t, c_size>, std::pair<size_t, c_size>> componentMapping;
 	
-
 	static std::vector<Reactable> flatten(
 		const std::vector<std::pair<Reactable, uint8_t>>& list);
 
@@ -65,7 +64,7 @@ public:
 		const Amount<Unit::CELSIUS> baseTemperature,
 		const Amount<Unit::JOULE_PER_MOLE> reactionEnergy,
 		const Amount<Unit::JOULE_PER_MOLE> activationEnergy,
-		std::vector<std::vector<Catalyst>>&& catalysts
+		std::vector<Catalyst>&& catalysts
 	) noexcept;
 
 	ReactionData(const ReactionData&) = delete;
@@ -88,7 +87,7 @@ public:
 
 	const std::vector<Reactable>& getReactants() const;
 	const std::vector<Reactable>& getProducts() const;
-	const std::vector<std::vector<Catalyst>>& getCatalysts() const;
+	const std::vector<Catalyst>& getCatalysts() const;
 
 	bool isSpecializationOf(const ReactionData& other) const;
 	bool isGeneralizationOf(const ReactionData& other) const;

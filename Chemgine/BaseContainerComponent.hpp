@@ -8,7 +8,10 @@
 class BaseContainerComponent : public DrawableComponent
 {
 protected:
-	BaseContainerComponent(const LabwareId id) noexcept;
+	BaseContainerComponent(
+		const LabwareId id,
+		const LabwareType type
+	) noexcept;
 
 	virtual Ref<BaseContainer> getOverflowTarget() const = 0;
 	virtual void setOverflowTarget(const Ref<BaseContainer> target) = 0;

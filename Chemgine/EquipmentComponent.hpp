@@ -5,5 +5,8 @@
 class EquipmentComponent : public DrawableComponent
 {
 protected:
-	EquipmentComponent(const LabwareId id) noexcept;
+	EquipmentComponent(
+		const LabwareId id,
+		const LabwareType type
+	) noexcept;
 };

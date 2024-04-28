@@ -67,6 +67,8 @@ inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::LITER
 	{
 	case Unit::CUBIC_METER:
 		return Amount<Unit::CUBIC_METER>(amount);
+	case Unit::DROP:
+		return Amount<Unit::DROP>(amount);
 	default:
 		return std::nullopt;
 	}
@@ -79,6 +81,22 @@ inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::CUBIC
 	{
 	case Unit::LITER:
 		return Amount<Unit::LITER>(amount);
+	case Unit::DROP:
+		return Amount<Unit::DROP>(amount);
+	default:
+		return std::nullopt;
+	}
+}
+
+template<>
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::DROP> amount, const Unit target)
+{
+	switch (target)
+	{
+	case Unit::LITER:
+		return Amount<Unit::LITER>(amount);
+	case Unit::CUBIC_METER:
+		return Amount<Unit::CUBIC_METER>(amount);
 	default:
 		return std::nullopt;
 	}

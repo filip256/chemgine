@@ -94,6 +94,7 @@ public:
         lab.add<Adaptor>(301);
         lab.add<Adaptor>(302);
         lab.add<Heatsource>(401);
+        lab.add<Heatsource>(401);
         lab.add<Condenser>(501);
 
         flask1.add(Molecule("CC(=O)O"), 4.0_mol);

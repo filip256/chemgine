@@ -2,8 +2,11 @@
 #include "Collision.hpp"
 #include "DrawableLabwareData.hpp"
 
-DrawableComponent::DrawableComponent(const LabwareId id) noexcept :
-	BaseLabwareComponent(id),
+DrawableComponent::DrawableComponent(
+	const LabwareId id,
+	const LabwareType type
+) noexcept :
+	BaseLabwareComponent(id, type),
 	sprite(getData().texture)
 {
 	const auto txScale = getData().textureScale;

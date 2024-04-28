@@ -15,9 +15,35 @@ const MolecularStructure& Catalyst::getStructure() const
 	return reactable.getStructure();
 }
 
+const Amount<Unit::MOLE_RATIO> Catalyst::getIdealAmount() const
+{
+	return idealAmount;
+}
+
+std::unordered_map<c_size, c_size> Catalyst::matchWith(const Catalyst& other) const
+{
+	return reactable.matchWith(other.reactable);
+}
+
 std::unordered_map<c_size, c_size> Catalyst::matchWith(const MolecularStructure& structure) const
 {
 	return reactable.matchWith(structure);
+}
+
+bool Catalyst::matchesWith(const Catalyst& other) const
+{
+	return this->idealAmount == other.idealAmount &&
+		this->matchWith(other).size();
+}
+
+bool Catalyst::operator==(const Catalyst& other) const
+{
+	return this->reactable == other.reactable;
+}
+
+bool Catalyst::operator!=(const Catalyst& other) const
+{
+	return this->reactable != other.reactable;
 }
 
 std::optional<Catalyst> Catalyst::get(

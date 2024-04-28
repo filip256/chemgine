@@ -402,16 +402,16 @@ BaseLabwareComponent* LabwareSystem::releaseComponent(const l_size componentIdx)
 
 LabwareSystem LabwareSystem::releaseSection(const l_size componentIdx, const uint8_t portIdx, std::vector<l_size>& componentsToRemove)
 {
-	const auto first = this->connections[componentIdx][portIdx].otherComponent;
-	this->connections[componentIdx][portIdx].setFree();
+	const auto first = connections[componentIdx][portIdx].otherComponent;
+	connections[componentIdx][portIdx].setFree();
 
 	LabwareSystem newSystem(*lab);
 	std::queue<std::pair<l_size, l_size>> queue;
 
 	// first component
-	this->removeFromBoundry(this->components[first]->getBounds());
-	newSystem.add(this->components[first]);
-	newSystem.connections.emplace_back(std::move(this->connections[first]));
+	removeFromBoundry(components[first]->getBounds());
+	newSystem.add(components[first]);
+	newSystem.connections.emplace_back(std::move(connections[first]));
 	componentsToRemove.emplace_back(first);
 
 	for (uint8_t i = 0; i < newSystem.connections.back().size(); ++i)
@@ -430,8 +430,8 @@ LabwareSystem LabwareSystem::releaseSection(const l_size componentIdx, const uin
 	{
 		const auto& c = queue.front();
 
-		newSystem.add(this->components[c.first]);
-		newSystem.connections.emplace_back(std::move(this->connections[c.first]));
+		newSystem.add(components[c.first]);
+		newSystem.connections.emplace_back(std::move(connections[c.first]));
 		componentsToRemove.emplace_back(c.first);
 
 		for (uint8_t i = 0; i < newSystem.connections.back().size(); ++i)
@@ -467,6 +467,7 @@ bool LabwareSystem::canConnect(const PortIdentifier& destination, const PortIden
 
 std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
 {
+	//TODO: this couldl be written better
 	std::vector<LabwareSystem> result;
 
 	l_size diff = 0;
@@ -484,12 +485,12 @@ std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
 			components[componentIdx]->disconnect(lab->getAtmosphere(), *components[c.otherComponent]);
 			components[c.otherComponent]->disconnect(lab->getAtmosphere(), *components[componentIdx]);
 
-			const Amount<Unit::RADIAN> angle = components[c.otherComponent - diff]->getPort(c.otherPort).angle +
-				components[c.otherComponent - diff]->getRotation() - 90.0_o;
+			const Amount<Unit::RADIAN> angle = components[c.otherComponent]->getPort(c.otherPort).angle +
+				components[c.otherComponent]->getRotation() - 90.0_o;
 
-			push.x += (components[componentIdx]->getPosition().x < components[c.otherComponent - diff]->getPosition().x ?
+			push.x += (components[componentIdx]->getPosition().x < components[c.otherComponent]->getPosition().x ?
 				1.0f : -1.0f) * std::cosf(angle.asStd());
-			push.y += (components[componentIdx]->getPosition().y < components[c.otherComponent - diff]->getPosition().y ?
+			push.y += (components[componentIdx]->getPosition().y < components[c.otherComponent]->getPosition().y ?
 				1.0f : -1.0f) * std::sinf(angle.asStd());
 
 			// one of the sub-sections can remain in this 
@@ -504,6 +505,7 @@ std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
 		}
 
 		// components and connections are moved away but cannot be erased until the end because of indexes
+		std::sort(toRemove.begin(), toRemove.end(), std::greater<>());
 		for (l_size i = 0; i < toRemove.size(); ++i)
 		{
 			if (toRemove[i] < componentIdx)

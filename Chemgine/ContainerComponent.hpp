@@ -22,11 +22,13 @@ protected:
 		std::enable_if_t<std::conjunction_v<std::is_base_of<Mixture, Args>...>>>
 	ContainerComponent(
 		const LabwareId id,
+		const LabwareType type,
 		CArgs&&... containers
 	) noexcept;
 
 	inline ContainerComponent(
 		const LabwareId id,
+		const LabwareType type,
 		Atmosphere& atmosphere
 	) noexcept = delete;
 
@@ -67,9 +69,10 @@ template<typename... Args>
 template<typename... CArgs, typename>
 ContainerComponent<Args...>::ContainerComponent(
 	const LabwareId id,
+	const LabwareType type,
 	CArgs&&... containers
 ) noexcept :
-	BaseContainerComponent(id),
+	BaseContainerComponent(id, type),
 	containers(std::forward<CArgs>(containers)...),
 	fills(getData().generateShapeFills())
 {}
@@ -77,9 +80,10 @@ ContainerComponent<Args...>::ContainerComponent(
 template<>
 inline ContainerComponent<Atmosphere>::ContainerComponent(
 	const LabwareId id,
+	const LabwareType type,
 	Atmosphere& atmosphere
 ) noexcept :
-	BaseContainerComponent(id),
+	BaseContainerComponent(id, type),
 	containers(atmosphere.createSubatmosphere(getData().getVolume())),
 	fills(getData().generateShapeFills())
 {}
@@ -87,9 +91,10 @@ inline ContainerComponent<Atmosphere>::ContainerComponent(
 template<>
 inline ContainerComponent<Reactor>::ContainerComponent(
 	const LabwareId id,
+	const LabwareType type,
 	Atmosphere& atmosphere
 ) noexcept :
-	BaseContainerComponent(id),
+	BaseContainerComponent(id, type),
 	containers(Reactor(atmosphere, getData().getVolume(), atmosphere)),
 	fills(getData().generateShapeFills())
 {}
@@ -97,9 +102,10 @@ inline ContainerComponent<Reactor>::ContainerComponent(
 template<>
 inline ContainerComponent<Atmosphere, Reactor>::ContainerComponent(
 	const LabwareId id,
+	const LabwareType type,
 	Atmosphere& atmosphere
 ) noexcept :
-	BaseContainerComponent(id),
+	BaseContainerComponent(id, type),
 	containers(std::make_tuple(
 		atmosphere.createSubatmosphere(getData().getVolume()),
 		Reactor(atmosphere, getData().getVolume(), atmosphere))),

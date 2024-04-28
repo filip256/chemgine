@@ -5,7 +5,7 @@ Flask::Flask(
 	const LabwareId id,
 	Atmosphere& atmosphere
 ) noexcept :
-	ContainerComponent(id, atmosphere)
+	ContainerComponent(id, LabwareType::FLASK, atmosphere)
 {}
 
 const FlaskData& Flask::getData() const

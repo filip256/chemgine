@@ -26,6 +26,7 @@ public:
 
 	std::unordered_map<c_size, c_size> matchWith(const MolecularStructure& structure) const;
 	std::unordered_map<c_size, c_size> matchWith(const Reactable& other) const;
+	bool matchesWith(const Reactable& other) const;
 
 	bool operator==(const Reactable& other) const;
 	bool operator!=(const Reactable& other) const;
