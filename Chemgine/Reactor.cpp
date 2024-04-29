@@ -1,6 +1,7 @@
 #include "Reactor.hpp"
 #include "DataStore.hpp"
 #include "Query.hpp"
+#include "Utils.hpp"
 #include "Logger.hpp"
 
 DataStoreAccessor Reactor::dataAccessor = DataStoreAccessor();
@@ -91,22 +92,22 @@ double Reactor::getInterLayerReactivityCoefficient(const ReactantSet& reactants)
 
 void Reactor::findNewReactions()
 {
-	for (const auto& [_, r1] : content)
-		if (r1.isNew)
-		{
-			cachedReactions.merge(std::move(
-				dataAccessor.get().reactions.findOccuringReactions(std::vector<Reactant>{ r1 })
-			));
-		}
+	// TODO: optimize (perhaps a generator would be good)
+	const auto reactants = Utils::extractValues(content.getReactants());
+	const auto arrangements = Utils::getArrangementsWithRepetitions(
+		reactants, dataAccessor.get().reactions.getMaxReactantCount());
 
-	for (const auto& [_, r1] : content)
-		for (const auto& [_, r2] : content)
-		{
-			if (r1.isNew || r2.isNew)
-				cachedReactions.merge(std::move(
-					dataAccessor.get().reactions.findOccuringReactions(std::vector<Reactant>{ r1, r2 })
-				));
-		}
+	for (size_t i = 0; i < arrangements.size(); ++i)
+	{
+		const bool anyNew = std::any_of(arrangements[i].begin(), arrangements[i].end(),
+			[](const Reactant& r) { return r.isNew; });
+
+		if (anyNew == false)
+			continue;
+
+		auto newReactions = dataAccessor.get().reactions.findOccuringReactions(arrangements[i]);
+		cachedReactions.merge(std::move(newReactions));
+	}
 
 	for (auto& [_, r] : content)
 		r.isNew = false;

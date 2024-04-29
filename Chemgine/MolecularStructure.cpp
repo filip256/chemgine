@@ -5,6 +5,7 @@
 #include "MolecularStructure.hpp"
 #include "CompositeComponent.hpp"
 #include "DataHelpers.hpp"
+#include "TextBlock.hpp"
 #include "Logger.hpp"
 
 MolecularStructure::MolecularStructure(const std::string& smiles)
@@ -356,9 +357,14 @@ c_size MolecularStructure::getRadicalAtomsCount() const
     return cnt;
 }
 
-bool MolecularStructure::isComplete() const
+bool MolecularStructure::isConcrete() const
 {
-    return components.empty () || !components.back()->isRadicalType();
+    return isVirtualHydrogen() || components.back()->isRadicalType() == false;
+}
+
+bool MolecularStructure::isGeneric() const
+{
+    return isConcrete() == false;
 }
 
 bool MolecularStructure::isOrganic() const
@@ -468,7 +474,7 @@ bool MolecularStructure::isConnected() const
 
 bool MolecularStructure::isVirtualHydrogen() const
 {
-    return components.size() == 0 && impliedHydrogenCount == 2;
+    return components.empty() && impliedHydrogenCount == 2;
 }
 
 bool MolecularStructure::areAdjacent(const c_size idxA, const c_size idxB) const
@@ -480,7 +486,7 @@ bool MolecularStructure::areAdjacent(const c_size idxA, const c_size idxB) const
 }
 
 void MolecularStructure::rPrint(
-    std::vector<std::string>& buffer,
+    TextBlock& buffer,
     const size_t x,
     const size_t y,
     const c_size c,
@@ -500,12 +506,25 @@ void MolecularStructure::rPrint(
     for (c_size i = 0; i < bonds[c].size(); ++i)
         if (visited[bonds[c][i].other] == false)
         {
-            char vC = '³', hC = 'Ä';
-            if (bonds[c][i].getType() == BondType::DOUBLE)
-                vC = 'º', hC = 'Í';
-            else if (bonds[c][i].getType() == BondType::TRIPLE)
-                vC = 'ð', hC = 'ð';
-
+            char vC, hC, d1C, d2C;
+            switch (bonds[c][i].getType())
+            {
+            case BondType::SINGLE:
+                vC = '³', hC = 'Ä', d1C = '\\', d2C = '/';
+                break;
+            case BondType::DOUBLE:
+                vC = 'º', hC = 'Í', d1C = hC, d2C = hC;
+                break;
+            case BondType::TRIPLE:
+                vC = 'ð', hC = 'ð', d1C = hC, d2C = hC;
+                break;
+            case BondType::QUADRUPLE:
+                vC = hC = d1C = d2C = '$';
+                break;
+            default:
+                vC = hC = d1C = d2C = '?';
+                break;
+            }
 
             if (buffer[y][x + 2] == ' ')
             {
@@ -527,36 +546,49 @@ void MolecularStructure::rPrint(
                 buffer[y + 1][x] = vC;
                 rPrint(buffer, x, y + 2, bonds[c][i].other, visited);
             }
+            else if (buffer[y + 2][x + 2] == ' ')
+            {
+                buffer[y + 1][x + 1] = d1C;
+                rPrint(buffer, x + 2, y + 2, bonds[c][i].other, visited);
+            }
+            else if (buffer[y + 2][x - 2] == ' ')
+            {
+                buffer[y + 1][x - 1] = d2C;
+                rPrint(buffer, x - 2, y + 2, bonds[c][i].other, visited);
+            }
+            else if (buffer[y - 2][x + 2] == ' ')
+            {
+                buffer[y - 1][x + 1] = d2C;
+                rPrint(buffer, x + 2, y - 2, bonds[c][i].other, visited);
+            }
+            else if (buffer[y - 2][x - 2] == ' ')
+            {
+                buffer[y - 1][x - 1] = d1C;
+                rPrint(buffer, x - 2, y - 2, bonds[c][i].other, visited);
+            }
             else
+            {
+                Logger::log("Incomplete ASCII print.", LogType::BAD);
                 break;
+            }
         }
 }
 
-std::string MolecularStructure::print(const size_t maxWidth, const size_t maxHeight) const
+std::string MolecularStructure::print() const
 {
     if (components.empty())
     {
         if (isVirtualHydrogen())
-            return std::string(maxWidth / 4, ' ') + "HÄH\n";
+            return "HÄH\n";
         return "";
     }
 
-	std::vector<std::string> buffer(maxHeight, std::string(maxWidth, ' '));
+    TextBlock buffer(100, 50);
     std::vector<uint8_t> visited(components.size(), false);
     rPrint(buffer, buffer[0].size() / 4, buffer.size() / 2, 0, visited);
 
-    std::string str;
-    size_t i = 0;
-    while (buffer[i].find_first_not_of(' ') == std::string::npos) ++i;
-
-    do
-    {
-        str += buffer[i] + '\n';
-        ++i;
-    }
-    while (buffer[i].find_first_not_of(' ') != std::string::npos);
-
-    return str;
+    buffer.trim();
+    return buffer.toString();
 }
 
 void MolecularStructure::clear()
@@ -1072,11 +1104,11 @@ std::string MolecularStructure::rToSMILES(
 
 std::string MolecularStructure::toSMILES() const
 {
-    if (components.empty())
-        return "";
-
     if (isVirtualHydrogen())
         return "HH";
+
+    if (components.empty())
+        return "";
 
     std::vector<size_t> insertPositions(components.size(), std::string::npos);
     uint8_t cycleCount = 1;

@@ -4,8 +4,6 @@
 #include "ReactantSet.hpp"
 #include "HashCombine.hpp"
 
-#include <vector>
-
 class ConcreteReaction
 {
 private:
@@ -23,8 +21,6 @@ public:
 	) noexcept;
 
 	ConcreteReaction(ConcreteReaction&&) = default;
-
-	bool isEquivalent(const ConcreteReaction& other) const;
 
 	const ReactantSet& getReactants() const;
 	const ReactantSet& getProducts() const;
@@ -48,10 +44,10 @@ struct std::hash<ConcreteReaction>
 	size_t operator() (const ConcreteReaction& reaction) const
 	{
 		size_t hash = 0;
-		for (const auto& [_, r] : reaction.reactants)
-			hashCombineWith(hash, r.molecule.getId());
-		for (const auto& [_, p] : reaction.products)
-			hashCombineWith(hash, p.molecule.getId());
+		for (const auto& [rId, _] : reaction.reactants)
+			hashCombineWith(hash, rId);
+		for (const auto& [pId, _] : reaction.products)
+			hashCombineWith(hash, pId);
 		return hash;
 	}
 };

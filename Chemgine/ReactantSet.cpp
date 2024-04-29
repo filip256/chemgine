@@ -79,6 +79,11 @@ Amount<Unit::MOLE> ReactantSet::getAmountOf(const ReactantSet& reactantSet) cons
 	return s;
 }
 
+const std::unordered_map<ReactantId, Reactant>& ReactantSet::getReactants() const
+{
+	return reactants;
+}
+
 ReactantSet::iterator ReactantSet::erase(const ReactantSet::iterator it)
 {
 	return reactants.erase(it);

@@ -847,11 +847,12 @@ public:
 	void runPersist()
 	{
 		const auto begin = std::chrono::steady_clock::now();
+		store.reactions.generateTotalSpan();
 		store.saveGenericMoleculesData("Out/genericmolecules.out.csv")
 			.saveMoleculesData("Out/molecules.out.csv");
 		const auto end = std::chrono::steady_clock::now();
 
-		Logger::log("Dump completed in " +
+		Logger::log("Total span dump completed in " +
 			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.");
 	}
 };

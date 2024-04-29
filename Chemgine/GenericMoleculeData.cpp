@@ -8,7 +8,7 @@ GenericMoleculeData::GenericMoleculeData(
 	id(id),
 	structure(smiles)
 {
-	if (this->structure.isComplete())
+	if (this->structure.isConcrete())
 	{
 		Logger::log("Complete structure with id " + std::to_string(id) + " defined as generic molecule.", LogType::WARN);
 	}
@@ -21,7 +21,7 @@ GenericMoleculeData::GenericMoleculeData(
 	id(id),
 	structure(std::move(structure))
 {
-	if (this->structure.isComplete())
+	if (this->structure.isConcrete())
 	{
 		Logger::log("Complete structure with id " + std::to_string(id) + " defined as generic molecule.", LogType::WARN);
 	}

@@ -144,14 +144,17 @@ size_t MoleculeRepository::findFirst(const MolecularStructure& structure) const
 
 MoleculeId MoleculeRepository::findOrAdd(MolecularStructure&& structure)
 {
-	if (structure.isEmpty())
+	if (structure.isEmpty() || structure.isGeneric())
+	{
+		Logger::log("Tried to create a concrete molecule from an empty or generic structure.", LogType::BAD);
 		return 0;
+	}
 
 	const auto idx = findFirst(structure);
 	if (idx != npos)
 		return table[idx].id;
 
-	Logger::log("New structure discovered: \n" + structure.print(50, 10), LogType::INFO);
+	Logger::log("New structure discovered: \n" + structure.print(), LogType::INFO);
 
 	const auto& mpA = estimators.add<OffsetEstimator>(estimators.at(toId(BuiltinEstimator::TORR_TO_REL_BP)), 0);
 	const auto& bpA = estimators.add<OffsetEstimator>(estimators.at(toId(BuiltinEstimator::TORR_TO_REL_BP)), 100);

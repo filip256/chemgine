@@ -38,7 +38,7 @@ const ObjT& Repository<KeyT1, KeyT2, ObjT>::at(const KeyT2 key) const
 template<class KeyT1, class KeyT2, class ObjT>
 const std::vector<ObjT>& Repository<KeyT1, KeyT2, ObjT>::data() const
 {
-	return table.data();
+	return table.getData();
 }
 
 template<class KeyT1, class KeyT2, class ObjT>

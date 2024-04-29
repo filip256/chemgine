@@ -321,9 +321,6 @@
     <ClCompile Include="Symbol.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
-    <ClCompile Include="MolecularStructure.cpp">
-      <Filter>Source Files\Molecules</Filter>
-    </ClCompile>
     <ClCompile Include="Context.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -425,6 +422,12 @@
     </ClCompile>
     <ClCompile Include="RandomizedParticle.cpp">
       <Filter>Source Files\Graphics\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="RetrosynthReaction.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
+    <ClCompile Include="MolecularStructure.cpp">
+      <Filter>Source Files\Molecules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -802,6 +805,9 @@
     </ClInclude>
     <ClInclude Include="Vapour.hpp">
       <Filter>Header Files\Graphics\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="RetrosynthReaction.hpp">
+      <Filter>Header Files\Reactions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

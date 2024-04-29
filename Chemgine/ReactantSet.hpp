@@ -44,6 +44,8 @@ public:
 	Amount<Unit::MOLE> getAmountOf(const ReactantId& reactantId) const;
 	Amount<Unit::MOLE> getAmountOf(const ReactantSet& reactantSet) const;
 
+	const std::unordered_map<ReactantId, Reactant>& getReactants() const;
+
 	iterator erase(const iterator it);
 	void erase(bool (*predicate)(const pairT&));
 

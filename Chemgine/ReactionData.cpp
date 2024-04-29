@@ -1,5 +1,6 @@
 #include "ReactionData.hpp"
 #include "SystemMatrix.hpp"
+#include "RetrosynthReaction.hpp"
 #include "Maths.hpp"
 #include "PairHash.hpp"
 #include "Logger.hpp"
@@ -22,8 +23,8 @@ ReactionData::ReactionData(
 	reactionEnergy(reactionEnergy),
 	activationEnergy(activationEnergy),
 	name(name),
-	reactants(flatten(reactants)),
-	products(flatten(products)),
+	reactants(Utils::flatten<Reactable, uint8_t>(reactants)),
+	products(Utils::flatten<Reactable, uint8_t>(products)),
 	catalysts(std::move(catalysts))
 {}
 
@@ -165,19 +166,6 @@ bool ReactionData::mapReactantsToProducts()
 
 }
 
-std::vector<Reactable> ReactionData::flatten(
-	const std::vector<std::pair<Reactable, uint8_t>>& list)
-{
-	std::vector<Reactable> result;
-	result.reserve(list.size());
-
-	for (size_t i = 0; i < list.size(); ++i)
-		for(uint8_t j = 0; j < list[i].second; ++j)
-			result.emplace_back(list[i].first);
-
-	return result;
-}
-
 bool ReactionData::hasAsReactant(const Reactant& reactant) const
 {
 	for (size_t i = 0; i < reactants.size(); ++i)
@@ -188,57 +176,7 @@ bool ReactionData::hasAsReactant(const Reactant& reactant) const
 	return false;
 }
 
-void ReactionData::enumerateReactantPairs(
-	const std::vector<Molecule>& molecules,
-	const std::unordered_set<std::pair<size_t, size_t>>& allowedPairs,
-	std::vector<std::pair<size_t, size_t>>& currentMatch,
-	std::vector<std::vector<std::pair<size_t, size_t>>>& result) const
-{
-	if (currentMatch.size() == reactants.size()) {
-		result.emplace_back(std::move(currentMatch));
-		return;
-	}
-
-	for (size_t i = 0; i < molecules.size(); ++i) {
-		const auto potentialPair = std::make_pair(i, currentMatch.size());
-
-		if (allowedPairs.contains(potentialPair)) 
-		{
-			currentMatch.push_back(potentialPair);
-			enumerateReactantPairs(molecules, allowedPairs, currentMatch, result);
-
-			if(currentMatch.size())
-				currentMatch.pop_back();
-		}
-	}
-}
-
-std::vector<std::vector<std::pair<size_t, std::unordered_map<c_size, c_size>>>> ReactionData::mapReactantsToMolecules(
-	const std::vector<Molecule>& molecules) const
-{
-	std::vector<std::vector<std::pair<size_t, std::unordered_map<c_size, c_size>>>> allowedMatches;
-
-	for (size_t i = 0; i < reactants.size(); ++i)
-	{
-		allowedMatches.emplace_back();
-		for (size_t j = 0; j < molecules.size(); ++j)
-		{
-			const auto match = reactants[i].matchWith(molecules[j].getStructure());
-			if (match.size())
-				allowedMatches.back().emplace_back(std::make_pair(j, match));
-		}
-		if (allowedMatches.back().empty())
-			return std::vector<std::vector<std::pair<size_t, std::unordered_map<c_size, c_size>>>>();
-
-		// skip repeated reactants
-		while (i + 1 < reactants.size() && reactants[i].getId() == reactants[i + 1].getId())
-			++i;
-	}
-
-	return allowedMatches;
-}
-
-std::vector<std::unordered_map<c_size, c_size>> ReactionData::generateConcreteMatches(
+std::vector<std::unordered_map<c_size, c_size>> ReactionData::generateConcreteReactantMatches(
 	const std::vector<Reactant>& molecules) const
 {
 	if (reactants.size() != molecules.size())
@@ -262,6 +200,22 @@ std::vector<std::unordered_map<c_size, c_size>> ReactionData::generateConcreteMa
 	return matches;
 }
 
+std::pair<size_t, std::unordered_map<c_size, c_size>> ReactionData::generateRetrosynthProductMatches(
+	const Reactable& targetProduct) const
+{
+	for (size_t i = 0; i < products.size(); ++i)
+	{
+		if (products[i].getStructure().isVirtualHydrogen() && targetProduct.getStructure().isVirtualHydrogen())
+			return std::make_pair(i, std::unordered_map<c_size, c_size>());
+
+		auto match = Utils::reverseMap(products[i].matchWith(targetProduct));
+		if(match.size())
+			return std::make_pair(i, std::move(match));
+	}
+
+	return std::make_pair(npos, std::unordered_map<c_size, c_size>());
+}
+
 std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<Reactant>& molecules,
 	const std::vector<std::unordered_map<c_size, c_size>>& matches) const
 {
@@ -283,7 +237,7 @@ std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<R
 			matches[p.first.first].at(p.first.second),
 			tempMap,
 			false,
-			Utils::extractValues(matches[p.first.first])
+			Utils::extractUniqueValues(matches[p.first.first])
 		);
 	}
 
@@ -297,6 +251,55 @@ std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<R
 		result.emplace_back(std::move(concreteProducts[i]));
 	}
 	return result;
+}
+
+RetrosynthReaction ReactionData::generateRetrosynthReaction(
+	const Reactable& targetProduct,
+	const std::pair<size_t, std::unordered_map<c_size, c_size>>& match) const
+{
+	// build concrete products
+	std::vector<MolecularStructure> substReactants;
+	substReactants.reserve(reactants.size());
+	for (size_t i = 0; i < reactants.size(); ++i)
+		substReactants.emplace_back(std::move(reactants[i].getStructure().createCopy()));
+
+	const auto targetMatchedComponents = Utils::extractUniqueValues(match.second);
+	const auto reversedMapping = Utils::reverseMap(componentMapping);
+	for (const auto& p : reversedMapping)
+	{
+		if (p.first.first != match.first)
+			continue;
+
+		std::unordered_map<c_size, c_size> tempMap = { {match.second.at(p.first.second), p.second.second} };
+		MolecularStructure::copyBranch(
+			substReactants[p.second.first],
+			targetProduct.getStructure(),
+			match.second.at(p.first.second),
+			tempMap,
+			false,
+			targetMatchedComponents
+		);
+	}
+
+	// canonicalize reactants
+	std::vector<Reactable> reactantReactables;
+	reactantReactables.reserve(substReactants.size());
+	for (size_t i = 0; i < substReactants.size(); ++i)
+	{
+		substReactants[i].canonicalize();
+		substReactants[i].recountImpliedHydrogens();
+		reactantReactables.emplace_back(*Reactable::get(std::move(substReactants[i])));
+	}
+
+	// copy products
+	std::vector<Reactable> productReactables;
+	productReactables.reserve(products.size());
+	productReactables.emplace_back(targetProduct);
+	for (size_t i = 0; i < products.size(); ++i)
+		if (i != match.first)
+			productReactables.emplace_back(products[i]);
+
+	return RetrosynthReaction(*this, reactantReactables, productReactables);
 }
 
 const std::vector<Reactable>& ReactionData::getReactants() const

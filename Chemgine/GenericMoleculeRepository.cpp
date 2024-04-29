@@ -86,11 +86,17 @@ size_t GenericMoleculeRepository::findFirst(const MolecularStructure& structure)
 MoleculeId GenericMoleculeRepository::findOrAdd(MolecularStructure&& structure)
 {
 	if (structure.isEmpty())
+	{
+		Logger::log("Tried to create a generic molecule from an empty structure.", LogType::BAD);
 		return 0;
+	}
 
 	const auto idx = findFirst(structure);
 	if (idx != npos)
 		return table[idx].id;
+
+	if (structure.isConcrete())
+		Logger::log("New generic molecule created from concrete structure.", LogType::WARN);
 
 	const auto id = getFreeId();
 	table.emplace(id, std::to_string(id), GenericMoleculeData(id, std::move(structure)));

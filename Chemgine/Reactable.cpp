@@ -63,14 +63,18 @@ bool Reactable::operator!=(const Reactable& other) const
 	return this->getStructure() != other.getStructure();
 }
 
-std::optional<Reactable> Reactable::get(const std::string& smiles)
+std::optional<Reactable> Reactable::get(MolecularStructure&& structure)
 {
-	MolecularStructure structure(smiles);
 	if (structure.isEmpty())
 		return std::nullopt;
 
-	if (structure.isComplete())
+	if (structure.isConcrete())
 		return Reactable(dataAccessor.get().molecules.findOrAdd(std::move(structure)), false);
 
 	return Reactable(dataAccessor.get().genericMolecules.findOrAdd(std::move(structure)), true);
+}
+
+std::optional<Reactable> Reactable::get(const std::string& smiles)
+{
+	return get(MolecularStructure(smiles));
 }
