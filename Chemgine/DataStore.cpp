@@ -5,7 +5,7 @@ DataStore::DataStore() :
 	genericMolecules(),
 	estimators(),
 	molecules(estimators),
-	reactions()
+	reactions(molecules)
 {}
 
 DataStore& DataStore::loadAtomsData(const std::string& path)

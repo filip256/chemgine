@@ -146,11 +146,18 @@ public:
     uint8_t getDegreesOfFreedom() const;
 
     /// <summary>
-    /// Checks if the molecule contains at least one radical type. 
+    /// Checks if the molecule contains no radical atoms. 
     /// Complexity: O(1)
     /// #Requires canonicalization
     /// </summary>
-    bool isComplete() const;
+    bool isConcrete() const;
+
+    /// <summary>
+    /// Checks if the molecule contains at least one radical atom. 
+    /// Complexity: O(1)
+    /// #Requires canonicalization
+    /// </summary>
+    bool isGeneric() const;
 
     /// <summary>
     /// Checks if the molecule contains a C-H bond. 

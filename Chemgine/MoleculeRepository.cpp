@@ -144,8 +144,11 @@ size_t MoleculeRepository::findFirst(const MolecularStructure& structure) const
 
 MoleculeId MoleculeRepository::findOrAdd(MolecularStructure&& structure)
 {
-	if (structure.isEmpty())
+	if (structure.isEmpty() || structure.isGeneric())
+	{
+		Logger::log("Tried to create a concrete molecule from an empty or generic structure.", LogType::BAD);
 		return 0;
+	}
 
 	const auto idx = findFirst(structure);
 	if (idx != npos)

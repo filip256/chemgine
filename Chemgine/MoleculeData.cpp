@@ -38,9 +38,9 @@ MoleculeData::MoleculeData(
 	relativeSolubilityEstimator(relativeSolubilityEstimator),
 	henrysConstantEstimator(henrysConstantEstimator)
 {
-	if (this->structure.isComplete() == false)
+	if (this->structure.isGeneric())
 	{
-		Logger::log("Incomplete structure with id " + std::to_string(id) + " defined as molecule.", LogType::WARN);
+		Logger::log("Generic structure with id " + std::to_string(id) + " defined as molecule.", LogType::WARN);
 	}
 }
 
@@ -80,7 +80,7 @@ MoleculeData::MoleculeData(
 	relativeSolubilityEstimator(relativeSolubilityEstimator),
 	henrysConstantEstimator(henrysConstantEstimator)
 {
-	if (this->structure.isComplete() == false)
+	if (this->structure.isGeneric())
 	{
 		Logger::log("Incomplete structure with id " + std::to_string(id) + " defined as molecule.", LogType::WARN);
 	}

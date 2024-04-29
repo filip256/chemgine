@@ -56,6 +56,11 @@ int main()
             .loadReactionsData("Data/ReactionData.csv")
             .loadLabwareData("Data/LabwareData.csv");
 
+        //const auto x = store.reactions.getRetrosynthReactions(
+        //    *Reactable::get(MolecularStructure("CC(=O)OCCC")));
+
+        //const auto t = store.reactions.generateTotalSpan();
+
         UIContext uiContext;
         uiContext.run();
 

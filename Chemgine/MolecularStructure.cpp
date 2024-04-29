@@ -356,9 +356,14 @@ c_size MolecularStructure::getRadicalAtomsCount() const
     return cnt;
 }
 
-bool MolecularStructure::isComplete() const
+bool MolecularStructure::isConcrete() const
 {
-    return components.empty () || !components.back()->isRadicalType();
+    return isVirtualHydrogen() || components.back()->isRadicalType() == false;
+}
+
+bool MolecularStructure::isGeneric() const
+{
+    return isConcrete() == false;
 }
 
 bool MolecularStructure::isOrganic() const
@@ -468,7 +473,7 @@ bool MolecularStructure::isConnected() const
 
 bool MolecularStructure::isVirtualHydrogen() const
 {
-    return components.size() == 0 && impliedHydrogenCount == 2;
+    return components.empty() && impliedHydrogenCount == 2;
 }
 
 bool MolecularStructure::areAdjacent(const c_size idxA, const c_size idxB) const

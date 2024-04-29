@@ -31,8 +31,7 @@ public:
 	/// <summary>
 	/// Returns a reference to the underlying data container.
 	/// </summary>
-	/// <returns></returns>
-	const std::vector<ObjT>& data() const;
+	const std::vector<ObjT>& getData() const;
 
 	bool containsKey1(const KeyT1& key1) const;
 	bool containsKey2(const KeyT2& key2) const;
@@ -98,7 +97,7 @@ const ObjT& MultiIndexMap<KeyT1, KeyT2, ObjT>::atKey2(const KeyT2& key2) const
 }
 
 template <class KeyT1, class KeyT2, class ObjT>
-const std::vector<ObjT>& MultiIndexMap<KeyT1, KeyT2, ObjT>::data() const
+const std::vector<ObjT>& MultiIndexMap<KeyT1, KeyT2, ObjT>::getData() const
 {
 	return objects;
 }

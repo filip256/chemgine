@@ -5,6 +5,10 @@
 
 #include <fstream>
 
+ReactionRepository::ReactionRepository(MoleculeRepository& molecules) noexcept :
+	molecules(molecules)
+{}
+
 bool ReactionRepository::loadFromFile(const std::string& path)
 {
 	std::ifstream file(path);
@@ -147,6 +151,8 @@ bool ReactionRepository::loadFromFile(const std::string& path)
 			continue;
 		}
 
+		maxReactantCount = std::max(static_cast<uint8_t>(reactantIds.size()), maxReactantCount);
+
 		if (table.emplace(
 			*id,
 			std::to_string(*id),
@@ -166,6 +172,11 @@ bool ReactionRepository::loadFromFile(const std::string& path)
 	return true;
 }
 
+uint8_t ReactionRepository::getMaxReactantCount() const
+{
+	return maxReactantCount;
+}
+
 const ReactionNetwork& ReactionRepository::getNetwork() const
 {
 	return network;
@@ -173,5 +184,38 @@ const ReactionNetwork& ReactionRepository::getNetwork() const
 
 std::unordered_set<ConcreteReaction> ReactionRepository::findOccuringReactions(const std::vector<Reactant>& reactants) const
 {
-	return network.getConcreteReactions(reactants);
+	return network.getOccuringReactions(reactants);
+}
+
+std::unordered_set<RetrosynthReaction> ReactionRepository::getRetrosynthReactions(const Reactable& targetProduct) const
+{
+	return network.getRetrosynthReactions(targetProduct);
+}
+
+size_t ReactionRepository::generateCurrentSpan() const
+{
+	const auto& molecules = this->molecules.getData().getData();
+	std::vector<Reactant> reactants;
+	reactants.reserve(molecules.size());
+
+	std::transform(
+		molecules.begin(), molecules.end(), std::back_inserter(reactants),
+		[](const MoleculeData& m) { return Reactant(Molecule(m.id), LayerType::NONE, 1.0_mol); });
+
+	const auto arrangements = Utils::getArrangementsWithRepetitions(reactants, maxReactantCount);
+	for(size_t i = 0; i < arrangements.size(); ++i)
+	{
+		findOccuringReactions(arrangements[i]);
+	}
+
+	return molecules.size() - reactants.size();
+}
+
+size_t ReactionRepository::generateTotalSpan(const size_t maxIterations) const
+{
+	const size_t initialCnt = molecules.getData().getData().size();
+
+	while (generateCurrentSpan() > 0);
+
+	return molecules.getData().getData().size() - initialCnt;
 }

@@ -288,6 +288,9 @@ Tasks:
   DONE. Add DEGREE and RADIAN units, remove toRandians()
   DONE. Add labware id-type check
   33. Add multiple overflow targets
+  DONE. Add retrosynthesis single step search
+  DONE. Add arrangements generator
+  DONE. Add total chemical span generator
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules

@@ -4,6 +4,7 @@
 #include "DirectedGraph.hpp"
 #include "TextBlock.hpp"
 #include "ConcreteReaction.hpp"
+#include "RetrosynthReaction.hpp"
 
 class ReactionNetwork
 {
@@ -22,10 +23,15 @@ private:
 
 	bool insert(const size_t current, ReactionData& reaction, size_t& firstInsert);
 
-	bool getConcreteReactions(
+	bool getOccuringReactions(
 		const std::vector<Reactant>& reactants,
 		const size_t current,
 		std::unordered_set<ConcreteReaction>& result) const;
+
+	bool getRetrosynthReactions(
+		const Reactable& targetProduct,
+		const size_t current,
+		std::unordered_set<RetrosynthReaction>& result) const;
 
 	void print(const size_t current, TextBlock& block, size_t& y, std::vector<uint8_t>& pipes) const;
 
@@ -35,7 +41,8 @@ public:
 
 	bool insert(ReactionData& reaction);
 
-	std::unordered_set<ConcreteReaction> getConcreteReactions(const std::vector<Reactant>& reactants) const;
+	std::unordered_set<ConcreteReaction> getOccuringReactions(const std::vector<Reactant>& reactants) const;
+	std::unordered_set<RetrosynthReaction> getRetrosynthReactions(const Reactable& targetProduct) const;
 
 	std::string print() const;
 

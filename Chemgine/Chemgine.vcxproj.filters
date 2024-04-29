@@ -426,6 +426,9 @@
     <ClCompile Include="RandomizedParticle.cpp">
       <Filter>Source Files\Graphics\Particles</Filter>
     </ClCompile>
+    <ClCompile Include="RetrosynthReaction.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -802,6 +805,9 @@
     </ClInclude>
     <ClInclude Include="Vapour.hpp">
       <Filter>Header Files\Graphics\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="RetrosynthReaction.hpp">
+      <Filter>Header Files\Reactions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -16,19 +16,6 @@ ConcreteReaction::ConcreteReaction(
 	products(products)
 {}
 
-bool ConcreteReaction::isEquivalent(const ConcreteReaction& other) const
-{
-	for (const auto& [_, r] : this->reactants)
-		if (other.reactants.contains(r) == false)
-			return false;
-
-	for (const auto& [_, p] : this->products)
-		if (other.products.contains(p) == false)
-			return false;
-
-	return true;
-}
-
 const ReactantSet& ConcreteReaction::getReactants() const
 {
 	return reactants;
@@ -51,12 +38,12 @@ const ReactionData& ConcreteReaction::getData() const
 
 bool ConcreteReaction::operator==(const ConcreteReaction& other) const
 {
-	return isEquivalent(other);
+	return this->reactants == other.reactants && this->products == other.products;
 }
 
 bool ConcreteReaction::operator!=(const ConcreteReaction& other) const
 {
-	return !isEquivalent(other);
+	return this->reactants != other.reactants || this->products != other.products;
 }
 
 ConcreteReaction ConcreteReaction::makeCopy() const

@@ -91,7 +91,7 @@ bool ReactionNetwork::insert(ReactionData& reaction)
 	return true;
 }
 
-bool ReactionNetwork::getConcreteReactions(
+bool ReactionNetwork::getOccuringReactions(
 	const std::vector<Reactant>& reactants,
 	const size_t current,
 	std::unordered_set<ConcreteReaction>& result) const
@@ -99,12 +99,15 @@ bool ReactionNetwork::getConcreteReactions(
 	bool matchFound = false;
 	for (auto i = graph.getNeighbourIterator(current); i != npos; ++i)
 	{
-		const auto& matches = i->data.generateConcreteMatches(reactants);
+		const auto& matches = i->data.generateConcreteReactantMatches(reactants);
 		if (matches.empty())
 			continue;
 
-		if (getConcreteReactions(reactants, i.getIndex(), result))
+		if (getOccuringReactions(reactants, i.getIndex(), result))
+		{
+			matchFound = true;
 			continue;
+		}
 
 		const auto products = i->data.generateConcreteProducts(reactants, matches);
 		if (products.size())
@@ -116,7 +119,7 @@ bool ReactionNetwork::getConcreteReactions(
 	return matchFound;
 }
 
-std::unordered_set<ConcreteReaction> ReactionNetwork::getConcreteReactions(
+std::unordered_set<ConcreteReaction> ReactionNetwork::getOccuringReactions(
 	const std::vector<Reactant>& reactants) const
 {
 	std::unordered_set<ConcreteReaction> result;
@@ -124,16 +127,62 @@ std::unordered_set<ConcreteReaction> ReactionNetwork::getConcreteReactions(
 	{
 		const auto& rData = graph[topLayer[i]].data;
 
-		const auto& matches = rData.generateConcreteMatches(reactants);
+		const auto& matches = rData.generateConcreteReactantMatches(reactants);
 		if (matches.empty())
 			continue;
 
-		if (getConcreteReactions(reactants, topLayer[i], result))
+		if (getOccuringReactions(reactants, topLayer[i], result))
 			continue;
 		
 		const auto products = rData.generateConcreteProducts(reactants, matches);
 		if (products.size())
 			result.insert(ConcreteReaction(rData, reactants, products));
+	}
+	return result;
+}
+
+bool ReactionNetwork::getRetrosynthReactions(
+	const Reactable& targetProduct,
+	const size_t current,
+	std::unordered_set<RetrosynthReaction>& result) const
+{
+	bool matchFound = false;
+	for (auto i = graph.getNeighbourIterator(current); i != npos; ++i)
+	{
+		const auto& match = i->data.generateRetrosynthProductMatches(targetProduct);
+		if (match.first == ReactionData::npos)
+			continue;
+
+		if (getRetrosynthReactions(targetProduct, i.getIndex(), result))
+		{
+			matchFound = true;
+			continue;
+		}
+
+		auto reaction = i->data.generateRetrosynthReaction(targetProduct, match);
+		result.emplace(std::move(reaction));
+		matchFound = true;
+	}
+	return matchFound;
+}
+
+std::unordered_set<RetrosynthReaction> ReactionNetwork::getRetrosynthReactions(
+	const Reactable& targetProduct) const
+{
+	std::unordered_set<RetrosynthReaction> result;
+	for (size_t i = 0; i < topLayer.size(); ++i)
+	{
+		const auto& rData = graph[topLayer[i]].data;
+
+		const auto& match = rData.generateRetrosynthProductMatches(targetProduct);
+		if (match.first == ReactionData::npos)
+			continue;
+
+		if (getRetrosynthReactions(targetProduct, topLayer[i], result))
+			continue;
+
+		auto reaction = rData.generateRetrosynthReaction(targetProduct, match);
+		result.emplace(std::move(reaction));
 	}
 	return result;
 }

@@ -6,8 +6,6 @@
 
 #include <optional>
 
-class ReactableFactory;
-
 class Reactable
 {
 private:
@@ -21,6 +19,8 @@ private:
 	const DataStore& dataStore() const;
 
 public:
+	Reactable(const Reactable&) = default;
+
 	const MoleculeId getId() const;
 	const MolecularStructure& getStructure() const;
 
@@ -31,7 +31,29 @@ public:
 	bool operator==(const Reactable& other) const;
 	bool operator!=(const Reactable& other) const;
 
+	static std::optional<Reactable> get(MolecularStructure&& structure);
 	static std::optional<Reactable> get(const std::string& smiles);
 
 	static void setDataStore(const DataStore& dataStore);
+
+	friend struct std::hash<Reactable>;
+};
+
+
+template<>
+struct std::hash<Reactable>
+{
+	size_t operator() (const Reactable& reactable) const
+	{
+		return std::hash<MoleculeId>()(reactable.id);
+	}
+};
+
+template<>
+struct std::hash<std::pair<Reactable, uint8_t>>
+{
+	size_t operator() (const std::pair<Reactable, uint8_t>& reactable) const
+	{
+		return std::hash<Reactable>()(reactable.first);
+	}
 };

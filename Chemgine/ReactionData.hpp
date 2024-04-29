@@ -12,6 +12,8 @@
 
 typedef uint16_t ReactionId;
 
+class RetrosynthReaction;
+
 class ReactionData
 {
 private:
@@ -20,32 +22,16 @@ private:
 	std::vector<Reactable> products;
 	std::vector<Catalyst> catalysts;
 	std::unordered_map<std::pair<size_t, c_size>, std::pair<size_t, c_size>> componentMapping;
-	
-	static std::vector<Reactable> flatten(
-		const std::vector<std::pair<Reactable, uint8_t>>& list);
 
 	static bool balance(
 		std::vector<std::pair<Reactable, uint8_t>>& reactants,
 		std::vector<std::pair<Reactable, uint8_t>>& products);
-
-	void enumerateReactantPairs(
-		const std::vector<Molecule>& molecules,
-		const std::unordered_set<std::pair<size_t, size_t>>& allowedPairs,
-		std::vector<std::pair<size_t, size_t>>& currentMatch,
-		std::vector<std::vector<std::pair<size_t, size_t>>>& result) const;
 
 	/// <summary>
 	/// Maps every component from reactants to every component from products.
 	/// Complexity: large
 	/// </summary>
 	bool mapReactantsToProducts();
-
-	/// <summary>
-	/// Returns a vector where each element [i] is a vector containing all the successful matchings 
-	/// between the i^th unique reactant and a molecule from the vector given as parameter.
-	/// </summary>
-	std::vector<std::vector<std::pair<size_t, std::unordered_map<c_size, c_size>>>> mapReactantsToMolecules(
-		const std::vector<Molecule>& molecules) const;
 
 public:
 	const ReactionId id;
@@ -76,14 +62,31 @@ public:
 	/// Tries to map the i-th molecule in the given vector with i-th reactant of the reaction.
 	/// If successful, a non-empty vector of atom maps is returned.
 	/// </summary>
-	std::vector<std::unordered_map<c_size, c_size>> generateConcreteMatches(const std::vector<Reactant>& molecules) const;
+	std::vector<std::unordered_map<c_size, c_size>> generateConcreteReactantMatches(const std::vector<Reactant>& molecules) const;
+	
+	/// <summary>
+	/// Tries to map one of the products of the reaction to the given target molecule.
+	/// If successful, the index of the product and an atom map are returned,
+	/// otherwise npos is retuned.
+	/// </summary>
+	std::pair<size_t, std::unordered_map<c_size, c_size>> generateRetrosynthProductMatches(const Reactable& targetProduct) const;
+	
 	/// <summary>
 	/// Generetates the concrete products of the reaction for the given molecules, using the matches
-	/// resulted from generateConcreteMatches(const std::vector<Reactant>&).
+	/// resulted from generateConcreteReactantMatches(...).
 	/// </summary>
 	std::vector<Molecule> generateConcreteProducts(
 		const std::vector<Reactant>& molecules,
 		const std::vector<std::unordered_map<c_size, c_size>>& matches) const;
+
+	/// <summary>
+	/// Generetates the concrete reactants of the reaction leading to the given target, using the matches
+	/// resulted from generateConcreteProductMatches(...).
+	/// Radical atoms which unmatched by the target remain unsubstituted in the resulted reactants.
+	/// </summary>
+	RetrosynthReaction generateRetrosynthReaction(
+		const Reactable& targetProduct,
+		const std::pair<size_t, std::unordered_map<c_size, c_size>>& match) const;
 
 	const std::vector<Reactable>& getReactants() const;
 	const std::vector<Reactable>& getProducts() const;
@@ -96,6 +99,8 @@ public:
 	void setBaseReaction(const ReactionData& reaction);
 
 	std::string getHRTag() const;
+
+	static constexpr size_t npos = static_cast<size_t>(-1);
 
 	friend class ReactionRepository;
 };
