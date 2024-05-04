@@ -200,8 +200,8 @@
     <ClCompile Include="ColorCast.cpp" />
     <ClCompile Include="Condenser.cpp" />
     <ClCompile Include="CondenserData.cpp" />
+    <ClCompile Include="ConnectionIdentifier.cpp" />
     <ClCompile Include="ContentInitializer.cpp" />
-    <ClCompile Include="Context.cpp" />
     <ClCompile Include="DynamicAmount.cpp" />
     <ClCompile Include="EquipmentComponent.cpp" />
     <ClCompile Include="EstimatorRepository.cpp" />
@@ -220,7 +220,7 @@
     <ClCompile Include="DrawableComponent.cpp" />
     <ClCompile Include="DataStoreAccessor.cpp" />
     <ClCompile Include="DrawableLabwareData.cpp" />
-    <ClCompile Include="DrawablePort.cpp" />
+    <ClCompile Include="DrawableLabwareConnection.cpp" />
     <ClCompile Include="Flask.cpp" />
     <ClCompile Include="Formulas.cpp" />
     <ClCompile Include="ForwardingContainer.cpp" />
@@ -231,7 +231,7 @@
     <ClCompile Include="LabwareConnection.cpp" />
     <ClCompile Include="LabwareDataFactory.cpp" />
     <ClCompile Include="LabwareRepository.cpp" />
-    <ClCompile Include="LabwarePort.cpp" />
+    <ClCompile Include="LabwareConnectionData.cpp" />
     <ClCompile Include="LabwareSystem.cpp" />
     <ClCompile Include="LayerContentIterator.cpp" />
     <ClCompile Include="LayerType.cpp" />
@@ -281,9 +281,9 @@
     <ClInclude Include="ColorCast.hpp" />
     <ClInclude Include="Condenser.hpp" />
     <ClInclude Include="CondenserData.hpp" />
+    <ClInclude Include="ConnectionIdentifier.hpp" />
     <ClInclude Include="ContainerComponent.hpp" />
     <ClInclude Include="BaseContainerLabwareData.hpp" />
-    <ClInclude Include="Context.hpp" />
     <ClInclude Include="DirectedGraph.hpp" />
     <ClInclude Include="DynamicAmount.hpp" />
     <ClInclude Include="EquipmentComponent.hpp" />
@@ -319,7 +319,7 @@
     <ClInclude Include="DrawableComponent.hpp" />
     <ClInclude Include="DataStoreAccessor.hpp" />
     <ClInclude Include="DrawableLabwareData.hpp" />
-    <ClInclude Include="DrawablePort.hpp" />
+    <ClInclude Include="DrawableLabwareConnection.hpp" />
     <ClInclude Include="FlagField.hpp" />
     <ClInclude Include="Flask.hpp" />
     <ClInclude Include="ContainerLabwareData.hpp" />
@@ -337,7 +337,7 @@
     <ClInclude Include="LabwareConnection.hpp" />
     <ClInclude Include="LabwareDataFactory.hpp" />
     <ClInclude Include="LabwareRepository.hpp" />
-    <ClInclude Include="LabwarePort.hpp" />
+    <ClInclude Include="LabwareConnectionData.hpp" />
     <ClInclude Include="LabwareSystem.hpp" />
     <ClInclude Include="LabwareType.hpp" />
     <ClInclude Include="LayerContentIterator.hpp" />

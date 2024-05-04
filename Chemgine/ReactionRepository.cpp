@@ -211,11 +211,12 @@ size_t ReactionRepository::generateCurrentSpan() const
 	return molecules.size() - reactants.size();
 }
 
-size_t ReactionRepository::generateTotalSpan(const size_t maxIterations) const
+size_t ReactionRepository::generateTotalSpan(size_t maxIterations) const
 {
 	const size_t initialCnt = molecules.getData().getData().size();
 
-	while (generateCurrentSpan() > 0);
+	while (maxIterations > 0 && generateCurrentSpan() > 0)
+		--maxIterations;
 
 	return molecules.getData().getData().size() - initialCnt;
 }

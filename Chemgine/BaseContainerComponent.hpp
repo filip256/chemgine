@@ -13,9 +13,10 @@ protected:
 		const LabwareType type
 	) noexcept;
 
-	virtual Ref<BaseContainer> getOverflowTarget() const = 0;
-	virtual void setOverflowTarget(const Ref<BaseContainer> target) = 0;
-	virtual void setOverflowTarget(BaseContainerComponent& target);
+	using OverflowTargetId = Mixture::OverflowTargetId;
+	virtual Ref<BaseContainer> getOverflowTarget(const OverflowTargetId id) const = 0;
+	virtual void setOverflowTarget(const Ref<BaseContainer> target, const OverflowTargetId id) = 0;
+	virtual void setOverflowTarget(BaseContainerComponent& target, const OverflowTargetId id);
 
 	template<typename C, typename = std::enable_if_t<std::is_base_of_v<Mixture, C>>>
 	static inline void draw(

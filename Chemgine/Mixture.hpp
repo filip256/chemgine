@@ -50,8 +50,9 @@ public:
 
 	virtual bool isEmpty() const = 0;
 
-	virtual Ref<BaseContainer> getOverflowTarget() const = 0;
-	virtual void setOverflowTarget(const Ref<BaseContainer> target) = 0;
+	using OverflowTargetId = uint8_t;
+	virtual Ref<BaseContainer> getOverflowTarget(const OverflowTargetId id) const = 0;
+	virtual void setOverflowTarget(const Ref<BaseContainer> target, const OverflowTargetId id) = 0;
 
 	friend class Layer;
 };

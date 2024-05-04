@@ -32,9 +32,9 @@ protected:
 		Atmosphere& atmosphere
 	) noexcept = delete;
 
-	Ref<BaseContainer> getOverflowTarget() const override final;
-	void setOverflowTarget(const Ref<BaseContainer> target) override final;
-	void setOverflowTarget(BaseContainerComponent& target) override final;
+	Ref<BaseContainer> getOverflowTarget(const OverflowTargetId id) const override final;
+	void setOverflowTarget(const Ref<BaseContainer> target, const OverflowTargetId id) override final;
+	void setOverflowTarget(BaseContainerComponent& target, const OverflowTargetId id) override final;
 
 	template<uint8_t I>
 	constexpr const auto& getContent() const;
@@ -62,6 +62,8 @@ public:
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 	void tick(const Amount<Unit::SECOND> timespan) override;
+
+	using LabwarePortId = BaseContainerComponent::OverflowTargetId;
 };
 
 
@@ -95,7 +97,7 @@ inline ContainerComponent<Reactor>::ContainerComponent(
 	Atmosphere& atmosphere
 ) noexcept :
 	BaseContainerComponent(id, type),
-	containers(Reactor(atmosphere, getData().getVolume(), atmosphere)),
+	containers(Reactor(atmosphere, getData().getVolume(), atmosphere, getPortCount())),
 	fills(getData().generateShapeFills())
 {}
 
@@ -108,7 +110,7 @@ inline ContainerComponent<Atmosphere, Reactor>::ContainerComponent(
 	BaseContainerComponent(id, type),
 	containers(std::make_tuple(
 		atmosphere.createSubatmosphere(getData().getVolume()),
-		Reactor(atmosphere, getData().getVolume(), atmosphere))),
+		Reactor(atmosphere, getData().getVolume(), atmosphere, getPortCount()))),
 	fills(getData().generateShapeFills())
 {}
 
@@ -198,21 +200,21 @@ void ContainerComponent<Args...>::add(const Amount<Unit::JOULE> energy)
 }
 
 template<typename... Args>
-Ref<BaseContainer> ContainerComponent<Args...>::getOverflowTarget() const
+Ref<BaseContainer> ContainerComponent<Args...>::getOverflowTarget(const OverflowTargetId id) const
 {
-	return getContent<0>().getOverflowTarget();
+	return getContent<0>().getOverflowTarget(id);
 }
 
 template<typename... Args>
-void ContainerComponent<Args...>::setOverflowTarget(const Ref<BaseContainer> target)
+void ContainerComponent<Args...>::setOverflowTarget(const Ref<BaseContainer> target, const OverflowTargetId id)
 {
-	getContent<0>().setOverflowTarget(target);
+	getContent<0>().setOverflowTarget(target, id);
 }
 
 template<typename... Args>
-void ContainerComponent<Args...>::setOverflowTarget(BaseContainerComponent& target)
+void ContainerComponent<Args...>::setOverflowTarget(BaseContainerComponent& target, const OverflowTargetId id)
 {
-	BaseContainerComponent::setOverflowTarget(target);
+	BaseContainerComponent::setOverflowTarget(target, id);
 }
 
 template<typename... Args>

@@ -9,7 +9,8 @@ protected:
 	DrawableLabwareData(
 		const LabwareId id,
 		const std::string& name,
-		std::vector<LabwarePort>&& ports,
+		std::vector<LabwarePortData>&& ports,
+		std::vector<LabwareContactData>&& contacts,
 		const std::string& textureFile,
 		const float textureScale,
 		const LabwareType type

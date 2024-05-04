@@ -2,6 +2,7 @@
 #include "DataStore.hpp"
 #include "Flask.hpp"
 #include "Condenser.hpp"
+#include "ConnectionIdentifier.hpp"
 
 Adaptor::Adaptor(
 	const LabwareId id,
@@ -15,36 +16,42 @@ const AdaptorData& Adaptor::getData() const
 	return static_cast<const AdaptorData&>(data);
 }
 
-bool Adaptor::tryConnect(BaseLabwareComponent& other)
+bool Adaptor::tryConnect(PortIdentifier& thisPort, PortIdentifier& otherPort)
 {
 	auto& container = getContent<0>();
-	if (other.isFlask())
+	auto& otherComp = otherPort.getComponent();
+	const auto otherPortId = otherPort.getPortIndex();
+
+	if (otherComp.isFlask())
 	{
-		container.setAllIncompatibilityTargets(other.as<Flask&>().getContent());
+		container.setAllIncompatibilityTargets(otherComp.as<Flask&>().getContent());
 		return true;
 	}
 
-	if (other.isAdaptor())
+	if (otherComp.isAdaptor())
 	{
-		container.setOverflowTarget(other.as<Adaptor&>().getContent());
+		container.setOverflowTarget(otherComp.as<Adaptor&>().getContent(), otherPortId);
 		return true;
 	}
 
-	if (other.isCondenser())
+	if (otherComp.isCondenser())
 	{
-		container.setOverflowTarget(other.as<Condenser&>().getContent());
+		container.setOverflowTarget(otherComp.as<Condenser&>().getContent(), otherPortId);
 		return true;
 	}
 
 	return false;
 }
 
-void Adaptor::disconnect(const Ref<BaseContainer> dump, const BaseLabwareComponent& other)
+void Adaptor::disconnect(PortIdentifier& thisPort, PortIdentifier& otherPort, const Ref<BaseContainer> dump)
 {
 	auto& container = getContent<0>();
-	if (other.isFlask())
+	auto& otherComp = otherPort.getComponent();
+	const auto otherPortId = otherPort.getPortIndex();
+
+	if (otherComp.isFlask())
 		container.setAllIncompatibilityTargets(dump);
 
-	if (other.isAdaptor())
-		container.setOverflowTarget(dump);
+	if (otherComp.isAdaptor())
+		container.setOverflowTarget(dump, otherPortId);
 }

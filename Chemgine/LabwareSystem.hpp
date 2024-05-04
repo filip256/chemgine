@@ -4,39 +4,9 @@
 #include "SizeTypedefs.hpp"
 #include "LabwareConnection.hpp"
 #include "SFML/Graphics.hpp"
+#include "ConnectionIdentifier.hpp"
 
 #include <limits>
-
-class LabwareSystem;
-
-class PortIdentifier
-{
-private:
-	l_size componentIdx;
-	uint8_t portIdx;
-	LabwareSystem& system;
-
-	PortIdentifier(
-		LabwareSystem& system,
-		const l_size componentIdx,
-		const uint8_t portIdx
-	) noexcept;
-
-public:
-	bool isValid() const;
-	l_size getComponentIndex() const;
-	uint8_t getPortIndex() const;
-	const BaseLabwareComponent& getComponent() const;
-	BaseLabwareComponent& getComponent();
-	const LabwareSystem& getSystem() const;
-	LabwareSystem& getSystem();
-
-	const DrawablePort* operator->() const;
-
-	friend class LabwareSystem;
-};
-
-
 
 class Lab;
 

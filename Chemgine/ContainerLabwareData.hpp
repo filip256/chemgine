@@ -28,7 +28,8 @@ protected:
 	ContainerLabwareData(
 		const LabwareId id,
 		const std::string& name,
-		std::vector<LabwarePort>&& ports,
+		std::vector<LabwarePortData>&& ports,
+		std::vector<LabwareContactData>&& contacts,
 		const std::string& textureFile,
 		const float textureScale,
 		std::array<Amount<Unit::LITER>, C>&& volumes,
@@ -40,7 +41,8 @@ protected:
 	ContainerLabwareData(
 		const LabwareId id,
 		const std::string& name,
-		std::vector<LabwarePort>&& ports,
+		std::vector<LabwarePortData>&& ports,
+		std::vector<LabwareContactData>&& contacts,
 		const std::string& textureFile,
 		const float textureScale,
 		const Amount<Unit::LITER> volume,
@@ -67,14 +69,19 @@ template<typename>
 ContainerLabwareData<C>::ContainerLabwareData(
 	const LabwareId id,
 	const std::string& name,
-	std::vector<LabwarePort>&& ports,
+	std::vector<LabwarePortData>&& ports,
+	std::vector<LabwareContactData>&& contacts,
 	const std::string& textureFile,
 	const float textureScale,
 	std::array<Amount<Unit::LITER>, C>&& volumes,
 	const std::array<Ref<const std::string>, C>& fillTextureFiles,
 	const LabwareType type
 ) noexcept :
-	BaseContainerLabwareData(id, name, std::move(ports), textureFile, textureScale, type),
+	BaseContainerLabwareData(
+		id, name,
+		std::move(ports), std::move(contacts),
+		textureFile, textureScale,
+		type),
 	volumes(std::move(volumes))
 {
 	for (uint8_t i = 0; i < C; ++i)
@@ -86,13 +93,18 @@ template<typename>
 ContainerLabwareData<C>::ContainerLabwareData(
 	const LabwareId id,
 	const std::string& name,
-	std::vector<LabwarePort>&& ports,
+	std::vector<LabwarePortData>&& ports,
+	std::vector<LabwareContactData>&& contacts,
 	const std::string& textureFile,
 	const float textureScale,
 	const Amount<Unit::LITER> volume,
 	const LabwareType type
 ) noexcept :
-	BaseContainerLabwareData(id, name, std::move(ports), textureFile, textureScale, type),
+	BaseContainerLabwareData(
+		id, name,
+		std::move(ports), std::move(contacts),
+		textureFile, textureScale,
+		type),
 	volumes({ volume })
 {
 	fillTextures.front() = ShapeFillTexture(texture, 0, hasMultiLayerStorage(type));

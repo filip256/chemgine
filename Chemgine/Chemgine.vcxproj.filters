@@ -228,7 +228,7 @@
     <ClCompile Include="FlaskData.cpp">
       <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
-    <ClCompile Include="LabwarePort.cpp">
+    <ClCompile Include="LabwareConnectionData.cpp">
       <Filter>Source Files\Labware</Filter>
     </ClCompile>
     <ClCompile Include="HeatsourceData.cpp">
@@ -270,7 +270,7 @@
     <ClCompile Include="DrawableLabwareData.cpp">
       <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
-    <ClCompile Include="DrawablePort.cpp">
+    <ClCompile Include="DrawableLabwareConnection.cpp">
       <Filter>Source Files\Labware\Components</Filter>
     </ClCompile>
     <ClCompile Include="ReactantSet.cpp">
@@ -323,9 +323,6 @@
     </ClCompile>
     <ClCompile Include="MolecularStructure.cpp">
       <Filter>Source Files\Molecules</Filter>
-    </ClCompile>
-    <ClCompile Include="Context.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Atmosphere.cpp">
       <Filter>Source Files\Mixtures\MixtureTypes</Filter>
@@ -428,6 +425,9 @@
     </ClCompile>
     <ClCompile Include="RetrosynthReaction.cpp">
       <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
+    <ClCompile Include="ConnectionIdentifier.cpp">
+      <Filter>Source Files\Labware</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -554,7 +554,7 @@
     <ClInclude Include="FlaskData.hpp">
       <Filter>Header Files\Labware\DataTypes</Filter>
     </ClInclude>
-    <ClInclude Include="LabwarePort.hpp">
+    <ClInclude Include="LabwareConnectionData.hpp">
       <Filter>Header Files\Labware</Filter>
     </ClInclude>
     <ClInclude Include="HeatsourceData.hpp">
@@ -602,7 +602,7 @@
     <ClInclude Include="DrawableLabwareData.hpp">
       <Filter>Header Files\Labware\DataTypes</Filter>
     </ClInclude>
-    <ClInclude Include="DrawablePort.hpp">
+    <ClInclude Include="DrawableLabwareConnection.hpp">
       <Filter>Header Files\Labware\Components</Filter>
     </ClInclude>
     <ClInclude Include="ContainsInterface.hpp">
@@ -670,9 +670,6 @@
     </ClInclude>
     <ClInclude Include="FlagField.hpp">
       <Filter>Header Files\DataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="Context.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Atmosphere.hpp">
       <Filter>Header Files\Mixtures\MixtureTypes</Filter>
@@ -808,6 +805,9 @@
     </ClInclude>
     <ClInclude Include="RetrosynthReaction.hpp">
       <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="ConnectionIdentifier.hpp">
+      <Filter>Header Files\Labware</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -21,22 +21,26 @@ BaseLabwareData* LabwareDataFactory::get(const LabwareId id, const LabwareType t
 
 FlaskData* LabwareDataFactory::getFlaskData(const LabwareId id,  const std::vector<std::string>& dataLine)
 {
-	if (dataLine.size() != 7)
+	if (dataLine.size() != 8)
 		return nullptr;
 
 	const auto volume = DataHelpers::parseUnsigned<Unit::LITER>(dataLine[3]);
 	if (volume.has_value() == false)
 		return nullptr;
 
-	auto ports = DataHelpers::parseList<LabwarePort>(dataLine[4], ';', true);
+	auto ports = DataHelpers::parseList<LabwarePortData>(dataLine[4], ';', true);
 	if (ports.has_value() == false)
 		return nullptr;
 
-	auto txScale = DataHelpers::parseUnsigned<float>(dataLine[6]);
+	auto contacts = DataHelpers::parseList<LabwareContactData>(dataLine[5], ';', true);
+	if (contacts.has_value() == false)
+		return nullptr;
+
+	auto txScale = DataHelpers::parseUnsigned<float>(dataLine[7]);
 	if (txScale.has_value() == false)
 		return nullptr;
 
-	return new FlaskData(id, dataLine[2], std::move(*ports), *volume, dataLine[5], *txScale);
+	return new FlaskData(id, dataLine[2], std::move(*ports), std::move(*contacts), *volume, dataLine[6], *txScale);
 }
 
 AdaptorData* LabwareDataFactory::getAdaptorData(const LabwareId id, const std::vector<std::string>& dataLine)
@@ -48,7 +52,7 @@ AdaptorData* LabwareDataFactory::getAdaptorData(const LabwareId id, const std::v
 	if (volume.has_value() == false)
 		return nullptr;
 
-	auto ports = DataHelpers::parseList<LabwarePort>(dataLine[4], ';', true);
+	auto ports = DataHelpers::parseList<LabwarePortData>(dataLine[4], ';', true);
 	if (ports.has_value() == false)
 		return nullptr;
 
@@ -64,7 +68,7 @@ CondenserData* LabwareDataFactory::getCondenserData(const LabwareId id, const st
 	if (dataLine.size() != 11)
 		return nullptr;
 
-	auto ports = DataHelpers::parseList<LabwarePort>(dataLine[3], ';', true);
+	auto ports = DataHelpers::parseList<LabwarePortData>(dataLine[3], ';', true);
 	if (ports.has_value() == false)
 		return nullptr;
 
@@ -92,17 +96,17 @@ HeatsourceData* LabwareDataFactory::getHeatsourceData(const LabwareId id, const 
 	if (dataLine.size() != 7)
 		return nullptr;
 
-	auto ports = DataHelpers::parseList<LabwarePort>(dataLine[4], ';', true);
-	if (ports.has_value() == false)
+	const auto power = DataHelpers::parseUnsigned<Unit::WATT>(dataLine[3]);
+	if (power.has_value() == false)
+		return nullptr;
+
+	auto contacts = DataHelpers::parseList<LabwareContactData>(dataLine[4], ';', true);
+	if (contacts.has_value() == false)
 		return nullptr;
 
 	auto txScale = DataHelpers::parseUnsigned<float>(dataLine[6]);
 	if (txScale.has_value() == false)
 		return nullptr;
 
-	const auto power = DataHelpers::parseUnsigned<Unit::WATT>(dataLine[3]);
-	if (power.has_value() == false)
-		return nullptr;
-
-	return new HeatsourceData(id, dataLine[2], std::move(*ports), dataLine[5], *txScale, *power);
+	return new HeatsourceData(id, dataLine[2], std::move(*contacts), dataLine[5], *txScale, *power);
 }

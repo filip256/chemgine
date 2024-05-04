@@ -11,7 +11,7 @@ public:
 	HeatsourceData(
 		const LabwareId id,
 		const std::string& name,
-		std::vector<LabwarePort>&& ports,
+		std::vector<LabwareContactData>&& ports,
 		const std::string& textureFile, 
 		const float textureScale,
 		const Amount<Unit::WATT> maxPowerOutput

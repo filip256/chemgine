@@ -75,12 +75,12 @@ sf::FloatRect DrawableComponent::getBounds() const
 	return sprite.getGlobalBounds();
 }
 
-const DrawablePort& DrawableComponent::getPort(const uint8_t idx) const
+const DrawableLabwareConnection& DrawableComponent::getPort(const uint8_t idx) const
 {
 	return adjustedPorts[idx];
 }
 
-const std::vector<DrawablePort>& DrawableComponent::getPorts() const
+const std::vector<DrawableLabwareConnection>& DrawableComponent::getPorts() const
 {
 	return adjustedPorts;
 }
@@ -105,7 +105,7 @@ void DrawableComponent::draw(sf::RenderTarget& target, sf::RenderStates states) 
 	//port.setOutlineThickness(28.0f);
 	for (uint8_t i = 0; i < adjustedPorts.size(); ++i)
 	{
-		port.setPosition(sprite.getPosition() + adjustedPorts[i].position);
+		port.setPosition(sprite.getPosition() + adjustedPorts[i].getPosition());
 		target.draw(port, states);
 	}
 #endif

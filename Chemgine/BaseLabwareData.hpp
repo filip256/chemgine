@@ -1,11 +1,11 @@
 #pragma once
 
+#include "LabwareType.hpp"
+#include "LabwareConnectionData.hpp"
+
 #include <cstdint>
 #include <string>
 #include <vector>
-
-#include "LabwareType.hpp"
-#include "LabwarePort.hpp"
 
 typedef uint32_t LabwareId;
 
@@ -15,12 +15,14 @@ public:
 	const LabwareId id;
 	const LabwareType type;
 	const std::string name;
-	const std::vector<LabwarePort> ports;
+	const std::vector<LabwarePortData> ports;
+	const std::vector<LabwareContactData> contacts;
 
 	BaseLabwareData(
 		const LabwareId id,
 		const std::string& name,
-		std::vector<LabwarePort>&& ports,
+		std::vector<LabwarePortData>&& ports,
+		std::vector<LabwareContactData>&& contacts,
 		const LabwareType type
 	) noexcept;
 	BaseLabwareData(const BaseLabwareData&) = delete;

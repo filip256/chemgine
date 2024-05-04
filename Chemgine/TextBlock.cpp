@@ -38,6 +38,7 @@ void TextBlock::TextLine::trim(const size_t left, const size_t right)
 		text = "";
 
 	text = text.substr(left, right - left + 1);
+	text.shrink_to_fit();
 }
 
 void TextBlock::TextLine::trim()
@@ -149,6 +150,8 @@ void TextBlock::trim()
 
 	for (size_t i = 0; i < block.size(); ++i)
 		block[i].trim(wStart, wEnd);
+
+	block.shrink_to_fit();
 }
 
 void TextBlock::clear()

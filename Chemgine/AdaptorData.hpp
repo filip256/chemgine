@@ -8,7 +8,7 @@ public:
 	AdaptorData(
 		const LabwareId id,
 		const std::string& name,
-		std::vector<LabwarePort>&& ports,
+		std::vector<LabwarePortData>&& ports,
 		const Amount<Unit::LITER> volume,
 		const std::string& textureFile,
 		const float textureScale

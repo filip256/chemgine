@@ -1,5 +1,6 @@
 #include "BaseLabwareComponent.hpp"
 #include "DataStore.hpp"
+#include "ConnectionIdentifier.hpp"
 #include "Logger.hpp"
 
 size_t BaseLabwareComponent::instanceCount = 0;
@@ -51,7 +52,12 @@ bool BaseLabwareComponent::isContainer() const
 	return false;
 }
 
-bool BaseLabwareComponent::tryConnect(BaseLabwareComponent& other)
+uint8_t BaseLabwareComponent::getPortCount() const
+{
+	return data.ports.size();
+}
+
+bool BaseLabwareComponent::tryConnect(PortIdentifier& thisPort, PortIdentifier& otherPort)
 {
 	return false;
 }

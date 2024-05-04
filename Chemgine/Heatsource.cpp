@@ -23,21 +23,21 @@ void Heatsource::setTarget(BaseContainerComponent& target)
 	this->target = target.getContent();
 }
 
-bool Heatsource::tryConnect(BaseLabwareComponent& other)
-{
-	if (other.isContainer())
-	{
-		this->setTarget(other.as<BaseContainerComponent&>());
-		return true;
-	}
-
-	return false;
-}
-
-void Heatsource::disconnect(const Ref<BaseContainer> dump, const BaseLabwareComponent& other)
-{
-	this->setTarget(dump);
-}
+//bool Heatsource::tryConnect(BaseLabwareComponent& other)
+//{
+//	if (other.isContainer())
+//	{
+//		this->setTarget(other.as<BaseContainerComponent&>());
+//		return true;
+//	}
+//
+//	return false;
+//}
+//
+//void Heatsource::disconnect(const Ref<BaseContainer> dump, const BaseLabwareComponent& other)
+//{
+//	this->setTarget(dump);
+//}
 
 void Heatsource::tick(const Amount<Unit::SECOND> timespan)
 {

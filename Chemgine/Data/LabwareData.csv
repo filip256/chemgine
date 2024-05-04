@@ -1,6 +1,6 @@
 Id,Type,Name,,
-#201,1,RBF,0.5_L,2:31:9:0_°;6:31:90:0_°,./Textures/jrbf500.png,1.0
+#201,1,RBF,0.5_L,2:31:9:0_°,6:31:90:0_°,./Textures/jrbf500.png,1.0
 #301,2,3-way Adaptor,0.05_L,3:6:58:0_°;3:36:34:290_°,./Textures/3way.png,1.0
 #302,2,Distillation Adaptor,0.05_L,2:11:10:282_°;3:39:52:0_°,./Textures/disthead.png,1.0
-#401,7,Hotplate,1000.0_W,6:41:10:0_°,./Textures/hotplate_sh2.png,1.0
+#401,7,Hotplate,1000.0_W,,6:41:10:0_°,./Textures/hotplate_sh2.png,1.0
 #501,3,Liebig Condenser,2:22:12:0_°;3:22:158:0_°,0.3_m,0.5_/m,0.2_L,./Textures/liebig300.png,1.0,./Textures/liebig300_if.png,./Textures/liebig300_cf.png

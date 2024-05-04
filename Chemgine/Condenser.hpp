@@ -15,8 +15,8 @@ public:
 
 	const CondenserData& getData() const override final;
 
-	bool tryConnect(BaseLabwareComponent& other) override final;
-	void disconnect(const Ref<BaseContainer> dump, const BaseLabwareComponent& other) override final;
+	bool tryConnect(PortIdentifier& thisPort, PortIdentifier& otherPort) override final;
+	void disconnect(PortIdentifier& thisPort, PortIdentifier& otherPort, const Ref<BaseContainer> dump) override final;
 
 	void tick(const Amount<Unit::SECOND> timespan) override final;
 };

@@ -2,7 +2,7 @@
 
 #include "BaseLabwareComponent.hpp"
 #include "DrawableLabwareData.hpp"
-#include "DrawablePort.hpp"
+#include "DrawableLabwareConnection.hpp"
 #include "ShapeFill.hpp"
 #include "SFML/Graphics.hpp"
 
@@ -10,7 +10,7 @@ class DrawableComponent : public BaseLabwareComponent
 {
 private:
 	sf::Sprite sprite;
-	std::vector<DrawablePort> adjustedPorts;
+	std::vector<DrawableLabwareConnection> adjustedPorts;
 
 protected:
 	DrawableComponent(
@@ -32,8 +32,8 @@ public:
 	const sf::Vector2f& getOrigin() const override final;
 	sf::FloatRect getBounds() const override final;
 
-	const DrawablePort& getPort(const uint8_t idx) const override final;
-	const std::vector<DrawablePort>& getPorts() const override final;
+	const DrawableLabwareConnection& getPort(const uint8_t idx) const override final;
+	const std::vector<DrawableLabwareConnection>& getPorts() const override final;
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 	bool contains(const sf::Vector2f& point) const override final;

@@ -5,12 +5,13 @@
 DrawableLabwareData::DrawableLabwareData(
 	const LabwareId id,
 	const std::string& name,
-	std::vector<LabwarePort>&& ports,
+	std::vector<LabwarePortData>&& ports,
+	std::vector<LabwareContactData>&& contacts,
 	const std::string& textureFile,
 	const float textureScale,
 	const LabwareType type
 ) noexcept :
-	BaseLabwareData(id, name, std::move(ports), type),
+	BaseLabwareData(id, name, std::move(ports), std::move(contacts), type),
 	textureScale(textureScale)
 {
 	Collision::createTextureAndBitmask(texture, textureFile);

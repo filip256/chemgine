@@ -16,13 +16,14 @@ protected:
 	Amount<Unit::LITER> totalVolume = 0.0;
 
 	const Amount<Unit::LITER> maxVolume;
-	Ref<BaseContainer> overflowTarget = DumpContainer::GlobalDumpContainer;
+	std::vector<Ref<BaseContainer>> overflowTargets;
 
 	std::map<LayerType, Layer> layers;
 
 	bool tryCreateLayer(const LayerType layer);
 	void addToLayer(const Reactant& reactant);
 	void add(const Amount<Unit::JOULE> heat, const LayerType layer) override final;
+	void overflow(const Amount<Unit::LITER> volume, const LayerType sourceLayer);
 
 	void removeNegligibles();
 	void checkOverflow();
@@ -42,7 +43,14 @@ public:
 	MultiLayerMixture(
 		const Ref<Atmosphere> atmosphere,
 		const Amount<Unit::LITER> maxVolume,
-		const Ref<BaseContainer> overflowTarget
+		std::vector<Ref<BaseContainer>>&& overflowTargets
+	) noexcept;
+
+	MultiLayerMixture(
+		const Ref<Atmosphere> atmosphere,
+		const Amount<Unit::LITER> maxVolume,
+		const Ref<BaseContainer> overflowTarget,
+		const uint8_t overflowTargetCount
 	) noexcept;
 
 	void add(const Reactant& reactant) override final;
@@ -68,8 +76,9 @@ public:
 
 	bool isEmpty() const override final;
 
-	Ref<BaseContainer> getOverflowTarget() const override final;
-	void setOverflowTarget(const Ref<BaseContainer> target) override final;
+	using Mixture::OverflowTargetId;
+	Ref<BaseContainer> getOverflowTarget(const OverflowTargetId id) const override final;
+	void setOverflowTarget(const Ref<BaseContainer> target, const OverflowTargetId id) override final;
 
 	using LayerDownIterator = std::map<LayerType, Layer>::const_iterator;
 	LayerDownIterator getLayersDownBegin() const;

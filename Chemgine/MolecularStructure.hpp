@@ -10,6 +10,8 @@
 #include "Bond.hpp"
 #include "BaseComponent.hpp"
 
+class TextBlock;
+
 class MolecularStructure
 {
 private:
@@ -18,7 +20,7 @@ private:
     std::vector<std::vector<Bond>> bonds;
 
     void rPrint(
-        std::vector<std::string>& buffer,
+        TextBlock& buffer,
         const size_t x,
         const size_t y,
         const c_size c,
@@ -119,7 +121,7 @@ public:
     void canonicalize();
 
     const BaseComponent* getComponent(const c_size idx) const;
-    std::string print(const size_t maxWidth = 100, const size_t maxHeight = 50) const;
+    std::string print() const;
     bool loadFromSMILES(const std::string& smiles);
     // not working for cycles :(
     std::string toSMILES() const;

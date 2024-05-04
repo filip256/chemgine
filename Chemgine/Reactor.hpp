@@ -50,12 +50,20 @@ public:
 	Reactor(
 		const Ref<Atmosphere> atmosphere,
 		const Amount<Unit::LITER> maxVolume,
-		const Ref<BaseContainer> overflowTarget
+		std::vector<Ref<BaseContainer>>&& overflowTargets
 	) noexcept;
 
 	Reactor(
 		const Ref<Atmosphere> atmosphere,
-		const Amount<Unit::LITER> maxVolume
+		const Amount<Unit::LITER> maxVolume,
+		Ref<BaseContainer> overflowTarget,
+		const uint8_t overflowTargetCount
+	) noexcept;
+
+	Reactor(
+		const Ref<Atmosphere> atmosphere,
+		const Amount<Unit::LITER> maxVolume,
+		const uint8_t overflowTargetCount
 	) noexcept;
 
 	Reactor(Reactor&&) = default;

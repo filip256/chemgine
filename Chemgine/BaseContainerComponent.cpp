@@ -17,7 +17,7 @@ bool BaseContainerComponent::isContainer() const
 	return true;
 }
 
-void BaseContainerComponent::setOverflowTarget(BaseContainerComponent& target)
+void BaseContainerComponent::setOverflowTarget(BaseContainerComponent& target, const OverflowTargetId id)
 {
-	setOverflowTarget(target.getContent());
+	setOverflowTarget(target.getContent(), id);
 }

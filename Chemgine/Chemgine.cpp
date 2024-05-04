@@ -56,10 +56,19 @@ int main()
             .loadReactionsData("Data/ReactionData.csv")
             .loadLabwareData("Data/LabwareData.csv");
 
-        //const auto x = store.reactions.getRetrosynthReactions(
-        //    *Reactable::get(MolecularStructure("CC(=O)OCCC")));
+        const auto x = store.reactions.getRetrosynthReactions(
+            *Reactable::get(MolecularStructure("CC(=O)OCCC")));
 
-        //const auto t = store.reactions.generateTotalSpan();
+        //for (const auto& i : x)
+        //{
+        //    std::cout << i.getBaseData().getHRTag() << '\n';
+        //    for (const auto& r : i.getReactants())
+        //        std::cout << r.first.getStructure().print() << '\n';
+        //    std::cout << '\n';
+        //    for (const auto& p : i.getProducts())
+        //        std::cout << p.first.getStructure().print() << '\n';
+        //    std::cout << "-------------------------\n";
+        //}
 
         UIContext uiContext;
         uiContext.run();

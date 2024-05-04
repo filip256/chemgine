@@ -21,9 +21,9 @@ Reactor::Reactor(const Reactor& other) noexcept :
 Reactor::Reactor(
 	const Ref<Atmosphere> atmosphere,
 	const Amount<Unit::LITER> maxVolume,
-	const Ref<BaseContainer> overflowTarget
+	std::vector<Ref<BaseContainer>>&& overflowTargets
 ) noexcept :
-	MultiLayerMixture(atmosphere, maxVolume, overflowTarget)
+	MultiLayerMixture(atmosphere, maxVolume, std::move(overflowTargets))
 {
 	dataAccessor.crashIfUninitialized();
 	temperatureSpeedEstimator = &dataAccessor.get().estimators.at(
@@ -34,9 +34,19 @@ Reactor::Reactor(
 
 Reactor::Reactor(
 	const Ref<Atmosphere> atmosphere,
-	const Amount<Unit::LITER> maxVolume
+	const Amount<Unit::LITER> maxVolume,
+	Ref<BaseContainer> overflowTarget,
+	const uint8_t overflowTargetCount
 ) noexcept :
-	Reactor(atmosphere, maxVolume, atmosphere)
+	Reactor(atmosphere, maxVolume, std::vector<Ref<BaseContainer>>(overflowTargetCount, overflowTarget))
+{}
+
+Reactor::Reactor(
+	const Ref<Atmosphere> atmosphere,
+	const Amount<Unit::LITER> maxVolume,
+	const uint8_t overflowTargetCount
+) noexcept :
+	Reactor(atmosphere, maxVolume, atmosphere, overflowTargetCount)
 {}
 
 void Reactor::setDataStore(const DataStore& dataStore)

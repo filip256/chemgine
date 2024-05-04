@@ -13,7 +13,16 @@ public:
 		const Amount<Unit::TORR> pressure,
 		const ContentInitializer& contentInitializer,
 		const Amount<Unit::LITER> maxVolume,
-		const Ref<BaseContainer> overflowTarget
+		std::vector<Ref<BaseContainer>>&& overflowTargets
+	) noexcept;
+
+	Atmosphere(
+		const Amount<Unit::CELSIUS> temperature,
+		const Amount<Unit::TORR> pressure,
+		const ContentInitializer& contentInitializer,
+		const Amount<Unit::LITER> maxVolume,
+		const Ref<BaseContainer> overflowTarget,
+		const uint8_t overflowTargetCount
 	) noexcept;
 	Atmosphere(Atmosphere&&) = default;
 

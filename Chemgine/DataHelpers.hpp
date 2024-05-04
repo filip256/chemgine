@@ -5,7 +5,7 @@
 #include "Utils.hpp"
 #include "Symbol.hpp"
 #include "Color.hpp"
-#include "LabwarePort.hpp"
+#include "LabwareConnectionData.hpp"
 
 #include <vector>
 #include <string>
@@ -280,7 +280,7 @@ inline std::optional<Spline<float>> DataHelpers::parse<Spline<float>>(const std:
 }
 
 template <>
-inline std::optional<LabwarePort> DataHelpers::parse<LabwarePort>(const std::string& str)
+inline std::optional<LabwarePortData> DataHelpers::parse<LabwarePortData>(const std::string& str)
 {
 	const auto port = DataHelpers::parseList(str, ':', true);
 
@@ -295,7 +295,26 @@ inline std::optional<LabwarePort> DataHelpers::parse<LabwarePort>(const std::str
 	if (type.has_value() == false || x.has_value() == false || y.has_value() == false || angle.has_value() == false)
 		return std::nullopt;
 
-	return LabwarePort(*type, *x, *y, *angle);
+	return LabwarePortData(*type, *x, *y, *angle);
+}
+
+template <>
+inline std::optional<LabwareContactData> DataHelpers::parse<LabwareContactData>(const std::string& str)
+{
+	const auto port = DataHelpers::parseList(str, ':', true);
+
+	if (port.size() != 4)
+		return std::nullopt;
+
+	const auto type = DataHelpers::parseEnum<PortType>(port[0]);
+	const auto x = DataHelpers::parse<unsigned int>(port[1]);
+	const auto y = DataHelpers::parse<unsigned int>(port[2]);
+	const auto angle = DataHelpers::parseUnsigned<Unit::DEGREE>(port[3]);
+
+	if (type.has_value() == false || x.has_value() == false || y.has_value() == false || angle.has_value() == false)
+		return std::nullopt;
+
+	return LabwareContactData(*type, *x, *y, *angle);
 }
 
 template <typename E, typename>

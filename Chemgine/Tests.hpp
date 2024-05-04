@@ -705,35 +705,35 @@ public:
 		atmosphere = new Atmosphere(
 			1.0_C, 760.0_torr,
 			{ { Molecule("N#N"), 78.084_mol }, { Molecule("O=O"), 20.946_mol } },
-			1000.0_L, *dumpA);
+			1000.0_L, *dumpA, 1);
 
-		reactorA = new Reactor(*atmosphere, 1.0_L);
+		reactorA = new Reactor(*atmosphere, 1.0_L, 1);
 		reactorA->add(Molecule("HH"), 2.0_mol);
 		reactorA->add(Molecule("CC=C"), 2.0_mol);
 		reactorA->add(Molecule("CC(=O)OCC"), 2.0_mol);
 		reactorA->add(Molecule("O"), 3.0_mol);
 
-		reactorB = new Reactor(*atmosphere, 1.0_L);
+		reactorB = new Reactor(*atmosphere, 1.0_L, 1);
 		reactorB->setTickMode(reactorB->getTickMode() - TickMode::ENABLE_CONDUCTION);
 		reactorB->add(Molecule("O"), 3.0_mol);
 
-		reactorC = new Reactor(*atmosphere, 20.0_L);
+		reactorC = new Reactor(*atmosphere, 20.0_L, 1);
 
-		reactorD = new Reactor(*atmosphere, 5.0_L);
+		reactorD = new Reactor(*atmosphere, 5.0_L, 1);
 		reactorD->setTickMode(reactorD->getTickMode());
 		reactorD->add(Molecule("CC(=O)O"), 2.0_mol);
 		reactorD->add(Molecule("OCC"), 3.0_mol);
 
-		reactorE = new Reactor(*atmosphere, 0.1_L);
+		reactorE = new Reactor(*atmosphere, 0.1_L, 1);
 		reactorE->setTickMode(reactorE->getTickMode() - TickMode::ENABLE_CONDUCTION);
 		reactorE->add(Molecule("O"), 5.4_mol);
 		
-		reactorF = new Reactor(*atmosphere, 1.0_L);
+		reactorF = new Reactor(*atmosphere, 1.0_L, 1);
 		gasMixtureA = new SingleLayerMixture<LayerType::GASEOUS>(
-			1.0_C, 760.0_torr, { { Molecule("N#N"), 78.084_mol } }, 0.5_L, *dumpA);
+			1.0_C, 760.0_torr, { { Molecule("N#N"), 78.084_mol } }, 0.5_L, *dumpA, 1);
 		gasMixtureA->setIncompatibilityTarget(LayerType::POLAR, *reactorF);
 
-		reactorG = new Reactor(*atmosphere, 1.0_L);
+		reactorG = new Reactor(*atmosphere, 1.0_L, 1);
 		forwardA = new ForwardingContainer(
 			{
 				{ [](const Reactant& reactant) -> bool { return reactant.molecule.getMolarMass() < 20; }, Ref<BaseContainer>(*reactorG)}
@@ -847,11 +847,12 @@ public:
 	void runPersist()
 	{
 		const auto begin = std::chrono::steady_clock::now();
+		store.reactions.generateTotalSpan();
 		store.saveGenericMoleculesData("Out/genericmolecules.out.csv")
 			.saveMoleculesData("Out/molecules.out.csv");
 		const auto end = std::chrono::steady_clock::now();
 
-		Logger::log("Dump completed in " +
+		Logger::log("Total span dump completed in " +
 			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.");
 	}
 };

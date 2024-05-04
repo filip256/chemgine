@@ -8,7 +8,7 @@ MultiLayerMixture::MultiLayerMixture(const MultiLayerMixture& other) noexcept :
 	totalMass(other.totalMass),
 	totalVolume(other.totalVolume),
 	maxVolume(other.maxVolume),
-	overflowTarget(other.overflowTarget)
+	overflowTargets(other.overflowTargets)
 {
 	for (const auto& l : other.layers)
 		this->layers.emplace(std::make_pair(l.first, l.second.makeCopy(*this)));
@@ -17,15 +17,24 @@ MultiLayerMixture::MultiLayerMixture(const MultiLayerMixture& other) noexcept :
 MultiLayerMixture::MultiLayerMixture(
 	const Ref<Atmosphere> atmosphere,
 	const Amount<Unit::LITER> maxVolume,
-	const Ref<BaseContainer> overflowTarget
+	std::vector<Ref<BaseContainer>>&& overflowTargets
 ) noexcept :
 	pressure(atmosphere->getPressure()),
 	maxVolume(maxVolume),
-	overflowTarget(overflowTarget)
+	overflowTargets(std::move(overflowTargets))
 {
 	layers.emplace(LayerType::GASEOUS, Layer(*this, LayerType::GASEOUS, atmosphere->getLayer().temperature));
 	atmosphere->copyContentTo(*this, maxVolume);
 }
+
+MultiLayerMixture::MultiLayerMixture(
+	const Ref<Atmosphere> atmosphere,
+	const Amount<Unit::LITER> maxVolume,
+	const Ref<BaseContainer> overflowTarget,
+	const uint8_t overflowTargetCount
+) noexcept :
+	MultiLayerMixture(atmosphere, maxVolume, std::vector<Ref<BaseContainer>>(overflowTargetCount, overflowTarget))
+{}
 
 bool MultiLayerMixture::tryCreateLayer(const LayerType layer)
 {
@@ -74,6 +83,13 @@ void MultiLayerMixture::add(const Amount<Unit::JOULE> heat, const LayerType laye
 	layers.at(layer).potentialEnergy += heat;
 }
 
+void MultiLayerMixture::overflow(const Amount<Unit::LITER> volume, const LayerType sourceLayer)
+{
+	const auto volFraction = volume / overflowTargets.size();
+	for(uint8_t i = 0; i < overflowTargets.size(); ++i)
+		moveContentTo(overflowTargets[i], volFraction, sourceLayer);
+}
+
 void MultiLayerMixture::removeNegligibles()
 {
 	bool removedAny = false;
@@ -105,23 +121,23 @@ void MultiLayerMixture::checkOverflow()
 	if (maxVolume.isInfinity())
 		return;
 
-	auto overflow = totalVolume - maxVolume;
-	if (overflow <= 0.0)
+	auto overflowVol = totalVolume - maxVolume;
+	if (overflowVol <= 0.0)
 		return;
 
 	auto topLayerType = getTopLayer();
 	auto* topLayer = &layers.at(topLayerType);
 
-	while (overflow > topLayer->volume)
+	while (overflowVol > topLayer->volume)
 	{
-		overflow -= topLayer->volume;
-		moveContentTo(overflowTarget, topLayer->volume, topLayerType);
+		overflowVol -= topLayer->volume;
+		overflow(topLayer->volume, topLayerType);
 
 		topLayerType = getTopLayer();
 		topLayer = &layers.at(topLayerType);
 	}
 	
-	moveContentTo(overflowTarget, overflow, topLayerType);
+	overflow(overflowVol, topLayerType);
 }
 
 LayerType MultiLayerMixture::getTopLayer() const
@@ -315,17 +331,17 @@ bool MultiLayerMixture::isEmpty() const
 	return totalMoles == 0.0_mol;
 }
 
-Ref<BaseContainer> MultiLayerMixture::getOverflowTarget() const
+Ref<BaseContainer> MultiLayerMixture::getOverflowTarget(const OverflowTargetId id) const
 {
-	return overflowTarget;
+	return overflowTargets[id];
 }
 
-void MultiLayerMixture::setOverflowTarget(const Ref<BaseContainer> target)
+void MultiLayerMixture::setOverflowTarget(const Ref<BaseContainer> target, const OverflowTargetId id)
 {
 	if (this == &*target)
 		Logger::log("Mixture: Overflow target set to self.", LogType::WARN);
 
-	overflowTarget = target;
+	overflowTargets[id] = target;
 }
 
 Amount<Unit::TORR> MultiLayerMixture::getPressure() const

@@ -11,7 +11,7 @@ public:
 	CondenserData(
 		const LabwareId id,
 		const std::string& name,
-		std::vector<LabwarePort>&& ports,
+		std::vector<LabwarePortData>&& ports,
 		const Amount<Unit::METER> length,
 		const Amount<Unit::PER_METER> efficiency,
 		const Amount<Unit::LITER> innerVolume,

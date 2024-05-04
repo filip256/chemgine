@@ -1,5 +1,6 @@
 #include "Flask.hpp"
 #include "DataStore.hpp"
+#include "ConnectionIdentifier.hpp"
 
 Flask::Flask(
 	const LabwareId id,
@@ -13,18 +14,22 @@ const FlaskData& Flask::getData() const
 	return static_cast<const FlaskData&>(data);
 }
 
-bool Flask::tryConnect(BaseLabwareComponent& other)
+bool Flask::tryConnect(PortIdentifier& thisPort, PortIdentifier& otherPort)
 {
-	if (other.isContainer())
+	auto& otherComp = otherPort.getComponent();
+	const auto otherPortId = otherPort.getPortIndex();
+
+	if (otherComp.isContainer())
 	{
-		this->setOverflowTarget(other.as<BaseContainerComponent&>());
+		this->setOverflowTarget(otherComp.as<BaseContainerComponent&>(), otherPortId);
 		return true;
 	}
 
 	return false;
 }
 
-void Flask::disconnect(const Ref<BaseContainer> dump, const BaseLabwareComponent& other)
+void Flask::disconnect(PortIdentifier& thisPort, PortIdentifier& otherPort, const Ref<BaseContainer> dump)
 {
-	this->setOverflowTarget(dump);
+	const auto otherPortId = otherPort.getPortIndex();
+	this->setOverflowTarget(dump, otherPortId);
 }
