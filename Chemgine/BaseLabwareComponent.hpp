@@ -78,7 +78,6 @@ L& BaseLabwareComponent::as()
 	return Ref(*this).as<L>();
 }
 
-
 template<typename L, typename>
 Ref<L> BaseLabwareComponent::cast()
 {

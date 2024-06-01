@@ -17,6 +17,9 @@ public:
 	Molecule(const MoleculeId id) noexcept;
 	Molecule(MolecularStructure&& structure) noexcept;
 	Molecule(const std::string& smiles) noexcept;
+	Molecule(const Molecule&) = default;
+
+	Molecule& operator=(const Molecule&) = default;
 
 	MoleculeId getId() const;
 	Amount<Unit::GRAM_PER_MOLE> getMolarMass() const;

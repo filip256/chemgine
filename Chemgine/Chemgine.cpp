@@ -56,6 +56,8 @@ int main()
             .loadReactionsData("Data/ReactionData.csv")
             .loadLabwareData("Data/LabwareData.csv");
 
+        std::cout << MolecularStructure("S(-O)(-O)(-O)(OCC)(OCCC(N(C)C)=O)C#N").print();
+
         const auto x = store.reactions.getRetrosynthReactions(
             *Reactable::get(MolecularStructure("CC(=O)OCCC")));
 

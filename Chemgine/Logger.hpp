@@ -18,15 +18,23 @@ private:
 public:
 	static LogType severityLevel;
 	static std::ostream& outputStream;
+	static std::istream& inputStream;
+
 	static void enterContext();
 	static void exitContext();
+
 	static void log(const char* str, const LogType type = LogType::NONE);
 	static void log(const std::string& str, const LogType type = LogType::NONE);
 	static void fatal(const char* str);
 	static void fatal(const std::string& str);
+
 	static void breakline();
+
 	static void logCached(const char* str, const LogType type = LogType::NONE);
 	static void logCached(const std::string& str, const LogType type = LogType::NONE);
+
 	static void printCache();
 	static void clearCache();
+
+	static std::string input(const std::string& msg = "");
 };

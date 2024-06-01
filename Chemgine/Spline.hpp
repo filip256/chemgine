@@ -11,6 +11,8 @@ private:
 	T getSlope(const size_t i, const size_t j) const;
 
 public:
+	using StorageType = T;
+
 	Spline() = default;
 	Spline(
 		std::vector<std::pair<T, T>>&& points,
@@ -23,7 +25,7 @@ public:
 	Spline(const Spline&) = default;
 	Spline(Spline&&) = default;
 
-	Spline& operator=(Spline&& other) = default;
+	Spline& operator=(Spline&&) = default;
 
 	const std::pair<T, T>& front() const;
 	const std::pair<T, T>& back() const;

@@ -9,6 +9,9 @@
 #include "Condenser.hpp"
 #include "PropertyPane.hpp"
 #include "Vapour.hpp"
+#include "DataHelpers.hpp"
+#include "DragNDropHelper.hpp"
+#include "CursorHelper.hpp"
 
 class UIContext
 {
@@ -43,34 +46,6 @@ private:
         constexpr static const size_t none = static_cast<size_t>(-1);
     };
 
-    class DragNDropHelper
-    {
-        bool inUse = false;
-        sf::Vector2f initialPos;
-
-    public:
-
-        void start(const sf::Vector2f& point) 
-        { 
-            inUse = true;
-            initialPos = point; 
-        }
-        void end()
-        { 
-            inUse = false;
-        }
-        void resetOrigin(const sf::Vector2f& point) 
-        { 
-            initialPos = point;
-        }
-        bool isInUse() const 
-        { 
-            return inUse;
-        }
-
-        sf::Vector2f getDelta(const sf::Vector2f& point) const { return point - initialPos; }
-    };
-
 public:
 
 	void run()
@@ -96,6 +71,10 @@ public:
         lab.add<Heatsource>(401);
         lab.add<Heatsource>(401);
         lab.add<Condenser>(501);
+
+        CursorHelper cursorHelper(window, sf::Cursor::Type::Cross);
+
+        std::optional<std::pair<Molecule, Amount<Unit::MOLE>>> inputMolecule = std::nullopt;
 
         flask1.add(Molecule("CC(=O)O"), 4.0_mol);
         flask2.add(Molecule("O"), 10.0_mol);
@@ -134,10 +113,25 @@ public:
                 {
                     if (event.mouseButton.button == sf::Mouse::Left)
                     {
-                        if (const size_t sys = lab.getSystemAt(mousePos); sys != Lab::npos)
+                        if (const auto sys = lab.getSystemAt(mousePos); sys != Lab::npos)
                         {
                             inHand.set(sys);
                             dndHelper.start(mousePos);
+                        }
+                    }
+                    else if (event.mouseButton.button == sf::Mouse::Right)
+                    {
+                        if (inputMolecule.has_value())
+                        {
+                            if (const auto [sys, comp] = lab.getSystemComponentAt(mousePos); sys != Lab::npos)
+                            {
+                                auto& component = lab.getSystem(sys).getComponent(comp);
+                                if (auto container = component.cast<BaseContainerComponent>())
+                                {
+                                    container->add(inputMolecule->first, inputMolecule->second);
+                                    Logger::log("Added " + inputMolecule->second.toString() + " of " + inputMolecule->first.data().name, LogType::INFO);
+                                }
+                            }
                         }
                     }
                 }
@@ -177,7 +171,23 @@ public:
                 }
                 else if (event.type == sf::Event::KeyReleased)
                 {
-                    if (event.key.code == sf::Keyboard::Key::LControl)
+                    if (event.key.code == sf::Keyboard::Key::I)
+                    {
+                        const auto input = Logger::input("Input Molecule   [SMILES]@[moles]");
+                        const auto temp = DataHelpers::parsePair<Molecule, Unit::MOLE>(input);
+
+                        if (temp.has_value() == false)
+                        {
+                            Logger::log("Malformed input ignored: " + input, LogType::BAD);
+                            inputMolecule.reset();
+                            cursorHelper.setType(sf::Cursor::Type::Cross);
+                            continue;
+                        }
+
+                        inputMolecule.emplace(*temp);
+                        cursorHelper.setType(sf::Cursor::Type::Hand);
+                    }
+                    else if (event.key.code == sf::Keyboard::Key::LControl)
                     {
                         drawPropertyPane = false;
                     }
@@ -193,7 +203,7 @@ public:
                 callRemoveEmptySystems = false;
             }
 
-            if (const auto timespan = tickClock.getElapsedTime().asSeconds(); timespan >= 0.01)
+            if (const auto timespan = tickClock.getElapsedTime().asSeconds(); timespan >= 0.1)
             {
                 //flask2.add(100.0_J);
                 lab.tick(timespan);

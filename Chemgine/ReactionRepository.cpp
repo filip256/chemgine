@@ -95,7 +95,7 @@ bool ReactionRepository::loadFromFile(const std::string& path)
 			continue;
 		}
 
-		// speed
+		//speed
 		const auto speed = DataHelpers::parsePair<Unit::MOLE_PER_SECOND, Unit::CELSIUS>(line[4])
 			.value_or(std::make_pair(1.0, 20.0));
 

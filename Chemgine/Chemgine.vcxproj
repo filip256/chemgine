@@ -202,6 +202,9 @@
     <ClCompile Include="CondenserData.cpp" />
     <ClCompile Include="ContentInitializer.cpp" />
     <ClCompile Include="Context.cpp" />
+    <ClCompile Include="CursorHelper.cpp" />
+    <ClCompile Include="DataHelpers.cpp" />
+    <ClCompile Include="DragNDropHelper.cpp" />
     <ClCompile Include="DynamicAmount.cpp" />
     <ClCompile Include="EquipmentComponent.cpp" />
     <ClCompile Include="EstimatorRepository.cpp" />
@@ -285,7 +288,9 @@
     <ClInclude Include="ContainerComponent.hpp" />
     <ClInclude Include="BaseContainerLabwareData.hpp" />
     <ClInclude Include="Context.hpp" />
+    <ClInclude Include="CursorHelper.hpp" />
     <ClInclude Include="DirectedGraph.hpp" />
+    <ClInclude Include="DragNDropHelper.hpp" />
     <ClInclude Include="DynamicAmount.hpp" />
     <ClInclude Include="EquipmentComponent.hpp" />
     <ClInclude Include="EstimatorRepository.hpp" />
@@ -305,7 +310,6 @@
     <ClInclude Include="Catalyst.hpp" />
     <ClInclude Include="Collision.hpp" />
     <ClInclude Include="CompositeComponent.hpp" />
-    <ClCompile Include="DataHelpers.cpp" />
     <ClCompile Include="DataStore.cpp" />
     <ClCompile Include="Repository.cpp" />
     <ClCompile Include="GenericMoleculeData.cpp" />

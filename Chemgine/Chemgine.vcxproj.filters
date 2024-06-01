@@ -145,13 +145,16 @@
     <Filter Include="Source Files\Graphics\Particles">
       <UniqueIdentifier>{f922ff8a-3fc4-47ae-bfb3-80d2466c3180}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Graphics\UI">
+      <UniqueIdentifier>{697a8b97-d7c6-4aa7-b154-a6aa4bfafcf8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\UI">
+      <UniqueIdentifier>{d90db257-9af8-417d-a155-7acbde95b276}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataStore.cpp">
       <Filter>Source Files\Data</Filter>
-    </ClCompile>
-    <ClCompile Include="DataHelpers.cpp">
-      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="Logger.cpp">
       <Filter>Source Files\Logger</Filter>
@@ -428,6 +431,15 @@
     </ClCompile>
     <ClCompile Include="MolecularStructure.cpp">
       <Filter>Source Files\Molecules</Filter>
+    </ClCompile>
+    <ClCompile Include="DataHelpers.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="CursorHelper.cpp">
+      <Filter>Source Files\Graphics\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="DragNDropHelper.cpp">
+      <Filter>Source Files\Graphics\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -808,6 +820,12 @@
     </ClInclude>
     <ClInclude Include="RetrosynthReaction.hpp">
       <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="CursorHelper.hpp">
+      <Filter>Header Files\Graphics\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="DragNDropHelper.hpp">
+      <Filter>Header Files\Graphics\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

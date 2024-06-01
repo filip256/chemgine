@@ -12,8 +12,10 @@ std::vector<std::string> DataHelpers::parseList(const std::string& line, const c
 				result.emplace_back(std::move(line.substr(lastSep + 1, i - lastSep - 1)));
 			lastSep = i;
 		}
+
 	if (ignoreEmpty == false || lastSep + 1 < line.size())
 		result.emplace_back(std::move(line.substr(lastSep + 1)));
+
 	return result;
 }
 
@@ -26,7 +28,7 @@ std::vector<std::vector<std::string>> DataHelpers::parseLists(const std::string&
 	for (size_t i = 0; i < outer.size(); ++i)
 	{
 		auto t = parseList(outer[i], inSep, ignoreEmpty);
-		if(ignoreEmpty == false || t.size())
+		if (ignoreEmpty == false || t.size())
 			result.emplace_back(std::move(t));
 	}
 

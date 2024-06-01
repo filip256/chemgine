@@ -5,7 +5,10 @@
 
 uint8_t Logger::contexts = 0;
 LogType Logger::severityLevel = LogType::ALL;
+
 std::ostream& Logger::outputStream = std::cout;
+std::istream& Logger::inputStream = std::cin;
+
 std::vector<std::pair<LogType, std::string>> Logger::cache;
 
 void Logger::enterContext()
@@ -135,4 +138,16 @@ void Logger::clearCache()
 #ifdef CHEM_ENABLE_LOGGING
 	cache.clear();
 #endif
+}
+
+std::string Logger::input(const std::string& msg)
+{
+	if(msg.empty() == false)
+		outputStream << msg << '\n';
+
+	outputStream << ">>> ";
+
+	std::string line;
+	std::cin >> line;
+	return line;
 }
