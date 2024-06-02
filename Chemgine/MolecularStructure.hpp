@@ -24,7 +24,8 @@ private:
         const size_t x,
         const size_t y,
         const c_size c,
-        std::vector<uint8_t>& visited) const;
+        std::vector<uint8_t>& visited,
+        const bool printImpliedHydrogens) const;
 
     static void insertCycleHeads(
         std::string& smiles,
@@ -38,6 +39,16 @@ private:
         std::map<c_size, uint8_t>& cycleHeads,
         const size_t insertOffset) const;
 
+    void removeAtom(const c_size idx);
+
+    void removeUnnecessaryHydrogens();
+
+    /// <summary>
+    /// Returns the number of required hydrogens in order to complete the component's valence.
+    /// If the valences of the component aren't respected it returns -1.
+    /// Complexity: O(n_bonds)
+    /// </summary>
+    int8_t countImpliedHydrogens(const c_size idx) const;
     /// <summary>
     /// Returns the number of required hydrogens in order to complete the molecule.
     /// If the valences of the components aren't respected it returns -1.

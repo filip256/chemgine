@@ -33,6 +33,10 @@ public:
 
 	bool isAtomicType() const;
 	bool isCompositeType() const;
+	virtual bool isRadicalType() const;
+
+	bool operator==(const BaseComponent& other) const;
+	bool operator!=(const BaseComponent& other) const;
 
 	static void setDataStore(const DataStore& dataStore);
 
@@ -51,8 +55,6 @@ public:
 	/// Must be the exact atoms or satisfy radical matching.
 	/// </summary>
 	static bool areMatching(const BaseComponent& x, const BaseComponent& y);
-
-	virtual bool isRadicalType() const;
 
 	virtual uint8_t getPrecedence() const = 0;
 

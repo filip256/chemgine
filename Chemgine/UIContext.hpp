@@ -203,7 +203,7 @@ public:
                 callRemoveEmptySystems = false;
             }
 
-            if (const auto timespan = tickClock.getElapsedTime().asSeconds(); timespan >= 0.1)
+            if (const auto timespan = tickClock.getElapsedTime().asSeconds(); timespan >= 0.05)
             {
                 //flask2.add(100.0_J);
                 lab.tick(timespan);

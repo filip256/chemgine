@@ -58,9 +58,19 @@ bool BaseComponent::isRadicalType() const
 	return false;
 }
 
+bool BaseComponent::operator==(const BaseComponent& other) const
+{
+	return this->id == other.id;
+}
+
+bool BaseComponent::operator!=(const BaseComponent& other) const
+{
+	return this->id != other.id;
+}
+
 bool BaseComponent::areEqual(const BaseComponent& x, const BaseComponent& y)
 {
-	return x.getId() == y.getId();
+	return x == y;
 }
 
 bool BaseComponent::areMatching(const BaseComponent& x, const BaseComponent& y)

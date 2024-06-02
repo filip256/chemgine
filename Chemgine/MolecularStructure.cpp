@@ -132,7 +132,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 
             if (Atom::isDefined(smiles.substr(i + 1, t - i - 1)) == false)
             {
-                Logger::log("Atomic symbol '" + smiles.substr(i + 1, t - i - 1) + "' at " + std::to_string(i) + "is undefined.", LogType::BAD);
+                Logger::log("Atomic symbol '" + smiles.substr(i + 1, t - i - 1) + "' at " + std::to_string(i) + " is undefined.", LogType::BAD);
                 clear();
                 return false;
             }
@@ -203,6 +203,8 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
         clear();
         return false;
     }
+
+    removeUnnecessaryHydrogens();
 
     const auto hCount = countImpliedHydrogens();
     if(hCount == -1)
@@ -287,21 +289,51 @@ void MolecularStructure::canonicalize()
     }
 }
 
+void MolecularStructure::removeAtom(const c_size idx)
+{
+    bonds.erase(bonds.begin() + idx);
+    delete components[idx];
+    components.erase(components.begin() + idx);
+
+    // repair bond indexes
+    for (c_size i = 0; i < bonds.size(); ++i)
+        for (c_size j = bonds[i].size(); j-- > 0;)
+        {
+            if (bonds[i][j].other > idx)
+                --bonds[i][j].other;
+            else if (bonds[i][j].other == idx)
+                bonds[i].erase(bonds[i].begin() + j);
+        }
+}
+
+void MolecularStructure::removeUnnecessaryHydrogens()
+{
+    for (c_size i = components.size(); i-- > 0;)
+        if (*components[i] == Atom("H") && bonds[i].front().getType() == BondType::SINGLE)
+            removeAtom(i);
+}
+
+int8_t MolecularStructure::countImpliedHydrogens(const c_size idx) const
+{
+    if (components[idx]->isRadicalType())
+        return 0;
+
+    const auto d = getDegreeOf(idx);
+    const auto v = static_cast<const Atom*>(components[idx])->data().getFittingValence(d);
+
+    return v == AtomData::nullValence ? -1 : v - d;
+}
+
 int16_t MolecularStructure::countImpliedHydrogens() const
 {
     int16_t hCount = 0;
     for (c_size i = 0; i < components.size(); ++i)
     {
-        if (components[i]->isRadicalType())
-            continue;
-
-        const auto d = getDegreeOf(i);
-        const auto v = static_cast<const Atom*>(components[i])->data().getFittingValence(d);
-
-        if (v == AtomData::nullValence)
+        const auto h = countImpliedHydrogens(i);
+        if (h == -1)
             return -1;
 
-        hCount += v - d;
+        hCount += h;
     }
     return hCount;
 }
@@ -331,7 +363,7 @@ Amount<Unit::GRAM_PER_MOLE> MolecularStructure::getMolarMass() const
     {
         cnt += components[i]->data().weight;
     }
-    cnt += Atom('H').data().weight * impliedHydrogenCount;
+    cnt += Atom("H").data().weight * impliedHydrogenCount;
     return cnt.to<Unit::GRAM_PER_MOLE>(Amount<Unit::MOLE>(1.0));
 }
 
@@ -490,7 +522,8 @@ void MolecularStructure::rPrint(
     const size_t x,
     const size_t y,
     const c_size c,
-    std::vector<uint8_t>& visited) const
+    std::vector<uint8_t>& visited,
+    const bool printImpliedHydrogens) const
 {
     if (x < 1 || y < 1 ||
         x >= buffer[0].size() - 2 || y >= buffer.size() - 2 ||
@@ -500,7 +533,9 @@ void MolecularStructure::rPrint(
     visited[c] = true;
 
     const auto& symb = components[c]->getSMILES();
-    for(uint8_t i = 0; i < symb.size() && x + i < buffer[0].size(); ++i)
+    const uint8_t symbSize = symb.size();
+
+    for(uint8_t i = 0; i < symbSize && x + i < buffer[0].size(); ++i)
         buffer[y][x + i] = symb[i];
 
     for (c_size i = 0; i < bonds[c].size(); ++i)
@@ -526,45 +561,45 @@ void MolecularStructure::rPrint(
                 break;
             }
 
-            if (buffer[y][x + 2] == ' ')
+            if (buffer[y][x + symbSize + 1] == ' ')
             {
-                buffer[y][x + 1] = hC;
-                rPrint(buffer, x + 2, y, bonds[c][i].other, visited);
+                buffer[y][x + symbSize] = hC;
+                rPrint(buffer, x + symbSize + 1, y, bonds[c][i].other, visited, printImpliedHydrogens);
             }
             else if (buffer[y][x - 2] == ' ')
             {
                 buffer[y][x - 1] = hC;
-                rPrint(buffer, x - 2, y, bonds[c][i].other, visited);
+                rPrint(buffer, x - 2, y, bonds[c][i].other, visited, printImpliedHydrogens);
             }
             else if (buffer[y - 2][x] == ' ')
             {
                 buffer[y - 1][x] = vC;
-                rPrint(buffer, x, y - 2, bonds[c][i].other, visited);
+                rPrint(buffer, x, y - 2, bonds[c][i].other, visited, printImpliedHydrogens);
             }
             else if (buffer[y + 2][x] == ' ')
             {
                 buffer[y + 1][x] = vC;
-                rPrint(buffer, x, y + 2, bonds[c][i].other, visited);
+                rPrint(buffer, x, y + 2, bonds[c][i].other, visited, printImpliedHydrogens);
             }
-            else if (buffer[y + 2][x + 2] == ' ')
+            else if (buffer[y + 2][x + symbSize + 1] == ' ')
             {
-                buffer[y + 1][x + 1] = d1C;
-                rPrint(buffer, x + 2, y + 2, bonds[c][i].other, visited);
+                buffer[y + 1][x + symbSize] = d1C;
+                rPrint(buffer, x + symbSize + 1, y + 2, bonds[c][i].other, visited, printImpliedHydrogens);
             }
             else if (buffer[y + 2][x - 2] == ' ')
             {
                 buffer[y + 1][x - 1] = d2C;
-                rPrint(buffer, x - 2, y + 2, bonds[c][i].other, visited);
+                rPrint(buffer, x - 2, y + 2, bonds[c][i].other, visited, printImpliedHydrogens);
             }
-            else if (buffer[y - 2][x + 2] == ' ')
+            else if (buffer[y - 2][x + symbSize + 1] == ' ')
             {
-                buffer[y - 1][x + 1] = d2C;
-                rPrint(buffer, x + 2, y - 2, bonds[c][i].other, visited);
+                buffer[y - 1][x + symbSize] = d2C;
+                rPrint(buffer, x + symbSize + 1, y - 2, bonds[c][i].other, visited, printImpliedHydrogens);
             }
             else if (buffer[y - 2][x - 2] == ' ')
             {
                 buffer[y - 1][x - 1] = d1C;
-                rPrint(buffer, x - 2, y - 2, bonds[c][i].other, visited);
+                rPrint(buffer, x - 2, y - 2, bonds[c][i].other, visited, printImpliedHydrogens);
             }
             else
             {
@@ -572,6 +607,61 @@ void MolecularStructure::rPrint(
                 break;
             }
         }
+
+    if (printImpliedHydrogens)
+    {
+        const auto hCount = countImpliedHydrogens(c);
+        for (int8_t i = 0; i < hCount; ++i)
+        {
+            char vC = '³', hC = 'Ä', d1C = '\\', d2C = '/';
+
+            if (buffer[y][x + symbSize + 1] == ' ')
+            {
+                buffer[y][x + symbSize] = hC;
+                buffer[y][x + symbSize + 1] = 'H';
+            }
+            else if (buffer[y][x - 2] == ' ')
+            {
+                buffer[y][x - 1] = hC;
+                buffer[y][x - 2] = 'H';
+            }
+            else if (buffer[y - 2][x] == ' ')
+            {
+                buffer[y - 1][x] = vC;
+                buffer[y - 2][x] = 'H';
+            }
+            else if (buffer[y + 2][x] == ' ')
+            {
+                buffer[y + 1][x] = vC;
+                buffer[y + 2][x] = 'H';
+            }
+            else if (buffer[y + 2][x + symbSize + 1] == ' ')
+            {
+                buffer[y + 1][x + symbSize] = d1C;
+                buffer[y + 2][x + symbSize + 1] = 'H';
+            }
+            else if (buffer[y + 2][x - 2] == ' ')
+            {
+                buffer[y + 1][x - 1] = d2C;
+                buffer[y + 2][x - 2] = 'H';
+            }
+            else if (buffer[y - 2][x + symbSize + 1] == ' ')
+            {
+                buffer[y - 1][x + symbSize] = d2C;
+                buffer[y - 2][x + symbSize + 1] = 'H';
+            }
+            else if (buffer[y - 2][x - 2] == ' ')
+            {
+                buffer[y - 1][x - 1] = d1C;
+                buffer[y - 2][x - 2] = 'H';
+            }
+            else
+            {
+                Logger::log("Incomplete ASCII print.", LogType::BAD);
+                break;
+            }
+        }
+    }
 }
 
 std::string MolecularStructure::print() const
@@ -585,7 +675,7 @@ std::string MolecularStructure::print() const
 
     TextBlock buffer(100, 50);
     std::vector<uint8_t> visited(components.size(), false);
-    rPrint(buffer, buffer[0].size() / 4, buffer.size() / 2, 0, visited);
+    rPrint(buffer, buffer[0].size() / 4, buffer.size() / 2, 0, visited, !isOrganic());
 
     buffer.trim();
     return buffer.toString();

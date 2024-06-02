@@ -17,3 +17,4 @@ Id,Name,Reactants,Products,Speed,Energy,Activation,Catalysts
 #216,dehydration,RO,ROR;O,1.0_mol@20_C,,0.0,O=C(CC)OC@0.5
 #217,dehydration,RO,ROR;O,1.0_mol@20_C,,0.0,O=C(CC)OC@0.7
 #218,dehydration,RO,ROR;O,1.0_mol@20_C,,0.0,O=C(CC)OC@0.5;N(R)@0.3
+#219,acid_base,[Na]OH;H[Cl],[Na][Cl];O,1.0_mol@20_C,,0.0,

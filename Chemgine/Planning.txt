@@ -291,6 +291,8 @@ Tasks:
   DONE. Add retrosynthesis single step search
   DONE. Add arrangements generator
   DONE. Add total chemical span generator
+  DONE. Implid hydrogen printing for inorganic molecules
+  34. Add molar mass test
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules

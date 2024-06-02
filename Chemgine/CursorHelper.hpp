@@ -8,7 +8,8 @@ class CursorHelper
 {
 private:
     sf::Window& window;
-    std::unordered_map<sf::Cursor::Type, std::unique_ptr<sf::Cursor>> cursors;
+    
+    static std::unordered_map<sf::Cursor::Type, std::unique_ptr<sf::Cursor>> cursors;
 
 public:
     CursorHelper(sf::Window& window) noexcept;

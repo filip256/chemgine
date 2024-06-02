@@ -5,13 +5,13 @@
 
 void AtomRepository::addPredefined()
 {
-	table.emplace(101, "*", AtomData(101, "*", "any radical", 0, { 1 }));
-	table.emplace(102, "R", AtomData(102, "R", "alkyl radical", 0, { 1 }));
-	table.emplace(103, "A", AtomData(103, "A", "aromatic radical", 0, { 1 }));
-	table.emplace(104, "X", AtomData(104, "X", "halogen radical", 0, { 1 }));
-	table.emplace(105, "Me", AtomData(105, "Me", "metal radical", 0, { 1 }));
+	table.emplace(21, "*", AtomData(21, "*", "any radical", 0, { 1 }));
+	table.emplace(22, "R", AtomData(22, "R", "alkyl radical", 0, { 1 }));
+	table.emplace(23, "A", AtomData(23, "A", "aromatic radical", 0, { 1 }));
+	table.emplace(24, "X", AtomData(24, "X", "halogen radical", 0, { 1 }));
+	table.emplace(25, "Me", AtomData(25, "Me", "metal radical", 0, { 1 }));
 
-	table.emplace(199, "H", AtomData(199, "H", "Hydrogen", 1.008, { 1 }));
+	table.emplace(101, "H", AtomData(101, "H", "Hydrogen", 1.008, { 1 }));
 }
 
 bool AtomRepository::loadFromFile(const std::string& path)

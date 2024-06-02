@@ -1,5 +1,7 @@
 #include "CursorHelper.hpp"
 
+std::unordered_map<sf::Cursor::Type, std::unique_ptr<sf::Cursor>> CursorHelper::cursors;
+
 CursorHelper::CursorHelper(sf::Window& window) noexcept:
     window(window)
 {}
