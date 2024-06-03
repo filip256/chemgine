@@ -20,8 +20,11 @@ class MolecularStructureTest
 {
 private:
 	bool passed = true;
-	std::vector<MolecularStructure> setA, setB, setC, setD, setE, setF, setG;
+	std::vector<MolecularStructure> setA, setB, setC, setD, setE, setF, setG, setM;
 	std::unordered_map<std::string, std::vector<uint8_t>> res;
+	std::unordered_map<std::string, std::vector<float>> resFloat;
+
+	const float massThreshold = 1;
 
 public:
 	void initialize()
@@ -30,6 +33,7 @@ public:
 		res.emplace(std::make_pair("==", std::vector<uint8_t>()));
 		res.emplace(std::make_pair("maximal", std::vector<uint8_t>()));
 		res.emplace(std::make_pair("addSub", std::vector<uint8_t>()));
+		resFloat.emplace(std::make_pair("mass", std::vector<float>()));
 
 		setA.emplace_back(std::move(MolecularStructure("CN(C)C(=O)C1=CC=CC=C1")));
 		setB.emplace_back(std::move(MolecularStructure("C1=CC=CC=C1R")));
@@ -174,6 +178,23 @@ public:
 		setG.emplace_back(std::move(MolecularStructure("OC1(CC1)C")));
 		setG.emplace_back(std::move(MolecularStructure("OC1C2CC12")));
 		setG.emplace_back(std::move(MolecularStructure("CC2CCCC(C1CCCCC1)C2")));
+
+		//-----//
+
+		setM.emplace_back(std::move(MolecularStructure("CN(C)C(=O)C1=CC=CC=C1")));
+		resFloat["mass"].emplace_back(149.084f);
+
+		setM.emplace_back(std::move(MolecularStructure("CC(=O)OC")));
+		resFloat["mass"].emplace_back(74.079f);
+
+		setM.emplace_back(std::move(MolecularStructure("C1CCCC1")));
+		resFloat["mass"].emplace_back(70.1f);
+
+		setM.emplace_back(std::move(MolecularStructure("CN1CC(C=C2C1CC3=CNC4=CC=CC2=C34)C(=O)O")));
+		resFloat["mass"].emplace_back(268.121f);
+
+		setM.emplace_back(std::move(MolecularStructure("[Mg](O)O")));
+		resFloat["mass"].emplace_back(58.319f);
 	}
 
 	void runTests()
@@ -239,6 +260,18 @@ public:
 				Logger::log("Test failed > MolecularStructure > addSubstituents > #" + std::to_string(i)
 					+ ": expected=" + std::to_string(res["addSub"][i]) + "\n"
 					+ setE[i].print() + '\n' + setF[i].print(), LogType::BAD);
+				passed = false;
+			}
+		}
+
+		for (size_t i = 0; i < setM.size(); ++i)
+		{
+			const auto mass = setM[i].getMolarMass().asStd();
+			if (std::abs(mass - resFloat["mass"][i]) > massThreshold)
+			{
+				Logger::log("Test failed > MolecularStructure > molarMass > #" + std::to_string(i)
+					+ ": expected=" + std::to_string(resFloat["mass"][i]) + "\n"
+					+ "  but got=" + std::to_string(mass), LogType::BAD);
 				passed = false;
 			}
 		}
