@@ -3,20 +3,17 @@
 #include "DataStoreAccessor.hpp"
 #include "MolecularStructure.hpp"
 #include "MoleculeId.hpp"
+#include "Accessor.hpp"
 
 #include <optional>
 
-class Reactable
+class Reactable : public Accessor<>
 {
 private:
-	static DataStoreAccessor dataAccessor;
-
 	const bool isGeneric;
 	const MoleculeId id;
 
 	Reactable(const MoleculeId id, const bool isGeneric) noexcept;
-
-	const DataStore& dataStore() const;
 
 public:
 	Reactable(const Reactable&) = default;
@@ -33,8 +30,6 @@ public:
 
 	static std::optional<Reactable> get(MolecularStructure&& structure);
 	static std::optional<Reactable> get(const std::string& smiles);
-
-	static void setDataStore(const DataStore& dataStore);
 
 	friend struct std::hash<Reactable>;
 };

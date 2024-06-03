@@ -6,7 +6,7 @@
 
 #include <unordered_map>
 
-class Atom : public Accessor<AtomData>
+class Atom : public Accessor<>
 {
 public:
     const AtomId id;

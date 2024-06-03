@@ -3,8 +3,6 @@
 #include "Amount.hpp"
 #include "Formulas.hpp"
 
-DataStoreAccessor Molecule::dataAccessor = DataStoreAccessor();
-
 Molecule::Molecule(const MoleculeId id) noexcept :
 	id(id),
 	molarMass(dataAccessor.getSafe().molecules.at(id).getStructure().getMolarMass())
@@ -19,11 +17,6 @@ Molecule::Molecule(MolecularStructure&& structure) noexcept :
 Molecule::Molecule(const std::string& smiles) noexcept :
 	Molecule(MolecularStructure(smiles))
 {}
-
-void Molecule::setDataStore(const DataStore& dataStore)
-{
-	dataAccessor.set(dataStore);
-}
 
 MoleculeId Molecule::getId() const
 {

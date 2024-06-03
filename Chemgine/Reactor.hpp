@@ -8,6 +8,7 @@
 #include "ConcreteReaction.hpp"
 #include "Atmosphere.hpp"
 #include "FlagField.hpp"
+#include "Accessor.hpp"
 
 enum class TickMode : uint8_t
 {
@@ -22,7 +23,7 @@ enum class TickMode : uint8_t
 	ENABLE_ALL = static_cast<uint8_t>(-1)
 };
 
-class Reactor : public MultiLayerMixture
+class Reactor : public MultiLayerMixture, public Accessor<>
 {
 private:
 	double stirSpeed = 0.0;
@@ -33,8 +34,6 @@ private:
 	const BaseEstimator* concentrationSpeedEstimator = nullptr;
 
 	std::unordered_set<ConcreteReaction> cachedReactions;
-
-	static DataStoreAccessor dataAccessor;
 
 	double getInterLayerReactivityCoefficient(const Reactant& r1, const Reactant& r2) const;
 	double getInterLayerReactivityCoefficient(const ReactantSet& reactants) const;
@@ -79,6 +78,4 @@ public:
 		const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
 
 	Reactor makeCopy() const;
-
-	static void setDataStore(const DataStore& dataStore);
 };

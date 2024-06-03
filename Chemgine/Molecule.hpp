@@ -2,14 +2,13 @@
 
 #include "DataStoreAccessor.hpp"
 #include "MoleculeData.hpp"
-#include "Amount.hpp"
 #include "AggregationType.hpp"
+#include "Accessor.hpp"
+#include "Amount.hpp"
 
-class Molecule
+class Molecule : public Accessor<>
 {
 private:
-	static DataStoreAccessor dataAccessor;
-
 	const MoleculeId id;
 	Amount<Unit::GRAM_PER_MOLE> molarMass;
 
@@ -98,8 +97,6 @@ public:
 
 	bool operator==(const Molecule& other) const;
 	bool operator!=(const Molecule& other) const;
-
-	static void setDataStore(const DataStore& dataStore);
 
 	friend struct std::hash<Molecule>;
 };

@@ -3,7 +3,6 @@
 #include "Logger.hpp"
 
 size_t BaseLabwareComponent::instanceCount = 0;
-DataStoreAccessor BaseLabwareComponent::dataAccessor = DataStoreAccessor();
 
 BaseLabwareComponent::BaseLabwareComponent(
 	const LabwareId id,
@@ -14,16 +13,6 @@ BaseLabwareComponent::BaseLabwareComponent(
 {
 	if (type != data.type)
 		Logger::fatal("Labware component given by id: " + std::to_string(id) + " does not match the requested component type.");
-}
-
-const DataStore& BaseLabwareComponent::dataStore() const
-{
-	return dataAccessor.getSafe();
-}
-
-void BaseLabwareComponent::setDataStore(const DataStore& dataStore)
-{
-	dataAccessor.set(dataStore);
 }
 
 bool BaseLabwareComponent::isFlask() const

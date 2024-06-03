@@ -836,12 +836,9 @@ public:
 	TestManager()
 	{
 		Logger::enterContext();
+		Accessor<>::setDataStore(store);
+
 		const auto begin = std::chrono::steady_clock::now();
-		Atom::setDataStore(store);
-		Reactable::setDataStore(store);
-		Reactor::setDataStore(store);
-		Molecule::setDataStore(store);
-		BaseLabwareComponent::setDataStore(store);
 		store.loadAtomsData("Data/AtomData.csv")
 			.loadEstimatorsData("")
 			.loadMoleculesData("Data/MoleculeData.csv")

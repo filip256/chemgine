@@ -43,11 +43,8 @@ int main()
         //#endif
 
         DataStore store;
-        Atom::setDataStore(store);
-        Reactable::setDataStore(store);
-        Reactor::setDataStore(store);
-        Molecule::setDataStore(store);
-        BaseLabwareComponent::setDataStore(store);
+        Accessor<>::setDataStore(store);
+
         store.loadAtomsData("Data/AtomData.csv")
             .loadEstimatorsData("")
             .loadMoleculesData("Data/MoleculeData.csv")

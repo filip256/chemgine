@@ -4,8 +4,6 @@
 #include "Utils.hpp"
 #include "Logger.hpp"
 
-DataStoreAccessor Reactor::dataAccessor = DataStoreAccessor();
-
 Reactor::Reactor(const Reactor& other) noexcept :
 	MultiLayerMixture(static_cast<const MultiLayerMixture&>(other).makeCopy()),
 	temperatureSpeedEstimator(other.temperatureSpeedEstimator),
@@ -38,11 +36,6 @@ Reactor::Reactor(
 ) noexcept :
 	Reactor(atmosphere, maxVolume, atmosphere)
 {}
-
-void Reactor::setDataStore(const DataStore& dataStore)
-{
-	dataAccessor.set(dataStore);
-}
 
 double Reactor::getInterLayerReactivityCoefficient(const Reactant& r1, const Reactant& r2) const
 {

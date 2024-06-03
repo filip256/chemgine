@@ -298,7 +298,7 @@ Tasks:
   DONE. Extend radical atom matching to user defined rules
   35. Allow multi-valence radicals
   36. Extend radical atom matching with substructures
-  37. Add Accessor
+  DONE. Add Accessor
   38. Rename BaseX to XBase
   39. Add find() method to MultiIndexMaps and use in repositories
 ---

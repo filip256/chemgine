@@ -1,23 +1,11 @@
 #include "Reactable.hpp"
 #include "DataStore.hpp"
 
-DataStoreAccessor Reactable::dataAccessor = DataStoreAccessor();
-
 Reactable::Reactable(const MoleculeId id, const bool isGeneric) noexcept :
 	id(id),
 	isGeneric(isGeneric)
 {
 	dataAccessor.crashIfUninitialized();
-}
-
-void Reactable::setDataStore(const DataStore& dataStore)
-{
-	dataAccessor.set(dataStore);
-}
-
-const DataStore& Reactable::dataStore() const
-{
-	return dataAccessor.get();
 }
 
 const MoleculeId Reactable::getId() const

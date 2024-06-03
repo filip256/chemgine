@@ -5,13 +5,11 @@
 #include "DrawablePort.hpp"
 #include "Molecule.hpp"
 #include "Mixture.hpp"
+#include "Accessor.hpp"
 #include "SFML/Graphics.hpp"
 
-class BaseLabwareComponent : public sf::Drawable
+class BaseLabwareComponent : public Accessor<>, public sf::Drawable
 {
-private:
-	static DataStoreAccessor dataAccessor;
-
 protected:
 	const BaseLabwareData& data;
 
@@ -20,14 +18,10 @@ protected:
 		const LabwareType type
 	) noexcept;
 
-	const DataStore& dataStore() const;
-
 public:
 	const LabwareId id;
 
 	virtual ~BaseLabwareComponent() = default;
-
-	static void setDataStore(const DataStore& dataStore);
 
 	bool isFlask() const;
 	bool isAdaptor() const;

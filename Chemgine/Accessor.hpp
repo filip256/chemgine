@@ -2,17 +2,19 @@
 
 #include "DataStoreAccessor.hpp"
 
-template<typename DataT>
+/// <summary>
+/// Implements data store related methods.
+/// Different types may be provided as template arguments, allowing multiple data stores
+/// to be used by certain derived types.
+/// </summary>
+template<typename UniqueT = void>
 class Accessor
 {
-private:
+protected:
 	static DataStoreAccessor dataAccessor;
 
-protected:
 	Accessor() = default;
 	virtual ~Accessor() = default;
-
-	virtual const DataT& data() const = 0;
 
 	/// <summary>
 	/// Similar to the static getDataStore but assumes that the null check has been done by the constructor
@@ -32,23 +34,23 @@ public:
 };
 
 
-template<typename DataT>
-DataStoreAccessor Accessor<DataT>::dataAccessor = DataStoreAccessor();
+template<typename UniqueT>
+DataStoreAccessor Accessor<UniqueT>::dataAccessor = DataStoreAccessor();
 
-template<typename DataT>
-void Accessor<DataT>::setDataStore(const DataStore& dataStore)
+template<typename UniqueT>
+void Accessor<UniqueT>::setDataStore(const DataStore& dataStore)
 {
 	dataAccessor.set(dataStore);
 }
 
-template<typename DataT>
-const DataStore& Accessor<DataT>::getDataStore()
+template<typename UniqueT>
+const DataStore& Accessor<UniqueT>::getDataStore()
 {
 	return dataAccessor.getSafe();
 }
 
-template<typename DataT>
-const DataStore& Accessor<DataT>::dataStore() const
+template<typename UniqueT>
+const DataStore& Accessor<UniqueT>::dataStore() const
 {
 	return dataAccessor.get();
 }
