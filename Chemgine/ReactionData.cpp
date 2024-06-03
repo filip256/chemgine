@@ -37,7 +37,7 @@ bool ReactionData::balance(
 
 	SystemMatrix<float> system;
 	const size_t syslen = reactants.size() + products.size() - 1;
-	std::unordered_map<ComponentId, size_t> sysmap;
+	std::unordered_map<AtomId, size_t> sysmap;
 
 	for (size_t i = 0; i < reactants.size(); ++i)
 	{
@@ -138,7 +138,7 @@ bool ReactionData::mapReactantsToProducts()
 			productIgnore[maxIdxJ].insert(p.second);
 
 			// only save radical atoms
-			if (reactants[i].getStructure().getComponent(p.first)->isRadicalType())
+			if (reactants[i].getStructure().getAtom(p.first)->isRadical())
 				componentMapping.emplace(std::make_pair(std::make_pair(i, p.first), std::make_pair(maxIdxJ, p.second)));
 		}
 

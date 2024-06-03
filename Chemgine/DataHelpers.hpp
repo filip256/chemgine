@@ -50,11 +50,17 @@ public:
 		const bool ignoreEmpty = false);
 
 	template <typename T1, typename T2>
-	static std::optional<std::pair<T1, T2>> parsePair(const std::string& str);
+	static std::optional<std::pair<T1, T2>> parsePair(
+		const std::string& str,
+		const char sep = '@');
 	template <Unit U1, Unit U2>
-	static std::optional<std::pair<Amount<U1>, Amount<U2>>> parsePair(const std::string& str);
+	static std::optional<std::pair<Amount<U1>, Amount<U2>>> parsePair(
+		const std::string& str,
+		const char sep = '@');
 	template <typename T, Unit U2>
-	static std::optional< std::pair<T, Amount<U2>>> parsePair(const std::string& str);
+	static std::optional< std::pair<T, Amount<U2>>> parsePair(
+		const std::string& str,
+		const char sep = '@');
 
 
 	template <typename T, typename = void>
@@ -328,9 +334,9 @@ public:
 	class Parser<std::pair<T1, T2>>
 	{
 	public:
-		static std::optional<std::pair<T1, T2>> parse(const std::string& str)
+		static std::optional<std::pair<T1, T2>> parse(const std::string& str, const char sep = '@')
 		{
-			const auto& pairStr = DataHelpers::parseList(str, '@', true);
+			const auto& pairStr = DataHelpers::parseList(str, sep, true);
 			if (pairStr.size() != 2)
 				return std::nullopt;
 
@@ -428,20 +434,25 @@ std::optional<std::vector<T>> DataHelpers::parseList(
 }
 
 template <typename T1, typename T2>
-inline std::optional<std::pair<T1, T2>> DataHelpers::parsePair(const std::string& str)
+inline std::optional<std::pair<T1, T2>> DataHelpers::parsePair(
+	const std::string& str,
+	const char sep)
 {
-	return Parser<std::pair<T1, T2>>::parse(str);
+	return Parser<std::pair<T1, T2>>::parse(str, sep);
 }
 
 template <Unit U1, Unit U2>
-static std::optional<std::pair<Amount<U1>, Amount<U2>>> DataHelpers::parsePair(const std::string& str)
+static std::optional<std::pair<Amount<U1>, Amount<U2>>> DataHelpers::parsePair(
+	const std::string& str,
+	const char sep)
 {
-	return parsePair<Amount<U1>, Amount<U2>>(str);
+	return parsePair<Amount<U1>, Amount<U2>>(str, sep);
 }
 
 template <typename T, Unit U>
-static std::optional< std::pair<T, Amount<U>>> DataHelpers::parsePair(const std::string& str)
+static std::optional< std::pair<T, Amount<U>>> DataHelpers::parsePair(
+	const std::string& str,
+	const char sep)
 {
-	return parsePair<T, Amount<U>>(str);
+	return parsePair<T, Amount<U>>(str, sep);
 }
-

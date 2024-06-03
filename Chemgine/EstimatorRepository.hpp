@@ -30,7 +30,7 @@ private:
 
 	EstimatorId getFreeId() const;
 
-	void addPredefined();
+	void loadBuiltins();
 	const BaseEstimator& add(const BaseEstimator* estimator);
 
 public:

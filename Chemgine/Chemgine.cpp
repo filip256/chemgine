@@ -6,7 +6,6 @@
 #include "DataStore.hpp"
 #include "Logger.hpp"
 #include "Atom.hpp"
-#include "CompositeComponent.hpp"
 #include "Tests.hpp"
 #include "Reactable.hpp"
 
@@ -44,7 +43,7 @@ int main()
         //#endif
 
         DataStore store;
-        BaseComponent::setDataStore(store);
+        Atom::setDataStore(store);
         Reactable::setDataStore(store);
         Reactor::setDataStore(store);
         Molecule::setDataStore(store);
@@ -109,8 +108,8 @@ int main()
         //    .saveMoleculesData("Out/molecules.out.csv");
     }
 
-    if (BaseComponent::instanceCount != 0)
-        Logger::log("Memory leak detected: BaseComponent (" + std::to_string(BaseComponent::instanceCount) + " unreleased instances).", LogType::BAD);
+    if (Atom::instanceCount != 0)
+        Logger::log("Memory leak detected: Atom (" + std::to_string(Atom::instanceCount) + " unreleased instances).", LogType::BAD);
     if (Bond::instanceCount != 0)
         Logger::log("Memory leak detected: Bond (" + std::to_string(Bond::instanceCount) + " unreleased instances).", LogType::BAD);
     if (BaseLabwareData::instanceCount != 0)

@@ -1,31 +1,44 @@
 #pragma once
 
 #include "AtomData.hpp"
-#include "BaseComponent.hpp"
+#include "Accessor.hpp"
+#include "SizeTypedefs.hpp"
 
-class Atom : public BaseComponent
+#include <unordered_map>
+
+class Atom : public Accessor<AtomData>
 {
-private:
+public:
+    const AtomId id;
+
+    Atom(const AtomId id) noexcept;
+    Atom(const Symbol symbol) noexcept;
     Atom(const Atom&) = default;
 
-public:
-    Atom(const ComponentId id);
-    Atom(const std::string& symbol);
-    Atom(const char symbol);
-    Atom(Atom&& atom) noexcept = default;
-    ~Atom() noexcept = default;
+    virtual const AtomData& data() const;
 
-    const AtomData& data() const override final;
+    bool isRadical() const;
 
-    bool isRadicalType() const override final;
+    uint8_t getPrecedence() const;
+    std::string getSMILES() const;
+    std::unordered_map<AtomId, c_size> getComponentCountMap() const;
 
-    static bool isDefined(const ComponentId id);
-    static bool isDefined(const std::string& symbol);
-    static bool isDefined(const char symbol);
+    bool equals(const Atom& other) const;
+    virtual bool matches(const Atom& other) const;
 
-    uint8_t getPrecedence() const override final;
+    bool operator==(const Atom& other) const;
+    bool operator!=(const Atom& other) const;
 
-    std::unordered_map<ComponentId, c_size> getComponentCountMap() const override final;
+    virtual Atom* clone() const;
 
-    Atom* clone() const override final;
+    static bool isDefined(const AtomId id);
+    static bool isDefined(const Symbol symbol);
+
+
+    // for memory leak checking 
+    static size_t instanceCount;
+#ifndef NDEBUG
+    void* operator new(const size_t count);
+    void operator delete(void* ptr);
+#endif
 };

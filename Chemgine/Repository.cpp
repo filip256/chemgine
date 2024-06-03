@@ -71,7 +71,7 @@ void Repository<KeyT1, KeyT2, ObjT>::clear()
 	table.clear();
 }
 
-template class Repository<ComponentId, Symbol, AtomData>;
+template class Repository<AtomId, Symbol, AtomData>;
 template class Repository<MoleculeId, std::string, MoleculeData>;
 template class Repository<MoleculeId, std::string, GenericMoleculeData>;
 template class Repository<ReactionId, std::string, ReactionData>;

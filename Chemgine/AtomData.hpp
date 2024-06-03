@@ -6,14 +6,15 @@
 class AtomData : public BaseComponentData
 {
 private:
-	const Symbol symbol;
-	const std::string& name;
 	const std::vector<uint8_t> valences;
 
 public:
+	const Symbol symbol;
+	const std::string& name;
+
 	AtomData(
-		const ComponentId id,
-		const Symbol& symbol,
+		const AtomId id,
+		const Symbol symbol,
 		const std::string& name,
 		const Amount<Unit::GRAM> weight,
 		std::vector<uint8_t>&& valences) noexcept;
@@ -22,6 +23,8 @@ public:
 	AtomData(AtomData&&) = default;
 	~AtomData() = default;
 
+	bool isRadical() const;
+
 	bool hasValence(const uint8_t v) const;
 	const std::vector<uint8_t>& getValences() const;
 
@@ -29,7 +32,8 @@ public:
 	std::string getSMILES() const override final;
 	std::string getBinaryId() const override final;
 
-	static uint8_t getRarityOf(const Symbol& symbol);
+	static uint8_t getRarityOf(const Symbol symbol);
 
-	static const uint8_t nullValence = static_cast<uint8_t>(-1);
+	static const uint8_t NullValence = static_cast<uint8_t>(-1);
+	static const std::vector<uint8_t> RadicalAnyValence;
 };

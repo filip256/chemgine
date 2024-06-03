@@ -213,9 +213,6 @@
     <ClCompile Include="BaseComponentData.cpp">
       <Filter>Source Files\Moleculars\DataTypes</Filter>
     </ClCompile>
-    <ClCompile Include="CompositeComponentData.cpp">
-      <Filter>Source Files\Moleculars\DataTypes</Filter>
-    </ClCompile>
     <ClCompile Include="AtomRepository.cpp">
       <Filter>Source Files\Moleculars\Repositories</Filter>
     </ClCompile>
@@ -238,12 +235,6 @@
       <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
     <ClCompile Include="Atom.cpp">
-      <Filter>Source Files\Moleculars\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseComponent.cpp">
-      <Filter>Source Files\Moleculars\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="CompositeComponent.cpp">
       <Filter>Source Files\Moleculars\Components</Filter>
     </ClCompile>
     <ClCompile Include="BaseLabwareComponent.cpp">
@@ -441,6 +432,15 @@
     <ClCompile Include="DragNDropHelper.cpp">
       <Filter>Source Files\Graphics\UI</Filter>
     </ClCompile>
+    <ClCompile Include="RadicalData.cpp">
+      <Filter>Source Files\Moleculars\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="Radical.cpp">
+      <Filter>Source Files\Moleculars\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="AtomFactory.cpp">
+      <Filter>Source Files\Moleculars</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -456,9 +456,6 @@
       <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
     <ClInclude Include="BondType.hpp">
-      <Filter>Header Files\Moleculars</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentType.hpp">
       <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
     <ClInclude Include="MultiIndexMap.hpp">
@@ -548,9 +545,6 @@
     <ClInclude Include="BaseComponentData.hpp">
       <Filter>Header Files\Moleculars\DataTypes</Filter>
     </ClInclude>
-    <ClInclude Include="CompositeComponentData.hpp">
-      <Filter>Header Files\Moleculars\DataTypes</Filter>
-    </ClInclude>
     <ClInclude Include="AtomRepository.hpp">
       <Filter>Header Files\Moleculars\Repositories</Filter>
     </ClInclude>
@@ -576,12 +570,6 @@
       <Filter>Header Files\Labware\Components</Filter>
     </ClInclude>
     <ClInclude Include="Atom.hpp">
-      <Filter>Header Files\Moleculars\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseComponent.hpp">
-      <Filter>Header Files\Moleculars\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="CompositeComponent.hpp">
       <Filter>Header Files\Moleculars\Components</Filter>
     </ClInclude>
     <ClInclude Include="Flask.hpp">
@@ -826,6 +814,18 @@
     </ClInclude>
     <ClInclude Include="DragNDropHelper.hpp">
       <Filter>Header Files\Graphics\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="RadicalData.hpp">
+      <Filter>Header Files\Moleculars\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Accessor.hpp">
+      <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="Radical.hpp">
+      <Filter>Header Files\Moleculars\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="AtomFactory.hpp">
+      <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

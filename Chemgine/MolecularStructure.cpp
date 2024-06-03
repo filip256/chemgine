@@ -3,8 +3,8 @@
 #include <queue>
 
 #include "MolecularStructure.hpp"
-#include "CompositeComponent.hpp"
 #include "DataHelpers.hpp"
+#include "AtomFactory.hpp"
 #include "TextBlock.hpp"
 #include "Logger.hpp"
 
@@ -30,9 +30,9 @@ MolecularStructure::MolecularStructure(const MolecularStructure& other) noexcept
     impliedHydrogenCount(other.impliedHydrogenCount),
     bonds(other.bonds.size())
 {
-    this->components.reserve(other.components.size());
-    for (size_t i = 0; i < other.components.size(); ++i)
-        this->components.emplace_back(other.components[i]->clone());
+    this->atoms.reserve(other.atoms.size());
+    for (size_t i = 0; i < other.atoms.size(); ++i)
+        this->atoms.emplace_back(other.atoms[i]->clone());
 
     for (size_t i = 0; i < other.bonds.size(); ++i)
     {
@@ -66,13 +66,13 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
     {
         if (isalpha(smiles[i])) // basic organic atom identification
         {
-            if (Atom::isDefined(smiles[i]))
+            if (Symbol symbol(smiles[i]); Atom::isDefined(symbol))
             {
-                components.emplace_back(new Atom(smiles[i]));
+                atoms.emplace_back(AtomFactory::get(symbol));
             }
-            else if (Atom::isDefined(smiles.substr(i, 2)))
+            else if (Symbol symbol(smiles.substr(i, 2)); Atom::isDefined(symbol))
             {
-                components.emplace_back(new Atom(smiles.substr(i, 2)));
+                atoms.emplace_back(AtomFactory::get(symbol));
                 ++i;
             }
             else
@@ -86,12 +86,12 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 
             if (prev != npos)
             {
-                bonds[prev].emplace_back(Bond(components.size() - 1, bondType));
+                bonds[prev].emplace_back(Bond(atoms.size() - 1, bondType));
                 bonds[bonds.size() - 1].emplace_back(Bond(prev, bondType));
                 bondType = BondType::SINGLE;
             }
 
-            prev = components.size() - 1;
+            prev = atoms.size() - 1;
             continue;
         }
 
@@ -130,24 +130,25 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
                 return false;
             }
 
-            if (Atom::isDefined(smiles.substr(i + 1, t - i - 1)) == false)
+            const Symbol symbol(smiles.substr(i + 1, t - i - 1));
+            if (Atom::isDefined(symbol) == false)
             {
-                Logger::log("Atomic symbol '" + smiles.substr(i + 1, t - i - 1) + "' at " + std::to_string(i) + " is undefined.", LogType::BAD);
+                Logger::log("Atomic symbol '" + symbol.getAsString() + "' at " + std::to_string(i) + " is undefined.", LogType::BAD);
                 clear();
                 return false;
             }
             
-            components.emplace_back(new Atom(smiles.substr(i + 1, t - i - 1)));
+            atoms.emplace_back(AtomFactory::get(symbol));
             bonds.emplace_back(std::vector<Bond>());
 
             if (prev != npos)
             {
-                bonds[prev].emplace_back(Bond(components.size() - 1, bondType));
+                bonds[prev].emplace_back(Bond(atoms.size() - 1, bondType));
                 bonds[bonds.size() - 1].emplace_back(Bond(prev, bondType));
                 bondType = BondType::SINGLE;
             }
 
-            prev = components.size() - 1;
+            prev = atoms.size() - 1;
             i = t;
             continue;
         }
@@ -164,13 +165,13 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             uint8_t label = smiles[i + 1] * 10 + smiles[i + 2] - 11 * '0';
             if (rings.contains(label))
             {
-                bonds[rings[label]].emplace_back(Bond(components.size() - 1, bondType));
-                bonds[components.size() - 1].emplace_back(Bond(rings[label], bondType));
+                bonds[rings[label]].emplace_back(Bond(atoms.size() - 1, bondType));
+                bonds[atoms.size() - 1].emplace_back(Bond(rings[label], bondType));
                 bondType = BondType::SINGLE;
             }
             else
             {
-                rings.emplace(std::move(std::make_pair(label, components.size() - 1)));
+                rings.emplace(std::move(std::make_pair(label, atoms.size() - 1)));
             }
             
             i += 2;
@@ -182,12 +183,12 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             uint8_t label = smiles[i] - '0';
             if (rings.contains(label))
             {
-                bonds[rings[label]].emplace_back(Bond(components.size() - 1, bondType));
-                bonds[components.size() - 1].emplace_back(Bond(rings[label], bondType));
+                bonds[rings[label]].emplace_back(Bond(atoms.size() - 1, bondType));
+                bonds[atoms.size() - 1].emplace_back(Bond(rings[label], bondType));
             }
             else
             {
-                rings.emplace(std::move(std::make_pair(label, components.size() - 1)));
+                rings.emplace(std::move(std::make_pair(label, atoms.size() - 1)));
             }
             continue;
         }
@@ -209,7 +210,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
     const auto hCount = countImpliedHydrogens();
     if(hCount == -1)
     {
-        Logger::log("Valence of a component was exceeded.", LogType::BAD);
+        Logger::log("Valence of an atom was exceeded.", LogType::BAD);
         clear();
         return false;
     }
@@ -220,11 +221,11 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 
 void MolecularStructure::canonicalize()
 {
-    if (components.size() <= 1)
+    if (atoms.size() <= 1)
         return;
 
-    std::vector<const BaseComponent*> copy(components);
-    std::vector<c_size> map(components.size(), npos);
+    std::vector<const Atom*> copy(atoms);
+    std::vector<c_size> map(atoms.size(), npos);
 
 
     for (c_size i = 1; i < copy.size(); ++i)
@@ -243,17 +244,17 @@ void MolecularStructure::canonicalize()
     for (c_size i = 0; i < map.size(); ++i)
     {
         for (c_size j = 0; j < copy.size(); ++j)
-            if (copy[j] == components[i])
+            if (copy[j] == atoms[i])
                 map[i] = j;
     }
 
-    components = std::move(copy);
+    atoms = std::move(copy);
 
     for (c_size i = 0; i < bonds.size(); ++i)
         for (c_size j = 0; j < bonds[i].size(); ++j)
             bonds[i][j].other = map[bonds[i][j].other];
 
-    for (c_size i = 0; i < components.size(); ++i)
+    for (c_size i = 0; i < atoms.size(); ++i)
     {
         if (map[i] == npos || map[i] == i)
             continue;
@@ -279,7 +280,7 @@ void MolecularStructure::canonicalize()
             int j = i - 1;
             auto k = bonds[b][i];
             while (j >= 0 &&
-                components[bonds[b][j].other]->getPrecedence() < components[k.other]->getPrecedence())
+                atoms[bonds[b][j].other]->getPrecedence() < atoms[k.other]->getPrecedence())
             {
                 bonds[b][j + 1] = bonds[b][j];
                 --j;
@@ -292,8 +293,8 @@ void MolecularStructure::canonicalize()
 void MolecularStructure::removeAtom(const c_size idx)
 {
     bonds.erase(bonds.begin() + idx);
-    delete components[idx];
-    components.erase(components.begin() + idx);
+    delete atoms[idx];
+    atoms.erase(atoms.begin() + idx);
 
     // repair bond indexes
     for (c_size i = 0; i < bonds.size(); ++i)
@@ -308,26 +309,23 @@ void MolecularStructure::removeAtom(const c_size idx)
 
 void MolecularStructure::removeUnnecessaryHydrogens()
 {
-    for (c_size i = components.size(); i-- > 0;)
-        if (*components[i] == Atom("H") && bonds[i].front().getType() == BondType::SINGLE)
+    for (c_size i = atoms.size(); i-- > 0;)
+        if (*atoms[i] == Atom("H") && bonds[i].front().getType() == BondType::SINGLE)
             removeAtom(i);
 }
 
 int8_t MolecularStructure::countImpliedHydrogens(const c_size idx) const
 {
-    if (components[idx]->isRadicalType())
-        return 0;
-
     const auto d = getDegreeOf(idx);
-    const auto v = static_cast<const Atom*>(components[idx])->data().getFittingValence(d);
+    const auto v = static_cast<const Atom*>(atoms[idx])->data().getFittingValence(d);
 
-    return v == AtomData::nullValence ? -1 : v - d;
+    return v == AtomData::NullValence ? -1 : v - d;
 }
 
 int16_t MolecularStructure::countImpliedHydrogens() const
 {
     int16_t hCount = 0;
-    for (c_size i = 0; i < components.size(); ++i)
+    for (c_size i = 0; i < atoms.size(); ++i)
     {
         const auto h = countImpliedHydrogens(i);
         if (h == -1)
@@ -346,9 +344,9 @@ uint8_t MolecularStructure::getDegreeOf(const c_size idx) const
     return cnt;
 }
 
-const BaseComponent* MolecularStructure::getComponent(const c_size idx) const
+const Atom* MolecularStructure::getAtom(const c_size idx) const
 {
-    return components[idx];
+    return atoms[idx];
 }
 
 c_size MolecularStructure::getImpliedHydrogenCount() const
@@ -359,9 +357,9 @@ c_size MolecularStructure::getImpliedHydrogenCount() const
 Amount<Unit::GRAM_PER_MOLE> MolecularStructure::getMolarMass() const
 {
     Amount<Unit::GRAM> cnt = 0;
-    for (c_size i = 0; i < components.size(); ++i)
+    for (c_size i = 0; i < atoms.size(); ++i)
     {
-        cnt += components[i]->data().weight;
+        cnt += atoms[i]->data().weight;
     }
     cnt += Atom("H").data().weight * impliedHydrogenCount;
     return cnt.to<Unit::GRAM_PER_MOLE>(Amount<Unit::MOLE>(1.0));
@@ -369,10 +367,10 @@ Amount<Unit::GRAM_PER_MOLE> MolecularStructure::getMolarMass() const
 
 uint8_t MolecularStructure::getDegreesOfFreedom() const
 {
-    if (components.size() == 1) // monoatomics have 3
+    if (atoms.size() == 1) // monoatomics have 3
         return 3;
 
-    if (components.size() == 2 || isVirtualHydrogen()) // diatomics have 5
+    if (atoms.size() == 2 || isVirtualHydrogen()) // diatomics have 5
         return 5;
 
     // TODO: find degreesOfFreedom for other molecules (6 is true for CH4)
@@ -382,8 +380,8 @@ uint8_t MolecularStructure::getDegreesOfFreedom() const
 c_size MolecularStructure::getRadicalAtomsCount() const
 {
     c_size cnt = 0;
-    c_size i = components.size();
-    while (i-- > 0 && components[i]->isRadicalType())
+    c_size i = atoms.size();
+    while (i-- > 0 && atoms[i]->isRadical())
         ++cnt;
 
     return cnt;
@@ -391,7 +389,7 @@ c_size MolecularStructure::getRadicalAtomsCount() const
 
 bool MolecularStructure::isConcrete() const
 {
-    return isVirtualHydrogen() || components.back()->isRadicalType() == false;
+    return isVirtualHydrogen() || atoms.back()->isRadical() == false;
 }
 
 bool MolecularStructure::isGeneric() const
@@ -404,14 +402,14 @@ bool MolecularStructure::isOrganic() const
     const auto carbon = Atom("C");
     const auto hydrogen = Atom("H");
 
-    for (c_size i = 0; i < components.size(); ++i)
+    for (c_size i = 0; i < atoms.size(); ++i)
     {
-        if (components[i]->getId() == carbon.getId())
+        if (carbon == *atoms[i])
         {
             uint8_t cnt = 0;
             for (c_size j = 0; j < bonds[i].size(); ++j)
             {
-                if (components[bonds[i][j].other]->getId() == hydrogen.getId())
+                if (hydrogen == *atoms[bonds[i][j].other])
                     return true;
                 cnt += bonds[i][j].getValence();
             }
@@ -423,21 +421,21 @@ bool MolecularStructure::isOrganic() const
     return false;
 }
 
-std::unordered_map<ComponentId, c_size> MolecularStructure::getComponentCountMap() const
+std::unordered_map<AtomId, c_size> MolecularStructure::getComponentCountMap() const
 {
-    std::unordered_map<ComponentId, c_size> result;
-    for (c_size i = 0; i < components.size(); ++i)
+    std::unordered_map<AtomId, c_size> result;
+    for (c_size i = 0; i < atoms.size(); ++i)
     {
-        if (result.contains(components[i]->getId()))
-            ++result[components[i]->getId()];
+        if (result.contains(atoms[i]->id))
+            ++result[atoms[i]->id];
         else
-            result.emplace(std::move(std::make_pair(components[i]->getId(), 1)));
+            result.emplace(std::move(std::make_pair(atoms[i]->id, 1)));
     }
     
     if (impliedHydrogenCount == 0)
         return result;
 
-    const auto hId = Atom("H").getId();
+    const auto hId = Atom("H").id;
     if (result.contains(hId))
         result[hId] += impliedHydrogenCount;
     else
@@ -448,12 +446,12 @@ std::unordered_map<ComponentId, c_size> MolecularStructure::getComponentCountMap
 
 bool MolecularStructure::isEmpty() const
 {
-    return impliedHydrogenCount == 0 && components.empty();
+    return impliedHydrogenCount == 0 && atoms.empty();
 }
 
 c_size MolecularStructure::componentCount() const
 {
-    return components.size();
+    return atoms.size();
 }
 
 c_size MolecularStructure::virtualBondCount() const
@@ -466,19 +464,19 @@ c_size MolecularStructure::virtualBondCount() const
 
 bool MolecularStructure::isCyclic() const
 {
-    return virtualBondCount() / 2 > components.size() - 1;
+    return virtualBondCount() / 2 > atoms.size() - 1;
 }
 
 bool MolecularStructure::isConnected() const
 {
-    if (components.size() == 0)
+    if (atoms.size() == 0)
         return true;
 
-    if (virtualBondCount() / 2 < components.size() - 1)
+    if (virtualBondCount() / 2 < atoms.size() - 1)
         return false;
 
     std::vector<uint8_t> visited;
-    visited.resize(components.size(), false);
+    visited.resize(atoms.size(), false);
     std::queue<c_size> queue;
 
     c_size c = 0;
@@ -506,7 +504,7 @@ bool MolecularStructure::isConnected() const
 
 bool MolecularStructure::isVirtualHydrogen() const
 {
-    return components.empty() && impliedHydrogenCount == 2;
+    return atoms.empty() && impliedHydrogenCount == 2;
 }
 
 bool MolecularStructure::areAdjacent(const c_size idxA, const c_size idxB) const
@@ -532,7 +530,7 @@ void MolecularStructure::rPrint(
 
     visited[c] = true;
 
-    const auto& symb = components[c]->getSMILES();
+    const auto& symb = atoms[c]->getSMILES();
     const uint8_t symbSize = symb.size();
 
     for(uint8_t i = 0; i < symbSize && x + i < buffer[0].size(); ++i)
@@ -666,7 +664,7 @@ void MolecularStructure::rPrint(
 
 std::string MolecularStructure::print() const
 {
-    if (components.empty())
+    if (atoms.empty())
     {
         if (isVirtualHydrogen())
             return "HÄH\n";
@@ -674,7 +672,7 @@ std::string MolecularStructure::print() const
     }
 
     TextBlock buffer(100, 50);
-    std::vector<uint8_t> visited(components.size(), false);
+    std::vector<uint8_t> visited(atoms.size(), false);
     rPrint(buffer, buffer[0].size() / 4, buffer.size() / 2, 0, visited, !isOrganic());
 
     buffer.trim();
@@ -683,11 +681,11 @@ std::string MolecularStructure::print() const
 
 void MolecularStructure::clear()
 {
-    while (components.empty() == false)
+    while (atoms.empty() == false)
     {
-        bonds[components.size() - 1].clear();
-        delete components.back();
-        components.pop_back();
+        bonds[atoms.size() - 1].clear();
+        delete atoms.back();
+        atoms.pop_back();
     }
     impliedHydrogenCount = 0;
 }
@@ -699,15 +697,15 @@ MolecularStructure MolecularStructure::createCopy() const
 
 bool MolecularStructure::areMatching(
     const c_size idxA, const MolecularStructure& a,
-    const c_size idxB, const MolecularStructure& b)
+    const c_size idxB, const MolecularStructure& b,
+    const bool escapeRadicalTypes)
 {
     if (a.bonds[idxA].size() != b.bonds[idxB].size())
         return false;
 
-    if (BaseComponent::areEqual(*a.components[idxA], *(b.components[idxB])) == false)
-        return false;
-
-    return true;
+    return escapeRadicalTypes ?
+        b.atoms[idxB]->matches(*a.atoms[idxA]) :
+        b.atoms[idxB]->equals(*a.atoms[idxA]);
 }
 
 bool MolecularStructure::areMatching(
@@ -719,12 +717,10 @@ bool MolecularStructure::areMatching(
         return false;
 
     // escape radical types
-    if (escapeRadicalTypes == true && b.components[nextB.other]->isRadicalType())
-    {
-        return true;
-    }
+    if (escapeRadicalTypes == true && b.atoms[nextB.other]->isRadical())
+        return b.atoms[nextB.other]->matches(*a.atoms[nextA.other]);
 
-    if (areMatching(nextA.other, a, nextB.other, b) == false)
+    if (areMatching(nextA.other, a, nextB.other, b, escapeRadicalTypes) == false)
         return false;
 
     // test to see both have the same types of bonds
@@ -767,7 +763,7 @@ uint8_t MolecularStructure::maximalSimilarity(
     if (nextA.getType() != nextB.getType())
         return 0;
 
-    if (BaseComponent::areEqual(*a.components[nextA.other], *(b.components[nextB.other])) == false)
+    if(b.atoms[nextB.other]->equals(*a.atoms[nextA.other]) == false)
         return 0;
 
     return getBondSimilarity(nextA.other, a, nextB.other, b);
@@ -891,20 +887,14 @@ bool MolecularStructure::checkConnectivity(
 
 std::unordered_map<c_size, c_size> MolecularStructure::mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const
 {
-    if (pattern.componentCount() == 0 || this->componentCount() == 0)    // TODO: could a molecule match a patter larger than itself?
+    if (pattern.componentCount() > this->componentCount() || pattern.componentCount() == 0)
         return std::unordered_map<c_size, c_size>();
 
-    // should start with a non radical type     TODO: remove, canonicalization is done anyway
-    c_size pStart = 0;
-    while (pStart < pattern.componentCount() && pattern.components[pStart]->isRadicalType())
-        ++pStart;
-    if (pStart == pattern.componentCount())
-        pStart = 0;
-
-
+    // should start with a non radical type, canonicalization assures this
+    const c_size pStart = 0;
     for (c_size i = 0; i < this->componentCount(); ++i)
     {
-        if (areMatching(i, *this, pStart, pattern))
+        if (areMatching(i, *this, pStart, pattern, escapeRadicalTypes))
         {
             std::vector<uint8_t> visited(pattern.componentCount(), false);
             std::unordered_map<c_size, c_size> mapping;
@@ -934,7 +924,7 @@ std::pair<std::unordered_map<c_size, c_size>, uint8_t> MolecularStructure::maxim
     // find atom that matches in both target and pattern
     std::pair<std::unordered_map<c_size, c_size>, uint8_t> maxMapping;
     uint8_t maxScore = 0;
-    for (c_size i = 0; i < this->components.size(); ++i)
+    for (c_size i = 0; i < this->atoms.size(); ++i)
     {
         if (targetIgnore.contains(i))
             continue;
@@ -943,12 +933,12 @@ std::pair<std::unordered_map<c_size, c_size>, uint8_t> MolecularStructure::maxim
         if (maxMapping.first.contains(i))
             continue;
 
-        for (c_size j = 0; j < pattern.components.size(); ++j)
+        for (c_size j = 0; j < pattern.atoms.size(); ++j)
         {
             if (patternIgnore.contains(j))
                 continue;
 
-            if (BaseComponent::areEqual(*this->components[i], *(pattern.components[j])) == false)
+            if(pattern.atoms[j]->equals(*this->atoms[i]) == false)
                 continue;
 
             const auto score = getBondSimilarity(i, *this, j, pattern);
@@ -986,10 +976,10 @@ void MolecularStructure::copyBranch(
     const std::unordered_set<c_size>& sourceIgnore)
 {
     // overwrites first matching radical atom
-    if (destination.components[sdMapping[sourceIdx]]->isRadicalType())
+    if (destination.atoms[sdMapping[sourceIdx]]->isRadical())
     {
-        delete destination.components[sdMapping[sourceIdx]];
-        destination.components[sdMapping[sourceIdx]] = source.components[sourceIdx]->clone();
+        delete destination.atoms[sdMapping[sourceIdx]];
+        destination.atoms[sdMapping[sourceIdx]] = source.atoms[sourceIdx]->clone();
     }
 
     std::queue<c_size> queue;
@@ -1006,8 +996,8 @@ void MolecularStructure::copyBranch(
         queue.pop();
 
         // add current node
-        sdMapping.insert(std::make_pair(c, destination.components.size()));
-        destination.components.emplace_back(source.components[c]->clone());
+        sdMapping.insert(std::make_pair(c, destination.atoms.size()));
+        destination.atoms.emplace_back(source.atoms[c]->clone());
         destination.bonds.emplace_back(std::vector<Bond>());
 
         // add bonds to existing nodes and queue non-existing nodes
@@ -1021,7 +1011,7 @@ void MolecularStructure::copyBranch(
                 );
 
                 destination.bonds[sdMapping.at(source.bonds[c][i].other)].emplace_back(Bond(
-                    destination.components.size() - 1,
+                    destination.atoms.size() - 1,
                     source.bonds[c][i].getType())
                 );
             }
@@ -1111,7 +1101,7 @@ std::string MolecularStructure::rToSMILES(
     std::string smiles;
     while (true)
     {
-        smiles += components[c]->getSMILES();
+        smiles += atoms[c]->getSMILES();
         insertPositions[c] = insertOffset + smiles.size();
 
         if (bonds[c].size() <= 1)  // C-C-C     end of chain, only neighbour == prev
@@ -1197,15 +1187,15 @@ std::string MolecularStructure::toSMILES() const
     if (isVirtualHydrogen())
         return "HH";
 
-    if (components.empty())
+    if (atoms.empty())
         return "";
 
-    std::vector<size_t> insertPositions(components.size(), std::string::npos);
+    std::vector<size_t> insertPositions(atoms.size(), std::string::npos);
     uint8_t cycleCount = 1;
     std::map<c_size, uint8_t> cycleHeads;
     std::string smiles;
 
-    smiles += components.front()->getSMILES();
+    smiles += atoms.front()->getSMILES();
     insertPositions.front() = smiles.size();
 
     if (bonds.front().empty())
@@ -1255,10 +1245,10 @@ std::string MolecularStructure::serialize() const
         return "h";
 
     std::string result;
-    for (c_size i = 0; i < components.size(); ++i)
-        result += components[i]->data().getBinaryId() + ';';
+    for (c_size i = 0; i < atoms.size(); ++i)
+        result += atoms[i]->data().getBinaryId() + ';';
     result.back() = '_';
-    for (c_size i = 0; i < components.size(); ++i)
+    for (c_size i = 0; i < atoms.size(); ++i)
     {
         for (c_size j = 0; j < bonds[i].size(); ++j)
             result += bonds[i][j].getSMILES() + std::to_string(bonds[i][j].other) + ';';
@@ -1289,13 +1279,13 @@ bool MolecularStructure::deserialize(const std::string& str)
     for (c_size i = 0; i < comps.size(); ++i)
     {
         const auto id = DataHelpers::parse<unsigned int>(comps[i]);
-        if (id.has_value() == false || Atom::isDefined(static_cast<ComponentId>(*id)) == false)
+        if (id.has_value() == false || Atom::isDefined(static_cast<AtomId>(*id)) == false)
         {
             clear();
             return false;
         }
 
-        components.emplace_back(new Atom(static_cast<ComponentId>(*id)));
+        atoms.emplace_back(AtomFactory::get(static_cast<AtomId>(*id)));
     }
 
     for (c_size i = 1; i < tokens.size(); ++i)

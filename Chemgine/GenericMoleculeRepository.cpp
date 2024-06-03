@@ -67,7 +67,7 @@ bool GenericMoleculeRepository::saveToFile(const std::string& path)
 	for (size_t i = 0; i < table.size(); ++i)
 	{
 		const auto& e = table[i];
-		file << '#' << e.id << ',' << e.getStructure().serialize() << '\n';
+		file << '#' << e.id << ',' << e.getStructure().toSMILES() << '\n';
 	}
 
 	file.close();

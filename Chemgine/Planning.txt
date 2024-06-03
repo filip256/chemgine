@@ -293,6 +293,14 @@ Tasks:
   DONE. Add total chemical span generator
   DONE. Implid hydrogen printing for inorganic molecules
   DONE. Add molar mass test
+  34. Use restrict keyword
+  DONE. Rename ComponentId to AtomId
+  DONE. Extend radical atom matching to user defined rules
+  35. Allow multi-valence radicals
+  36. Extend radical atom matching with substructures
+  37. Add Accessor
+  38. Rename BaseX to XBase
+  39. Add find() method to MultiIndexMaps and use in repositories
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules

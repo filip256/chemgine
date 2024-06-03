@@ -2,7 +2,7 @@
 
 Context::Context() noexcept
 {
-	BaseComponent::setDataStore(dataStore);
+	Atom::setDataStore(dataStore);
 	Reactable::setDataStore(dataStore);
 	Reactor::setDataStore(dataStore);
 	Molecule::setDataStore(dataStore);

@@ -194,6 +194,7 @@
     <ClCompile Include="Adaptor.cpp" />
     <ClCompile Include="AggregationType.cpp" />
     <ClCompile Include="Atmosphere.cpp" />
+    <ClCompile Include="AtomFactory.cpp" />
     <ClCompile Include="BaseContainer.cpp" />
     <ClCompile Include="BaseContainerComponent.cpp" />
     <ClCompile Include="Color.cpp" />
@@ -215,7 +216,6 @@
     <ClCompile Include="BaseReactionCondition.cpp" />
     <ClCompile Include="Catalyst.cpp" />
     <ClCompile Include="Collision.cpp" />
-    <ClCompile Include="CompositeComponentData.cpp" />
     <ClCompile Include="ConcreteReaction.cpp" />
     <ClCompile Include="AdaptorData.cpp" />
     <ClCompile Include="ConstantEstimator.cpp" />
@@ -249,6 +249,8 @@
     <ClCompile Include="Molecule.cpp" />
     <ClCompile Include="MoleculeData.cpp" />
     <ClCompile Include="OffsetEstimator.cpp" />
+    <ClCompile Include="Radical.cpp" />
+    <ClCompile Include="RadicalData.cpp" />
     <ClCompile Include="RandomizedParticle.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Polarity.cpp" />
@@ -279,6 +281,7 @@
     <ClInclude Include="AggregationType.hpp" />
     <ClInclude Include="Amount.hpp" />
     <ClInclude Include="Atmosphere.hpp" />
+    <ClInclude Include="AtomFactory.hpp" />
     <ClInclude Include="BaseContainer.hpp" />
     <ClInclude Include="BaseContainerComponent.hpp" />
     <ClInclude Include="Color.hpp" />
@@ -300,8 +303,6 @@
     <ClCompile Include="BaseComponentData.cpp" />
     <ClCompile Include="Bond.cpp" />
     <ClCompile Include="Chemgine.cpp" />
-    <ClCompile Include="BaseComponent.cpp" />
-    <ClCompile Include="CompositeComponent.cpp" />
     <ClInclude Include="BaseEstimator.hpp" />
     <ClInclude Include="BaseComponentData.hpp" />
     <ClInclude Include="BaseLabwareComponent.hpp" />
@@ -309,13 +310,11 @@
     <ClInclude Include="BaseReactionCondition.hpp" />
     <ClInclude Include="Catalyst.hpp" />
     <ClInclude Include="Collision.hpp" />
-    <ClInclude Include="CompositeComponent.hpp" />
     <ClCompile Include="DataStore.cpp" />
     <ClCompile Include="Repository.cpp" />
     <ClCompile Include="GenericMoleculeData.cpp" />
     <ClCompile Include="GenericMoleculeRepository.cpp" />
     <ClCompile Include="Logger.cpp" />
-    <ClInclude Include="CompositeComponentData.hpp" />
     <ClInclude Include="ConcreteReaction.hpp" />
     <ClInclude Include="AdaptorData.hpp" />
     <ClInclude Include="ConstantEstimator.hpp" />
@@ -358,6 +357,8 @@
     <ClInclude Include="Maths.hpp" />
     <ClInclude Include="Mixture.hpp" />
     <ClInclude Include="OffsetEstimator.hpp" />
+    <ClInclude Include="Radical.hpp" />
+    <ClInclude Include="RadicalData.hpp" />
     <ClInclude Include="RandomizedParticle.hpp" />
     <ClInclude Include="ParticleSystem.hpp" />
     <ClInclude Include="Polarity.hpp" />
@@ -410,8 +411,7 @@
     <ClInclude Include="AtomRepository.hpp" />
     <ClInclude Include="Bond.hpp" />
     <ClInclude Include="BondType.hpp" />
-    <ClInclude Include="BaseComponent.hpp" />
-    <ClInclude Include="ComponentType.hpp" />
+    <ClInclude Include="Accessor.hpp" />
     <ClInclude Include="DataHelpers.hpp" />
     <ClInclude Include="DataStore.hpp" />
     <ClInclude Include="Repository.hpp" />

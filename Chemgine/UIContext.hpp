@@ -173,8 +173,8 @@ public:
                 {
                     if (event.key.code == sf::Keyboard::Key::I)
                     {
-                        const auto input = Logger::input("Input Molecule   [SMILES]@[moles]");
-                        const auto temp = DataHelpers::parsePair<Molecule, Unit::MOLE>(input);
+                        const auto input = Logger::input("Input Molecule   [SMILES]_[moles]");
+                        const auto temp = DataHelpers::parsePair<Molecule, Unit::MOLE>(input, '_');
 
                         if (temp.has_value() == false)
                         {

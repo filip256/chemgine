@@ -2,71 +2,97 @@
 #include "DataStore.hpp"
 #include "Logger.hpp"
 
+size_t Atom::instanceCount = 0;
 
-Atom::Atom(const ComponentId id) :
-    BaseComponent(id, ComponentType::ATOMIC)
+Atom::Atom(const AtomId id) noexcept :
+    id(isDefined(id) ? id : 0)
 {
-    if (dataStore().atoms.contains(id) == false)
-    {
+    if (this->id == 0)
         Logger::log("Atom id " + std::to_string(id) + " is undefined.", LogType::BAD);
-        this->id = 0;
-    }
 }
 
-Atom::Atom(const std::string& symbol) :
-    BaseComponent(0 ,ComponentType::ATOMIC)
+Atom::Atom(const Symbol symbol) noexcept :
+    id(isDefined(symbol) ? dataStore().atoms.at(symbol).id : 0)
 {
-    if (dataStore().atoms.contains(symbol) == false)
-    {
-        Logger::log("Atom symbol '" + symbol + "' is undefined.", LogType::BAD);
-        return;
-    }
-    id = dataStore().atoms.at(symbol).id;
+    if (id == 0)
+        Logger::log("Atom symbol '" + symbol.getAsString() + "' is undefined.", LogType::BAD);
 }
-
-Atom::Atom(const char symbol) :
-    Atom::Atom(std::string(1, symbol))
-{}
 
 const AtomData& Atom::data() const
 {
     return dataStore().atoms.at(id);
 }
 
-bool Atom::isRadicalType() const
+bool Atom::isRadical() const
 {
-    return dataStore().atoms.at(id).weight == 0;
+    return data().isRadical();
 }
 
-bool Atom::isDefined(const ComponentId id)
+bool Atom::equals(const Atom& other) const
 {
-    return getDataStore().atoms.contains(id);
+    return *this == other;
 }
 
-bool Atom::isDefined(const std::string& symbol)
+bool Atom::matches(const Atom& other) const
 {
-    return getDataStore().atoms.contains(symbol);
-}
-
-bool Atom::isDefined(const char symbol)
-{
-    return isDefined(std::string(1, symbol));
+    return *this == other;
 }
 
 uint8_t Atom::getPrecedence() const
 {
-    if (isRadicalType())
+    if (isRadical())
         return 0;
     
     return data().getRarity();
 }
 
-std::unordered_map<ComponentId, c_size> Atom::getComponentCountMap() const
+std::string Atom::getSMILES() const
 {
-    return std::unordered_map<ComponentId, c_size> {std::make_pair(id, 1)};
+    return data().getSMILES();
+}
+
+std::unordered_map<AtomId, c_size> Atom::getComponentCountMap() const
+{
+    return std::unordered_map<AtomId, c_size> {std::make_pair(id, 1)};
+}
+
+bool Atom::operator==(const Atom& other) const
+{
+    return this->id == other.id;
+}
+
+bool Atom::operator!=(const Atom& other) const
+{
+    return this->id != other.id;
 }
 
 Atom* Atom::clone() const
 {
     return new Atom(*this);
 }
+
+bool Atom::isDefined(const AtomId id)
+{
+    return getDataStore().atoms.contains(id);
+}
+
+bool Atom::isDefined(const Symbol symbol)
+{
+    return getDataStore().atoms.contains(symbol);
+}
+
+
+
+#ifndef NDEBUG
+void* Atom::operator new(const size_t count)
+{
+    ++instanceCount;
+    return ::operator new(count);
+}
+
+void Atom::operator delete(void* ptr)
+{
+    --instanceCount;
+    return ::operator delete(ptr);
+}
+#endif

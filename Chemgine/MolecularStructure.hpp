@@ -8,7 +8,7 @@
 #include <stack>
 
 #include "Bond.hpp"
-#include "BaseComponent.hpp"
+#include "Atom.hpp"
 
 class TextBlock;
 
@@ -16,7 +16,7 @@ class MolecularStructure
 {
 private:
     uint16_t impliedHydrogenCount = 0;
-    std::vector<const BaseComponent*> components;
+    std::vector<const Atom*> atoms;
     std::vector<std::vector<Bond>> bonds;
 
     void rPrint(
@@ -44,14 +44,14 @@ private:
     void removeUnnecessaryHydrogens();
 
     /// <summary>
-    /// Returns the number of required hydrogens in order to complete the component's valence.
-    /// If the valences of the component aren't respected it returns -1.
+    /// Returns the number of required hydrogens in order to complete the atom's valence.
+    /// If the valences of the atom aren't respected it returns -1.
     /// Complexity: O(n_bonds)
     /// </summary>
     int8_t countImpliedHydrogens(const c_size idx) const;
     /// <summary>
     /// Returns the number of required hydrogens in order to complete the molecule.
-    /// If the valences of the components aren't respected it returns -1.
+    /// If the valences of the atoms aren't respected it returns -1.
     /// Complexity: O(n_comps * n_bonds)
     /// </summary>
     int16_t countImpliedHydrogens() const;
@@ -59,7 +59,8 @@ private:
     // basic matching
     static bool areMatching(
         const c_size idxA, const MolecularStructure& a,
-        const c_size idxB, const MolecularStructure& b);
+        const c_size idxB, const MolecularStructure& b,
+        const bool escapeRadicalTypes);
 
     // finner matching for the compare method
     static bool areMatching(
@@ -125,13 +126,13 @@ public:
     MolecularStructure& operator=(MolecularStructure&&) = default;
 
     /// <summary>
-    /// Sorts components and bonds in decreasing order of component precedence.
+    /// Sorts atoms and bonds in decreasing order of atom precedence.
     /// Normalization simplifies algorithms and speeds up comparison.
     /// Complexity: O(n_comps * n_bonds * n_bonds)
     /// </summary>
     void canonicalize();
 
-    const BaseComponent* getComponent(const c_size idx) const;
+    const Atom* getAtom(const c_size idx) const;
     std::string print() const;
     bool loadFromSMILES(const std::string& smiles);
     // not working for cycles :(
@@ -179,10 +180,10 @@ public:
     bool isOrganic() const;
 
     /// <summary>
-    /// Returns a map representing a histrogram of all the components in this structure.
+    /// Returns a map representing a histrogram of all the atoms in this structure.
     /// Complexity: O(n)
     /// </summary>
-    std::unordered_map<ComponentId, c_size> getComponentCountMap() const;
+    std::unordered_map<AtomId, c_size> getComponentCountMap() const;
 
     /// <summary>
     /// Returns true if the molecule contains no real or virtual atoms.
@@ -210,7 +211,7 @@ public:
     bool isVirtualHydrogen() const;
 
     /// <summary>
-    /// Checks if the two components are adjacent.
+    /// Checks if the two atoms are adjacent.
     /// Complexity: O(n)
     /// </summary>
     bool areAdjacent(const c_size idxA, const c_size idxB) const;
@@ -218,7 +219,7 @@ public:
     void clear();
 
     /// <summary>
-    /// Returns the number of bonds connected to a components (non-single bonds are taken into account)
+    /// Returns the number of bonds connected to a atoms (non-single bonds are taken into account)
     /// Complexity: O(n)
     /// </summary>
     /// <returns></returns>
@@ -249,8 +250,8 @@ public:
     /// Copies the branch starting at sourceIdx from source into the destination, using the mapping
     /// in order to avoid copying unwanted branches and resolve cycles.
     /// </summary>
-    /// <param name="sourceIdx">: the common component between the destination and source, where the branch starts</param>
-    /// <param name="sdMapping">: a map between the components of the source and those of the destination.</param>
+    /// <param name="sourceIdx">: the common atom between the destination and source, where the branch starts</param>
+    /// <param name="sdMapping">: a map between the atoms of the source and those of the destination.</param>
     /// <param name="canonicalize">: if true, canonicalization and implied hydrogen recount occurs after the copy is made and sdMapping is invalidated. </param>
     static void copyBranch(
         MolecularStructure& destination,
@@ -261,11 +262,11 @@ public:
         const std::unordered_set<c_size>& sourceIgnore = std::unordered_set<c_size>());
 
     /// <summary>
-    /// Returns a molecule derived from pattern by adding all the substituents of instance that start from common components.
+    /// Returns a molecule derived from pattern by adding all the substituents of instance that start from common atoms.
     /// </summary>
     /// <param name="pattern">: the base structure </param>
     /// <param name="instance">: a structure that has common substructures with the pattern </param>
-    /// <param name="ipMap">: a map between the common components of pattern and instance </param>
+    /// <param name="ipMap">: a map between the common atoms of pattern and instance </param>
     static MolecularStructure addSubstituents(
         const MolecularStructure& pattern,
         const MolecularStructure& instance,

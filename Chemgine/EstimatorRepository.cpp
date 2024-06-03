@@ -15,7 +15,7 @@ EstimatorRepository::~EstimatorRepository() noexcept
 		delete a.second;
 }
 
-void EstimatorRepository::addPredefined()
+void EstimatorRepository::loadBuiltins()
 {
 	table.emplace(std::make_pair(toId(BuiltinEstimator::TEMP_TO_REL_RSPEED),
 		new FunctionalEstimator(toId(BuiltinEstimator::TEMP_TO_REL_RSPEED),
@@ -64,7 +64,7 @@ void EstimatorRepository::addPredefined()
 
 bool EstimatorRepository::loadFromFile(const std::string& path)
 {
-	addPredefined();
+	loadBuiltins();
 
 	Logger::log("Loaded " + std::to_string(table.size()) + " estimators.", LogType::INFO);
 	return true;

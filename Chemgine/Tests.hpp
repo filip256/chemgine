@@ -24,7 +24,7 @@ private:
 	std::unordered_map<std::string, std::vector<uint8_t>> res;
 	std::unordered_map<std::string, std::vector<float>> resFloat;
 
-	const float massThreshold = 1;
+	const float massThreshold = 1.0f;
 
 public:
 	void initialize()
@@ -35,165 +35,170 @@ public:
 		res.emplace(std::make_pair("addSub", std::vector<uint8_t>()));
 		resFloat.emplace(std::make_pair("mass", std::vector<float>()));
 
-		setA.emplace_back(std::move(MolecularStructure("CN(C)C(=O)C1=CC=CC=C1")));
-		setB.emplace_back(std::move(MolecularStructure("C1=CC=CC=C1R")));
+		setA.emplace_back("CN(C)C(=O)C1=CC=CC=C1");
+		setB.emplace_back("C1=CC=CC=C1R");
 		res["mapTo"].emplace_back(true);
 		res["=="].emplace_back(false);
 
-		setA.emplace_back(std::move(MolecularStructure("CC(=O)OC")));
-		setB.emplace_back(std::move(MolecularStructure("RC(=O)OR")));
+		setA.emplace_back("CC(=O)OC");
+		setB.emplace_back("RC(=O)OR");
 		res["mapTo"].emplace_back(true);
 		res["=="].emplace_back(false);
 
-		setA.emplace_back(std::move(MolecularStructure("CC(=O)OC")));
-		setB.emplace_back(std::move(MolecularStructure("RC(=O)O")));
+		setA.emplace_back("CC(=O)OC");
+		setB.emplace_back("RC(=O)O");
 		res["mapTo"].emplace_back(false);
 		res["=="].emplace_back(false);
 
-		setA.emplace_back(std::move(MolecularStructure("CC(=O)N(C)C")));
-		setB.emplace_back(std::move(MolecularStructure("RC(=O)N(R)R")));
+		setA.emplace_back("CC(=O)N(C)C");
+		setB.emplace_back("RC(=O)N(R)R");
 		res["mapTo"].emplace_back(true);
 		res["=="].emplace_back(false);
 
-		setA.emplace_back(std::move(MolecularStructure("O(C)(CC)")));
-		setB.emplace_back(std::move(MolecularStructure("O(C)(C)")));
+		setA.emplace_back("O(C)(CC)");
+		setB.emplace_back("O(C)(C)");
 		res["mapTo"].emplace_back(false);
 		res["=="].emplace_back(false);
 
-		setA.emplace_back(std::move(MolecularStructure("C1CC1")));
-		setB.emplace_back(std::move(MolecularStructure("C1CC1")));
+		setA.emplace_back("C1CC1");
+		setB.emplace_back("C1CC1");
 		res["mapTo"].emplace_back(true);
 		res["=="].emplace_back(true);
 
-		setA.emplace_back(std::move(MolecularStructure("C1CCC1")));
-		setB.emplace_back(std::move(MolecularStructure("C1CC1")));
+		setA.emplace_back("C1CCC1");
+		setB.emplace_back("C1CC1");
 		res["mapTo"].emplace_back(false);
 		res["=="].emplace_back(false);
 
-		setA.emplace_back(std::move(MolecularStructure("C1C(OC)CC1")));
-		setB.emplace_back(std::move(MolecularStructure("C1CC(OR)C1")));
+		setA.emplace_back("C1C(OC)CC1");
+		setB.emplace_back("C1CC(OR)C1");
 		res["mapTo"].emplace_back(true);
 		res["=="].emplace_back(false);
 
-		setA.emplace_back(std::move(MolecularStructure("CC(O)C")));
-		setB.emplace_back(std::move(MolecularStructure("OR")));
+		setA.emplace_back("CC(O)C");
+		setB.emplace_back("OR");
 		res["mapTo"].emplace_back(true);
 		res["=="].emplace_back(false);
 
-		setA.emplace_back(std::move(MolecularStructure("CC1CCCC2CCCCC12")));
-		setB.emplace_back(std::move(MolecularStructure("CC1CCCC2CCCCC12")));
+		setA.emplace_back("CC1CCCC2CCCCC12");
+		setB.emplace_back("CC1CCCC2CCCCC12");
 		res["mapTo"].emplace_back(true);
 		res["=="].emplace_back(true);
 
-		setA.emplace_back(std::move(MolecularStructure("CC1=CC2=C(NC=C2)C=C1")));
-		setB.emplace_back(std::move(MolecularStructure("RC1=CC2=C(NC=C2)C=C1")));
+		setA.emplace_back("CC1=CC2=C(NC=C2)C=C1");
+		setB.emplace_back("RC1=CC2=C(NC=C2)C=C1");
 		res["mapTo"].emplace_back(true);
 		res["=="].emplace_back(false);
 
-		setA.emplace_back(std::move(MolecularStructure("C1CC2=C1C=C2")));
-		setB.emplace_back(std::move(MolecularStructure("RC1=C(R)CC1")));
+		setA.emplace_back("C1CC2=C1C=C2");
+		setB.emplace_back("RC1=C(R)CC1");
 		res["mapTo"].emplace_back(true);
 		res["=="].emplace_back(false);
 
-		setA.emplace_back(std::move(MolecularStructure("C(C)(C)OC")));
-		setB.emplace_back(std::move(MolecularStructure("O(R)R")));
+		setA.emplace_back("C(C)(C)OC");
+		setB.emplace_back("O(R)R");
 		res["mapTo"].emplace_back(true);
 		res["=="].emplace_back(false);
 
-		setA.emplace_back(std::move(MolecularStructure("O(CCC)CC")));
-		setB.emplace_back(std::move(MolecularStructure("O(CC)(CCC)")));
+		setA.emplace_back("O(CCC)CC");
+		setB.emplace_back("O(CC)(CCC)");
 		res["mapTo"].emplace_back(true);
 		res["=="].emplace_back(true);
 
-		setA.emplace_back(std::move(MolecularStructure("CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C")));
-		setB.emplace_back(std::move(MolecularStructure("N(R)C14CC(CC=C1C2=C(OR)C=CC3=C2C(=C[N]3)C4)C(=O)N(R)R")));
+		setA.emplace_back("CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C");
+		setB.emplace_back("N(R)C14CC(CC=C1C2=C(OR)C=CC3=C2C(=C[N]3)C4)C(=O)N(R)R");
 		res["mapTo"].emplace_back(true);
 		res["=="].emplace_back(false);
 
-		setA.emplace_back(std::move(MolecularStructure("COC4=C2C1=C([N]C=C1CC3(CC(CC=C23)C(=O)N(C)C)NC(C)C)C=C4")));
-		setB.emplace_back(std::move(MolecularStructure("N(R)C14CC(CC=C1C2=C(OR)C=CC3=C2C(=C[N]3)C4)C(=O)N(R)R")));
+		setA.emplace_back("COC4=C2C1=C([N]C=C1CC3(CC(CC=C23)C(=O)N(C)C)NC(C)C)C=C4");
+		setB.emplace_back("N(R)C14CC(CC=C1C2=C(OR)C=CC3=C2C(=C[N]3)C4)C(=O)N(R)R");
+		res["mapTo"].emplace_back(true);
+		res["=="].emplace_back(false);
+
+		setA.emplace_back("[Cl]");
+		setB.emplace_back("X");
 		res["mapTo"].emplace_back(true);
 		res["=="].emplace_back(false);
 
 		//-----//
 
-		setC.emplace_back(std::move(MolecularStructure("CC(=O)OC")));
-		setD.emplace_back(std::move(MolecularStructure("OCC")));
+		setC.emplace_back("CC(=O)OC");
+		setD.emplace_back("OCC");
 		res["maximal"].emplace_back(3);
 
-		setC.emplace_back(std::move(MolecularStructure("C1CCCCC(O)CC1")));
-		setD.emplace_back(std::move(MolecularStructure("CC(O)C")));
+		setC.emplace_back("C1CCCCC(O)CC1");
+		setD.emplace_back("CC(O)C");
 		res["maximal"].emplace_back(4);
 
-		setC.emplace_back(std::move(MolecularStructure("CC(=O)OR")));
-		setD.emplace_back(std::move(MolecularStructure("OCR")));
+		setC.emplace_back("CC(=O)OR");
+		setD.emplace_back("OCR");
 		res["maximal"].emplace_back(2);
 
-		setC.emplace_back(std::move(MolecularStructure("C(=O)N(C)C")));
-		setD.emplace_back(std::move(MolecularStructure("C1CCC1")));
+		setC.emplace_back("C(=O)N(C)C");
+		setD.emplace_back("C1CCC1");
 		res["maximal"].emplace_back(1);
 
-		setC.emplace_back(std::move(MolecularStructure("O(C)CC")));
-		setD.emplace_back(std::move(MolecularStructure("O(CC)C")));
+		setC.emplace_back("O(C)CC");
+		setD.emplace_back("O(CC)C");
 		res["maximal"].emplace_back(4);
 
-		setC.emplace_back(std::move(MolecularStructure("CC2CCCC(C1CCCCC1)C2")));
-		setD.emplace_back(std::move(MolecularStructure("CC1CCCCC1")));
+		setC.emplace_back("CC2CCCC(C1CCCCC1)C2");
+		setD.emplace_back("CC1CCCCC1");
 		res["maximal"].emplace_back(7);
 
 		//-----//
 
-		setE.emplace_back(std::move(MolecularStructure("CC(=O)OC")));
-		setF.emplace_back(std::move(MolecularStructure("OCCC")));
+		setE.emplace_back("CC(=O)OC");
+		setF.emplace_back("OCCC");
 		res["addSub"].emplace_back(6);
 
 
-		setE.emplace_back(std::move(MolecularStructure("CC(=O)OR")));
-		setF.emplace_back(std::move(MolecularStructure("OCCC")));
+		setE.emplace_back("CC(=O)OR");
+		setF.emplace_back("OCCC");
 		res["addSub"].emplace_back(6);
 
-		setE.emplace_back(std::move(MolecularStructure("CCC(=O)O")));
-		setF.emplace_back(std::move(MolecularStructure("CC(=O)OCC")));
+		setE.emplace_back("CCC(=O)O");
+		setF.emplace_back("CC(=O)OCC");
 		res["addSub"].emplace_back(7);
 
-		setE.emplace_back(std::move(MolecularStructure("C(=O)O")));
-		setF.emplace_back(std::move(MolecularStructure("CC(=O)OC(C)C")));
+		setE.emplace_back("C(=O)O");
+		setF.emplace_back("CC(=O)OC(C)C");
 		res["addSub"].emplace_back(7);
 
-		setE.emplace_back(std::move(MolecularStructure("C1CCCC1")));
-		setF.emplace_back(std::move(MolecularStructure("C1CC(O)C1")));
+		setE.emplace_back("C1CCCC1");
+		setF.emplace_back("C1CC(O)C1");
 		res["addSub"].emplace_back(6);
 
-		setE.emplace_back(std::move(MolecularStructure("CC(=C)C")));
-		setF.emplace_back(std::move(MolecularStructure("C1CCC1O")));
+		setE.emplace_back("CC(=C)C");
+		setF.emplace_back("C1CCC1O");
 		res["addSub"].emplace_back(6);
 
-		setG.emplace_back(std::move(MolecularStructure("C1CCC1")));
-		setG.emplace_back(std::move(MolecularStructure("C1C(C)C(C)C1")));
-		setG.emplace_back(std::move(MolecularStructure("C1C(O)C(C)C1")));
-		setG.emplace_back(std::move(MolecularStructure("CC(=O)C")));
-		setG.emplace_back(std::move(MolecularStructure("CC(=O)OC(=O)C")));
-		setG.emplace_back(std::move(MolecularStructure("C1CC12CC2")));
-		setG.emplace_back(std::move(MolecularStructure("C1C(O)CC12CC2")));
-		setG.emplace_back(std::move(MolecularStructure("OC1(CC1)C")));
-		setG.emplace_back(std::move(MolecularStructure("OC1C2CC12")));
-		setG.emplace_back(std::move(MolecularStructure("CC2CCCC(C1CCCCC1)C2")));
+		setG.emplace_back("C1CCC1");
+		setG.emplace_back("C1C(C)C(C)C1");
+		setG.emplace_back("C1C(O)C(C)C1");
+		setG.emplace_back("CC(=O)C");
+		setG.emplace_back("CC(=O)OC(=O)C");
+		setG.emplace_back("C1CC12CC2");
+		setG.emplace_back("C1C(O)CC12CC2");
+		setG.emplace_back("OC1(CC1)C");
+		setG.emplace_back("OC1C2CC12");
+		setG.emplace_back("CC2CCCC(C1CCCCC1)C2");
 
 		//-----//
 
-		setM.emplace_back(std::move(MolecularStructure("CN(C)C(=O)C1=CC=CC=C1")));
+		setM.emplace_back("CN(C)C(=O)C1=CC=CC=C1");
 		resFloat["mass"].emplace_back(149.084f);
 
-		setM.emplace_back(std::move(MolecularStructure("CC(=O)OC")));
+		setM.emplace_back("CC(=O)OC");
 		resFloat["mass"].emplace_back(74.079f);
 
-		setM.emplace_back(std::move(MolecularStructure("C1CCCC1")));
+		setM.emplace_back("C1CCCC1");
 		resFloat["mass"].emplace_back(70.1f);
 
-		setM.emplace_back(std::move(MolecularStructure("CN1CC(C=C2C1CC3=CNC4=CC=CC2=C34)C(=O)O")));
+		setM.emplace_back("CN1CC(C=C2C1CC3=CNC4=CC=CC2=C34)C(=O)O");
 		resFloat["mass"].emplace_back(268.121f);
 
-		setM.emplace_back(std::move(MolecularStructure("[Mg](O)O")));
+		setM.emplace_back("[Mg](O)O");
 		resFloat["mass"].emplace_back(58.319f);
 	}
 
@@ -832,7 +837,7 @@ public:
 	{
 		Logger::enterContext();
 		const auto begin = std::chrono::steady_clock::now();
-		BaseComponent::setDataStore(store);
+		Atom::setDataStore(store);
 		Reactable::setDataStore(store);
 		Reactor::setDataStore(store);
 		Molecule::setDataStore(store);

@@ -57,6 +57,9 @@ public:
 	template<class T>
 	static std::vector<std::vector<T>> getArrangementsWithRepetitions(
 		const std::vector<T>& vector, const size_t maxLength);
+
+	template<class T>
+	static T copy(const T& obj);
 };
 
 
@@ -220,4 +223,10 @@ static std::vector<std::vector<T>> Utils::getArrangementsWithRepetitions(
 
 	getArrangementsWithRepetitions(vector, maxLength, current, result);
 	return result;
+}
+
+template<class T>
+static T Utils::copy(const T& obj)
+{
+	return obj;
 }
