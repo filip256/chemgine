@@ -16,8 +16,10 @@ public:
 	SystemMatrix(const SystemMatrix&) = delete;
 
 	void addRow(std::vector<T>&& row, const T result);
-	void addRow(const size_t n);
+	void addNullRow(const size_t n);
 	void swapRows(const size_t x, const size_t y);
+
+	bool isNullRow(const size_t idx);
 
 	bool trySolution(const std::vector<T>& solution) const;
 

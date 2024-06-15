@@ -1,6 +1,7 @@
 #include "SystemMatrix.hpp"
 
 #include <iostream>
+#include <algorithm> 
 
 template<class T>
 SystemMatrix<T>::SystemMatrix(std::initializer_list<std::initializer_list<T>> initializer) noexcept :
@@ -25,12 +26,19 @@ bool SystemMatrix<T>::toREF()
 
         const auto pivot = matrix[i][i];
         if (std::abs(pivot) < 1e-10)
+        {
+            // Duplicate rows may result more than one null rows at the end, thus a null pivot in the penultimate row
+            // The system might still be solvable if rows > cols
+            if (rows > cols && isNullRow(i + 1))
+                break;
+
             return false;
+        }
 
         for (size_t j = i; j < cols; ++j)
             matrix[i][j] /= pivot;
 
-        // eliminate non-zero elements below the pivot
+        // Eliminate non-zero elements below the pivot
         for (size_t k = i + 1; k < rows; ++k) 
         {
             const auto factor = matrix[k][i];
@@ -71,15 +79,21 @@ void SystemMatrix<T>::addRow(std::vector<T>&& row, const T result)
 }
 
 template <class T>
-void SystemMatrix<T>::addRow(const size_t n)
+void SystemMatrix<T>::addNullRow(const size_t n)
 {
-	matrix.emplace_back(std::move(std::vector<T>(n + 1, 0)));
+	matrix.emplace_back(std::move(std::vector<T>(n + 1, 0.0)));
 }
 
 template <class T>
 void SystemMatrix<T>::swapRows(const size_t x, const size_t y)
 {
     matrix[x].swap(matrix[y]);
+}
+
+template <class T>
+bool SystemMatrix<T>::isNullRow(const size_t idx)
+{
+    return std::all_of(matrix[idx].begin(), matrix[idx].end(), [](const auto i) { return i == 0; });
 }
 
 template <class T>

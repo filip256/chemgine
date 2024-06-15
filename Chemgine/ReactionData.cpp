@@ -15,7 +15,7 @@ ReactionData::ReactionData(
 	const Amount<Unit::CELSIUS> baseTemperature,
 	const Amount<Unit::JOULE_PER_MOLE> reactionEnergy,
 	const Amount<Unit::JOULE_PER_MOLE> activationEnergy,
-	std::vector<Catalyst>&& catalysts
+	ImmutableSet<Catalyst>&& catalysts
 ) noexcept :
 	id(id),
 	baseSpeed(baseSpeed),
@@ -47,7 +47,7 @@ bool ReactionData::balance(
 			if (sysmap.contains(c.first) == false)
 			{
 				sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
-				system.addRow(syslen);
+				system.addNullRow(syslen);
 				system.back()[i] = static_cast<float>(c.second);
 			}
 			else
@@ -62,7 +62,7 @@ bool ReactionData::balance(
 		if (sysmap.contains(c.first) == false)
 		{
 			sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
-			system.addRow(syslen);
+			system.addNullRow(syslen);
 			system.back().back() = static_cast<float>(c.second);
 		}
 		else
@@ -77,7 +77,7 @@ bool ReactionData::balance(
 			if (sysmap.contains(c.first) == false)
 			{
 				sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
-				system.addRow(syslen);
+				system.addNullRow(syslen);
 				system.back()[reactants.size() + i - 1] = -1 * static_cast<float>(c.second);
 			}
 			else
@@ -86,7 +86,7 @@ bool ReactionData::balance(
 	}
 
 
-	//The most complex product should be fixed, not the first.
+	// TODO: The most complex product should be fixed, not the first.
 	const auto result = system.solve();
 	if (result.empty())
 		return false;
@@ -312,7 +312,7 @@ const std::vector<Reactable>& ReactionData::getProducts() const
 	return products;
 }
 
-const std::vector<Catalyst>& ReactionData::getCatalysts() const
+const ImmutableSet<Catalyst> &ReactionData::getCatalysts() const
 {
 	return catalysts;
 }

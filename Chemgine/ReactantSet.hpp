@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 class Mixture;
+class Catalyst;
 
 class ReactantSet
 {
@@ -43,6 +44,7 @@ public:
 
 	Amount<Unit::MOLE> getAmountOf(const ReactantId& reactantId) const;
 	Amount<Unit::MOLE> getAmountOf(const ReactantSet& reactantSet) const;
+	Amount<Unit::MOLE> getAmountOf(const Catalyst& catalyst) const;
 
 	const std::unordered_map<ReactantId, Reactant>& getReactants() const;
 

@@ -24,6 +24,7 @@ public:
 
 	const ReactantSet& getReactants() const;
 	const ReactantSet& getProducts() const;
+	const ImmutableSet<Catalyst>& getCatalysts() const;
 
 	const Amount<Unit::CELSIUS> getReactantTemperature() const;
 
@@ -48,6 +49,8 @@ struct std::hash<ConcreteReaction>
 			hashCombineWith(hash, rId);
 		for (const auto& [pId, _] : reaction.products)
 			hashCombineWith(hash, pId);
+		for (const auto& cat : reaction.baseReaction.getCatalysts())
+			hashCombineWith(hash, cat.getId());
 		return hash;
 	}
 };

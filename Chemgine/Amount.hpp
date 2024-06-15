@@ -51,6 +51,7 @@ public:
 	static inline std::string unitName() noexcept = delete;
 	
 	inline std::string toString(const uint8_t maxDigits = 255) const noexcept;
+	inline std::string format() noexcept = delete;
 
 	static const Amount<UnitT> Unknown;
 	static const Amount<UnitT> Infinity;
@@ -298,6 +299,9 @@ template<>
 inline std::string Amount<Unit::JOULE_PER_MOLE_CELSIUS>::unitName() noexcept { return Amount<Unit::JOULE>::unitName() + " / (" + Amount<Unit::MOLE>::unitName() + " + " + Amount<Unit::CELSIUS>::unitName() + ")"; }
 template<>
 inline std::string Amount<Unit::TORR_MOLE_RATIO>::unitName() noexcept { return Amount<Unit::TORR>::unitName() + " * (" + Amount<Unit::MOLE>::unitName() + " / " + Amount<Unit::MOLE>::unitName() + ")"; }
+
+template<>
+inline std::string Amount<Unit::SECOND>::format() noexcept { return Linguistics::formatTime(asMilli()); }
 
 //    --- Direct Conversions ---    //
 
@@ -616,7 +620,7 @@ template<>
 template<>
 constexpr Amount<Unit::MOLE> Amount<Unit::MOLE_PER_SECOND>::to(const Amount<Unit::SECOND> timespan) const noexcept
 {
-	return value / timespan.asStd();
+	return value * timespan.asStd();
 }
 
 

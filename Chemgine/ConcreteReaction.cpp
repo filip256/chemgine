@@ -26,6 +26,11 @@ const ReactantSet& ConcreteReaction::getProducts() const
 	return products;
 }
 
+const ImmutableSet<Catalyst>& ConcreteReaction::getCatalysts() const
+{
+	return baseReaction.getCatalysts();
+}
+
 const Amount<Unit::CELSIUS> ConcreteReaction::getReactantTemperature() const
 {
 	return reactants.any().getLayerTemperature();
@@ -38,12 +43,16 @@ const ReactionData& ConcreteReaction::getData() const
 
 bool ConcreteReaction::operator==(const ConcreteReaction& other) const
 {
-	return this->reactants == other.reactants && this->products == other.products;
+	return this->reactants == other.reactants &&
+		this->products == other.products &&
+		this->baseReaction.getCatalysts() == other.baseReaction.getCatalysts();
 }
 
 bool ConcreteReaction::operator!=(const ConcreteReaction& other) const
 {
-	return this->reactants != other.reactants || this->products != other.products;
+	return this->reactants != other.reactants ||
+		this->products != other.products ||
+		this->baseReaction.getCatalysts() != other.baseReaction.getCatalysts();
 }
 
 ConcreteReaction ConcreteReaction::makeCopy() const

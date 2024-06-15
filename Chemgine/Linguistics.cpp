@@ -1,4 +1,5 @@
 #include "Linguistics.hpp"
+#include "Amount.hpp"
 
 void Linguistics::pluralize(std::string& str)
 {
@@ -48,6 +49,37 @@ void Linguistics::formatFloatingPoint(std::string& str, const uint8_t maxDigits)
 std::string Linguistics::formatFloatingPoint(const std::string& str, const uint8_t maxDigit)
 {
 	std::string temp(str);
-	formatFloatingPoint(temp);
+	formatFloatingPoint(temp, maxDigit);
 	return temp;
+}
+
+void Linguistics::padFront(std::string& str, const size_t minLenght, const char padding)
+{
+	const auto padLen = minLenght - str.size();
+	if (minLenght <= str.size())
+		return;
+	
+	str = std::string(minLenght - str.size(), padding) + str;
+}
+
+std::string Linguistics::padFront(const std::string& str, const size_t minLength, const char padding)
+{
+	std::string temp(str);
+	padFront(temp, minLength, padding);
+	return temp;
+}
+
+std::string Linguistics::formatTime(int32_t milliseconds)
+{
+	const auto h = milliseconds / 3600000;
+	milliseconds -= h * 3600000;
+	const auto m = milliseconds / 60000;
+	milliseconds -= m * 60000;
+	const auto s = milliseconds / 1000;
+	milliseconds -= s * 1000;
+
+	return std::to_string(h) + ':' +
+		padFront(std::to_string(m), 2, '0') + ':' +
+		padFront(std::to_string(s), 2, '0') + '.' +
+		std::to_string(milliseconds);
 }

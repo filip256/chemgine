@@ -36,6 +36,11 @@ bool Catalyst::matchesWith(const Catalyst& other) const
 		this->matchWith(other).size();
 }
 
+bool Catalyst::matchesWith(const MolecularStructure& structure) const
+{
+	return this->matchWith(structure).size();
+}
+
 bool Catalyst::operator==(const Catalyst& other) const
 {
 	return this->reactable == other.reactable;

@@ -132,6 +132,17 @@ bool ReactionRepository::loadFromFile(const std::string& path)
 				continue;
 			}
 
+			bool isUnique = true;
+			for(size_t j = 0; j < catalysts.size(); ++j)
+				if (catalysts[j].matchesWith(c->getStructure()) || c->matchesWith(catalysts[j].getStructure()))
+				{
+					isUnique = false;
+					Logger::log("Ingored duplicate catalyst '" + catStr[i] + "' in reaction with id " + std::to_string(*id) + ".", LogType::WARN);
+					break;
+				}
+			if (isUnique == false)
+				continue;
+
 			catalysts.emplace_back(*c);
 		}
 

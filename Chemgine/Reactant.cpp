@@ -118,6 +118,11 @@ Amount<Unit::JOULE_PER_MOLE> Reactant::getDepositionHeat() const
 	return molecule.getDepositionHeatAt(getLayer().getTemperature(), container->getPressure());
 }
 
+Amount<Unit::MOLE_RATIO> Reactant::getSolubilityIn(const Polarity& solventPolarity) const
+{
+	return molecule.getSolubilityAt(getLayer().getTemperature(), container->getPressure(), solventPolarity);
+}
+
 Ref<Mixture> Reactant::getContainer() const
 {
 	return container;

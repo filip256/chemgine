@@ -83,6 +83,15 @@ double Reactor::getInterLayerReactivityCoefficient(const ReactantSet& reactants)
 	return result;
 }
 
+double Reactor::getCatalyticReactivityCoefficient(const ImmutableSet<Catalyst>& catalysts) const
+{
+	// TODO: take concentration into account
+	for (size_t i = 0; i < catalysts.size(); ++i)
+		if (getAmountOf(catalysts[i]) == 0.0)
+			return 0.0;
+	return 1.0;
+}
+
 void Reactor::findNewReactions()
 {
 	// TODO: optimize (perhaps a generator would be good)
@@ -117,7 +126,10 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 			totalVolume.asStd() *
 			temperatureSpeedEstimator->get((r.getReactantTemperature() - r.getData().baseTemperature).asStd()) *
 			concentrationSpeedEstimator->get((getAmountOf(r.getReactants()) / totalMoles).asStd()) *
-			getInterLayerReactivityCoefficient(r.getReactants());
+			getInterLayerReactivityCoefficient(r.getReactants()) *
+			getCatalyticReactivityCoefficient(r.getCatalysts());
+		
+		//Logger::log("Reactor: Applying reaction " + r.getData().getHRTag() + " with speed=" + speedCoef.toString(), LogType::INFO);
 		
 		if (speedCoef == 0)
 			continue;

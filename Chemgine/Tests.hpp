@@ -882,7 +882,7 @@ public:
 	void runPersist()
 	{
 		const auto begin = std::chrono::steady_clock::now();
-		store.reactions.generateTotalSpan();
+		//store.reactions.generateTotalSpan();
 		store.saveGenericMoleculesData("Out/genericmolecules.out.csv")
 			.saveMoleculesData("Out/molecules.out.csv");
 		const auto end = std::chrono::steady_clock::now();

@@ -6,6 +6,7 @@
 #include "Ref.hpp"
 
 class Layer;
+class Catalyst;
 
 /// <summary>
 /// The simplest type of reactant container with internal storage.
@@ -34,6 +35,7 @@ public:
 
 	Amount<Unit::MOLE> getAmountOf(const Reactant& reactant) const;
 	Amount<Unit::MOLE> getAmountOf(const ReactantSet& reactantSet) const;
+	Amount<Unit::MOLE> getAmountOf(const Catalyst& catalyst) const;
 
 	virtual Amount<Unit::TORR> getPressure() const = 0;
 	virtual Amount<Unit::MOLE> getTotalMoles() const = 0;

@@ -296,11 +296,16 @@ Tasks:
   34. Use restrict keyword
   DONE. Rename ComponentId to AtomId
   DONE. Extend radical atom matching to user defined rules
-  35. Allow multi-valence radicals
+  DONE. Allow multi-valence radicals
   36. Extend radical atom matching with substructures
   DONE. Add Accessor
   38. Rename BaseX to XBase
   39. Add find() method to MultiIndexMaps and use in repositories
+  DONE. Fix solving for systems with duplicate rows
+  DONE. Implement a ImmutableSet, assures elements are unique but has vector storage and is immutable (many const sets can be replaced)
+  40. Investigate other ImmutableSet possible uses
+  DONE. Make sure catalysts of a reaction are not specializations of eachother
+  DONE. Add time system
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules
@@ -316,6 +321,7 @@ Tasks:
   DONE. Add tests for overflows
   DONE. Fix 'leaky' overflow bug
   DONE. Add reactor determinism test
+  DONE. Add check for catalysts
 ---
   DONE. Add aggregation state changes to reactors
   DONE. Add nucleators to layers

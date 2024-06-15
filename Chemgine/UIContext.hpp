@@ -54,8 +54,16 @@ public:
 
         font.loadFromFile("./Fonts/font.ttf");
 
-        sf::Text text("FPS:", font, 18);
-        text.setPosition(sf::Vector2f(5.0f, window.getSize().y - 22.0f));
+        sf::Text textFPS("FPS:", font, 18);
+        textFPS.setPosition(sf::Vector2f(5.0f, window.getSize().y - 22.0f));
+
+        sf::Text textTime("T=", font, 18);
+        textTime.setPosition(sf::Vector2f(window.getSize().x - 200.0f, window.getSize().y - 22.0f));
+
+        bool isInTimeSetMode = false;
+        float timeMultiplier = 1.0;
+        sf::Text textTimeMult("x" + std::to_string(timeMultiplier).substr(0, 4), font, 18);
+        textTimeMult.setPosition(sf::Vector2f(window.getSize().x - 50.0f, window.getSize().y - 22.0f));
 
         bool callRemoveEmptySystems = false;
 
@@ -65,22 +73,24 @@ public:
         auto& flask1 = lab.add<Flask>(201);
         lab.add<Adaptor>(301);
         lab.add<Adaptor>(302);
-        auto& flask2 = lab.add<Flask>(201);
+        //auto& flask2 = lab.add<Flask>(201);
         lab.add<Adaptor>(301);
         lab.add<Adaptor>(302);
         lab.add<Heatsource>(401);
         lab.add<Heatsource>(401);
         lab.add<Condenser>(501);
+        lab.add<Flask>(201);
+        lab.add<Flask>(201);
 
         CursorHelper cursorHelper(window, sf::Cursor::Type::Cross);
 
         std::optional<std::pair<Molecule, Amount<Unit::MOLE>>> inputMolecule = std::nullopt;
 
         flask1.add(Molecule("CC(=O)O"), 4.0_mol);
-        flask2.add(Molecule("O"), 10.0_mol);
+        //flask2.add(Molecule("O"), 10.0_mol);
 
         for(size_t i = 0; i < lab.getSystemCount(); ++i)
-            lab.getSystem(i).move(sf::Vector2f(100 + 75 * i, 50));
+            lab.getSystem(i).move(sf::Vector2f(100 + 85 * i, 100));
 
         Vapour vapour(50, sf::Vector2f(500.0f, 500.0f), sf::Color(255, 255, 255, 10), 0.0_o, 0.7f, 0.5f);
 
@@ -88,6 +98,7 @@ public:
         window.setVerticalSyncEnabled(true);
         size_t frameCount = 0;
         sf::Clock frameClock, tickClock;
+        sf::Time gameTime, lastLabTick, lastEnvTick, lastFrame;
         while (window.isOpen())
         {
             sf::Event event;
@@ -154,8 +165,18 @@ public:
                 }
                 else if (event.type == sf::Event::MouseWheelMoved)
                 {
-                    if (inHand.isSet())
+                    if (isInTimeSetMode)
+                    {
+                        timeMultiplier += event.mouseWheel.delta * 0.05f * std::max(timeMultiplier, 1.0f);
+                        timeMultiplier = std::max(timeMultiplier, 0.05f);
+                        timeMultiplier = std::min(timeMultiplier, 50.0f);
+
+                        textTimeMult.setString("x" + std::to_string(timeMultiplier).substr(0, 4));
+                    }
+                    else if (inHand.isSet())
+                    {
                         lab.getSystem(inHand.idx).rotate(event.mouseWheel.delta * 2);
+                    }
                 }
                 else if (event.type == sf::Event::KeyPressed)
                 {
@@ -167,6 +188,10 @@ public:
                             propertyPane.setSubject(comp);
                             drawPropertyPane = true;
                         }
+                    }
+                    else if (event.key.code == sf::Keyboard::Key::T)
+                    {
+                        isInTimeSetMode = true;
                     }
                 }
                 else if (event.type == sf::Event::KeyReleased)
@@ -191,6 +216,10 @@ public:
                     {
                         drawPropertyPane = false;
                     }
+                    else if (event.key.code == sf::Keyboard::Key::T)
+                    {
+                        isInTimeSetMode = false;
+                    }
                 }
 
                 else if (event.type == sf::Event::Closed)
@@ -203,25 +232,40 @@ public:
                 callRemoveEmptySystems = false;
             }
 
-            if (const auto timespan = tickClock.getElapsedTime().asSeconds(); timespan >= 0.05)
+            auto cTime = tickClock.getElapsedTime();
+            if (const auto timespan = (cTime - lastEnvTick).asSeconds(); timespan >= 0.01)
             {
-                //flask2.add(100.0_J);
-                lab.tick(timespan);
-                vapour.tick(timespan);
-                tickClock.restart();
+                vapour.tick(timespan * timeMultiplier);
+
+                textTime.setString("T= " + Amount<Unit::SECOND>(gameTime.asMilliseconds() / 1000.0f).format());
+
+                lastEnvTick = cTime;
             }
+
+            cTime = tickClock.getElapsedTime();
+            if (const auto timespan = (cTime - lastLabTick).asSeconds(); timespan >= 0.05)
+            {
+                lab.tick(timespan * timeMultiplier);
+                lastLabTick = cTime;
+            }
+
+            cTime = tickClock.getElapsedTime();
+            gameTime += sf::microseconds((cTime - lastFrame).asMicroseconds() * timeMultiplier);
+            lastFrame = cTime;
 
             window.clear();
             window.draw(lab);
             window.draw(vapour);
             if (drawPropertyPane)
                 window.draw(propertyPane);
-            window.draw(text);
+            window.draw(textFPS);
+            window.draw(textTime);
+            window.draw(textTimeMult);
             window.display();
 
             if ((frameCount & 3) == 0)
             {
-                text.setString("FPS:" + std::to_string(static_cast<int>(
+                textFPS.setString("FPS:" + std::to_string(static_cast<int>(
                     4000000.0f / frameClock.getElapsedTime().asMicroseconds()
                     )));
                 frameClock.restart();

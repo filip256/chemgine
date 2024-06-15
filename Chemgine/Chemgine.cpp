@@ -31,23 +31,6 @@
 #include "Linguistics.hpp"
 #include "DynamicAmount.hpp"
 
-/*
-*     -- Chemgine's 1 Year Aniversary --
-* 
-*  Serious development began exactly 1 year ago,
-*  on 4th of June 2023. There's still a long way
-*  ahead but many core functionalities have been
-*  implemented and the project's structure is in
-*  acceptable shape.
-* 
-*  We're currently at:
-*   - 119 completed tasks 
-*   - 131 commits
-*   - 19607 lines of code
-* 
-*  Take a stir!
-*/
-
 int main()
 {
     {
@@ -71,6 +54,7 @@ int main()
 
         std::cout << MolecularStructure("S(-O)(-O)(-O)(OCC)(OCCC(N(C)C)=O)C#N").print();
 
+        // TDOD: add in presentation
         const auto x = store.reactions.getRetrosynthReactions(
             *Reactable::get(MolecularStructure("CC(=O)OCCC")));
 

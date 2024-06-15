@@ -37,6 +37,7 @@ private:
 
 	double getInterLayerReactivityCoefficient(const Reactant& r1, const Reactant& r2) const;
 	double getInterLayerReactivityCoefficient(const ReactantSet& reactants) const;
+	double getCatalyticReactivityCoefficient(const ImmutableSet<Catalyst>& catalysts) const;
 
 	void findNewReactions();
 	void runReactions(const Amount<Unit::SECOND> timespan);

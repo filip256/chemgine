@@ -28,6 +28,7 @@ bool CursorHelper::setType(const sf::Cursor::Type type)
     }
 
     window.setMouseCursor(*c->second);
+    return true;
 }
 
 void CursorHelper::setVisibility(const bool visible)

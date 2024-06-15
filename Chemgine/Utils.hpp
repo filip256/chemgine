@@ -14,8 +14,8 @@ private:
 		std::vector<T>& current, std::vector<std::vector<T>>& result);
 
 public:
-	template<class T>
-	static std::vector<T> toSortedSetVector(std::vector<T>&& vect);
+	//template<class T>
+	//static std::vector<T> toSortedSetVector(std::vector<T>&& vect);
 
 	template<class KeyT1, class KeyT2, class Obj>
 	static std::unordered_map<KeyT1, Obj> compose(
@@ -63,13 +63,13 @@ public:
 };
 
 
-template<class T>
-std::vector<T> Utils::toSortedSetVector(std::vector<T>&& vect)
-{
-	std::sort(vect.begin(), vect.end());
-	vect.erase(std::unique(vect.begin(), vect.end()), vect.end());
-	return std::move(vect);
-}
+//template<class T>
+//std::vector<T> Utils::toSortedSetVector(std::vector<T>&& vect)
+//{
+//	std::sort(vect.begin(), vect.end());
+//	vect.erase(std::unique(vect.begin(), vect.end()), vect.end());
+//	return std::move(vect);
+//}
 
 template<class T1, class T2>
 static std::pair<T2, T1> Utils::reversePair(

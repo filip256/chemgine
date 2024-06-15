@@ -827,6 +827,9 @@
     <ClInclude Include="AtomFactory.hpp">
       <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
+    <ClInclude Include="ImmutableSet.hpp">
+      <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv">

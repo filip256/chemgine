@@ -1,19 +1,19 @@
 #include "AtomData.hpp"
 #include "Utils.hpp"
 
-const std::vector<uint8_t> AtomData::RadicalAnyValence = { NullValence };
+const ImmutableSet<uint8_t> AtomData::RadicalAnyValence = { NullValence };
 
 AtomData::AtomData(
 	const AtomId id,
 	const Symbol symbol,
 	const std::string& name,
 	const Amount<Unit::GRAM> weight,
-	std::vector<uint8_t>&& valences
+	ImmutableSet<uint8_t>&& valences
 ) noexcept :
 	BaseComponentData(id, weight, getRarityOf(symbol)),
 	symbol(symbol),
 	name(name),
-	valences(Utils::toSortedSetVector(std::move(valences)))
+	valences(std::move(valences))
 {}
 
 bool AtomData::isRadical() const
@@ -29,7 +29,7 @@ bool AtomData::hasValence(const uint8_t v) const
 	return false;
 }
 
-const std::vector<uint8_t>& AtomData::getValences() const
+const ImmutableSet<uint8_t>& AtomData::getValences() const
 {
 	return valences;
 }

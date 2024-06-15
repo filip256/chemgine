@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "BaseComponentData.hpp"
+#include "ImmutableSet.hpp"
 #include "Reactable.hpp"
 #include "PairHash.hpp"
 #include "Reactant.hpp"
@@ -20,7 +21,7 @@ private:
 	Ref<const ReactionData> baseReaction = nullRef;
 	std::vector<Reactable> reactants;
 	std::vector<Reactable> products;
-	std::vector<Catalyst> catalysts;
+	ImmutableSet<Catalyst> catalysts;
 	std::unordered_map<std::pair<size_t, c_size>, std::pair<size_t, c_size>> componentMapping;
 
 	static bool balance(
@@ -50,7 +51,7 @@ public:
 		const Amount<Unit::CELSIUS> baseTemperature,
 		const Amount<Unit::JOULE_PER_MOLE> reactionEnergy,
 		const Amount<Unit::JOULE_PER_MOLE> activationEnergy,
-		std::vector<Catalyst>&& catalysts
+		ImmutableSet<Catalyst>&& catalysts
 	) noexcept;
 
 	ReactionData(const ReactionData&) = delete;
@@ -90,7 +91,7 @@ public:
 
 	const std::vector<Reactable>& getReactants() const;
 	const std::vector<Reactable>& getProducts() const;
-	const std::vector<Catalyst>& getCatalysts() const;
+	const ImmutableSet<Catalyst>& getCatalysts() const;
 
 	bool isSpecializationOf(const ReactionData& other) const;
 	bool isGeneralizationOf(const ReactionData& other) const;

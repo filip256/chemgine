@@ -1,4 +1,5 @@
 #include "ReactantSet.hpp"
+#include "Catalyst.hpp"
 
 ReactantSet::ReactantSet(
 	const ReactantSet& other,
@@ -73,9 +74,18 @@ Amount<Unit::MOLE> ReactantSet::getAmountOf(const ReactantId& reactantId) const
 
 Amount<Unit::MOLE> ReactantSet::getAmountOf(const ReactantSet& reactantSet) const
 {
-	Amount<Unit::MOLE> s = 0.0;
-	for (const auto& r : reactantSet)
-		s += getAmountOf(r.first);
+	auto s = 0.0_mol;
+	for (const auto& [rId, _] : reactantSet)
+		s += getAmountOf(rId);
+	return s;
+}
+
+Amount<Unit::MOLE> ReactantSet::getAmountOf(const Catalyst& catalyst) const
+{
+	auto s = 0.0_mol;
+	for (const auto& [_, r] : reactants)
+		if (catalyst.matchesWith(r.molecule.getStructure()))
+			s += r.amount;
 	return s;
 }
 

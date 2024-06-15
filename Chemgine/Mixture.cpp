@@ -1,4 +1,5 @@
 #include "Mixture.hpp"
+#include "Catalyst.hpp"
 
 Mixture::Mixture(const Mixture& other) noexcept :
 	content(other.content.makeCopy(*this))
@@ -38,4 +39,9 @@ Amount<Unit::MOLE> Mixture::getAmountOf(const Reactant& reactant) const
 Amount<Unit::MOLE> Mixture::getAmountOf(const ReactantSet& reactantSet) const
 {
 	return content.getAmountOf(reactantSet);
+}
+
+Amount<Unit::MOLE> Mixture::getAmountOf(const Catalyst& catalyst) const
+{
+	return content.getAmountOf(catalyst);
 }

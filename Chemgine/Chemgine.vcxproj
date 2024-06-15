@@ -403,6 +403,7 @@
     <ClInclude Include="Utils.hpp" />
     <ClInclude Include="Value.hpp" />
     <ClInclude Include="Vapour.hpp" />
+    <ClInclude Include="ImmutableSet.hpp" />
     <ClInclude Include="VectorUtils.hpp" />
   </ItemGroup>
   <ItemGroup>
