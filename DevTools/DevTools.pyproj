@@ -22,11 +22,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="checks\all.py" />
+    <Compile Include="tools\dep_graph.py" />
     <Compile Include="utils\av_check.py" />
     <Compile Include="utils\build.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="checks\" />
+    <Folder Include="tools\" />
     <Folder Include="utils\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
