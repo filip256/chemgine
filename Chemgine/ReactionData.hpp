@@ -93,6 +93,7 @@ public:
 	const std::vector<Reactable>& getProducts() const;
 	const ImmutableSet<Catalyst>& getCatalysts() const;
 
+	bool isCutReaction() const;
 	bool isSpecializationOf(const ReactionData& other) const;
 	bool isGeneralizationOf(const ReactionData& other) const;
 	bool isEquivalentTo(const ReactionData& other) const;

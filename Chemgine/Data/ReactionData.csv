@@ -30,3 +30,4 @@ Id,Name,Reactants,Products,Speed,Energy,Activation,Catalysts
 #229,acid_base,[Me]O;S(=O)(=O)(O)O,S(=O)(=O)(O[Me])O[Me];O,0.8_mol/s@20_C,,0.0,
 #230,acid_base,[Me]O;RC(=O)O,RC(=O)O[Me];O,0.4_mol/s@20_C,,0.0,
 #231,acid_displacement,RC(=O)O[Me];S(=O)(=O)(O)O,RC(=O)O;S(=O)(=O)(O)O[Me],0.3_mol/s@20_C,,0.0,
+#232,cut_esterification,O=C(R)O;OC(R)R,O=C(R)OC(R)R;O,0.0_mol/s@100_C,,,

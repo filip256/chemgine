@@ -589,19 +589,48 @@ Categorizations:
 
     Potential serialization formats:
 
-    Amount:
-        
 
+#tag B
 
-            react<{gugyug, huahsimdasdu, asdhi}:{hiashud, asygduam, sdguya}>
-        [
-	        <id:        #123>
-	        <density:   spline<C:g/L>[1.0:10.0, 2.0K:15.0]>
-	        <speed:     1.0mol/s>
-	        <catalysts: {syga, dhsiahdim}>
-        ]
+load : basic_chem
 
+atom : C {
+    name = "asfasf",
+    weight = 54.5_g/mol,
+    valence = [1,2,3,4],
+}
 
+radical : R {
+    match = [C, '*CC']
+}
+
+:: comment
+
+:.
+  comment
+.:
+
+>> debug msg
+
+spline<id12> : C -> g/L {
+    values =  [1.0:10.0, 2.0_K:15.0_g/mL]
+}
+
+mol : O=C(C)OC=C {
+    density =   spline : C -> g/L { values = [1.0:10.0, 2.0_K:15.0_g/mL] } #empiric,
+    density =   spline<id12> #empiric,
+    density =   func<C:g/L> : x * 2 + 1
+} #empiric
+
+react : O=C(C)OC=C + O=C(C)OC=C -> O=C(C)OC=C + O=C(C)OC=C {
+    catalyst =   [C=O]
+}
+
+flask<> {
+}
+
+lab {
+}
 
 Amount<T> -> DynAmount{T}
 DynAmount{T1} -> DynAmount{T2}

@@ -129,10 +129,10 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 			getInterLayerReactivityCoefficient(r.getReactants()) *
 			getCatalyticReactivityCoefficient(r.getCatalysts());
 		
-		//Logger::log("Reactor: Applying reaction " + r.getData().getHRTag() + " with speed=" + speedCoef.toString(), LogType::INFO);
-		
 		if (speedCoef == 0)
 			continue;
+
+		//Logger::log("Reactor: Applying reaction " + r.getData().getHRTag() + " with speed=" + speedCoef.toString(), LogType::INFO);
 
 		// if there isn't enough of a reactant, adjust the speed coefficient
 		for (const auto& [_, i] : r.getReactants())

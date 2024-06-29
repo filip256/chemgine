@@ -181,8 +181,8 @@ public:
 		setG.emplace_back("C1CC12CC2");
 		setG.emplace_back("C1C(O)CC12CC2");
 		setG.emplace_back("OC1(CC1)C");
-		setG.emplace_back("OC1C2CC12");
-		setG.emplace_back("CC2CCCC(C1CCCCC1)C2");
+		//setG.emplace_back("OC1C2CC12");
+		//setG.emplace_back("CC2CCCC(C1CCCCC1)C2");
 
 		//-----//
 

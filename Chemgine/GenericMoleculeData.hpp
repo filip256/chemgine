@@ -24,4 +24,6 @@ public:
 	~GenericMoleculeData() = default;
 
 	const MolecularStructure& getStructure() const;
+
+	std::string getHRTag() const;
 };

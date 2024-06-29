@@ -29,6 +29,8 @@ public:
 		const std::string& smiles,
 		const Amount<Unit::MOLE_RATIO> idealAmount);
 
+	std::string getHRTag() const;
+
 	friend struct std::hash<Catalyst>;
 };
 

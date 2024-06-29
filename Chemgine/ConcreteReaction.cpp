@@ -41,6 +41,11 @@ const ReactionData& ConcreteReaction::getData() const
 	return baseReaction;
 }
 
+std::string ConcreteReaction::getHRTag() const
+{
+	return baseReaction.getHRTag();
+}
+
 bool ConcreteReaction::operator==(const ConcreteReaction& other) const
 {
 	return this->reactants == other.reactants &&

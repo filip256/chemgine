@@ -133,10 +133,11 @@ public:
     void canonicalize();
 
     const Atom* getAtom(const c_size idx) const;
-    std::string print() const;
+
     bool loadFromSMILES(const std::string& smiles);
     // not working for cycles :(
     std::string toSMILES() const;
+    std::string print() const;
 
     /// <summary>
     /// Complexity: O(1)

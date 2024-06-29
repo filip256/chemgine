@@ -90,3 +90,8 @@ const MolecularStructure& MoleculeData::getStructure() const
 {
 	return structure;
 }
+
+std::string MoleculeData::getHRTag() const
+{
+	return '<' + std::to_string(id) + ':' + name + '>';
+}

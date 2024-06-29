@@ -1,5 +1,6 @@
 #include "ReactantSet.hpp"
 #include "Catalyst.hpp"
+#include "Logger.hpp"
 
 ReactantSet::ReactantSet(
 	const ReactantSet& other,
@@ -49,9 +50,27 @@ void ReactantSet::add(const Reactant& reactant)
 	const auto& temp = reactants.find(reactant.getId());
 	if (temp != reactants.end())
 	{
-		temp->second.amount += reactant.amount;
+		auto& currentAmount = temp->second.amount;
+		// TODO: these should be enabled
+		//if (reactant.amount > currentAmount && false)
+		//{
+		//	Logger::log("ReactantSet: Tried to remove a larger amount than the existing amount of " +
+		//		reactant.molecule.getHRTag(), LogType::WARN);
+		//}
+		//else if (reactant.amount == currentAmount)
+		//	currentAmount = Amount<>::Epsilon.asStd(); // helps avoiding NaN's
+		//else
+			currentAmount += reactant.amount;
+
+		return;
 	}
 
+	if (reactant.amount < 0.0)
+	{
+		Logger::log("ReactantSet: Tried to add a negative amount of " +
+			reactant.molecule.getHRTag(), LogType::BAD);
+		return;
+	}
 	reactants.emplace(std::make_pair(reactant.getId(), reactant.mutate(container)));
 }
 

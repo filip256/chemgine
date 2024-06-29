@@ -30,6 +30,8 @@ public:
 
 	const ReactionData& getData() const;
 
+	std::string getHRTag() const;
+
 	bool operator==(const ConcreteReaction& other) const;
 	bool operator!=(const ConcreteReaction& other) const;
 

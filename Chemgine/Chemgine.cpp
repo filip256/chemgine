@@ -52,22 +52,16 @@ int main()
             .loadReactionsData("Data/ReactionData.csv")
             .loadLabwareData("Data/LabwareData.csv");
 
-        std::cout << MolecularStructure("S(-O)(-O)(-O)(OCC)(OCCC(N(C)C)=O)C#N").print();
+        std::cout << MolecularStructure("S(-O)(-O)(-O)(OCC)(OCCC(N(C)C)=O)C#N").print()<<'\n';
 
         // TDOD: add in presentation
         const auto x = store.reactions.getRetrosynthReactions(
-            *Reactable::get(MolecularStructure("CC(=O)OCCC")));
+            *Reactable::get(MolecularStructure("O(C(C)C)C(=O)C")));
 
-        //for (const auto& i : x)
-        //{
-        //    std::cout << i.getBaseData().getHRTag() << '\n';
-        //    for (const auto& r : i.getReactants())
-        //        std::cout << r.first.getStructure().print() << '\n';
-        //    std::cout << '\n';
-        //    for (const auto& p : i.getProducts())
-        //        std::cout << p.first.getStructure().print() << '\n';
-        //    std::cout << "-------------------------\n";
-        //}
+        for (const auto& i : x)
+        {
+            std::cout << i.print() << "\n-------------------------\n";
+        }
 
         UIContext uiContext;
         uiContext.run();

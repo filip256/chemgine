@@ -80,7 +80,7 @@ def create_graph(folder, create_cluster, label_cluster, strict):
 		folder_to_files[os.path.dirname(path)].append(path)
 	nodes = {normalize(path) for path in files}
 	# Create graph
-	graph = Digraph(strict=strict, graph_attr={'ratio':'0.8'})
+	graph = Digraph(strict=strict, graph_attr={'ratio':'1.8'})
 	# Find edges and create clusters
 	for folder in folder_to_files:
 		with graph.subgraph(name='cluster_{}'.format(folder)) as cluster:

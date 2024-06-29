@@ -95,6 +95,8 @@ public:
 		const Polarity& solventPolarity
 	) const;
 
+	std::string getHRTag() const;
+
 	bool operator==(const Molecule& other) const;
 	bool operator!=(const Molecule& other) const;
 

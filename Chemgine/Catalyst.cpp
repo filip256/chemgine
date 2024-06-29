@@ -61,3 +61,8 @@ std::optional<Catalyst> Catalyst::get(
 
 	return std::nullopt;
 }
+
+std::string Catalyst::getHRTag() const
+{
+	return '<' + getStructure().toSMILES() + ", " + idealAmount.toString() + '>';
+}

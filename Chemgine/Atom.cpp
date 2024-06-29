@@ -46,6 +46,11 @@ uint8_t Atom::getPrecedence() const
     return data().getRarity();
 }
 
+std::string Atom::getSymbol() const
+{
+    return data().symbol.getAsString();
+}
+
 std::string Atom::getSMILES() const
 {
     return data().getSMILES();

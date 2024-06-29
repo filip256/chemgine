@@ -31,3 +31,8 @@ const MolecularStructure& GenericMoleculeData::getStructure() const
 {
 	return structure;
 }
+
+std::string GenericMoleculeData::getHRTag() const
+{
+	return '<' + std::to_string(id) + ':' + structure.toSMILES() + '>';
+}

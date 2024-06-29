@@ -20,6 +20,7 @@ public:
     bool isRadical() const;
 
     uint8_t getPrecedence() const;
+    std::string getSymbol() const;
     std::string getSMILES() const;
     std::unordered_map<AtomId, c_size> getComponentCountMap() const;
 

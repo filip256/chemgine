@@ -27,6 +27,9 @@ public:
 
 	const ReactionData& getBaseData() const;
 
+	std::string getHRTag() const;
+	std::string print() const;
+
 	bool operator==(const RetrosynthReaction& other) const;
 	bool operator!=(const RetrosynthReaction& other) const;
 

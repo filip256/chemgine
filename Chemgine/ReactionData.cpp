@@ -317,6 +317,11 @@ const ImmutableSet<Catalyst> &ReactionData::getCatalysts() const
 	return catalysts;
 }
 
+bool ReactionData::isCutReaction() const
+{
+	return baseSpeed == 0.0;
+}
+
 bool ReactionData::isSpecializationOf(const ReactionData& other) const
 {
 	// check reactants

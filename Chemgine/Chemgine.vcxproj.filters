@@ -151,6 +151,9 @@
     <Filter Include="Source Files\Graphics\UI">
       <UniqueIdentifier>{d90db257-9af8-417d-a155-7acbde95b276}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Tests">
+      <UniqueIdentifier>{96683bd0-b53a-4bbf-9fc6-75a6b83046a4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataStore.cpp">
@@ -475,9 +478,6 @@
     </ClInclude>
     <ClInclude Include="BaseReactionCondition.hpp">
       <Filter>Header Files\Reactions</Filter>
-    </ClInclude>
-    <ClInclude Include="Tests.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SystemMatrix.hpp">
       <Filter>Header Files\DataStructures</Filter>
@@ -829,6 +829,9 @@
     </ClInclude>
     <ClInclude Include="ImmutableSet.hpp">
       <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="Tests.hpp">
+      <Filter>Header Files\Tests</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

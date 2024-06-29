@@ -187,6 +187,11 @@ Amount<Unit::MOLE_RATIO> Molecule::getSolubilityAt(
 	return baseSolubility * scale;
 }
 
+std::string Molecule::getHRTag() const
+{
+	return data().getHRTag();
+}
+
 bool Molecule::operator==(const Molecule& other) const
 {
 	return this->id == other.id;

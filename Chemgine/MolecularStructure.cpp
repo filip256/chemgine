@@ -524,13 +524,13 @@ void MolecularStructure::rPrint(
     const bool printImpliedHydrogens) const
 {
     if (x < 1 || y < 1 ||
-        x >= buffer[0].size() - 2 || y >= buffer.size() - 2 ||
+        x >= buffer.getWidth() - 2 || y >= buffer.getHeight() - 2 ||
         buffer[y][x] != ' ')
         return;
 
     visited[c] = true;
 
-    const auto& symb = atoms[c]->getSMILES();
+    const auto& symb = atoms[c]->getSymbol();
     const uint8_t symbSize = symb.size();
 
     for(uint8_t i = 0; i < symbSize && x + i < buffer[0].size(); ++i)
@@ -559,15 +559,17 @@ void MolecularStructure::rPrint(
                 break;
             }
 
+            const uint8_t nextSymbSize = atoms[bonds[c][i].other]->getSymbol().size();
+
             if (buffer[y][x + symbSize + 1] == ' ')
             {
                 buffer[y][x + symbSize] = hC;
                 rPrint(buffer, x + symbSize + 1, y, bonds[c][i].other, visited, printImpliedHydrogens);
             }
-            else if (buffer[y][x - 2] == ' ')
+            else if (buffer[y][x - nextSymbSize - 1] == ' ')
             {
                 buffer[y][x - 1] = hC;
-                rPrint(buffer, x - 2, y, bonds[c][i].other, visited, printImpliedHydrogens);
+                rPrint(buffer, x - nextSymbSize - 1, y, bonds[c][i].other, visited, printImpliedHydrogens);
             }
             else if (buffer[y - 2][x] == ' ')
             {
@@ -584,20 +586,20 @@ void MolecularStructure::rPrint(
                 buffer[y + 1][x + symbSize] = d1C;
                 rPrint(buffer, x + symbSize + 1, y + 2, bonds[c][i].other, visited, printImpliedHydrogens);
             }
-            else if (buffer[y + 2][x - 2] == ' ')
+            else if (buffer[y + 2][x - nextSymbSize - 1] == ' ')
             {
                 buffer[y + 1][x - 1] = d2C;
-                rPrint(buffer, x - 2, y + 2, bonds[c][i].other, visited, printImpliedHydrogens);
+                rPrint(buffer, x - nextSymbSize - 1, y + 2, bonds[c][i].other, visited, printImpliedHydrogens);
             }
             else if (buffer[y - 2][x + symbSize + 1] == ' ')
             {
                 buffer[y - 1][x + symbSize] = d2C;
                 rPrint(buffer, x + symbSize + 1, y - 2, bonds[c][i].other, visited, printImpliedHydrogens);
             }
-            else if (buffer[y - 2][x - 2] == ' ')
+            else if (buffer[y - 2][x - nextSymbSize - 1] == ' ')
             {
                 buffer[y - 1][x - 1] = d1C;
-                rPrint(buffer, x - 2, y - 2, bonds[c][i].other, visited, printImpliedHydrogens);
+                rPrint(buffer, x - nextSymbSize - 1, y - 2, bonds[c][i].other, visited, printImpliedHydrogens);
             }
             else
             {
@@ -673,7 +675,7 @@ std::string MolecularStructure::print() const
 
     TextBlock buffer(100, 50);
     std::vector<uint8_t> visited(atoms.size(), false);
-    rPrint(buffer, buffer[0].size() / 4, buffer.size() / 2, 0, visited, !isOrganic());
+    rPrint(buffer, buffer.getWidth() / 4, buffer.getHeight() / 2, 0, visited, !isOrganic());
 
     buffer.trim();
     return buffer.toString();
