@@ -12,10 +12,15 @@ public:
 	using StorageT = typename std::underlying_type<EnumT>::type;
 
 private:
+	uint8_t idx;
 	StorageT field;
-	uint8_t idx = 0;
 
-	FlagIterator(StorageT field) : field(field) {}
+	FlagIterator(const StorageT field, const uint8_t idx = 0) noexcept;
+
+	void findNext();
+
+	static FlagIterator begin(const StorageT field);
+	static FlagIterator end(const StorageT field);
 
 public:
 	EnumT operator*() const;
@@ -23,8 +28,6 @@ public:
 	FlagIterator& operator++();
 
 	bool operator!=(const FlagIterator& other) const;
-
-	static const uint8_t npos = static_cast<uint8_t>(-1);
 
 	template <class EnumT>
 	friend class FlagField;
@@ -67,6 +70,21 @@ public:
 
 
 template<class EnumT>
+FlagIterator<EnumT>::FlagIterator(const StorageT field, const uint8_t idx) noexcept :
+	field(field),
+	idx(idx)
+{
+	findNext();
+}
+
+template<class EnumT>
+void FlagIterator<EnumT>::findNext()
+{
+	while ((field & (1 << idx)) == 0 && idx < sizeof(StorageT) * 8)
+		++idx;
+}
+
+template<class EnumT>
 EnumT FlagIterator<EnumT>::operator*() const
 {
 	return static_cast<EnumT>(1 << idx);
@@ -76,8 +94,7 @@ template<class EnumT>
 typename FlagIterator<EnumT>& FlagIterator<EnumT>::operator++()
 {
 	++idx;
-	while ((field & (1 << idx)) == 0 && idx < sizeof(StorageT) * 8)
-		++idx;
+	findNext();
 	return *this;
 }
 
@@ -87,12 +104,25 @@ bool FlagIterator<EnumT>::operator!=(const FlagIterator& other) const
 	return idx != other.idx;
 }
 
+template<class EnumT>
+FlagIterator<EnumT> FlagIterator<EnumT>::begin(const StorageT field)
+{
+	return FlagIterator<EnumT>(field, 0);
+}
+
+template<class EnumT>
+FlagIterator<EnumT> FlagIterator<EnumT>::end(const StorageT field)
+{
+	return FlagIterator<EnumT>(field, sizeof(StorageT) * 8);
+}
+
 
 template <class EnumT>
 const FlagField<EnumT> FlagField<EnumT>::None = FlagField(0);
 
 template <class EnumT>
 const FlagField<EnumT> FlagField<EnumT>::All = FlagField(std::numeric_limits<StorageT>::max());
+
 
 template <class EnumT>
 FlagField<EnumT>::FlagField(const StorageT field) noexcept :
@@ -155,11 +185,11 @@ FlagField<EnumT> FlagField<EnumT>::operator-(const FlagField<EnumT> other) const
 template <class EnumT>
 FlagIterator<EnumT> FlagField<EnumT>::begin() const
 {
-	return FlagIterator<EnumT>(field);
+	return FlagIterator<EnumT>::begin(field);
 }
 
 template <class EnumT>
 FlagIterator<EnumT> FlagField<EnumT>::end() const
 {
-	return FlagIterator<EnumT>(FlagIterator<EnumT>::npos);
+	return FlagIterator<EnumT>::end(field);
 }

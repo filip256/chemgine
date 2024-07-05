@@ -78,7 +78,7 @@ bool StateNucleator::setIfLower(const Reactant& other)
 	if (getTransitionPointCB == nullptr)
 		return false;
 
-	if (reactant.has_value()  == false ||
+	if (reactant.has_value() == false ||
 		(other.*getTransitionPointCB)() < (*reactant.*getTransitionPointCB)())
 	{
 		setReactant(other);

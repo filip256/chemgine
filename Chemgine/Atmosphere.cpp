@@ -28,6 +28,8 @@ Atmosphere Atmosphere::makeCopy() const
 void Atmosphere::tick(const Amount<Unit::SECOND> timespan)
 {
 	checkOverflow();
+	//removeNegligibles();
+	consumePotentialEnergy();
 }
 
 Atmosphere Atmosphere::createDefaultAtmosphere()

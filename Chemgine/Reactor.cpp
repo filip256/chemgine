@@ -2,7 +2,7 @@
 #include "DataStore.hpp"
 #include "Query.hpp"
 #include "Utils.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 
 Reactor::Reactor(const Reactor& other) noexcept :
 	MultiLayerMixture(static_cast<const MultiLayerMixture&>(other).makeCopy()),
@@ -132,7 +132,7 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 		if (speedCoef == 0)
 			continue;
 
-		//Logger::log("Reactor: Applying reaction " + r.getData().getHRTag() + " with speed=" + speedCoef.toString(), LogType::INFO);
+		//Log::log("Reactor: Applying reaction " + r.getData().getHRTag() + " with speed=" + speedCoef.toString(), LogType::INFO);
 
 		// if there isn't enough of a reactant, adjust the speed coefficient
 		for (const auto& [_, i] : r.getReactants())

@@ -49,9 +49,9 @@ std::string RetrosynthReaction::print() const
 	buffer.appendRight(lastR->first.getStructure().print());
 
 	if(baseReaction.isCutReaction())
-		buffer.appendRight(" -X-> ");
+		buffer.appendRight(" ÄXÄ> ");
 	else
-		buffer.appendRight(" ---> ");
+		buffer.appendRight(" ÄÄÄ> ");
 
 	const auto lastP = --products.end();
 	for (auto p = products.begin(); p != lastP; ++p)

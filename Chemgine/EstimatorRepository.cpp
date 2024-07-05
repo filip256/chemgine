@@ -1,5 +1,5 @@
 #include "EstimatorRepository.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 
 #include <cmath>
 
@@ -66,7 +66,7 @@ bool EstimatorRepository::loadFromFile(const std::string& path)
 {
 	loadBuiltins();
 
-	Logger::log("Loaded " + std::to_string(table.size()) + " estimators.", LogType::INFO);
+	Log(this).info("Loaded {0} estimators.", table.size());
 	return true;
 }
 

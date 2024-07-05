@@ -15,7 +15,7 @@ enum class LayerType : uint8_t
 	INORG_MOLTEN_SOLID = 1 << 5,
 	SOLID = 1 << 6,
 
-	ANY = 255,
+	ANY = (1 << 7) - 1,
 
 	FIRST = GASEOUS,
 	LAST = SOLID,

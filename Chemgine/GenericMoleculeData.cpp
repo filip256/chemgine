@@ -1,5 +1,5 @@
 #include "GenericMoleculeData.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 
 GenericMoleculeData::GenericMoleculeData(
 	const MoleculeId id,
@@ -10,7 +10,7 @@ GenericMoleculeData::GenericMoleculeData(
 {
 	if (this->structure.isConcrete())
 	{
-		Logger::log("Complete structure with id " + std::to_string(id) + " defined as generic molecule.", LogType::WARN);
+		Log(this).warn("Complete structure with id {0} defined as generic molecule.", id);
 	}
 }
 
@@ -23,7 +23,7 @@ GenericMoleculeData::GenericMoleculeData(
 {
 	if (this->structure.isConcrete())
 	{
-		Logger::log("Complete structure with id " + std::to_string(id) + " defined as generic molecule.", LogType::WARN);
+		Log(this).warn("Complete structure with id {0} defined as generic molecule.", id);
 	}
 }
 

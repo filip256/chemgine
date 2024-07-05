@@ -1,6 +1,6 @@
 #include "Atom.hpp"
 #include "DataStore.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 
 size_t Atom::instanceCount = 0;
 
@@ -8,14 +8,14 @@ Atom::Atom(const AtomId id) noexcept :
     id(isDefined(id) ? id : 0)
 {
     if (this->id == 0)
-        Logger::log("Atom id " + std::to_string(id) + " is undefined.", LogType::BAD);
+        Log(this).error("Atom id {0} is undefined.", id);
 }
 
 Atom::Atom(const Symbol symbol) noexcept :
     id(isDefined(symbol) ? dataStore().atoms.at(symbol).id : 0)
 {
     if (id == 0)
-        Logger::log("Atom symbol '" + symbol.getAsString() + "' is undefined.", LogType::BAD);
+        Log(this).error("Atom symbol '{0}' is undefined.", symbol.getAsString());
 }
 
 const AtomData& Atom::data() const

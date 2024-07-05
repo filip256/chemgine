@@ -1,6 +1,6 @@
 #include "RadicalData.hpp"
 #include "AtomRepository.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 #include "Utils.hpp"
 
 const std::unordered_set<AtomId> RadicalData::MatchAny = std::unordered_set<AtomId>{ 0 };
@@ -25,5 +25,5 @@ RadicalData::RadicalData(
 	RadicalData(id, symbol, name, repository.getIds(matchables))
 {
 	if (this->matchables.size() != matchables.size())
-		Logger::log("RadicalData: Some matching symbols are undefined.", LogType::BAD);
+		Log(this).error("Some matching symbols are undefined.");
 }

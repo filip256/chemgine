@@ -1,5 +1,5 @@
 #include "ReactionNetwork.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 
 ReactionNetwork::ReactionNode::ReactionNode(ReactionData& data) noexcept :
 	data(data)
@@ -17,7 +17,7 @@ bool ReactionNetwork::insert(const size_t current, ReactionData& reaction, size_
 		{
 			if (reaction.isEquivalentTo(i->data))
 			{
-				Logger::log("Discarded duplicate reaction with id: " + std::to_string(reaction.id) + ".", LogType::WARN);
+				Log(this).warn("Discarded duplicate reaction with id {0}.", reaction.id);
 				return false;
 			}
 			
@@ -60,7 +60,7 @@ bool ReactionNetwork::insert(ReactionData& reaction)
 		{
 			if (reaction.isEquivalentTo(topReaction))
 			{
-				Logger::log("Discarded duplicate reaction with id: " + std::to_string(reaction.id) + ".", LogType::WARN);
+				Log(this).warn("Discarded duplicate reaction with id {0}.", reaction.id);
 				return false;
 			}
 

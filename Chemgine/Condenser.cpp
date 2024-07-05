@@ -27,13 +27,13 @@ bool Condenser::tryConnect(BaseLabwareComponent& other)
 
 	if (other.isAdaptor())
 	{
-		container.setAllIncompatibilityTargets(other.as<Flask&>().getContent());
+		container.setAllIncompatibilityTargets(other.as<Adaptor&>().getContent());
 		return true;
 	}
 
 	if (other.isCondenser())
 	{
-		container.setAllIncompatibilityTargets(other.as<Flask&>().getContent());
+		container.setAllIncompatibilityTargets(other.as<Condenser&>().getContent());
 		return true;
 	}
 
@@ -54,7 +54,8 @@ void Condenser::tick(const Amount<Unit::SECOND> timespan)
 	if (content.isEmpty() == false && coolant.isEmpty() == false)
 	{
 		// TODO: make hT depend on the temp difference and add conversions methods
-		const auto heatTransfer = 5.0_J * data.length.asStd() * data.efficiency.asStd() * timespan.asStd();
+		const auto tempDiff = content.getLayerTemperature() - coolant.getLayerTemperature(LayerType::POLAR);
+		const auto heatTransfer = 5.0_J * tempDiff.asStd() * data.length.asStd() * data.efficiency.asStd() * timespan.asStd();
 		content.add(-heatTransfer);
 		coolant.add(heatTransfer);
 	}

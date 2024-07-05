@@ -23,4 +23,7 @@ public:
 	static std::string padFront(const std::string& str, const size_t minLength, const char padding);
 
 	static std::string formatTime(int32_t milliseconds);
+
+	static std::string toHex(const uint64_t value);
+	static std::string toHex(const void* ptr);
 };

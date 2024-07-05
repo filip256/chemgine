@@ -89,10 +89,10 @@ const std::vector<DrawablePort>& DrawableComponent::getPorts() const
 void DrawableComponent::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 #ifndef NDEBUG
-	sf::RectangleShape bBox(sprite.getGlobalBounds().getSize());
-	bBox.setPosition(sprite.getGlobalBounds().getPosition());
-	bBox.setFillColor(sf::Color(255, 255, 255, 25));
-	target.draw(bBox, states);
+	//sf::RectangleShape bBox(sprite.getGlobalBounds().getSize());
+	//bBox.setPosition(sprite.getGlobalBounds().getPosition());
+	//bBox.setFillColor(sf::Color(255, 255, 255, 25));
+	//target.draw(bBox, states);
 #endif
 
 	target.draw(sprite, states);

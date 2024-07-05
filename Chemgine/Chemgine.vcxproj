@@ -230,6 +230,7 @@
     <ClCompile Include="Heatsource.cpp" />
     <ClCompile Include="HeatsourceData.cpp" />
     <ClCompile Include="FlaskData.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="Lab.cpp" />
     <ClCompile Include="LabwareConnection.cpp" />
     <ClCompile Include="LabwareDataFactory.cpp" />
@@ -239,6 +240,7 @@
     <ClCompile Include="LayerContentIterator.cpp" />
     <ClCompile Include="LayerType.cpp" />
     <ClCompile Include="Linguistics.cpp" />
+    <ClCompile Include="LogSettings.cpp" />
     <ClCompile Include="MolecularStructure.cpp" />
     <ClCompile Include="MultiLayerMixture.cpp" />
     <ClCompile Include="Layer.cpp" />
@@ -274,6 +276,7 @@
     <ClCompile Include="Symbol.cpp" />
     <ClCompile Include="SystemMatrix.cpp" />
     <ClCompile Include="DumpContainer.cpp" />
+    <ClCompile Include="TerminalUtils.cpp" />
     <ClCompile Include="TextBlock.cpp" />
     <ClCompile Include="Value.cpp" />
     <ClCompile Include="Vapour.cpp" />
@@ -314,7 +317,7 @@
     <ClCompile Include="Repository.cpp" />
     <ClCompile Include="GenericMoleculeData.cpp" />
     <ClCompile Include="GenericMoleculeRepository.cpp" />
-    <ClCompile Include="Logger.cpp" />
+    <ClCompile Include="Log.cpp" />
     <ClInclude Include="ConcreteReaction.hpp" />
     <ClInclude Include="AdaptorData.hpp" />
     <ClInclude Include="ConstantEstimator.hpp" />
@@ -337,6 +340,7 @@
     <ClInclude Include="HeatsourceData.hpp" />
     <ClInclude Include="IndexMap.hpp" />
     <ClInclude Include="FlaskData.hpp" />
+    <ClInclude Include="Input.hpp" />
     <ClInclude Include="Lab.hpp" />
     <ClInclude Include="LabwareConnection.hpp" />
     <ClInclude Include="LabwareDataFactory.hpp" />
@@ -382,6 +386,7 @@
     <ClInclude Include="STP.hpp" />
     <ClInclude Include="Symbol.hpp" />
     <ClInclude Include="DumpContainer.hpp" />
+    <ClInclude Include="TerminalUtils.hpp" />
     <ClInclude Include="TextBlock.hpp" />
     <ClInclude Include="UIContext.hpp" />
     <ClInclude Include="UndirectedGraph.hpp" />
@@ -416,7 +421,7 @@
     <ClInclude Include="DataHelpers.hpp" />
     <ClInclude Include="DataStore.hpp" />
     <ClInclude Include="Repository.hpp" />
-    <ClInclude Include="Logger.hpp" />
+    <ClInclude Include="Log.hpp" />
     <ClInclude Include="MolecularStructure.hpp" />
   </ItemGroup>
   <ItemGroup>

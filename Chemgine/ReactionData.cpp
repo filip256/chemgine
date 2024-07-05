@@ -3,7 +3,7 @@
 #include "RetrosynthReaction.hpp"
 #include "Maths.hpp"
 #include "PairHash.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 #include "Utils.hpp"
 
 ReactionData::ReactionData(

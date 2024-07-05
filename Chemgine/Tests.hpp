@@ -6,7 +6,7 @@
 #include <chrono>
 #include <functional>
 
-#include "Logger.hpp"
+#include "Log.hpp"
 #include "MolecularStructure.hpp"
 #include "DataStore.hpp"
 #include "Reactor.hpp"
@@ -208,17 +208,15 @@ public:
 		{
 			if (setA[i].mapTo(setB[i], true).size() > 0 != res["mapTo"][i])
 			{
-				Logger::log("Test failed > MolecularStructure > mapTo > #" + std::to_string(i)
-					+ ": expected=" + std::to_string(res["mapTo"][i]) + "\n"
-					+ setA[i].print() + '\n' + setB[i].print(), LogType::BAD);
+				Log(this).error("Test failed > MolecularStructure > mapTo > #{0}: expected={1}\n{2}\n{3}",
+					i, res["mapTo"][i], setA[i].print(), setB[i].print());
 				passed = false;
 			}
 
 			if ((setA[i] == setB[i]) != res["=="][i])
 			{
-				Logger::log("Test failed > MolecularStructure > == > #" + std::to_string(i)
-					+ ": expected=" + std::to_string(res["=="][i]) + "\n"
-					+ setA[i].print() + '\n' + setB[i].print(), LogType::BAD);
+				Log(this).error("Test failed > MolecularStructure > == > #{0}: expected={1}\n{2}\n{3}",
+					i, res["=="][i], setA[i].print(), setB[i].print());
 				passed = false;
 			}
 		}
@@ -227,9 +225,8 @@ public:
 		{
 			if (setC[i].maximalMapTo(setD[i]).first.size() != res["maximal"][i])
 			{
-				Logger::log("Test failed > MolecularStructure > maximalMapTo > #" + std::to_string(i)
-					+ ": expected=" + std::to_string(res["maximal"][i]) + "\n"
-					+ setC[i].print() + '\n' + setD[i].print(), LogType::BAD);
+				Log(this).error("Test failed > MolecularStructure > maximaMapTo > #{0}: expected={1}\n{2}\n{3}",
+					i, res["maximal"][i], setC[i].print(), setD[i].print());
 				passed = false;
 			}
 		}
@@ -238,9 +235,8 @@ public:
 		{
 			if (MolecularStructure(setG[i].serialize(), true) != setG[i])
 			{
-				Logger::log("Test failed > MolecularStructure > serialize/deserialize > #" + std::to_string(i)
-					+ ": expected= true\n"
-					+ setG[i].print(), LogType::BAD);
+				Log(this).error("Test failed > MolecularStructure > serialize/deserialize > #{0} : expected= true\n{1}",
+					i, setG[i].print());
 				passed = false;
 			}
 		}
@@ -249,9 +245,8 @@ public:
 		{
 			if (MolecularStructure(setG[i].toSMILES()) != setG[i])
 			{
-				Logger::log("Test failed > MolecularStructure > SMILES > #" + std::to_string(i)
-					+ ": expected= true\n"
-					+ setG[i].print(), LogType::BAD);
+				Log(this).error("Test failed > MolecularStructure > SMILES > #{0}: expected= true\n{1}",
+					setG[i].print(), i, setG[i].print());
 				passed = false;
 			}
 		}
@@ -262,9 +257,8 @@ public:
 			const auto newMol = MolecularStructure::addSubstituents(setE[i], setF[i], map);
 			if (newMol.componentCount() != res["addSub"][i])
 			{
-				Logger::log("Test failed > MolecularStructure > addSubstituents > #" + std::to_string(i)
-					+ ": expected=" + std::to_string(res["addSub"][i]) + "\n"
-					+ setE[i].print() + '\n' + setF[i].print(), LogType::BAD);
+				Log(this).error("Test failed > MolecularStructure > addSubstituents > #{0}: expected={1}\n{2}\n{3}",
+					i, res["addSub"][i], setA[i].print(), setB[i].print());
 				passed = false;
 			}
 		}
@@ -274,9 +268,8 @@ public:
 			const auto mass = setM[i].getMolarMass().asStd();
 			if (std::abs(mass - resFloat["mass"][i]) > massThreshold)
 			{
-				Logger::log("Test failed > MolecularStructure > molarMass > #" + std::to_string(i)
-					+ ": expected=" + std::to_string(resFloat["mass"][i]) + "\n"
-					+ "  but got=" + std::to_string(mass), LogType::BAD);
+				Log(this).error("Test failed > MolecularStructure > molarMass > #{0}: expected={1}\nbut got={2}",
+					i, resFloat["mass"][i], mass);
 				passed = false;
 			}
 		}
@@ -307,7 +300,7 @@ class EstimatorTest
 		{
 			if (refData.contains(input) == false)
 			{
-				Logger::log("Missing reference data for input:" + std::to_string(input), LogType::WARN);
+				Log(this).warn("Missing reference data for input: {0}.", input);
 				return 0;
 			}
 
@@ -317,8 +310,8 @@ class EstimatorTest
 
 		double testMAE(const std::function<double(double)>& estimator) const
 		{
-			Logger::enterContext();
-			Logger::logCached("Input    |   Reference  Actual     Error", LogType::TABLE);
+			Log<>::nest();
+			Log(this).cache("Input    |   Reference  Actual     Error");
 			double tErr = 0.0;
 			for (const auto& p : refData)
 			{	
@@ -326,14 +319,14 @@ class EstimatorTest
 				const auto err = abs(p.second - act);
 				tErr += err;
 
-				Logger::logCached(std::to_string(p.first).substr(0, 8) + " |   " + std::to_string(p.second).substr(0, 8) + "   " + std::to_string(act).substr(0, 8) + "   " + std::to_string(err), LogType::TABLE);
+				Log(this).cache(std::to_string(p.first).substr(0, 8) + " |   " + std::to_string(p.second).substr(0, 8) + "   " + std::to_string(act).substr(0, 8) + "   " + std::to_string(err));
 			}
 			const auto mae = tErr / refData.size();
 
-			Logger::logCached("---------+------------------------------------", LogType::TABLE);
-			Logger::logCached("MAE:     |   " + std::to_string(mae).substr(0, 16), LogType::TABLE);
-			Logger::exitContext();
-			Logger::logCached("", LogType::TABLE);
+			Log(this).cache("---------+------------------------------------");
+			Log(this).cache("MAE:     |   " + std::to_string(mae).substr(0, 16));
+			Log<>::unnest();
+			Log(this).cache("");
 
 			return mae;
 		}
@@ -355,20 +348,20 @@ public:
 		auto mae = waterBpRef.testMAE([&water](double input) {return water.getBoilingPointAt(input).asStd(); });
 		if (mae > waterBpThreshold)
 		{
-			Logger::log("Test failed > Estimator > waterBp: MAE=" + std::to_string(mae), LogType::BAD);
-			Logger::printCache();
+			Log(this).error("Test failed > Estimator > waterBp: MAE={0}.", mae);
+			Log(this).printCache();
 			passed = false;
 		}
-		Logger::clearCache();
+		Log(this).clearCache();
 
 		mae = waterDensityRef.testMAE([&water](double input) {return water.getDensityAt(input, 760.0).asStd(); });
 		if (mae > waterDensityThreshold)
 		{
-			Logger::log("Test failed > Estimator > waterDensity: MAE=" + std::to_string(mae), LogType::BAD);
-			Logger::printCache();
+			Log(this).error("Test failed > Estimator > waterBp: MAE={0}.", mae);
+			Log(this).printCache();
 			passed = false;
 		}
-		Logger::clearCache();
+		Log(this).clearCache();
 	}
 
 	bool hasPassed()
@@ -409,7 +402,8 @@ private:
 
 			if (std::abs((massAfter - massBefore).asStd()) > 1e-5)
 			{
-				Logger::log("Test failed > Reactor > mass conservation: expected=" + massBefore.toString() + "   actual=" + massAfter.toString(), LogType::BAD);
+				Log(this).error("Test failed > Reactor > mass conservation: expected={0}   actual={1}",
+					massBefore.toString(), massAfter.toString());
 				passed = false;
 				break;
 			}
@@ -417,8 +411,8 @@ private:
 	}
 	void runTemperatureTest()
 	{
-		Logger::enterContext();
-		Logger::logCached("Input    |   Reference  Actual     Error", LogType::TABLE);
+		Log<>::nest();
+		Log(this).cache("Input    |   Reference  Actual     Error");
 
 		const auto& layer = reactorB->getLayer(LayerType::POLAR);
 		const auto moles = layer.getMoles();
@@ -435,28 +429,28 @@ private:
 			const auto err = abs((act - batches[i].second).asStd());
 			tErr += err;
 
-			Logger::logCached(addedEnergy.toString(7) + " |   " + batches[i].second.toString(7) + "   " + act.toString(7) + "   " + std::to_string(err), LogType::TABLE);
+			Log(this).cache(addedEnergy.toString(7) + " |   " + batches[i].second.toString(7) + "   " + act.toString(7) + "   " + std::to_string(err));
 		}
 		const auto mae = tErr / batches.size();
 
-		Logger::logCached("---------+------------------------------------", LogType::TABLE);
-		Logger::logCached("MAE:     |   " + std::to_string(mae).substr(0, 16), LogType::TABLE);
-		Logger::exitContext();
-		Logger::logCached("", LogType::TABLE);
+		Log(this).cache("---------+------------------------------------");
+		Log(this).cache("MAE:     |   " + std::to_string(mae).substr(0, 16));
+		Log<>::unnest();
+		Log(this).cache("");
 
 		if (mae > waterTemperatureThreshold)
 		{
-			Logger::log("Test failed > Reactor > waterTemp: MAE=" + std::to_string(mae), LogType::BAD);
-			Logger::printCache();
+			Log(this).error("Test failed > Reactor > waterTemp: MAE={0}", mae);
+			Log(this).printCache();
 			passed = false;
 		}
-		Logger::clearCache();
+		Log(this).clearCache();
 	}
 	void runVolumetricTest()
 	{
 		if (std::abs((reactorC->getTotalVolume() - reactorC->getMaxVolume()).asStd()) > overflowLossThreshold)
 		{
-			Logger::log("Test failed > Reactor > volumetrics > total_volume: expected=" + reactorC->getMaxVolume().toString() + "   actual=" + reactorC->getTotalVolume().toString(), LogType::BAD);
+			Log(this).error("Test failed > Reactor > volumetrics > total_volume: expected={0}   actual={1}", reactorC->getMaxVolume().toString(), reactorC->getTotalVolume().toString());
 			passed = false;
 		}
 
@@ -470,14 +464,14 @@ private:
 		auto loss = abs((atmBefore + reactorBefore - atmAfter - reactorAfter).asStd());
 		if(loss > overflowLossThreshold)
 		{
-			Logger::log("Test failed > Reactor > volumetrics > overflow: Total volume loss=" + std::to_string(loss), LogType::BAD);
+			Log(this).error("Test failed > Reactor > volumetrics > overflow: Total volume loss={0}.", loss);
 			passed = false;
 		}
 
 		loss = abs((reactorAfter - reactorC->getMaxVolume()).asStd());
 		if(loss > overflowLossThreshold)
 		{
-			Logger::log("Test failed > Reactor > volumetrics > overflow: Source volume loss=" + std::to_string(loss), LogType::BAD);
+			Log(this).error("Test failed > Reactor > volumetrics > overflow: Source volume loss={0}.", loss);
 			passed = false;
 		}
 	}
@@ -489,7 +483,7 @@ private:
 		gasMixtureA->add(water);
 		if (reactorF->getAmountOf(water) != water.amount)
 		{
-			Logger::log("Test failed > SingleLayerMixture > incompatible forwarding: Incompatible reactant was not forwarded.", LogType::BAD);
+			Log(this).error("Test failed > SingleLayerMixture > incompatible forwarding: Incompatible reactant was not forwarded.");
 			passed = false;
 		}
 
@@ -497,7 +491,7 @@ private:
 		gasMixtureA->add(oxygen);
 		if (reactorF->getTotalMoles() != molesBefore)
 		{
-			Logger::log("Test failed > SingleLayerMixture > incompatible forwarding: Compatible reactant was forwarded.", LogType::BAD);
+			Log(this).error("Test failed > SingleLayerMixture > incompatible forwarding: Compatible reactant was forwarded.");
 			passed = false;
 		}
 	}
@@ -509,7 +503,7 @@ private:
 		forwardA->add(water);
 		if (reactorG->getAmountOf(water) != water.amount)
 		{
-			Logger::log("Test failed > ForwardContainer: Reactant was not forwarded correctly.", LogType::BAD);
+			Log(this).error("Test failed > ForwardContainer: Reactant was not forwarded correctly.");
 			passed = false;
 		}
 
@@ -517,7 +511,7 @@ private:
 		forwardA->add(oxygen);
 		if (reactorG->getTotalMoles() != molesBefore)
 		{
-			Logger::log("Test failed > ForwardContainer: Reactant was not forwarded correctly.", LogType::BAD);
+			Log(this).error("Test failed > ForwardContainer: Reactant was not forwarded correctly.");
 			passed = false;
 		}
 	}
@@ -534,7 +528,7 @@ private:
 
 		if (reactorD->isSame(initialReactor))
 		{
-			Logger::log("Test failed > Reactor > determinism: given reactors were already stable", LogType::BAD);
+			Log(this).error("Test failed > Reactor > determinism: given reactors were already stable.");
 			testPassed = false;
 			return;
 		}
@@ -544,40 +538,40 @@ private:
 			double err = abs((reactorD->getPressure() - copyReactor.getPressure()).asStd());
 			if (err > determinismEqualityThreshold)
 			{
-				Logger::log("Test failed > Reactor > determinism: reactors have different states: pressure, loss=" + std::to_string(err), LogType::BAD);
+				Log(this).error("Test failed > Reactor > determinism: reactors have different states: pressure, loss={0}.", err);
 				testPassed = false;
 			}
 
 			err = abs((reactorD->getTotalMoles() - copyReactor.getTotalMoles()).asStd());
 			if (err > determinismEqualityThreshold)
 			{
-				Logger::log("Test failed > Reactor > determinism: reactors have different states: total moles, loss=" + std::to_string(err), LogType::BAD);
+				Log(this).error("Test failed > Reactor > determinism: reactors have different states: total mols, loss={0}.", err);
 				testPassed = false;
 			}
 
 			err = abs((reactorD->getTotalMass() - copyReactor.getTotalMass()).asStd());
 			if (err > determinismEqualityThreshold)
 			{
-				Logger::log("Test failed > Reactor > determinism: reactors have different states: total mass, loss=" + std::to_string(err), LogType::BAD);
+				Log(this).error("Test failed > Reactor > determinism: reactors have different states: total mass, loss={0}.", err);
 				testPassed = false;
 			}
 
 			err = abs((reactorD->getTotalVolume() - copyReactor.getTotalVolume()).asStd());
 			if (err > determinismEqualityThreshold)
 			{
-				Logger::log("Test failed > Reactor > determinism: reactors have different states: total volume, loss=" + std::to_string(err), LogType::BAD);
+				Log(this).error("Test failed > Reactor > determinism: reactors have different states: total volume, loss={0}.", err);
 				testPassed = false;
 			}
 
 			if (reactorD->hasSameContent(copyReactor, determinismEqualityThreshold) == false)
 			{
-				Logger::log("Test failed > Reactor > determinism: reactors have different contents", LogType::BAD);
+				Log(this).error("Test failed > Reactor > determinism: reactors have different contents.");
 				testPassed = false;
 			}
 
 			if (reactorD->hasSameLayers(copyReactor, determinismEqualityThreshold) == false)
 			{
-				Logger::log("Test failed > Reactor > determinism: reactors have different layers", LogType::BAD);
+				Log(this).error("Test failed > Reactor > determinism: reactors have different layers.");
 				testPassed = false;
 			}
 
@@ -595,8 +589,8 @@ private:
 	}
 	void runAggregationChangeTest()
 	{
-		Logger::enterContext();
-		Logger::logCached("Energy  |   SourceTemp   DestinationTemp  Source Nucleator Amount", LogType::TABLE);
+		Log<>::nest();
+		Log(this).cache("Energy  |   SourceTemp   DestinationTemp  Source Nucleator Amount");
 
 		const auto& source = reactorE->getLayer(LayerType::POLAR);
 		const auto& destination = reactorE->getLayer(LayerType::GASEOUS);
@@ -610,21 +604,19 @@ private:
 		auto pastDestinationTemp = destination.getTemperature();
 
 		Amount<Unit::JOULE> energyStep = 6000.0;
-		Logger::logCached("0kJ     |   " +
+		Log(this).cache("0kJ     |   " +
 			source.getTemperature().toString(8) + "    " +
 			destination.getTemperature().toString(8) + "        " +
-			reactorE->getAmountOf(nucleator).toString(8),
-			LogType::TABLE);
+			reactorE->getAmountOf(nucleator).toString(8));
 
 		for (size_t i = 0; i < 64; ++i)
 		{
 			reactorE->add(Amount<Unit::JOULE>(energyStep));
 			reactorE->tick(tickTimespan);
-			Logger::logCached(std::to_string(energyStep.asKilo() * (i + 1)).substr(0, 5) + "kJ |   " +
+			Log(this).cache(std::to_string(energyStep.asKilo() * (i + 1)).substr(0, 5) + "kJ |   " +
 				source.getTemperature().toString(8) + "    " +
 				destination.getTemperature().toString(8) + "        " +
-				reactorE->getAmountOf(nucleator).toString(8),
-				LogType::TABLE);
+				reactorE->getAmountOf(nucleator).toString(8));
 
 			if (testPhase == 0) // heating up source to tp
 			{
@@ -636,7 +628,7 @@ private:
 				}
 				else if (sTemp >= sourceMaxTemp)
 				{
-					Logger::log("Test failed > Reactor > aggregation change > max source temp exceeded, T=" + sTemp.toString(), LogType::BAD);
+					Log(this).error("Test failed > Reactor > aggregation change > max source temp exceeded, T={0}.", sTemp.toString());
 					testPassed = false;
 					break;
 				}
@@ -644,7 +636,7 @@ private:
 				const auto dTemp = destination.getTemperature();;
 				if (dTemp != pastDestinationTemp)
 				{
-					Logger::log("Test failed > Reactor > aggregation change > destination temperature changed in phase 0", LogType::BAD);
+					Log(this).error("Test failed > Reactor > aggregation change > destination temperature changed in phase 0.");
 					testPassed = false;
 					break;
 				}
@@ -660,7 +652,7 @@ private:
 				}
 				else if (dTemp >= sourceMaxTemp)
 				{
-					Logger::log("Test failed > Reactor > aggregation change > max destination temp exceeded, T=" + dTemp.toString(), LogType::BAD);
+					Log(this).error("Test failed > Reactor > aggregation change > max destination temp exceeded, T={0}.", dTemp.toString());
 					testPassed = false;
 					break;
 				}
@@ -668,7 +660,7 @@ private:
 				const auto sTemp = source.getTemperature();;
 				if (sTemp != pastSourceTemp)
 				{
-					Logger::log("Test failed > Reactor > aggregation change > source temperature changed in phase 1", LogType::BAD);
+					Log(this).error("Test failed > Reactor > aggregation change > source temperature changed in phase 1.");
 					testPassed = false;
 					break;
 				}
@@ -679,7 +671,7 @@ private:
 				const auto nMoles = reactorE->getAmountOf(nucleator);
 				if (nMoles >= pastNucleatorAmount)
 				{
-					Logger::log("Test failed > Reactor > aggregation change > nucleator did not transfer in phase 2", LogType::BAD);
+					Log(this).error("Test failed > Reactor > aggregation change > nucleator did not transfer in phase 2.");
 					testPassed = false;
 					break;
 				}
@@ -688,7 +680,7 @@ private:
 				const auto dTemp = destination.getTemperature();;
 				if (dTemp != pastDestinationTemp)
 				{
-					Logger::log("Test failed > Reactor > aggregation change > destination temperature changed in phase 2", LogType::BAD);
+					Log(this).error("Test failed > Reactor > aggregation change > destination temperature changed in phase 2.");
 					testPassed = false;
 					break;
 				}
@@ -702,38 +694,38 @@ private:
 				const auto dTemp = destination.getTemperature();
 				if (dTemp <= pastDestinationTemp)
 				{
-					Logger::log("Test failed > Reactor > aggregation change > destination temperature did not increase in phase 3", LogType::BAD);
+					Log(this).error("Test failed > Reactor > aggregation change > destination temperature did not increase in phase 3.");
 					testPassed = false;
 					break;
 				}
 				pastDestinationTemp = dTemp;
 				if (source.getTemperature().isInfinity() == false)
 				{
-					Logger::log("Test failed > Reactor > aggregation change > empty layer temperature was not infinity", LogType::BAD);
+					Log(this).error("Test failed > Reactor > aggregation change > empty layer temperature was not infinity.");
 					testPassed = false;
 					break;
 				}
 			}
 		}
 
-		Logger::logCached("--------+--------------------------------------------", LogType::TABLE);
+		Log(this).cache("--------+--------------------------------------------");
 
 		if(testPassed && testPhase != 3)
 		{
-			Logger::log("Test failed > Reactor > aggregation change > not all test phases were reached, phase=" + std::to_string(testPhase), LogType::BAD);
+			Log(this).error("Test failed > Reactor > aggregation change > not all test phases were reached, phase={0}.", testPhase);
 			testPassed = false;
 		}
 
-		Logger::exitContext();
-		Logger::logCached("", LogType::TABLE);
+		Log<>::unnest();
+		Log(this).cache("");
 
 		if (testPassed == false)
 		{
-			Logger::printCache();
+			Log(this).printCache();
 			passed = false;
 		}
 
-		Logger::clearCache();
+		Log(this).clearCache();
 	}
 
 public:
@@ -835,7 +827,7 @@ private:
 public:
 	TestManager()
 	{
-		Logger::enterContext();
+		Log<>::nest();
 		Accessor<>::setDataStore(store);
 
 		const auto begin = std::chrono::steady_clock::now();
@@ -851,13 +843,13 @@ public:
 		molecularStructureTest.initialize();
 		reactorTest.initialize();
 		const auto end = std::chrono::steady_clock::now();
-		Logger::log("Test initialization completed in " +
-			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.");
+		Log(this).info("Test initialization completed in {0}s.",
+			std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0);
 	}
 
 	~TestManager()
 	{
-		Logger::exitContext();
+		Log<>::unnest();
 	}
 
 	void runAll()
@@ -868,15 +860,15 @@ public:
 		reactorTest.runTests();
 		const auto end = std::chrono::steady_clock::now();
 
-		Logger::log("Test execution completed in " +
-			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.");
+		Log(this).info("Test execution completed in {0}s.", 
+			std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0);
 
 		if (molecularStructureTest.hasPassed())
-			Logger::log("All MolecularStructure tests passed.", LogType::GOOD);
+			Log(this).success("All MolecularStructure tests passed.");
 		if (estimatorTest.hasPassed())
-			Logger::log("All Estimator tests passed.", LogType::GOOD);
+			Log(this).success("All Estimator tests passed.");
 		if (reactorTest.hasPassed())
-			Logger::log("All Reactor tests passed.", LogType::GOOD);
+			Log(this).success("All Reactor tests passed.");
 	}
 
 	void runPersist()
@@ -887,7 +879,7 @@ public:
 			.saveMoleculesData("Out/molecules.out.csv");
 		const auto end = std::chrono::steady_clock::now();
 
-		Logger::log("Total span dump completed in " +
-			std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0) + "s.");
+		Log(this).info("Total span dump completed in {0}s.",
+			std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() / 1000000.0);
 	}
 };

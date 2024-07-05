@@ -106,8 +106,8 @@ inline ContainerComponent<Atmosphere, Reactor>::ContainerComponent(
 	Atmosphere& atmosphere
 ) noexcept :
 	BaseContainerComponent(id, type),
-	containers(std::make_tuple(
-		atmosphere.createSubatmosphere(getData().getVolume()),
+	containers(std::tuple(
+		Atmosphere(atmosphere.createSubatmosphere(getData().getVolume())),
 		Reactor(atmosphere, getData().getVolume(), atmosphere))),
 	fills(getData().generateShapeFills())
 {}

@@ -6,10 +6,12 @@ enum class LogType : uint8_t
 {
 	NONE,
 	FATAL,
-	BAD,
+	ERROR,
 	WARN,
-	GOOD,
+	SUCCESS,
 	INFO,
+	DEBUG,
+	TRACE,
 	TABLE,
 	ALL
 };

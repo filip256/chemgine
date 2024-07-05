@@ -3,7 +3,7 @@
 #include "OffsetEstimator.hpp"
 #include "ScaleEstimator.hpp"
 #include "SplineEstimator.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 
 #include <fstream>
 
@@ -18,7 +18,7 @@ bool MoleculeRepository::loadFromFile(const std::string& path)
 
 	if (!file.is_open())
 	{
-		Logger::log("Failed to open file '" + path + "'.", LogType::BAD);
+		Log(this).error("Failed to open file '{0}'.", path);
 		return false;
 	}
 
@@ -36,24 +36,24 @@ bool MoleculeRepository::loadFromFile(const std::string& path)
 
 		if (line.size() != 17)
 		{
-			Logger::log("Incompletely defined molecule skipped.", LogType::BAD);
+			Log(this).error("Incompletely defined molecule skipped.");
 			continue;
 		}
 
 		if (line[1].empty())
 		{
-			Logger::log("Failed to load molecule due to empty SMILES string.", LogType::BAD);
+			Log(this).error("Failed to load molecule due to empty SMILES string.");
 			continue;
 		}
 		if (line[2].empty())
 		{
-			Logger::log("Molecule name was empty. (" + line[1] + ')', LogType::WARN);
+			Log(this).warn("Empty molecule name at {0}.", line[1]);
 		}
 
 		const auto id = DataHelpers::parseId<MoleculeId>(line[0]);
 		if (id.has_value() == false)
 		{
-			Logger::log("Missing id, molecule '" + line[1] + "' skipped.", LogType::BAD);
+			Log(this).error("Missing id, molecule '{0}' skipped.", line[1]);
 			continue;
 		}
 
@@ -103,12 +103,12 @@ bool MoleculeRepository::loadFromFile(const std::string& path)
 			MoleculeData(*id, line[2], line[1], hydro, lipo, color, mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA, solA, henryA)
 		) == false)
 		{
-			Logger::log("Molecule with duplicate id " + std::to_string(*id) + " skipped.", LogType::WARN);
+			Log(this).warn("Molecule with duplicate id {0} skipped.", *id);
 		}
 	}
 	file.close();
 
-	Logger::log("Loaded " + std::to_string(table.size()) + " molecules.", LogType::INFO);
+	Log(this).info("Loaded {0} molecules.", table.size());
 
 	return true;
 }
@@ -119,7 +119,7 @@ bool MoleculeRepository::saveToFile(const std::string& path)
 
 	if (!file.is_open())
 	{
-		Logger::log("Failed to open file '" + path + "'.", LogType::BAD);
+		Log(this).error("Failed to open file '{0}'.", path);
 		return false;
 	}
 
@@ -146,7 +146,7 @@ MoleculeId MoleculeRepository::findOrAdd(MolecularStructure&& structure)
 {
 	if (structure.isEmpty() || structure.isGeneric())
 	{
-		Logger::log("Tried to create a concrete molecule from an empty or generic structure.", LogType::BAD);
+		Log(this).error("Tried to create a concrete molecule from an empty or generic structure.");
 		return 0;
 	}
 
@@ -154,7 +154,7 @@ MoleculeId MoleculeRepository::findOrAdd(MolecularStructure&& structure)
 	if (idx != npos)
 		return table[idx].id;
 
-	Logger::log("New structure discovered: \n" + structure.print(), LogType::INFO);
+	Log(this).debug("New structure discovered: \n{0}", structure.print());
 
 	const auto& mpA = estimators.add<OffsetEstimator>(estimators.at(toId(BuiltinEstimator::TORR_TO_REL_BP)), 0);
 	const auto& bpA = estimators.add<OffsetEstimator>(estimators.at(toId(BuiltinEstimator::TORR_TO_REL_BP)), 100);

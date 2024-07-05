@@ -1,6 +1,6 @@
 #include "AtomRepository.hpp"
 #include "DataHelpers.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 #include "Utils.hpp"
 
 #include <fstream>
@@ -57,7 +57,7 @@ std::unordered_set<AtomId> AtomRepository::getIds(const std::unordered_set<Symbo
 	{
 		if (contains(s) == false)
 		{
-			Logger::log("AtomRepository: Skipped undefined atom symbol: " + s.getAsString() + ".", LogType::BAD);
+			Log(this).error("Skipped undefined atom symbol: '{0}'.", s.getAsString());
 			continue;
 		}
 		result.emplace(at(s).id);
@@ -72,7 +72,7 @@ bool AtomRepository::loadFromFile(const std::string& path)
 
 	if (!file.is_open())
 	{
-		Logger::log("Failed to open file '" + path + "'.", LogType::BAD);
+		Log(this).error("Failed to open file '{0}'.", path);
 		return false;
 	}
 
@@ -91,20 +91,20 @@ bool AtomRepository::loadFromFile(const std::string& path)
 		const auto id = DataHelpers::parseId<AtomId>(line[0]);
 		if (id.has_value() == false)
 		{
-			Logger::log("Missing id, atom skipped.", LogType::BAD);
+			Log(this).error("Missing id, atom skipped.");
 			continue;
 		}
 
 		const auto symbol = DataHelpers::parse<Symbol>(line[1]);
 		if (symbol.has_value() == false)
 		{
-			Logger::log("Missing or invalid symbol: \"" + line[1] + "\", atom skipped.", LogType::BAD);
+			Log(this).error("Missing or invalid symbol: \"{0}\", atom skipped.", line[1]);
 			continue;
 		}
 
 		if (line[2].empty())
 		{
-			Logger::log("Atom name was empty. (" + line[1] + ')', LogType::WARN);
+			Log(this).warn("Missing name for atom '{0}'.", line[1]);
 		}
 
 		const auto weight = DataHelpers::parseUnsigned<double>(line[3]);
@@ -112,18 +112,18 @@ bool AtomRepository::loadFromFile(const std::string& path)
 		auto valences = DataHelpers::parseList<uint8_t>(line[4], ';', true);
 		if (valences.has_value() == false)
 		{
-			Logger::log("Atom with invalid or missing valence with id " + std::to_string(*id) + " skipped.", LogType::BAD);
+			Log(this).error("Atom with invalid or missing valence with id {0} skipped.", *id);
 			continue;
 		}
 
 		if (add<AtomData>(*id, *symbol, line[2], Amount<Unit::GRAM>(weight.value_or(0)), std::move(*valences)) == false)
 		{
-			Logger::log("Duplicate atom with id " + std::to_string(*id) + " or symbol '" + line[1] + "' skipped.", LogType::WARN);
+			Log(this).warn("Duplicate atom with id {0} or symbol '{1}' skipped.", *id, line[1]);
 		}
 	}
 	file.close();
 
-	Logger::log("Loaded " + std::to_string(table.size()) + " atoms.", LogType::INFO);
+	Log(this).info("Loaded {0} atoms.", table.size());
 
 	loadBuiltins();
 

@@ -6,13 +6,13 @@
 #include "DataHelpers.hpp"
 #include "AtomFactory.hpp"
 #include "TextBlock.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 
 MolecularStructure::MolecularStructure(const std::string& smiles)
 {
     if (loadFromSMILES(smiles) == false)
     {
-        Logger::log("Molecule initialized with ill-formed smiles: \"" + smiles + "\".", LogType::BAD);
+        Log(this).error("Molecule initialized with ill-formed smiles: \"{0}\".", smiles);
         return;
     }
     canonicalize();
@@ -77,7 +77,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             }
             else
             {
-                Logger::log("Atomic symbol '" + std::string(1, smiles[i]) + "' at " + std::to_string(i) + " is undefined.", LogType::BAD);
+                Log(this).error("Atomic symbol '{0}' at {1} is undefined.", smiles[i], i);
                 clear();
                 return false;
             }
@@ -111,7 +111,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
         {
             if (branches.empty())
             {
-                Logger::log("Unpaired ')' found at " + std::to_string(i) + " .", LogType::BAD);
+               Log(this).error("Unpaired ')' found at {0}.", i);
                 clear();
                 return false;
             }
@@ -125,7 +125,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             const size_t t = smiles.find(']', i + 1);
             if (t == std::string::npos)
             {
-                Logger::log("Unpaired '[' found at " + std::to_string(i) + " .", LogType::BAD);
+                Log(this).error("Unpaired '[' found at {0}.", i);
                 clear();
                 return false;
             }
@@ -133,7 +133,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             const Symbol symbol(smiles.substr(i + 1, t - i - 1));
             if (Atom::isDefined(symbol) == false)
             {
-                Logger::log("Atomic symbol '" + symbol.getAsString() + "' at " + std::to_string(i) + " is undefined.", LogType::BAD);
+                Log(this).error("Atomic symbol '{0}' at {1} is undefined.", symbol.getAsString(), i);
                 clear();
                 return false;
             }
@@ -157,7 +157,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
         {
             if (i + 2 >= smiles.size() || isdigit(smiles[i + 1]) == false || isdigit(smiles[i + 2]) == false)
             {
-                Logger::log("Two-digit ring label is missing.", LogType::BAD);
+                Log(this).error("Two-digit ring label is missing.");
                 clear();
                 return false;
             }
@@ -193,14 +193,14 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             continue;
         }
 
-        Logger::log("Unidentified symbol '" + std::string(1, smiles[i]) + "' at " + std::to_string(i) + " found.", LogType::BAD);
+        Log(this).error("Unidentified symbol '{0}' at {1} found.", smiles[i], i);
         clear();
         return false;
     }
 
     if(branches.empty() == false)
     {
-        Logger::log("Unpaired '(' found.", LogType::BAD);
+        Log(this).error("Unpaired '(' found.");
         clear();
         return false;
     }
@@ -210,7 +210,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
     const auto hCount = countImpliedHydrogens();
     if(hCount == -1)
     {
-        Logger::log("Valence of an atom was exceeded.", LogType::BAD);
+        Log(this).error("Valence of an atom was exceeded.");
         clear();
         return false;
     }
@@ -603,7 +603,7 @@ void MolecularStructure::rPrint(
             }
             else
             {
-                Logger::log("Incomplete ASCII print.", LogType::BAD);
+                Log(this).warn("Incomplete ASCII print.");
                 break;
             }
         }
@@ -657,7 +657,7 @@ void MolecularStructure::rPrint(
             }
             else
             {
-                Logger::log("Incomplete ASCII print.", LogType::BAD);
+                Log(this).warn("Incomplete ASCII print.");
                 break;
             }
         }

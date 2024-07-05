@@ -1,6 +1,9 @@
 #include "Linguistics.hpp"
 #include "Amount.hpp"
 
+#include <sstream>
+#include <iomanip>
+
 void Linguistics::pluralize(std::string& str)
 {
 	str += 's';
@@ -82,4 +85,16 @@ std::string Linguistics::formatTime(int32_t milliseconds)
 		padFront(std::to_string(m), 2, '0') + ':' +
 		padFront(std::to_string(s), 2, '0') + '.' +
 		std::to_string(milliseconds);
+}
+
+std::string Linguistics::toHex(const uint64_t value)
+{
+	std::stringstream ss;
+	ss << std::hex << std::showbase << value;
+	return ss.str();
+}
+
+std::string Linguistics::toHex(const void* ptr)
+{
+	return toHex(reinterpret_cast<uint64_t>(ptr));
 }

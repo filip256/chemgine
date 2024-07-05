@@ -1,17 +1,17 @@
 #include "DataStoreAccessor.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 
 void DataStoreAccessor::set(const DataStore& dataStore)
 {
 	if (this->dataStore)
-		Logger::log("Already initilized data store accessor has been modified.", LogType::WARN);
+		Log(this).warn("Already initilized data store accessor has been modified.");
 	this->dataStore = &dataStore;
 }
 
 void DataStoreAccessor::crashIfUninitialized() const
 {
 	if (dataStore == nullptr)
-		Logger::fatal("Tried to access a data store with an uninitialized accessor.");
+		Log(this).fatal("Tried to access a data store with an uninitialized accessor.");
 }
 
 const DataStore& DataStoreAccessor::get() const

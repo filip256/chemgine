@@ -25,12 +25,6 @@
     <Filter Include="Source Files\Helpers">
       <UniqueIdentifier>{b8c164f9-bc88-447e-acac-70a3088b9bab}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Logger">
-      <UniqueIdentifier>{246aeafc-ad72-4a6f-8fbc-0291bd3fc205}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Logger">
-      <UniqueIdentifier>{0fedb36f-f314-4a1a-8d0c-1e540066cb3c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Moleculars">
       <UniqueIdentifier>{a94d79da-7fa6-493b-8148-015b4c4a4212}</UniqueIdentifier>
     </Filter>
@@ -154,13 +148,19 @@
     <Filter Include="Header Files\Tests">
       <UniqueIdentifier>{96683bd0-b53a-4bbf-9fc6-75a6b83046a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Terminal">
+      <UniqueIdentifier>{246aeafc-ad72-4a6f-8fbc-0291bd3fc205}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Terminal">
+      <UniqueIdentifier>{0fedb36f-f314-4a1a-8d0c-1e540066cb3c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataStore.cpp">
       <Filter>Source Files\Data</Filter>
     </ClCompile>
-    <ClCompile Include="Logger.cpp">
-      <Filter>Source Files\Logger</Filter>
+    <ClCompile Include="Log.cpp">
+      <Filter>Source Files\Terminal</Filter>
     </ClCompile>
     <ClCompile Include="Bond.cpp">
       <Filter>Source Files\Moleculars</Filter>
@@ -444,6 +444,15 @@
     <ClCompile Include="AtomFactory.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
+    <ClCompile Include="TerminalUtils.cpp">
+      <Filter>Source Files\Terminal</Filter>
+    </ClCompile>
+    <ClCompile Include="LogSettings.cpp">
+      <Filter>Source Files\Terminal</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Source Files\Terminal</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -452,8 +461,8 @@
     <ClInclude Include="DataHelpers.hpp">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="Logger.hpp">
-      <Filter>Header Files\Logger</Filter>
+    <ClInclude Include="Log.hpp">
+      <Filter>Header Files\Terminal</Filter>
     </ClInclude>
     <ClInclude Include="Bond.hpp">
       <Filter>Header Files\Moleculars</Filter>
@@ -465,7 +474,7 @@
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
     <ClInclude Include="LogType.hpp">
-      <Filter>Header Files\Logger</Filter>
+      <Filter>Header Files\Terminal</Filter>
     </ClInclude>
     <ClInclude Include="Value.hpp">
       <Filter>Header Files\Data\Values</Filter>
@@ -832,6 +841,12 @@
     </ClInclude>
     <ClInclude Include="Tests.hpp">
       <Filter>Header Files\Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="TerminalUtils.hpp">
+      <Filter>Header Files\Terminal</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.hpp">
+      <Filter>Header Files\Terminal</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

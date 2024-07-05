@@ -4,7 +4,7 @@
 #include "Layer.hpp"
 #include "Constants.hpp"
 #include "Ref.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 #include "DumpContainer.hpp"
 #include "ContentInitializer.hpp"
 #include "FlagField.hpp"
@@ -29,6 +29,7 @@ protected:
 
 	void removeNegligibles();
 	void checkOverflow();
+	void consumePotentialEnergy();
 
 	void scaleToVolume(const Amount<Unit::LITER> volume);
 
@@ -42,6 +43,8 @@ public:
 		const Amount<Unit::LITER> maxVolume,
 		const Ref<BaseContainer> overflowTarget
 	) noexcept;
+
+	//SingleLayerMixture(SingleLayerMixture&&) = default;
 
 	const Layer& getLayer() const;
 	Amount<Unit::CELSIUS> getLayerTemperature() const;
@@ -88,6 +91,7 @@ public:
 
 template<LayerType L>
 SingleLayerMixture<L>::SingleLayerMixture(const SingleLayerMixture& other) noexcept :
+	Mixture(other),
 	layer(other.layer.makeCopy(*this)),
 	pressure(other.pressure),
 	maxVolume(other.maxVolume),
@@ -170,7 +174,7 @@ void SingleLayerMixture<L>::removeNegligibles()
 	if (removedAny == false)
 		return;
 
-	for (const auto& r : content)
+	for (const auto& [_, r]:content)
 	{
 		layer.setIfNucleator(r);
 	}
@@ -187,6 +191,13 @@ void SingleLayerMixture<L>::checkOverflow()
 		return;
 
 	moveContentTo(overflowTarget, overflow);
+}
+
+template<LayerType L>
+void SingleLayerMixture<L>::consumePotentialEnergy()
+{
+	layer.convertTemporaryStateReactants();
+	layer.consumePotentialEnergy();
 }
 
 template<LayerType L>
@@ -217,7 +228,7 @@ template<LayerType L>
 void SingleLayerMixture<L>::setOverflowTarget(const Ref<BaseContainer> target)
 {
 	if (this == &*target)
-		Logger::log("Mixture: Overflow target set to self.", LogType::WARN);
+		Log(this).warn("Overflow target set to self.");
 
 	overflowTarget = target;
 }
@@ -227,12 +238,12 @@ void SingleLayerMixture<L>::setIncompatibilityTarget(const LayerType layerType, 
 {
 	if (layerType == L)
 	{
-		Logger::log("SingleLayerMixture<" + std::to_string(toIndex(L)) + ">: Tried to set incompatibility target for its own layer.", LogType::BAD);
+		Log(this).error("Tried to set incompatibility target for its own layer.");
 		return;
 	}
 
 	if (this == &*target)
-		Logger::log("SingleLayerMixture<" + std::to_string(toIndex(L)) + ">: Incompatibility target set to self.", LogType::WARN);
+		Log(this).warn("Incompatibility target set to self.");
 
 	incompatibilityTargets.at(layerType) = target;
 }
@@ -247,7 +258,7 @@ void SingleLayerMixture<L>::setIncompatibilityTargets(const FlagField<LayerType>
 template<LayerType L>
 void SingleLayerMixture<L>::setAllIncompatibilityTargets(const Ref<BaseContainer> target)
 {
-	setIncompatibilityTargets(FlagField<LayerType>::All - L, target);
+	setIncompatibilityTargets(FlagField(LayerType::ANY) - L, target);
 }
 
 template<LayerType L>
@@ -323,7 +334,7 @@ const Layer& SingleLayerMixture<L>::getLayer(const LayerType l) const
 template<LayerType L>
 Amount<Unit::CELSIUS> SingleLayerMixture<L>::getLayerTemperature() const
 {
-	return getLayerHeatTemperature(L);
+	return getLayerTemperature(L);
 }
 
 template<LayerType L>

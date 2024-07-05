@@ -1,5 +1,5 @@
 #include "MoleculeData.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 
 MoleculeData::MoleculeData(
 	const MoleculeId id,
@@ -40,7 +40,7 @@ MoleculeData::MoleculeData(
 {
 	if (this->structure.isGeneric())
 	{
-		Logger::log("Generic structure with id " + std::to_string(id) + " defined as molecule.", LogType::WARN);
+		Log(this).warn("Generic structure with id {0} defined as molecule.", id);
 	}
 }
 
@@ -82,7 +82,7 @@ MoleculeData::MoleculeData(
 {
 	if (this->structure.isGeneric())
 	{
-		Logger::log("Incomplete structure with id " + std::to_string(id) + " defined as molecule.", LogType::WARN);
+		Log(this).warn("Generic structure with id {0} defined as molecule.", id);
 	}
 }
 

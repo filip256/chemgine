@@ -306,6 +306,8 @@ Tasks:
   40. Investigate other ImmutableSet possible uses
   DONE. Make sure catalysts of a reaction are not specializations of eachother
   DONE. Add time system
+  DONE. Improved logger
+  41. Moving Reactors/Atmospheres end up calling the copy ctor of the unederlying mixture!!! Default moving would result in ownership errors.
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules

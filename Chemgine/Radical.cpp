@@ -1,19 +1,19 @@
 #include "Radical.hpp"
 #include "DataStore.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 
 Radical::Radical(const AtomId id) noexcept :
 	Atom(id)
 {
 	if(isRadical() == false)
-		Logger::log("Radical initialized with non-radical atom data.", LogType::BAD);
+		Log(this).error("Radical initialized with non-radical atom data.");
 }
 
 Radical::Radical(const Symbol symbol) noexcept :
 	Atom(symbol)
 {
 	if (isRadical() == false)
-		Logger::log("Radical initialized with non-radical atom data.", LogType::BAD);
+		Log(this).error("Radical initialized with non-radical atom data.");
 }
 
 const RadicalData& Radical::data() const

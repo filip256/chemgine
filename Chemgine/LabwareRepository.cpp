@@ -1,7 +1,7 @@
 #include "LabwareRepository.hpp"
 #include "DataHelpers.hpp"
 #include "LabwareDataFactory.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 
 #include <fstream>
 
@@ -17,7 +17,7 @@ bool LabwareRepository::loadFromFile(const std::string& path)
 
 	if (!file.is_open())
 	{
-		Logger::log("Failed to open file '" + path + "'.", LogType::BAD);
+		Log(this).error("Failed to open file '{0}'.", path);
 		return false;
 	}
 
@@ -35,7 +35,7 @@ bool LabwareRepository::loadFromFile(const std::string& path)
 
 		if (line.size() < 3)
 		{
-			Logger::log("Failed to load labware due to missing id or type.", LogType::BAD);
+			Log(this).error("Failed to load labware due to missing id or type.");
 			continue;
 		}
 
@@ -44,25 +44,25 @@ bool LabwareRepository::loadFromFile(const std::string& path)
 
 		if (id.has_value() == false || type.has_value() == false)
 		{
-			Logger::log("Failed to load labware due to missing id or type.", LogType::BAD);
+			Log(this).error("Failed to load labware due to missing id or type.");
 			continue;
 		}
 
 		const auto ptr = LabwareDataFactory::get(*id, *type, line);
 		if(ptr == nullptr)
 		{
-			Logger::log("Failed to load labware with id " + std::to_string(*id) + ".", LogType::BAD);
+			Log(this).error("Failed to load labware with id {0}.", *id);
 			continue;
 		}
 
 		if (table.emplace(*id, ptr).second == false)
 		{
-			Logger::log("Duplicate labware with id " + std::to_string(*id) + "skipped.", LogType::WARN);
+			Log(this).warn("Duplicate labware with id {0} skipped.", *id);
 		}
 	}
 	file.close();
 
-	Logger::log("Loaded " + std::to_string(table.size()) + " labware items.", LogType::INFO);
+	Log(this).info("Loaded {0} labware items.", table.size());
 
 	return true;
 }

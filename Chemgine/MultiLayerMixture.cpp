@@ -323,7 +323,7 @@ Ref<BaseContainer> MultiLayerMixture::getOverflowTarget() const
 void MultiLayerMixture::setOverflowTarget(const Ref<BaseContainer> target)
 {
 	if (this == &*target)
-		Logger::log("Mixture: Overflow target set to self.", LogType::WARN);
+		Log(this).warn("Overflow target set to self.");
 
 	overflowTarget = target;
 }

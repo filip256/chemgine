@@ -1,6 +1,6 @@
 #include "DumpContainer.hpp"
 #include "Reactant.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 
 DumpContainer DumpContainer::GlobalDumpContainer = DumpContainer();
 
@@ -9,7 +9,7 @@ void DumpContainer::add(const Reactant& reactant)
 	const auto rMass = reactant.getMass();
 	if (totalMass.oveflowsOnAdd(rMass))
 	{
-		Logger::log("DumpContainer: Mass overflowed and was set to 0 (some checks might fail).", LogType::WARN);
+		Log(this).warn("Mass overflowed and was set to 0 (some checks might fail).");
 		totalMass = 0.0;
 		return;
 	}
@@ -21,7 +21,7 @@ void DumpContainer::add(const Amount<Unit::JOULE> energy)
 {
 	if (totalEnergy.oveflowsOnAdd(energy))
 	{
-		Logger::log("DumpContainer: Energy overflowed and was set to 0 (some checks might fail).", LogType::WARN);
+		Log(this).warn("Energy overflowed and was set to 0 (some checks might fail).");
 		totalMass = 0.0;
 		return;
 	}

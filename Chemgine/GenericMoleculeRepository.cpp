@@ -1,6 +1,6 @@
 #include "GenericMoleculeRepository.hpp"
 #include "DataHelpers.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 #include <fstream>
 
 
@@ -10,7 +10,7 @@ bool GenericMoleculeRepository::loadFromFile(const std::string& path)
 
 	if (!file.is_open())
 	{
-		Logger::log("Failed to open file '" + path + "'.", LogType::BAD);
+		Log(this).error("Failed to open file '{0}'.", path);
 		return false;
 	}
 
@@ -27,14 +27,14 @@ bool GenericMoleculeRepository::loadFromFile(const std::string& path)
 		auto line = DataHelpers::parseList(buffer, ',');
 		if (line[1].empty())
 		{
-			Logger::log("Failed to load generic molecule due to empty SMILES string.", LogType::BAD);
+			Log(this).error("Failed to load generic molecule due to empty SMILES string.");
 			continue;
 		}
 
 		const auto id = DataHelpers::parseId<MoleculeId>(line[0]);
 		if (id.has_value() == false)
 		{
-			Logger::log("Missing id, generic molecule: '" + line[1] + "' skipped.", LogType::BAD);
+			Log(this).error("Missing id, generic molecule: '{0}' skipped.", line[1]);
 			continue;
 		}
 
@@ -44,12 +44,12 @@ bool GenericMoleculeRepository::loadFromFile(const std::string& path)
 			GenericMoleculeData(*id, line[1])
 		) == false)
 		{
-			Logger::log("Generic molecule with duplicate id " + std::to_string(*id) + " skipped.", LogType::WARN);
+			Log(this).warn("Generic molecule with duplicate id {0} skipped.", *id);
 		}
 	}
 	file.close();
 
-	Logger::log("Loaded " + std::to_string(table.size()) + " generic molecules.", LogType::INFO);
+	Log(this).info("Loaded {0} generic molecules.", table.size());
 
 	return true;
 }
@@ -60,7 +60,7 @@ bool GenericMoleculeRepository::saveToFile(const std::string& path)
 
 	if (!file.is_open())
 	{
-		Logger::log("Failed to open file '" + path + "'.", LogType::BAD);
+		Log(this).error("Failed to open file '{0}'.", path);
 		return false;
 	}
 
@@ -87,7 +87,7 @@ MoleculeId GenericMoleculeRepository::findOrAdd(MolecularStructure&& structure)
 {
 	if (structure.isEmpty())
 	{
-		Logger::log("Tried to create a generic molecule from an empty structure.", LogType::BAD);
+		Log(this).error("Tried to create a generic molecule from an empty structure.");
 		return 0;
 	}
 
@@ -96,7 +96,7 @@ MoleculeId GenericMoleculeRepository::findOrAdd(MolecularStructure&& structure)
 		return table[idx].id;
 
 	if (structure.isConcrete())
-		Logger::log("New generic molecule created from concrete structure.", LogType::WARN);
+		Log(this).warn("New generic molecule created from concrete structure.");
 
 	const auto id = getFreeId();
 	table.emplace(id, std::to_string(id), GenericMoleculeData(id, std::move(structure)));

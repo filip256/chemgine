@@ -1,5 +1,5 @@
 #include "BaseEstimator.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 
 #include <cassert>
 #include <typeinfo>
@@ -17,13 +17,13 @@ EstimatorId BaseEstimator::getId() const
 
 double BaseEstimator::get(const double input) const
 {
-	Logger::fatal("Undefined estimator method: double get(double)");
+	Log(this).fatal("Undefined estimator method: double get(double)");
 	return std::numeric_limits<double>::max();
 }
 
 double BaseEstimator::get(const double input1, const double input2) const
 {
-	Logger::fatal("Undefined estimator method: double get(double, double)");
+	Log(this).fatal("Undefined estimator method: double get(double, double)");
 	return std::numeric_limits<double>::max();
 }
 

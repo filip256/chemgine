@@ -3,7 +3,8 @@
 #include "SFML/Graphics.hpp"
 #include "Lab.hpp"
 #include "Flask.hpp"
-#include "Logger.hpp"
+#include "Input.hpp"
+#include "Log.hpp"
 #include "Adaptor.hpp"
 #include "Heatsource.hpp"
 #include "Condenser.hpp"
@@ -50,7 +51,7 @@ public:
 
 	void run()
 	{
-        Logger::enterContext();
+        Log<>::nest();
 
         font.loadFromFile("./Fonts/font.ttf");
 
@@ -92,7 +93,7 @@ public:
         for(size_t i = 0; i < lab.getSystemCount(); ++i)
             lab.getSystem(i).move(sf::Vector2f(100 + 85 * i, 100));
 
-        Vapour vapour(50, sf::Vector2f(500.0f, 500.0f), sf::Color(255, 255, 255, 10), 0.0_o, 0.7f, 0.5f);
+        //Vapour vapour(50, sf::Vector2f(500.0f, 500.0f), sf::Color(255, 255, 255, 10), 0.0_o, 0.7f, 0.5f);
 
         //window.setFramerateLimit(300);
         window.setVerticalSyncEnabled(true);
@@ -140,7 +141,8 @@ public:
                                 if (auto container = component.cast<BaseContainerComponent>())
                                 {
                                     container->add(inputMolecule->first, inputMolecule->second);
-                                    Logger::log("Added " + inputMolecule->second.toString() + " of " + inputMolecule->first.data().name, LogType::INFO);
+                                    Log(this).info("Added {0} of {1}.",
+                                        inputMolecule->second.toString(), inputMolecule->first.data().name);
                                 }
                             }
                         }
@@ -198,12 +200,12 @@ public:
                 {
                     if (event.key.code == sf::Keyboard::Key::I)
                     {
-                        const auto input = Logger::input("Input Molecule   [SMILES]_[moles]");
+                        const auto input = Input::get("Input Molecule   [SMILES]_[moles]");
                         const auto temp = DataHelpers::parsePair<Molecule, Unit::MOLE>(input, '_');
 
                         if (temp.has_value() == false)
                         {
-                            Logger::log("Malformed input ignored: " + input, LogType::BAD);
+                            Log(this).error("Malformed input ignored: {0}.", input);
                             inputMolecule.reset();
                             cursorHelper.setType(sf::Cursor::Type::Cross);
                             continue;
@@ -211,6 +213,11 @@ public:
 
                         inputMolecule.emplace(*temp);
                         cursorHelper.setType(sf::Cursor::Type::Hand);
+                    }
+                    else if (event.key.code == sf::Keyboard::Key::P)
+                    {
+                        inputMolecule.reset();
+                        cursorHelper.setType(sf::Cursor::Type::Cross);
                     }
                     else if (event.key.code == sf::Keyboard::Key::LControl)
                     {
@@ -235,7 +242,7 @@ public:
             auto cTime = tickClock.getElapsedTime();
             if (const auto timespan = (cTime - lastEnvTick).asSeconds(); timespan >= 0.01)
             {
-                vapour.tick(timespan * timeMultiplier);
+                //vapour.tick(timespan * timeMultiplier);
 
                 textTime.setString("T= " + Amount<Unit::SECOND>(gameTime.asMilliseconds() / 1000.0f).format());
 
@@ -255,7 +262,7 @@ public:
 
             window.clear();
             window.draw(lab);
-            window.draw(vapour);
+            //window.draw(vapour);
             if (drawPropertyPane)
                 window.draw(propertyPane);
             window.draw(textFPS);
@@ -274,6 +281,6 @@ public:
             ++frameCount;
         }
 
-        Logger::exitContext();
+        Log<>::unnest();
 	}
 };

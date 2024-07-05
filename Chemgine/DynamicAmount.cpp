@@ -1,5 +1,5 @@
 #include "DynamicAmount.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 
 #include <type_traits>
 #include <unordered_map>
@@ -123,8 +123,7 @@ std::string DynamicAmount::getUnitSymbol(const Unit unit)
     case Unit::TORR_MOLE_RATIO:
         return Amount<Unit::TORR_MOLE_RATIO>::unitSymbol();
     default:
-        Logger::fatal("DynamicAmount: Unable to find symbol for Unit[" +
-            std::to_string(static_cast<std::underlying_type_t<Unit>>(unit)) + "].");
+        Log<DynamicAmount>().fatal("Unable to find symbol for Unit[{0}].", static_cast<std::underlying_type_t<Unit>>(unit));
         return "";
     }
 }
@@ -190,8 +189,7 @@ std::string DynamicAmount::getUnitName(const Unit unit)
     case Unit::TORR_MOLE_RATIO:
         return Amount<Unit::TORR_MOLE_RATIO>::unitName();
     default:
-        Logger::fatal("DynamicAmount: Unable to find name for Unit[" +
-            std::to_string(static_cast<std::underlying_type_t<Unit>>(unit)) + "].");
+        Log<DynamicAmount>().fatal("Unable to find name for Unit[{0}].", static_cast<std::underlying_type_t<Unit>>(unit));
         return "";
     }
 }

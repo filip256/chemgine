@@ -110,7 +110,7 @@ void LabwareSystem::add(PortIdentifier& srcPort, PortIdentifier& destPort)
 	bool connectionSuccess = srcComp.tryConnect(destComp);
 	connectionSuccess |= destComp.tryConnect(srcComp);   // make sure both are called
 	if (connectionSuccess == false)
-		Logger::log("LabwareSystem: Port-supported connection resulted in no connection between components.", LogType::WARN);
+		Log<LabwareSystem>().warn("Port-supported connection resulted in no connection between components.");
 
 	srcComp.setRotation(destPort->angle - srcPort->angle + destPort.getComponent().getRotation());
 	srcComp.setPosition(destPort->position - srcPort->position + destPort.getComponent().getPosition());
@@ -207,10 +207,10 @@ void LabwareSystem::tick(const Amount<Unit::SECOND> timespan)
 void LabwareSystem::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 #ifndef NDEBUG
-	sf::RectangleShape bBox(boundingBox.getSize());
+	/*sf::RectangleShape bBox(boundingBox.getSize());
 	bBox.setPosition(boundingBox.getPosition());
 	bBox.setFillColor(sf::Color(255, 255, 255, 25));
-	target.draw(bBox, states);
+	target.draw(bBox, states);*/
 #endif
 
 	for (l_size i = 0; i < components.size(); ++i)

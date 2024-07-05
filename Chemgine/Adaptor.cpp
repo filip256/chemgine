@@ -32,7 +32,8 @@ bool Adaptor::tryConnect(BaseLabwareComponent& other)
 
 	if (other.isCondenser())
 	{
-		container.setOverflowTarget(other.as<Condenser&>().getContent());
+		if(id != 302)
+			container.setOverflowTarget(other.as<Condenser&>().getContent());
 		return true;
 	}
 

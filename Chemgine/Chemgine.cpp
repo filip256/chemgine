@@ -4,7 +4,7 @@
 #include <string>
 
 #include "DataStore.hpp"
-#include "Logger.hpp"
+#include "Log.hpp"
 #include "Atom.hpp"
 #include "Tests.hpp"
 #include "Reactable.hpp"
@@ -66,6 +66,7 @@ int main()
         UIContext uiContext;
         uiContext.run();
 
+
         //std::cout << MolecularStructure("OC1C2CC12").toSMILES() << '\n';
 
         //const auto& ra = store.reactions.at(201);
@@ -101,17 +102,17 @@ int main()
     }
 
     if (Atom::instanceCount != 0)
-        Logger::log("Memory leak detected: Atom (" + std::to_string(Atom::instanceCount) + " unreleased instances).", LogType::BAD);
+        Log().error("Memory leak detected: Atom ({0} unreleased instances).", Atom::instanceCount);
     if (Bond::instanceCount != 0)
-        Logger::log("Memory leak detected: Bond (" + std::to_string(Bond::instanceCount) + " unreleased instances).", LogType::BAD);
+        Log().error("Memory leak detected: Bond ({0} unreleased instances).", Bond::instanceCount);
     if (BaseLabwareData::instanceCount != 0)
-        Logger::log("Memory leak detected: BaseLabwareData (" + std::to_string(BaseLabwareData::instanceCount) + " unreleased instances).", LogType::BAD);
+        Log().error("Memory leak detected: BaseLabwareData ({0} unreleased instances).", BaseLabwareData::instanceCount);
     if (BaseLabwareComponent::instanceCount != 0)
-        Logger::log("Memory leak detected: BaseLabwareComponent (" + std::to_string(BaseLabwareComponent::instanceCount) + " unreleased instances).", LogType::BAD);
+        Log().error("Memory leak detected: BaseLabwareComponent ({0} unreleased instances).", BaseLabwareComponent::instanceCount);
     if (BaseEstimator::instanceCount != 0)
-        Logger::log("Memory leak detected: BaseEstimator (" + std::to_string(BaseEstimator::instanceCount) + " unreleased instances).", LogType::BAD);
+        Log().error("Memory leak detected: BaseEstimator ({0} unreleased instances).", BaseEstimator::instanceCount);
     if (BaseContainer::instanceCount != 0)
-        Logger::log("Memory leak detected: BaseContainer (" + std::to_string(BaseContainer::instanceCount) + " unreleased instances).", LogType::BAD);
+        Log().error("Memory leak detected: BaseContainer ({0} unreleased instances).", BaseContainer::instanceCount);
 
     getchar();
     return 0;

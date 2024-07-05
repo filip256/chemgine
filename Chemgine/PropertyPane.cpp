@@ -62,6 +62,13 @@ void MixturePropertyPane::LayerPropertyPane::draw(sf::RenderTarget& target, sf::
 	target.draw(propertyName, states);
 	target.draw(propertyValue, states);
 
+	propertyName.move(sf::Vector2f(0.0f, 16.0f));
+	propertyValue.move(sf::Vector2f(0.0f, 16.0f));
+	propertyName.setString("Kinetic Energy:");
+	propertyValue.setString(subject->getKineticEnergy().toString(6));
+	target.draw(propertyName, states);
+	target.draw(propertyValue, states);
+
 	propertyName.setPosition(sf::Vector2f(position.x, position.y + 20.0f));
 	propertyValue.setPosition(sf::Vector2f(position.x + 100.0f, position.y + 20.0f));
 }
@@ -124,8 +131,13 @@ MixturePropertyPane::MixturePropertyPane(const sf::Font& font) noexcept :
 void MixturePropertyPane::setSubject(const BaseLabwareComponent& subject)
 {
 	this->subject = subject;
-	title.setString(subject.getData().name);
 	setPosition(subject.getPosition());
+
+#ifndef NDEBUG
+	title.setString(subject.getData().name + " <" + Linguistics::toHex(&subject) + '>');
+#else
+	title.setString(subject.getData().name);
+#endif
 }
 
 void MixturePropertyPane::setPosition(const sf::Vector2f& position)
@@ -185,9 +197,19 @@ void MixturePropertyPane::draw(sf::RenderTarget& target, sf::RenderStates states
 			contentPane.setSubject(l->second);
 			target.draw(layerPane, states);
 			target.draw(contentPane, states);
-			layerPane.setPosition(layerPane.getPosition() + sf::Vector2f(0.0f, 90.0f));
-			contentPane.setPosition(contentPane.getPosition() + sf::Vector2f(0.0f, 90.0f));
+			layerPane.setPosition(layerPane.getPosition() + sf::Vector2f(0.0f, 110.0f));
+			contentPane.setPosition(contentPane.getPosition() + sf::Vector2f(0.0f, 110.0f));
 		}
+	}
+	else if (const auto contentCast = Ref(container).cast<const Atmosphere>())
+	{
+		layerPane.setPosition(propertyName.getPosition() + sf::Vector2f(16.0f, 16.0f));
+		contentPane.setPosition(propertyName.getPosition() + sf::Vector2f(220.0f, 32.0f));
+
+		layerPane.setSubject(contentCast->getLayer());
+		contentPane.setSubject(contentCast->getLayer());
+		target.draw(layerPane, states);
+		target.draw(contentPane, states);
 	}
 
 	propertyName.setPosition(sf::Vector2f(position.x, position.y + 20.0f));
