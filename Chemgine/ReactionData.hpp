@@ -57,7 +57,8 @@ public:
 	ReactionData(const ReactionData&) = delete;
 	ReactionData(ReactionData&&) = default;
 
-	bool hasAsReactant(const Reactant& reactant) const;
+	bool hasAsReactant(const MolecularStructure& structure) const;
+	bool hasAsReactant(const Molecule& molecule) const;
 	
 	/// <summary>
 	/// Tries to map the i-th molecule in the given vector with i-th reactant of the reaction.

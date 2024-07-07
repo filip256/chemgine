@@ -25,7 +25,7 @@ std::unordered_map<c_size, c_size> Reactable::matchWith(const MolecularStructure
 {
 	const auto& thisStructure = getStructure();
 	const auto map = structure.mapTo(thisStructure, true);
-	if (map.size() == thisStructure.componentCount())
+	if (map.size() == thisStructure.getNonVirtualAtomCount())
 		return map;
 
 	return std::unordered_map<c_size, c_size>();

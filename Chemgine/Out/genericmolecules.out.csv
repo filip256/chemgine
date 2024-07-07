@@ -28,9 +28,11 @@
 #228,O[Me]O
 #229,[Me](X)X
 #230,[Ba](X)X
-#231,O=C(OC(=O)R)R
-#232,S(=O)(=O)(O)O[Me]
-#233,S(=O)(=O)(O[Me])O[Me]
-#234,O=C(O[Me])R
-#235,OC(R)R
-#236,O=C(OC(R)R)R
+#231,O=CC(O)R
+#232,O=CC(OCC(=O)R)R
+#233,O=C(OC(=O)R)R
+#234,S(=O)(=O)(O)O[Me]
+#235,S(=O)(=O)(O[Me])O[Me]
+#236,O=C(O[Me])R
+#237,OC(R)R
+#238,O=C(OC(R)R)R

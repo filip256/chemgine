@@ -449,7 +449,7 @@ bool MolecularStructure::isEmpty() const
     return impliedHydrogenCount == 0 && atoms.empty();
 }
 
-c_size MolecularStructure::componentCount() const
+c_size MolecularStructure::getNonVirtualAtomCount() const
 {
     return atoms.size();
 }
@@ -673,7 +673,7 @@ std::string MolecularStructure::print() const
         return "";
     }
 
-    TextBlock buffer(100, 50);
+    TextBlock buffer(200, 50);
     std::vector<uint8_t> visited(atoms.size(), false);
     rPrint(buffer, buffer.getWidth() / 4, buffer.getHeight() / 2, 0, visited, !isOrganic());
 
@@ -889,16 +889,16 @@ bool MolecularStructure::checkConnectivity(
 
 std::unordered_map<c_size, c_size> MolecularStructure::mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const
 {
-    if (pattern.componentCount() > this->componentCount() || pattern.componentCount() == 0)
+    if (pattern.getNonVirtualAtomCount() > this->getNonVirtualAtomCount() || pattern.getNonVirtualAtomCount() == 0)
         return std::unordered_map<c_size, c_size>();
 
     // should start with a non radical type, canonicalization assures this
     const c_size pStart = 0;
-    for (c_size i = 0; i < this->componentCount(); ++i)
+    for (c_size i = 0; i < this->getNonVirtualAtomCount(); ++i)
     {
         if (areMatching(i, *this, pStart, pattern, escapeRadicalTypes))
         {
-            std::vector<uint8_t> visited(pattern.componentCount(), false);
+            std::vector<uint8_t> visited(pattern.getNonVirtualAtomCount(), false);
             std::unordered_map<c_size, c_size> mapping;
 
             if (DFSCompare(i, *this, pStart, pattern, visited, mapping, escapeRadicalTypes) == false)
@@ -920,7 +920,7 @@ std::pair<std::unordered_map<c_size, c_size>, uint8_t> MolecularStructure::maxim
     const std::unordered_set<c_size>& targetIgnore,
     const std::unordered_set<c_size>& patternIgnore) const
 {
-    if (pattern.componentCount() == 0 || this->componentCount() == 0)
+    if (pattern.getNonVirtualAtomCount() == 0 || this->getNonVirtualAtomCount() == 0)
         return std::pair<std::unordered_map<c_size, c_size>, uint8_t>();
 
     // find atom that matches in both target and pattern
@@ -1057,20 +1057,20 @@ MolecularStructure MolecularStructure::addSubstituents(
 
 bool MolecularStructure::operator==(const MolecularStructure& other) const
 {
-    if (this->componentCount() != other.componentCount() || this->impliedHydrogenCount != other.impliedHydrogenCount)
+    if (this->getNonVirtualAtomCount() != other.getNonVirtualAtomCount() || this->impliedHydrogenCount != other.impliedHydrogenCount)
         return false;
 
     const auto mapping = this->mapTo(other, false);
-    return mapping.size() == this->componentCount();
+    return mapping.size() == this->getNonVirtualAtomCount();
 }
 
 bool MolecularStructure::operator!=(const MolecularStructure& other) const
 {
-    if (this->componentCount() != other.componentCount() || this->impliedHydrogenCount != other.impliedHydrogenCount)
+    if (this->getNonVirtualAtomCount() != other.getNonVirtualAtomCount() || this->impliedHydrogenCount != other.impliedHydrogenCount)
         return true;
 
     const auto mapping = this->mapTo(other, false);
-    return mapping.size() != this->componentCount();
+    return mapping.size() != this->getNonVirtualAtomCount();
 }
 
 bool MolecularStructure::operator==(const std::string& other) const

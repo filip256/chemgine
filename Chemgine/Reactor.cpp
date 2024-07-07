@@ -132,7 +132,7 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 		if (speedCoef == 0)
 			continue;
 
-		//Log::log("Reactor: Applying reaction " + r.getData().getHRTag() + " with speed=" + speedCoef.toString(), LogType::INFO);
+		Log(this).trace("Applying reaction {0} with speed={1}.", r.getData().getHRTag(), speedCoef.toString());
 
 		// if there isn't enough of a reactant, adjust the speed coefficient
 		for (const auto& [_, i] : r.getReactants())
@@ -160,8 +160,8 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 void Reactor::runLayerEnergyConduction(const Amount<Unit::SECOND> timespan)
 {
 	// TODO: find way to determine these based on molecular composition
-	const static Amount<Unit::WATT> favourableC = 0.05;    // as relative conductivity
-	const static Amount<Unit::WATT> unfavourableC = 0.03;  // as relative conductivity
+	const static Amount<Unit::WATT> favourableC = 0.000005;    // as relative conductivity
+	const static Amount<Unit::WATT> unfavourableC = 0.000003;  // as relative conductivity
 
 	for (auto& l : layers)
 	{

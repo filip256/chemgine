@@ -255,7 +255,7 @@ public:
 		{
 			auto map = setF[i].maximalMapTo(setE[i]).first;
 			const auto newMol = MolecularStructure::addSubstituents(setE[i], setF[i], map);
-			if (newMol.componentCount() != res["addSub"][i])
+			if (newMol.getNonVirtualAtomCount() != res["addSub"][i])
 			{
 				Log(this).error("Test failed > MolecularStructure > addSubstituents > #{0}: expected={1}\n{2}\n{3}",
 					i, res["addSub"][i], setA[i].print(), setB[i].print());

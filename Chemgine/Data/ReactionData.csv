@@ -24,7 +24,7 @@ Id,Name,Reactants,Products,Speed,Energy,Activation,Catalysts
 #223,acid_base,[Me](O)O;X,[Me](X)X;O,0.01_mol/s@20_C,,0.0,
 #224,acid_base,[Ca](O)O;[Cl],[Ca]([Cl])[Cl];O,0.01_mol/s@20_C,,0.0,
 #225,acid_base,[Ba](O)O;X,[Ba](X)X;O,1_mol/s@20_C,,0.0,
-#226,dehydration,O=C(R)O,O=C(R)OC(=O)R;O,0.1_mol/s@20_C,100.0,0.0,
+#226,dehydration,O=CC(R)O,O=CC(R)OCC(=O)R;O,0.1_mol/s@20_C,100.0,0.0,
 #227,dehydration,O=C(R)O,O=C(R)OC(=O)R;O,0.7_mol/s@20_C,100.0,0.0,S(=O)(=O)(O)O@0.5
 #228,acid_base,[Me]O;S(=O)(=O)(O)O,S(=O)(=O)(O)O[Me];O,0.9_mol/s@20_C,,0.0,
 #229,acid_base,[Me]O;S(=O)(=O)(O)O,S(=O)(=O)(O[Me])O[Me];O,0.8_mol/s@20_C,,0.0,

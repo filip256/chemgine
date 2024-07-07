@@ -34,6 +34,8 @@
 int main()
 {
     {
+        LogBase::logLevel = LogType::DEBUG;
+
         //#ifndef NDEBUG
         {
             TestManager tests;
@@ -50,7 +52,7 @@ int main()
             .loadMoleculesData("Data/MoleculeData.csv")
             .loadGenericMoleculesData("Data/GenericMoleculeData.csv")
             .loadReactionsData("Data/ReactionData.csv")
-            .loadLabwareData("Data/LabwareData.csv");
+            .loadLabwareData("Data/LabwareData.csv");;
 
         std::cout << MolecularStructure("S(-O)(-O)(-O)(OCC)(OCCC(N(C)C)=O)C#N").print()<<'\n';
 

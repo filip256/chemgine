@@ -142,21 +142,21 @@ bool ReactionData::mapReactantsToProducts()
 				componentMapping.emplace(std::make_pair(std::make_pair(i, p.first), std::make_pair(maxIdxJ, p.second)));
 		}
 
-		if (reactants[i].getStructure().componentCount() != reactantIgnore[i].size())
+		if (reactants[i].getStructure().getNonVirtualAtomCount() != reactantIgnore[i].size())
 			--i;
 	}
 
 	// check if mapping is complete
 	for (size_t i = 0; i < reactants.size(); ++i)
 	{
-		if (reactants[i].getStructure().componentCount() != reactantIgnore[i].size())
+		if (reactants[i].getStructure().getNonVirtualAtomCount() != reactantIgnore[i].size())
 		{
 			return false;
 		}
 	}
 	for (size_t i = 0; i < products.size(); ++i)
 	{
-		if (products[i].getStructure().componentCount() != productIgnore[i].size())
+		if (products[i].getStructure().getNonVirtualAtomCount() != productIgnore[i].size())
 		{
 			return false;
 		}
@@ -166,14 +166,19 @@ bool ReactionData::mapReactantsToProducts()
 
 }
 
-bool ReactionData::hasAsReactant(const Reactant& reactant) const
+bool ReactionData::hasAsReactant(const MolecularStructure& structure) const
 {
 	for (size_t i = 0; i < reactants.size(); ++i)
 	{
-		if (reactant.molecule.getStructure().mapTo(reactants[i].getStructure(), true).size() != 0)
+		if (structure.mapTo(reactants[i].getStructure(), true).size() != 0)
 			return true;
 	}
 	return false;
+}
+
+bool ReactionData::hasAsReactant(const Molecule& molecule) const
+{
+	return hasAsReactant(molecule.getStructure());
 }
 
 std::vector<std::unordered_map<c_size, c_size>> ReactionData::generateConcreteReactantMatches(
@@ -248,6 +253,11 @@ std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<R
 	{
 		concreteProducts[i].canonicalize();
 		concreteProducts[i].recountImpliedHydrogens();
+
+		// TODO: add pulymer support
+		if (concreteProducts[i].getNonVirtualAtomCount() > 100)
+			continue;
+
 		result.emplace_back(std::move(concreteProducts[i]));
 	}
 	return result;

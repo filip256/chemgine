@@ -136,7 +136,9 @@ std::unordered_set<ConcreteReaction> ReactionNetwork::getOccuringReactions(
 		
 		const auto products = rData.generateConcreteProducts(reactants, matches);
 		if (products.size())
+		{
 			result.insert(ConcreteReaction(rData, reactants, products));
+		}
 	}
 	return result;
 }

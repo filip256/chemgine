@@ -17,7 +17,7 @@
 class UIContext
 {
 private:
-	sf::RenderWindow window = sf::RenderWindow(sf::VideoMode(1200, 800), "Chemgine");
+	sf::RenderWindow window = sf::RenderWindow(sf::VideoMode(1800, 1000), "Chemgine");
     Lab lab;
 
     sf::Font font;

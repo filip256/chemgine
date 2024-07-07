@@ -226,7 +226,7 @@ size_t ReactionRepository::generateTotalSpan(const size_t maxIterations) const
 {
 	const size_t initialCnt = molecules.getData().getData().size();
 
-	while (generateCurrentSpan() > 0);
+	while (generateCurrentSpan() > 0 && molecules.getData().getData().size() < 1000);
 
 	return molecules.getData().getData().size() - initialCnt;
 }

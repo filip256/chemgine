@@ -196,7 +196,7 @@ public:
     /// Virtual hydrogens not included.
     /// Complexity: O(1)
     /// </summary>
-    inline c_size componentCount() const;
+    inline c_size getNonVirtualAtomCount() const;
 
     /// <summary>
     /// Complexity: O(n)
