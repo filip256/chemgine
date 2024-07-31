@@ -831,12 +831,9 @@ public:
 		Accessor<>::setDataStore(store);
 
 		const auto begin = std::chrono::steady_clock::now();
-		store.loadAtomsData("Data/AtomData.csv")
-			.loadEstimatorsData("")
-			.loadMoleculesData("Data/MoleculeData.csv")
-			.loadGenericMoleculesData("Data/GenericMoleculeData.csv")
-			.loadReactionsData("Data/ReactionData.csv")
-			.loadLabwareData("Data/LabwareData.csv");
+
+		store.load("./Data/builtin.cdef");
+		store.reactions.buildNetwork();
 
 		std::cout << '\n' << store.reactions.getNetwork().print() << '\n';
 

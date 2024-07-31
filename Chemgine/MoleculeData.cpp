@@ -4,7 +4,7 @@
 MoleculeData::MoleculeData(
 	const MoleculeId id,
 	const std::string& name,
-	const std::string& smiles,
+	MolecularStructure&& structure,
 	const Amount<Unit::MOLE_RATIO> hydrophilicity,
 	const Amount<Unit::MOLE_RATIO> lipophilicity,
 	const Color color,
@@ -21,7 +21,7 @@ MoleculeData::MoleculeData(
 	const BaseEstimator& henrysConstantEstimator
 ) noexcept :
 	id(id),
-	structure(smiles),
+	structure(std::move(structure)),
 	type(this->structure.isOrganic() ? MoleculeType::ORGANIC : MoleculeType::INORGANIC),
 	name(name),
 	polarity(hydrophilicity, lipophilicity),

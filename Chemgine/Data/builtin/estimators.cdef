@@ -1,0 +1,7 @@
+:.
+    Built-in Estimator Definitions
+.:
+
+_spline<id_splx>: g -> L {
+    values: 0.0@1.0;1.0@3.0,
+};

@@ -1,12 +1,63 @@
 #include "DataStore.hpp"
+#include "DefFileParser.hpp"
+#include "Log.hpp"
+
+#include <fstream>
 
 DataStore::DataStore() : 
 	atoms(),
 	genericMolecules(),
 	estimators(),
 	molecules(estimators),
-	reactions(molecules)
+	reactions(molecules),
+	labware()
 {}
+
+DataStore& DataStore::load(const std::string& path)
+{
+	DefFileParser parser(path, *this);
+
+	while (true)
+	{
+		auto entry = parser.nextDefinition();
+		if (parser.isOpen() == false)
+			break;
+
+		if (entry.has_value() == false)
+		{
+			Log(this).warn("Skipped invalid definition.");
+			continue;
+		}
+
+		switch (entry->type)
+		{
+		case DefinitionType::SPLINE:
+			estimators.add<SplineEstimator>(std::move(*entry));
+			break;
+
+		case DefinitionType::ATOM:
+			atoms.add<AtomData>(std::move(*entry));
+			break;
+
+		case DefinitionType::RADICAL:
+			atoms.add<RadicalData>(std::move(*entry));
+			break;
+
+		case DefinitionType::MOLECULE:
+			molecules.add(std::move(*entry));
+			break;
+
+		case DefinitionType::REACTION:
+			reactions.add(std::move(*entry));
+			break;
+
+		case DefinitionType::LABWARE:
+			labware.add(std::move(*entry));
+			break;
+		}
+	}
+	return *this;
+}
 
 DataStore& DataStore::loadAtomsData(const std::string& path)
 {
@@ -54,4 +105,17 @@ DataStore& DataStore::saveGenericMoleculesData(const std::string& path)
 {
 	genericMolecules.saveToFile(path);
 	return *this;
+}
+
+ParseStatus DataStore::getFileStatus(const std::string& filePath)
+{
+	const auto it = fileParseHistory.find(filePath);
+	return it == fileParseHistory.end() ? ParseStatus::UNTOUCHED :
+		it->second ? ParseStatus::PARSED :
+		ParseStatus::STARTED;
+}
+
+bool DataStore::wasParsed(const std::string& filePath)
+{
+	return getFileStatus(filePath) == ParseStatus::PARSED;
 }

@@ -210,6 +210,30 @@ inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::RADIA
 	}
 }
 
+template<>
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::MOLE_RATIO> amount, const Unit target)
+{
+	switch (target)
+	{
+	case Unit::MOLE_PERCENT:
+		return Amount<Unit::MOLE_PERCENT>(amount);
+	default:
+		return std::nullopt;
+	}
+}
+
+template<>
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::MOLE_PERCENT> amount, const Unit target)
+{
+	switch (target)
+	{
+	case Unit::MOLE_RATIO:
+		return Amount<Unit::MOLE_RATIO>(amount);
+	default:
+		return std::nullopt;
+	}
+}
+
 template<Unit UnitT>
 static std::optional<Amount<UnitT>> DynamicAmount::get(const StorageType value, const std::string& symbol)
 {

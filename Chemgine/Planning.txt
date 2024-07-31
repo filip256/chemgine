@@ -254,7 +254,7 @@ Tasks:
   ?. Treat layers and container refs equally.
   DONE. Add get LayerType and AggregationType name strings
   15. Add more simulation-time logs
-  ?. Add getPropertyAtSTP()
+  ?. Add pullPropertyAtSTP()
   DONE. Better way to mark predefined estimator ids
   16. Make reaction tree methods iterative
   17. Consider avoiding reparsing reactions in the tree (in case of cycles)
@@ -383,6 +383,45 @@ Tasks:
   1. Add user define-able radical atoms
 ---
   1. Add user defineable specific bond properties
+---
+     - DEFINITION LANGUAGE -
+
+  DONE. Add parser which splits text into defs
+  DONE. Add new parser to existing implementation
+  DONE. Add logic for multi-loads
+  DONE. Add parser for splines and radicals
+  5. Remove loadBuiltins()'s and old CSV parsing
+  6. Add typed splines
+  7. Improve list and pair formats
+  8. Add printing
+  9. Add func parsers
+
+---
+     - DIRECT REFERENCING -
+
+  1. Use dyn allocation for all data objects
+  2. Rewrite accessors to work with ptrs
+  3. Remove id properties
+  4. Add language referencing
+
+---
+     - PRECISION -
+
+  1. Rename all floats and doubles to typedef
+
+---
+    - PROPER TESTING -
+---
+    - FULL CYCLE SUPPORT -
+---
+    - BETTER API -
+---
+    - SMART AMOUNTS -
+---
+    - BETTER LOGS -
+
+    1. Separate dev logs from user logs
+---
 
 
 
@@ -580,59 +619,4 @@ Categorizations:
 
 
 
-
-
-
-
-
-
     -----------------------------------------------------------------------------------------------------------------
-
-
-    Potential serialization formats:
-
-
-#tag B
-
-load : basic_chem
-
-atom : C {
-    name = "asfasf",
-    weight = 54.5_g/mol,
-    valence = [1,2,3,4],
-}
-
-radical : R {
-    match = [C, '*CC']
-}
-
-:: comment
-
-:.
-  comment
-.:
-
->> debug msg
-
-spline<id12> : C -> g/L {
-    values =  [1.0:10.0, 2.0_K:15.0_g/mL]
-}
-
-mol : O=C(C)OC=C {
-    density =   spline : C -> g/L { values = [1.0:10.0, 2.0_K:15.0_g/mL] } #empiric,
-    density =   spline<id12> #empiric,
-    density =   func<C:g/L> : x * 2 + 1
-} #empiric
-
-react : O=C(C)OC=C + O=C(C)OC=C -> O=C(C)OC=C + O=C(C)OC=C {
-    catalyst =   [C=O]
-}
-
-flask<> {
-}
-
-lab {
-}
-
-Amount<T> -> DynAmount{T}
-DynAmount{T1} -> DynAmount{T2}

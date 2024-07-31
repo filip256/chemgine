@@ -24,10 +24,17 @@ bool GenericMoleculeRepository::loadFromFile(const std::string& path)
 	std::getline(file, buffer);
 	while (std::getline(file, buffer))
 	{
-		auto line = DataHelpers::parseList(buffer, ',');
+		auto line = Utils::split(buffer, ',');
 		if (line[1].empty())
 		{
 			Log(this).error("Failed to load generic molecule due to empty SMILES string.");
+			continue;
+		}
+
+		auto structure = DataHelpers::parse<MolecularStructure>(line[1]);
+		if (structure.has_value() == false)
+		{
+			Log(this).error("Invalid SMILES.");
 			continue;
 		}
 
@@ -38,11 +45,7 @@ bool GenericMoleculeRepository::loadFromFile(const std::string& path)
 			continue;
 		}
 
-		if (table.emplace(
-			*id,
-			line[1],
-			GenericMoleculeData(*id, line[1])
-		) == false)
+		if (table.emplace(*id, line[1], GenericMoleculeData(*id, std::move(*structure))) == false)
 		{
 			Log(this).warn("Generic molecule with duplicate id {0} skipped.", *id);
 		}

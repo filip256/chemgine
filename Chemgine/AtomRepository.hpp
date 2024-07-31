@@ -3,6 +3,7 @@
 #include "Repository.hpp"
 #include "AtomData.hpp"
 #include "RadicalData.hpp"
+#include "DefinitionObject.hpp"
 
 class AtomRepository
 {
@@ -10,8 +11,6 @@ private:
 	MultiIndexMap<AtomId, Symbol, const AtomData*> table;
 
 	bool add(const AtomData* data);
-
-	void loadBuiltins();
 
 public:
 	AtomRepository() = default;
@@ -23,6 +22,9 @@ public:
 		(std::is_constructible_v<A, Args...> || std::is_constructible_v<A, Args..., const AtomRepository&>)>>
 	bool add(Args&&... args);
 
+	template <typename AtomT>
+	bool add(DefinitionObject&& definition);
+
 	bool contains(const AtomId id) const;
 	bool contains(const Symbol symbol) const;
 
@@ -33,7 +35,7 @@ public:
 	/// Returns the ids of the atoms with the given symbols.
 	/// Missing symbols are skipped.
 	/// </summary>
-	std::unordered_set<AtomId> getIds(const std::unordered_set<Symbol>& symbols) const;
+	std::unordered_set<AtomId> getIds(const std::vector<Symbol>& symbols) const;
 
 	bool loadFromFile(const std::string& path);
 

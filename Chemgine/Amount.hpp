@@ -219,7 +219,7 @@ inline std::string Amount<Unit::WATT>::unitSymbol() noexcept { return "W"; }
 template<>
 inline std::string Amount<Unit::METER>::unitSymbol() noexcept { return "m"; }
 template<>
-inline std::string Amount<Unit::DEGREE>::unitSymbol() noexcept { return "°"; }
+inline std::string Amount<Unit::DEGREE>::unitSymbol() noexcept { return "o"; }
 template<>
 inline std::string Amount<Unit::RADIAN>::unitSymbol() noexcept { return "rad"; }
 template<>
@@ -228,6 +228,8 @@ template<>
 inline std::string Amount<Unit::PER_METER>::unitSymbol() noexcept { return "/" + Amount<Unit::METER>::unitSymbol(); }
 template<>
 inline std::string Amount<Unit::MOLE_RATIO>::unitSymbol() noexcept { return Amount<Unit::MOLE>::unitSymbol() + "/" + Amount<Unit::MOLE>::unitSymbol(); }
+template<>
+inline std::string Amount<Unit::MOLE_PERCENT>::unitSymbol() noexcept { return Amount<Unit::MOLE>::unitSymbol() + "%"; }
 template<>
 inline std::string Amount<Unit::MOLE_PER_SECOND>::unitSymbol() noexcept { return Amount<Unit::MOLE>::unitSymbol() + "/" + Amount<Unit::SECOND>::unitSymbol(); }
 template<>
@@ -285,6 +287,8 @@ template<>
 inline std::string Amount<Unit::PER_METER>::unitName() noexcept { return "/" + Amount<Unit::METER>::unitName(); }
 template<>
 inline std::string Amount<Unit::MOLE_RATIO>::unitName() noexcept { return Amount<Unit::MOLE>::unitName() + " / " + Amount<Unit::MOLE>::unitName(); }
+template<>
+inline std::string Amount<Unit::MOLE_PERCENT>::unitName() noexcept { return Amount<Unit::MOLE>::unitName() + " %"; }
 template<>
 inline std::string Amount<Unit::MOLE_PER_SECOND>::unitName() noexcept { return Amount<Unit::MOLE>::unitName() + " / " + Amount<Unit::SECOND>::unitName(); }
 template<>
@@ -431,6 +435,17 @@ constexpr Amount<Unit::RADIAN>::Amount(const Amount<Unit::DEGREE>& degrees) noex
 	Amount<Unit::RADIAN>(degrees.asStd() * (std::numbers::pi_v<StorageType> / 180.0))
 {}
 
+template<>
+template<>
+constexpr Amount<Unit::MOLE_RATIO>::Amount(const Amount<Unit::MOLE_PERCENT>& ratio) noexcept :
+	Amount<Unit::MOLE_RATIO>(ratio.asStd() * 100.0)
+{}
+
+template<>
+template<>
+constexpr Amount<Unit::MOLE_PERCENT>::Amount(const Amount<Unit::MOLE_RATIO>& ratio) noexcept :
+	Amount<Unit::MOLE_PERCENT>(ratio.asStd() / 100.0)
+{}
 
 //    --- Indirect Conversions ---    //
 

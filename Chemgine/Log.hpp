@@ -1,5 +1,6 @@
 #pragma once
 
+#include <regex>
 #include <string>
 #include <vector>
 #include <format>
@@ -50,6 +51,9 @@ public:
 	static LogType logLevel;
 	static LogType printNameLevel;
 	static LogType printAddressLevel;
+
+	static std::regex logSourceFilter;
+
 	static std::ostream& outputStream;
 
 	LogBase() = delete;
@@ -114,6 +118,10 @@ const Log<SourceT>& Log<SourceT>::log(const std::string& msg, const LogType type
 	if (type > LogBase::logLevel)
 		return *this;
 
+	const auto typeName = getTypeName();
+	if (std::regex_match(typeName, LogBase::logSourceFilter) == false)
+		return *this;
+
 	for (uint8_t i = 0; i < contexts; ++i)
 		LogBase::outputStream << "  ";
 
@@ -150,17 +158,16 @@ const Log<SourceT>& Log<SourceT>::log(const std::string& msg, const LogType type
 
 	if (type <= printNameLevel)
 	{
-		const auto name = getTypeName();
-		if (name.size())
+		if (typeName.size())
 		{
-			outputStream << '[' << getTypeName();
+			outputStream << '[' << typeName;
 			if (type <= printAddressLevel)
 			{
 				const auto addr = getAddress();
 				if (addr.size())
-					outputStream << ": " << getAddress();
+					outputStream << " <" << addr << '>';
 			}
-			outputStream << "] ";
+			outputStream << "]   ";
 		}
 	}
 

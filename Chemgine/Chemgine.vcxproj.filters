@@ -154,6 +154,15 @@
     <Filter Include="Source Files\Terminal">
       <UniqueIdentifier>{0fedb36f-f314-4a1a-8d0c-1e540066cb3c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Data\BuiltIn">
+      <UniqueIdentifier>{f2c9daf0-f82c-4bfb-978d-e777270471f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Data\Parsers">
+      <UniqueIdentifier>{88932a60-5de8-4102-9970-0f78e1a9c326}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Data\Parsers">
+      <UniqueIdentifier>{7e7d83b0-6811-4e6e-8d28-dcd0d6fac6c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataStore.cpp">
@@ -426,9 +435,6 @@
     <ClCompile Include="MolecularStructure.cpp">
       <Filter>Source Files\Molecules</Filter>
     </ClCompile>
-    <ClCompile Include="DataHelpers.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
     <ClCompile Include="CursorHelper.cpp">
       <Filter>Source Files\Graphics\UI</Filter>
     </ClCompile>
@@ -453,13 +459,28 @@
     <ClCompile Include="Input.cpp">
       <Filter>Source Files\Terminal</Filter>
     </ClCompile>
+    <ClCompile Include="ReactionSpecifier.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
+    <ClCompile Include="StringUtils.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="PathUtils.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="DefFileParser.cpp">
+      <Filter>Source Files\Data\Parsers</Filter>
+    </ClCompile>
+    <ClCompile Include="DefinitionLocation.cpp">
+      <Filter>Source Files\Data\Parsers</Filter>
+    </ClCompile>
+    <ClCompile Include="DefinitionObject.cpp">
+      <Filter>Source Files\Data\Parsers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
       <Filter>Header Files\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="DataHelpers.hpp">
-      <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="Log.hpp">
       <Filter>Header Files\Terminal</Filter>
@@ -848,6 +869,30 @@
     <ClInclude Include="Input.hpp">
       <Filter>Header Files\Terminal</Filter>
     </ClInclude>
+    <ClInclude Include="StringUtils.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="ReactionSpecifier.hpp">
+      <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="PathUtils.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="DefFileParser.hpp">
+      <Filter>Header Files\Data\Parsers</Filter>
+    </ClInclude>
+    <ClInclude Include="DefinitionLocation.hpp">
+      <Filter>Header Files\Data\Parsers</Filter>
+    </ClInclude>
+    <ClInclude Include="DefinitionObject.hpp">
+      <Filter>Header Files\Data\Parsers</Filter>
+    </ClInclude>
+    <ClInclude Include="DataHelpers.hpp">
+      <Filter>Header Files\Data\Parsers</Filter>
+    </ClInclude>
+    <ClInclude Include="Keywords.hpp">
+      <Filter>Header Files\Data\Parsers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv">
@@ -870,6 +915,27 @@
     </None>
     <None Include="Out\genericmolecules.out.csv">
       <Filter>Resource Files\Out</Filter>
+    </None>
+    <None Include="Data\builtin.cdef">
+      <Filter>Resource Files\Data\BuiltIn</Filter>
+    </None>
+    <None Include="Data\builtin\atoms.cdef">
+      <Filter>Resource Files\Data\BuiltIn</Filter>
+    </None>
+    <None Include="Data\builtin\estimators.cdef">
+      <Filter>Resource Files\Data\BuiltIn</Filter>
+    </None>
+    <None Include="Data\builtin\labware.cdef">
+      <Filter>Resource Files\Data\BuiltIn</Filter>
+    </None>
+    <None Include="Data\builtin\molecules.cdef">
+      <Filter>Resource Files\Data\BuiltIn</Filter>
+    </None>
+    <None Include="Data\builtin\radicals.cdef">
+      <Filter>Resource Files\Data\BuiltIn</Filter>
+    </None>
+    <None Include="Data\builtin\reactions.cdef">
+      <Filter>Resource Files\Data\BuiltIn</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

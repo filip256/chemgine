@@ -3,10 +3,12 @@
 #include "DynamicAmount.hpp"
 #include "Spline.hpp"
 #include "Utils.hpp"
+#include "StringUtils.hpp"
 #include "Symbol.hpp"
 #include "Color.hpp"
 #include "LabwarePort.hpp"
 #include "Molecule.hpp"
+#include "ReactionSpecifier.hpp"
 
 #include <vector>
 #include <string>
@@ -32,21 +34,10 @@ public:
 	template <typename T>
 	static std::optional<T> parseId(const std::string& str);
 
-	static std::vector<std::string> parseList(
-		const std::string& line,
-		const char sep,
-		const bool ignoreEmpty = false);
-
 	template <typename T>
 	static std::optional<std::vector<T>> parseList(
 		const std::string& line,
 		const char sep,
-		const bool ignoreEmpty = false);
-
-	static std::vector<std::vector<std::string>> parseLists(
-		const std::string& line,
-		const char outSep,
-		const char inSep,
 		const bool ignoreEmpty = false);
 
 	template <typename T1, typename T2>
@@ -54,10 +45,12 @@ public:
 		const std::string& str,
 		const char sep = '@');
 	template <Unit U1, Unit U2>
+
 	static std::optional<std::pair<Amount<U1>, Amount<U2>>> parsePair(
 		const std::string& str,
 		const char sep = '@');
 	template <typename T, Unit U2>
+
 	static std::optional< std::pair<T, Amount<U2>>> parsePair(
 		const std::string& str,
 		const char sep = '@');
@@ -89,7 +82,19 @@ public:
 	public:
 		static std::optional<std::string> parse(const std::string& str)
 		{
-			return str;
+			return Utils::strip(str);
+		}
+	};
+
+	template <>
+	class Parser<std::vector<std::string>>
+	{
+	public:
+		static std::optional<std::vector<std::string>> parse(const std::string& str)
+		{
+			auto list = Utils::split(str, ',', true);
+			std::for_each(list.begin(), list.end(), [](auto& str) { Utils::strip(str); });
+			return list;
 		}
 	};
 
@@ -213,7 +218,7 @@ public:
 	public:
 		static std::optional<Amount<U>> parse(const std::string& str)
 		{
-			const auto pair = parseList(str, '_', true);
+			const auto pair = Utils::split(str, '_', true);
 			if (pair.empty())
 				return std::nullopt;
 
@@ -267,7 +272,7 @@ public:
 	public:
 		static std::optional<Spline<T>> parse(const std::string& str)
 		{
-			const auto& pointsStr = parseList(str, ';', true);
+			const auto& pointsStr = Utils::split(str, ';', true);
 
 			std::vector<std::pair<float, float>> points;
 			points.reserve(pointsStr.size());
@@ -313,7 +318,7 @@ public:
 	public:
 		static std::optional<LabwarePort> parse(const std::string& str)
 		{
-			const auto port = DataHelpers::parseList(str, ':', true);
+			const auto port = Utils::split(str, ':', true);
 
 			if (port.size() != 4)
 				return std::nullopt;
@@ -336,7 +341,7 @@ public:
 	public:
 		static std::optional<std::pair<T1, T2>> parse(const std::string& str, const char sep = '@')
 		{
-			const auto& pairStr = DataHelpers::parseList(str, sep, true);
+			const auto& pairStr = Utils::split(str, sep, true);
 			if (pairStr.size() != 2)
 				return std::nullopt;
 
@@ -349,6 +354,44 @@ public:
 				return std::nullopt;
 
 			return std::optional<std::pair<T1, T2>>(std::make_pair(*val1, *val2));
+		}
+	};
+
+	template <>
+	class Parser<ReactionSpecifier>
+	{
+	public:
+		static std::optional<ReactionSpecifier> parse(const std::string& str)
+		{
+			const auto sep = str.find("->");
+			if (sep > str.size() - 3)
+				return std::nullopt;
+
+			const auto reactantsStr = str.substr(0, sep);
+			const auto productsStr = str.substr(sep + 2);
+
+			auto reactants = Utils::split(reactantsStr, '+', false);
+			auto products = Utils::split(productsStr, '+', false);
+
+			if (reactants.empty() || products.empty())
+				return std::nullopt;
+
+			for (size_t i = 0; i < reactants.size(); ++i)
+			{
+				Utils::strip(reactants[i]);
+				if (reactants[i].empty())
+					return std::nullopt;
+			}
+
+			for (size_t i = 0; i < products.size(); ++i)
+			{
+				Utils::strip(products[i]);
+				if (products[i].empty())
+					return std::nullopt;
+			}
+
+			return std::optional<ReactionSpecifier>(std::in_place,
+				std::move(reactants), std::move(products));
 		}
 	};
 };
@@ -406,6 +449,9 @@ std::optional<std::vector<T>> DataHelpers::parseList(
 	const char sep,
 	const bool ignoreEmpty)
 {
+	if (line.starts_with('{') && line.ends_with('}'))
+		return parseList<T>(line.substr(1, line.size() - 2), sep, ignoreEmpty);
+
 	std::vector<T> result;
 	size_t lastSep = -1;
 
@@ -414,7 +460,7 @@ std::optional<std::vector<T>> DataHelpers::parseList(
 		{
 			if (ignoreEmpty == false || i - lastSep - 1 > 0)
 			{
-				auto r = parse<T>(line.substr(lastSep + 1, i - lastSep - 1));
+				auto r = parse<T>(Utils::strip(line.substr(lastSep + 1, i - lastSep - 1)));
 				if (r.has_value())
 					result.emplace_back(std::move(*r));
 				else
@@ -424,7 +470,7 @@ std::optional<std::vector<T>> DataHelpers::parseList(
 		}
 	if (ignoreEmpty == false || lastSep + 1 < line.size())
 	{
-		auto r = parse<T>(line.substr(lastSep + 1));
+		auto r = parse<T>(Utils::strip(line.substr(lastSep + 1)));
 		if (r.has_value())
 			result.emplace_back(std::move(*r));
 		else

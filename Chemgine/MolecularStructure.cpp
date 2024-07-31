@@ -53,6 +53,9 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 
     if (smiles == "HH") // the only purely virtual molecule
     {
+        if (Atom::isDefined("H") == false)
+            return false;
+
         impliedHydrogenCount = 2;
         return true;
     }
@@ -1270,14 +1273,14 @@ bool MolecularStructure::deserialize(const std::string& str)
         return true;
     }
 
-    const auto tokens = DataHelpers::parseList(str, '_');
+    const auto tokens = Utils::split(str, '_');
     if (tokens.empty())
     {
         clear();
         return false;
     }
 
-    auto comps = DataHelpers::parseList(tokens[0], ';');
+    auto comps = Utils::split(tokens[0], ';');
     for (c_size i = 0; i < comps.size(); ++i)
     {
         const auto id = DataHelpers::parse<unsigned int>(comps[i]);
@@ -1292,7 +1295,7 @@ bool MolecularStructure::deserialize(const std::string& str)
 
     for (c_size i = 1; i < tokens.size(); ++i)
     {
-        comps = DataHelpers::parseList(tokens[i], ';');
+        comps = Utils::split(tokens[i], ';');
         bonds.emplace_back(std::vector<Bond>());
         for (c_size j = 0; j < comps.size(); ++j)
         {

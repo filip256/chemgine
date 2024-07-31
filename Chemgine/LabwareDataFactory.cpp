@@ -84,7 +84,7 @@ CondenserData* LabwareDataFactory::getCondenserData(const LabwareId id, const st
 	if (txScale.has_value() == false)
 		return nullptr;
 
-	return new CondenserData(id, dataLine[2], std::move(*ports), *length, *efficiency, *volume, dataLine[7], *txScale, dataLine[9], dataLine[10]);
+	return new CondenserData(id, dataLine[2], std::move(*ports), *volume, *length, *efficiency, dataLine[7], dataLine[9], dataLine[10], *txScale);
 }
 
 HeatsourceData* LabwareDataFactory::getHeatsourceData(const LabwareId id, const std::vector<std::string>& dataLine)
@@ -104,5 +104,5 @@ HeatsourceData* LabwareDataFactory::getHeatsourceData(const LabwareId id, const 
 	if (power.has_value() == false)
 		return nullptr;
 
-	return new HeatsourceData(id, dataLine[2], std::move(*ports), dataLine[5], *txScale, *power);
+	return new HeatsourceData(id, dataLine[2], std::move(*ports), *power, dataLine[5], *txScale);
 }

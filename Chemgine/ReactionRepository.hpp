@@ -20,7 +20,10 @@ public:
 	ReactionRepository(MoleculeRepository& molecules) noexcept;
 	ReactionRepository(const ReactionRepository&) = delete;
 
+	bool add(DefinitionObject&& definition);
+
 	bool loadFromFile(const std::string& path);
+	void buildNetwork();
 
 	uint8_t getMaxReactantCount() const;
 	const ReactionNetwork& getNetwork() const;

@@ -44,7 +44,7 @@ public:
 	MoleculeData(
 		const MoleculeId id,
 		const std::string& name,
-		const std::string& smiles,
+		MolecularStructure&& structure,
 		const Amount<Unit::MOLE_RATIO> hydrophilicity,
 		const Amount<Unit::MOLE_RATIO> lipophilicity,
 		const Color color,

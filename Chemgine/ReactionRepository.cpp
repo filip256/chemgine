@@ -1,13 +1,135 @@
 #include "ReactionRepository.hpp"
 #include "DataHelpers.hpp"
-#include "Log.hpp"
 #include "Molecule.hpp"
+#include "Keywords.hpp"
+#include "Log.hpp"
 
 #include <fstream>
 
 ReactionRepository::ReactionRepository(MoleculeRepository& molecules) noexcept :
 	molecules(molecules)
 {}
+
+bool ReactionRepository::add(DefinitionObject&& definition)
+{
+	const auto id = definition.pullProperty("id", DataHelpers::parseId<ReactionId>);
+	if (id.has_value() == false)
+		return false;
+
+	const auto name = definition.pullDefaultProperty("name", "?");
+
+	const auto spec = DataHelpers::parse<ReactionSpecifier>(definition.specifier);
+	if (spec.has_value() == false)
+	{
+		Log(this).error("Invalid reaction specifier: '{0}', at: {1}.", definition.specifier, definition.getLocationName());
+		return false;
+	}
+
+	// reactants
+	std::vector<std::pair<Reactable, uint8_t>> reactantIds;
+	reactantIds.reserve(spec->reactants.size());
+	for (size_t i = 0; i < spec->reactants.size(); ++i)
+	{
+		const auto r = Reactable::get(spec->reactants[i]);
+		if (r.has_value() == false)
+		{
+			Log(this).error("Malformed reactant: '{0}' in reaction with id: {1}, at: {2}.", spec->reactants[i], *id, definition.getLocationName());
+			return false;
+		}
+		reactantIds.emplace_back(std::make_pair(*r, 0));
+	}
+
+	// products
+	std::vector<std::pair<Reactable, uint8_t>> productIds;
+	productIds.reserve(spec->products.size());
+	for (size_t i = 0; i < spec->products.size(); ++i)
+	{
+		const auto p = Reactable::get(spec->products[i]);
+		if (p.has_value() == false)
+		{
+			Log(this).error("Malformed product: '{0}' in reaction with id: {1}, at: {2}.", spec->products[i], *id, definition.getLocationName());
+			return false;
+		}
+		productIds.emplace_back(std::make_pair(*p, 0));
+	}
+
+	if (ReactionData::balance(reactantIds, productIds) == false)
+	{
+		Log(this).error("Reaction with id: '{0}' could not be balanced.", *id);
+		return false;
+	}
+
+	const auto speed = definition.pullDefaultProperty(Keywords::Reactions::Speed,
+		std::pair<Amount<Unit::MOLE_PER_SECOND>, Amount<Unit::CELSIUS>>(1.0, 20.0_C),
+		DataHelpers::parsePair<Unit::MOLE_PER_SECOND, Unit::CELSIUS>, '@');
+	const auto energy = definition.pullDefaultProperty(Keywords::Reactions::Energy, Amount<Unit::JOULE_PER_MOLE>(0.0),
+		DataHelpers::parse<Unit::JOULE_PER_MOLE>);
+	const auto activation = definition.pullDefaultProperty(Keywords::Reactions::Activation, Amount<Unit::JOULE_PER_MOLE>(0.0),
+		DataHelpers::parse<Unit::JOULE_PER_MOLE>);
+
+	// catalysts
+	const auto catStr = definition.pullDefaultProperty(Keywords::Reactions::Catalysts, std::vector<std::string>(),
+		DataHelpers::parseList<std::string>, ',', true);
+
+	std::vector<Catalyst> catalysts;
+	catalysts.reserve(catStr.size());
+	for (size_t i = 0; i < catStr.size(); ++i)
+	{
+		// TODO: this should be parsed somewhere else (like CatalystSpecifier?)
+		const auto pair = Utils::split(catStr[i], '@', true);
+		if (pair.size() != 2)
+		{
+			Log(this).error("Malformed catalyst for reaction with id: '{0}', at: {1}.", *id, definition.getLocationName());
+			return false;
+		}
+
+		const auto amount = DataHelpers::parseUnsigned<Unit::MOLE_RATIO>(pair.back());
+		if (amount.has_value() == false)
+		{
+			Log(this).error("Malformed catalyst: '{0}' in reaction with id: '{1}', at: {2}.", catStr[i], *id, definition.getLocationName());
+			return false;
+		}
+
+		const auto c = Catalyst::get(pair.front(), *amount);
+		if (c.has_value() == false)
+		{
+			Log(this).error("Malformed catalyst: '{0}' in reaction with id: '{1}', at: {2}.", catStr[i], *id, definition.getLocationName());
+			return false;
+		}
+
+		bool isUnique = true;
+		for (size_t j = 0; j < catalysts.size(); ++j)
+			if (catalysts[j].matchesWith(c->getStructure()) || c->matchesWith(catalysts[j].getStructure()))
+			{
+				isUnique = false;
+				Log(this).warn("Ingored duplicate catalyst '{0}' in reaction with id {1}, at: {2}.", catStr[i], *id, definition.getLocationName());
+				break;
+			}
+		if (isUnique == false)
+			continue;
+
+		catalysts.emplace_back(*c);
+	}
+
+	const auto& ignored = definition.getRemainingProperties();
+	for (const auto& [name, _] : ignored)
+		Log(this).warn("Ignored unknown reaction property: '{0}', at: {1}.", name, definition.getLocationName());
+
+	// create
+	ReactionData data(*id, name, reactantIds, productIds, speed.first, speed.second, energy, activation, std::move(catalysts));
+	if (data.mapReactantsToProducts() == false)
+	{
+		Log(this).error("Malformed reaction with id: {0}, at: {1}.", *id, definition.getLocationName());
+		return false;
+	}
+
+	maxReactantCount = std::max(static_cast<uint8_t>(reactantIds.size()), maxReactantCount);
+
+	if (table.emplace(*id, std::to_string(*id), std::move(data)) == false)
+		Log(this).warn("Skipped reaction with duplicate id: '{0}', at: {1}.", *id, definition.getLocationName());
+
+	return true;
+}
 
 bool ReactionRepository::loadFromFile(const std::string& path)
 {
@@ -32,7 +154,7 @@ bool ReactionRepository::loadFromFile(const std::string& path)
 		if (buffer.starts_with('\\'))
 			continue;
 
-		auto line = DataHelpers::parseList(buffer, ',');
+		auto line = Utils::split(buffer, ',');
 
 		if (line.size() != 8)
 		{
@@ -48,7 +170,7 @@ bool ReactionRepository::loadFromFile(const std::string& path)
 		}
 
 		// reactants
-		const auto reactants = DataHelpers::parseList(line[2], ';', true);
+		const auto reactants = Utils::split(line[2], ';', true);
 		if (reactants.empty())
 		{
 			Log(this).error("Reaction without reactants with id {0} skipped.", *id);
@@ -69,7 +191,7 @@ bool ReactionRepository::loadFromFile(const std::string& path)
 		}
 
 		// products
-		const auto products = DataHelpers::parseList(line[3], ';', true);
+		const auto products = Utils::split(line[3], ';', true);
 		if (products.empty())
 		{
 			Log(this).error("Reaction without products with id {0} skipped.", *id);
@@ -106,12 +228,12 @@ bool ReactionRepository::loadFromFile(const std::string& path)
 		const auto activationEnergy = DataHelpers::parseUnsigned<Unit::JOULE_PER_MOLE>(line[6]);
 
 		//catalysts
-		const auto catStr = DataHelpers::parseList(line[7], ';', true);
+		const auto catStr = Utils::split(line[7], ';', true);
 		std::vector<Catalyst> catalysts;
 		catalysts.reserve(catStr.size());
 		for (size_t i = 0; i < catStr.size(); ++i)
 		{
-			const auto pair = DataHelpers::parseList(catStr[i], '@', true);
+			const auto pair = Utils::split(catStr[i], '@', true);
 			if (pair.size() != 2)
 			{
 				Log(this).error("Reaction catalyst for the reaction with id {0} is ill-defined. Catalysts skipped.", *id);
@@ -164,11 +286,7 @@ bool ReactionRepository::loadFromFile(const std::string& path)
 
 		maxReactantCount = std::max(static_cast<uint8_t>(reactantIds.size()), maxReactantCount);
 
-		if (table.emplace(
-			*id,
-			std::to_string(*id),
-			std::move(data)
-		) == false)
+		if (table.emplace(*id, std::to_string(*id), std::move(data)) == false)
 		{
 			Log(this).warn("Reaction with duplicate id {0} skipped.", *id);
 		}
@@ -177,10 +295,16 @@ bool ReactionRepository::loadFromFile(const std::string& path)
 
 	Log(this).info("Loaded {0} reactions.", table.size());
 
-	for (size_t i = 0; i < table.size(); ++i)
-		network.insert(table[i]);
+	buildNetwork();
 
 	return true;
+}
+
+void ReactionRepository::buildNetwork()
+{
+	// TODO: use fixed data allocation and remove this
+	for (size_t i = 0; i < table.size(); ++i)
+		network.insert(table[i]);
 }
 
 uint8_t ReactionRepository::getMaxReactantCount() const

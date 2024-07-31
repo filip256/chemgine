@@ -4,13 +4,13 @@ CondenserData::CondenserData(
 	const LabwareId id,
 	const std::string& name,
 	std::vector<LabwarePort>&& ports,
+	const Amount<Unit::LITER> innerVolume,
 	const Amount<Unit::METER> length,
 	const Amount<Unit::PER_METER> efficiency,
-	const Amount<Unit::LITER> innerVolume,
 	const std::string& textureFile,
-	const float textureScale,
 	const std::string& innerfillTextureFile,
-	const std::string& coolantfillTextureFile
+	const std::string& coolantfillTextureFile,
+	const float textureScale
 ) noexcept :
 	ContainerLabwareData<2>(
 		id, name, std::move(ports), textureFile, textureScale,

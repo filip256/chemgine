@@ -30,29 +30,25 @@
 #include "TextBlock.hpp"
 #include "Linguistics.hpp"
 #include "DynamicAmount.hpp"
+#include "DefFileParser.hpp"
+#include "PathUtils.hpp"
 
 int main()
 {
     {
         LogBase::logLevel = LogType::DEBUG;
 
-        //#ifndef NDEBUG
         {
             TestManager tests;
             tests.runAll();
             tests.runPersist();
         }
-        //#endif
 
         DataStore store;
         Accessor<>::setDataStore(store);
 
-        store.loadAtomsData("Data/AtomData.csv")
-            .loadEstimatorsData("")
-            .loadMoleculesData("Data/MoleculeData.csv")
-            .loadGenericMoleculesData("Data/GenericMoleculeData.csv")
-            .loadReactionsData("Data/ReactionData.csv")
-            .loadLabwareData("Data/LabwareData.csv");;
+        store.load("./Data/builtin.cdef");
+        store.reactions.buildNetwork();
 
         std::cout << MolecularStructure("S(-O)(-O)(-O)(OCC)(OCCC(N(C)C)=O)C#N").print()<<'\n';
 

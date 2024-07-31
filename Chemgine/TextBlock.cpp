@@ -245,8 +245,13 @@ void TextBlock::trim()
 		++idx;
 	}
 
-	block.erase(block.begin() + hEnd + 1, block.end());
-	block.erase(block.begin(), block.begin() + hStart);
+	if (hStart <= hEnd)
+	{
+		block.erase(block.begin() + hEnd + 1, block.end());
+		block.erase(block.begin(), block.begin() + hStart);
+	}
+	else
+		block.clear();
 
 	for (size_t i = 0; i < getHeight(); ++i)
 		block[i].trim(wStart, wEnd);
@@ -277,6 +282,9 @@ bool TextBlock::empty() const
 
 std::string TextBlock::toString() const
 {
+	if (block.empty())  // prevent size_t = -1 later
+		return "";
+
 	std::string result;
 
 	for (size_t i = 0; i < getHeight() - 1; ++i)

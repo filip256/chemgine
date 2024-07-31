@@ -12,8 +12,8 @@ public:
 		const LabwareId id,
 		const std::string& name,
 		std::vector<LabwarePort>&& ports,
+		const Amount<Unit::WATT> maxPowerOutput,
 		const std::string& textureFile, 
-		const float textureScale,
-		const Amount<Unit::WATT> maxPowerOutput
+		const float textureScale
 	) noexcept;
 };

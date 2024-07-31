@@ -1,4 +1,6 @@
 #include "EstimatorRepository.hpp"
+#include "DataHelpers.hpp"
+#include "Keywords.hpp"
 #include "Log.hpp"
 
 #include <cmath>
@@ -8,15 +10,10 @@ constexpr EstimatorId toId(const BuiltinEstimator tag)
 	return static_cast<EstimatorId>(tag);
 }
 
-
-EstimatorRepository::~EstimatorRepository() noexcept
+EstimatorRepository::EstimatorRepository() noexcept
 {
-	for (const auto& a : table)
-		delete a.second;
-}
+	// TODO: remove this ctor and define estimators in .cdef file
 
-void EstimatorRepository::loadBuiltins()
-{
 	table.emplace(std::make_pair(toId(BuiltinEstimator::TEMP_TO_REL_RSPEED),
 		new FunctionalEstimator(toId(BuiltinEstimator::TEMP_TO_REL_RSPEED),
 			+[](double deltaTemperature) { return std::pow(2, deltaTemperature / 10.0); })
@@ -45,9 +42,9 @@ void EstimatorRepository::loadBuiltins()
 	table.emplace(std::make_pair(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH),
 		new FunctionalEstimator(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH),
 			+[](double tempDifC, double torr) { return (std::pow(1.005, -tempDifC / 2.0) +
-				torr > 0 ? 
-					std::pow(1.001, (torr - 760) / 2.0) :
-					-1 * std::pow(1.001, (-torr - 760) / 2.0))
+				torr > 0 ?
+				std::pow(1.001, (torr - 760) / 2.0) :
+				-1 * std::pow(1.001, (-torr - 760) / 2.0))
 			/ 2.0; })
 	));
 
@@ -62,10 +59,33 @@ void EstimatorRepository::loadBuiltins()
 	));
 }
 
+EstimatorRepository::~EstimatorRepository() noexcept
+{
+	for (const auto& a : table)
+		delete a.second;
+}
+
+template <>
+bool EstimatorRepository::add<SplineEstimator>(DefinitionObject&& definition)
+{
+	const auto values = definition.pullProperty(Keywords::Splines::Values, DataHelpers::parse<Spline<float>>);
+
+	if (values.has_value() == false)
+	{
+		Log(this).error("Incomplete spline definition at: {0}.", definition.getLocationName());
+		return false;
+	}
+
+	const auto& ignored = definition.getRemainingProperties();
+	for (const auto& [name, _] : ignored)
+		Log(this).warn("Ignored unknown estimator property: '{0}', at: {1}.", name, definition.getLocationName());
+
+	add<SplineEstimator>(std::move(*values));
+	return true;
+}
+
 bool EstimatorRepository::loadFromFile(const std::string& path)
 {
-	loadBuiltins();
-
 	Log(this).info("Loaded {0} estimators.", table.size());
 	return true;
 }

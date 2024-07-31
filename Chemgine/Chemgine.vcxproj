@@ -204,7 +204,9 @@
     <ClCompile Include="ContentInitializer.cpp" />
     <ClCompile Include="Context.cpp" />
     <ClCompile Include="CursorHelper.cpp" />
-    <ClCompile Include="DataHelpers.cpp" />
+    <ClCompile Include="DefFileParser.cpp" />
+    <ClCompile Include="DefinitionLocation.cpp" />
+    <ClCompile Include="DefinitionObject.cpp" />
     <ClCompile Include="DragNDropHelper.cpp" />
     <ClCompile Include="DynamicAmount.cpp" />
     <ClCompile Include="EquipmentComponent.cpp" />
@@ -251,6 +253,7 @@
     <ClCompile Include="Molecule.cpp" />
     <ClCompile Include="MoleculeData.cpp" />
     <ClCompile Include="OffsetEstimator.cpp" />
+    <ClCompile Include="PathUtils.cpp" />
     <ClCompile Include="Radical.cpp" />
     <ClCompile Include="RadicalData.cpp" />
     <ClCompile Include="RandomizedParticle.cpp" />
@@ -264,6 +267,7 @@
     <ClCompile Include="ReactionData.cpp" />
     <ClCompile Include="ReactionRepository.cpp" />
     <ClCompile Include="ReactionNetwork.cpp" />
+    <ClCompile Include="ReactionSpecifier.cpp" />
     <ClCompile Include="RetrosynthReaction.cpp" />
     <ClCompile Include="Reactor.cpp" />
     <ClCompile Include="ScaleEstimator.cpp" />
@@ -273,6 +277,7 @@
     <ClCompile Include="SplineEstimator.cpp" />
     <ClCompile Include="SplitEstimator.cpp" />
     <ClCompile Include="StateNucleator.cpp" />
+    <ClCompile Include="StringUtils.cpp" />
     <ClCompile Include="Symbol.cpp" />
     <ClCompile Include="SystemMatrix.cpp" />
     <ClCompile Include="DumpContainer.cpp" />
@@ -295,6 +300,9 @@
     <ClInclude Include="BaseContainerLabwareData.hpp" />
     <ClInclude Include="Context.hpp" />
     <ClInclude Include="CursorHelper.hpp" />
+    <ClInclude Include="DefFileParser.hpp" />
+    <ClInclude Include="DefinitionLocation.hpp" />
+    <ClInclude Include="DefinitionObject.hpp" />
     <ClInclude Include="DirectedGraph.hpp" />
     <ClInclude Include="DragNDropHelper.hpp" />
     <ClInclude Include="DynamicAmount.hpp" />
@@ -341,6 +349,7 @@
     <ClInclude Include="IndexMap.hpp" />
     <ClInclude Include="FlaskData.hpp" />
     <ClInclude Include="Input.hpp" />
+    <ClInclude Include="Keywords.hpp" />
     <ClInclude Include="Lab.hpp" />
     <ClInclude Include="LabwareConnection.hpp" />
     <ClInclude Include="LabwareDataFactory.hpp" />
@@ -361,6 +370,7 @@
     <ClInclude Include="Maths.hpp" />
     <ClInclude Include="Mixture.hpp" />
     <ClInclude Include="OffsetEstimator.hpp" />
+    <ClInclude Include="PathUtils.hpp" />
     <ClInclude Include="Radical.hpp" />
     <ClInclude Include="RadicalData.hpp" />
     <ClInclude Include="RandomizedParticle.hpp" />
@@ -372,6 +382,7 @@
     <ClInclude Include="ReactantRef.hpp" />
     <ClInclude Include="ReactantSet.hpp" />
     <ClInclude Include="ReactionNetwork.hpp" />
+    <ClInclude Include="ReactionSpecifier.hpp" />
     <ClInclude Include="Ref.hpp" />
     <ClInclude Include="ScaleEstimator.hpp" />
     <ClInclude Include="ShapeFill.hpp" />
@@ -384,6 +395,7 @@
     <ClInclude Include="SplitEstimator.hpp" />
     <ClInclude Include="StateNucleator.hpp" />
     <ClInclude Include="STP.hpp" />
+    <ClInclude Include="StringUtils.hpp" />
     <ClInclude Include="Symbol.hpp" />
     <ClInclude Include="DumpContainer.hpp" />
     <ClInclude Include="TerminalUtils.hpp" />
@@ -426,6 +438,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Data\AtomData.csv" />
+    <None Include="Data\builtin.cdef" />
+    <None Include="Data\builtin\atoms.cdef" />
+    <None Include="Data\builtin\estimators.cdef" />
+    <None Include="Data\builtin\labware.cdef" />
+    <None Include="Data\builtin\molecules.cdef" />
+    <None Include="Data\builtin\radicals.cdef" />
+    <None Include="Data\builtin\reactions.cdef" />
     <None Include="Data\GenericMoleculeData.csv" />
     <None Include="Data\LabwareData.csv" />
     <None Include="Data\MoleculeData.csv" />

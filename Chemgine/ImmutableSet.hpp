@@ -17,11 +17,13 @@ private:
 	
 	static std::vector<T> toSortedSetVector(std::vector<T>&& set);
 	static std::vector<T> toSortedSetVector(std::set<T>&& set);
+	static std::vector<T> toSortedSetVector(std::unordered_set<T>&& set);
 
 public:
 	ImmutableSet() = default;
 	ImmutableSet(std::vector<T>&& content) noexcept;
 	ImmutableSet(std::set<T>&& content) noexcept;
+	ImmutableSet(std::unordered_set<T>&& content) noexcept;
 	ImmutableSet(std::initializer_list<T> content) noexcept;
 	ImmutableSet(const ImmutableSet&) = default;
 	ImmutableSet(ImmutableSet&&) = default;
@@ -54,6 +56,11 @@ ImmutableSet<T>::ImmutableSet(std::set<T>&& content) noexcept :
 {}
 
 template <typename T>
+ImmutableSet<T>::ImmutableSet(std::unordered_set<T>&& content) noexcept :
+	content(ImmutableSet::toSortedSetVector(std::move(content)))
+{}
+
+template <typename T>
 ImmutableSet<T>::ImmutableSet(std::initializer_list<T> content) noexcept :
 	content(ImmutableSet::toSortedSetVector(std::set(content)))
 {}
@@ -76,6 +83,18 @@ std::vector<T> ImmutableSet<T>::toSortedSetVector(std::vector<T>&& vector)
 
 template <typename T>
 std::vector<T> ImmutableSet<T>::toSortedSetVector(std::set<T>&& set)
+{
+	std::vector<T> result;
+	result.reserve(set.size());
+
+	for (auto&& it : set)
+		result.emplace_back(std::move(it));
+
+	return result;
+}
+
+template <typename T>
+std::vector<T> ImmutableSet<T>::toSortedSetVector(std::unordered_set<T>&& set)
 {
 	std::vector<T> result;
 	result.reserve(set.size());

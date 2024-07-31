@@ -5,6 +5,7 @@
 #include "SplineEstimator.hpp"
 #include "LinearEstimator.hpp"
 #include "ConstantEstimator.hpp"
+#include "DefinitionObject.hpp"
 #include "Maths.hpp"
 
 #include <unordered_map>
@@ -30,25 +31,26 @@ private:
 
 	EstimatorId getFreeId() const;
 
-	void loadBuiltins();
 	const BaseEstimator& add(const BaseEstimator* estimator);
 
 public:
-	EstimatorRepository() = default;
+	EstimatorRepository() noexcept;
 	EstimatorRepository(const EstimatorRepository&) = delete;
 	~EstimatorRepository() noexcept;
 
 	bool loadFromFile(const std::string& path);
-	
+
+	template <typename EstT>
+	bool add(DefinitionObject&& definition);
+
 	/// <summary>
-	/// Allocates a new estimator and appends it to the table.
-	/// Specializations can provide optimizations for certain estimators.
+	/// Constructs and allocates a new estimator of the given type.
+	/// Specializations can provide optimizations for certain estimator types.
 	/// </summary>
 	template <typename EstT, typename... Args, typename = std::enable_if_t<
 		std::is_base_of_v<BaseEstimator, EstT> &&
 		std::is_constructible_v<EstT, EstimatorId, Args...>>>
 	const BaseEstimator& add(Args&&... args);
-	//  and they still ask why I use C++...
 
 	const BaseEstimator& at(const EstimatorId id) const;
 };

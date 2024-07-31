@@ -1,0 +1,47 @@
+:.
+    Built-in Labware
+.:
+
+_lab: flask {
+    id:      #201,
+    name:    RBF,
+    volume:  500_mL,
+    ports:   {2:31:9:0_o, 6:31:90:0_o},
+    tx:      ./Textures/jrbf500.png
+};
+
+_lab: adaptor {
+    id:      #301,
+    name:    3-way Adaptor,
+    volume:  50_mL,
+    ports:   {3:6:58:0_o, 3:36:34:290_o},
+    tx:      ./Textures/3way.png,
+};
+
+_lab: adaptor {
+    id:      #302,
+    name:    Distillation Adaptor,
+    volume:  50_mL,
+    ports:   {2:11:10:282_o, 3:39:52:0_o},
+    tx:      ./Textures/disthead.png,
+};
+
+_lab: heatsource {
+    id:      #401,
+    name:    Hotplate,
+    power:   1.0_kW,
+    ports:   {6:41:7:0_o},
+    tx:     ./Textures/hotplate_sh2.png,
+};
+
+_lab: condenser {
+    id:           #501,
+    name:         Liebig Condenser,
+    volume:       200_mL,
+    length:       0.3_m,
+    effic:        0.5_/m,
+    ports:        {2:22:12:0_o, 3:22:158:0_o},
+    tx:           ./Textures/liebig300.png,
+    inner_mask:   ./Textures/liebig300_if.png,
+    coolant_mask: ./Textures/liebig300_cf.png,
+};

@@ -13,10 +13,6 @@ public:
 
 	GenericMoleculeData(
 		const MoleculeId id,
-		const std::string& smiles) noexcept;
-
-	GenericMoleculeData(
-		const MoleculeId id,
 		MolecularStructure&& structure) noexcept;
 
 	GenericMoleculeData(const GenericMoleculeData&) = delete;
