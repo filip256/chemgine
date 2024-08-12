@@ -38,8 +38,6 @@ public:
 	EstimatorRepository(const EstimatorRepository&) = delete;
 	~EstimatorRepository() noexcept;
 
-	bool loadFromFile(const std::string& path);
-
 	template <typename EstT>
 	bool add(DefinitionObject&& definition);
 

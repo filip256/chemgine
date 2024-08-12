@@ -16,7 +16,6 @@ DataStore::DataStore() :
 DataStore& DataStore::load(const std::string& path)
 {
 	DefFileParser parser(path, *this);
-
 	while (true)
 	{
 		auto entry = parser.nextDefinition();
@@ -29,69 +28,44 @@ DataStore& DataStore::load(const std::string& path)
 			continue;
 		}
 
+		bool success = false;
 		switch (entry->type)
 		{
 		case DefinitionType::SPLINE:
-			estimators.add<SplineEstimator>(std::move(*entry));
+			success = estimators.add<SplineEstimator>(std::move(*entry));
 			break;
 
 		case DefinitionType::ATOM:
-			atoms.add<AtomData>(std::move(*entry));
+			success = atoms.add<AtomData>(std::move(*entry));
 			break;
 
 		case DefinitionType::RADICAL:
-			atoms.add<RadicalData>(std::move(*entry));
+			success = atoms.add<RadicalData>(std::move(*entry));
 			break;
 
 		case DefinitionType::MOLECULE:
-			molecules.add(std::move(*entry));
+			success = molecules.add(std::move(*entry));
 			break;
 
 		case DefinitionType::REACTION:
-			reactions.add(std::move(*entry));
+			success = reactions.add(std::move(*entry));
 			break;
 
 		case DefinitionType::LABWARE:
-			labware.add(std::move(*entry));
+			success = labware.add(std::move(*entry));
+			break;
+
+		default:
+			Log(this).error("Unknown definition type: '{0}', at: {1}.", static_cast<uint8_t>(entry->type), entry->getLocationName());
 			break;
 		}
+
+		if (success == false)
+		{
+			Log(this).warn("Skipped invalid definition.");
+			continue;
+		}
 	}
-	return *this;
-}
-
-DataStore& DataStore::loadAtomsData(const std::string& path)
-{
-	atoms.loadFromFile(path);
-	return *this;
-}
-
-DataStore& DataStore::loadMoleculesData(const std::string& path)
-{
-	molecules.loadFromFile(path);
-	return *this;
-}
-
-DataStore& DataStore::loadGenericMoleculesData(const std::string& path)
-{
-	genericMolecules.loadFromFile(path);
-	return *this;
-}
-
-DataStore& DataStore::loadReactionsData(const std::string& path)
-{
-	reactions.loadFromFile(path);
-	return *this;
-}
-
-DataStore& DataStore::loadEstimatorsData(const std::string& path)
-{
-	estimators.loadFromFile(path);
-	return *this;
-}
-
-DataStore& DataStore::loadLabwareData(const std::string& path)
-{
-	labware.loadFromFile(path);
 	return *this;
 }
 

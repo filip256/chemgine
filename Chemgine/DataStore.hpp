@@ -37,15 +37,6 @@ public:
 
 	DataStore& load(const std::string& path);
 
-	DataStore& loadAtomsData(const std::string& path);
-
-	DataStore& loadEstimatorsData(const std::string& path);
-	DataStore& loadMoleculesData(const std::string& path);
-	DataStore& loadGenericMoleculesData(const std::string& path);
-	DataStore& loadReactionsData(const std::string& path);
-
-	DataStore& loadLabwareData(const std::string& path);
-
 	DataStore& saveMoleculesData(const std::string& path);
 	DataStore& saveGenericMoleculesData(const std::string& path);
 

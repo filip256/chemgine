@@ -21,7 +21,5 @@ public:
 
 	bool add(DefinitionObject&& definition);
 
-	bool loadFromFile(const std::string& path);
-
 	const BaseLabwareData& at(const LabwareId id) const;
 };

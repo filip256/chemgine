@@ -327,9 +327,6 @@
     <ClCompile Include="Symbol.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
-    <ClCompile Include="Context.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Atmosphere.cpp">
       <Filter>Source Files\Mixtures\MixtureTypes</Filter>
     </ClCompile>
@@ -701,9 +698,6 @@
     <ClInclude Include="FlagField.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
-    <ClInclude Include="Context.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Atmosphere.hpp">
       <Filter>Header Files\Mixtures\MixtureTypes</Filter>
     </ClInclude>
@@ -895,21 +889,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Data\AtomData.csv">
-      <Filter>Resource Files\Data</Filter>
-    </None>
-    <None Include="Data\GenericMoleculeData.csv">
-      <Filter>Resource Files\Data</Filter>
-    </None>
-    <None Include="Data\MoleculeData.csv">
-      <Filter>Resource Files\Data</Filter>
-    </None>
-    <None Include="Data\ReactionData.csv">
-      <Filter>Resource Files\Data</Filter>
-    </None>
-    <None Include="Data\LabwareData.csv">
-      <Filter>Resource Files\Data</Filter>
-    </None>
     <None Include="Out\molecules.out.csv">
       <Filter>Resource Files\Out</Filter>
     </None>

@@ -31,14 +31,6 @@ public:
 	const AtomData& at(const AtomId id) const;
 	const AtomData& at(const Symbol symbol) const;
 
-	/// <summary>
-	/// Returns the ids of the atoms with the given symbols.
-	/// Missing symbols are skipped.
-	/// </summary>
-	std::unordered_set<AtomId> getIds(const std::vector<Symbol>& symbols) const;
-
-	bool loadFromFile(const std::string& path);
-
 	static constexpr size_t npos = static_cast<size_t>(-1);
 };
 

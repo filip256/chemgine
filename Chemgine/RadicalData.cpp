@@ -1,7 +1,6 @@
 #include "RadicalData.hpp"
-#include "AtomRepository.hpp"
-#include "Log.hpp"
 #include "Utils.hpp"
+#include "Log.hpp"
 
 const std::unordered_set<AtomId> RadicalData::MatchAny = std::unordered_set<AtomId>{ 0 };
 

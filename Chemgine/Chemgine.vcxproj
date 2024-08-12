@@ -202,7 +202,6 @@
     <ClCompile Include="Condenser.cpp" />
     <ClCompile Include="CondenserData.cpp" />
     <ClCompile Include="ContentInitializer.cpp" />
-    <ClCompile Include="Context.cpp" />
     <ClCompile Include="CursorHelper.cpp" />
     <ClCompile Include="DefFileParser.cpp" />
     <ClCompile Include="DefinitionLocation.cpp" />
@@ -298,7 +297,6 @@
     <ClInclude Include="CondenserData.hpp" />
     <ClInclude Include="ContainerComponent.hpp" />
     <ClInclude Include="BaseContainerLabwareData.hpp" />
-    <ClInclude Include="Context.hpp" />
     <ClInclude Include="CursorHelper.hpp" />
     <ClInclude Include="DefFileParser.hpp" />
     <ClInclude Include="DefinitionLocation.hpp" />
@@ -437,7 +435,6 @@
     <ClInclude Include="MolecularStructure.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Data\AtomData.csv" />
     <None Include="Data\builtin.cdef" />
     <None Include="Data\builtin\atoms.cdef" />
     <None Include="Data\builtin\estimators.cdef" />
@@ -445,10 +442,6 @@
     <None Include="Data\builtin\molecules.cdef" />
     <None Include="Data\builtin\radicals.cdef" />
     <None Include="Data\builtin\reactions.cdef" />
-    <None Include="Data\GenericMoleculeData.csv" />
-    <None Include="Data\LabwareData.csv" />
-    <None Include="Data\MoleculeData.csv" />
-    <None Include="Data\ReactionData.csv" />
     <None Include="Out\genericmolecules.out.csv" />
     <None Include="Out\molecules.out.csv" />
   </ItemGroup>

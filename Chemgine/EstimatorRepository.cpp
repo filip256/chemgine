@@ -84,12 +84,6 @@ bool EstimatorRepository::add<SplineEstimator>(DefinitionObject&& definition)
 	return true;
 }
 
-bool EstimatorRepository::loadFromFile(const std::string& path)
-{
-	Log(this).info("Loaded {0} estimators.", table.size());
-	return true;
-}
-
 const BaseEstimator& EstimatorRepository::add(const BaseEstimator* estimator)
 {
 	const auto it = std::find_if(table.cbegin(), table.cend(), [estimator](const auto& e) {
