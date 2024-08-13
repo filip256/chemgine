@@ -5,6 +5,8 @@
 enum class Unit : uint16_t
 {
 	NONE,
+	ANY,
+
 	LITER,
 	CUBIC_METER,
 	DROP,

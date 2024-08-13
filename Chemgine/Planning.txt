@@ -390,11 +390,18 @@ Tasks:
   DONE. Add new parser to existing implementation
   DONE. Add logic for multi-loads
   DONE. Add parser for splines and radicals
-  5. Remove loadBuiltins()'s and old CSV parsing
-  6. Add typed splines
+  DONE. Remove loadBuiltins()'s and old CSV parsing
+  6. Add typed estimators
+     - estimator rework needed, storing defs is not a good ideea
+     - Out of line func and spline defs are stored in id-def map
+     - When used, these are built and casted to the units expected by the user
+     - Users will contain TypedEstimator<InTs..., OutT>'s
   7. Improve list and pair formats
   8. Add printing
   9. Add func parsers
+  10. Fix reaction network building
+  11. Add definition tags
+  12. Add definition override
 
 ---
      - DIRECT REFERENCING -
@@ -618,5 +625,7 @@ Categorizations:
     - have a tick function that defines their effect
 
 
+
+    -----------------------------------------------------------------------------------------------------------------
 
     -----------------------------------------------------------------------------------------------------------------

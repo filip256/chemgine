@@ -7,10 +7,10 @@ class DefinitionLocation
 private:
 	const static size_t eofLine = static_cast<size_t>(-1);
 
-public:
-	const std::string file;
-	const size_t line;
+	std::string file;
+	size_t line;
 
+public:
 	DefinitionLocation(
 		const std::string& file,
 		const size_t line
@@ -19,6 +19,9 @@ public:
 	DefinitionLocation(DefinitionLocation&&) = default;
 
 	DefinitionLocation& operator=(DefinitionLocation&&) = default;
+
+	const std::string& getFile() const;
+	size_t getLine() const;
 
 	std::string toString() const;
 

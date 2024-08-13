@@ -13,6 +13,26 @@ DynamicAmount::DynamicAmount(const StorageType value, const Unit unit) noexcept 
 	unit(unit)
 {}
 
+DynamicAmount::StorageType DynamicAmount::asKilo() const
+{
+    return value / 1000.0;
+}
+
+DynamicAmount::StorageType DynamicAmount::asStd() const
+{
+    return value;
+}
+
+DynamicAmount::StorageType DynamicAmount::asMilli() const
+{
+    return value * 1000.0;
+}
+
+DynamicAmount::StorageType DynamicAmount::asMicro() const
+{
+    return value / 1000000.0;
+}
+
 std::optional<DynamicAmount> DynamicAmount::to(const Unit target) const
 {
     if (unit == target)
@@ -20,6 +40,8 @@ std::optional<DynamicAmount> DynamicAmount::to(const Unit target) const
 
     switch (unit)
     {
+    case Unit::ANY:
+        return DynamicAmount(value, target);
     case Unit::LITER:
         return DynamicAmount::cast(Amount<Unit::LITER>(value), target);
     case Unit::CUBIC_METER:
@@ -72,6 +94,8 @@ std::string DynamicAmount::getUnitSymbol(const Unit unit)
     {
     case Unit::NONE:
         return Amount<Unit::NONE>::unitSymbol();
+    case Unit::ANY:
+        return Amount<Unit::ANY>::unitSymbol();
     case Unit::LITER:
         return Amount<Unit::LITER>::unitSymbol();
     case Unit::CUBIC_METER:
@@ -140,6 +164,8 @@ std::string DynamicAmount::getUnitName(const Unit unit)
     {
     case Unit::NONE:
         return Amount<Unit::NONE>::unitName();
+    case Unit::ANY:
+        return Amount<Unit::ANY>::unitName();
     case Unit::LITER:
         return Amount<Unit::LITER>::unitName();
     case Unit::CUBIC_METER:
@@ -207,6 +233,7 @@ std::optional<Unit> DynamicAmount::getUnitFromSymbol(const std::string& symbol)
     static const std::unordered_map<std::string, Unit> symbolToUnitMap = 
     {
         {DynamicAmount::getUnitSymbol(Unit::NONE), Unit::NONE},
+        {DynamicAmount::getUnitSymbol(Unit::ANY), Unit::ANY},
         {DynamicAmount::getUnitSymbol(Unit::LITER), Unit::LITER},
         {DynamicAmount::getUnitSymbol(Unit::CUBIC_METER), Unit::CUBIC_METER},
         {DynamicAmount::getUnitSymbol(Unit::DROP), Unit::DROP},

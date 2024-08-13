@@ -107,7 +107,7 @@ std::string Log<SourceT>::getTypeName()
 	if (name.starts_with("class "))
 		name = name.substr(6);
 
-	std::remove_if(name.begin(), name.end(), [](const auto c) { return std::isspace(c) != 0 || c == '\n'; });
+	std::erase_if(name, [](const auto c) { return std::isspace(c) != 0 || c == '\n'; });
 
 	return name.size() ? name : "";
 }

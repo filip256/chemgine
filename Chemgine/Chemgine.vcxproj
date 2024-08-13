@@ -208,6 +208,8 @@
     <ClCompile Include="DefinitionObject.cpp" />
     <ClCompile Include="DragNDropHelper.cpp" />
     <ClCompile Include="DynamicAmount.cpp" />
+    <ClCompile Include="EstimatorSpecifier.cpp" />
+    <ClCompile Include="OOLSplineEstimator.cpp" />
     <ClCompile Include="EquipmentComponent.cpp" />
     <ClCompile Include="EstimatorRepository.cpp" />
     <ClCompile Include="Atom.cpp" />
@@ -304,6 +306,8 @@
     <ClInclude Include="DirectedGraph.hpp" />
     <ClInclude Include="DragNDropHelper.hpp" />
     <ClInclude Include="DynamicAmount.hpp" />
+    <ClInclude Include="EstimatorSpecifier.hpp" />
+    <ClInclude Include="OOLSplineEstimator.hpp" />
     <ClInclude Include="EquipmentComponent.hpp" />
     <ClInclude Include="EstimatorRepository.hpp" />
     <ClInclude Include="EstimatorType.hpp" />

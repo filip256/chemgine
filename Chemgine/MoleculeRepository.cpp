@@ -15,10 +15,10 @@ MoleculeRepository::MoleculeRepository(EstimatorRepository& estimators) noexcept
 
 bool MoleculeRepository::add(DefinitionObject&& definition)
 {
-	auto structure = DataHelpers::parse<MolecularStructure>(definition.specifier);
+	auto structure = DataHelpers::parse<MolecularStructure>(definition.getSpecifier());
 	if (structure.has_value() == false)
 	{
-		Log(this).error("Invalid SMILES specifier: '{0}', as: {1}.", definition.specifier, definition.getLocationName());
+		Log(this).error("Invalid SMILES specifier: '{0}', as: {1}.", definition.getSpecifier(), definition.getLocationName());
 		return false;
 	}
 

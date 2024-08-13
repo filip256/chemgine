@@ -1,4 +1,5 @@
 #include "DefinitionObject.hpp"
+#include "DataStore.hpp"
 
 DefinitionObject::DefinitionObject(
 	const DefinitionType type,
@@ -13,6 +14,16 @@ DefinitionObject::DefinitionObject(
 	properties(std::move(properties)),
 	location(std::move(location))
 {}
+
+const std::string& DefinitionObject::getIdentifier() const
+{
+	return identifier;
+}
+
+const std::string& DefinitionObject::getSpecifier() const
+{
+	return specifier;
+}
 
 std::string DefinitionObject::getLocationName() const
 {

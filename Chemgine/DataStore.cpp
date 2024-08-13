@@ -32,7 +32,7 @@ DataStore& DataStore::load(const std::string& path)
 		switch (entry->type)
 		{
 		case DefinitionType::SPLINE:
-			success = estimators.add<SplineEstimator>(std::move(*entry));
+			success = estimators.addOOLDefinition(std::move(*entry));
 			break;
 
 		case DefinitionType::ATOM:
@@ -62,7 +62,7 @@ DataStore& DataStore::load(const std::string& path)
 
 		if (success == false)
 		{
-			Log(this).warn("Skipped invalid definition.");
+			Log(this).warn("Skipped invalid definition, at: {0}.", entry->getLocationName());
 			continue;
 		}
 	}

@@ -474,6 +474,12 @@
     <ClCompile Include="DefinitionObject.cpp">
       <Filter>Source Files\Data\Parsers</Filter>
     </ClCompile>
+    <ClCompile Include="OOLSplineEstimator.cpp">
+      <Filter>Source Files\Estimators</Filter>
+    </ClCompile>
+    <ClCompile Include="EstimatorSpecifier.cpp">
+      <Filter>Source Files\Estimators</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -886,6 +892,12 @@
     </ClInclude>
     <ClInclude Include="Keywords.hpp">
       <Filter>Header Files\Data\Parsers</Filter>
+    </ClInclude>
+    <ClInclude Include="OOLSplineEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="EstimatorSpecifier.hpp">
+      <Filter>Header Files\Estimators</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

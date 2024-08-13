@@ -18,10 +18,10 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 
 	const auto name = definition.pullDefaultProperty("name", "?");
 
-	const auto spec = DataHelpers::parse<ReactionSpecifier>(definition.specifier);
+	const auto spec = DataHelpers::parse<ReactionSpecifier>(definition.getSpecifier());
 	if (spec.has_value() == false)
 	{
-		Log(this).error("Invalid reaction specifier: '{0}', at: {1}.", definition.specifier, definition.getLocationName());
+		Log(this).error("Invalid reaction specifier: '{0}', at: {1}.", definition.getSpecifier(), definition.getLocationName());
 		return false;
 	}
 

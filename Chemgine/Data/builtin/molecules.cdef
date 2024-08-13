@@ -2,6 +2,8 @@
     Built-in Reactions
 .:
 
+INCLUDE :/estimators.cdef AS est
+
 _mol: O {
 	id:              #501,
 	name:            water,
@@ -74,4 +76,12 @@ _mol: N#N {
 	melting_point:   -210.02_C,
 	boiling_point:   -195.79_C,
 	color:           {50:200:255:100},
+};
+
+_mol: CC(O)C {
+	id:              #510,
+	name:            isopropanol,
+	melting_point:   -210.02_C,
+	boiling_point:   -195.79_C,
+	liquid_density:  $est@ld_0,
 };

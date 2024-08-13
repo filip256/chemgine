@@ -8,6 +8,16 @@ DefinitionLocation::DefinitionLocation(
 	line(line)
 {}
 
+const std::string& DefinitionLocation::getFile() const
+{
+	return file;
+}
+
+size_t DefinitionLocation::getLine() const
+{
+	return line;
+}
+
 std::string DefinitionLocation::toString() const
 {
 	return file.size() ?

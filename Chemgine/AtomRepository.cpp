@@ -20,10 +20,10 @@ bool AtomRepository::add(const AtomData* data)
 template <>
 bool AtomRepository::add<AtomData>(DefinitionObject&& definition)
 {
-	const auto symbol = DataHelpers::parse<Symbol>(definition.specifier);
+	const auto symbol = DataHelpers::parse<Symbol>(definition.getSpecifier());
 	if (symbol.has_value() == false)
 	{
-		Log(this).error("Invalid atom symbol: '{0}' at: {1}.", definition.specifier, definition.getLocationName());
+		Log(this).error("Invalid atom symbol: '{0}' at: {1}.", definition.getSpecifier(), definition.getLocationName());
 		return false;
 	}
 
@@ -55,10 +55,10 @@ bool AtomRepository::add<AtomData>(DefinitionObject&& definition)
 template <>
 bool AtomRepository::add<RadicalData>(DefinitionObject&& definition)
 {
-	const auto symbol = DataHelpers::parse<Symbol>(definition.specifier);
+	const auto symbol = DataHelpers::parse<Symbol>(definition.getSpecifier());
 	if (symbol.has_value() == false)
 	{
-		Log(this).error("Invalid radical symbol: '{0}' at: {1}.", definition.specifier, definition.getLocationName());
+		Log(this).error("Invalid radical symbol: '{0}' at: {1}.", definition.getSpecifier(), definition.getLocationName());
 		return false;
 	}
 

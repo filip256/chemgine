@@ -20,16 +20,15 @@ enum class DefinitionType
 class DefinitionObject
 {
 public:
-	const DefinitionType type;
+	DefinitionType type;
 
 private:
+	std::string identifier;
+	std::string specifier;
+	DefinitionLocation location;
 	std::unordered_map<std::string, std::string> properties;
 
 public:
-	const std::string identifier;
-	const std::string specifier;
-	const DefinitionLocation location;
-
 	DefinitionObject(
 		const DefinitionType type,
 		std::string&& identifier,
@@ -42,6 +41,9 @@ public:
 	DefinitionObject(DefinitionObject&&) = default;
 
 	DefinitionObject& operator=(DefinitionObject&&) = default;
+
+	const std::string& getIdentifier() const;
+	const std::string& getSpecifier() const;
 
 	/// <summary>
 	/// Returns the name of the location where the object was defined.

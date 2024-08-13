@@ -140,11 +140,11 @@ bool LabwareRepository::add(DefinitionObject&& definition)
 		{Keywords::Labware::Heatsource, &LabwareRepository::add<LabwareType::HEATSOURCE> }
 	};
 
-	const auto it = adders.find(definition.specifier);
+	const auto it = adders.find(definition.getSpecifier());
 	if (it != adders.end())
 		return (this->*(it->second))(std::move(definition));
 
-	Log(this).error("Unknown labware specifier: '{0}', at: {1}.", definition.specifier, definition.getLocationName());
+	Log(this).error("Unknown labware specifier: '{0}', at: {1}.", definition.getSpecifier(), definition.getLocationName());
 	return false;
 }
 

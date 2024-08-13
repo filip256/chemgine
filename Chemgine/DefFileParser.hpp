@@ -14,6 +14,7 @@ private:
 	std::string currentFile;
 	std::ifstream stream;
 	std::unique_ptr<DefFileParser> subParser = nullptr;
+	std::unordered_map<std::string, std::string> includeAliases;
 
 	DataStore& dataStore;
 

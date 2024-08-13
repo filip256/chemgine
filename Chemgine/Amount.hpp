@@ -189,6 +189,8 @@ std::string Amount<UnitT>::toString(const uint8_t maxDigits) const noexcept
 template<>
 inline std::string Amount<Unit::NONE>::unitSymbol() noexcept { return ""; }
 template<>
+inline std::string Amount<Unit::ANY>::unitSymbol() noexcept { return "*"; }
+template<>
 inline std::string Amount<Unit::GRAM>::unitSymbol() noexcept { return "g"; }
 template<>
 inline std::string Amount<Unit::LITER>::unitSymbol() noexcept { return "L"; }
@@ -246,7 +248,9 @@ template<>
 inline std::string Amount<Unit::TORR_MOLE_RATIO>::unitSymbol() noexcept { return Amount<Unit::TORR>::unitSymbol() + "*(" + Amount<Unit::MOLE>::unitSymbol() + "/" + Amount<Unit::MOLE>::unitSymbol() + ")"; }
 
 template<>
-inline std::string Amount<Unit::NONE>::unitName() noexcept { return "unit"; }
+inline std::string Amount<Unit::NONE>::unitName() noexcept { return ""; }
+template<>
+inline std::string Amount<Unit::ANY>::unitName() noexcept { return "any unit"; }
 template<>
 inline std::string Amount<Unit::GRAM>::unitName() noexcept { return "gram"; }
 template<>

@@ -52,7 +52,6 @@ int main()
 
         std::cout << MolecularStructure("S(-O)(-O)(-O)(OCC)(OCCC(N(C)C)=O)C#N").print()<<'\n';
 
-        // TDOD: add in presentation
         const auto x = store.reactions.getRetrosynthReactions(
             *Reactable::get(MolecularStructure("O(C(C)C)C(=O)C")));
 

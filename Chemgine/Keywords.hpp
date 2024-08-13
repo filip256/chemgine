@@ -7,6 +7,7 @@ namespace Keywords
 	namespace Syntax
 	{
 		const std::string Include = "INCLUDE";
+		const std::string IncludeAs = "AS";
 	}
 
 	namespace Types

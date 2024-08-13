@@ -5,6 +5,8 @@
 #include "Keywords.hpp"
 #include "Log.hpp"
 
+using namespace Keywords;
+
 DefFileParser::DefFileParser(
 	const std::string& filePath,
 	DataStore& dataStore
@@ -93,6 +95,9 @@ std::pair<std::string, DefinitionLocation> DefFileParser::nextDefinitionLine()
 		if (subLine.first.size())
 			return subLine;
 
+		includeAliases.merge(subParser->includeAliases); // inherit include aliases
+		for (const auto& a : subParser->includeAliases)
+			Log(this).warn("Ignored already defined include alias: '{0}: {1}' from included file, at: {2}:{3}.", a.first, a.second, currentFile, currentLine);
 		subParser.reset(nullptr);
 	}
 
@@ -141,15 +146,39 @@ std::pair<std::string, DefinitionLocation> DefFileParser::nextDefinitionLine()
 		}
 
 		// load
-		if (line.starts_with(Keywords::Syntax::Include))
+		if (line.starts_with(Syntax::Include))
 		{
-			line = line.substr(7);
-			Utils::normalizePath(line);
+			const auto pathEnd = line.find(Syntax::IncludeAs, Syntax::Include.size());
+			auto path = Utils::normalizePath(
+				line.substr(Syntax::Include.size(), pathEnd - Syntax::Include.size()));
 
-			if(line.starts_with(":/"))
-				include(Utils::combinePaths(Utils::extractDirName(currentFile), line.substr(1)));
-			else
-				include(line);
+			// append dir
+			if (path.starts_with(":/"))
+				path = Utils::combinePaths(Utils::extractDirName(currentFile), path.substr(1));
+
+			if (path.empty())
+			{
+				Log(this).error("Missing include path after '{0}' keyword, at: {1}:{2}.", Syntax::Include, currentFile, currentLine);
+				continue;
+			}
+
+			if (pathEnd != std::string::npos)
+			{
+				auto alias = Utils::strip(line.substr(pathEnd + Syntax::IncludeAs.size()));
+				if (alias.empty())
+				{
+					Log(this).error("Missing include alias after '{0}' keyword, at: {1}:{2}.", Syntax::IncludeAs, currentFile, currentLine);
+					continue;
+				}
+
+				if (auto status = includeAliases.emplace(std::move(alias), path); status.second == false)
+				{
+					Log(this).warn("Redefinition of an existing include alias: '{0}: {1}', at: {2}:{3}.", alias, status.first->second, currentFile, currentLine);
+					status.first->second = path;
+				}
+			}
+
+			include(path);
 
 			return nextDefinitionLine();
 		}
@@ -178,7 +207,7 @@ std::pair<std::string, DefinitionLocation> DefFileParser::nextDefinitionLine()
 					return std::make_pair(line, std::move(location));
 			} while (true);
 
-			Log(this).error("Missing multi-line definition terminator: ';', at: {0}.", location.toString());
+			Log(this).error("Missing definition terminator: ';', at: {0}.", location.toString());
 			continue;
 		}
 
@@ -194,13 +223,25 @@ std::optional<DefinitionObject> DefFileParser::nextDefinition()
 {
 	static const std::unordered_map<std::string, DefinitionType> typeMap
 	{
-		{Keywords::Types::Spline, DefinitionType::SPLINE},
-		{Keywords::Types::Atom, DefinitionType::ATOM},
-		{Keywords::Types::Radical, DefinitionType::RADICAL},
-		{Keywords::Types::Molecule, DefinitionType::MOLECULE},
-		{Keywords::Types::Reaction, DefinitionType::REACTION},
-		{Keywords::Types::Labware, DefinitionType::LABWARE},
+		{Types::Spline, DefinitionType::SPLINE},
+		{Types::Atom, DefinitionType::ATOM},
+		{Types::Radical, DefinitionType::RADICAL},
+		{Types::Molecule, DefinitionType::MOLECULE},
+		{Types::Reaction, DefinitionType::REACTION},
+		{Types::Labware, DefinitionType::LABWARE},
 	};
+
+	// finish includes first
+	if (subParser)
+	{
+		auto subLine = subParser->nextDefinition();
+		if (subLine.has_value())
+			return subLine;
+
+		// continue parsing until EoF, even if error occurs
+		if(subParser->isOpen() == false)
+			subParser.reset(nullptr);
+	}
 
 	auto [line, location] = nextDefinitionLine();
 	if (line.starts_with('_') == false)
@@ -213,9 +254,16 @@ std::optional<DefinitionObject> DefFileParser::nextDefinition()
 		idEnd = line.find('>', typeEnd + 1);
 		if (idEnd == std::string::npos)
 		{
-			Log(this).error("Malformed definition: '{0}', at: {1}.", line, location.toString());
+			Log(this).error("Missing identifier terminator: '>', at: {0}.", location.toString());
 			return std::nullopt;
 		}
+
+		if (idEnd - typeEnd < 2)
+		{
+			Log(this).error("Definition with empty identifier, at: {0}.", location.toString());
+			return std::nullopt;
+		}
+
 	}
 	else
 		idEnd = typeEnd = line.find(':', 1);
@@ -226,7 +274,8 @@ std::optional<DefinitionObject> DefFileParser::nextDefinition()
 		return std::nullopt;
 	}
 
-	const auto specifierEnd = line.find('{', idEnd + 1);
+	const auto specifierBegin = line.find(':', idEnd);
+	const auto specifierEnd = line.find('{', specifierBegin + 1);
 	if (specifierEnd == std::string::npos)
 	{
 		Log(this).error("Malformed definition: '{0}', at: {1}.", line, location.toString());
@@ -256,10 +305,15 @@ std::optional<DefinitionObject> DefFileParser::nextDefinition()
 	const auto type = typeIt->second;
 
 	// parse identifier (optional)
-	auto idStr = Utils::strip(line.substr(typeEnd + 1, idEnd - typeEnd - 1));
+	const auto idStr = idEnd != typeEnd ? Utils::strip(line.substr(typeEnd + 1, idEnd - typeEnd - 1)) : "";
+	if (const auto illegalIdx = idStr.find_first_of(" .~;:'\"<>(){}~`!@#$%^&*()-+[]{}|?,/\\"); illegalIdx != std::string::npos)
+	{
+		Log(this).error("Identifier: '{0}' contains illegal symbol: '{1}', at: {2}.", idStr, idStr[illegalIdx], location.toString());
+		return std::nullopt;
+	}
 
 	// parse specifier
-	auto specifierStr = Utils::strip(line.substr(idEnd + 1, specifierEnd - idEnd - 1));
+	auto specifierStr = Utils::strip(line.substr(specifierBegin + 1, specifierEnd - specifierBegin - 1));
 	if (specifierStr.empty())
 	{
 		Log(this).error("Definition with missing specifier: '{0}', at: {1}.", line, location.toString());
@@ -301,12 +355,35 @@ std::optional<DefinitionObject> DefFileParser::nextDefinition()
 			return std::nullopt;
 		}
 
+		if (value.starts_with('$'))
+		{
+			if (const auto aliasEnd = value.find('@', 1); aliasEnd != std::string::npos)
+			{
+				// expand include aliases
+				const auto alias = value.substr(1, aliasEnd - 1);
+				if (alias.empty())
+				{
+					Log(this).error("Empty include alias on value: '{0}', at: {1}.", value, location.toString());
+					return std::nullopt;
+				}
+
+				const auto aliasIt = includeAliases.find(alias);
+				if (aliasIt == includeAliases.end())
+				{
+					Log(this).error("Undefined include alias: '{0}', at: {1}.", alias, location.toString());
+					return std::nullopt;
+				}
+
+				value.replace(1, alias.size(), aliasIt->second);
+			}
+		}
+
 		properties.emplace(std::make_pair(std::move(name), std::move(value)));
 	}
 
 	return std::optional<DefinitionObject>(std::in_place,
 		type,
-		std::move(idStr),
+		idStr.size() ? location.getFile() + '@' + idStr : "",
 		std::move(specifierStr),
 		std::move(properties),
 		std::move(location)

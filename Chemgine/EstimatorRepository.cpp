@@ -65,22 +65,60 @@ EstimatorRepository::~EstimatorRepository() noexcept
 		delete a.second;
 }
 
-template <>
-bool EstimatorRepository::add<SplineEstimator>(DefinitionObject&& definition)
+bool EstimatorRepository::addOOLDefinition(DefinitionObject&& definition)
 {
-	const auto values = definition.pullProperty(Keywords::Splines::Values, DataHelpers::parse<Spline<float>>);
+	auto specifier = DataHelpers::parse<EstimatorSpecifier>(definition.getSpecifier());
+	if (specifier.has_value() == false)
+	{
+		Log(this).error("Invalid spline units specifier: '{0}', as: {1}.", definition.getSpecifier(), definition.getLocationName());
+		return false;
+	}
 
-	if (values.has_value() == false)
+	const auto rawValues = definition.pullProperty(Keywords::Splines::Values,
+		DataHelpers::parse<std::vector<std::pair<DynamicAmount, DynamicAmount>>>);
+
+	if (rawValues.has_value() == false)
 	{
 		Log(this).error("Incomplete spline definition at: {0}.", definition.getLocationName());
 		return false;
 	}
 
+	std::vector<std::pair<float, float>> values;
+	values.reserve(rawValues->size());
+
+	for (size_t i = 0; i < rawValues->size(); ++i)
+	{
+		const auto& pair = (*rawValues)[i];
+		const auto inAmount = pair.first.to(specifier->inUnit);
+		if (inAmount.has_value() == false)
+		{
+			Log(this).error("Failed to convert spline value input unit: '{0}' to base input unit: '{1}', at: {2}",
+				pair.first.getUnitSymbol(), DynamicAmount::getUnitSymbol(specifier->inUnit), definition.getLocationName());
+			return false;
+		}
+
+		const auto outAmount = pair.second.to(specifier->outUnit);
+		if (outAmount.has_value() == false)
+		{
+			Log(this).error("Failed to convert spline value output unit: '{0}' to base input unit: '{1}', at: {2}",
+				pair.second.getUnitSymbol(), DynamicAmount::getUnitSymbol(specifier->outUnit), definition.getLocationName());
+			return false;
+		}
+
+		values.emplace_back(inAmount->asStd(), outAmount->asStd());
+	}
+
 	const auto& ignored = definition.getRemainingProperties();
 	for (const auto& [name, _] : ignored)
-		Log(this).warn("Ignored unknown estimator property: '{0}', at: {1}.", name, definition.getLocationName());
+		Log(this).warn("Ignored unknown spline property: '{0}', at: {1}.", name, definition.getLocationName());
 
-	add<SplineEstimator>(std::move(*values));
+	const auto success = oolSplines.emplace(definition.getIdentifier(), OOLSplineEstimator(std::move(*specifier), std::move(values)));
+	if (success.second == false)
+	{
+		Log(this).error("Clash between existing spline identifier: '{0}' and new definition at: {1}.", success.first->first, definition.getLocationName());
+		return false;
+	}
+
 	return true;
 }
 

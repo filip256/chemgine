@@ -21,6 +21,11 @@ public:
 	template<Unit OUnitT>
 	DynamicAmount(const Amount<OUnitT> amount) noexcept;
 
+	StorageType asKilo() const;
+	StorageType asStd() const;
+	StorageType asMilli() const;
+	StorageType asMicro() const;
+
 	std::optional<DynamicAmount> to(const Unit target) const;
 	template<Unit UnitT>
 	std::optional<Amount<UnitT>> to() const;

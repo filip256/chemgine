@@ -6,6 +6,7 @@
 #include "LinearEstimator.hpp"
 #include "ConstantEstimator.hpp"
 #include "DefinitionObject.hpp"
+#include "OOLSplineEstimator.hpp"
 #include "Maths.hpp"
 
 #include <unordered_map>
@@ -28,6 +29,7 @@ class EstimatorRepository
 {
 private:
 	std::unordered_map<EstimatorId, const BaseEstimator*> table;
+	std::unordered_map<std::string, OOLSplineEstimator> oolSplines;
 
 	EstimatorId getFreeId() const;
 
@@ -38,8 +40,7 @@ public:
 	EstimatorRepository(const EstimatorRepository&) = delete;
 	~EstimatorRepository() noexcept;
 
-	template <typename EstT>
-	bool add(DefinitionObject&& definition);
+	bool addOOLDefinition(DefinitionObject&& definition);
 
 	/// <summary>
 	/// Constructs and allocates a new estimator of the given type.

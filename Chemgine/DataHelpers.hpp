@@ -8,6 +8,7 @@
 #include "Color.hpp"
 #include "LabwarePort.hpp"
 #include "Molecule.hpp"
+#include "EstimatorSpecifier.hpp"
 #include "ReactionSpecifier.hpp"
 
 #include <vector>
@@ -237,6 +238,30 @@ public:
 	};
 
 	template <>
+	class Parser<DynamicAmount>
+	{
+	public:
+		static std::optional<DynamicAmount> parse(const std::string& str)
+		{
+			const auto pair = Utils::split(str, '_', true);
+			if (pair.empty())
+				return std::nullopt;
+
+			const auto val = DataHelpers::parse<Amount<>::StorageType>(pair.front());
+			if (val.has_value() == false)
+				return std::nullopt;
+
+			if (pair.size() == 1)
+				return DynamicAmount(*val, Unit::ANY);
+
+			if (pair.size() == 2)
+				return DynamicAmount::get(*val, pair.back());
+
+			return std::nullopt;
+		}
+	};
+
+	template <>
 	class Parser<Symbol>
 	{
 	public:
@@ -335,6 +360,16 @@ public:
 		}
 	};
 
+	template <typename T>
+	class Parser<std::vector<T>>
+	{
+	public:
+		static std::optional<std::vector<T>> parse(const std::string& str, const char sep = ',')
+		{
+			return parseList<T>(str, sep, true);
+		}
+	};
+
 	template <typename T1, typename T2>
 	class Parser<std::pair<T1, T2>>
 	{
@@ -354,6 +389,28 @@ public:
 				return std::nullopt;
 
 			return std::optional<std::pair<T1, T2>>(std::make_pair(*val1, *val2));
+		}
+	};
+
+	template <>
+	class Parser<EstimatorSpecifier>
+	{
+	public:
+		static std::optional<EstimatorSpecifier> parse(const std::string& str)
+		{
+			const auto sep = str.find("->");
+			if (sep > str.size() - 3)
+				return std::nullopt;
+
+			const auto inStr = Utils::strip(str.substr(0, sep));
+			const auto outStr = Utils::strip(str.substr(sep + 2));
+
+			const auto inUnit = DynamicAmount::getUnitFromSymbol(inStr);
+			const auto outUnit = DynamicAmount::getUnitFromSymbol(outStr);
+
+			return inUnit.has_value() && outUnit.has_value() ?
+				std::optional(EstimatorSpecifier(*inUnit, *outUnit)) :
+				std::nullopt;
 		}
 	};
 
