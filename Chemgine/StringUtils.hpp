@@ -5,13 +5,15 @@
 
 namespace Utils
 {
+	bool isWhiteSpace(const char c);
+
 	void strip(
 		std::string& str,
-		bool (*pred)(const char) = [](const auto c) -> bool { return std::isspace(c); });
+		bool (*pred)(const char) = [](const auto c) -> bool { return isWhiteSpace(c); });
 
 	std::string strip(
 		const std::string& str,
-		bool (*pred)(const char) = [](const auto c) -> bool { return std::isspace(c); });
+		bool (*pred)(const char) = [](const auto c) -> bool { return isWhiteSpace(c); });
 
 	std::vector<std::string> split(
 		const std::string& line,

@@ -1,7 +1,7 @@
 #include "DefFileParser.hpp"
 #include "StringUtils.hpp"
 #include "PathUtils.hpp"
-#include "DataStore.hpp"
+#include "FileStore.hpp"
 #include "Keywords.hpp"
 #include "Log.hpp"
 
@@ -9,19 +9,26 @@ using namespace Keywords;
 
 DefFileParser::DefFileParser(
 	const std::string& filePath,
-	DataStore& dataStore
+	FileStore& fileStore
 ) noexcept :
 	currentFile(Utils::normalizePath(filePath)),
 	stream(currentFile),
-	dataStore(dataStore)
+	fileStore(fileStore)
 {
-	if (stream.is_open())
+	if (stream.is_open() == false)
 	{
-		dataStore.fileParseHistory.emplace(std::make_pair(currentFile, false));
+		Log(this).error("Failed to open file: '{0}'.", currentFile);
 		return;
 	}
 
-	Log(this).error("Failed to open file: '{0}'.", currentFile);
+	if(fileStore.getFileStatus(filePath) == ParseStatus::PARSED)
+	{
+		Log(this).warn("Skipping already loaded file: '{0}'.", filePath);
+		forceFinish();
+		return;
+	}
+
+	fileStore.setFileStatus(currentFile, ParseStatus::STARTED);
 }
 
 DefFileParser::~DefFileParser() noexcept
@@ -33,14 +40,9 @@ DefFileParser::~DefFileParser() noexcept
 	}
 }
 
-bool DefFileParser::isOpen() const
-{
-	return stream.is_open();
-}
-
 void DefFileParser::include(const std::string& filePath)
 {
-	const auto status = dataStore.getFileStatus(filePath);
+	const auto status = fileStore.getFileStatus(filePath);
 	if (status == ParseStatus::PARSED)
 	{
 		Log(this).warn("Skipping already included file: '{0}', at: {1}:{2}.", filePath, currentFile, currentLine);
@@ -53,23 +55,37 @@ void DefFileParser::include(const std::string& filePath)
 		return;
 	}
 
-	subParser.reset(new DefFileParser(filePath, dataStore));
+	subParser = std::make_unique<DefFileParser>(filePath, fileStore);
+}
+
+bool DefFileParser::isOpen() const
+{
+	return stream.is_open();
+}
+
+DefinitionLocation DefFileParser::getCurrentLocalLocation() const
+{
+	return isOpen() ? DefinitionLocation(currentFile, currentLine) :
+		DefinitionLocation::createEOF(currentFile);
+}
+
+DefinitionLocation DefFileParser::getCurrentGlobalLocation() const
+{
+	return subParser ? subParser->getCurrentGlobalLocation() :
+		getCurrentLocalLocation();
 }
 
 void DefFileParser::forceFinish()
 {
-	if (stream.is_open())
+	if (isOpen())
 	{
-		dataStore.fileParseHistory.at(currentFile) = true;
+		fileStore.setFileStatus(currentFile, ParseStatus::PARSED);
 		stream.close();
 	}
 }
 
-std::string DefFileParser::nextLine()
+std::string DefFileParser::nextLocalLine()
 {
-	if (stream.is_open() == false)
-		return "";
-
 	std::string line;
 	while (std::getline(stream, line))
 	{
@@ -78,6 +94,47 @@ std::string DefFileParser::nextLine()
 		Utils::strip(line);
 		if (line.empty())
 			continue;
+
+		return line;
+	}
+
+	forceFinish();
+	return "";
+}
+
+std::string DefFileParser::nextGlobalLine()
+{
+	// finish includes first
+	if (subParser)
+	{
+		const auto subLine = subParser->nextGlobalLine();
+		if (subParser->isOpen())
+			return subLine;
+
+		subParser.reset(nullptr);
+	}
+
+	// main file
+	while(true)
+	{
+		const auto line = nextLocalLine();
+		if (line.empty())
+			break;
+
+		// include
+		if (line.starts_with(Syntax::Include))
+		{
+			const auto pathEnd = line.find(Syntax::IncludeAs, Syntax::Include.size());
+			auto path = Utils::normalizePath(
+				line.substr(Syntax::Include.size(), pathEnd - Syntax::Include.size()));
+
+			// append dir
+			if (path.starts_with(":/"))
+				path = Utils::combinePaths(Utils::extractDirName(currentFile), path.substr(1));
+
+			include(path);
+			return nextGlobalLine();
+		}
 
 		return line;
 	}
@@ -102,9 +159,9 @@ std::pair<std::string, DefinitionLocation> DefFileParser::nextDefinitionLine()
 	}
 
 	// main file
-	do
+	while(true)
 	{
-		auto line = nextLine();
+		auto line = nextLocalLine();
 		if (line.empty())
 			break;
 
@@ -116,9 +173,9 @@ std::pair<std::string, DefinitionLocation> DefFileParser::nextDefinitionLine()
 		if (line.starts_with(":."))
 		{
 			bool commentClosed = false;
-			do
+			while(true)
 			{
-				line = nextLine();
+				line = nextLocalLine();
 				if (line.empty())
 					break;
 
@@ -127,7 +184,7 @@ std::pair<std::string, DefinitionLocation> DefFileParser::nextDefinitionLine()
 					commentClosed = true;
 					break;
 				}
-			} while (true);
+			};
 
 
 			if (commentClosed)
@@ -145,7 +202,7 @@ std::pair<std::string, DefinitionLocation> DefFileParser::nextDefinitionLine()
 			continue;
 		}
 
-		// load
+		// include
 		if (line.starts_with(Syntax::Include))
 		{
 			const auto pathEnd = line.find(Syntax::IncludeAs, Syntax::Include.size());
@@ -179,23 +236,22 @@ std::pair<std::string, DefinitionLocation> DefFileParser::nextDefinitionLine()
 			}
 
 			include(path);
-
 			return nextDefinitionLine();
 		}
 
 		// defs
 		if (line.starts_with('_'))
 		{
-			DefinitionLocation location(currentFile, currentLine);
+			auto location = getCurrentLocalLocation();
 
 			// single-line def
 			if (line.ends_with(';'))
 				return std::make_pair(line, std::move(location));
 
 			// multi-line def
-			do
+			while(true)
 			{
-				const auto newLine = nextLine();
+				const auto newLine = nextLocalLine();
 				if (newLine.empty())
 					break;
 
@@ -205,15 +261,14 @@ std::pair<std::string, DefinitionLocation> DefFileParser::nextDefinitionLine()
 				line += ' ' + newLine;
 				if (newLine.ends_with(';'))
 					return std::make_pair(line, std::move(location));
-			} while (true);
+			};
 
 			Log(this).error("Missing definition terminator: ';', at: {0}.", location.toString());
 			continue;
 		}
 
 		Log(this).error("Unknown synthax: '{0}', at: {1}:{2}.", line, currentFile, currentLine);
-
-	} while (true);
+	};
 
 	forceFinish();
 	return std::make_pair("", DefinitionLocation::createEOF(currentFile));
@@ -234,9 +289,9 @@ std::optional<DefinitionObject> DefFileParser::nextDefinition()
 	// finish includes first
 	if (subParser)
 	{
-		auto subLine = subParser->nextDefinition();
-		if (subLine.has_value())
-			return subLine;
+		auto subDef = subParser->nextDefinition();
+		if (subDef.has_value())
+			return subDef;
 
 		// continue parsing until EoF, even if error occurs
 		if(subParser->isOpen() == false)

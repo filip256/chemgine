@@ -480,6 +480,12 @@
     <ClCompile Include="EstimatorSpecifier.cpp">
       <Filter>Source Files\Estimators</Filter>
     </ClCompile>
+    <ClCompile Include="FileStore.cpp">
+      <Filter>Source Files\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="DefFileAnalyzer.cpp">
+      <Filter>Source Files\Data\Parsers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -898,6 +904,12 @@
     </ClInclude>
     <ClInclude Include="EstimatorSpecifier.hpp">
       <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="FileStore.hpp">
+      <Filter>Header Files\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="DefFileAnalyzer.hpp">
+      <Filter>Header Files\Data\Parsers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

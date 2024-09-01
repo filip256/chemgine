@@ -1,8 +1,14 @@
 #include "DataStore.hpp"
+#include "PathUtils.hpp"
 #include "DefFileParser.hpp"
+#include "DefFileAnalyzer.hpp"
 #include "Log.hpp"
 
 #include <fstream>
+
+#include <chrono>
+#include <thread>
+
 
 DataStore::DataStore() : 
 	atoms(),
@@ -15,9 +21,24 @@ DataStore::DataStore() :
 
 DataStore& DataStore::load(const std::string& path)
 {
-	DefFileParser parser(path, *this);
+	const auto normPath = Utils::normalizePath(path);
+
+	const auto analysis = DefFileAnalyzer(normPath, fileStore).analyze();
+	if (analysis.failed)
+		Log(this).warn("Pre-parse analysis failed on file: '{0}'", normPath);
+	else
+	{
+		Log(this).info("Pre-parse analysis on file: '{0}':\n - Total Definitions: {1} ({2} already parsed)\n - Total Files:       {3} ({4} already parsed)",
+			normPath, analysis.totalDefinitionCount, analysis.preparsedDefinitionCount, analysis.totalFileCount, analysis.preparsedFileCount);
+	}
+	
+	size_t definitionCount = analysis.preparsedDefinitionCount;
+	DefFileParser parser(normPath, fileStore);
 	while (true)
 	{
+		if (analysis.failed == false)
+			Log(this).info("\r[{0}/{1}] definitions parsed.", definitionCount, analysis.totalDefinitionCount - analysis.preparsedDefinitionCount);
+
 		auto entry = parser.nextDefinition();
 		if (parser.isOpen() == false)
 			break;
@@ -65,7 +86,11 @@ DataStore& DataStore::load(const std::string& path)
 			Log(this).warn("Skipped invalid definition, at: {0}.", entry->getLocationName());
 			continue;
 		}
+
+		++definitionCount;
 	}
+
+	Log(this).success("File load completed.");
 	return *this;
 }
 
@@ -79,17 +104,4 @@ DataStore& DataStore::saveGenericMoleculesData(const std::string& path)
 {
 	genericMolecules.saveToFile(path);
 	return *this;
-}
-
-ParseStatus DataStore::getFileStatus(const std::string& filePath)
-{
-	const auto it = fileParseHistory.find(filePath);
-	return it == fileParseHistory.end() ? ParseStatus::UNTOUCHED :
-		it->second ? ParseStatus::PARSED :
-		ParseStatus::STARTED;
-}
-
-bool DataStore::wasParsed(const std::string& filePath)
-{
-	return getFileStatus(filePath) == ParseStatus::PARSED;
 }

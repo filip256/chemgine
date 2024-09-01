@@ -10,6 +10,7 @@
 
 #include "LogType.hpp"
 #include "Linguistics.hpp"
+#include "StringUtils.hpp"
 #include "TerminalUtils.hpp"
 
 
@@ -34,6 +35,7 @@ private:
 
 protected:
 	static uint8_t contexts;
+	static size_t foldCount;
 	static std::vector<std::string> cache;
 
 	LogBase(const void* location = nullptr) noexcept;
@@ -104,10 +106,10 @@ std::string Log<SourceT>::getTypeName()
 
 	auto name = std::string(typeid(SourceT).name());
 
-	if (name.starts_with("class "))
-		name = name.substr(6);
+	if (name.starts_with("class"))
+		name = name.substr(5);
 
-	std::erase_if(name, [](const auto c) { return std::isspace(c) != 0 || c == '\n'; });
+	Utils::strip(name);
 
 	return name.size() ? name : "";
 }
@@ -115,63 +117,103 @@ std::string Log<SourceT>::getTypeName()
 template<typename SourceT>
 const Log<SourceT>& Log<SourceT>::log(const std::string& msg, const LogType type) const
 {
-	if (type > LogBase::logLevel)
+	if (type > logLevel)
 		return *this;
 
 	const auto typeName = getTypeName();
-	if (std::regex_match(typeName, LogBase::logSourceFilter) == false)
+	if (std::regex_match(typeName, logSourceFilter) == false)
 		return *this;
 
-	for (uint8_t i = 0; i < contexts; ++i)
-		LogBase::outputStream << "  ";
+	size_t suffixSize = 0;
 
-	switch (type)
+	// exit folded log sequence
+	if (foldCount != static_cast<size_t>(-1) && msg.starts_with('\r') == false)
 	{
-	case LogType::ERROR:
-		OS::setTextRed();
-		outputStream << "ERROR:   ";
-		break;
-	case LogType::WARN:
-		OS::setTextDarkYellow();
-		outputStream << "WARN:    ";
-		break;
-	case LogType::SUCCESS:
-		OS::setTextGreen();
-		outputStream << "SUCCESS: ";
-		break;
-	case LogType::INFO:
-		OS::setTextCyan();
-		outputStream << "INFO:    ";
-		break;
-	case LogType::DEBUG:
-		OS::setTextMagenta();
-		outputStream << "DEBUG:   ";
-		break;
-	case LogType::TRACE:
-		OS::setTextBlue();
-		outputStream << "TRACE:   ";
-		break;
+		foldCount = static_cast<size_t>(-1);
+		outputStream << '\n';
 	}
 
-	if (type != LogType::NONE)
-		OS::setTextWhite();
-
-	if (type <= printNameLevel)
+	if (foldCount == static_cast<size_t>(-1))
 	{
-		if (typeName.size())
+		for (uint8_t i = 0; i < contexts; ++i)
+			outputStream << "  ";
+		suffixSize += contexts * 2;
+
+		switch (type)
 		{
-			outputStream << '[' << typeName;
-			if (type <= printAddressLevel)
+		case LogType::ERROR:
+			OS::setTextRed();
+			outputStream << "ERROR:   ";
+			break;
+		case LogType::WARN:
+			OS::setTextDarkYellow();
+			outputStream << "WARN:    ";
+			break;
+		case LogType::SUCCESS:
+			OS::setTextGreen();
+			outputStream << "SUCCESS: ";
+			break;
+		case LogType::INFO:
+			OS::setTextCyan();
+			outputStream << "INFO:    ";
+			break;
+		case LogType::DEBUG:
+			OS::setTextMagenta();
+			outputStream << "DEBUG:   ";
+			break;
+		case LogType::TRACE:
+			OS::setTextBlue();
+			outputStream << "TRACE:   ";
+			break;
+		}
+		suffixSize += 10;
+
+
+		if (type != LogType::NONE)
+			OS::setTextWhite();
+
+		if (type <= printNameLevel)
+		{
+			if (typeName.size())
 			{
-				const auto addr = getAddress();
-				if (addr.size())
-					outputStream << " <" << addr << '>';
+				outputStream << '[' << typeName;
+				if (type <= printAddressLevel)
+				{
+					if (const auto addr = getAddress(); addr.size())
+					{
+						outputStream << " <" << addr << '>';
+						suffixSize += addr.size() + 3;
+					}
+				}
+				outputStream << "]   ";
+				suffixSize += typeName.size() + 5;
 			}
-			outputStream << "]   ";
 		}
 	}
 
-	outputStream << msg << '\n';
+	if (msg.starts_with('\r')) // folded log
+	{
+		// don't backspace on the first folded log
+		if (foldCount != static_cast<size_t>(-1))
+		{
+			for (size_t i = 0; i < foldCount; ++i)
+				outputStream << '\b';
+		}
+
+		outputStream << msg.substr(1);
+		foldCount = msg.size() - 1;
+	}
+	else // normal log
+	{
+		const auto splitMsg = Utils::split(msg, '\n', false);
+		outputStream << splitMsg.front() << '\n';
+		for (size_t i = 1; i < splitMsg.size(); ++i)
+		{
+			for (uint8_t i = 0; i < suffixSize; ++i)
+				outputStream << ' ';
+			outputStream << splitMsg[i] << '\n';
+		}
+	}
 
 	return *this;
 }
@@ -198,6 +240,7 @@ void Log<SourceT>::fatalExit(const std::string& msg) const
 	OS::setTextDarkRed();
 	outputStream << "\n   The execution was halted due to a fatal error!\n   Press ENTER to exit.\n";
 	OS::setTextWhite();
+	throw;
 	getchar();
 	std::exit(EXIT_FAILURE);
 }

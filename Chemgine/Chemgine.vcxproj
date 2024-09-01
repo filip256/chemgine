@@ -203,12 +203,14 @@
     <ClCompile Include="CondenserData.cpp" />
     <ClCompile Include="ContentInitializer.cpp" />
     <ClCompile Include="CursorHelper.cpp" />
+    <ClCompile Include="DefFileAnalyzer.cpp" />
     <ClCompile Include="DefFileParser.cpp" />
     <ClCompile Include="DefinitionLocation.cpp" />
     <ClCompile Include="DefinitionObject.cpp" />
     <ClCompile Include="DragNDropHelper.cpp" />
     <ClCompile Include="DynamicAmount.cpp" />
     <ClCompile Include="EstimatorSpecifier.cpp" />
+    <ClCompile Include="FileStore.cpp" />
     <ClCompile Include="OOLSplineEstimator.cpp" />
     <ClCompile Include="EquipmentComponent.cpp" />
     <ClCompile Include="EstimatorRepository.cpp" />
@@ -300,6 +302,7 @@
     <ClInclude Include="ContainerComponent.hpp" />
     <ClInclude Include="BaseContainerLabwareData.hpp" />
     <ClInclude Include="CursorHelper.hpp" />
+    <ClInclude Include="DefFileAnalyzer.hpp" />
     <ClInclude Include="DefFileParser.hpp" />
     <ClInclude Include="DefinitionLocation.hpp" />
     <ClInclude Include="DefinitionObject.hpp" />
@@ -307,6 +310,7 @@
     <ClInclude Include="DragNDropHelper.hpp" />
     <ClInclude Include="DynamicAmount.hpp" />
     <ClInclude Include="EstimatorSpecifier.hpp" />
+    <ClInclude Include="FileStore.hpp" />
     <ClInclude Include="OOLSplineEstimator.hpp" />
     <ClInclude Include="EquipmentComponent.hpp" />
     <ClInclude Include="EstimatorRepository.hpp" />

@@ -5,7 +5,7 @@
 #include <fstream>
 #include <optional>
 
-class DataStore;
+class FileStore;
 
 class DefFileParser
 {
@@ -16,22 +16,27 @@ private:
 	std::unique_ptr<DefFileParser> subParser = nullptr;
 	std::unordered_map<std::string, std::string> includeAliases;
 
-	DataStore& dataStore;
+	FileStore& fileStore;
 
 	void include(const std::string& filePath);
 	
 public:
 	DefFileParser(
 		const std::string& filePath,
-		DataStore& dataStore
+		FileStore& fileStore
 	) noexcept;
+	DefFileParser(const DefFileParser&) = delete;
 	DefFileParser(DefFileParser&&) = default;
 	~DefFileParser() noexcept;
 
 	bool isOpen() const;
 
+	DefinitionLocation getCurrentLocalLocation() const;
+	DefinitionLocation getCurrentGlobalLocation() const;
+
 	void forceFinish();
-	std::string nextLine();
+	std::string nextLocalLine();
+	std::string nextGlobalLine();
 	std::pair<std::string, DefinitionLocation> nextDefinitionLine();
 	std::optional<DefinitionObject> nextDefinition();
 };
