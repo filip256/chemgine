@@ -10,7 +10,9 @@
 #include <thread>
 
 
-DataStore::DataStore() : 
+DataStore::DataStore() :
+	fileStore(),
+	oolDefinitions(),
 	atoms(),
 	genericMolecules(),
 	estimators(),
@@ -33,7 +35,7 @@ DataStore& DataStore::load(const std::string& path)
 	}
 	
 	size_t definitionCount = analysis.preparsedDefinitionCount;
-	DefFileParser parser(normPath, fileStore);
+	DefFileParser parser(normPath, fileStore, oolDefinitions);
 	while (true)
 	{
 		if (analysis.failed == false)
@@ -52,8 +54,13 @@ DataStore& DataStore::load(const std::string& path)
 		bool success = false;
 		switch (entry->type)
 		{
-		case DefinitionType::SPLINE:
-			success = estimators.addOOLDefinition(std::move(*entry));
+		case DefinitionType::AUTO:
+			Log(this).error("Cannot infer type of out-of-line definition, at: {0}.", entry->getLocationName());
+			success = false;
+			break;
+
+		case DefinitionType::DATA:
+			success = oolDefinitions.add(std::move(*entry));
 			break;
 
 		case DefinitionType::ATOM:

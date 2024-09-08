@@ -1,8 +1,10 @@
 #include "MoleculeRepository.hpp"
-#include "DataHelpers.hpp"
+#include "Parsers.hpp"
+#include "DefinitionParsers.hpp"
 #include "OffsetEstimator.hpp"
 #include "ScaleEstimator.hpp"
 #include "SplineEstimator.hpp"
+#include "TypedEstimator.hpp"
 #include "Keywords.hpp"
 #include "Log.hpp"
 
@@ -12,52 +14,56 @@ MoleculeRepository::MoleculeRepository(EstimatorRepository& estimators) noexcept
 	estimators(estimators)
 {}
 
-
 bool MoleculeRepository::add(DefinitionObject&& definition)
 {
-	auto structure = DataHelpers::parse<MolecularStructure>(definition.getSpecifier());
+	auto structure = Def::parse<MolecularStructure>(definition.getSpecifier());
 	if (structure.has_value() == false)
 	{
 		Log(this).error("Invalid SMILES specifier: '{0}', as: {1}.", definition.getSpecifier(), definition.getLocationName());
 		return false;
 	}
 
-	const auto id = definition.pullProperty("id", DataHelpers::parseId<MoleculeId>);
+	const auto id = definition.pullProperty("id", Def::parseId<MoleculeId>);
 	const auto name = definition.pullDefaultProperty(Keywords::Molecules::Name, "?");
 
 	if (id.has_value() == false)
 		return false;
 
 	const auto mp = definition.pullDefaultProperty(Keywords::Molecules::MeltingPoint, 0.0,
-		DataHelpers::parse<double>);
+		Def::parse<double>);
 	const auto bp = definition.pullDefaultProperty(Keywords::Molecules::BoilingPoint, 100.0,
-		DataHelpers::parse<double>);
+		Def::parse<double>);
 	const auto sd = definition.pullDefaultProperty(Keywords::Molecules::SolidDensity, Spline<float>({ {0, 1.0} }),
-		DataHelpers::parse<Spline<float>>);
+		Def::parse<Spline<float>>);
 	const auto ld = definition.pullDefaultProperty(Keywords::Molecules::LiquidDensity, Spline<float>({ {0, 1.0} }),
-		DataHelpers::parse<Spline<float>>);
+		Def::parse<Spline<float>>);
 	const auto shc = definition.pullDefaultProperty(Keywords::Molecules::SolidHeatCapacity, Spline<float>({ {36.0, 760.0} }),
-		DataHelpers::parse<Spline<float>>);
+		Def::parse<Spline<float>>);
 	const auto lhc = definition.pullDefaultProperty(Keywords::Molecules::LiquidHeatCapacity, Spline<float>({ {75.4840232, 760.0} }),
-		DataHelpers::parse<Spline<float>>);
+		Def::parse<Spline<float>>);
 	const auto flh = definition.pullDefaultProperty(Keywords::Molecules::FusionLatentHeat, 6020.0,
-		DataHelpers::parse<double>);
+		Def::parse<double>);
 	const auto vlh = definition.pullDefaultProperty(Keywords::Molecules::VaporizationLatentHeat, 40700.0,
-		DataHelpers::parse<double>);
+		Def::parse<double>);
 	const auto slh = definition.pullDefaultProperty(Keywords::Molecules::SublimationLatentHeat, std::numeric_limits<double>::max(),
-		DataHelpers::parse<double>);
+		Def::parse<double>);
 	const auto hp = definition.pullDefaultProperty(Keywords::Molecules::Hydrophilicity, 1.0,
-		DataHelpers::parse<double>);
+		Def::parse<double>);
 	const auto lp = definition.pullDefaultProperty(Keywords::Molecules::Lipophilicity, 0.0,
-		DataHelpers::parse<double>);
+		Def::parse<double>);
 	const auto invSol = definition.pullDefaultProperty(Keywords::Molecules::InverseSolubility, false,
-		DataHelpers::parse<bool>);
+		Def::parse<bool>);
 	const auto sol = definition.pullOptionalProperty(Keywords::Molecules::Solubility,
-		DataHelpers::parse<Spline<float>>);
+		Def::parse<Spline<float>>);
 	const auto henry = definition.pullDefaultProperty(Keywords::Molecules::HenryConstant, Spline<float>({ {1000.0, 760.0} }),
-		DataHelpers::parse<Spline<float>>);
+		Def::parse<Spline<float>>);
 	const auto col = definition.pullDefaultProperty(Keywords::Molecules::Color, Color(0, 255, 255, 100),
-		DataHelpers::parse<Color>);
+		Def::parse<Color>);
+
+	const auto subDef = definition.getOptionalDefinition("subdef",
+		Def::parse<TypedEstimator<Unit::LITER, Unit::GRAM>*>);
+	const auto subDef1 = definition.getOptionalDefinition("subdefr",
+		Def::parse<TypedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>*>);
 
 	const auto& mpA = estimators.add<OffsetEstimator>(estimators.at(toId(BuiltinEstimator::TORR_TO_REL_BP)), mp);
 	const auto& bpA = estimators.add<OffsetEstimator>(estimators.at(toId(BuiltinEstimator::TORR_TO_REL_BP)), bp);

@@ -15,13 +15,15 @@ public:
 		const std::string& file,
 		const size_t line
 	) noexcept;
-	DefinitionLocation(const DefinitionLocation&) = delete;
+	DefinitionLocation(const DefinitionLocation&) = default;
 	DefinitionLocation(DefinitionLocation&&) = default;
 
 	DefinitionLocation& operator=(DefinitionLocation&&) = default;
 
 	const std::string& getFile() const;
 	size_t getLine() const;
+
+	bool isEOF() const;
 
 	std::string toString() const;
 

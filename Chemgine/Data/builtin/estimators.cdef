@@ -2,6 +2,6 @@
     Built-in Estimator Definitions
 .:
 
-_spline<ld_0>: g -> L {
-    values: {0.0_mg@1.0, 1.0@3.0_drops},
+_data<ld_0>: g -> L {
+    values: {1.0_mg : 1.0_L, 2.0_mg : 3.0_drops},
 };

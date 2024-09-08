@@ -237,7 +237,7 @@ inline std::string Amount<Unit::MOLE_PER_SECOND>::unitSymbol() noexcept { return
 template<>
 inline std::string Amount<Unit::GRAM_PER_MOLE>::unitSymbol() noexcept { return Amount<Unit::GRAM>::unitSymbol() + "/" + Amount<Unit::MOLE>::unitSymbol(); }
 template<>
-inline std::string Amount<Unit::GRAM_PER_MILLILITER>::unitSymbol() noexcept { return Amount<Unit::GRAM>::unitSymbol() + "/milli" + Amount<Unit::LITER>::unitSymbol(); }
+inline std::string Amount<Unit::GRAM_PER_MILLILITER>::unitSymbol() noexcept { return Amount<Unit::GRAM>::unitSymbol() + "/m" + Amount<Unit::LITER>::unitSymbol(); }
 template<>
 inline std::string Amount<Unit::JOULE_PER_MOLE>::unitSymbol() noexcept { return Amount<Unit::JOULE>::unitSymbol() + "/" + Amount<Unit::MOLE>::unitSymbol(); }
 template<>

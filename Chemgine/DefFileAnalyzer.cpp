@@ -8,7 +8,7 @@ DefFileAnalyzer::DefFileAnalyzer(
 	FileStore& mainFileStore
 ) noexcept:
 	mainFileStore(mainFileStore),
-	parser(DefFileParser(filePath, fileStore))
+	parser(DefFileParser(filePath, fileStore, {}))
 {}
 
 AnalysisResult DefFileAnalyzer::analyze()
@@ -30,7 +30,7 @@ AnalysisResult DefFileAnalyzer::analyze()
 		if (line.starts_with('_'))
 		{
 			++result.totalDefinitionCount;
-			if (mainFileStore.getFileStatus(location.getFile()) == ParseStatus::PARSED)
+			if (mainFileStore.getFileStatus(location.getFile()) == ParseStatus::COMPLETED)
 				++result.preparsedDefinitionCount;
 		}
 	}
@@ -38,7 +38,7 @@ AnalysisResult DefFileAnalyzer::analyze()
 	const auto& fileHistory = fileStore.getHistory();
 	result.totalFileCount = fileHistory.size();
 	for (const auto& f : fileHistory)
-		if (mainFileStore.getFileStatus(f.first) == ParseStatus::PARSED)
+		if (mainFileStore.getFileStatus(f.first) == ParseStatus::COMPLETED)
 			++result.preparsedFileCount;
 
 	result.failed = false;

@@ -207,12 +207,10 @@ const Log<SourceT>& Log<SourceT>::log(const std::string& msg, const LogType type
 	{
 		const auto splitMsg = Utils::split(msg, '\n', false);
 		outputStream << splitMsg.front() << '\n';
+
+		const std::string suffixSpace(suffixSize, ' ');
 		for (size_t i = 1; i < splitMsg.size(); ++i)
-		{
-			for (uint8_t i = 0; i < suffixSize; ++i)
-				outputStream << ' ';
-			outputStream << splitMsg[i] << '\n';
-		}
+			outputStream << suffixSpace << splitMsg[i] << '\n';
 	}
 
 	return *this;

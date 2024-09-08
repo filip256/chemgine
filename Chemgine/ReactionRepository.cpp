@@ -1,5 +1,5 @@
 #include "ReactionRepository.hpp"
-#include "DataHelpers.hpp"
+#include "ReactionSpecifier.hpp"
 #include "Molecule.hpp"
 #include "Keywords.hpp"
 #include "Log.hpp"
@@ -12,14 +12,14 @@ ReactionRepository::ReactionRepository(MoleculeRepository& molecules) noexcept :
 
 bool ReactionRepository::add(DefinitionObject&& definition)
 {
-	const auto id = definition.pullProperty("id", DataHelpers::parseId<ReactionId>);
-	if (id.has_value() == false)
+	const auto id = definition.pullProperty("id", Def::parseId<ReactionId>);
+	if (not id.has_value())
 		return false;
 
 	const auto name = definition.pullDefaultProperty("name", "?");
 
-	const auto spec = DataHelpers::parse<ReactionSpecifier>(definition.getSpecifier());
-	if (spec.has_value() == false)
+	const auto spec = Def::parse<ReactionSpecifier>(definition.getSpecifier());
+	if (not spec.has_value())
 	{
 		Log(this).error("Invalid reaction specifier: '{0}', at: {1}.", definition.getSpecifier(), definition.getLocationName());
 		return false;
@@ -31,7 +31,7 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 	for (size_t i = 0; i < spec->reactants.size(); ++i)
 	{
 		const auto r = Reactable::get(spec->reactants[i]);
-		if (r.has_value() == false)
+		if (not r.has_value())
 		{
 			Log(this).error("Malformed reactant: '{0}' in reaction with id: {1}, at: {2}.", spec->reactants[i], *id, definition.getLocationName());
 			return false;
@@ -45,7 +45,7 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 	for (size_t i = 0; i < spec->products.size(); ++i)
 	{
 		const auto p = Reactable::get(spec->products[i]);
-		if (p.has_value() == false)
+		if (not p.has_value())
 		{
 			Log(this).error("Malformed product: '{0}' in reaction with id: {1}, at: {2}.", spec->products[i], *id, definition.getLocationName());
 			return false;
@@ -61,37 +61,22 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 
 	const auto speed = definition.pullDefaultProperty(Keywords::Reactions::Speed,
 		std::pair<Amount<Unit::MOLE_PER_SECOND>, Amount<Unit::CELSIUS>>(1.0, 20.0_C),
-		DataHelpers::parsePair<Unit::MOLE_PER_SECOND, Unit::CELSIUS>, '@');
+		Def::parse<std::pair<Amount<Unit::MOLE_PER_SECOND>, Amount<Unit::CELSIUS>>>);
 	const auto energy = definition.pullDefaultProperty(Keywords::Reactions::Energy, Amount<Unit::JOULE_PER_MOLE>(0.0),
-		DataHelpers::parse<Unit::JOULE_PER_MOLE>);
+		Def::parse<Amount<Unit::JOULE_PER_MOLE>>);
 	const auto activation = definition.pullDefaultProperty(Keywords::Reactions::Activation, Amount<Unit::JOULE_PER_MOLE>(0.0),
-		DataHelpers::parse<Unit::JOULE_PER_MOLE>);
+		Def::parse<Amount<Unit::JOULE_PER_MOLE>>);
 
 	// catalysts
 	const auto catStr = definition.pullDefaultProperty(Keywords::Reactions::Catalysts, std::vector<std::string>(),
-		DataHelpers::parseList<std::string>, ',', true);
+		Def::parse<std::vector<std::string>>);
 
 	std::vector<Catalyst> catalysts;
 	catalysts.reserve(catStr.size());
 	for (size_t i = 0; i < catStr.size(); ++i)
 	{
-		// TODO: this should be parsed somewhere else (like CatalystSpecifier?)
-		const auto pair = Utils::split(catStr[i], '@', true);
-		if (pair.size() != 2)
-		{
-			Log(this).error("Malformed catalyst for reaction with id: '{0}', at: {1}.", *id, definition.getLocationName());
-			return false;
-		}
-
-		const auto amount = DataHelpers::parseUnsigned<Unit::MOLE_RATIO>(pair.back());
-		if (amount.has_value() == false)
-		{
-			Log(this).error("Malformed catalyst: '{0}' in reaction with id: '{1}', at: {2}.", catStr[i], *id, definition.getLocationName());
-			return false;
-		}
-
-		const auto c = Catalyst::get(pair.front(), *amount);
-		if (c.has_value() == false)
+		const auto c = Def::parse<Catalyst>(catStr[i]);
+		if (not c.has_value())
 		{
 			Log(this).error("Malformed catalyst: '{0}' in reaction with id: '{1}', at: {2}.", catStr[i], *id, definition.getLocationName());
 			return false;

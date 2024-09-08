@@ -10,7 +10,7 @@
 #include "Condenser.hpp"
 #include "PropertyPane.hpp"
 #include "Vapour.hpp"
-#include "DataHelpers.hpp"
+#include "Parsers.hpp"
 #include "DragNDropHelper.hpp"
 #include "CursorHelper.hpp"
 
@@ -201,7 +201,7 @@ public:
                     if (event.key.code == sf::Keyboard::Key::I)
                     {
                         const auto input = Input::get("Input Molecule   [SMILES]_[moles]");
-                        const auto temp = DataHelpers::parsePair<Molecule, Unit::MOLE>(input, '_');
+                        const auto temp = Def::parse<std::pair<Molecule, Amount<Unit::MOLE>>>(input, '_');
 
                         if (temp.has_value() == false)
                         {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Amount.hpp"
+#include "Parsers.hpp"
 
 #include <optional>
 
@@ -247,3 +248,66 @@ static std::optional<Amount<UnitT>> DynamicAmount::get(const StorageType value, 
 		std::optional(temp->to<UnitT>()) :
 		std::nullopt;
 }
+
+
+//    --- Def ---    //
+
+template <>
+class Def::Parser<Unit>
+{
+public:
+	static std::optional<Unit> parse(const std::string& str)
+	{
+		return DynamicAmount::getUnitFromSymbol(Utils::strip(str));
+	}
+};
+
+
+template <Unit U>
+class Def::Parser<Amount<U>>
+{
+public:
+	static std::optional<Amount<U>> parse(const std::string& str)
+	{
+		const auto pair = Utils::split(Utils::strip(str), '_', true);
+		if (pair.empty())
+			return std::nullopt;
+
+		const auto val = Def::parse<Amount<>::StorageType>(pair.front());
+		if (val.has_value() == false)
+			return std::nullopt;
+
+		if (pair.size() == 1)
+			return Amount<U>(*val);
+
+		if (pair.size() == 2)
+			return DynamicAmount::get<U>(*val, pair.back());
+
+		return std::nullopt;
+	}
+};
+
+
+template <>
+class Def::Parser<DynamicAmount>
+{
+public:
+	static std::optional<DynamicAmount> parse(const std::string& str)
+	{
+		const auto pair = Utils::split(str, '_', true);
+		if (pair.empty())
+			return std::nullopt;
+
+		const auto val = Def::parse<Amount<>::StorageType>(pair.front());
+		if (val.has_value() == false)
+			return std::nullopt;
+
+		if (pair.size() == 1)
+			return DynamicAmount(*val, Unit::ANY);
+
+		if (pair.size() == 2)
+			return DynamicAmount::get(*val, pair.back());
+
+		return std::nullopt;
+	}
+};

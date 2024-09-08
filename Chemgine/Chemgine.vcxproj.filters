@@ -207,9 +207,6 @@
     <ClCompile Include="Constants.cpp">
       <Filter>Source Files\Data</Filter>
     </ClCompile>
-    <ClCompile Include="LabwareDataFactory.cpp">
-      <Filter>Source Files\Labware</Filter>
-    </ClCompile>
     <ClCompile Include="LabwareRepository.cpp">
       <Filter>Source Files\Labware</Filter>
     </ClCompile>
@@ -474,9 +471,6 @@
     <ClCompile Include="DefinitionObject.cpp">
       <Filter>Source Files\Data\Parsers</Filter>
     </ClCompile>
-    <ClCompile Include="OOLSplineEstimator.cpp">
-      <Filter>Source Files\Estimators</Filter>
-    </ClCompile>
     <ClCompile Include="EstimatorSpecifier.cpp">
       <Filter>Source Files\Estimators</Filter>
     </ClCompile>
@@ -485,6 +479,9 @@
     </ClCompile>
     <ClCompile Include="DefFileAnalyzer.cpp">
       <Filter>Source Files\Data\Parsers</Filter>
+    </ClCompile>
+    <ClCompile Include="OOLDefRepository.cpp">
+      <Filter>Source Files\Data</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -564,9 +561,6 @@
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="LabwareType.hpp">
-      <Filter>Header Files\Labware</Filter>
-    </ClInclude>
-    <ClInclude Include="LabwareDataFactory.hpp">
       <Filter>Header Files\Labware</Filter>
     </ClInclude>
     <ClInclude Include="LabwareRepository.hpp">
@@ -893,14 +887,11 @@
     <ClInclude Include="DefinitionObject.hpp">
       <Filter>Header Files\Data\Parsers</Filter>
     </ClInclude>
-    <ClInclude Include="DataHelpers.hpp">
+    <ClInclude Include="Parsers.hpp">
       <Filter>Header Files\Data\Parsers</Filter>
     </ClInclude>
     <ClInclude Include="Keywords.hpp">
       <Filter>Header Files\Data\Parsers</Filter>
-    </ClInclude>
-    <ClInclude Include="OOLSplineEstimator.hpp">
-      <Filter>Header Files\Estimators</Filter>
     </ClInclude>
     <ClInclude Include="EstimatorSpecifier.hpp">
       <Filter>Header Files\Estimators</Filter>
@@ -909,6 +900,18 @@
       <Filter>Header Files\Data</Filter>
     </ClInclude>
     <ClInclude Include="DefFileAnalyzer.hpp">
+      <Filter>Header Files\Data\Parsers</Filter>
+    </ClInclude>
+    <ClInclude Include="TypedEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="OOLDefRepository.hpp">
+      <Filter>Header Files\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="DataPoint.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="DefinitionParsers.hpp">
       <Filter>Header Files\Data\Parsers</Filter>
     </ClInclude>
   </ItemGroup>

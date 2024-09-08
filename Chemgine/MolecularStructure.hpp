@@ -1,14 +1,15 @@
 #pragma once
 
+#include "Bond.hpp"
+#include "Atom.hpp"
+#include "Parsers.hpp"
+
 #include <vector>
 #include <string>
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
 #include <stack>
-
-#include "Bond.hpp"
-#include "Atom.hpp"
 
 class TextBlock;
 
@@ -289,4 +290,18 @@ public:
 
     std::string serialize() const;
     bool deserialize(const std::string& str);
+};
+
+
+template <>
+class Def::Parser<MolecularStructure>
+{
+public:
+    static std::optional<MolecularStructure> parse(const std::string& str)
+    {
+        MolecularStructure molecule(str);
+        return molecule.isEmpty() ?
+            std::nullopt :
+            std::optional(std::move(molecule));
+    }
 };

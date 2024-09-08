@@ -1,5 +1,5 @@
 #include "AtomRepository.hpp"
-#include "DataHelpers.hpp"
+#include "Parsers.hpp"
 #include "Keywords.hpp"
 #include "Log.hpp"
 #include "Utils.hpp"
@@ -20,17 +20,17 @@ bool AtomRepository::add(const AtomData* data)
 template <>
 bool AtomRepository::add<AtomData>(DefinitionObject&& definition)
 {
-	const auto symbol = DataHelpers::parse<Symbol>(definition.getSpecifier());
+	const auto symbol = Def::parse<Symbol>(definition.getSpecifier());
 	if (symbol.has_value() == false)
 	{
 		Log(this).error("Invalid atom symbol: '{0}' at: {1}.", definition.getSpecifier(), definition.getLocationName());
 		return false;
 	}
 
-	const auto id = definition.pullProperty("id", DataHelpers::parseId<AtomId>);
+	const auto id = definition.pullProperty("id", Def::parseId<AtomId>);
 	const auto name = definition.pullProperty(Keywords::Atoms::Name);
-	const auto weight = definition.pullProperty(Keywords::Atoms::Weight, DataHelpers::parseUnsigned<double>);
-	auto valences = definition.pullProperty(Keywords::Atoms::Valences, DataHelpers::parseList<uint8_t>, ',', true);
+	const auto weight = definition.pullProperty(Keywords::Atoms::Weight, Def::parseUnsigned<double>);
+	auto valences = definition.pullProperty(Keywords::Atoms::Valences, Def::parse<std::vector<uint8_t>>);
 
 	if (id.has_value() == false || name.has_value() == false ||
 		weight.has_value() == false || valences.has_value() == false)
@@ -55,16 +55,16 @@ bool AtomRepository::add<AtomData>(DefinitionObject&& definition)
 template <>
 bool AtomRepository::add<RadicalData>(DefinitionObject&& definition)
 {
-	const auto symbol = DataHelpers::parse<Symbol>(definition.getSpecifier());
+	const auto symbol = Def::parse<Symbol>(definition.getSpecifier());
 	if (symbol.has_value() == false)
 	{
 		Log(this).error("Invalid radical symbol: '{0}' at: {1}.", definition.getSpecifier(), definition.getLocationName());
 		return false;
 	}
 
-	const auto id = definition.pullProperty("id", DataHelpers::parseId<AtomId>);
+	const auto id = definition.pullProperty("id", Def::parseId<AtomId>);
 	const auto name = definition.pullDefaultProperty(Keywords::Atoms::Name, symbol->getAsString());
-	const auto matches = definition.pullProperty(Keywords::Atoms::RadicalMatches, DataHelpers::parseList<Symbol>, ',', true);
+	const auto matches = definition.pullProperty(Keywords::Atoms::RadicalMatches, Def::parse<std::vector<Symbol>>);
 
 	if (id.has_value() == false || matches.has_value() == false)
 	{

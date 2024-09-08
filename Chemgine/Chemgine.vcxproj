@@ -211,7 +211,7 @@
     <ClCompile Include="DynamicAmount.cpp" />
     <ClCompile Include="EstimatorSpecifier.cpp" />
     <ClCompile Include="FileStore.cpp" />
-    <ClCompile Include="OOLSplineEstimator.cpp" />
+    <ClCompile Include="OOLDefRepository.cpp" />
     <ClCompile Include="EquipmentComponent.cpp" />
     <ClCompile Include="EstimatorRepository.cpp" />
     <ClCompile Include="Atom.cpp" />
@@ -238,7 +238,6 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Lab.cpp" />
     <ClCompile Include="LabwareConnection.cpp" />
-    <ClCompile Include="LabwareDataFactory.cpp" />
     <ClCompile Include="LabwareRepository.cpp" />
     <ClCompile Include="LabwarePort.cpp" />
     <ClCompile Include="LabwareSystem.cpp" />
@@ -302,16 +301,18 @@
     <ClInclude Include="ContainerComponent.hpp" />
     <ClInclude Include="BaseContainerLabwareData.hpp" />
     <ClInclude Include="CursorHelper.hpp" />
+    <ClInclude Include="DataPoint.hpp" />
     <ClInclude Include="DefFileAnalyzer.hpp" />
     <ClInclude Include="DefFileParser.hpp" />
     <ClInclude Include="DefinitionLocation.hpp" />
     <ClInclude Include="DefinitionObject.hpp" />
+    <ClInclude Include="DefinitionParsers.hpp" />
     <ClInclude Include="DirectedGraph.hpp" />
     <ClInclude Include="DragNDropHelper.hpp" />
     <ClInclude Include="DynamicAmount.hpp" />
     <ClInclude Include="EstimatorSpecifier.hpp" />
     <ClInclude Include="FileStore.hpp" />
-    <ClInclude Include="OOLSplineEstimator.hpp" />
+    <ClInclude Include="OOLDefRepository.hpp" />
     <ClInclude Include="EquipmentComponent.hpp" />
     <ClInclude Include="EstimatorRepository.hpp" />
     <ClInclude Include="EstimatorType.hpp" />
@@ -358,7 +359,6 @@
     <ClInclude Include="Keywords.hpp" />
     <ClInclude Include="Lab.hpp" />
     <ClInclude Include="LabwareConnection.hpp" />
-    <ClInclude Include="LabwareDataFactory.hpp" />
     <ClInclude Include="LabwareRepository.hpp" />
     <ClInclude Include="LabwarePort.hpp" />
     <ClInclude Include="LabwareSystem.hpp" />
@@ -406,6 +406,7 @@
     <ClInclude Include="DumpContainer.hpp" />
     <ClInclude Include="TerminalUtils.hpp" />
     <ClInclude Include="TextBlock.hpp" />
+    <ClInclude Include="TypedEstimator.hpp" />
     <ClInclude Include="UIContext.hpp" />
     <ClInclude Include="UndirectedGraph.hpp" />
     <ClInclude Include="Unit.hpp" />
@@ -436,7 +437,7 @@
     <ClInclude Include="Bond.hpp" />
     <ClInclude Include="BondType.hpp" />
     <ClInclude Include="Accessor.hpp" />
-    <ClInclude Include="DataHelpers.hpp" />
+    <ClInclude Include="Parsers.hpp" />
     <ClInclude Include="DataStore.hpp" />
     <ClInclude Include="Repository.hpp" />
     <ClInclude Include="Log.hpp" />

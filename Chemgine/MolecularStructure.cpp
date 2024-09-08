@@ -3,7 +3,7 @@
 #include <queue>
 
 #include "MolecularStructure.hpp"
-#include "DataHelpers.hpp"
+#include "Parsers.hpp"
 #include "AtomFactory.hpp"
 #include "TextBlock.hpp"
 #include "Log.hpp"
@@ -1283,7 +1283,7 @@ bool MolecularStructure::deserialize(const std::string& str)
     auto comps = Utils::split(tokens[0], ';');
     for (c_size i = 0; i < comps.size(); ++i)
     {
-        const auto id = DataHelpers::parse<unsigned int>(comps[i]);
+        const auto id = Def::parse<unsigned int>(comps[i]);
         if (id.has_value() == false || Atom::isDefined(static_cast<AtomId>(*id)) == false)
         {
             clear();
@@ -1307,7 +1307,7 @@ bool MolecularStructure::deserialize(const std::string& str)
 
             if (std::isdigit(comps[j][0]))
             {
-                const auto id = DataHelpers::parse<unsigned int>(comps[j]);
+                const auto id = Def::parse<unsigned int>(comps[j]);
                 if (id.has_value() == false)
                 {
                     clear();
@@ -1325,7 +1325,7 @@ bool MolecularStructure::deserialize(const std::string& str)
                     return false;
                 }
 
-                const auto id = DataHelpers::parse<unsigned int>(comps[j].substr(1));
+                const auto id = Def::parse<unsigned int>(comps[j].substr(1));
                 if (id.has_value() == false)
                 {
                     clear();

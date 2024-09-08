@@ -6,12 +6,15 @@
 #include "ReactionRepository.hpp"
 #include "LabwareRepository.hpp"
 #include "EstimatorRepository.hpp"
+#include "OOLDefRepository.hpp"
 #include "FileStore.hpp"
 
 class DataStore
 {
 public:
 	FileStore fileStore;
+
+	OOLDefRepository oolDefinitions;
 
 	AtomRepository atoms;
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Parsers.hpp"
+
 #include <string>
 
 class Symbol
@@ -38,5 +40,20 @@ struct std::hash<Symbol>
 	size_t operator()(const Symbol s) const noexcept
 	{
 		return (static_cast<size_t>(s.symbol[1]) << 8) | static_cast<size_t>(s.symbol[0]);
+	}
+};
+
+
+template <>
+class Def::Parser<Symbol>
+{
+public:
+	static std::optional<Symbol> parse(const std::string& str)
+	{
+		const auto stripped = Utils::strip(str);
+		if (stripped.size() != 1 && stripped.size() != 2)
+			return std::nullopt;
+
+		return Symbol(stripped);
 	}
 };

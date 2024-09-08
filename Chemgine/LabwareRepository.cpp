@@ -1,6 +1,9 @@
 #include "LabwareRepository.hpp"
-#include "DataHelpers.hpp"
-#include "LabwareDataFactory.hpp"
+#include "Parsers.hpp"
+#include "FlaskData.hpp"
+#include "AdaptorData.hpp"
+#include "CondenserData.hpp"
+#include "HeatsourceData.hpp"
 #include "Keywords.hpp"
 #include "Log.hpp"
 
@@ -15,12 +18,12 @@ LabwareRepository::~LabwareRepository() noexcept
 template <>
 bool LabwareRepository::add<LabwareType::FLASK>(DefinitionObject&& definition)
 {
-	const auto id = definition.pullProperty("id", DataHelpers::parseId<LabwareId>);
+	const auto id = definition.pullProperty("id", Def::parseId<LabwareId>);
 	const auto name = definition.pullDefaultProperty(Keywords::Labware::Name, "?");
-	auto ports = definition.pullProperty(Keywords::Labware::Ports, DataHelpers::parseList<LabwarePort>, ',', true);
-	const auto volume = definition.pullProperty(Keywords::Labware::Volume, DataHelpers::parseUnsigned<Unit::LITER>);
+	auto ports = definition.pullProperty(Keywords::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
+	const auto volume = definition.pullProperty(Keywords::Labware::Volume, Def::parse<Amount<Unit::LITER>>);
 	const auto tx = definition.pullProperty(Keywords::Labware::Texture);
-	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, DataHelpers::parseUnsigned<float>);
+	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float>);
 
 	if (id.has_value() == false || volume.has_value() == false ||
 		ports.has_value() == false || tx.has_value() == false)
@@ -42,12 +45,12 @@ bool LabwareRepository::add<LabwareType::FLASK>(DefinitionObject&& definition)
 template <>
 bool LabwareRepository::add<LabwareType::ADAPTOR>(DefinitionObject&& definition)
 {
-	const auto id = definition.pullProperty("id", DataHelpers::parseId<LabwareId>);
+	const auto id = definition.pullProperty("id", Def::parseId<LabwareId>);
 	const auto name = definition.pullDefaultProperty(Keywords::Labware::Name, "?");
-	auto ports = definition.pullProperty(Keywords::Labware::Ports, DataHelpers::parseList<LabwarePort>, ',', true);
-	const auto volume = definition.pullProperty(Keywords::Labware::Volume, DataHelpers::parseUnsigned<Unit::LITER>);
+	auto ports = definition.pullProperty(Keywords::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
+	const auto volume = definition.pullProperty(Keywords::Labware::Volume, Def::parse<Amount<Unit::LITER>>);
 	const auto tx = definition.pullProperty(Keywords::Labware::Texture);
-	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, DataHelpers::parseUnsigned<float>);
+	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float>);
 
 	if (id.has_value() == false || volume.has_value() == false ||
 		ports.has_value() == false || tx.has_value() == false)
@@ -69,16 +72,16 @@ bool LabwareRepository::add<LabwareType::ADAPTOR>(DefinitionObject&& definition)
 template <>
 bool LabwareRepository::add<LabwareType::CONDENSER>(DefinitionObject&& definition)
 {
-	const auto id = definition.pullProperty("id", DataHelpers::parseId<LabwareId>);
+	const auto id = definition.pullProperty("id", Def::parseId<LabwareId>);
 	const auto name = definition.pullDefaultProperty(Keywords::Labware::Name, "?");
-	auto ports = definition.pullProperty(Keywords::Labware::Ports, DataHelpers::parseList<LabwarePort>, ',', true);
-	const auto volume = definition.pullProperty(Keywords::Labware::Volume, DataHelpers::parseUnsigned<Unit::LITER>);
-	const auto length = definition.pullProperty(Keywords::Labware::Length, DataHelpers::parseUnsigned<Unit::METER>);
-	const auto effic = definition.pullProperty(Keywords::Labware::Effic, DataHelpers::parseUnsigned<Unit::PER_METER>);
+	auto ports = definition.pullProperty(Keywords::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
+	const auto volume = definition.pullProperty(Keywords::Labware::Volume, Def::parse<Amount<Unit::LITER>>);
+	const auto length = definition.pullProperty(Keywords::Labware::Length, Def::parse<Amount<Unit::METER>>);
+	const auto effic = definition.pullProperty(Keywords::Labware::Effic, Def::parse<Amount<Unit::PER_METER>>);
 	const auto tx = definition.pullProperty(Keywords::Labware::Texture);
 	const auto inner = definition.pullProperty(Keywords::Labware::InnerMask);
 	const auto coolant = definition.pullProperty(Keywords::Labware::CoolantMask);
-	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, DataHelpers::parseUnsigned<float>);
+	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float>);
 
 	if (id.has_value() == false || volume.has_value() == false ||
 		length.has_value() == false || effic.has_value() == false ||
@@ -102,12 +105,12 @@ bool LabwareRepository::add<LabwareType::CONDENSER>(DefinitionObject&& definitio
 template <>
 bool LabwareRepository::add<LabwareType::HEATSOURCE>(DefinitionObject&& definition)
 {
-	const auto id = definition.pullProperty("id", DataHelpers::parseId<LabwareId>);
+	const auto id = definition.pullProperty("id", Def::parseId<LabwareId>);
 	const auto name = definition.pullDefaultProperty(Keywords::Labware::Name, "?");
-	auto ports = definition.pullProperty(Keywords::Labware::Ports, DataHelpers::parseList<LabwarePort>, ',', true);
-	const auto power = definition.pullProperty(Keywords::Labware::Power, DataHelpers::parseUnsigned<Unit::WATT>);
+	auto ports = definition.pullProperty(Keywords::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
+	const auto power = definition.pullProperty(Keywords::Labware::Power, Def::parse<Amount<Unit::WATT>>);
 	const auto tx = definition.pullProperty(Keywords::Labware::Texture);
-	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, DataHelpers::parseUnsigned<float>);
+	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float>);
 
 	if (id.has_value() == false || power.has_value() == false ||
 		ports.has_value() == false || tx.has_value() == false)

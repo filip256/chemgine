@@ -18,6 +18,11 @@ size_t DefinitionLocation::getLine() const
 	return line;
 }
 
+bool DefinitionLocation::isEOF() const
+{
+	return line == eofLine;
+}
+
 std::string DefinitionLocation::toString() const
 {
 	return file.size() ?

@@ -9,13 +9,13 @@ _mol: O {
 	name:            water,
 	melting_point:   0.0_C,
 	boiling_point:   100.0_C,
-	solid_density:   1.0_g/L@-1.0_C,
-	liquid_density:  0.9999017_g/L@1.0_C,
-	solid_hc:        36.0_J/mol@760.0_torr,
-	liquid_hc:       75.4840232_J/(mol*C)@760.0_torr,
+	solid_density:   1.0_g/L @ -1.0_C,
+	liquid_density:  0.9999017_g/L @ 1.0_C,
+	solid_hc:        36.0_J/mol @ 760.0_torr,
+	liquid_hc:       75.4840232_J/(mol*C) @ 760.0_torr,
 	fusion_lh:       6020_J/mol,
 	vaporization_lh: 40700_J/mol,
-	color:           {0:100:255:150},
+	color:           {0, 100, 255, 150},
 };
 
 _mol: OC {
@@ -30,7 +30,7 @@ _mol: CC(=O)O {
 	name:            acetic acid,
 	melting_point:   0.635_C,
 	boiling_point:   117.9_C,
-	color:           {0:100:200:100},
+	color:           {0, 100, 200, 100},
 };
 
 _mol: CC(=O)OC(=O)C {
@@ -38,7 +38,7 @@ _mol: CC(=O)OC(=O)C {
 	name:            acetic anhydride,
 	melting_point:   -73.4_C,
 	boiling_point:   139.5_C,
-	color:           {255:0:0:200},
+	color:           {255, 0, 0, 200},
 };
 
 _mol: CC(=O)OC {
@@ -67,7 +67,7 @@ _mol: O=O {
 	name:            oxygen,
 	melting_point:   -218.4_C,
 	boiling_point:   -182.96_C,
-	color:           {255:255:255:10},
+	color:           {255, 255, 255, 10},
 };
 
 _mol: N#N {
@@ -75,7 +75,7 @@ _mol: N#N {
 	name:            nitrogen,
 	melting_point:   -210.02_C,
 	boiling_point:   -195.79_C,
-	color:           {50:200:255:100},
+	color:           {50, 200, 255, 100},
 };
 
 _mol: CC(O)C {
@@ -83,5 +83,16 @@ _mol: CC(O)C {
 	name:            isopropanol,
 	melting_point:   -210.02_C,
 	boiling_point:   -195.79_C,
-	liquid_density:  $est@ld_0,
+	subdef:  $est@ld_0,
+};
+
+_mol: CC(=O)C {
+	id:              #511,
+	name:            acetone,
+	melting_point:   -210.02_C,
+	boiling_point:   -195.79_C,
+	subdefr:         _: C -> g/mL {
+		values: { 1.0_F : 10_mg/mL },
+		mode: LINEAR
+	},
 };

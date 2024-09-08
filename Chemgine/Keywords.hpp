@@ -12,8 +12,8 @@ namespace Keywords
 
 	namespace Types
 	{
-		const std::string Spline = "spline";
-		const std::string Function = "func";
+		const std::string Auto = "";
+		const std::string Data = "data";
 		const std::string Atom = "atom";
 		const std::string Radical = "radical";
 		const std::string Molecule = "mol";
@@ -21,7 +21,7 @@ namespace Keywords
 		const std::string Labware = "lab";
 	}
 
-	namespace Splines
+	namespace Data
 	{
 		const std::string Values = "values";
 	}

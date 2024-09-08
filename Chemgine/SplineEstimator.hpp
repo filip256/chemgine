@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BaseEstimator.hpp"
+#include "TypedEstimator.hpp"
 #include "Spline.hpp"
 
 class SplineEstimator : public BaseEstimator
@@ -26,4 +26,38 @@ public:
 	) const override final;
 
 	SplineEstimator* clone() const override final;
+};
+
+template<Unit OutU, Unit... InUs>
+class TypedSplineEstimator : public TypedEstimator<OutU, InUs...>
+{
+private:
+	const Spline<float> spline;
+
+public:
+	TypedSplineEstimator(
+		const EstimatorId id,
+		Spline<float>&& spline
+	) noexcept :
+		BaseEstimator(id),
+		spline(std::move(spline))
+	{}
+
+	TypedSplineEstimator(
+		const EstimatorId id,
+		const Spline<float>& spline
+	) noexcept :
+		BaseEstimator(id),
+		spline(spline)
+	{}
+
+	virtual Amount<OutU> get(const Amount<InUs>... inputs) const
+	{
+		return spline.getLinearValueAt(std::get<0>(std::forward_as_tuple(inputs...)));
+	}
+
+	SplineEstimator* clone() const override final
+	{
+		return new SplineEstimator(*this);
+	}
 };

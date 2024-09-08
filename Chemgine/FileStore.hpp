@@ -7,7 +7,7 @@ enum class ParseStatus : uint8_t
 {
 	UNTOUCHED,
 	STARTED,
-	PARSED
+	COMPLETED
 };
 
 /// <summary>

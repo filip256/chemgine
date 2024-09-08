@@ -41,7 +41,7 @@ std::vector<std::string> Utils::split(const std::string& line, const char separa
 
 		if (i - lastSep - 1 > 0)
 		{
-			auto item = Utils::strip(line.substr(lastSep + 1, i - lastSep - 1));
+			auto item = line.substr(lastSep + 1, i - lastSep - 1);
 			if (ignoreEmpty == false || item.size())
 				result.emplace_back(std::move(item));
 		}
@@ -53,7 +53,7 @@ std::vector<std::string> Utils::split(const std::string& line, const char separa
 
 	if (lastSep + 1 < line.size())
 	{
-		auto item = Utils::strip(line.substr(lastSep + 1));
+		auto item =line.substr(lastSep + 1);
 		if (ignoreEmpty == false || item.size())
 			result.emplace_back(std::move(item));
 	}
@@ -72,16 +72,16 @@ std::vector<std::string> Utils::split(
 {
 	std::vector<std::string> result;
 	size_t lastSep = static_cast<size_t>(-1);
-	bool ignoreSection = false;
+	size_t ignoreSections = 0;
 
 	for (size_t i = 0; i < line.size(); ++i)
 	{
 		if (line[i] == ignoreSectionBegin)
-			ignoreSection = true;
-		else if(line[i] == ignoreSectionEnd)
-			ignoreSection = false;
+			++ignoreSections;
+		else if(line[i] == ignoreSectionEnd && ignoreSections > 0)
+			--ignoreSections;
 
-		if (ignoreSection)
+		if (ignoreSections != 0)
 			continue;
 
 		if (line[i] != separator)

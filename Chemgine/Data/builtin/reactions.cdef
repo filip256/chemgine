@@ -5,7 +5,7 @@
 _react: O=C(R)O + OR -> O=C(R)OR + O {
     id:        #201,
     name:      esterification,
-    speed:     100.0_mol/s@20_C,
+    speed:     100.0_mol/s @ 20_C,
     energy:    100.0_J/mol,
 };
 
@@ -19,28 +19,28 @@ _react: O=C(R)OR + O -> O=C(R)O + OR {
 _react: RO -> ROR + O {
     id:        #203,
     name:      dehydration,
-    speed:     1.0_mol/s@20_C,
+    speed:     1.0_mol/s @ 20_C,
     energy:    0.0_J/mol,
 };
 
 _react: RC=C + HH -> RCC {
     id:        #204,
     name:      reduction,
-    speed:     1.0_mol/s@20_C,
+    speed:     1.0_mol/s @ 20_C,
     energy:    0.0_J/mol,
 };
 
 _react: O=C(C)O + OR -> O=C(C)OR + O {
     id:        #205,
     name:      esterification,
-    speed:     0.1_mol/s@20_C,
+    speed:     0.1_mol/s @ 20_C,
     energy:    0.0_J/mol,
 };
 
 _react: RO -> ROR + O {
     id:        #206,
     name:      dehydration,
-    speed:     1.0_mol/s@20_C,
+    speed:     1.0_mol/s @ 20_C,
     energy:    0.0_J/mol,
     catalysts: {O=C(R)OR@50.0_mol%}
 };
@@ -48,21 +48,21 @@ _react: RO -> ROR + O {
 _react: [Me]O + X -> [Me]X + O {
     id:        #207,
     name:      acid-base,
-    speed:     0.01_mol/s@20_C,
+    speed:     0.01_mol/s @ 20_C,
     energy:    100.0_J/mol,
 };
 
 _react: [Me](O)O + X -> [Me](X)X + O {
     id:        #208,
     name:      acid-base,
-    speed:     0.01_mol/s@20_C,
+    speed:     0.01_mol/s @ 20_C,
     energy:    10.0_J/mol,
 };
 
 _react: O=C(R)O -> O=C(R)OC(=O)R + O {
     id:        #209,
     name:      dehydration,
-    speed:     0.7_mol/s@20_C,
+    speed:     0.7_mol/s @ 20_C,
     energy:    10.0_J/mol,
     catalysts: {S(=O)(=O)(O)O@050.0_mol%}
 };
@@ -70,33 +70,33 @@ _react: O=C(R)O -> O=C(R)OC(=O)R + O {
 _react: O=C(R)O -> O=C(R)OC(=O)R + O {
     id:        #210,
     name:      dehydration,
-    speed:     0.7_mol/s@20_C,
+    speed:     0.7_mol/s @ 20_C,
     energy:    10.0_J/mol,
 };
 
 _react: [Me]O + S(=O)(=O)(O)O -> S(=O)(=O)(O)O[Me] + O {
     id:        #211,
     name:      acid-base,
-    speed:     0.9_mol/s@20_C,
+    speed:     0.9_mol/s @ 20_C,
     energy:    100.0_J/mol,
 };
 
 _react: [Me]O + RC(=O)O -> RC(=O)O[Me] + O {
     id:        #212,
     name:      acid-base,
-    speed:     0.7_mol/s@20_C,
+    speed:     0.7_mol/s @ 20_C,
     energy:    80.0_J/mol,
 };
 
 _react: RC(=O)O[Me] + S(=O)(=O)(O)O -> RC(=O)O + S(=O)(=O)(O)O[Me] {
     id:        #213,
     name:      acid displacement,
-    speed:     0.3_mol/s@20_C,
+    speed:     0.3_mol/s @ 20_C,
     energy:    20.0_J/mol,
 };
 
 _react: O=C(R)O + OC(R)R -> O=C(R)OC(R)R + O {
     id:        #214,
     name:      cut-esterification,
-    speed:     0.0_mol/s@0.0_C,
+    speed:     0.0_mol/s @ 0.0_C,
 };

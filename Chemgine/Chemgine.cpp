@@ -50,6 +50,8 @@ int main()
         store.load("./Data/builtin.cdef");
         store.reactions.buildNetwork();
 
+        std::cout << MolecularStructure("S(=O)(=O)(O)O").print() << '\n';
+
         std::cout << MolecularStructure("S(-O)(-O)(-O)(OCC)(OCCC(N(C)C)=O)C#N").print()<<'\n';
 
         const auto x = store.reactions.getRetrosynthReactions(
