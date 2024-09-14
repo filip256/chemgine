@@ -1,6 +1,6 @@
 #include "Value.hpp"
+#include "NumericUtils.hpp"
 
-#include <cmath>
 #include <limits>
 
 template<class T>
@@ -21,7 +21,7 @@ Value<T>& Value<T>::operator=(const Value<T>& other)
 }
 
 template <class T>
-bool Value<T>::operator==(const Value<T>& other) const { return std::abs(value - other.value) <= epsilon; }
+bool Value<T>::operator==(const Value<T>& other) const { return Utils::equal(value, other.value, epsilon); }
 
 template <class T>
 bool Value<T>::operator!=(const Value<T>& other) const { return !(*this == other); }

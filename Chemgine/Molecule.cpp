@@ -50,12 +50,12 @@ Color Molecule::getColor() const
 
 Amount<Unit::CELSIUS> Molecule::getMeltingPointAt(const Amount<Unit::TORR> pressure) const
 {
-	return this->data().meltingPointEstimator.get(pressure.asStd());
+	return this->data().meltingPointEstimator.get(pressure);
 }
 
 Amount<Unit::CELSIUS> Molecule::getBoilingPointAt(const Amount<Unit::TORR> pressure) const
 {
-	return this->data().boilingPointEstimator.get(pressure.asStd());
+	return this->data().boilingPointEstimator.get(pressure);
 }
 
 AggregationType Molecule::getAggregationAt(
@@ -77,8 +77,8 @@ Amount<Unit::GRAM_PER_MILLILITER> Molecule::getDensityAt(
 	const auto& data = this->data();
 	return
 		aggregation == AggregationType::GAS ? Formulas::idealGasLaw(temperature, pressure, molarMass) :
-		aggregation == AggregationType::LIQUID ? data.liquidDensityEstimator.get(temperature.asStd()) :
-		data.solidDensityEstimator.get(temperature.asStd());
+		aggregation == AggregationType::LIQUID ? data.liquidDensityEstimator.get(temperature) :
+		data.solidDensityEstimator.get(temperature);
 }
 
 Amount<Unit::GRAM_PER_MILLILITER> Molecule::getDensityAt(
@@ -98,8 +98,8 @@ Amount<Unit::JOULE_PER_MOLE_CELSIUS> Molecule::getHeatCapacityAt(
 	const auto& data = this->data();
 	return
 		aggregation == AggregationType::GAS ? Formulas::isobaricHeatCapacity(data.getStructure().getDegreesOfFreedom()) :
-		aggregation == AggregationType::LIQUID ? data.liquidHeatCapacityEstimator.get(pressure.asStd()) :
-		data.solidHeatCapacityEstimator.get(pressure.asStd());
+		aggregation == AggregationType::LIQUID ? data.liquidHeatCapacityEstimator.get(pressure) :
+		data.solidHeatCapacityEstimator.get(pressure);
 }
 
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> Molecule::getHeatCapacityAt(
@@ -115,7 +115,7 @@ Amount<Unit::JOULE_PER_MOLE> Molecule::getFusionHeatAt(
 	const Amount<Unit::TORR> pressure
 ) const
 {
-	return this->data().fusionLatentHeatEstimator.get(temperature.asStd(), -pressure.asStd());
+	return this->data().fusionLatentHeatEstimator.get(temperature, -pressure);
 }
 
 Amount<Unit::JOULE_PER_MOLE> Molecule::getVaporizationHeatAt(
@@ -123,7 +123,7 @@ Amount<Unit::JOULE_PER_MOLE> Molecule::getVaporizationHeatAt(
 	const Amount<Unit::TORR> pressure
 ) const
 {
-	return this->data().vaporizationLatentHeatEstimator.get(temperature.asStd(), pressure.asStd());
+	return this->data().vaporizationLatentHeatEstimator.get(temperature, pressure);
 }
 
 Amount<Unit::JOULE_PER_MOLE> Molecule::getSublimationHeatAt(
@@ -131,7 +131,7 @@ Amount<Unit::JOULE_PER_MOLE> Molecule::getSublimationHeatAt(
 	const Amount<Unit::TORR> pressure
 ) const
 {
-	return this->data().sublimationLatentHeatEstimator.get(temperature.asStd(), pressure.asStd());
+	return this->data().sublimationLatentHeatEstimator.get(temperature, pressure);
 }
 
 Amount<Unit::JOULE_PER_MOLE> Molecule::getLiquefactionHeatAt(
@@ -166,7 +166,7 @@ Amount<Unit::MOLE_RATIO> Molecule::getSolubilityAt(
 {
 	const auto& solute = this->data();
 	if (this->getAggregationAt(temperature, pressure) == AggregationType::GAS)
-		return pressure.asStd() / solute.henrysConstantEstimator.get(temperature.asStd());
+		return pressure.to<Unit::MOLE_RATIO>(solute.henrysConstantEstimator.get(temperature));
 
 	// Direct approach
 	//
@@ -183,8 +183,8 @@ Amount<Unit::MOLE_RATIO> Molecule::getSolubilityAt(
 	//	  logP >= phi ? solute.polarity.lipophilicity :
 	//	  (solute.polarity.hydrophilicity * (phi - logP) + solute.polarity.lipophilicity * (phi + logP)) / (2.0 * phi);
 
-	const auto scale = solute.relativeSolubilityEstimator.get(temperature.asStd());
-	return baseSolubility * scale;
+	const auto scale = solute.relativeSolubilityEstimator.get(temperature);
+	return baseSolubility * scale.asStd();
 }
 
 std::string Molecule::getHRTag() const

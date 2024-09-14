@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Parsers.hpp"
+#include "Keywords.hpp"
 
 #include <cstdint>
 
@@ -25,13 +26,26 @@ class Def::Parser<Color>
 public:
 	static std::optional<Color> parse(const std::string& str)
 	{
-		if (str.empty())
+		const auto props = Def::parse<std::unordered_map<std::string, std::string>>(str);
+		if (not props.has_value())
 			return std::nullopt;
 
-		const auto rgba = Def::parse<std::vector<uint8_t>>(str);
-		if (rgba.has_value() == false || rgba->size() != 4)
+		const auto rIt = props->find(Keywords::Color::R);
+		const auto gIt = props->find(Keywords::Color::G);
+		const auto bIt = props->find(Keywords::Color::B);
+		const auto intensityIt = props->find(Keywords::Color::Intensity);
+
+		if (rIt == props->end() || gIt == props->end(); bIt == props->end())
 			return std::nullopt;
 
-		return Color((*rgba)[0], (*rgba)[1], (*rgba)[2], (*rgba)[3]);
+		const auto r = Def::parse<uint8_t>(rIt->second);
+		const auto g = Def::parse<uint8_t>(gIt->second);
+		const auto b = Def::parse<uint8_t>(bIt->second);
+		const auto intensity = Def::parse<uint8_t>(intensityIt->second);
+
+		if (not (r.has_value() && g.has_value() && b.has_value() && intensity.has_value()))
+			return std::nullopt;
+
+		return Color(*r, *g, *b, *intensity);
 	}
 };

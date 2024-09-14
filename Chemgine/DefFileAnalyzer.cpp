@@ -1,4 +1,5 @@
 #include "DefFileAnalyzer.hpp"
+#include "OOLDefRepository.hpp"
 #include "Keywords.hpp"
 
 using namespace Keywords;

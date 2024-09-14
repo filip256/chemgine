@@ -1,9 +1,10 @@
 #pragma once
 
-#include "TypedEstimator.hpp"
+#include "UnitizedEstimator.hpp"
 #include "Spline.hpp"
 
-class SplineEstimator : public BaseEstimator
+template<Unit OutU, Unit InU>
+class SplineEstimator : public UnitizedEstimator<OutU, InU>
 {
 private:
 	const Spline<float> spline;
@@ -11,53 +12,62 @@ private:
 public:
 	SplineEstimator(
 		const EstimatorId id,
-		Spline<float>&& spline
+		Spline<float>&& spline,
+		const EstimationMode mode
 	) noexcept;
 
 	SplineEstimator(
 		const EstimatorId id,
-		const Spline<float>& spline
+		const Spline<float>& spline,
+		const EstimationMode mode
 	) noexcept;
 
-	double get(const double input) const override final;
+	Amount<OutU> get(const Amount<InU> input) const override final;
 
-	bool isEquivalent(const BaseEstimator& other,
+	bool isEquivalent(const EstimatorBase& other,
 		const double epsilon = std::numeric_limits<double>::epsilon()
 	) const override final;
 
 	SplineEstimator* clone() const override final;
 };
 
-template<Unit OutU, Unit... InUs>
-class TypedSplineEstimator : public TypedEstimator<OutU, InUs...>
+template<Unit OutU, Unit InU>
+SplineEstimator<OutU, InU>::SplineEstimator(
+	const EstimatorId id,
+	Spline<float>&& spline,
+	const EstimationMode mode
+) noexcept :
+	UnitizedEstimator<OutU, InU>(id, mode),
+	spline(std::move(spline))
+{}
+
+template<Unit OutU, Unit InU>
+SplineEstimator<OutU, InU>::SplineEstimator(
+	const EstimatorId id,
+	const Spline<float>& spline,
+	const EstimationMode mode
+) noexcept :
+	SplineEstimator(id, Utils::copy(spline), mode)
+{}
+
+template<Unit OutU, Unit InU>
+Amount<OutU> SplineEstimator<OutU, InU>::get(const Amount<InU> input) const
 {
-private:
-	const Spline<float> spline;
+	return spline.getLinearValueAt(input.asStd());
+}
 
-public:
-	TypedSplineEstimator(
-		const EstimatorId id,
-		Spline<float>&& spline
-	) noexcept :
-		BaseEstimator(id),
-		spline(std::move(spline))
-	{}
+template<Unit OutU, Unit InU>
+bool SplineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const double epsilon) const
+{
+	if (not EstimatorBase::isEquivalent(other, epsilon))
+		return false;
 
-	TypedSplineEstimator(
-		const EstimatorId id,
-		const Spline<float>& spline
-	) noexcept :
-		BaseEstimator(id),
-		spline(spline)
-	{}
+	const auto& oth = static_cast<decltype(*this)&>(other);
+	return this->spline.isEquivalent(oth.spline, epsilon);
+}
 
-	virtual Amount<OutU> get(const Amount<InUs>... inputs) const
-	{
-		return spline.getLinearValueAt(std::get<0>(std::forward_as_tuple(inputs...)));
-	}
-
-	SplineEstimator* clone() const override final
-	{
-		return new SplineEstimator(*this);
-	}
-};
+template<Unit OutU, Unit InU>
+SplineEstimator<OutU, InU>* SplineEstimator<OutU, InU>::clone() const
+{
+	return new SplineEstimator(*this);
+}

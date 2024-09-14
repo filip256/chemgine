@@ -6,8 +6,6 @@
 
 Reactor::Reactor(const Reactor& other) noexcept :
 	MultiLayerMixture(static_cast<const MultiLayerMixture&>(other).makeCopy()),
-	temperatureSpeedEstimator(other.temperatureSpeedEstimator),
-	concentrationSpeedEstimator(other.concentrationSpeedEstimator),
 	stirSpeed(other.stirSpeed),
 	tickMode(other.tickMode)
 {
@@ -24,10 +22,6 @@ Reactor::Reactor(
 	MultiLayerMixture(atmosphere, maxVolume, overflowTarget)
 {
 	dataAccessor.crashIfUninitialized();
-	temperatureSpeedEstimator = &dataAccessor.get().estimators.at(
-		toId(BuiltinEstimator::TEMP_TO_REL_RSPEED));
-	concentrationSpeedEstimator = &dataAccessor.get().estimators.at(
-		toId(BuiltinEstimator::MCONC_TO_REL_RSPEED));
 }
 
 Reactor::Reactor(
@@ -122,10 +116,9 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 		const auto x = r.getReactantTemperature();
 
 		auto speedCoef =
-			r.getData().baseSpeed.to<Unit::MOLE>(timespan) *
+			r.getData().getSpeedAt(r.getReactantTemperature(), getAmountOf(r.getReactants()).to<Unit::MOLE_RATIO>(totalMoles))
+			.to<Unit::MOLE>(timespan) *
 			totalVolume.asStd() *
-			temperatureSpeedEstimator->get((r.getReactantTemperature() - r.getData().baseTemperature).asStd()) *
-			concentrationSpeedEstimator->get((getAmountOf(r.getReactants()) / totalMoles).asStd()) *
 			getInterLayerReactivityCoefficient(r.getReactants()) *
 			getCatalyticReactivityCoefficient(r.getCatalysts());
 		

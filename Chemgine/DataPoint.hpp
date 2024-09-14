@@ -17,6 +17,9 @@ public:
 		const std::tuple<Amount<InUs>...>& inputs
 	) noexcept;
 	DataPoint(const DataPoint&) = default;
+
+	bool operator==(const DataPoint& other) const;
+	bool operator<(const DataPoint& other) const;
 };
 
 template<Unit OutU, Unit... InUs>
@@ -27,6 +30,18 @@ DataPoint<OutU, InUs...>::DataPoint(
 	output(output),
 	inputs(inputs)
 {}
+
+template<Unit OutU, Unit... InUs>
+bool DataPoint<OutU, InUs...>::operator==(const DataPoint& other) const
+{
+	return this->output == other.output && this->inputs == other.inputs;
+}
+
+template<Unit OutU, Unit... InUs>
+bool DataPoint<OutU, InUs...>::operator<(const DataPoint& other) const
+{
+	return std::get<0>(this->inputs) < std::get<0>(other.inputs);
+}
 
 
 template<Unit OutU, Unit... InUs>
@@ -40,7 +55,7 @@ private:
 		std::index_sequence<Is...>)
 	{
 		std::tuple<Amount<InUs>...> expectedInputs;
-		uint8_t failed = static_cast<uint8_t>(-1);
+		auto failed = static_cast<uint8_t>(-1);
 
 		(
 			[&baseInputs, &expectedInputs, &failed, &location]() {
@@ -48,8 +63,6 @@ private:
 				if (not expected.has_value())
 				{
 					failed = Is;
-					Log<DataPoint<OutU, InUs...>>().error("Failed to convert data point input from base unit: '{0}' to expected unit: '{1}', at: {2}.",
-						baseInputs[Is].getUnitSymbol(), DynamicAmount::getUnitSymbol(InUs), location.toString());
 					return;
 				}
 
@@ -71,7 +84,7 @@ public:
 	)
 	{
 		const Log<DataPoint<OutU, InUs...>> log;
-		const uint8_t inputCount = sizeof...(InUs);
+		const auto inputCount = sizeof...(InUs);
 
 		// parse values
 		const auto pair = Def::parse<std::pair<std::string, DynamicAmount>>(str, ':');
@@ -89,12 +102,12 @@ public:
 		}
 		if (rawInputs->size() != inputCount)
 		{
-			log.error("The number of data point inputs: {0} does not match the expected number of inputs: {1}, at: {2}.",
-				rawInputs->size(), inputCount, location.toString());
+			log.error("The number of data point inputs ({0}) in: '{1}' does not match the expected number of inputs ({2}), at: {3}.",
+				rawInputs->size(), pair->first, inputCount, location.toString());
 			return std::nullopt;
 		}
 
-		// convert from element units to base units
+		// convert output
 		const auto baseOutput = pair->second.to(outputBaseUnit);
 		if (not baseOutput.has_value())
 		{
@@ -103,6 +116,15 @@ public:
 			return std::nullopt;
 		}
 
+		const auto expectedOutput = baseOutput->to<OutU>();
+		if (not expectedOutput.has_value())
+		{
+			log.error("Failed to convert data point output from base unit: '{0}' to expected unit: '{1}', at: {2}.",
+				baseOutput->getUnitSymbol(), DynamicAmount::getUnitSymbol(OutU), location.toString());
+			return std::nullopt;
+		}
+
+		// convert inputs
 		std::vector<DynamicAmount> baseInputs;
 		baseInputs.reserve(inputCount);
 		for (size_t i = 0; i < inputCount; i++)
@@ -118,19 +140,34 @@ public:
 			baseInputs.emplace_back(*convert);
 		}
 
-		// convert from base units to expected static units
-		const auto expectedOutput = baseOutput->to<OutU>();
-		if (not expectedOutput.has_value())
-		{
-			log.error("Failed to convert data point output from base unit: '{0}' to expected unit: '{1}', at: {2}.",
-				baseOutput->getUnitSymbol(), DynamicAmount::getUnitSymbol(OutU), location.toString());
-			return std::nullopt;
-		}
-
+		// try given input order
 		const auto expectedInputs = convertInputs(baseInputs, location, std::make_index_sequence<inputCount>{});
-		if (not expectedInputs.has_value())
-			return std::nullopt;
+		if (expectedInputs.has_value())
+			return DataPoint(*expectedOutput, *expectedInputs);
 
-		return DataPoint(*expectedOutput, *expectedInputs);
+		// try to permute input order (must sort before calling next_permutation)
+		std::sort(baseInputs.begin(), baseInputs.end(),
+			[](const auto& l, const auto& r) { return l.getUnit() < r.getUnit(); });
+		do
+		{
+			const auto expectedInputs = convertInputs(baseInputs, location, std::make_index_sequence<inputCount>{});
+			if (expectedInputs.has_value())
+				return DataPoint(*expectedOutput, *expectedInputs);
+
+		} while (std::next_permutation(baseInputs.begin(), baseInputs.end(),
+			[](const auto& l, const auto& r) { return l.getUnit() < r.getUnit(); }));
+
+		std::string baseUnitNames = DynamicAmount::getUnitSymbol(inputBaseUnits.front());
+		for (size_t i = 1; i < inputBaseUnits.size(); ++i)
+			baseUnitNames += ", " + DynamicAmount::getUnitSymbol(inputBaseUnits[i]);
+
+		std::string expectedUnitNames;
+		((expectedUnitNames += DynamicAmount::getUnitSymbol(InUs) + ", "), ...);
+		expectedUnitNames.pop_back();
+		expectedUnitNames.pop_back();
+
+		log.error("Failed to convert data point inputs from base units: '{0}' to expected units: '{1}', at: {2}.",
+			baseUnitNames, expectedUnitNames, location.toString());
+		return std::nullopt;
 	}
 };

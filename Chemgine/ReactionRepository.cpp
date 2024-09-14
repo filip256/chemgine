@@ -1,12 +1,17 @@
 #include "ReactionRepository.hpp"
 #include "ReactionSpecifier.hpp"
+#include "EstimatorParsers.hpp"
 #include "Molecule.hpp"
 #include "Keywords.hpp"
 #include "Log.hpp"
 
 #include <fstream>
 
-ReactionRepository::ReactionRepository(MoleculeRepository& molecules) noexcept :
+ReactionRepository::ReactionRepository(
+	EstimatorRepository& estimators,
+	const MoleculeRepository& molecules
+) noexcept :
+	estimators(estimators),
 	molecules(molecules)
 {}
 
@@ -59,14 +64,6 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 		return false;
 	}
 
-	const auto speed = definition.pullDefaultProperty(Keywords::Reactions::Speed,
-		std::pair<Amount<Unit::MOLE_PER_SECOND>, Amount<Unit::CELSIUS>>(1.0, 20.0_C),
-		Def::parse<std::pair<Amount<Unit::MOLE_PER_SECOND>, Amount<Unit::CELSIUS>>>);
-	const auto energy = definition.pullDefaultProperty(Keywords::Reactions::Energy, Amount<Unit::JOULE_PER_MOLE>(0.0),
-		Def::parse<Amount<Unit::JOULE_PER_MOLE>>);
-	const auto activation = definition.pullDefaultProperty(Keywords::Reactions::Activation, Amount<Unit::JOULE_PER_MOLE>(0.0),
-		Def::parse<Amount<Unit::JOULE_PER_MOLE>>);
-
 	// catalysts
 	const auto catStr = definition.pullDefaultProperty(Keywords::Reactions::Catalysts, std::vector<std::string>(),
 		Def::parse<std::vector<std::string>>);
@@ -96,13 +93,34 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 		catalysts.emplace_back(*c);
 	}
 
+	const auto isCut = definition.pullDefaultProperty(Keywords::Reactions::IsCut, false,
+		Def::parse<bool>);
+
+	std::unique_ptr<ReactionData> data;
+	if (isCut)
+	{
+		data = std::make_unique<ReactionData>(*id, name, reactantIds, productIds, std::move(catalysts));
+	}
+	else
+	{
+		const auto tempSpeed = definition.getDefinition(Keywords::Reactions::TemperatureSpeed,
+			Def::Parser<UnitizedEstimator<Unit::MOLE_PER_SECOND, Unit::CELSIUS>>::parse, estimators);
+		const auto concSpeed = definition.getDefinition(Keywords::Reactions::ConcentrationSpeed,
+			Def::Parser<UnitizedEstimator<Unit::NONE, Unit::MOLE_RATIO>>::parse, estimators);
+		const auto energy = definition.pullDefaultProperty(Keywords::Reactions::Energy, Amount<Unit::JOULE_PER_MOLE>(0.0),
+			Def::parse<Amount<Unit::JOULE_PER_MOLE>>);
+		const auto activation = definition.pullDefaultProperty(Keywords::Reactions::Activation, Amount<Unit::JOULE_PER_MOLE>(0.0),
+			Def::parse<Amount<Unit::JOULE_PER_MOLE>>);
+
+		data = std::make_unique<ReactionData>(*id, name, reactantIds, productIds, energy, activation, *tempSpeed, *concSpeed, std::move(catalysts));
+	}
+
 	const auto& ignored = definition.getRemainingProperties();
 	for (const auto& [name, _] : ignored)
 		Log(this).warn("Ignored unknown reaction property: '{0}', at: {1}.", name, definition.getLocationName());
 
 	// create
-	ReactionData data(*id, name, reactantIds, productIds, speed.first, speed.second, energy, activation, std::move(catalysts));
-	if (data.mapReactantsToProducts() == false)
+	if (data->mapReactantsToProducts() == false)
 	{
 		Log(this).error("Malformed reaction with id: {0}, at: {1}.", *id, definition.getLocationName());
 		return false;
@@ -110,7 +128,7 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 
 	maxReactantCount = std::max(static_cast<uint8_t>(reactantIds.size()), maxReactantCount);
 
-	if (table.emplace(*id, std::to_string(*id), std::move(data)) == false)
+	if (table.emplace(*id, std::to_string(*id), std::move(*data)) == false)
 		Log(this).warn("Skipped reaction with duplicate id: '{0}', at: {1}.", *id, definition.getLocationName());
 
 	return true;

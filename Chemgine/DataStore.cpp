@@ -6,10 +6,6 @@
 
 #include <fstream>
 
-#include <chrono>
-#include <thread>
-
-
 DataStore::DataStore() :
 	fileStore(),
 	oolDefinitions(),
@@ -17,7 +13,7 @@ DataStore::DataStore() :
 	genericMolecules(),
 	estimators(),
 	molecules(estimators),
-	reactions(molecules),
+	reactions(estimators, molecules),
 	labware()
 {}
 
@@ -34,12 +30,16 @@ DataStore& DataStore::load(const std::string& path)
 			normPath, analysis.totalDefinitionCount, analysis.preparsedDefinitionCount, analysis.totalFileCount, analysis.preparsedFileCount);
 	}
 	
-	size_t definitionCount = analysis.preparsedDefinitionCount;
+	auto definitionCount = analysis.preparsedDefinitionCount;
 	DefFileParser parser(normPath, fileStore, oolDefinitions);
 	while (true)
 	{
-		if (analysis.failed == false)
-			Log(this).info("\r[{0}/{1}] definitions parsed.", definitionCount, analysis.totalDefinitionCount - analysis.preparsedDefinitionCount);
+		if (not analysis.failed)
+		{
+			const auto definitionsToParse = analysis.totalDefinitionCount - analysis.preparsedDefinitionCount;
+			const auto perc = static_cast<uint8_t>((static_cast<float>(definitionCount) / definitionsToParse) * 100.f);
+			Log(this).info("\r[{0}%] Parsed {1} out of {2} definitions.", perc, definitionCount, definitionsToParse);
+		}
 
 		auto entry = parser.nextDefinition();
 		if (parser.isOpen() == false)
@@ -52,7 +52,7 @@ DataStore& DataStore::load(const std::string& path)
 		}
 
 		bool success = false;
-		switch (entry->type)
+		switch (entry->getType())
 		{
 		case DefinitionType::AUTO:
 			Log(this).error("Cannot infer type of out-of-line definition, at: {0}.", entry->getLocationName());
@@ -84,7 +84,7 @@ DataStore& DataStore::load(const std::string& path)
 			break;
 
 		default:
-			Log(this).error("Unknown definition type: '{0}', at: {1}.", static_cast<uint8_t>(entry->type), entry->getLocationName());
+			Log(this).error("Unknown definition type: '{0}', at: {1}.", static_cast<uint8_t>(entry->getType()), entry->getLocationName());
 			break;
 		}
 
@@ -96,6 +96,8 @@ DataStore& DataStore::load(const std::string& path)
 
 		++definitionCount;
 	}
+
+	oolDefinitions.clear();
 
 	Log(this).success("File load completed.");
 	return *this;

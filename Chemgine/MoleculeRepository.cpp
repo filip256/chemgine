@@ -1,10 +1,9 @@
 #include "MoleculeRepository.hpp"
 #include "Parsers.hpp"
-#include "DefinitionParsers.hpp"
-#include "OffsetEstimator.hpp"
-#include "ScaleEstimator.hpp"
+#include "EstimatorParsers.hpp"
+#include "AffineEstimator.hpp"
 #include "SplineEstimator.hpp"
-#include "TypedEstimator.hpp"
+#include "UnitizedEstimator.hpp"
 #include "Keywords.hpp"
 #include "Log.hpp"
 
@@ -16,7 +15,7 @@ MoleculeRepository::MoleculeRepository(EstimatorRepository& estimators) noexcept
 
 bool MoleculeRepository::add(DefinitionObject&& definition)
 {
-	auto structure = Def::parse<MolecularStructure>(definition.getSpecifier());
+	auto structure = Def::Parser<MolecularStructure>::parse(definition.getSpecifier());
 	if (structure.has_value() == false)
 	{
 		Log(this).error("Invalid SMILES specifier: '{0}', as: {1}.", definition.getSpecifier(), definition.getLocationName());
@@ -24,60 +23,38 @@ bool MoleculeRepository::add(DefinitionObject&& definition)
 	}
 
 	const auto id = definition.pullProperty("id", Def::parseId<MoleculeId>);
-	const auto name = definition.pullDefaultProperty(Keywords::Molecules::Name, "?");
-
-	if (id.has_value() == false)
+	if (not id.has_value())
 		return false;
 
-	const auto mp = definition.pullDefaultProperty(Keywords::Molecules::MeltingPoint, 0.0,
-		Def::parse<double>);
-	const auto bp = definition.pullDefaultProperty(Keywords::Molecules::BoilingPoint, 100.0,
-		Def::parse<double>);
-	const auto sd = definition.pullDefaultProperty(Keywords::Molecules::SolidDensity, Spline<float>({ {0, 1.0} }),
-		Def::parse<Spline<float>>);
-	const auto ld = definition.pullDefaultProperty(Keywords::Molecules::LiquidDensity, Spline<float>({ {0, 1.0} }),
-		Def::parse<Spline<float>>);
-	const auto shc = definition.pullDefaultProperty(Keywords::Molecules::SolidHeatCapacity, Spline<float>({ {36.0, 760.0} }),
-		Def::parse<Spline<float>>);
-	const auto lhc = definition.pullDefaultProperty(Keywords::Molecules::LiquidHeatCapacity, Spline<float>({ {75.4840232, 760.0} }),
-		Def::parse<Spline<float>>);
-	const auto flh = definition.pullDefaultProperty(Keywords::Molecules::FusionLatentHeat, 6020.0,
-		Def::parse<double>);
-	const auto vlh = definition.pullDefaultProperty(Keywords::Molecules::VaporizationLatentHeat, 40700.0,
-		Def::parse<double>);
-	const auto slh = definition.pullDefaultProperty(Keywords::Molecules::SublimationLatentHeat, std::numeric_limits<double>::max(),
-		Def::parse<double>);
+	const auto name = definition.pullDefaultProperty(Keywords::Molecules::Name, "?");
 	const auto hp = definition.pullDefaultProperty(Keywords::Molecules::Hydrophilicity, 1.0,
 		Def::parse<double>);
 	const auto lp = definition.pullDefaultProperty(Keywords::Molecules::Lipophilicity, 0.0,
 		Def::parse<double>);
-	const auto invSol = definition.pullDefaultProperty(Keywords::Molecules::InverseSolubility, false,
-		Def::parse<bool>);
-	const auto sol = definition.pullOptionalProperty(Keywords::Molecules::Solubility,
-		Def::parse<Spline<float>>);
-	const auto henry = definition.pullDefaultProperty(Keywords::Molecules::HenryConstant, Spline<float>({ {1000.0, 760.0} }),
-		Def::parse<Spline<float>>);
+	const auto mp = definition.getDefinition(Keywords::Molecules::MeltingPoint,
+		Def::Parser<UnitizedEstimator<Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+	const auto bp = definition.getDefinition(Keywords::Molecules::BoilingPoint,
+		Def::Parser<UnitizedEstimator<Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+	const auto sd = definition.getDefinition(Keywords::Molecules::SolidDensity,
+		Def::Parser<UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>::parse, estimators);
+	const auto ld = definition.getDefinition(Keywords::Molecules::LiquidDensity,
+		Def::Parser<UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>::parse, estimators);
+	const auto shc = definition.getDefinition(Keywords::Molecules::SolidHeatCapacity,
+		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>::parse, estimators);
+	const auto lhc = definition.getDefinition(Keywords::Molecules::LiquidHeatCapacity,
+		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>::parse, estimators);
+	const auto flh = definition.getDefinition(Keywords::Molecules::FusionLatentHeat,
+		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+	const auto vlh = definition.getDefinition(Keywords::Molecules::VaporizationLatentHeat,
+		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+	const auto slh = definition.getDefinition(Keywords::Molecules::SublimationLatentHeat,
+		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+	const auto sol = definition.getDefinition(Keywords::Molecules::RelativeSolubility,
+		Def::Parser<UnitizedEstimator<Unit::NONE, Unit::CELSIUS>>::parse, estimators);
+	const auto hen = definition.getDefinition(Keywords::Molecules::HenryConstant,
+		Def::Parser<UnitizedEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>>::parse, estimators);
 	const auto col = definition.pullDefaultProperty(Keywords::Molecules::Color, Color(0, 255, 255, 100),
 		Def::parse<Color>);
-
-	const auto subDef = definition.getOptionalDefinition("subdef",
-		Def::parse<TypedEstimator<Unit::LITER, Unit::GRAM>*>);
-	const auto subDef1 = definition.getOptionalDefinition("subdefr",
-		Def::parse<TypedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>*>);
-
-	const auto& mpA = estimators.add<OffsetEstimator>(estimators.at(toId(BuiltinEstimator::TORR_TO_REL_BP)), mp);
-	const auto& bpA = estimators.add<OffsetEstimator>(estimators.at(toId(BuiltinEstimator::TORR_TO_REL_BP)), bp);
-	const auto& sdA = estimators.add<SplineEstimator>(sd);
-	const auto& ldA = estimators.add<SplineEstimator>(ld);
-	const auto& shcA = estimators.add<SplineEstimator>(shc);
-	const auto& lhcA = estimators.add<SplineEstimator>(lhc);
-	const auto& flhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), flh);
-	const auto& vlhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), vlh);
-	const auto& slhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), slh);
-	const auto& solA = sol.has_value() ? estimators.add<SplineEstimator>(*sol) :
-		invSol ? estimators.at(toId(BuiltinEstimator::TEMP_TO_REL_INV_SOL)) :
-		estimators.at(toId(BuiltinEstimator::TEMP_TO_REL_SOL));
-	const auto& henryA = estimators.add<SplineEstimator>(henry);
 
 	const auto& ignored = definition.getRemainingProperties();
 	for (const auto& [name, _] : ignored)
@@ -85,7 +62,7 @@ bool MoleculeRepository::add(DefinitionObject&& definition)
 
 	if (table.emplace(
 		*id, name,
-		MoleculeData(*id, name, std::move(*structure), hp, lp, col, mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA, solA, henryA)) == false)
+		MoleculeData(*id, name, std::move(*structure), hp, lp, col, *mp, *bp, *sd, *ld, *shc, *lhc, *flh, *vlh, *slh, *sol, *hen)) == false)
 	{
 		Log(this).warn("Molecule with duplicate id: '{0}' skipped.", *id);
 		return false;
@@ -137,22 +114,22 @@ MoleculeId MoleculeRepository::findOrAdd(MolecularStructure&& structure)
 
 	Log(this).debug("New structure discovered: \n{0}", structure.print());
 
-	const auto& mpA = estimators.add<OffsetEstimator>(estimators.at(toId(BuiltinEstimator::TORR_TO_REL_BP)), 0);
-	const auto& bpA = estimators.add<OffsetEstimator>(estimators.at(toId(BuiltinEstimator::TORR_TO_REL_BP)), 100);
-	const auto& sdA = estimators.add<SplineEstimator>(Spline<float>({ {0, 1.0f} }));
-	const auto& ldA = estimators.add<SplineEstimator>(Spline<float>({ {0, 1.0f} }));
-	const auto& shcA = estimators.add<SplineEstimator>(Spline<float>({ {36.0, 760.0} }));
-	const auto& lhcA = estimators.add<SplineEstimator>(Spline<float>({ {75.4840232, 760.0} }));
-	const auto& flhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), 6020.0f);
-	const auto& vlhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), 40700.0f);
-	const auto& slhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), std::numeric_limits<double>::max());
 	const auto hydro = 1.0;
 	const auto lipo = 0.0;
-	const auto& solA = estimators.at(toId(BuiltinEstimator::TEMP_TO_REL_SOL));
-	const auto& henryA = estimators.add<SplineEstimator>(Spline<float>({ {1000.0, 760.0} }));
+	const auto& mp = static_cast<const UnitizedEstimator<Unit::CELSIUS, Unit::TORR>&>(estimators.add<ConstantEstimator<Unit::CELSIUS, Unit::TORR>>(0.0));
+	const auto& bp = static_cast<const UnitizedEstimator<Unit::CELSIUS, Unit::TORR>&>(estimators.add<ConstantEstimator<Unit::CELSIUS, Unit::TORR>>(100.0));
+	const auto& sd = static_cast<const UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>&>(estimators.add<ConstantEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>(1.0));
+	const auto& ld = static_cast<const UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>&>(estimators.add<ConstantEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>(1.0));
+	const auto& shc = static_cast<const UnitizedEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>&>(estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>(36.0));
+	const auto& lhc = static_cast<const UnitizedEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>&>(estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>(75.4840232));
+	const auto& flh = static_cast<const UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>&>(estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(6020.0));
+	const auto& vlh = static_cast<const UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>&>(estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(40700.0));
+	const auto& slh = static_cast<const UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>&>(estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(std::numeric_limits<float>::max()));
+	const auto& sol = static_cast<const UnitizedEstimator<Unit::NONE, Unit::CELSIUS>&>(estimators.add<ConstantEstimator<Unit::NONE, Unit::CELSIUS>>(1.0));
+	const auto& hen = static_cast<const UnitizedEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>&>(estimators.add<ConstantEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>>(1000.0));
 	const auto color = Color(0, 255, 255, 100);
 
 	const auto id = getFreeId();
-	table.emplace(id, std::to_string(id), MoleculeData(id, std::move(structure), hydro, lipo, color, mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA, solA, henryA));
+	table.emplace(id, std::to_string(id), MoleculeData(id, std::move(structure), hydro, lipo, color, mp, bp, sd, ld, shc, lhc, flh, vlh, slh, sol, hen));
 	return id;
 }

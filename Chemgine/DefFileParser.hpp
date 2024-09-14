@@ -21,6 +21,7 @@ private:
 	FileStore& fileStore;
 
 	void include(const std::string& filePath);
+	void closeSubparser();
 	
 public:
 	DefFileParser(

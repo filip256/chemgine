@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <string>
+#include <unordered_map>
 #include <optional>
 #include <stdexcept>
 
@@ -152,9 +153,9 @@ namespace Def
 			if (str.empty())
 				return std::nullopt;
 
-			if (str == "t" || str == "TRUE")
+			if (str == "true")
 				return std::optional(true);
-			if (str == "f" || str == "FALSE")
+			if (str == "false")
 				return std::optional(false);
 
 			return std::nullopt;
@@ -164,31 +165,50 @@ namespace Def
 	template <typename T>
 	class Parser<std::vector<T>>
 	{
+	private:
+		static std::string removeBrackets(const std::string& str)
+		{
+			return str.starts_with('{') && str.ends_with('}') ?
+				str.substr(1, str.size() - 2) :
+				str;
+		}
+
 	public:
 		static std::optional<std::vector<T>> parse(const std::string& str, const bool ignoreEmpty = true)
 		{
-			if (str.starts_with('{') && str.ends_with('}'))
-				return parse(str.substr(1, str.size() - 2), ignoreEmpty);
+			const auto listStr = removeBrackets(str);
 
 			std::vector<T> result;
 			size_t lastSep = -1;
-			for (size_t i = 0; i < str.size(); ++i)
-				if (str[i] == ',')
-				{
-					if (ignoreEmpty == false || i - lastSep - 1 > 0)
-					{
-						auto r = Def::parse<T>(str.substr(lastSep + 1, i - lastSep - 1));
-						if (r.has_value())
-							result.emplace_back(std::move(*r));
-						else
-							return std::nullopt;
-					}
-					lastSep = i;
-				}
+			size_t ignoreSections = 0;
 
-			if (ignoreEmpty == false || lastSep + 1 < str.size())
+			for (size_t i = 0; i < listStr.size(); ++i)
 			{
-				auto r = Def::parse<T>(str.substr(lastSep + 1));
+				if (listStr[i] == '{')
+					++ignoreSections;
+				else if (listStr[i] == '}' && ignoreSections > 0)
+					--ignoreSections;
+
+				if (ignoreSections != 0)
+					continue;
+
+				if (listStr[i] != ',')
+					continue;
+
+				if (ignoreEmpty == false || i - lastSep - 1 > 0)
+				{
+					auto r = Def::parse<T>(listStr.substr(lastSep + 1, i - lastSep - 1));
+					if (r.has_value())
+						result.emplace_back(std::move(*r));
+					else
+						return std::nullopt;
+				}
+				lastSep = i;
+			}
+
+			if (ignoreEmpty == false || lastSep + 1 < listStr.size())
+			{
+				auto r = Def::parse<T>(listStr.substr(lastSep + 1));
 				if (r.has_value())
 					result.emplace_back(std::move(*r));
 				else
@@ -201,22 +221,55 @@ namespace Def
 	template <typename T1, typename T2>
 	class Parser<std::pair<T1, T2>>
 	{
-	public:
-		static std::optional<std::pair<T1, T2>> parse(const std::string& str, const char sep = '@')
+	private:
+		static std::string removeBrackets(const std::string& str)
 		{
-			const auto& pairStr = Utils::split(str, sep, true);
+			return str.starts_with('{') && str.ends_with('}') ?
+				str.substr(1, str.size() - 2) :
+				str;
+		}
+
+	public:
+		static std::optional<std::pair<T1, T2>> parse(const std::string& str, const char sep = ':')
+		{
+			const auto& pairStr = Utils::split(removeBrackets(str), sep, '{', '}', true);
 			if (pairStr.size() != 2)
 				return std::nullopt;
 
 			const auto val1 = Def::parse<T1>(pairStr.front());
-			if (val1.has_value() == false)
+			if (not val1.has_value())
 				return std::nullopt;
 
 			const auto val2 = Def::parse<T2>(pairStr.back());
-			if (val2.has_value() == false)
+			if (not val2.has_value())
 				return std::nullopt;
 
 			return std::optional<std::pair<T1, T2>>(std::make_pair(*val1, *val2));
+		}
+	};
+
+	template <typename T>
+	class Parser<std::unordered_map<std::string, T>>
+	{
+	public:
+		static std::optional<std::unordered_map<std::string, T>> parse(const std::string& str)
+		{
+			auto entries = Def::parse<std::vector<std::pair<std::string, std::string>>>(str);
+			if (not entries.has_value())
+				return std::nullopt;
+
+			std::unordered_map<std::string, T> result;
+			result.reserve(entries->size());
+			for (size_t i = 0; i < entries->size(); ++i)
+			{
+				auto value = Def::parse<T>((*entries)[i].second);
+				if (not value.has_value())
+					return std::nullopt;
+
+				result.emplace(std::move((*entries)[i].first), *std::move(value));
+			}
+
+			return result;
 		}
 	};
 };

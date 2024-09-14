@@ -30,9 +30,6 @@ private:
 
 	FlagField<TickMode> tickMode = TickMode::ENABLE_ALL;
 
-	const BaseEstimator* temperatureSpeedEstimator = nullptr;
-	const BaseEstimator* concentrationSpeedEstimator = nullptr;
-
 	std::unordered_set<ConcreteReaction> cachedReactions;
 
 	double getInterLayerReactivityCoefficient(const Reactant& r1, const Reactant& r2) const;

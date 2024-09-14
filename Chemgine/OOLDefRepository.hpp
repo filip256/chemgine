@@ -19,4 +19,6 @@ public:
 	bool add(DefinitionObject&& definition);
 
 	const DefinitionObject* getDefinition(const std::string& identifier) const;
+
+	void clear();
 };

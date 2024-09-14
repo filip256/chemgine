@@ -10,6 +10,12 @@ namespace Keywords
 		const std::string IncludeAs = "AS";
 	}
 
+	namespace Amounts
+	{
+		const std::string Min = "-INF";
+		const std::string Max = "INF";
+	}
+
 	namespace Types
 	{
 		const std::string Auto = "";
@@ -24,6 +30,16 @@ namespace Keywords
 	namespace Data
 	{
 		const std::string Values = "values";
+		const std::string Mode = "mode";
+		const std::string CompressionLoss = "loss";
+		const std::string Base = "base";
+		const std::string Input1 = "input_1";
+		const std::string Input2 = "input_2";
+		const std::string VerticalShift = "v_shift";
+		const std::string HorizontalShift = "h_shift";
+		const std::string Scale = "scale";
+		const std::string AnchorPoint = "anchor_point";
+		const std::string RebasePoint = "rebase_point";
 	}
 
 	namespace Atoms
@@ -48,8 +64,7 @@ namespace Keywords
 		const std::string SublimationLatentHeat = "sublimation_lh";
 		const std::string Hydrophilicity = "hydrophilicity";
 		const std::string Lipophilicity = "lipophilicity";
-		const std::string InverseSolubility = "has_inverse_solubility";
-		const std::string Solubility = "solubility";
+		const std::string RelativeSolubility = "rel_solubility";
 		const std::string HenryConstant = "henry_const";
 		const std::string Color = "color";
 	}
@@ -57,10 +72,12 @@ namespace Keywords
 	namespace Reactions
 	{
 		const std::string Name = "name";
-		const std::string Speed = "speed";
+		const std::string TemperatureSpeed = "speed_t";
+		const std::string ConcentrationSpeed = "speed_c";
 		const std::string Energy = "energy";
 		const std::string Activation = "activation";
 		const std::string Catalysts = "catalysts";
+		const std::string IsCut = "is_cut";
 	}
 
 	namespace Labware
@@ -80,5 +97,20 @@ namespace Keywords
 		const std::string Power = "power";
 		const std::string Texture = "tx";
 		const std::string TextureScale = "tx_scale";
+	}
+
+	namespace Color
+	{
+		const std::string R = "r";
+		const std::string G = "g";
+		const std::string B = "b";
+		const std::string Intensity = "intensity";
+	}
+
+	namespace Port
+	{
+		const std::string X = "x";
+		const std::string Y = "y";
+		const std::string Angle = "angle";
 	}
 }

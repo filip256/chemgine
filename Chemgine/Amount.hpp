@@ -8,6 +8,7 @@
 #include "Value.hpp"
 #include "Unit.hpp"
 #include "Linguistics.hpp"
+#include "NumericUtils.hpp"
 
 /// <summary>
 /// Stores the amount of a certain Unit and statically handles conversions between units.
@@ -154,7 +155,7 @@ constexpr Amount<UnitT> Amount<UnitT>::operator-=(const Amount<UnitT> other) noe
 template <Unit UnitT>
 constexpr inline bool Amount<UnitT>::equals(const Amount<UnitT> other, const StorageType epsilon) const noexcept
 {
-	return (this->value - other.value) <= epsilon;
+	return Utils::equal(this->value, other.value, epsilon);
 }
 
 template<Unit UnitT>
@@ -183,11 +184,15 @@ std::string Amount<UnitT>::toString(const uint8_t maxDigits) const noexcept
 {
 	auto str = std::to_string(value);
 	Linguistics::formatFloatingPoint(str, maxDigits);
-	return str + ' ' + Amount<UnitT>::unitSymbol();
+
+	if constexpr (UnitT != Unit::NONE)
+		return str + ' ' + Amount<UnitT>::unitSymbol();
+	else
+		return str + ' '; // don't print NONE's unit
 }
 
 template<>
-inline std::string Amount<Unit::NONE>::unitSymbol() noexcept { return ""; }
+inline std::string Amount<Unit::NONE>::unitSymbol() noexcept { return "1"; }
 template<>
 inline std::string Amount<Unit::ANY>::unitSymbol() noexcept { return "*"; }
 template<>
@@ -511,9 +516,23 @@ constexpr Amount<Unit::MOLE> Amount<Unit::GRAM>::to(const Amount<Unit::GRAM_PER_
 
 template<>
 template<>
+constexpr Amount<Unit::MOLE_RATIO> Amount<Unit::TORR>::to(const Amount<Unit::TORR_MOLE_RATIO> henry) const noexcept
+{
+	return value / henry.asStd();
+}
+
+template<>
+template<>
 constexpr Amount<Unit::MOLE> Amount<Unit::MOLE_RATIO>::to(const Amount<Unit::MOLE> moles) const noexcept
 {
 	return value * moles.asStd();
+}
+
+template<>
+template<>
+constexpr Amount<Unit::MOLE_RATIO> Amount<Unit::MOLE>::to(const Amount<Unit::MOLE> moles) const noexcept
+{
+	return value / moles.asStd();
 }
 
 template<>
@@ -655,6 +674,7 @@ constexpr inline Amount<Unit::KELVIN> operator""_K(long double value) { return v
 constexpr inline Amount<Unit::FAHRENHEIT> operator""_F(long double value) { return value; }
 constexpr inline Amount<Unit::TORR> operator""_torr(long double value) { return value; }
 constexpr inline Amount<Unit::PASCAL> operator""_Pa(long double value) { return value; }
+constexpr inline Amount<Unit::ATMOSPHERE> operator""_atm(long double value) { return value; }
 constexpr inline Amount<Unit::JOULE> operator""_J(long double value) { return value; }
 constexpr inline Amount<Unit::WATT> operator""_W(long double value) { return value; }
 constexpr inline Amount<Unit::METER> operator""_m(long double value) { return value; }

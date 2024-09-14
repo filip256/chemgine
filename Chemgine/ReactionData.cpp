@@ -11,18 +11,36 @@ ReactionData::ReactionData(
 	const std::string& name,
 	const std::vector<std::pair<Reactable, uint8_t>>& reactants,
 	const std::vector<std::pair<Reactable, uint8_t>>& products,
-	const Amount<Unit::MOLE_PER_SECOND> baseSpeed,
-	const Amount<Unit::CELSIUS> baseTemperature,
 	const Amount<Unit::JOULE_PER_MOLE> reactionEnergy,
 	const Amount<Unit::JOULE_PER_MOLE> activationEnergy,
+	const UnitizedEstimator<Unit::MOLE_PER_SECOND, Unit::CELSIUS>& tempSpeedEstimator,
+	const UnitizedEstimator<Unit::NONE, Unit::MOLE_RATIO>& concSpeedEstimator,
 	ImmutableSet<Catalyst>&& catalysts
 ) noexcept :
 	id(id),
-	baseSpeed(baseSpeed),
-	baseTemperature(baseTemperature),
+	isCut(false),
 	reactionEnergy(reactionEnergy),
 	activationEnergy(activationEnergy),
 	name(name),
+	tempSpeedEstimator(&tempSpeedEstimator),
+	concSpeedEstimator(&concSpeedEstimator),
+	reactants(Utils::flatten<Reactable, uint8_t>(reactants)),
+	products(Utils::flatten<Reactable, uint8_t>(products)),
+	catalysts(std::move(catalysts))
+{}
+
+ReactionData::ReactionData(
+	const ReactionId id,
+	const std::string& name,
+	const std::vector<std::pair<Reactable, uint8_t>>& reactants,
+	const std::vector<std::pair<Reactable, uint8_t>>& products,
+	ImmutableSet<Catalyst>&& catalysts
+) noexcept :
+	id(id),
+	isCut(true),
+	name(name),
+	tempSpeedEstimator(nullptr),
+	concSpeedEstimator(nullptr),
 	reactants(Utils::flatten<Reactable, uint8_t>(reactants)),
 	products(Utils::flatten<Reactable, uint8_t>(products)),
 	catalysts(std::move(catalysts))
@@ -322,14 +340,23 @@ const std::vector<Reactable>& ReactionData::getProducts() const
 	return products;
 }
 
-const ImmutableSet<Catalyst> &ReactionData::getCatalysts() const
+const ImmutableSet<Catalyst>& ReactionData::getCatalysts() const
 {
 	return catalysts;
 }
 
+Amount<Unit::MOLE_PER_SECOND> ReactionData::getSpeedAt(
+	const Amount<Unit::CELSIUS> temperature,
+	const Amount<Unit::MOLE_RATIO> concentration) const
+{
+	return tempSpeedEstimator ?
+		tempSpeedEstimator->get(temperature) * concSpeedEstimator->get(concentration).asStd() :
+		0.0;
+}
+
 bool ReactionData::isCutReaction() const
 {
-	return baseSpeed == 0.0;
+	return isCut;
 }
 
 bool ReactionData::isSpecializationOf(const ReactionData& other) const

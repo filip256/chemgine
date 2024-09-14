@@ -20,3 +20,8 @@ const DefinitionObject* OOLDefRepository::getDefinition(const std::string& ident
 	const auto it = definitions.find(identifier);
 	return it != definitions.end() ? it->second.get() : nullptr;
 }
+
+void OOLDefRepository::clear()
+{
+	definitions.clear();
+}

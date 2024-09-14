@@ -2,6 +2,7 @@
 
 #include "Amount.hpp"
 #include "Parsers.hpp"
+#include "Keywords.hpp"
 
 #include <optional>
 
@@ -273,7 +274,11 @@ public:
 		if (pair.empty())
 			return std::nullopt;
 
-		const auto val = Def::parse<Amount<>::StorageType>(pair.front());
+		const auto valStr = Utils::strip(pair.front());
+		const auto val =
+			valStr == Keywords::Amounts::Min ? std::numeric_limits<Amount<>::StorageType>::lowest() :
+			valStr == Keywords::Amounts::Max ? std::numeric_limits<Amount<>::StorageType>::max() :
+			Def::parse<Amount<>::StorageType>(valStr);
 		if (val.has_value() == false)
 			return std::nullopt;
 

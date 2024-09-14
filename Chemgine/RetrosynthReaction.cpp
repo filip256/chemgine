@@ -84,7 +84,8 @@ std::string RetrosynthReaction::print() const
 
 	// properties
 	result += " - Activation: " + baseReaction.activationEnergy.toString() + '\n';
-	result += " - Speed:      " + baseReaction.baseSpeed.toString() + " at " + baseReaction.baseTemperature.toString() + " (relative)\n";
+	result += " - Speed:      " + baseReaction.getSpeedAt(20.0_C, 1.0).toString() +
+		" (at " + Amount(20.0_C).toString() + ")\n";
 	result += " - Energy:     " + baseReaction.activationEnergy.toString() + '\n';
 
 	return result;

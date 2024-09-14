@@ -19,6 +19,11 @@ DefinitionObject::DefinitionObject(
 	location(std::move(location))
 {}
 
+DefinitionType DefinitionObject::getType() const
+{
+	return type;
+}
+
 const std::string& DefinitionObject::getIdentifier() const
 {
 	return identifier;

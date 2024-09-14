@@ -1,4 +1,5 @@
 #include "Spline.hpp"
+#include "NumericUtils.hpp"
 
 #include <limits>
 #include <algorithm>
@@ -12,7 +13,7 @@ Spline<T>::Spline(
 	std::sort(points.begin(), points.end(), [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; });
 	points.erase(std::unique(
 			points.begin(),points.end(),
-			[](const auto& lhs, const auto& rhs) { return std::abs(lhs.first - rhs.first) < std::numeric_limits<T>::epsilon(); }),
+		[](const auto& lhs, const auto& rhs) { return Utils::equal(lhs.first, rhs.first); }),
 		points.end());
 
 	this->points = std::move(points);
@@ -103,7 +104,7 @@ void Spline<T>::compress(const T maxLinearError)
 	{
 		const T slope = getSlope(i - 1, i + 1);
 		const T after = (slope * (points[i].first - points[i - 1].first) + points[i - 1].second);
-		if (std::abs(points[i].second - after) <= maxLinearError)
+		if (Utils::equal(points[i].second, after, maxLinearError))
 		{
 			points.erase(points.begin() + i);
 			if (points.size() < 3)
@@ -112,7 +113,7 @@ void Spline<T>::compress(const T maxLinearError)
 		--i;
 	}
 
-	if (points.size() == 2 && std::abs(points.front().second - points.back().second) <= maxLinearError)
+	if (points.size() == 2 && Utils::equal(points.front().second, points.back().second, maxLinearError))
 		points.pop_back();
 
 	points.shrink_to_fit();
@@ -122,7 +123,7 @@ template <class T>
 bool Spline<T>::isEquivalent(const Spline<T>& other, const T epsilon) const
 {
 	for (size_t i = 0; i < this->points.size(); ++i)
-		if (std::abs(this->points[i].second - other.getLinearValueAt(this->points[i].first)) > epsilon)
+		if (not Utils::equal(this->points[i].second, other.getLinearValueAt(this->points[i].first), epsilon))
 			return false;
 	return true;
 }

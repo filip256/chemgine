@@ -2,7 +2,8 @@
 
 #include "MoleculeId.hpp"
 #include "MolecularStructure.hpp"
-#include "BaseEstimator.hpp"
+#include "EstimatorBase.hpp"
+#include "UnitizedEstimator.hpp"
 #include "Amount.hpp"
 #include "MoleculeType.hpp"
 #include "Polarity.hpp"
@@ -24,22 +25,21 @@ public:
 
 	const Color color;
 
-	const BaseEstimator& meltingPointEstimator;
-	const BaseEstimator& boilingPointEstimator;
+	const UnitizedEstimator<Unit::CELSIUS, Unit::TORR>& meltingPointEstimator;
+	const UnitizedEstimator<Unit::CELSIUS, Unit::TORR>& boilingPointEstimator;
 
-	const BaseEstimator& solidDensityEstimator;
-	const BaseEstimator& liquidDensityEstimator;
+	const UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>& solidDensityEstimator;
+	const UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>& liquidDensityEstimator;
 
-	const BaseEstimator& solidHeatCapacityEstimator;
-	const BaseEstimator& liquidHeatCapacityEstimator;
+	const UnitizedEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>& solidHeatCapacityEstimator;
+	const UnitizedEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>& liquidHeatCapacityEstimator;
 
-	const BaseEstimator& fusionLatentHeatEstimator;
-	const BaseEstimator& vaporizationLatentHeatEstimator;
-	const BaseEstimator& sublimationLatentHeatEstimator;
+	const UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>& fusionLatentHeatEstimator;
+	const UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>& vaporizationLatentHeatEstimator;
+	const UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>& sublimationLatentHeatEstimator;
 
-	const BaseEstimator& relativeSolubilityEstimator;
-	const BaseEstimator& henrysConstantEstimator;
-
+	const UnitizedEstimator<Unit::NONE, Unit::CELSIUS>& relativeSolubilityEstimator;
+	const UnitizedEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>& henrysConstantEstimator;
 
 	MoleculeData(
 		const MoleculeId id,
@@ -48,17 +48,17 @@ public:
 		const Amount<Unit::MOLE_RATIO> hydrophilicity,
 		const Amount<Unit::MOLE_RATIO> lipophilicity,
 		const Color color,
-		const BaseEstimator& meltingPointEstimator,
-		const BaseEstimator& boilingPointEstimator,
-		const BaseEstimator& solidDensityEstimator,
-		const BaseEstimator& liquidDensityEstimator,
-		const BaseEstimator& solidHeatCapacityEstimator,
-		const BaseEstimator& liquidHeatCapacityEstimator,
-		const BaseEstimator& fusionLatentHeatEstimator,
-		const BaseEstimator& vaporizationLatentHeatEstimator,
-		const BaseEstimator& sublimationLatentHeatEstimator,
-		const BaseEstimator& relativeSolubilityEstimator,
-		const BaseEstimator& henrysConstantEstimator
+		const UnitizedEstimator<Unit::CELSIUS, Unit::TORR>& meltingPointEstimator,
+		const UnitizedEstimator<Unit::CELSIUS, Unit::TORR>& boilingPointEstimator,
+		const UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>& solidDensityEstimator,
+		const UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>& liquidDensityEstimator,
+		const UnitizedEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>& solidHeatCapacityEstimator,
+		const UnitizedEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>& liquidHeatCapacityEstimator,
+		const UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>& fusionLatentHeatEstimator,
+		const UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>& vaporizationLatentHeatEstimator,
+		const UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>& sublimationLatentHeatEstimator,
+		const UnitizedEstimator<Unit::NONE, Unit::CELSIUS>& relativeSolubilityEstimator,
+		const UnitizedEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>& henrysConstantEstimator
 	) noexcept;
 
 	MoleculeData(
@@ -67,17 +67,17 @@ public:
 		const Amount<Unit::MOLE_RATIO> hydrophilicity,
 		const Amount<Unit::MOLE_RATIO> lipophilicity,
 		const Color color,
-		const BaseEstimator& meltingPointEstimator,
-		const BaseEstimator& boilingPointEstimator,
-		const BaseEstimator& solidDensityEstimator,
-		const BaseEstimator& liquidDensityEstimator,
-		const BaseEstimator& solidHeatCapacityEstimator,
-		const BaseEstimator& liquidHeatCapacityEstimator,
-		const BaseEstimator& fusionLatentHeatEstimator,
-		const BaseEstimator& vaporizationLatentHeatEstimator,
-		const BaseEstimator& sublimationLatentHeatEstimator,
-		const BaseEstimator& relativeSolubilityEstimator,
-		const BaseEstimator& henrysConstantEstimator
+		const UnitizedEstimator<Unit::CELSIUS, Unit::TORR>& meltingPointEstimator,
+		const UnitizedEstimator<Unit::CELSIUS, Unit::TORR>& boilingPointEstimator,
+		const UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>& solidDensityEstimator,
+		const UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>& liquidDensityEstimator,
+		const UnitizedEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>& solidHeatCapacityEstimator,
+		const UnitizedEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>& liquidHeatCapacityEstimator,
+		const UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>& fusionLatentHeatEstimator,
+		const UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>& vaporizationLatentHeatEstimator,
+		const UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>& sublimationLatentHeatEstimator,
+		const UnitizedEstimator<Unit::NONE, Unit::CELSIUS>& relativeSolubilityEstimator,
+		const UnitizedEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>& henrysConstantEstimator
 	) noexcept;
 
 	MoleculeData(const MoleculeData&) = delete;

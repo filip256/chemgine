@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "BaseComponentData.hpp"
+#include "UnitizedEstimator.hpp"
 #include "ImmutableSet.hpp"
 #include "Reactable.hpp"
 #include "PairHash.hpp"
@@ -36,21 +37,30 @@ private:
 
 public:
 	const ReactionId id;
-	const Amount<Unit::MOLE_PER_SECOND> baseSpeed;
-	const Amount<Unit::CELSIUS> baseTemperature;
+	const bool isCut;
 	const Amount<Unit::JOULE_PER_MOLE> reactionEnergy;
 	const Amount<Unit::JOULE_PER_MOLE> activationEnergy;
 	const std::string name;
+	const UnitizedEstimator<Unit::MOLE_PER_SECOND, Unit::CELSIUS>* tempSpeedEstimator;
+	const UnitizedEstimator<Unit::NONE, Unit::MOLE_RATIO>* concSpeedEstimator;
 
 	ReactionData(
 		const ReactionId id,
 		const std::string& name,
 		const std::vector<std::pair<Reactable, uint8_t>>& reactants,
 		const std::vector<std::pair<Reactable, uint8_t>>& products,
-		const Amount<Unit::MOLE_PER_SECOND> baseSpeed,
-		const Amount<Unit::CELSIUS> baseTemperature,
 		const Amount<Unit::JOULE_PER_MOLE> reactionEnergy,
 		const Amount<Unit::JOULE_PER_MOLE> activationEnergy,
+		const UnitizedEstimator<Unit::MOLE_PER_SECOND, Unit::CELSIUS>& tempSpeedEstimator,
+		const UnitizedEstimator<Unit::NONE, Unit::MOLE_RATIO>& concSpeedEstimator,
+		ImmutableSet<Catalyst>&& catalysts
+	) noexcept;
+
+	ReactionData(
+		const ReactionId id,
+		const std::string& name,
+		const std::vector<std::pair<Reactable, uint8_t>>& reactants,
+		const std::vector<std::pair<Reactable, uint8_t>>& products,
 		ImmutableSet<Catalyst>&& catalysts
 	) noexcept;
 
@@ -93,6 +103,11 @@ public:
 	const std::vector<Reactable>& getReactants() const;
 	const std::vector<Reactable>& getProducts() const;
 	const ImmutableSet<Catalyst>& getCatalysts() const;
+
+	Amount<Unit::MOLE_PER_SECOND> getSpeedAt(
+		const Amount<Unit::CELSIUS> temperature,
+		const Amount<Unit::MOLE_RATIO> concentration
+	) const;
 
 	bool isCutReaction() const;
 	bool isSpecializationOf(const ReactionData& other) const;

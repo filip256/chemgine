@@ -2,6 +2,8 @@
 
 #include "PortType.hpp"
 #include "DynamicAmount.hpp"
+#include "Keywords.hpp"
+
 
 class LabwarePort
 {
@@ -24,19 +26,28 @@ class Def::Parser<LabwarePort>
 public:
 	static std::optional<LabwarePort> parse(const std::string& str)
 	{
-		const auto port = Utils::split(str, ':', true);
-
-		if (port.size() != 4)
+		const auto pair = Def::parse<std::pair<PortType, std::string>>(str);
+		if (not pair.has_value())
 			return std::nullopt;
 
-		const auto type = Def::parseEnum<PortType>(port[0]);
-		const auto x = Def::parse<uint32_t>(port[1]);
-		const auto y = Def::parse<uint32_t>(port[2]);
-		const auto angle = Def::parse<Amount<Unit::DEGREE>>(port[3]);
-
-		if (type.has_value() == false || x.has_value() == false || y.has_value() == false || angle.has_value() == false)
+		const auto props = Def::parse<std::unordered_map<std::string, std::string>>(pair->second);
+		if (not props.has_value())
 			return std::nullopt;
 
-		return LabwarePort(*type, *x, *y, *angle);
+		const auto xIt = props->find(Keywords::Port::X);
+		const auto yIt = props->find(Keywords::Port::Y);
+		const auto angleIt = props->find(Keywords::Port::Angle);
+
+		if (xIt == props->end() || yIt == props->end(); angleIt == props->end())
+			return std::nullopt;
+
+		const auto x = Def::parse<uint32_t>(xIt->second);
+		const auto y = Def::parse<uint32_t>(yIt->second);
+		const auto angle = Def::parse<Amount<Unit::DEGREE>>(angleIt->second);
+
+		if (not (x.has_value() && y.has_value() && angle.has_value()))
+			return std::nullopt;
+
+		return LabwarePort(pair->first, *x, *y, *angle);
 	}
 };

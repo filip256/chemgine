@@ -288,16 +288,7 @@
     <ClCompile Include="Spline.cpp">
       <Filter>Source Files\DataStructures</Filter>
     </ClCompile>
-    <ClCompile Include="BaseEstimator.cpp">
-      <Filter>Source Files\Estimators</Filter>
-    </ClCompile>
-    <ClCompile Include="SplineEstimator.cpp">
-      <Filter>Source Files\Estimators</Filter>
-    </ClCompile>
-    <ClCompile Include="OffsetEstimator.cpp">
-      <Filter>Source Files\Estimators</Filter>
-    </ClCompile>
-    <ClCompile Include="SplitEstimator.cpp">
+    <ClCompile Include="EstimatorBase.cpp">
       <Filter>Source Files\Estimators</Filter>
     </ClCompile>
     <ClCompile Include="Formulas.cpp">
@@ -305,15 +296,6 @@
     </ClCompile>
     <ClCompile Include="Catalyst.cpp">
       <Filter>Source Files\Reactions</Filter>
-    </ClCompile>
-    <ClCompile Include="ScaleEstimator.cpp">
-      <Filter>Source Files\Estimators</Filter>
-    </ClCompile>
-    <ClCompile Include="ConstantEstimator.cpp">
-      <Filter>Source Files\Estimators</Filter>
-    </ClCompile>
-    <ClCompile Include="LinearEstimator.cpp">
-      <Filter>Source Files\Estimators</Filter>
     </ClCompile>
     <ClCompile Include="GenericMoleculeData.cpp">
       <Filter>Source Files\Molecules</Filter>
@@ -483,6 +465,15 @@
     <ClCompile Include="OOLDefRepository.cpp">
       <Filter>Source Files\Data</Filter>
     </ClCompile>
+    <ClCompile Include="EstimatorFactory.cpp">
+      <Filter>Source Files\Estimators</Filter>
+    </ClCompile>
+    <ClCompile Include="Regressors2D.cpp">
+      <Filter>Source Files\DataStructures</Filter>
+    </ClCompile>
+    <ClCompile Include="Regressors3D.cpp">
+      <Filter>Source Files\DataStructures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -611,9 +602,6 @@
     <ClInclude Include="LabwareSystem.hpp">
       <Filter>Header Files\Labware</Filter>
     </ClInclude>
-    <ClInclude Include="PortType.hpp">
-      <Filter>Header Files\Labware</Filter>
-    </ClInclude>
     <ClInclude Include="LabwareConnection.hpp">
       <Filter>Header Files\Labware</Filter>
     </ClInclude>
@@ -656,7 +644,7 @@
     <ClInclude Include="Spline.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
-    <ClInclude Include="BaseEstimator.hpp">
+    <ClInclude Include="EstimatorBase.hpp">
       <Filter>Header Files\Estimators</Filter>
     </ClInclude>
     <ClInclude Include="EstimatorType.hpp">
@@ -665,25 +653,13 @@
     <ClInclude Include="SplineEstimator.hpp">
       <Filter>Header Files\Estimators</Filter>
     </ClInclude>
-    <ClInclude Include="OffsetEstimator.hpp">
-      <Filter>Header Files\Estimators</Filter>
-    </ClInclude>
-    <ClInclude Include="SplitEstimator.hpp">
-      <Filter>Header Files\Estimators</Filter>
-    </ClInclude>
     <ClInclude Include="Formulas.hpp">
       <Filter>Header Files\Data</Filter>
     </ClInclude>
     <ClInclude Include="Catalyst.hpp">
       <Filter>Header Files\Reactions</Filter>
     </ClInclude>
-    <ClInclude Include="ScaleEstimator.hpp">
-      <Filter>Header Files\Estimators</Filter>
-    </ClInclude>
     <ClInclude Include="ConstantEstimator.hpp">
-      <Filter>Header Files\Estimators</Filter>
-    </ClInclude>
-    <ClInclude Include="LinearEstimator.hpp">
       <Filter>Header Files\Estimators</Filter>
     </ClInclude>
     <ClInclude Include="GenericMoleculeData.hpp">
@@ -902,7 +878,7 @@
     <ClInclude Include="DefFileAnalyzer.hpp">
       <Filter>Header Files\Data\Parsers</Filter>
     </ClInclude>
-    <ClInclude Include="TypedEstimator.hpp">
+    <ClInclude Include="UnitizedEstimator.hpp">
       <Filter>Header Files\Estimators</Filter>
     </ClInclude>
     <ClInclude Include="OOLDefRepository.hpp">
@@ -911,8 +887,44 @@
     <ClInclude Include="DataPoint.hpp">
       <Filter>Header Files\Estimators</Filter>
     </ClInclude>
-    <ClInclude Include="DefinitionParsers.hpp">
+    <ClInclude Include="EstimationMode.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="EstimatorFactory.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="EstimatorParsers.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="AffineEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="NumericUtils.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="MetaUtils.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="DefinitionParser.hpp">
       <Filter>Header Files\Data\Parsers</Filter>
+    </ClInclude>
+    <ClInclude Include="Regressors2D.hpp">
+      <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="Regressors3D.hpp">
+      <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="Regression2DEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="Regression3DEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="Casts.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="PortType.hpp">
+      <Filter>Header Files\Labware</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

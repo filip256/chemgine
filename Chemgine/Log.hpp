@@ -7,6 +7,7 @@
 #include <typeinfo>
 #include <iostream>
 #include <algorithm>
+#include <stdexcept>
 
 #include "LogType.hpp"
 #include "Linguistics.hpp"
@@ -24,7 +25,7 @@
 #else
 	#define CHEM_LOG_ERROR
 	#define CHEM_LOG_WARN
-	#define CHEM_LOG_SUCCESS
+	#define CHEM_LOG_INFO
 #endif
 
 
@@ -219,6 +220,14 @@ const Log<SourceT>& Log<SourceT>::log(const std::string& msg, const LogType type
 template<typename SourceT>
 void Log<SourceT>::fatalExit(const std::string& msg) const
 {
+	// exit folded log sequence
+	if (foldCount != static_cast<size_t>(-1) && msg.starts_with('\r') == false)
+	{
+		foldCount = static_cast<size_t>(-1);
+		outputStream << '\n';
+	}
+
+	outputStream << '\n';
 	OS::setTextDarkRed();
 	outputStream << "FATAL:   ";
 	OS::setTextWhite();
@@ -238,7 +247,9 @@ void Log<SourceT>::fatalExit(const std::string& msg) const
 	OS::setTextDarkRed();
 	outputStream << "\n   The execution was halted due to a fatal error!\n   Press ENTER to exit.\n";
 	OS::setTextWhite();
-	throw;
+
+	throw std::runtime_error("Fatal error: '" + msg + "'.");
+
 	getchar();
 	std::exit(EXIT_FAILURE);
 }

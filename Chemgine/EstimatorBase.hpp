@@ -8,28 +8,25 @@ typedef uint16_t EstimatorId;
 
 class EstimatorRepository;
 
-class BaseEstimator
+class EstimatorBase
 {
 protected:
 	EstimatorId id;
 
-	BaseEstimator(const EstimatorId id) noexcept;
-	BaseEstimator(const BaseEstimator&) = default;
-	BaseEstimator(BaseEstimator&&) = default;
+	EstimatorBase(const EstimatorId id) noexcept;
+	EstimatorBase(const EstimatorBase&) = default;
+	EstimatorBase(EstimatorBase&&) = default;
 
 public:
-	virtual ~BaseEstimator() = default;
+	virtual ~EstimatorBase() = default;
 
 	EstimatorId getId() const;
 
-	virtual double get(const double input) const;
-	virtual double get(const double input1, const double input2) const;
-
-	virtual bool isEquivalent(const BaseEstimator& other,
+	virtual bool isEquivalent(const EstimatorBase& other,
 		const double epsilon = std::numeric_limits<double>::epsilon()
 	) const;
 
-	virtual BaseEstimator* clone() const = 0;
+	virtual EstimatorBase* clone() const = 0;
 
 	friend class EstimatorRepository;
 

@@ -205,7 +205,7 @@ std::vector<std::vector<T>> Utils::getArrangementsWithRepetitions(
 	std::vector<T> current;
 	current.reserve(maxLength);
 
-	getArrangementsWithRepetitions(vector, maxLength, current, result);
+	::getArrangementsWithRepetitions(vector, maxLength, current, result);
 	return result;
 }
 

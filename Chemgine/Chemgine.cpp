@@ -33,6 +33,8 @@
 #include "DefFileParser.hpp"
 #include "PathUtils.hpp"
 
+#include <algorithm> 
+
 int main()
 {
     {
@@ -42,6 +44,13 @@ int main()
             TestManager tests;
             tests.runAll();
             tests.runPersist();
+        }
+
+        std::vector<int> in = { 2, 1 };
+        while (std::next_permutation(in.begin(), in.end())) {
+            for (const auto& i : in)
+                std::cout << i << ' ';
+            std::cout << '\n';
         }
 
         DataStore store;
@@ -108,8 +117,8 @@ int main()
         Log().error("Memory leak detected: BaseLabwareData ({0} unreleased instances).", BaseLabwareData::instanceCount);
     if (BaseLabwareComponent::instanceCount != 0)
         Log().error("Memory leak detected: BaseLabwareComponent ({0} unreleased instances).", BaseLabwareComponent::instanceCount);
-    if (BaseEstimator::instanceCount != 0)
-        Log().error("Memory leak detected: BaseEstimator ({0} unreleased instances).", BaseEstimator::instanceCount);
+    if (EstimatorBase::instanceCount != 0)
+        Log().error("Memory leak detected: EstimatorBase ({0} unreleased instances).", EstimatorBase::instanceCount);
     if (BaseContainer::instanceCount != 0)
         Log().error("Memory leak detected: BaseContainer ({0} unreleased instances).", BaseContainer::instanceCount);
 

@@ -2,6 +2,57 @@
     Built-in Estimator Definitions
 .:
 
-_data<ld_0>: g -> L {
-    values: {1.0_mg : 1.0_L, 2.0_mg : 3.0_drops},
+_data<sd_0>: C -> g/mL {
+    values: { 0.0 : 1.0 },
+};
+
+_data<ld_0>: C -> g/mL {
+    values: { 0.0 : 1.0 },
+};
+
+_data<shc_0>: atm -> J/(mol*C) {
+    values: { 1.0 : 36.0 },
+};
+
+_data<lhc_0>: atm -> J/(mol*C) {
+    values: { 1.0 : 75.4840232 },
+};
+
+_data<flh_0>: C, atm -> J/mol {
+    values: { { 0.0, 1.0 } : 6020.0 } },
+};
+
+_data<vlh_0>: C, torr -> J/mol {
+    values: { { 0.0, 1.0 } : 40700.0, { 1.0, 1.0 } : 40900.0 },
+};
+
+_data<slh_0>: C, atm -> J/mol {
+    values: { { 0.0, 1.0 } : INF } },
+};
+
+_data<rsol_0>: C -> 1 {
+    values: { 1.0 : 1.0, 2.0 : 1.1 },
+};
+
+_data<irsol_0>: C -> 1 {
+    values: { 1.0 : 1.0, 2.0 : 0.9 },
+};
+
+_data<hencst_0>: C -> torr*(mol/mol) {
+    values: { 0.0 : 1000.0 },
+};
+
+_data<bp_w>: torr -> C {
+    values: { 1400 : 118.1, 1000 : 107.8, 900 : 104.8, 800 : 101.4, 760 : 100, 600 : 93.3,
+              500 : 89.0, 400 : 83.3, 300 : 75.6, 200 : 66.5, 100 : 51.9, 1 : -16.9} },
+};
+
+_data<rtspd_0>: C -> mol/s {
+    values: { -INF : 0.0, -40.0 : 0.0625, -30.0 : 0.125, -20.0 : 0.25, -10.0 : 0.5,
+              0.0 : 1.0, 10.0 : 2.0, 20.0 : 4.0, 30.0 : 8.0, 50.0 : 16.0 },
+};
+
+_data<rcspd_0>: mol/mol -> 1 {
+    values: { -INF : 0.0, 0.0 : 0.0, 0.1 : 0.5, 0.2 : 0.66, 0.4 : 0.8, 0.75 : 0.9,
+              1.0 : 1.0, INF : 1.0 },
 };

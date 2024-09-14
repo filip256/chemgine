@@ -11,13 +11,17 @@ class ReactionRepository :
 	public Repository<ReactionId, std::string, ReactionData>
 {
 private:
+	EstimatorRepository& estimators;
 	const MoleculeRepository& molecules;
 
 	uint8_t maxReactantCount = 0;
 	ReactionNetwork network;
 
 public:
-	ReactionRepository(MoleculeRepository& molecules) noexcept;
+	ReactionRepository(
+		EstimatorRepository& estimators,
+		const MoleculeRepository& molecules
+	) noexcept;
 	ReactionRepository(const ReactionRepository&) = delete;
 
 	bool add(DefinitionObject&& definition);
