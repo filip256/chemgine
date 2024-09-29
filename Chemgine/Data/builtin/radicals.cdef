@@ -3,31 +3,26 @@
 .:
 
 _radical : * {
-    id:       #21,
     name:     any radical,
     matches:  *,
 };
 
 _radical : R {
-    id:       #22,
     name:     alkyl radical,
     matches:  C,
 };
 
 _radical : A {
-    id:       #23,
     name:     aromatic radical,
     matches:  C,
 };
 
 _radical : X {
-    id:       #24,
     name:     halogen radical,
     matches:  {F, Cl, Br, At, Ts},
 };
 
 _radical : Me {
-    id:       #25,
     name:     metal radical,
     matches:  {Li, Na, K, Be, Mg, Ca, Sr, Ba},
 };

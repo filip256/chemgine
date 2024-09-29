@@ -41,8 +41,8 @@ public:
 	const Amount<Unit::JOULE_PER_MOLE> reactionEnergy;
 	const Amount<Unit::JOULE_PER_MOLE> activationEnergy;
 	const std::string name;
-	const UnitizedEstimator<Unit::MOLE_PER_SECOND, Unit::CELSIUS>* tempSpeedEstimator;
-	const UnitizedEstimator<Unit::NONE, Unit::MOLE_RATIO>* concSpeedEstimator;
+	const EstimatorRef<Unit::MOLE_PER_SECOND, Unit::CELSIUS> tempSpeedEstimator;
+	const EstimatorRef<Unit::NONE, Unit::MOLE_RATIO> concSpeedEstimator;
 
 	ReactionData(
 		const ReactionId id,
@@ -51,8 +51,8 @@ public:
 		const std::vector<std::pair<Reactable, uint8_t>>& products,
 		const Amount<Unit::JOULE_PER_MOLE> reactionEnergy,
 		const Amount<Unit::JOULE_PER_MOLE> activationEnergy,
-		const UnitizedEstimator<Unit::MOLE_PER_SECOND, Unit::CELSIUS>& tempSpeedEstimator,
-		const UnitizedEstimator<Unit::NONE, Unit::MOLE_RATIO>& concSpeedEstimator,
+		EstimatorRef<Unit::MOLE_PER_SECOND, Unit::CELSIUS>&& tempSpeedEstimator,
+		EstimatorRef<Unit::NONE, Unit::MOLE_RATIO>&& concSpeedEstimator,
 		ImmutableSet<Catalyst>&& catalysts
 	) noexcept;
 
@@ -61,6 +61,8 @@ public:
 		const std::string& name,
 		const std::vector<std::pair<Reactable, uint8_t>>& reactants,
 		const std::vector<std::pair<Reactable, uint8_t>>& products,
+		EstimatorRef<Unit::MOLE_PER_SECOND, Unit::CELSIUS>&& tempSpeedEstimator,
+		EstimatorRef<Unit::NONE, Unit::MOLE_RATIO>&& concSpeedEstimator,
 		ImmutableSet<Catalyst>&& catalysts
 	) noexcept;
 

@@ -22,4 +22,6 @@ public:
 	bool add(DefinitionObject&& definition);
 
 	const BaseLabwareData& at(const LabwareId id) const;
+
+	void clear();
 };

@@ -9,6 +9,7 @@
 #include "Unit.hpp"
 #include "Linguistics.hpp"
 #include "NumericUtils.hpp"
+#include "Printers.hpp"
 
 /// <summary>
 /// Stores the amount of a certain Unit and statically handles conversions between units.
@@ -680,3 +681,15 @@ constexpr inline Amount<Unit::WATT> operator""_W(long double value) { return val
 constexpr inline Amount<Unit::METER> operator""_m(long double value) { return value; }
 constexpr inline Amount<Unit::DEGREE> operator""_o(long double value) { return value; }
 constexpr inline Amount<Unit::RADIAN> operator""_rad(long double value) { return value; }
+
+//    --- Printer ---    //
+
+template <Unit U>
+class Def::Printer<Amount<U>>
+{
+public:
+	static std::string print(const Amount<U> object)
+	{
+		return Linguistics::formatFloatingPoint(std::to_string(object.asStd())) + '_' + object.unitSymbol();
+	}
+};

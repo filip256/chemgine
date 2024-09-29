@@ -2,40 +2,26 @@
 #include "DataStore.hpp"
 #include "Log.hpp"
 
-Radical::Radical(const AtomId id) noexcept :
-	Atom(id)
-{
-	if(isRadical() == false)
-		Log(this).error("Radical initialized with non-radical atom data.");
-}
-
 Radical::Radical(const Symbol symbol) noexcept :
 	Atom(symbol)
-{
-	if (isRadical() == false)
-		Log(this).error("Radical initialized with non-radical atom data.");
-}
+{}
 
-const RadicalData& Radical::data() const
+const RadicalData& Radical::getData() const
 {
-	return static_cast<const RadicalData&>(dataStore().atoms.at(id));
+	return static_cast<const RadicalData&>(data);
 }
 
 bool Radical::matches(const Atom& other) const
 {
+	const auto& d = this->getData();
 	return equals(other) ||
-		data().matchables == RadicalData::MatchAny ||
-		data().matchables.contains(other.id);
+		d.matchables == RadicalData::MatchAny ||
+		d.matchables.contains(other.getData().symbol);
 }
 
 Radical* Radical::clone() const
 {
 	return new Radical(*this);
-}
-
-bool Radical::isDefined(const AtomId id)
-{
-	return Atom::isDefined(id) && getDataStore().atoms.at(id).isRadical();
 }
 
 bool Radical::isDefined(const Symbol symbol)

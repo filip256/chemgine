@@ -3,11 +3,9 @@
 BaseComponentData::BaseComponentData() {}
 
 BaseComponentData::BaseComponentData(
-	const AtomId id,
 	const Amount<Unit::GRAM> weight,
 	const uint8_t rarity
 ) :
-	id(id),
 	weight(weight),
 	rarity(rarity)
 {}

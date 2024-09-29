@@ -22,7 +22,7 @@ DefFileParser::DefFileParser(
 {
 	if (stream.is_open() == false)
 	{
-		Log(this).error("Failed to open file: '{0}'.", currentFile);
+		Log(this).error("Failed to open file for read: '{0}'.", currentFile);
 		return;
 	}
 
@@ -292,7 +292,7 @@ std::optional<DefinitionObject> DefFileParser::nextDefinition()
 	if (subParser)
 	{
 		auto subDef = subParser->nextDefinition();
-		if (subDef.has_value())
+		if (subDef)
 			return subDef;
 
 		// continue parsing until EoF, even if error occurs

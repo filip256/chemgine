@@ -13,8 +13,8 @@ ReactionData::ReactionData(
 	const std::vector<std::pair<Reactable, uint8_t>>& products,
 	const Amount<Unit::JOULE_PER_MOLE> reactionEnergy,
 	const Amount<Unit::JOULE_PER_MOLE> activationEnergy,
-	const UnitizedEstimator<Unit::MOLE_PER_SECOND, Unit::CELSIUS>& tempSpeedEstimator,
-	const UnitizedEstimator<Unit::NONE, Unit::MOLE_RATIO>& concSpeedEstimator,
+	EstimatorRef<Unit::MOLE_PER_SECOND, Unit::CELSIUS>&& tempSpeedEstimator,
+	EstimatorRef<Unit::NONE, Unit::MOLE_RATIO>&& concSpeedEstimator,
 	ImmutableSet<Catalyst>&& catalysts
 ) noexcept :
 	id(id),
@@ -22,8 +22,8 @@ ReactionData::ReactionData(
 	reactionEnergy(reactionEnergy),
 	activationEnergy(activationEnergy),
 	name(name),
-	tempSpeedEstimator(&tempSpeedEstimator),
-	concSpeedEstimator(&concSpeedEstimator),
+	tempSpeedEstimator(std::move(tempSpeedEstimator)),
+	concSpeedEstimator(std::move(concSpeedEstimator)),
 	reactants(Utils::flatten<Reactable, uint8_t>(reactants)),
 	products(Utils::flatten<Reactable, uint8_t>(products)),
 	catalysts(std::move(catalysts))
@@ -34,13 +34,15 @@ ReactionData::ReactionData(
 	const std::string& name,
 	const std::vector<std::pair<Reactable, uint8_t>>& reactants,
 	const std::vector<std::pair<Reactable, uint8_t>>& products,
+	EstimatorRef<Unit::MOLE_PER_SECOND, Unit::CELSIUS>&& tempSpeedEstimator,
+	EstimatorRef<Unit::NONE, Unit::MOLE_RATIO>&& concSpeedEstimator,
 	ImmutableSet<Catalyst>&& catalysts
 ) noexcept :
 	id(id),
 	isCut(true),
 	name(name),
-	tempSpeedEstimator(nullptr),
-	concSpeedEstimator(nullptr),
+	tempSpeedEstimator(std::move(tempSpeedEstimator)),
+	concSpeedEstimator(std::move(concSpeedEstimator)),
 	reactants(Utils::flatten<Reactable, uint8_t>(reactants)),
 	products(Utils::flatten<Reactable, uint8_t>(products)),
 	catalysts(std::move(catalysts))
@@ -55,7 +57,7 @@ bool ReactionData::balance(
 
 	SystemMatrix<float> system;
 	const size_t syslen = reactants.size() + products.size() - 1;
-	std::unordered_map<AtomId, size_t> sysmap;
+	std::unordered_map<Symbol, size_t> sysmap;
 
 	for (size_t i = 0; i < reactants.size(); ++i)
 	{
@@ -156,7 +158,7 @@ bool ReactionData::mapReactantsToProducts()
 			productIgnore[maxIdxJ].insert(p.second);
 
 			// only save radical atoms
-			if (reactants[i].getStructure().getAtom(p.first)->isRadical())
+			if (reactants[i].getStructure().getAtom(p.first).isRadical())
 				componentMapping.emplace(std::make_pair(std::make_pair(i, p.first), std::make_pair(maxIdxJ, p.second)));
 		}
 
@@ -349,9 +351,7 @@ Amount<Unit::MOLE_PER_SECOND> ReactionData::getSpeedAt(
 	const Amount<Unit::CELSIUS> temperature,
 	const Amount<Unit::MOLE_RATIO> concentration) const
 {
-	return tempSpeedEstimator ?
-		tempSpeedEstimator->get(temperature) * concSpeedEstimator->get(concentration).asStd() :
-		0.0;
+	return tempSpeedEstimator->get(temperature) * concSpeedEstimator->get(concentration).asStd();
 }
 
 bool ReactionData::isCutReaction() const

@@ -52,7 +52,7 @@ const std::unordered_map<std::string, std::string>& DefinitionObject::getRemaini
 std::optional<std::string> DefinitionObject::getProperty(const std::string& key) const
 {
 	const auto prop = getOptionalProperty(key);
-	if (prop.has_value() == false)
+	if (not prop)
 		Log(this).error("Missing required property: '{0}', at: {1}.", key, location.toString());
 
 	return prop;
@@ -60,17 +60,17 @@ std::optional<std::string> DefinitionObject::getProperty(const std::string& key)
 
 std::optional<std::string> DefinitionObject::getOptionalProperty(const std::string& key) const
 {
-	auto handle = properties.find(key);
-	if (handle == properties.end())
+	auto it = properties.find(key);
+	if (it == properties.end())
 		return std::nullopt;
 
-	return std::move(handle->second);
+	return it->second;
 }
 
 std::string DefinitionObject::getDefaultProperty(const std::string& key, std::string&& defaultValue) const
 {
 	const auto prop = getOptionalProperty(key);
-	return prop.has_value() ? *prop : defaultValue;
+	return prop ? *prop : defaultValue;
 }
 
 std::optional<std::string> DefinitionObject::pullProperty(const std::string& key)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "EstimatorType.hpp"
+#include "CountedRef.hpp"
 
 #include <string>
 
@@ -8,7 +9,7 @@ typedef uint16_t EstimatorId;
 
 class EstimatorRepository;
 
-class EstimatorBase
+class EstimatorBase : public Countable<>
 {
 protected:
 	EstimatorId id;

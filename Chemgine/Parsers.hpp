@@ -16,7 +16,7 @@ namespace Def
 	template <typename T>
 	static std::optional<T> parseUnsigned(const std::string& str);
 
-	template <typename E, typename = std::enable_if_t<std::is_enum_v<E>>>
+	template <typename E>
 	static std::optional<E> parseEnum(const std::string& str);
 
 	template <typename T>
@@ -25,13 +25,13 @@ namespace Def
 	template <typename T, typename = void>
 	class Parser
 	{
-		static_assert(std::is_arithmetic_v<T>, "Parser: Unsupported non-arithmetic type");
+		static_assert(std::is_arithmetic_v<T>, "Parser: Unsupported type.");
 
 	public:
 		static std::optional<T> parse(const std::string& str)
 		{
 			const auto r = Def::parse<int64_t>(str);
-			return r.has_value() &&
+			return r &&
 				*r >= std::numeric_limits<T>::min() && *r <= std::numeric_limits<T>::max() ?
 				std::optional<T>(*r) :
 				std::nullopt;
@@ -179,7 +179,7 @@ namespace Def
 			const auto listStr = removeBrackets(str);
 
 			std::vector<T> result;
-			size_t lastSep = -1;
+			int64_t lastSep = -1;
 			size_t ignoreSections = 0;
 
 			for (size_t i = 0; i < listStr.size(); ++i)
@@ -198,10 +198,10 @@ namespace Def
 				if (ignoreEmpty == false || i - lastSep - 1 > 0)
 				{
 					auto r = Def::parse<T>(listStr.substr(lastSep + 1, i - lastSep - 1));
-					if (r.has_value())
-						result.emplace_back(std::move(*r));
-					else
+					if(not r)
 						return std::nullopt;
+
+					result.emplace_back(std::move(*r));
 				}
 				lastSep = i;
 			}
@@ -209,10 +209,10 @@ namespace Def
 			if (ignoreEmpty == false || lastSep + 1 < listStr.size())
 			{
 				auto r = Def::parse<T>(listStr.substr(lastSep + 1));
-				if (r.has_value())
-					result.emplace_back(std::move(*r));
-				else
+				if (not r)
 					return std::nullopt;
+
+				result.emplace_back(std::move(*r));
 			}
 			return result;
 		}
@@ -237,11 +237,11 @@ namespace Def
 				return std::nullopt;
 
 			const auto val1 = Def::parse<T1>(pairStr.front());
-			if (not val1.has_value())
+			if (not val1)
 				return std::nullopt;
 
 			const auto val2 = Def::parse<T2>(pairStr.back());
-			if (not val2.has_value())
+			if (not val2)
 				return std::nullopt;
 
 			return std::optional<std::pair<T1, T2>>(std::make_pair(*val1, *val2));
@@ -255,7 +255,7 @@ namespace Def
 		static std::optional<std::unordered_map<std::string, T>> parse(const std::string& str)
 		{
 			auto entries = Def::parse<std::vector<std::pair<std::string, std::string>>>(str);
-			if (not entries.has_value())
+			if (not entries)
 				return std::nullopt;
 
 			std::unordered_map<std::string, T> result;
@@ -263,7 +263,7 @@ namespace Def
 			for (size_t i = 0; i < entries->size(); ++i)
 			{
 				auto value = Def::parse<T>((*entries)[i].second);
-				if (not value.has_value())
+				if (not value)
 					return std::nullopt;
 
 				result.emplace(std::move((*entries)[i].first), *std::move(value));
@@ -285,16 +285,18 @@ template <typename T>
 inline std::optional<T> Def::parseUnsigned(const std::string& str)
 {
 	const auto r = Def::Parser<T>::parse(str);
-	return r.has_value() == false || *r < 0 ?
+	return not r || *r < 0 ?
 		std::nullopt :
 		std::optional(r);
 }
 
-template <typename E, typename>
+template <typename E>
 inline std::optional<E> Def::parseEnum(const std::string& str)
 {
+	static_assert(std::is_enum_v<E>, "Enum Parser: Unsupported non-enum type.");
+
 	const auto val = parse<std::underlying_type_t<E>>(str);
-	return val.has_value() ? std::make_optional(static_cast<E>(*val)) : std::nullopt;
+	return val ? std::make_optional(static_cast<E>(*val)) : std::nullopt;
 }
 
 template <typename T>

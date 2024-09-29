@@ -19,17 +19,18 @@ public:
 	EstimatorRepository(const EstimatorRepository&) = delete;
 
 	/// <summary>
-	/// Constructs and allocates a new estimator of the given type.
-	/// Specializations can provide optimizations for certain estimator types.
+	/// Builds a new estimator of the given type.
 	/// </summary>
 	template <typename EstT, typename... Args>
-	const EstT& add(Args&&... args);
+	CountedRef<const EstT> add(Args&&... args);
 
 	const EstimatorBase& at(const EstimatorId id) const;
+
+	void clear();
 };
 
 template <typename EstT, typename... Args>
-const EstT& EstimatorRepository::add(Args&&... args)
+CountedRef<const EstT> EstimatorRepository::add(Args&&... args)
 {
 	static_assert(std::is_base_of_v<EstimatorBase, EstT>,
 		"EstimatorRepository: EstT must be a EstimatorBase derived type.");

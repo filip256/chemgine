@@ -4,6 +4,8 @@
 #include "ImmutableSet.hpp"
 #include "Symbol.hpp"
 
+class DefinitionObject;
+
 class AtomData : public BaseComponentData
 {
 private:
@@ -11,10 +13,9 @@ private:
 
 public:
 	const Symbol symbol;
-	const std::string& name;
+	const std::string name;
 
 	AtomData(
-		const AtomId id,
 		const Symbol symbol,
 		const std::string& name,
 		const Amount<Unit::GRAM> weight,
@@ -31,7 +32,8 @@ public:
 
 	uint8_t getFittingValence(const uint8_t bonds) const override final;
 	std::string getSMILES() const override final;
-	std::string getBinaryId() const override final;
+
+	virtual DefinitionObject toDefinition() const;
 
 	static uint8_t getRarityOf(const Symbol symbol);
 

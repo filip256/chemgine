@@ -62,7 +62,7 @@ public:
 	static std::optional<Catalyst> parse(const std::string& str)
 	{
 		const auto pair = Def::parse<std::pair<std::string, Amount<Unit::MOLE_RATIO>>>(str);
-		if (not pair.has_value())
+		if (not pair)
 			return std::nullopt;
 
 		return Catalyst::get(pair->first, pair->second);

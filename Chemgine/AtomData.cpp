@@ -1,16 +1,18 @@
 #include "AtomData.hpp"
+#include "DefinitionObject.hpp"
+#include "Keywords.hpp"
+#include "Printers.hpp"
 #include "Utils.hpp"
 
 const ImmutableSet<uint8_t> AtomData::RadicalAnyValence = { NullValence };
 
 AtomData::AtomData(
-	const AtomId id,
 	const Symbol symbol,
 	const std::string& name,
 	const Amount<Unit::GRAM> weight,
 	ImmutableSet<uint8_t>&& valences
 ) noexcept :
-	BaseComponentData(id, weight, getRarityOf(symbol)),
+	BaseComponentData(weight, getRarityOf(symbol)),
 	symbol(symbol),
 	name(name),
 	valences(std::move(valences))
@@ -53,10 +55,19 @@ std::string AtomData::getSMILES() const
 		'[' + symbol.getAsString() + ']';
 }
 
-std::string AtomData::getBinaryId() const
+DefinitionObject AtomData::toDefinition() const
 {
-	//return std::string({ static_cast<char>(id) });
-	return std::to_string(id);
+	std::unordered_map<std::string, std::string> properties
+	{
+		{Keywords::Atoms::Name, name},
+		{Keywords::Atoms::Weight, Def::print(weight)},
+		{Keywords::Atoms::Valences, Def::print(valences.getContent())},
+	};
+
+	return DefinitionObject(
+		DefinitionType::ATOM, "", symbol.getAsString(),
+		std::move(properties), {}, {},
+		DefinitionLocation::createUnknown());
 }
 
 uint8_t AtomData::getRarityOf(const Symbol symbol)

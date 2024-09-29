@@ -4,825 +4,707 @@
 .:
 
 _atom: H {
-    id:         #101,
     name:       hydrogen,
     weight:     1.008_g/mol,
     valences:   {1}
 };
 
 _atom: He {
-    id:         #102,
     name:       helium,
     weight:     4.0026_g/mol,
     valences:   {0}
 };
 
 _atom: Li {
-    id:         #103,
     name:       lithium,
     weight:     6.94_g/mol,
     valences:   {1}
 };
 
 _atom: Be {
-    id:         #104,
     name:       beryllium,
     weight:     9.0122_g/mol,
     valences:   {2}
 };
 
 _atom: B {
-    id:         #105,
     name:       boron,
     weight:     10.81_g/mol,
     valences:   {3}
 };
 
 _atom: C {
-    id:         #106,
     name:       carbon,
     weight:     12.011_g/mol,
     valences:   {4}
 };
 
 _atom: N {
-    id:         #107,
     name:       nitrogen,
     weight:     14.007_g/mol,
     valences:   {3}
 };
 
 _atom: O {
-    id:         #108,
     name:       oxygen,
     weight:     15.999_g/mol,
     valences:   {2}
 };
 
 _atom: F {
-    id:         #109,
     name:       fluorine,
     weight:     18.998_g/mol,
     valences:   {1}
 };
 
 _atom: Ne {
-    id:         #110,
     name:       neon,
     weight:     20.180_g/mol,
     valences:   {0}
 };
 
 _atom: Na {
-    id:         #111,
     name:       sodium,
     weight:     22.990_g/mol,
     valences:   {1}
 };
 
 _atom: Mg {
-    id:         #112,
     name:       magnesium,
     weight:     24.305_g/mol,
     valences:   {2}
 };
 
 _atom: Al {
-    id:         #113,
     name:       aluminum,
     weight:     26.982_g/mol,
     valences:   {3}
 };
 
 _atom: Si {
-    id:         #114,
     name:       silicon,
     weight:     28.085_g/mol,
     valences:   {4}
 };
 
 _atom: P {
-    id:         #115,
     name:       phosphorus,
     weight:     30.974_g/mol,
     valences:   {5}
 };
 
 _atom: S {
-    id:         #116,
     name:       sulfur,
     weight:     32.06_g/mol,
     valences:   {0, 2, 4, 6}
 };
 
 _atom: Cl {
-    id:         #117,
     name:       chlorine,
     weight:     35.45_g/mol,
     valences:   {1}
 };
 
 _atom: Ar {
-    id:         #118,
     name:       argon,
     weight:     39.948_g/mol,
     valences:   {0}
 };
 
 _atom: K {
-    id:         #119,
     name:       potassium,
     weight:     39.098_g/mol,
     valences:   {1}
 };
 
 _atom: Ca {
-    id:         #120,
     name:       calcium,
     weight:     40.078_g/mol,
     valences:   {2}
 };
 
 _atom: Sc {
-    id:         #121,
     name:       scandium,
     weight:     44.955_g/mol,
     valences:   {3}
 };
 
 _atom: Ti {
-    id:         #122,
     name:       titanium,
     weight:     47.867_g/mol,
     valences:   {4}
 };
 
 _atom: V {
-    id:         #123,
     name:       vanadium,
     weight:     50.942_g/mol,
     valences:   {5}
 };
 
 _atom: Cr {
-    id:         #124,
     name:       chromium,
     weight:     51.996_g/mol,
     valences:   {6}
 };
 
 _atom: Mn {
-    id:         #125,
     name:       manganese,
     weight:     54.938_g/mol,
     valences:   {7}
 };
 
 _atom: Fe {
-    id:         #126,
     name:       iron,
     weight:     55.845_g/mol,
     valences:   {2}
 };
 
 _atom: Co {
-    id:         #127,
     name:       cobalt,
     weight:     58.933_g/mol,
     valences:   {2}
 };
 
 _atom: Ni {
-    id:         #128,
     name:       nickel,
     weight:     58.693_g/mol,
     valences:   {2}
 };
 
 _atom: Cu {
-    id:         #129,
     name:       copper,
     weight:     63.546_g/mol,
     valences:   {2}
 };
 
 _atom: Zn {
-    id:         #130,
     name:       zinc,
     weight:     65.38_g/mol,
     valences:   {2}
 };
 
 _atom: Ga {
-    id:         #131,
     name:       gallium,
     weight:     69.723_g/mol,
     valences:   {3}
 };
 
 _atom: Ge {
-    id:         #132,
     name:       germanium,
     weight:     72.63_g/mol,
     valences:   {4}
 };
 
 _atom: As {
-    id:         #133,
     name:       arsenic,
     weight:     74.922_g/mol,
     valences:   {5}
 };
 
 _atom: Se {
-    id:         #134,
     name:       selenium,
     weight:     78.971_g/mol,
     valences:   {6}
 };
 
 _atom: Br {
-    id:         #135,
     name:       bromine,
     weight:     79.904_g/mol,
     valences:   {1}
 };
 
 _atom: Kr {
-    id:         #136,
     name:       krypton,
     weight:     83.798_g/mol,
     valences:   {0}
 };
 
 _atom: Rb {
-    id:         #137,
     name:       rubidium,
     weight:     85.468_g/mol,
     valences:   {1}
 };
 
 _atom: Sr {
-    id:         #138,
     name:       strontium,
     weight:     87.62_g/mol,
     valences:   {2}
 };
 
 _atom: Y {
-    id:         #139,
     name:       yttrium,
     weight:     88.906_g/mol,
     valences:   {3}
 };
 
 _atom: Zr {
-    id:         #140,
     name:       zirconium,
     weight:     91.224_g/mol,
     valences:   {4}
 };
 
 _atom: Nb {
-    id:         #141,
     name:       niobium,
     weight:     92.906_g/mol,
     valences:   {5}
 };
 
 _atom: Mo {
-    id:         #142,
     name:       molybdenum,
     weight:     95.95_g/mol,
     valences:   {6}
 };
 
 _atom: Tc {
-    id:         #143,
     name:       technetium,
     weight:     98_g/mol,
     valences:   {7}
 };
 
 _atom: Ru {
-    id:         #144,
     name:       ruthenium,
     weight:     101.07_g/mol,
     valences:   {8}
 };
 
 _atom: Rh {
-    id:         #145,
     name:       rhodium,
     weight:     102.91_g/mol,
     valences:   {3}
 };
 
 _atom: Pd {
-    id:         #146,
     name:       palladium,
     weight:     106.42_g/mol,
     valences:   {2}
 };
 
 _atom: Ag {
-    id:         #147,
     name:       silver,
     weight:     107.87_g/mol,
     valences:   {1}
 };
 
 _atom: Cd {
-    id:         #148,
     name:       cadmium,
     weight:     112.41_g/mol,
     valences:   {2}
 };
 
 _atom: In {
-    id:         #149,
     name:       indium,
     weight:     114.82_g/mol,
     valences:   {3}
 };
 
 _atom: Sn {
-    id:         #150,
     name:       tin,
     weight:     118.71_g/mol,
     valences:   {4}
 };
 
 _atom: Sb {
-    id:         #151,
     name:       antimony,
     weight:     121.76_g/mol,
     valences:   {5}
 };
 
 _atom: Te {
-    id:         #152,
     name:       tellurium,
     weight:     127.60_g/mol,
     valences:   {6}
 };
 
 _atom: I {
-    id:         #153,
     name:       iodine,
     weight:     126.90_g/mol,
     valences:   {1}
 };
 
 _atom: Xe {
-    id:         #154,
     name:       xenon,
     weight:     131.29_g/mol,
     valences:   {0}
 };
 
 _atom: Cs {
-    id:         #155,
     name:       cesium,
     weight:     132.91_g/mol,
     valences:   {1}
 };
 
 _atom: Ba {
-    id:         #156,
     name:       barium,
     weight:     137.33_g/mol,
     valences:   {2}
 };
 
 _atom: La {
-    id:         #157,
     name:       lanthanum,
     weight:     138.91_g/mol,
     valences:   {3}
 };
 
 _atom: Ce {
-    id:         #158,
     name:       cerium,
     weight:     140.12_g/mol,
     valences:   {4}
 };
 
 _atom: Pr {
-    id:         #159,
     name:       praseodymium,
     weight:     140.91_g/mol,
     valences:   {3}
 };
 
 _atom: Nd {
-    id:         #160,
     name:       neodymium,
     weight:     144.24_g/mol,
     valences:   {3}
 };
 
 _atom: Pm {
-    id:         #161,
     name:       promethium,
     weight:     145_g/mol,
     valences:   {3}
 };
 
 _atom: Sm {
-    id:         #162,
     name:       samarium,
     weight:     150.36_g/mol,
     valences:   {3}
 };
 
 _atom: Eu {
-    id:         #163,
     name:       europium,
     weight:     151.96_g/mol,
     valences:   {3}
 };
 
 _atom: Gd {
-    id:         #164,
     name:       gadolinium,
     weight:     157.25_g/mol,
     valences:   {3}
 };
 
 _atom: Tb {
-    id:         #165,
     name:       terbium,
     weight:     158.93_g/mol,
     valences:   {3}
 };
 
 _atom: Dy {
-    id:         #166,
     name:       dysprosium,
     weight:     162.50_g/mol,
     valences:   {3}
 };
 
 _atom: Ho {
-    id:         #167,
     name:       holmium,
     weight:     164.93_g/mol,
     valences:   {3}
 };
 
 _atom: Er {
-    id:         #168,
     name:       erbium,
     weight:     167.26_g/mol,
     valences:   {3}
 };
 
 _atom: Tm {
-    id:         #169,
     name:       thulium,
     weight:     168.93_g/mol,
     valences:   {3}
 };
 
 _atom: Yb {
-    id:         #170,
     name:       ytterbium,
     weight:     173.05_g/mol,
     valences:   {3}
 };
 
 _atom: Lu {
-    id:         #171,
     name:       lutetium,
     weight:     174.97_g/mol,
     valences:   {3}
 };
 
 _atom: Hf {
-    id:         #172,
     name:       hafnium,
     weight:     178.49_g/mol,
     valences:   {4}
 };
 
 _atom: Ta {
-    id:         #173,
     name:       tantalum,
     weight:     180.95_g/mol,
     valences:   {5}
 };
 
 _atom: W {
-    id:         #174,
     name:       tungsten,
     weight:     183.84_g/mol,
     valences:   {6}
 };
 
 _atom: Re {
-    id:         #175,
     name:       rhenium,
     weight:     186.21_g/mol,
     valences:   {7}
 };
 
 _atom: Os {
-    id:         #176,
     name:       osmium,
     weight:     190.23_g/mol,
     valences:   {8}
 };
 
 _atom: Ir {
-    id:         #177,
     name:       iridium,
     weight:     192.22_g/mol,
     valences:   {3}
 };
 
 _atom: Pt {
-    id:         #178,
     name:       platinum,
     weight:     195.08_g/mol,
     valences:   {2}
 };
 
 _atom: Au {
-    id:         #179,
     name:       gold,
     weight:     196.97_g/mol,
     valences:   {1}
 };
 
 _atom: Hg {
-    id:         #180,
     name:       mercury,
     weight:     200.59_g/mol,
     valences:   {2}
 };
 
 _atom: Tl {
-    id:         #181,
     name:       thallium,
     weight:     204.38_g/mol,
     valences:   {3}
 };
 
 _atom: Pb {
-    id:         #182,
     name:       lead,
     weight:     207.2_g/mol,
     valences:   {4}
 };
 
 _atom: Bi {
-    id:         #183,
     name:       bismuth,
     weight:     208.98_g/mol,
     valences:   {5}
 };
 
 _atom: Po {
-    id:         #184,
     name:       polonium,
     weight:     209_g/mol,
     valences:   {6}
 };
 
 _atom: At {
-    id:         #185,
     name:       astatine,
     weight:     210_g/mol,
     valences:   {7}
 };
 
 _atom: Rn {
-    id:         #186,
     name:       radon,
     weight:     222_g/mol,
     valences:   {0}
 };
 
 _atom: Fr {
-    id:         #187,
     name:       francium,
     weight:     223_g/mol,
     valences:   {1}
 };
 
 _atom: Ra {
-    id:         #188,
     name:       radium,
     weight:     226_g/mol,
     valences:   {2}
 };
 
 _atom: Ac {
-    id:         #189,
     name:       actinium,
     weight:     227_g/mol,
     valences:   {3}
 };
 
 _atom: Th {
-    id:         #190,
     name:       thorium,
     weight:     232.04_g/mol,
     valences:   {4}
 };
 
 _atom: Pa {
-    id:         #191,
     name:       protactinium,
     weight:     231.04_g/mol,
     valences:   {5}
 };
 
 _atom: U {
-    id:         #192,
     name:       uranium,
     weight:     238.03_g/mol,
     valences:   {6}
 };
 
 _atom: Np {
-    id:         #193,
     name:       neptunium,
     weight:     237_g/mol,
     valences:   {7}
 };
 
 _atom: Pu {
-    id:         #194,
     name:       plutonium,
     weight:     244_g/mol,
     valences:   {8}
 };
 
 _atom: Am {
-    id:         #195,
     name:       americium,
     weight:     243_g/mol,
     valences:   {8}
 };
 
 _atom: Cm {
-    id:         #196,
     name:       curium,
     weight:     247_g/mol,
     valences:   {8}
 };
 
 _atom: Bk {
-    id:         #197,
     name:       berkelium,
     weight:     247_g/mol,
     valences:   {8}
 };
 
 _atom: Cf {
-    id:         #198,
     name:       californium,
     weight:     251_g/mol,
     valences:   {8}
 };
 
 _atom: Es {
-    id:         #199,
     name:       einsteinium,
     weight:     252_g/mol,
     valences:   {8}
 };
 
 _atom: Fm {
-    id:         #200,
     name:       fermium,
     weight:     257_g/mol,
     valences:   {8}
 };
 
 _atom: Md {
-    id:         #201,
     name:       mendelevium,
     weight:     258_g/mol,
     valences:   {8}
 };
 
 _atom: No {
-    id:         #202,
     name:       nobelium,
     weight:     259_g/mol,
     valences:   {8}
 };
 
 _atom: Lr {
-    id:         #203,
     name:       lawrencium,
     weight:     262_g/mol,
     valences:   {3}
 };
 
 _atom: Rf {
-    id:         #204,
     name:       rutherfordium,
     weight:     267_g/mol,
     valences:   {4}
 };
 
 _atom: Db {
-    id:         #205,
     name:       dubnium,
     weight:     270_g/mol,
     valences:   {5}
 };
 
 _atom: Sg {
-    id:         #206,
     name:       seaborgium,
     weight:     271_g/mol,
     valences:   {6}
 };
 
 _atom: Bh {
-    id:         #207,
     name:       bohrium,
     weight:     270_g/mol,
     valences:   {7}
 };
 
 _atom: Hs {
-    id:         #208,
     name:       hassium,
     weight:     277_g/mol,
     valences:   {8}
 };
 
 _atom: Mt {
-    id:         #209,
     name:       meitnerium,
     weight:     278_g/mol,
     valences:   {9}
 };
 
 _atom: Ds {
-    id:         #210,
     name:       darmstadtium,
     weight:     281_g/mol,
     valences:   {10}
 };
 
 _atom: Rg {
-    id:         #211,
     name:       roentgenium,
     weight:     282_g/mol,
     valences:   {11}
 };
 _atom: Cn {
-    id:         #212,
     name:       copernicium,
     weight:     285_g/mol,
     valences:   {12}
 };
 
 _atom: Nh {
-    id:         #213,
     name:       nihonium,
     weight:     286_g/mol,
     valences:   {13}
 };
 
 _atom: Fl {
-    id:         #214,
     name:       flerovium,
     weight:     289_g/mol,
     valences:   {14}
 };
 
 _atom: Mc {
-    id:         #215,
     name:       moscovium,
     weight:     290_g/mol,
     valences:   {15}
 };
 
 _atom: Lv {
-    id:         #216,
     name:       livermorium,
     weight:     293_g/mol,
     valences:   {16}
 };
 
 _atom: Ts {
-    id:         #217,
     name:       tennessine,
     weight:     294_g/mol,
     valences:   {17}
 };
 
 _atom: Og {
-    id:         #218,
     name:       oganesson,
     weight:     294_g/mol,
     valences:   {18}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DefinitionLocation.hpp"
+#include "CountedRef.hpp"
 #include "Log.hpp"
 
 #include <unordered_map>
@@ -166,9 +167,9 @@ public:
 	/// If the definition isn't found or parsing fails, an error message is logged.
 	/// </summary>
 	template<typename T, typename... Args>
-	T getDefinition(
+	std::optional<CountedRef<const T>> getDefinition(
 		const std::string& key,
-		T (*parser)(const DefinitionObject&, Args...),
+		std::optional<CountedRef<const T>>(*parser)(const DefinitionObject&, Args...),
 		Args&&... parserArgs) const;
 
 	/// <summary>
@@ -176,9 +177,9 @@ public:
 	/// If the parsing fails, a warning message is logged.
 	/// </summary>
 	template<typename T, typename... Args>
-	T getOptionalDefinition(
+	std::optional<CountedRef<const T>> getOptionalDefinition(
 		const std::string& key,
-		T (*parser)(const DefinitionObject&, Args...),
+		std::optional<CountedRef<const T>>(*parser)(const DefinitionObject&, Args...),
 		Args&&... parserArgs) const;
 };
 
@@ -189,11 +190,11 @@ std::optional<T> DefinitionObject::getProperty(
 	Args&&... parserArgs) const
 {
 	const auto strProp = getProperty(key);
-	if (strProp.has_value() == false)
+	if (not strProp)
 		return std::nullopt;
 
 	const auto parsed = parser(*strProp, std::forward<Args>(parserArgs)...);
-	if (parsed.has_value() == false)
+	if (not parsed)
 		Log(this).error("Failed to parse property: '{0} : {1}', at: {2}.", key, *strProp, location.toString());
 
 	return parsed;
@@ -206,11 +207,11 @@ std::optional<T> DefinitionObject::getOptionalProperty(
 	Args&&... parserArgs) const
 {
 	const auto strProp = getOptionalProperty(key);
-	if (strProp.has_value() == false)
+	if (not strProp)
 		return std::nullopt;
 
 	const auto parsed = parser(*strProp, std::forward<Args>(parserArgs)...);
-	if (parsed.has_value() == false)
+	if (not parsed)
 		Log(this).warn("Failed to parse optional property: '{0} : {1}', at: {2}.", key, *strProp, location.toString());
 
 	return parsed;
@@ -224,7 +225,7 @@ T DefinitionObject::getDefaultProperty(
 	Args&&... parserArgs) const
 {
 	const auto prop = getOptionalProperty<T>(key, parser, std::forward<Args>(parserArgs)...);
-	return prop.has_value() ? *prop : defaultValue;
+	return prop ? *prop : defaultValue;
 }
 
 template<typename T, typename... Args>
@@ -262,34 +263,34 @@ T DefinitionObject::pullDefaultProperty(
 }
 
 template<typename T, typename... Args>
-T DefinitionObject::getOptionalDefinition(
+std::optional<CountedRef<const T>> DefinitionObject::getOptionalDefinition(
 	const std::string& key,
-	T (*parser)(const DefinitionObject&, Args...),
+	std::optional<CountedRef<const T>>(*parser)(const DefinitionObject&, Args...),
 	Args&&... parserArgs) const
 {
 	const auto* def = getOptionalDefinition(key);
 	if (def == nullptr)
-		return nullptr;
+		return std::nullopt;
 
 	auto parsed = parser(*def, std::forward<Args>(parserArgs)...);
-	if (parsed == nullptr)
+	if (not parsed)
 		Log(this).warn("Failed to parse optional sub-definition for: '{0}', at: {1}.", key, location.toString());
 
 	return std::move(parsed);
 }
 
 template<typename T, typename... Args>
-T DefinitionObject::getDefinition(
+std::optional<CountedRef<const T>> DefinitionObject::getDefinition(
 	const std::string& key,
-	T (*parser)(const DefinitionObject&, Args...),
+	std::optional<CountedRef<const T>>(*parser)(const DefinitionObject&, Args...),
 	Args&&... parserArgs) const
 {
 	const auto* def = getDefinition(key);
 	if (def == nullptr)
-		return nullptr;
+		return std::nullopt;
 
 	auto parsed = parser(*def, std::forward<Args>(parserArgs)...);
-	if (parsed == nullptr)
+	if (not parsed)
 		Log(this).error("Failed to parse sub-definition for: '{0}', at: {1}.", key, location.toString());
 
 	return std::move(parsed);

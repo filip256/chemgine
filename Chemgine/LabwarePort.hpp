@@ -27,25 +27,25 @@ public:
 	static std::optional<LabwarePort> parse(const std::string& str)
 	{
 		const auto pair = Def::parse<std::pair<PortType, std::string>>(str);
-		if (not pair.has_value())
+		if (not pair)
 			return std::nullopt;
 
 		const auto props = Def::parse<std::unordered_map<std::string, std::string>>(pair->second);
-		if (not props.has_value())
+		if (not props)
 			return std::nullopt;
 
 		const auto xIt = props->find(Keywords::Port::X);
 		const auto yIt = props->find(Keywords::Port::Y);
 		const auto angleIt = props->find(Keywords::Port::Angle);
 
-		if (xIt == props->end() || yIt == props->end(); angleIt == props->end())
+		if (xIt == props->end() || yIt == props->end() || angleIt == props->end())
 			return std::nullopt;
 
 		const auto x = Def::parse<uint32_t>(xIt->second);
 		const auto y = Def::parse<uint32_t>(yIt->second);
 		const auto angle = Def::parse<Amount<Unit::DEGREE>>(angleIt->second);
 
-		if (not (x.has_value() && y.has_value() && angle.has_value()))
+		if (not (x && y && angle))
 			return std::nullopt;
 
 		return LabwarePort(pair->first, *x, *y, *angle);

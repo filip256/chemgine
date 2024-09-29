@@ -25,8 +25,7 @@ bool LabwareRepository::add<LabwareType::FLASK>(DefinitionObject&& definition)
 	const auto tx = definition.pullProperty(Keywords::Labware::Texture);
 	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float>);
 
-	if (id.has_value() == false || volume.has_value() == false ||
-		ports.has_value() == false || tx.has_value() == false)
+	if (not(id && volume && ports && tx))
 	{
 		Log(this).error("Incomplete flask definition at: {0}.", definition.getLocationName());
 		return false;
@@ -52,8 +51,7 @@ bool LabwareRepository::add<LabwareType::ADAPTOR>(DefinitionObject&& definition)
 	const auto tx = definition.pullProperty(Keywords::Labware::Texture);
 	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float>);
 
-	if (id.has_value() == false || volume.has_value() == false ||
-		ports.has_value() == false || tx.has_value() == false)
+	if (not(id && volume && ports && tx))
 	{
 		Log(this).error("Incomplete adaptor definition at: {0}.", definition.getLocationName());
 		return false;
@@ -83,10 +81,7 @@ bool LabwareRepository::add<LabwareType::CONDENSER>(DefinitionObject&& definitio
 	const auto coolant = definition.pullProperty(Keywords::Labware::CoolantMask);
 	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float>);
 
-	if (id.has_value() == false || volume.has_value() == false ||
-		length.has_value() == false || effic.has_value() == false ||
-		ports.has_value() == false || tx.has_value() == false ||
-		inner.has_value() == false || coolant.has_value() == false)
+	if (not(id && volume && length && effic && ports && tx && inner && coolant))
 	{
 		Log(this).error("Incomplete condenser definition at: {0}.", definition.getLocationName());
 		return false;
@@ -112,8 +107,7 @@ bool LabwareRepository::add<LabwareType::HEATSOURCE>(DefinitionObject&& definiti
 	const auto tx = definition.pullProperty(Keywords::Labware::Texture);
 	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float>);
 
-	if (id.has_value() == false || power.has_value() == false ||
-		ports.has_value() == false || tx.has_value() == false)
+	if (not(id && power && ports && tx))
 	{
 		Log(this).error("Incomplete heatsource definition at: {0}.", definition.getLocationName());
 		return false;
@@ -154,4 +148,9 @@ bool LabwareRepository::add(DefinitionObject&& definition)
 const BaseLabwareData& LabwareRepository::at(const LabwareId id) const
 {
 	return *table.at(id);
+}
+
+void LabwareRepository::clear()
+{
+	table.clear();
 }

@@ -66,7 +66,7 @@ public:
 		for (size_t i = 0; i < pointsStr.size(); ++i)
 		{
 			const auto p = Def::parse<std::pair<double, double>>(pointsStr[i]);
-			if (p.has_value() == false)
+			if (not p)
 				return std::nullopt;
 			points.emplace_back(Utils::reversePair(*p));
 		}

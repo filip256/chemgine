@@ -8,21 +8,21 @@
 
 class Atom : public Accessor<>
 {
-public:
-    const AtomId id;
+protected:
+    const AtomData& data;
 
-    Atom(const AtomId id) noexcept;
+public:
     Atom(const Symbol symbol) noexcept;
     Atom(const Atom&) = default;
 
-    virtual const AtomData& data() const;
+    virtual const AtomData& getData() const;
 
     bool isRadical() const;
 
     uint8_t getPrecedence() const;
     std::string getSymbol() const;
     std::string getSMILES() const;
-    std::unordered_map<AtomId, c_size> getComponentCountMap() const;
+    std::unordered_map<Symbol, c_size> getComponentCountMap() const;
 
     bool equals(const Atom& other) const;
     virtual bool matches(const Atom& other) const;
@@ -32,7 +32,6 @@ public:
 
     virtual Atom* clone() const;
 
-    static bool isDefined(const AtomId id);
     static bool isDefined(const Symbol symbol);
 
 

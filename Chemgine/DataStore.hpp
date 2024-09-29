@@ -30,6 +30,8 @@ public:
 	DataStore(const DataStore&) = delete;
 
 	DataStore& load(const std::string& path);
+	const DataStore& dump(const std::string& path) const;
+	DataStore& clear();
 
 	DataStore& saveMoleculesData(const std::string& path);
 	DataStore& saveGenericMoleculesData(const std::string& path);

@@ -61,14 +61,14 @@ Amount<Unit::JOULE_PER_MOLE> StateNucleator::getTransitionHeat() const
 
 bool StateNucleator::isLower(const Reactant& other) const
 {
-	return reactant.has_value() ?
+	return reactant ?
 		(other.*getTransitionPointCB)() < (*reactant.*getTransitionPointCB)() :
 		true;
 }
 
 bool StateNucleator::isHigher(const Reactant& other) const
 {
-	return reactant.has_value() ?
+	return reactant ?
 		(other.*getTransitionPointCB)() > (*reactant.*getTransitionPointCB)() :
 		true;
 }
@@ -78,8 +78,7 @@ bool StateNucleator::setIfLower(const Reactant& other)
 	if (getTransitionPointCB == nullptr)
 		return false;
 
-	if (reactant.has_value() == false ||
-		(other.*getTransitionPointCB)() < (*reactant.*getTransitionPointCB)())
+	if (not reactant || (other.*getTransitionPointCB)() < (*reactant.*getTransitionPointCB)())
 	{
 		setReactant(other);
 		return true;
@@ -93,8 +92,7 @@ bool StateNucleator::setIfHigher(const Reactant& other)
 	if (getTransitionPointCB == nullptr)
 		return false;
 
-	if (reactant.has_value() == false ||
-		(other.*getTransitionPointCB)() > (*reactant.*getTransitionPointCB)())
+	if (not reactant || (other.*getTransitionPointCB)() > (*reactant.*getTransitionPointCB)())
 	{
 		setReactant(other);
 		return true;

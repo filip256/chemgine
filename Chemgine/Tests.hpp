@@ -233,16 +233,6 @@ public:
 
 		for (size_t i = 0; i < setG.size(); ++i)
 		{
-			if (MolecularStructure(setG[i].serialize(), true) != setG[i])
-			{
-				Log(this).error("Test failed > MolecularStructure > serialize/deserialize > #{0} : expected= true\n{1}",
-					i, setG[i].print());
-				passed = false;
-			}
-		}
-
-		for (size_t i = 0; i < setG.size(); ++i)
-		{
 			if (MolecularStructure(setG[i].toSMILES()) != setG[i])
 			{
 				Log(this).error("Test failed > MolecularStructure > SMILES > #{0}: expected= true\n{1}",

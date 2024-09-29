@@ -56,10 +56,8 @@ std::optional<Catalyst> Catalyst::get(
 	const Amount<Unit::MOLE_RATIO> idealAmount)
 {
 	const auto r = Reactable::get(smiles);
-	if (r.has_value())
-		return Catalyst(*r, idealAmount);
-
-	return std::nullopt;
+	return r ? std::optional(Catalyst(*r, idealAmount)) :
+		std::nullopt;
 }
 
 std::string Catalyst::getHRTag() const

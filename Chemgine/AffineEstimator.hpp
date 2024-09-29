@@ -6,21 +6,25 @@ template<Unit OutU, Unit InU>
 class AffineEstimator : public UnitizedEstimator<OutU, InU>
 {
 private:
+	const EstimatorRef<OutU, InU> base;
+
+public:
 	const double vShift = 0.0;
 	const double hShift = 0.0;
 	const double scale = 1.0;
-	const UnitizedEstimator<OutU, InU>& base;
 
-public:
 	AffineEstimator(
 		const EstimatorId id,
-		const UnitizedEstimator<OutU, InU>& base,
+		const EstimatorRef<OutU, InU>& base,
 		const double vShift,
 		const double hShift,
 		const double scale
 	) noexcept;
+	AffineEstimator(const AffineEstimator&) = default;
 
 	Amount<OutU> get(const Amount<InU> input) const override final;
+
+	const EstimatorRef<OutU, InU>& getBase() const;
 
 	bool isEquivalent(const EstimatorBase& other,
 		const double epsilon = std::numeric_limits<double>::epsilon()
@@ -33,12 +37,12 @@ public:
 template<Unit OutU, Unit InU>
 AffineEstimator<OutU, InU>::AffineEstimator(
 	const EstimatorId id,
-	const UnitizedEstimator<OutU, InU>& base,
+	const EstimatorRef<OutU, InU>& base,
 	const double vShift,
 	const double hShift,
 	const double scale
 ) noexcept :
-	UnitizedEstimator<OutU, InU>(id, base.getMode()),
+	UnitizedEstimator<OutU, InU>(id, base->getMode()),
 	vShift(vShift),
 	hShift(hShift),
 	scale(scale),
@@ -48,7 +52,13 @@ AffineEstimator<OutU, InU>::AffineEstimator(
 template<Unit OutU, Unit InU>
 Amount<OutU> AffineEstimator<OutU, InU>::get(const Amount<InU> input) const
 {
-	return (base.get(input - hShift) + vShift) * scale;
+	return base->get(input - hShift) * scale + vShift;
+}
+
+template<Unit OutU, Unit InU>
+const EstimatorRef<OutU, InU>& AffineEstimator<OutU, InU>::getBase() const
+{
+	return base;
 }
 
 template<Unit OutU, Unit InU>
@@ -62,7 +72,7 @@ bool AffineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const 
 		Utils::equal(this->vShift, oth.vShift, epsilon) &&
 		Utils::equal(this->hShift, oth.hShift, epsilon) &&
 		Utils::equal(this->scale, oth.scale, epsilon) &&
-		this->base.isEquivalent(oth.base);
+		this->base->isEquivalent(*oth.base);
 }
 
 template<Unit OutU, Unit InU>

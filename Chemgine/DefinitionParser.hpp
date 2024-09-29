@@ -146,7 +146,7 @@ public:
 			{
 				auto subDef = Def::parse<DefinitionObject>(
 					value, Utils::copy(location), includeAliases, oolDefinitions);
-				if (subDef.has_value() == false)
+				if (not subDef)
 				{
 					log.error("Failed to parse in-line sub-definition: '{0}', at: {1}.", value, location.toString());
 					return std::nullopt;

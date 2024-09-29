@@ -30,11 +30,11 @@ public:
 			return std::nullopt;
 
 		const auto outUnit = Def::parse<Unit>(str.substr(sep + 2));
-		if (not outUnit.has_value())
+		if (not outUnit)
 			return std::nullopt;
 
 		auto inUnits = Def::parse<std::vector<Unit>>(str.substr(0, sep));
-		if (not inUnits.has_value())
+		if (not inUnits)
 			return std::nullopt;
 
 		return EstimatorSpecifier(*outUnit, std::move(*inUnits));

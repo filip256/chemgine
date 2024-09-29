@@ -29,6 +29,7 @@ namespace Keywords
 
 	namespace Data
 	{
+		const std::string Constant = "const";
 		const std::string Values = "values";
 		const std::string Mode = "mode";
 		const std::string CompressionLoss = "loss";

@@ -298,6 +298,7 @@
     <ClInclude Include="CondenserData.hpp" />
     <ClInclude Include="ContainerComponent.hpp" />
     <ClInclude Include="BaseContainerLabwareData.hpp" />
+    <ClInclude Include="CountedRef.hpp" />
     <ClInclude Include="CursorHelper.hpp" />
     <ClInclude Include="DataPoint.hpp" />
     <ClInclude Include="DefFileAnalyzer.hpp" />
@@ -305,6 +306,7 @@
     <ClInclude Include="DefinitionLocation.hpp" />
     <ClInclude Include="DefinitionObject.hpp" />
     <ClInclude Include="DefinitionParser.hpp" />
+    <ClInclude Include="DefinitionPrinter.hpp" />
     <ClInclude Include="DirectedGraph.hpp" />
     <ClInclude Include="DragNDropHelper.hpp" />
     <ClInclude Include="DynamicAmount.hpp" />
@@ -314,6 +316,7 @@
     <ClInclude Include="EstimatorSpecifier.hpp" />
     <ClInclude Include="FileStore.hpp" />
     <ClInclude Include="MetaUtils.hpp" />
+    <ClInclude Include="MoleculeId.hpp" />
     <ClInclude Include="NumericUtils.hpp" />
     <ClInclude Include="OOLDefRepository.hpp" />
     <ClInclude Include="EquipmentComponent.hpp" />
@@ -368,7 +371,6 @@
     <ClInclude Include="LabwareType.hpp" />
     <ClInclude Include="LayerContentIterator.hpp" />
     <ClInclude Include="Linguistics.hpp" />
-    <ClInclude Include="MoleculeId.hpp" />
     <ClInclude Include="ContentInitializer.hpp" />
     <ClInclude Include="MoleculeType.hpp" />
     <ClInclude Include="MultiLayerMixture.hpp" />
@@ -379,6 +381,7 @@
     <ClInclude Include="Mixture.hpp" />
     <ClInclude Include="PathUtils.hpp" />
     <ClInclude Include="PortType.hpp" />
+    <ClInclude Include="Printers.hpp" />
     <ClInclude Include="Radical.hpp" />
     <ClInclude Include="RadicalData.hpp" />
     <ClInclude Include="RandomizedParticle.hpp" />
@@ -455,6 +458,7 @@
     <None Include="Data\builtin\molecules.cdef" />
     <None Include="Data\builtin\radicals.cdef" />
     <None Include="Data\builtin\reactions.cdef" />
+    <None Include="Out\builtin.cdef" />
     <None Include="Out\genericmolecules.out.csv" />
     <None Include="Out\molecules.out.csv" />
   </ItemGroup>

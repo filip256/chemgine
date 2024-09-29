@@ -133,7 +133,7 @@ public:
                     }
                     else if (event.mouseButton.button == sf::Mouse::Right)
                     {
-                        if (inputMolecule.has_value())
+                        if (inputMolecule)
                         {
                             if (const auto [sys, comp] = lab.getSystemComponentAt(mousePos); sys != Lab::npos)
                             {
@@ -203,7 +203,7 @@ public:
                         const auto input = Input::get("Input Molecule   [SMILES]_[moles]");
                         const auto temp = Def::parse<std::pair<Molecule, Amount<Unit::MOLE>>>(input, '_');
 
-                        if (temp.has_value() == false)
+                        if (not temp)
                         {
                             Log(this).error("Malformed input ignored: {0}.", input);
                             inputMolecule.reset();

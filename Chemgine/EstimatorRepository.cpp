@@ -39,6 +39,11 @@ const EstimatorBase& EstimatorRepository::at(const EstimatorId id) const
 	return *table.at(id);
 }
 
+void EstimatorRepository::clear()
+{
+	table.clear();
+}
+
 EstimatorId EstimatorRepository::getFreeId() const
 {
 	size_t id = 201;

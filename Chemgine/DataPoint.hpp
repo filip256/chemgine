@@ -60,7 +60,7 @@ private:
 		(
 			[&baseInputs, &expectedInputs, &failed, &location]() {
 				const auto expected = baseInputs[Is].to<InUs>();
-				if (not expected.has_value())
+				if (not expected)
 				{
 					failed = Is;
 					return;
@@ -88,14 +88,14 @@ public:
 
 		// parse values
 		const auto pair = Def::parse<std::pair<std::string, DynamicAmount>>(str, ':');
-		if (not pair.has_value())
+		if (not pair)
 		{
 			log.error("Malfomed data point: '{0}', at: {1}.", str, location.toString());
 			return std::nullopt;
 		}
 
 		const auto rawInputs = Def::parse<std::vector<DynamicAmount>>(pair->first, ',');
-		if (not rawInputs.has_value())
+		if (not rawInputs)
 		{
 			log.error("Malfomed data point inputs list: '{0}', at: {1}.", pair->first, location.toString());
 			return std::nullopt;
@@ -109,7 +109,7 @@ public:
 
 		// convert output
 		const auto baseOutput = pair->second.to(outputBaseUnit);
-		if (not baseOutput.has_value())
+		if (not baseOutput)
 		{
 			log.error("Failed to convert data point output from given unit: '{0}' to base unit: '{1}', at: {2}.",
 				pair->second.getUnitSymbol(), DynamicAmount::getUnitSymbol(outputBaseUnit), location.toString());
@@ -117,7 +117,7 @@ public:
 		}
 
 		const auto expectedOutput = baseOutput->to<OutU>();
-		if (not expectedOutput.has_value())
+		if (not expectedOutput)
 		{
 			log.error("Failed to convert data point output from base unit: '{0}' to expected unit: '{1}', at: {2}.",
 				baseOutput->getUnitSymbol(), DynamicAmount::getUnitSymbol(OutU), location.toString());
@@ -130,7 +130,7 @@ public:
 		for (size_t i = 0; i < inputCount; i++)
 		{
 			const auto convert = (*rawInputs)[i].to(inputBaseUnits[i]);
-			if (not convert.has_value())
+			if (not convert)
 			{
 				log.error("Failed to convert data point input from given unit: '{0}' to base unit: '{1}', at: {2}.",
 					(*rawInputs)[i].getUnitSymbol(), DynamicAmount::getUnitSymbol(inputBaseUnits[i]), location.toString());
@@ -142,7 +142,7 @@ public:
 
 		// try given input order
 		const auto expectedInputs = convertInputs(baseInputs, location, std::make_index_sequence<inputCount>{});
-		if (expectedInputs.has_value())
+		if (expectedInputs)
 			return DataPoint(*expectedOutput, *expectedInputs);
 
 		// try to permute input order (must sort before calling next_permutation)
@@ -151,7 +151,7 @@ public:
 		do
 		{
 			const auto expectedInputs = convertInputs(baseInputs, location, std::make_index_sequence<inputCount>{});
-			if (expectedInputs.has_value())
+			if (expectedInputs)
 				return DataPoint(*expectedOutput, *expectedInputs);
 
 		} while (std::next_permutation(baseInputs.begin(), baseInputs.end(),

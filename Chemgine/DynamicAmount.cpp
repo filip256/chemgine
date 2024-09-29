@@ -273,11 +273,11 @@ std::optional<Unit> DynamicAmount::getUnitFromSymbol(const std::string& symbol)
 std::optional<DynamicAmount> DynamicAmount::get(const StorageType value, const std::string& symbol)
 {
     auto unit = DynamicAmount::getUnitFromSymbol(symbol);
-    if (unit.has_value())
+    if (unit)
         return DynamicAmount(value, *unit);
     
     unit = DynamicAmount::getUnitFromSymbol(symbol.substr(1));
-    if (unit.has_value() == false)
+    if (not unit)
         return std::nullopt;
     
     const StorageType multiplier = *unit == Unit::CUBIC_METER ?

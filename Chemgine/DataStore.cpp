@@ -2,6 +2,7 @@
 #include "PathUtils.hpp"
 #include "DefFileParser.hpp"
 #include "DefFileAnalyzer.hpp"
+#include "DefinitionPrinter.hpp"
 #include "Log.hpp"
 
 #include <fstream>
@@ -45,7 +46,7 @@ DataStore& DataStore::load(const std::string& path)
 		if (parser.isOpen() == false)
 			break;
 
-		if (entry.has_value() == false)
+		if (not entry)
 		{
 			Log(this).warn("Skipped invalid definition.");
 			continue;
@@ -100,6 +101,34 @@ DataStore& DataStore::load(const std::string& path)
 	oolDefinitions.clear();
 
 	Log(this).success("File load completed.");
+	return *this;
+}
+
+const DataStore& DataStore::dump(const std::string& path) const
+{
+	std::ofstream out(path);
+	if (not out.is_open())
+		Log(this).fatal("Failed to open file for write: '{0}'.", path);
+
+	for (const auto& a : atoms)
+	{
+		out << Def::print(a.second->toDefinition()) << '\n';
+	}
+
+	out.close();
+	return *this;
+}
+
+DataStore& DataStore::clear()
+{
+	labware.clear();
+	reactions.clear();
+	genericMolecules.clear();
+	molecules.clear();
+	estimators.clear();
+	atoms.clear();
+	oolDefinitions.clear();
+	fileStore.clear();
 	return *this;
 }
 

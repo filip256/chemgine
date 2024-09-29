@@ -31,6 +31,8 @@ public:
 	size_t size() const;
 	bool empty() const;
 
+	const std::vector<T>& getContent() const;
+
 	const T& front() const;
 	const T& back() const;
 
@@ -113,6 +115,12 @@ template <typename T>
 bool ImmutableSet<T>::empty() const
 {
 	return content.empty();
+}
+
+template <typename T>
+const std::vector<T>& ImmutableSet<T>::getContent() const
+{
+	return content;
 }
 
 template <typename T>

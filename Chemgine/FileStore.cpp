@@ -5,6 +5,11 @@ const std::unordered_map<std::string, bool>& FileStore::getHistory() const
 	return parseHistory;
 }
 
+void FileStore::clear()
+{
+	parseHistory.clear();
+}
+
 ParseStatus FileStore::getFileStatus(const std::string& filePath) const
 {
 	const auto it = parseHistory.find(filePath);

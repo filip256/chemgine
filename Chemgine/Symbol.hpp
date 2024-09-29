@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Parsers.hpp"
+#include "Printers.hpp"
 
 #include <string>
 
@@ -55,5 +56,15 @@ public:
 			return std::nullopt;
 
 		return Symbol(stripped);
+	}
+};
+
+template <>
+class Def::Printer<Symbol>
+{
+public:
+	static std::string print(const Symbol& object)
+	{
+		return object.getAsString();
 	}
 };

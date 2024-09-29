@@ -38,3 +38,7 @@ EstimationMode UnitizedEstimator<OutU, InUs...>::getMode() const
 {
 	return mode;
 }
+
+
+template<Unit OutU, Unit... InUs>
+using EstimatorRef = CountedRef<const UnitizedEstimator<OutU, InUs...>>;

@@ -18,13 +18,13 @@ ReactionRepository::ReactionRepository(
 bool ReactionRepository::add(DefinitionObject&& definition)
 {
 	const auto id = definition.pullProperty("id", Def::parseId<ReactionId>);
-	if (not id.has_value())
+	if (not id)
 		return false;
 
 	const auto name = definition.pullDefaultProperty("name", "?");
 
 	const auto spec = Def::parse<ReactionSpecifier>(definition.getSpecifier());
-	if (not spec.has_value())
+	if (not spec)
 	{
 		Log(this).error("Invalid reaction specifier: '{0}', at: {1}.", definition.getSpecifier(), definition.getLocationName());
 		return false;
@@ -36,7 +36,7 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 	for (size_t i = 0; i < spec->reactants.size(); ++i)
 	{
 		const auto r = Reactable::get(spec->reactants[i]);
-		if (not r.has_value())
+		if (not r)
 		{
 			Log(this).error("Malformed reactant: '{0}' in reaction with id: {1}, at: {2}.", spec->reactants[i], *id, definition.getLocationName());
 			return false;
@@ -50,7 +50,7 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 	for (size_t i = 0; i < spec->products.size(); ++i)
 	{
 		const auto p = Reactable::get(spec->products[i]);
-		if (not p.has_value())
+		if (not p)
 		{
 			Log(this).error("Malformed product: '{0}' in reaction with id: {1}, at: {2}.", spec->products[i], *id, definition.getLocationName());
 			return false;
@@ -73,7 +73,7 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 	for (size_t i = 0; i < catStr.size(); ++i)
 	{
 		const auto c = Def::parse<Catalyst>(catStr[i]);
-		if (not c.has_value())
+		if (not c)
 		{
 			Log(this).error("Malformed catalyst: '{0}' in reaction with id: '{1}', at: {2}.", catStr[i], *id, definition.getLocationName());
 			return false;
@@ -99,20 +99,31 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 	std::unique_ptr<ReactionData> data;
 	if (isCut)
 	{
-		data = std::make_unique<ReactionData>(*id, name, reactantIds, productIds, std::move(catalysts));
+		EstimatorFactory factory(estimators);
+		data = std::make_unique<ReactionData>(
+			*id, name,
+			reactantIds, productIds,
+			factory.createConstant<Unit::MOLE_PER_SECOND, Unit::CELSIUS>(0.0),
+			factory.createConstant<Unit::NONE, Unit::MOLE_RATIO>(0.0),
+			std::move(catalysts));
 	}
 	else
 	{
-		const auto tempSpeed = definition.getDefinition(Keywords::Reactions::TemperatureSpeed,
-			Def::Parser<UnitizedEstimator<Unit::MOLE_PER_SECOND, Unit::CELSIUS>>::parse, estimators);
-		const auto concSpeed = definition.getDefinition(Keywords::Reactions::ConcentrationSpeed,
-			Def::Parser<UnitizedEstimator<Unit::NONE, Unit::MOLE_RATIO>>::parse, estimators);
 		const auto energy = definition.pullDefaultProperty(Keywords::Reactions::Energy, Amount<Unit::JOULE_PER_MOLE>(0.0),
 			Def::parse<Amount<Unit::JOULE_PER_MOLE>>);
 		const auto activation = definition.pullDefaultProperty(Keywords::Reactions::Activation, Amount<Unit::JOULE_PER_MOLE>(0.0),
 			Def::parse<Amount<Unit::JOULE_PER_MOLE>>);
+		auto tempSpeed = definition.getDefinition(Keywords::Reactions::TemperatureSpeed,
+			Def::Parser<UnitizedEstimator<Unit::MOLE_PER_SECOND, Unit::CELSIUS>>::parse, estimators);
+		auto concSpeed = definition.getDefinition(Keywords::Reactions::ConcentrationSpeed,
+			Def::Parser<UnitizedEstimator<Unit::NONE, Unit::MOLE_RATIO>>::parse, estimators);
 
-		data = std::make_unique<ReactionData>(*id, name, reactantIds, productIds, energy, activation, *tempSpeed, *concSpeed, std::move(catalysts));
+		data = std::make_unique<ReactionData>(
+			*id, name,
+			reactantIds, productIds,
+			energy, activation,
+			std::move(*tempSpeed), std::move(*concSpeed),
+			std::move(catalysts));
 	}
 
 	const auto& ignored = definition.getRemainingProperties();

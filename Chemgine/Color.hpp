@@ -27,7 +27,7 @@ public:
 	static std::optional<Color> parse(const std::string& str)
 	{
 		const auto props = Def::parse<std::unordered_map<std::string, std::string>>(str);
-		if (not props.has_value())
+		if (not props)
 			return std::nullopt;
 
 		const auto rIt = props->find(Keywords::Color::R);
@@ -35,7 +35,7 @@ public:
 		const auto bIt = props->find(Keywords::Color::B);
 		const auto intensityIt = props->find(Keywords::Color::Intensity);
 
-		if (rIt == props->end() || gIt == props->end(); bIt == props->end())
+		if (rIt == props->end() || gIt == props->end() || bIt == props->end())
 			return std::nullopt;
 
 		const auto r = Def::parse<uint8_t>(rIt->second);
@@ -43,7 +43,7 @@ public:
 		const auto b = Def::parse<uint8_t>(bIt->second);
 		const auto intensity = Def::parse<uint8_t>(intensityIt->second);
 
-		if (not (r.has_value() && g.has_value() && b.has_value() && intensity.has_value()))
+		if (not (r && g && b && intensity))
 			return std::nullopt;
 
 		return Color(*r, *g, *b, *intensity);

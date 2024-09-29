@@ -58,6 +58,7 @@ int main()
 
         store.load("./Data/builtin.cdef");
         store.reactions.buildNetwork();
+        store.dump("./Out/builtin.cdef");
 
         std::cout << MolecularStructure("S(=O)(=O)(O)O").print() << '\n';
 

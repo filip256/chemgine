@@ -59,7 +59,7 @@ template<Unit UnitT>
 std::optional<Amount<UnitT>> DynamicAmount::to() const
 {
 	const auto converted = to(UnitT);
-	return converted.has_value() ?
+	return converted ?
 		std::optional(Amount<UnitT>(converted->value)) :
 		std::nullopt;
 }
@@ -245,7 +245,7 @@ template<Unit UnitT>
 static std::optional<Amount<UnitT>> DynamicAmount::get(const StorageType value, const std::string& symbol)
 {
 	const auto temp = DynamicAmount::get(value, symbol);
-	return temp.has_value() ?
+	return temp ?
 		std::optional(temp->to<UnitT>()) :
 		std::nullopt;
 }
@@ -279,7 +279,7 @@ public:
 			valStr == Keywords::Amounts::Min ? std::numeric_limits<Amount<>::StorageType>::lowest() :
 			valStr == Keywords::Amounts::Max ? std::numeric_limits<Amount<>::StorageType>::max() :
 			Def::parse<Amount<>::StorageType>(valStr);
-		if (val.has_value() == false)
+		if (not val)
 			return std::nullopt;
 
 		if (pair.size() == 1)
@@ -304,7 +304,7 @@ public:
 			return std::nullopt;
 
 		const auto val = Def::parse<Amount<>::StorageType>(pair.front());
-		if (val.has_value() == false)
+		if (not val)
 			return std::nullopt;
 
 		if (pair.size() == 1)

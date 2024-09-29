@@ -3,9 +3,10 @@
 #include "Atom.hpp"
 #include "Symbol.hpp"
 
+#include <memory>
+
 class AtomFactory
 {
 public:
-	static Atom* get(const AtomId id);
-	static Atom* get(const Symbol symbol);
+	static std::unique_ptr<const Atom> get(const Symbol symbol);
 };

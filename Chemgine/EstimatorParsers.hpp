@@ -7,7 +7,7 @@ template<Unit OutU, Unit... InUs>
 class Def::Parser<UnitizedEstimator<OutU, InUs...>>
 {
 public:
-	static const UnitizedEstimator<OutU, InUs...>* parse(
+	static std::optional<EstimatorRef<OutU, InUs...>> parse(
 		const DefinitionObject& definition,
 		EstimatorRepository& repository)
 	{
@@ -16,14 +16,14 @@ public:
 		if (definition.getType() != DefinitionType::DATA && definition.getType() != DefinitionType::AUTO)
 		{
 			log.error("Expected definition of type 'DATA' but got: '{0}', at: {1}.", static_cast<uint8_t>(definition.getType()), definition.getLocationName());
-			return nullptr;
+			return std::nullopt;
 		}
 
 		const auto specifier = Def::parse<EstimatorSpecifier>(definition.getSpecifier());
-		if (not specifier.has_value())
+		if (not specifier)
 		{
 			log.error("Malfomed data units specifier: '{0}', at: {1}.", definition.getSpecifier(), definition.getLocationName());
-			return nullptr;
+			return std::nullopt;
 		}
 
 		const auto inputCount = sizeof...(InUs);
@@ -31,15 +31,16 @@ public:
 		{
 			log.error("The number of input base units ({0}) in: '{1}' does not match the expected number of inputs ({2}), at: {3}.",
 				specifier->inUnits.size(), definition.getSpecifier(), inputCount, definition.getLocationName());
-			return nullptr;
+			return std::nullopt;
 		}
 
-		if (const auto strValues = definition.getOptionalProperty(Keywords::Data::Values,
-			Def::parse<std::vector<std::string>>); strValues.has_value())
+		if (const auto constant = definition.getOptionalProperty(Keywords::Data::Constant, Def::parse<Amount<OutU>>))
 		{
-			if (not strValues.has_value())
-				return nullptr;
+			return EstimatorFactory(repository).createConstant<OutU, InUs...>(*constant);
+		}
 
+		if (const auto strValues = definition.getOptionalProperty(Keywords::Data::Values, Def::parse<std::vector<std::string>>))
+		{
 			const auto mode = definition.getDefaultProperty(Keywords::Data::Mode, EstimationMode::LINEAR,
 				Def::parse<EstimationMode>);
 			const auto loss = definition.getDefaultProperty(Keywords::Data::CompressionLoss, 0.0f,
@@ -50,8 +51,8 @@ public:
 			{
 				const auto point = Def::parse<DataPoint<OutU, InUs...>>(
 					(*strValues)[i], specifier->outUnit, specifier->inUnits, definition.getLocation());
-				if (not point.has_value())
-					return nullptr;
+				if (not point)
+					return std::nullopt;
 
 				dataPoints.emplace_back(*point);
 			}
@@ -68,22 +69,22 @@ public:
 			if (base)
 			{
 				// anchor transform
-				if (const auto anchorPointStr = definition.getOptionalProperty(Keywords::Data::AnchorPoint); anchorPointStr.has_value())
+				if (const auto anchorPointStr = definition.getOptionalProperty(Keywords::Data::AnchorPoint))
 				{
 					const auto anchorPoint = Def::parse<DataPoint<OutU, InU>>(*anchorPointStr, OutU, std::vector<Unit>{InU}, definition.getLocation());
-					if (not anchorPoint.has_value())
-						return nullptr;
+					if (not anchorPoint)
+						return std::nullopt;
 
 					const auto hShift = definition.getDefaultProperty(Keywords::Data::HorizontalShift, 0.0, Def::parse<double>);
 					return EstimatorFactory(repository).createAffine(*base, *anchorPoint, hShift);
 				}
 
 				// rebase transform
-				if (const auto rebasePointStr = definition.getOptionalProperty(Keywords::Data::RebasePoint); rebasePointStr.has_value())
+				if (const auto rebasePointStr = definition.getOptionalProperty(Keywords::Data::RebasePoint))
 				{
 					const auto rebasePoint = Def::parse<DataPoint<OutU, InU>>(*rebasePointStr, OutU, std::vector<Unit>{InU}, definition.getLocation());
-					if (not rebasePoint.has_value())
-						return nullptr;
+					if (not rebasePoint)
+						return std::nullopt;
 
 					return EstimatorFactory(repository).createAffine(*base, *rebasePoint);
 				}
@@ -98,6 +99,6 @@ public:
 		}
 
 		log.fatal("Unsupported estimator definition, at: {0}", definition.getLocationName());
-		return nullptr;
+		return std::nullopt;
 	}
 };

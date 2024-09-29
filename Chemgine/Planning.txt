@@ -405,6 +405,7 @@ Tasks:
   DONE. Add constant and linear estimator fusing with transforms
   17. Add non-linear regressors
   18. Better ignored property check
+  19. Pass Symbol& everywhere, make symbol 8-byte
 
 ---
      - DIRECT REFERENCING -
@@ -428,6 +429,8 @@ Tasks:
 
     1. Remove unnecesarry clone() methods, and implement the others by deriving D from Clonable<D>
     2. Replace dynamic casts with faster variants
+    3. Remove all the operator new instance counting
+
 ---
     - SMART AMOUNTS -
 ---
@@ -625,7 +628,7 @@ Categorizations:
                    - vertically and horizontally: f(X) = base(X - Xr + Xh) - base(Xh) + Yr,
                       where Xh is a given zero-point on base
                    - vertically with scaling: f(X) = base(X - Xr) * Yr
-                - by a given v_shift and h_shift: f(X) = base(X - h_shift) + v_shift
+                - by a given v_shif, h_shift and scale: f(X) = base(X - h_shift) * scale + v_shift
             - scaling: f(X) = base(X) * scale
           - algebraic:
              - mult: f(X) = e1(X) * e2(X)
@@ -633,6 +636,40 @@ Categorizations:
              - compose: f(X) = e2(e1(X)) 
 
           Example: reaction speed(x_C) = mult(affine(doubles_func, h_shift: base_temp), base_speed)
+
+
+          Optimizations:
+           - affine v, h, s:
+              - on constant f(x) = c:
+                  f(x - h)*s + v = c*s + v
+
+              - on linear f(x) = x*b1 + b0:
+                   f(x - h)*s + v = ((x - h)*b1 + b0)*s + v =
+                                  = (x*b1 - h*b1 + b0)*s + v =
+                                  = x*b1*s - h*b1*s + b0*s + v =
+                                  = x*b1*s - (h*b1 - b0)*s + v
+                                      \__/   \_______________/
+                                   x*new_b1 + new_b0          new_b1 = b1*s, new_b0 = - (h*b1 - b0)*s + v
+
+              - on affine f(x) = (x - H)*S + V:
+                   f(x - h)*s + v = ((x - H - h)*S + V)*s + v
+                                  = (x*S - H*S - h*S + V)*s + v =
+                                  = x*S*s - H*S*s - h*S*s + v*s + v =
+                                  = x*S*s - (H + h)*S*s + v*(s + 1)
+                                      \_/   \_____________________/
+                                   x*new_s + new_v            new_s = S*s, new_v = - (H + h)*S*s + v*(s + 1)
+
+                 
+             
+        Estimator Ref Count:
+            Estimator E gets:
+               1 when the E is created
+              +1 when estimator E' = E would be created
+              +1 when derived estimator D(E) is created
+              -1 when derived estimator D(E) is optimized into D' = D(E)
+
+
+            CountedRef<T> could increment and decrement T's ref count safely when T is of type Countable<CountT>
 
 
           CONSIDER REMOVING THE EXISTANCE THRESHOLD

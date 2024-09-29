@@ -18,7 +18,7 @@ _mol: O {
 	sublimation_lh:  $est@slh_0,
 	rel_solubility:  $est@rsol_0,
 	henry_const:     $est@hencst_0,
-	color:           {0, 100, 255, 150},
+	color:           { r: 0, g: 100, b: 255, intensity: 150 },
 };
 
 _mol: OC {

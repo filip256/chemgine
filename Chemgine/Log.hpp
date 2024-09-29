@@ -70,13 +70,13 @@ private:
 	static std::string getTypeName();
 
 	const Log& log(const std::string& msg, const LogType type) const;
-	void fatalExit(const std::string& msg) const;
+	__declspec(noreturn) void fatalExit(const std::string& msg) const;
 
 public:
 	Log(const SourceT* location = nullptr) noexcept;
 
 	template <class... Args>
-	void fatal(std::format_string<Args...> format, Args&&... args) const;
+	__declspec(noreturn) void fatal(std::format_string<Args...> format, Args&&... args) const;
 	template <class... Args>
 	const Log& error(std::format_string<Args...> format, Args&&... args) const;
 	template <class... Args>

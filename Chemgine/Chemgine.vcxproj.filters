@@ -743,9 +743,6 @@
     <ClInclude Include="SparseDirectedGraph.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
-    <ClInclude Include="MoleculeId.hpp">
-      <Filter>Header Files\Molecules</Filter>
-    </ClInclude>
     <ClInclude Include="ReactantRef.hpp">
       <Filter>Header Files\Mixtures</Filter>
     </ClInclude>
@@ -926,6 +923,18 @@
     <ClInclude Include="PortType.hpp">
       <Filter>Header Files\Labware</Filter>
     </ClInclude>
+    <ClInclude Include="CountedRef.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Printers.hpp">
+      <Filter>Header Files\Data\Parsers</Filter>
+    </ClInclude>
+    <ClInclude Include="DefinitionPrinter.hpp">
+      <Filter>Header Files\Data\Parsers</Filter>
+    </ClInclude>
+    <ClInclude Include="MoleculeId.hpp">
+      <Filter>Header Files\Molecules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Out\molecules.out.csv">
@@ -954,6 +963,9 @@
     </None>
     <None Include="Data\builtin\reactions.cdef">
       <Filter>Resource Files\Data\BuiltIn</Filter>
+    </None>
+    <None Include="Out\builtin.cdef">
+      <Filter>Resource Files\Out</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -26,6 +26,8 @@ public:
 
 	const std::unordered_map<std::string, bool>& getHistory() const;
 
+	void clear();
+
 	ParseStatus getFileStatus(const std::string& filePath) const;
 	void setFileStatus(const std::string& filePath, const ParseStatus status);
 };
