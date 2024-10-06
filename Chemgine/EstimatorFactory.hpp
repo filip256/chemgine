@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Casts.hpp"
+#include "DataPoint.hpp"
 #include "AffineEstimator.hpp"
 #include "SplineEstimator.hpp"
 #include "ConstantEstimator.hpp"
@@ -44,6 +45,14 @@ public:
 	EstimatorRef<OutU, InU> createAffine(
 		const EstimatorRef<OutU, InU>& base,
 		const DataPoint<OutU, InU> rebasePoint);
+
+	template<Unit OutU, Unit InU>
+	EstimatorRef<OutU, InU> createLinearRegression(
+		const float paramX, const float shift);
+
+	template<Unit OutU, Unit InU1, Unit InU2>
+	EstimatorRef<OutU, InU1, InU2> createLinearRegression(
+		const float paramX, const float paramY, const float shift);
 };
 
 
@@ -102,7 +111,7 @@ EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
 			return repository.add<Regression3DEstimator<LinearRegressor3D, OutU, InUs...>>(LinearRegressor3D::fit(points), mode);
 	}
 
-	Log<EstimatorFactory>().fatal("Unsupported estimator data type.");
+	Log(this).fatal("Unsupported estimator data type.");
 }
 
 
@@ -174,4 +183,22 @@ EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 	const auto hShift = std::get<0>(rebasePoint.inputs);
 	const auto scale = rebasePoint.output;
 	return createAffine(base, 0.0, hShift.asStd(), scale.asStd());
+}
+
+template<Unit OutU, Unit InU>
+EstimatorRef<OutU, InU> EstimatorFactory::createLinearRegression(
+	const float paramX, const float shift)
+{
+	return repository.add<Regression2DEstimator<LinearRegressor2D, OutU, InU>>(
+		LinearRegressor2D(paramX, shift),
+		EstimationMode::LINEAR);
+}
+
+template<Unit OutU, Unit InU1, Unit InU2>
+EstimatorRef<OutU, InU1, InU2> EstimatorFactory::createLinearRegression(
+	const float paramX, const float paramY, const float shift)
+{
+	return repository.add<Regression3DEstimator<LinearRegressor3D, OutU, InU1, InU2>>(
+		LinearRegressor3D(paramX, paramY, shift),
+		EstimationMode::LINEAR);
 }

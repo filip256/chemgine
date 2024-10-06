@@ -1,18 +1,20 @@
 #include "OOLDefRepository.hpp"
 #include "DefinitionObject.hpp"
 
-bool OOLDefRepository::add(DefinitionObject&& definition)
+const DefinitionObject* OOLDefRepository::add(DefinitionObject&& definition)
 {
-	auto temp = definition.getIdentifier();
-	const auto success = definitions.emplace(std::move(temp),
-		std::make_unique<const DefinitionObject>(std::move(definition)));
-	if (success.second == false)
+	const auto existing = definitions.find(definition.getIdentifier());
+	if (existing != definitions.end())
 	{
-		Log(this).error("Clash between existing OOL identifier: '{0}' and new definition at: {1}.", success.first->first, definition.getLocationName());
-		return false;
+		Log(this).error("Clash between existing OOL identifier: '{0}' (defined at: {1}) and new definition at: {2}.",
+			existing->first, existing->second->getLocationName(), definition.getLocationName());
+		return nullptr;
 	}
 
-	return true;
+	auto tempId = definition.getIdentifier();
+	const auto it = definitions.emplace(std::move(tempId), std::make_unique<const DefinitionObject>(std::move(definition)));
+
+	return it.first->second.get();
 }
 
 const DefinitionObject* OOLDefRepository::getDefinition(const std::string& identifier) const

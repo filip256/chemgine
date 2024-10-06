@@ -2,6 +2,7 @@
 
 #include "Keywords.hpp"
 #include "EstimatorFactory.hpp"
+#include "EstimatorSpecifier.hpp"
 
 template<Unit OutU, Unit... InUs>
 class Def::Parser<UnitizedEstimator<OutU, InUs...>>
@@ -43,7 +44,7 @@ public:
 		{
 			const auto mode = definition.getDefaultProperty(Keywords::Data::Mode, EstimationMode::LINEAR,
 				Def::parse<EstimationMode>);
-			const auto loss = definition.getDefaultProperty(Keywords::Data::CompressionLoss, 0.0f,
+			const auto loss = definition.getDefaultProperty(Keywords::Data::CompressionLoss, 0.0,
 				Def::parse<float>);
 
 			std::vector<DataPoint<OutU, InUs...>> dataPoints;
@@ -58,6 +59,47 @@ public:
 			}
 
 			return EstimatorFactory(repository).createData(std::move(dataPoints), mode, loss);
+		}
+
+		if (const auto parameters = definition.getOptionalProperty(Keywords::Data::Parameters,
+			Def::parse<std::vector<float>>))
+		{
+			const auto mode = definition.getProperty(Keywords::Data::Mode, Def::parse<EstimationMode>);
+			if (not mode)
+				return std::nullopt;
+
+			if constexpr (inputCount == 1)
+			{
+				if (mode == EstimationMode::LINEAR)
+				{
+					if (parameters->size() != 2)
+					{
+						log.error("Invalid number of parameters ({0}) for 1st degree linear regression.",
+							parameters->size());
+						return std::nullopt;
+					}
+
+					return EstimatorFactory(repository).createLinearRegression<OutU, InUs...>(
+						parameters->front(), parameters->back());
+				}
+			}
+			else if constexpr (inputCount == 2)
+			{
+				if (mode == EstimationMode::LINEAR)
+				{
+					if (parameters->size() != 3)
+					{
+						log.error("Invalid number of parameters ({0}) for 2nd degree linear regression.",
+							parameters->size());
+						return std::nullopt;
+					}
+
+					return EstimatorFactory(repository).createLinearRegression<OutU, InUs...>(
+						parameters->front(), (*parameters)[1], parameters->back());
+				}
+			}
+
+			log.fatal("Unsupported regression estimator definition, at: {0}", definition.getLocationName());
 		}
 
 		if constexpr (inputCount == 1)
@@ -75,7 +117,8 @@ public:
 					if (not anchorPoint)
 						return std::nullopt;
 
-					const auto hShift = definition.getDefaultProperty(Keywords::Data::HorizontalShift, 0.0, Def::parse<double>);
+					const auto hShift = definition.getDefaultProperty(Keywords::Data::HorizontalShift, 0.0,
+						Def::parse<float>);
 					return EstimatorFactory(repository).createAffine(*base, *anchorPoint, hShift);
 				}
 
@@ -90,9 +133,9 @@ public:
 				}
 
 				// manual transform
-				const auto vShift = definition.getDefaultProperty(Keywords::Data::VerticalShift, 0.0, Def::parse<double>);
-				const auto hShift = definition.getDefaultProperty(Keywords::Data::HorizontalShift, 0.0, Def::parse<double>);
-				const auto scale = definition.getDefaultProperty(Keywords::Data::Scale, 1.0, Def::parse<double>);
+				const auto vShift = definition.getDefaultProperty(Keywords::Data::VerticalShift, 0.0, Def::parse<float>);
+				const auto hShift = definition.getDefaultProperty(Keywords::Data::HorizontalShift, 0.0, Def::parse<float>);
+				const auto scale = definition.getDefaultProperty(Keywords::Data::Scale, 1.0, Def::parse<float>);
 
 				return EstimatorFactory(repository).createAffine(*base, vShift, hShift, scale);
 			}

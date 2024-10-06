@@ -125,10 +125,10 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
                 return false;
             }
 
-            const Symbol symbol(smiles.substr(i + 1, t - i - 1));
+            const Symbol& symbol(smiles.substr(i + 1, t - i - 1));
             if (Atom::isDefined(symbol) == false)
             {
-                Log(this).error("Atomic symbol '{0}' at {1} is undefined.", symbol.getAsString(), i);
+                Log(this).error("Atomic symbol '{0}' at {1} is undefined.", symbol.getString(), i);
                 clear();
                 return false;
             }

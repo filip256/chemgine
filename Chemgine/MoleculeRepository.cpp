@@ -22,10 +22,6 @@ bool MoleculeRepository::add(DefinitionObject&& definition)
 		return false;
 	}
 
-	const auto id = definition.pullProperty("id", Def::parseId<MoleculeId>);
-	if (not id)
-		return false;
-
 	const auto name = definition.pullDefaultProperty(Keywords::Molecules::Name, "?");
 	const auto hp = definition.pullDefaultProperty(Keywords::Molecules::Hydrophilicity, 1.0,
 		Def::parse<double>);
@@ -60,63 +56,41 @@ bool MoleculeRepository::add(DefinitionObject&& definition)
 	for (const auto& [name, _] : ignored)
 		Log(this).warn("Ignored unknown molecule property: '{0}', at: {1}.", name, definition.getLocationName());
 
-	if (table.emplace(
-		*id, name,
-		MoleculeData(
-			*id, name, std::move(*structure),
-			hp, lp, col, 
+	const auto id = getFreeId();
+	table.emplace(id,
+		std::make_unique<MoleculeData>(
+			id, name, std::move(*structure),
+			hp, lp, col,
 			std::move(*mp), std::move(*bp),
 			std::move(*sd), std::move(*ld),
 			std::move(*shc), std::move(*lhc), std::move(*flh),
-			std::move(*vlh), std::move(*slh), std::move(*sol), std::move(*hen))) == false)
-	{
-		Log(this).warn("Molecule with duplicate id: '{0}' skipped.", *id);
-		return false;
-	}
+			std::move(*vlh), std::move(*slh), std::move(*sol), std::move(*hen)));
 
 	return true;
 }
 
-bool MoleculeRepository::saveToFile(const std::string& path)
+const MoleculeData& MoleculeRepository::at(const MoleculeId id) const
 {
-	std::ofstream file(path);
-
-	if (!file.is_open())
-	{
-		Log(this).error("Failed to open file '{0}'.", path);
-		return false;
-	}
-
-	for (size_t i = 0; i < table.size(); ++i)
-	{
-		const auto& e = table[i];
-		file << '#' << e.id << ',' << e.getStructure().toSMILES() << ',' << e.name << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << '\n';
-	}
-
-	file.close();
-	return true;
+	return *table.at(id);
 }
 
-size_t MoleculeRepository::findFirst(const MolecularStructure& structure) const
+const MoleculeData* MoleculeRepository::findFirst(const MolecularStructure& structure) const
 {
-	for (size_t i = 0; i < table.size(); ++i)
-		if (table[i].getStructure() == structure)
-			return i;
+	for (const auto& m : table)
+		if (m.second->getStructure() == structure)
+			return m.second.get();
 
-	return npos;
+	return nullptr;
 }
 
-MoleculeId MoleculeRepository::findOrAdd(MolecularStructure&& structure)
+const MoleculeData& MoleculeRepository::findOrAdd(MolecularStructure&& structure)
 {
 	if (structure.isEmpty() || structure.isGeneric())
-	{
-		Log(this).error("Tried to create a concrete molecule from an empty or generic structure.");
-		return 0;
-	}
+		Log(this).fatal("Tried to create a concrete molecule from an empty or generic structure.");
 
-	const auto idx = findFirst(structure);
-	if (idx != npos)
-		return table[idx].id;
+	const auto existing = findFirst(structure);
+	if (existing != nullptr)
+		return *existing;
 
 	Log(this).debug("New structure discovered: \n{0}", structure.print());
 
@@ -136,7 +110,7 @@ MoleculeId MoleculeRepository::findOrAdd(MolecularStructure&& structure)
 	auto hen = estimators.add<ConstantEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>>(1000.0);
 
 	const auto id = getFreeId();
-	table.emplace(id, std::to_string(id), MoleculeData(
+	const auto& it = table.emplace(id, std::make_unique<MoleculeData>(
 		id, structure.toSMILES(), std::move(structure),
 		hydro, lipo, color,
 		std::move(mp), std::move(bp),
@@ -145,5 +119,37 @@ MoleculeId MoleculeRepository::findOrAdd(MolecularStructure&& structure)
 		std::move(flh), std::move(vlh), std::move(slh),
 		std::move(sol), std::move(hen)));
 
+	return *it.first->second;
+}
+
+MoleculeRepository::Iterator MoleculeRepository::begin() const
+{
+	return table.begin();
+}
+
+MoleculeRepository::Iterator MoleculeRepository::end() const
+{
+	return table.end();
+}
+
+size_t MoleculeRepository::size() const
+{
+	return table.size();
+}
+
+void MoleculeRepository::clear()
+{
+	table.clear();
+}
+
+MoleculeId MoleculeRepository::getFreeId() const
+{
+	static MoleculeId id = 0;
+	while (table.contains(id))
+	{
+		if (id == std::numeric_limits<MoleculeId>::max())
+			Log(this).fatal("Molecule id limit reached: {0}.", id);
+		++id;
+	}
 	return id;
 }

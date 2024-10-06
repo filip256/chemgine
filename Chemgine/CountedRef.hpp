@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Log.hpp"
 #include "Casts.hpp"
 
 #include <type_traits>
@@ -33,14 +34,14 @@ public:
 	Countable(Countable&&) = default;
     virtual ~Countable() = default;
 
-	CountT getCount() const;
+	CountT getRefCount() const;
 
 	template<CountableType T>
 	friend class CountedRef;
 };
 
 template<typename CountT>
-CountT Countable<CountT>::getCount() const
+CountT Countable<CountT>::getRefCount() const
 {
 	return count;
 }
@@ -59,7 +60,7 @@ public:
 	template<CountableType D>
 	CountedRef(const CountedRef<D>& other) noexcept;
 
-	CountedRef(CountedRef&&) = default;
+	CountedRef(CountedRef&& other) noexcept;
 
 	~CountedRef() noexcept;
 
@@ -81,12 +82,18 @@ public:
 	const DstT* cast() const;
 };
 
+
 template<CountableType T>
 CountedRef<T>::CountedRef(T& object) noexcept :
 	object(object)
 {
 	++object.count;
 }
+
+template<CountableType T>
+CountedRef<T>::CountedRef(CountedRef&& other) noexcept :
+	CountedRef(other) // move also increments the ref count since (dtors are called on moved objects too)
+{}
 
 template<CountableType T>
 template<CountableType D>

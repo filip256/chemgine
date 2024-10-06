@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <ostream>
 
 #include "LabwareType.hpp"
 #include "LabwarePort.hpp"
@@ -27,10 +28,6 @@ public:
 	BaseLabwareData(BaseLabwareData&&) = default;
 	virtual ~BaseLabwareData() = default;
 
-	// for memory leak checking 
-	static size_t instanceCount;
-#ifndef NDEBUG
-	void* operator new(const size_t count);
-	void operator delete(void* ptr);
-#endif
+	virtual void printDefinition(std::ostream& out) const = 0;
+	virtual void dumpTextures(const std::string& path) const = 0;
 };

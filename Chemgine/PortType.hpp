@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Parsers.hpp"
+#include "Printers.hpp"
 
 #include <cstdint>
 
@@ -36,5 +37,25 @@ public:
 		return typeIt != typeMap.end() ?
 			std::optional(typeIt->second) :
 			std::nullopt;
+	}
+};
+
+template <>
+class Def::Printer<PortType>
+{
+public:
+	static std::string print(const PortType object)
+	{
+		static const std::unordered_map<PortType, std::string> typeMap
+		{
+			{PortType::SIMPLE, "SIMPLE"},
+			{PortType::INLET, "INLET"},
+			{PortType::OUTLET, "OUTLET",},
+			{PortType::DROPPER, "DROPPER"},
+			{PortType::HOSE, "HOSE"},
+			{PortType::CONTACT, "CONTACT"},
+		};
+
+		return typeMap.at(object);
 	}
 };

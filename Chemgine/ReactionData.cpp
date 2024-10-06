@@ -521,3 +521,53 @@ std::string ReactionData::getHRTag() const
 {
 	return '<' + std::to_string(id) + ':' + name + '>';
 }
+
+void ReactionData::printDefinition(
+	std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted
+) const
+{
+	tempSpeedEstimator->printDefinition(out, alreadyPrinted, false);
+	concSpeedEstimator->printDefinition(out, alreadyPrinted, false);
+
+	out << '_' << Keywords::Types::Reaction;
+
+	out << ':';
+
+	const auto compare = [](const Reactable& l, const Reactable& r) { return l.getId() < r.getId(); };
+	const auto uniqueReactants = ImmutableSet<Reactable>::toSortedSetVector(Utils::copy(reactants), compare);
+	const auto uniqueProducts = ImmutableSet<Reactable>::toSortedSetVector(Utils::copy(products), compare);
+
+	for (size_t i = 0; i < uniqueReactants.size() - 1; ++i)
+		out << uniqueReactants[i].getStructure().toSMILES() << '+';
+	out << uniqueReactants.back().getStructure().toSMILES();
+
+	out << "->";
+
+	for (size_t i = 0; i < uniqueProducts.size() - 1; ++i)
+		out << uniqueProducts[i].getStructure().toSMILES() << '+';
+	out << uniqueProducts.back().getStructure().toSMILES();
+
+	out << '{';
+	out << Keywords::Reactions::Id << ':' << Def::printId(id) << ',';
+	out << Keywords::Reactions::Name << ':' << name << ',';
+	if(catalysts.size())
+		out << Keywords::Reactions::Catalysts << ':' << Def::print(catalysts) << ',';
+
+	if (isCut)
+	{
+		out << Keywords::Reactions::IsCut << ':' << Def::print(true) << "};\n";
+		return;
+	}
+
+	if (reactionEnergy != 0.0)
+		out << Keywords::Reactions::Energy << ':' << Def::print(reactionEnergy) << ',';
+	if (activationEnergy != 0.0)
+		out << Keywords::Reactions::Activation << ':' << Def::print(activationEnergy) << ',';
+
+	out << Keywords::Reactions::TemperatureSpeed << ':';
+	tempSpeedEstimator->printDefinition(out, alreadyPrinted, true);
+	out << ',';
+	out << Keywords::Reactions::ConcentrationSpeed << ':';
+	concSpeedEstimator->printDefinition(out, alreadyPrinted, true);
+	out << "};\n";
+}

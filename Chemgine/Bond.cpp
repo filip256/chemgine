@@ -1,7 +1,5 @@
 #include "Bond.hpp"
 
-size_t Bond::instanceCount = 0;
-
 Bond::Bond(const c_size other, const BondType type) :
 	other(other),
 	type(type)
@@ -77,17 +75,3 @@ uint8_t Bond::getValence(const BondType type)
 
 	return 1;
 }
-
-#ifndef NDEBUG
-void* Bond::operator new(const size_t count)
-{
-	++instanceCount;
-	return ::operator new(count);
-}
-
-void Bond::operator delete(void* ptr)
-{
-	--instanceCount;
-	return ::operator delete(ptr);
-}
-#endif

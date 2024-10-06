@@ -2,7 +2,7 @@
     Built-in Reaction Definitions.
 .:
 
-INCLUDE :/estimators.cdef AS est
+INCLUDE ~/estimators.cdef AS est
 
 _react: O=C(R)O + OR -> O=C(R)OR + O {
     id:        #201,

@@ -7,7 +7,7 @@
 const std::unordered_set<Symbol> RadicalData::MatchAny = std::unordered_set<Symbol>{ {'*'} };
 
 RadicalData::RadicalData(
-	const Symbol symbol,
+	const Symbol& symbol,
 	const std::string& name,
 	std::unordered_set<Symbol>&& matchables
 ) noexcept :
@@ -15,16 +15,12 @@ RadicalData::RadicalData(
 	matchables(std::move(matchables))
 {}
 
-DefinitionObject RadicalData::toDefinition() const
+void RadicalData::printDefinition(std::ostream& out) const
 {
-	std::unordered_map<std::string, std::string> properties
-	{
-		{Keywords::Atoms::Name, name},
-		{Keywords::Atoms::RadicalMatches, Def::print(matchables)},
-	};
-
-	return DefinitionObject(
-		DefinitionType::ATOM, "", symbol.getAsString(),
-		std::move(properties), {}, {},
-		DefinitionLocation::createUnknown());
+	out << '_' << Keywords::Types::Radical;
+	out << ':' << Def::print(symbol);
+	out << '{';
+	out << Keywords::Atoms::Name << ':' << name << ',';
+	out << Keywords::Atoms::RadicalMatches << ':' << Def::print(matchables);
+	out << "};\n";
 }

@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Utils.hpp"
+#include "Printers.hPP"
 
+#include <functional>
 #include <vector>
 #include <set>
 
@@ -25,7 +27,9 @@ public:
 	ImmutableSet(ImmutableSet&&) = default;
 
 	static std::vector<T> toSortedSetVector(std::vector<T>&& set);
+	static std::vector<T> toSortedSetVector(std::vector<T>&& set, bool(*compare)(const T&, const T&));
 	static std::vector<T> toSortedSetVector(std::set<T>&& set);
+	static std::vector<T> toSortedSetVector(std::set<T, std::function<bool(const T&, const T&)>>&& set);
 	static std::vector<T> toSortedSetVector(std::unordered_set<T>&& set);
 
 	size_t size() const;
@@ -70,7 +74,8 @@ ImmutableSet<T>::ImmutableSet(std::initializer_list<T> content) noexcept :
 template <typename T>
 std::vector<T> ImmutableSet<T>::toSortedSetVector(std::vector<T>&& vector)
 {
-	if constexpr (std::assignable_from<T&, const T&>) //if inplace is possible
+	// TODO: this check fails many times due to const members
+	if constexpr (std::assignable_from<T&, T>) // inplace if possible
 	{
 		std::sort(vector.begin(), vector.end());
 		vector.erase(std::unique(vector.begin(), vector.end()), vector.end());
@@ -84,7 +89,36 @@ std::vector<T> ImmutableSet<T>::toSortedSetVector(std::vector<T>&& vector)
 }
 
 template <typename T>
+std::vector<T> ImmutableSet<T>::toSortedSetVector(std::vector<T>&& vector, bool(*compare)(const T&, const T&))
+{
+	// TODO: this check fails many times due to const members
+	if constexpr (std::assignable_from<T&, T>) // inplace if possible
+	{
+		std::sort(vector.begin(), vector.end(), compare);
+		vector.erase(std::unique(vector.begin(), vector.end()), vector.end());
+		return vector;
+	}
+	else
+	{
+		std::set<T, std::function<bool(const T&, const T&)>> set(vector.begin(), vector.end(), std::function(compare));
+		return ImmutableSet<T>::toSortedSetVector(std::move(set));
+	}
+}
+
+template <typename T>
 std::vector<T> ImmutableSet<T>::toSortedSetVector(std::set<T>&& set)
+{
+	std::vector<T> result;
+	result.reserve(set.size());
+
+	for (auto&& it : set)
+		result.emplace_back(std::move(it));
+
+	return result;
+}
+
+template <typename T>
+std::vector<T> ImmutableSet<T>::toSortedSetVector(std::set<T, std::function<bool(const T&, const T&)>>&& set)
 {
 	std::vector<T> result;
 	result.reserve(set.size());
@@ -164,3 +198,14 @@ bool ImmutableSet<T>::operator!=(const ImmutableSet& other) const
 {
 	return this->content != other.content;
 }
+
+
+template <typename T>
+class Def::Printer<ImmutableSet<T>>
+{
+public:
+	static std::string print(const ImmutableSet<T>& object)
+	{
+		return Def::print(object.getContent());
+	}
+};

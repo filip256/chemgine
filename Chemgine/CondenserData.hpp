@@ -20,4 +20,6 @@ public:
 		const std::string& coolantfillTextureFile,
 		const float textureScale
 	) noexcept;
+
+	void printDefinition(std::ostream& out) const override final;
 };

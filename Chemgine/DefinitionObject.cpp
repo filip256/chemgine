@@ -49,6 +49,16 @@ const std::unordered_map<std::string, std::string>& DefinitionObject::getRemaini
 	return properties;
 }
 
+const std::unordered_map<std::string, DefinitionObject>& DefinitionObject::getILSubDefs() const
+{
+	return ilSubDefs;
+}
+
+const std::unordered_map<std::string, const DefinitionObject*>& DefinitionObject::getOOLSubDefs() const
+{
+	return oolSubDefs;
+}
+
 std::optional<std::string> DefinitionObject::getProperty(const std::string& key) const
 {
 	const auto prop = getOptionalProperty(key);

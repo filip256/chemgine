@@ -1,36 +1,45 @@
 #pragma once
 
-#include "UnitizedEstimator.hpp"
+#include "DerivedEstimator.hpp"
+#include "Keywords.hpp"
+#include "Printers.hpp"
 
 template<Unit OutU, Unit InU>
-class AffineEstimator : public UnitizedEstimator<OutU, InU>
+class AffineEstimator : public DerivedEstimator<OutU, InU>
 {
 private:
 	const EstimatorRef<OutU, InU> base;
 
+	void tryPrintOOLDefinition(
+		std::ostream& out,
+		std::unordered_set<EstimatorId>& alreadyPrinted
+	) const override final;
+
+	void printILDefinition(
+		std::ostream& out,
+		std::unordered_set<EstimatorId>& alreadyPrinted
+	) const override final;
+
 public:
-	const double vShift = 0.0;
-	const double hShift = 0.0;
-	const double scale = 1.0;
+	const float vShift = 0.0;
+	const float hShift = 0.0;
+	const float scale = 1.0;
 
 	AffineEstimator(
 		const EstimatorId id,
 		const EstimatorRef<OutU, InU>& base,
-		const double vShift,
-		const double hShift,
-		const double scale
+		const float vShift,
+		const float hShift,
+		const float scale
 	) noexcept;
-	AffineEstimator(const AffineEstimator&) = default;
 
 	Amount<OutU> get(const Amount<InU> input) const override final;
 
 	const EstimatorRef<OutU, InU>& getBase() const;
 
 	bool isEquivalent(const EstimatorBase& other,
-		const double epsilon = std::numeric_limits<double>::epsilon()
+		const float epsilon = std::numeric_limits<float>::epsilon()
 	) const override final;
-
-	AffineEstimator* clone() const override final;
 };
 
 
@@ -38,11 +47,11 @@ template<Unit OutU, Unit InU>
 AffineEstimator<OutU, InU>::AffineEstimator(
 	const EstimatorId id,
 	const EstimatorRef<OutU, InU>& base,
-	const double vShift,
-	const double hShift,
-	const double scale
+	const float vShift,
+	const float hShift,
+	const float scale
 ) noexcept :
-	UnitizedEstimator<OutU, InU>(id, base->getMode()),
+	DerivedEstimator<OutU, InU>(id),
 	vShift(vShift),
 	hShift(hShift),
 	scale(scale),
@@ -62,7 +71,7 @@ const EstimatorRef<OutU, InU>& AffineEstimator<OutU, InU>::getBase() const
 }
 
 template<Unit OutU, Unit InU>
-bool AffineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const double epsilon) const
+bool AffineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const float epsilon) const
 {
 	if (EstimatorBase::isEquivalent(other, epsilon) == false)
 		return false;
@@ -76,7 +85,72 @@ bool AffineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const 
 }
 
 template<Unit OutU, Unit InU>
-AffineEstimator<OutU, InU>* AffineEstimator<OutU, InU>::clone() const
+void AffineEstimator<OutU, InU>::tryPrintOOLDefinition(
+	std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted) const
 {
-	return new AffineEstimator(*this);
+	if (alreadyPrinted.contains(EstimatorBase::id))
+		return;
+
+	// try to OOL print base, since it might have multiple references
+	base->printDefinition(out, alreadyPrinted, false);
+
+	if (this->getRefCount() == 1)
+		return;
+
+	alreadyPrinted.emplace(EstimatorBase::id);
+
+	out << '_';
+	out << Keywords::Types::Data;
+	out << '<' << EstimatorBase::getDefIdentifier() << '>';
+	out << ':' << UnitizedEstimator<OutU, InU>::getUnitSpecifier();
+
+	out << '{';
+	out << Keywords::Data::Base << ':';
+	base->printDefinition(out, alreadyPrinted, true);
+
+	if (not Utils::equal(vShift, 0.0f))
+		out << ',' << Keywords::Data::VerticalShift << ':' << Def::print(vShift);
+	if (not Utils::equal(hShift, 0.0f))
+		out << ',' << Keywords::Data::HorizontalShift << ':' << Def::print(hShift);
+	if (not Utils::equal(scale, 1.0f))
+		out << ',' << Keywords::Data::Scale << ':' << Def::print(scale);
+
+	out << '}';
+
+	out << ";\n";
+}
+
+template<Unit OutU, Unit InU>
+void AffineEstimator<OutU, InU>::printILDefinition(
+	std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted) const
+{
+	if (alreadyPrinted.contains(EstimatorBase::id))
+	{
+		out << '$' << EstimatorBase::getDefIdentifier();
+		return;
+	}
+
+	alreadyPrinted.emplace(EstimatorBase::id);
+
+	if (base->getRefCount() > 1 && not alreadyPrinted.contains(base->getId()))
+	{
+		Log(this).fatal("Tried to inline-print an estimator sub-definition (id: {0}) with multiple references, id: {1}.",
+			Def::print(base->getId()), Def::print(this->id));
+	}
+
+	out << '_';
+	out << ':' << UnitizedEstimator<OutU, InU>::getUnitSpecifier();
+
+	out << '{';
+	out << Keywords::Data::Base << ':';
+	base->printDefinition(out, alreadyPrinted, true);
+
+	if(not Utils::equal(vShift, 0.0f))
+		out << ',' << Keywords::Data::VerticalShift << ':' << Def::print(vShift);
+	if (not Utils::equal(hShift, 0.0f))
+		out << ',' << Keywords::Data::HorizontalShift << ':' << Def::print(hShift);
+	if (not Utils::equal(scale, 1.0f))
+		out << ',' << Keywords::Data::Scale << ':' << Def::print(scale);
+
+	out << '}';
 }

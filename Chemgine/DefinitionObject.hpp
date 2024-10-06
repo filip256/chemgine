@@ -56,6 +56,8 @@ public:
 	/// Returns a map containing only the properties which haven't been pulled yet.
 	/// </summary>
 	const std::unordered_map<std::string, std::string>& getRemainingProperties() const;
+	const std::unordered_map<std::string, DefinitionObject>& getILSubDefs() const;
+	const std::unordered_map<std::string, const DefinitionObject*>& getOOLSubDefs() const;
 
 	/// <summary>
 	/// Extracts and returns the property with the given key.
@@ -99,10 +101,10 @@ public:
 	/// If the parsing fails, a warning message is logged.
 	/// If the property isn't found or parsing fails, the given default value is returned.
 	/// </summary>
-	template<typename T, typename... Args>
+	template<typename T, typename D, typename... Args>
 	T getDefaultProperty(
 		const std::string& key,
-		T&& defaultValue,
+		D&& defaultValue,
 		std::optional<T>(*parser)(const std::string&, Args...),
 		Args&&... parserArgs) const;
 
@@ -217,10 +219,10 @@ std::optional<T> DefinitionObject::getOptionalProperty(
 	return parsed;
 }
 
-template<typename T, typename... Args>
+template<typename T, typename D, typename... Args>
 T DefinitionObject::getDefaultProperty(
 	const std::string& key,
-	T&& defaultValue,
+	D&& defaultValue,
 	std::optional<T>(*parser)(const std::string&, Args...),
 	Args&&... parserArgs) const
 {

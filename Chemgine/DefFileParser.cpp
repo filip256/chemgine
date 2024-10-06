@@ -221,7 +221,7 @@ std::pair<std::string, DefinitionLocation> DefFileParser::nextDefinitionLine()
 				line.substr(Syntax::Include.size(), pathEnd - Syntax::Include.size()));
 
 			// append dir
-			if (path.starts_with(":/"))
+			if (path.starts_with("~/"))
 				path = Utils::combinePaths(Utils::extractDirName(currentFile), path.substr(1));
 
 			if (path.empty())

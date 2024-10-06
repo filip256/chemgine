@@ -68,3 +68,13 @@ public:
 		return Catalyst::get(pair->first, pair->second);
 	}
 };
+
+template <>
+class Def::Printer<Catalyst>
+{
+public:
+	static std::string print(const Catalyst& object)
+	{
+		return Def::print(std::pair(object.getStructure().toSMILES(), object.getIdealAmount()));
+	}
+};

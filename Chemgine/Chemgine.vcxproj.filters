@@ -231,9 +231,6 @@
     <ClCompile Include="MoleculeData.cpp">
       <Filter>Source Files\Molecules</Filter>
     </ClCompile>
-    <ClCompile Include="BaseLabwareData.cpp">
-      <Filter>Source Files\Labware\DataTypes</Filter>
-    </ClCompile>
     <ClCompile Include="FlaskData.cpp">
       <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
@@ -473,6 +470,9 @@
     </ClCompile>
     <ClCompile Include="Regressors3D.cpp">
       <Filter>Source Files\DataStructures</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseLabwareData.cpp">
+      <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -929,11 +929,11 @@
     <ClInclude Include="Printers.hpp">
       <Filter>Header Files\Data\Parsers</Filter>
     </ClInclude>
-    <ClInclude Include="DefinitionPrinter.hpp">
-      <Filter>Header Files\Data\Parsers</Filter>
-    </ClInclude>
     <ClInclude Include="MoleculeId.hpp">
       <Filter>Header Files\Molecules</Filter>
+    </ClInclude>
+    <ClInclude Include="DerivedEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

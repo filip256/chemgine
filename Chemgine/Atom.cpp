@@ -2,9 +2,7 @@
 #include "DataStore.hpp"
 #include "Log.hpp"
 
-size_t Atom::instanceCount = 0;
-
-Atom::Atom(const Symbol symbol) noexcept :
+Atom::Atom(const Symbol& symbol) noexcept :
     data(dataStore().atoms.at(symbol))
 {}
 
@@ -38,7 +36,7 @@ uint8_t Atom::getPrecedence() const
 
 std::string Atom::getSymbol() const
 {
-    return data.symbol.getAsString();
+    return data.symbol.getString();
 }
 
 std::string Atom::getSMILES() const
@@ -66,23 +64,7 @@ Atom* Atom::clone() const
     return new Atom(*this);
 }
 
-bool Atom::isDefined(const Symbol symbol)
+bool Atom::isDefined(const Symbol& symbol)
 {
     return getDataStore().atoms.contains(symbol);
 }
-
-
-
-#ifndef NDEBUG
-void* Atom::operator new(const size_t count)
-{
-    ++instanceCount;
-    return ::operator new(count);
-}
-
-void Atom::operator delete(void* ptr)
-{
-    --instanceCount;
-    return ::operator delete(ptr);
-}
-#endif

@@ -46,5 +46,7 @@ public:
 
 	std::string print() const;
 
+	void clear();
+
 	static constexpr size_t npos = decltype(graph)::npos;
 };

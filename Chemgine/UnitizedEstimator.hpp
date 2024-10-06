@@ -1,44 +1,38 @@
 #pragma once
 
 #include "EstimatorBase.hpp"
-#include "EstimationMode.hpp"
-#include "EstimatorSpecifier.hpp"
-#include "DataPoint.hpp"
-#include "DefinitionObject.hpp"
 #include "Amount.hpp"
 
 template<Unit OutU, Unit... InUs>
 class UnitizedEstimator : public EstimatorBase
 {
 protected:
-	const EstimationMode mode;
+	static std::string getUnitSpecifier();
 
 public:
-	UnitizedEstimator(
-		const EstimatorId id, 
-		const EstimationMode mode
-	) noexcept;
+	using EstimatorBase::EstimatorBase;
 
 	virtual Amount<OutU> get(const Amount<InUs>... inputs) const = 0;
-
-	EstimationMode getMode() const;
 };
 
 template<Unit OutU, Unit... InUs>
-UnitizedEstimator<OutU, InUs...>::UnitizedEstimator(
-	const EstimatorId id,
-	const EstimationMode mode
-) noexcept :
-	EstimatorBase(id),
-	mode(mode)
-{}
-
-template<Unit OutU, Unit... InUs>
-EstimationMode UnitizedEstimator<OutU, InUs...>::getMode() const
+std::string UnitizedEstimator<OutU, InUs...>::getUnitSpecifier()
 {
-	return mode;
-}
+	std::string specifier;
+	if constexpr (sizeof...(InUs) == 1)
+	{
+		((specifier += Amount<InUs>::unitSymbol()), ...);
+	}
+	else
+	{
+		specifier += '(';
+		((specifier += Amount<InUs>::unitSymbol() + ','), ...);
+		specifier.back() = ')';
+	}
 
+	specifier += "->" + Amount<OutU>::unitSymbol();
+	return specifier;
+}
 
 template<Unit OutU, Unit... InUs>
 using EstimatorRef = CountedRef<const UnitizedEstimator<OutU, InUs...>>;

@@ -17,9 +17,14 @@ ReactionRepository::ReactionRepository(
 
 bool ReactionRepository::add(DefinitionObject&& definition)
 {
-	const auto id = definition.pullProperty("id", Def::parseId<ReactionId>);
+	auto id = definition.pullOptionalProperty(Keywords::Reactions::Id, Def::parseId<ReactionId>);
 	if (not id)
+		id = getFreeId();
+	else if (table.contains(*id))
+	{
+		Log(this).error("Reaction with duplicate id: '{0}', at: {1}.", *id, definition.getLocationName());
 		return false;
+	}
 
 	const auto name = definition.pullDefaultProperty("name", "?");
 
@@ -139,17 +144,31 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 
 	maxReactantCount = std::max(static_cast<uint8_t>(reactantIds.size()), maxReactantCount);
 
-	if (table.emplace(*id, std::to_string(*id), std::move(*data)) == false)
-		Log(this).warn("Skipped reaction with duplicate id: '{0}', at: {1}.", *id, definition.getLocationName());
+	const auto r = table.emplace(*id, std::move(data));
+	network.insert(*r.first->second);
 
 	return true;
 }
 
-void ReactionRepository::buildNetwork()
+ReactionRepository::Iterator ReactionRepository::begin() const
 {
-	// TODO: use fixed data allocation and remove this
-	for (size_t i = 0; i < table.size(); ++i)
-		network.insert(table[i]);
+	return table.begin();
+}
+
+ReactionRepository::Iterator ReactionRepository::end() const
+{
+	return table.end();
+}
+
+size_t ReactionRepository::size() const
+{
+	return table.size();
+}
+
+void ReactionRepository::clear()
+{
+	network.clear();
+	table.clear();
 }
 
 uint8_t ReactionRepository::getMaxReactantCount() const
@@ -174,13 +193,12 @@ std::unordered_set<RetrosynthReaction> ReactionRepository::getRetrosynthReaction
 
 size_t ReactionRepository::generateCurrentSpan() const
 {
-	const auto& molecules = this->molecules.getData().getData();
 	std::vector<Reactant> reactants;
 	reactants.reserve(molecules.size());
 
 	std::transform(
 		molecules.begin(), molecules.end(), std::back_inserter(reactants),
-		[](const MoleculeData& m) { return Reactant(Molecule(m.id), LayerType::NONE, 1.0_mol); });
+		[](const auto& mIt) { return Reactant(Molecule(*mIt.second), LayerType::NONE, 1.0_mol); });
 
 	const auto arrangements = Utils::getArrangementsWithRepetitions(reactants, maxReactantCount);
 	for(size_t i = 0; i < arrangements.size(); ++i)
@@ -193,9 +211,21 @@ size_t ReactionRepository::generateCurrentSpan() const
 
 size_t ReactionRepository::generateTotalSpan(const size_t maxIterations) const
 {
-	const size_t initialCnt = molecules.getData().getData().size();
+	const size_t initialCnt = molecules.size();
 
-	while (generateCurrentSpan() > 0 && molecules.getData().getData().size() < 1000);
+	while (generateCurrentSpan() > 0 && molecules.size() < 1000);
 
-	return molecules.getData().getData().size() - initialCnt;
+	return molecules.size() - initialCnt;
+}
+
+ReactionId ReactionRepository::getFreeId() const
+{
+	static ReactionId id = 0;
+	while (table.contains(id))
+	{
+		if (id == std::numeric_limits<ReactionId>::max())
+			Log(this).fatal("Reaction id limit reached: {0}.", id);
+		++id;
+	}
+	return id;
 }

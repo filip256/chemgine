@@ -20,3 +20,21 @@ CondenserData::CondenserData(
 	length(length),
 	efficiency(efficiency)
 {}
+
+void CondenserData::printDefinition(std::ostream& out) const
+{
+	out << '_' << Keywords::Types::Labware;
+	out << ':' << Def::print(type);
+	out << '{';
+	out << Keywords::Labware::Id << ':' << Def::printId(id) << ',';
+	out << Keywords::Labware::Name << ':' << name << ',';
+	out << Keywords::Labware::Ports << ':' << Def::print(ports) << ',';
+	out << Keywords::Labware::Volume << ':' << Def::print(getVolume<0>()) << ',';
+	out << Keywords::Labware::Length << ':' << Def::print(length) << ',';
+	out << Keywords::Labware::Efficiency << ':' << Def::print(efficiency) << ',';
+	out << Keywords::Labware::Texture << ':' << "~/" << textureFile << ',';
+	out << Keywords::Labware::InnerMask << ':' << "~/" << "fill0_" << textureFile << ',';
+	out << Keywords::Labware::CoolantMask << ':' << "~/" << "fill1_" << textureFile << ',';
+	out << Keywords::Labware::TextureScale << ':' << textureScale;
+	out << "};\n";
+}

@@ -2,7 +2,6 @@
 
 #include "MoleculeId.hpp"
 #include "MolecularStructure.hpp"
-#include "EstimatorBase.hpp"
 #include "UnitizedEstimator.hpp"
 #include "Amount.hpp"
 #include "MoleculeType.hpp"
@@ -68,4 +67,8 @@ public:
 	const MolecularStructure& getStructure() const;
 
 	std::string getHRTag() const;
+
+	void printDefinition(
+		std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted
+	) const;
 };

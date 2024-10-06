@@ -4,7 +4,6 @@
 #include "DynamicAmount.hpp"
 #include "Keywords.hpp"
 
-
 class LabwarePort
 {
 public:
@@ -49,5 +48,22 @@ public:
 			return std::nullopt;
 
 		return LabwarePort(pair->first, *x, *y, *angle);
+	}
+};
+
+template <>
+class Def::Printer<LabwarePort>
+{
+public:
+	static std::string print(const LabwarePort& object)
+	{
+		std::unordered_map<std::string, std::string> props
+		{
+			{ Keywords::Port::X, Def::print(object.x) },
+			{ Keywords::Port::Y, Def::print(object.y) },
+			{ Keywords::Port::Angle, Def::print(object.angle) }
+		};
+
+		return Def::print(std::pair(Def::print(object.type), std::move(props)));
 	}
 };

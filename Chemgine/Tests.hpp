@@ -378,7 +378,7 @@ private:
 	const Amount<Unit::SECOND> tickTimespan = 1.0_s;
 
 	const double waterTemperatureThreshold = 0.1;
-	const double overflowLossThreshold = 0.0000001;
+	const double overflowLossThreshold = 1.0e-4;
 	const double determinismEqualityThreshold = std::numeric_limits<double>::epsilon();
 
 	void runConservationOfMassTest()
@@ -390,7 +390,7 @@ private:
 			atmosphere->tick(tickTimespan);
 			const auto massAfter = reactorA->getTotalMass() + atmosphere->getTotalMass() + dumpA->getTotalMass();
 
-			if (std::abs((massAfter - massBefore).asStd()) > 1e-5)
+			if (std::abs((massAfter - massBefore).asStd()) > 1e-3)
 			{
 				Log(this).error("Test failed > Reactor > mass conservation: expected={0}   actual={1}",
 					massBefore.toString(), massAfter.toString());
@@ -823,7 +823,7 @@ public:
 		const auto begin = std::chrono::steady_clock::now();
 
 		store.load("./Data/builtin.cdef");
-		store.reactions.buildNetwork();
+		//store.reactions.buildNetwork();
 
 		std::cout << '\n' << store.reactions.getNetwork().print() << '\n';
 
@@ -862,8 +862,7 @@ public:
 	{
 		const auto begin = std::chrono::steady_clock::now();
 		//store.reactions.generateTotalSpan();
-		store.saveGenericMoleculesData("Out/genericmolecules.out.csv")
-			.saveMoleculesData("Out/molecules.out.csv");
+		store.saveGenericMoleculesData("Out/genericmolecules.out.csv");
 		const auto end = std::chrono::steady_clock::now();
 
 		Log(this).info("Total span dump completed in {0}s.",

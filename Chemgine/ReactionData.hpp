@@ -120,6 +120,10 @@ public:
 
 	std::string getHRTag() const;
 
+	void printDefinition(
+		std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted
+	) const;
+
 	static constexpr size_t npos = static_cast<size_t>(-1);
 
 	friend class ReactionRepository;

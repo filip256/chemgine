@@ -2,10 +2,9 @@
     Built-in Reactions
 .:
 
-INCLUDE :/estimators.cdef AS est
+INCLUDE ~/estimators.cdef AS est
 
 _mol: O {
-	id:              #501,
 	name:            water,
 	melting_point:   _: atm -> C { values: { 1.0 : 0.0 } },
 	boiling_point:   $est@bp_w,
@@ -22,7 +21,6 @@ _mol: O {
 };
 
 _mol: OC {
-	id:              #502,
 	name:            methanol,
 	melting_point:   _: atm -> C { values: { 1.0 : -97.8 } },
 	boiling_point:   _: atm -> C { base: $est@bp_w, anchor_point: { 1.0_atm : 64.7 }},
@@ -38,7 +36,6 @@ _mol: OC {
 };
 
 _mol: CC(=O)O {
-	id:              #503,
 	name:            acetic acid,
 	melting_point:   _: atm -> C { values: { 1.0 : 0.635 } },
 	boiling_point:   _: atm -> C { values: { 1.0 : 117.9 } },,
@@ -55,7 +52,6 @@ _mol: CC(=O)O {
 };
 
 _mol: CC(=O)OC(=O)C {
-	id:              #504,
 	name:            acetic anhydride,
 	melting_point:   _: atm -> C { values: { 1.0 : -73.4 } },
 	boiling_point:   _: atm -> C { values: { 1.0 : 139.5 } },
@@ -72,7 +68,6 @@ _mol: CC(=O)OC(=O)C {
 };
 
 _mol: CC(=O)OC {
-	id:              #505,
 	name:            methyl acetate,
 	melting_point:   _: atm -> C { values: { 1.0 : -98.2 } },
 	boiling_point:   _: atm -> C { values: { 1.0 : 56.7 } },
@@ -88,7 +83,6 @@ _mol: CC(=O)OC {
 };
 
 _mol: COC {
-	id:              #506,
 	name:            dimethyl ether,
 	melting_point:   _: atm -> C { values: { 1.0 : -141.5 } },
 	boiling_point:   _: atm -> C { values: { 1.0 : -24.82 } },
@@ -104,7 +98,6 @@ _mol: COC {
 };
 
 _mol: HH {
-	id:              #507,
 	name:            hydrogen,
 	melting_point:   _: atm -> C { values: { 1.0 : -252.762 } },
 	boiling_point:   _: atm -> C { values: { 1.0 : -259.16 } },
@@ -120,7 +113,6 @@ _mol: HH {
 };
 
 _mol: O=O {
-	id:              #508,
 	name:            oxygen,
 	melting_point:   _: atm -> C { values: { 1.0 : -218.4 } },
 	boiling_point:   _: atm -> C { values: { 1.0 : -182.96 } },
@@ -137,7 +129,6 @@ _mol: O=O {
 };
 
 _mol: N#N {
-	id:              #509,
 	name:            nitrogen,
 	melting_point:   _: atm -> C { values: { 1.0 : -210.02 } },
 	boiling_point:   _: atm -> C { values: { 1.0 : -195.79 } },
@@ -154,7 +145,6 @@ _mol: N#N {
 };
 
 _mol: CC(O)C {
-	id:              #510,
 	name:            isopropanol,
 	melting_point:   _: atm -> C { values: { 1.0 : -210.02 } },
 	boiling_point:   _: atm -> C { values: { 1.0 : -195.79 } },
@@ -170,7 +160,6 @@ _mol: CC(O)C {
 };
 
 _mol: CC(=O)C {
-	id:              #511,
 	name:            acetone,
 	melting_point:   _: atm -> C { values: { 1.0 : -210.02 } },
 	boiling_point:   _: atm -> C { values: { 1.0 : -195.79 } },

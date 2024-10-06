@@ -274,11 +274,7 @@ public:
 		if (pair.empty())
 			return std::nullopt;
 
-		const auto valStr = Utils::strip(pair.front());
-		const auto val =
-			valStr == Keywords::Amounts::Min ? std::numeric_limits<Amount<>::StorageType>::lowest() :
-			valStr == Keywords::Amounts::Max ? std::numeric_limits<Amount<>::StorageType>::max() :
-			Def::parse<Amount<>::StorageType>(valStr);
+		const auto val = Def::parse<Amount<>::StorageType>(Utils::strip(pair.front()));
 		if (not val)
 			return std::nullopt;
 

@@ -2,6 +2,7 @@
 #include "PathUtils.hpp"
 
 #include <algorithm>
+#include <filesystem>
 
 void Utils::normalizePath(std::string& path)
 {
@@ -52,4 +53,9 @@ std::string Utils::combinePaths(const std::string& path1, const std::string& pat
 	return path2.starts_with('/') ?
 		path1 + path2 :
 		path1 + '/' + path2;
+}
+
+bool Utils::fileExists(const std::string& path)
+{
+	return std::filesystem::exists(path);
 }

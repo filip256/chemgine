@@ -7,15 +7,18 @@
 #include "ReactionNetwork.hpp"
 #include "MoleculeRepository.hpp"
 
-class ReactionRepository :
-	public Repository<ReactionId, std::string, ReactionData>
+class ReactionRepository
 {
 private:
+	std::unordered_map<ReactionId, std::unique_ptr<ReactionData>> table;
+
 	EstimatorRepository& estimators;
 	const MoleculeRepository& molecules;
 
 	uint8_t maxReactantCount = 0;
 	ReactionNetwork network;
+
+	ReactionId getFreeId() const;
 
 public:
 	ReactionRepository(
@@ -26,7 +29,12 @@ public:
 
 	bool add(DefinitionObject&& definition);
 
-	void buildNetwork();
+	using Iterator = std::unordered_map<ReactionId, std::unique_ptr<ReactionData>>::const_iterator;
+	Iterator begin() const;
+	Iterator end() const;
+
+	size_t size() const;
+	void clear();
 
 	uint8_t getMaxReactantCount() const;
 	const ReactionNetwork& getNetwork() const;

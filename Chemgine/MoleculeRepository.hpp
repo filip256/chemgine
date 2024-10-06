@@ -5,11 +5,14 @@
 #include "EstimatorRepository.hpp"
 #include "DefinitionObject.hpp"
 
-class MoleculeRepository :
-	public Repository<MoleculeId, std::string, MoleculeData>
+class MoleculeRepository
 {
 private:
+	std::unordered_map<MoleculeId, std::unique_ptr<const MoleculeData>> table;
+
 	EstimatorRepository& estimators;
+
+	MoleculeId getFreeId() const;
 
 public:
 	MoleculeRepository(EstimatorRepository& estimators) noexcept;
@@ -17,9 +20,16 @@ public:
 
 	bool add(DefinitionObject&& definition);
 
-	bool saveToFile(const std::string& path);
+	const MoleculeData& at(const MoleculeId id) const;
 
-	size_t findFirst(const MolecularStructure& structure) const;
+	const MoleculeData* findFirst(const MolecularStructure& structure) const;
 
-	MoleculeId findOrAdd(MolecularStructure&& structure);
+	const MoleculeData& findOrAdd(MolecularStructure&& structure);
+
+	using Iterator = std::unordered_map<MoleculeId, std::unique_ptr<const MoleculeData>>::const_iterator;
+	Iterator begin() const;
+	Iterator end() const;
+
+	size_t size() const;
+	void clear();
 };

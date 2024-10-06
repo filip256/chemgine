@@ -46,19 +46,13 @@ int main()
             tests.runPersist();
         }
 
-        std::vector<int> in = { 2, 1 };
-        while (std::next_permutation(in.begin(), in.end())) {
-            for (const auto& i : in)
-                std::cout << i << ' ';
-            std::cout << '\n';
-        }
-
         DataStore store;
         Accessor<>::setDataStore(store);
 
-        store.load("./Data/builtin.cdef");
-        store.reactions.buildNetwork();
-        store.dump("./Out/builtin.cdef");
+        store.load("./Data/builtin.cdef")
+            .dump("./Out/builtin.cdef")
+            .clear()
+            .load("./Out/builtin.cdef");
 
         std::cout << MolecularStructure("S(=O)(=O)(O)O").print() << '\n';
 
@@ -110,16 +104,8 @@ int main()
         //    .saveMoleculesData("Out/molecules.out.csv");
     }
 
-    if (Atom::instanceCount != 0)
-        Log().error("Memory leak detected: Atom ({0} unreleased instances).", Atom::instanceCount);
-    if (Bond::instanceCount != 0)
-        Log().error("Memory leak detected: Bond ({0} unreleased instances).", Bond::instanceCount);
-    if (BaseLabwareData::instanceCount != 0)
-        Log().error("Memory leak detected: BaseLabwareData ({0} unreleased instances).", BaseLabwareData::instanceCount);
     if (BaseLabwareComponent::instanceCount != 0)
         Log().error("Memory leak detected: BaseLabwareComponent ({0} unreleased instances).", BaseLabwareComponent::instanceCount);
-    if (EstimatorBase::instanceCount != 0)
-        Log().error("Memory leak detected: EstimatorBase ({0} unreleased instances).", EstimatorBase::instanceCount);
     if (BaseContainer::instanceCount != 0)
         Log().error("Memory leak detected: BaseContainer ({0} unreleased instances).", BaseContainer::instanceCount);
 

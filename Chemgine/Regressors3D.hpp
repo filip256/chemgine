@@ -13,6 +13,8 @@ public:
 
 	virtual float get(const float input1, const float input2) const = 0;
 
+	virtual std::vector<float> getParams() const = 0;
+
 	virtual bool isEquivalent(const Regressor3DBase& other,
 		const float epsilon = std::numeric_limits<float>::epsilon()
 	) const;
@@ -34,6 +36,8 @@ public:
 	LinearRegressor3D(const LinearRegressor3D&) = default;
 
 	float get(const float input1, const float input2) const override final;
+
+	std::vector<float> getParams() const override final;
 
 	bool isEquivalent(const Regressor3DBase& other,
 		const float epsilon = std::numeric_limits<float>::epsilon()

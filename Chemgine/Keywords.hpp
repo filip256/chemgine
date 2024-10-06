@@ -41,6 +41,7 @@ namespace Keywords
 		const std::string Scale = "scale";
 		const std::string AnchorPoint = "anchor_point";
 		const std::string RebasePoint = "rebase_point";
+		const std::string Parameters = "params";
 	}
 
 	namespace Atoms
@@ -72,6 +73,7 @@ namespace Keywords
 
 	namespace Reactions
 	{
+		const std::string Id = "id";
 		const std::string Name = "name";
 		const std::string TemperatureSpeed = "speed_t";
 		const std::string ConcentrationSpeed = "speed_c";
@@ -83,6 +85,7 @@ namespace Keywords
 
 	namespace Labware
 	{
+		const std::string Id = "id";
 		const std::string Flask = "flask";
 		const std::string Adaptor = "adaptor";
 		const std::string Condenser = "condenser";
@@ -92,7 +95,7 @@ namespace Keywords
 		const std::string Ports = "ports";
 		const std::string Volume = "volume";
 		const std::string Length = "length";
-		const std::string Effic = "effic";
+		const std::string Efficiency = "effic";
 		const std::string InnerMask = "inner_mask";
 		const std::string CoolantMask = "coolant_mask";
 		const std::string Power = "power";

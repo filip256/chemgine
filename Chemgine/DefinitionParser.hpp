@@ -108,7 +108,7 @@ public:
 			return std::nullopt;
 		}
 
-		const auto props = Utils::split(propertiesStr, ',', '{', '}', true);
+		const auto props = Utils::split(propertiesStr, ',', "{[(", "}])", true);
 		std::unordered_map<std::string, std::string> properties;
 		std::unordered_map<std::string, DefinitionObject> ilSubDefs;
 		std::unordered_map<std::string, const DefinitionObject*> oolSubDefs;
@@ -191,6 +191,10 @@ public:
 				oolSubDefs.emplace(std::move(name), definition);
 				continue;
 			}
+
+			// relative path
+			if (value.starts_with("~/"))
+				value = Utils::combinePaths(Utils::extractDirName(location.getFile()), value.substr(1));
 
 			// normal properties
 			properties.emplace(std::move(name), std::move(value));

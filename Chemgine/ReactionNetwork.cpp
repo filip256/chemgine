@@ -235,3 +235,9 @@ std::string ReactionNetwork::print() const
 	block.trim();
 	return block.toString();
 }
+
+void ReactionNetwork::clear()
+{
+	graph.clear();
+	topLayer.clear();
+}

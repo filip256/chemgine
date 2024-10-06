@@ -384,6 +384,12 @@ Tasks:
 ---
   1. Add user defineable specific bond properties
 ---
+     - IMPORTANT -
+
+  1. size_t is only 4-bytes on x86, some custom hashes and Symbol comparison might fail on x86. Use uint64_t where possible
+  2. float comparison should use adaptive epsilon
+
+---
      - DEFINITION LANGUAGE -
 
   DONE. Add parser which splits text into defs
@@ -406,6 +412,7 @@ Tasks:
   17. Add non-linear regressors
   18. Better ignored property check
   19. Pass Symbol& everywhere, make symbol 8-byte
+  20. Scientific float notation for printers
 
 ---
      - DIRECT REFERENCING -

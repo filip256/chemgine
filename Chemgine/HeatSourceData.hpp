@@ -16,4 +16,6 @@ public:
 		const std::string& textureFile, 
 		const float textureScale
 	) noexcept;
+
+	void printDefinition(std::ostream& out) const override final;
 };

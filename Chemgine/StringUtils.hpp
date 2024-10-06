@@ -27,6 +27,13 @@ namespace Utils
 		const char ignoreSectionEnd,
 		const bool ignoreEmpty = false);
 
+	std::vector<std::string> split(
+		const std::string& line,
+		const char separator,
+		const std::string& ignoreSectionBegins,
+		const std::string& ignoreSectionEnds,
+		const bool ignoreEmpty = false);
+
 	std::vector<std::vector<std::string>> splitLists(
 		const std::string& line,
 		const char outerSeparator,

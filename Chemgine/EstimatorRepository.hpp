@@ -24,7 +24,13 @@ public:
 	template <typename EstT, typename... Args>
 	CountedRef<const EstT> add(Args&&... args);
 
+	void dropUnusedEstimators();
+
 	const EstimatorBase& at(const EstimatorId id) const;
+
+	using Iterator = std::unordered_map<EstimatorId, std::unique_ptr<const EstimatorBase>>::const_iterator;
+	Iterator begin() const;
+	Iterator end() const;
 
 	void clear();
 };

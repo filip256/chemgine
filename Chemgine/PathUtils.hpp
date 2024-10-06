@@ -12,4 +12,6 @@ namespace Utils
 	std::string extractExtension(const std::string& path);
 
 	std::string combinePaths(const std::string& path1, const std::string& path2);
+
+	bool fileExists(const std::string& path);
 }

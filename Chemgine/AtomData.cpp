@@ -7,7 +7,7 @@
 const ImmutableSet<uint8_t> AtomData::RadicalAnyValence = { NullValence };
 
 AtomData::AtomData(
-	const Symbol symbol,
+	const Symbol& symbol,
 	const std::string& name,
 	const Amount<Unit::GRAM> weight,
 	ImmutableSet<uint8_t>&& valences
@@ -50,27 +50,24 @@ uint8_t AtomData::getFittingValence(const uint8_t bonds) const
 
 std::string AtomData::getSMILES() const
 {
-	return symbol.isSingleByte() ?
-		symbol.getAsString() :
-		'[' + symbol.getAsString() + ']';
+	const auto smiles = symbol.getString();
+	return smiles.size() > 1 ?
+		'[' + smiles + ']' :
+		smiles;
 }
 
-DefinitionObject AtomData::toDefinition() const
+void AtomData::printDefinition(std::ostream& out) const
 {
-	std::unordered_map<std::string, std::string> properties
-	{
-		{Keywords::Atoms::Name, name},
-		{Keywords::Atoms::Weight, Def::print(weight)},
-		{Keywords::Atoms::Valences, Def::print(valences.getContent())},
-	};
-
-	return DefinitionObject(
-		DefinitionType::ATOM, "", symbol.getAsString(),
-		std::move(properties), {}, {},
-		DefinitionLocation::createUnknown());
+	out << '_' << Keywords::Types::Atom;
+	out << ':' << Def::print(symbol);
+	out << '{';
+	out << Keywords::Atoms::Name << ':' << name << ',';
+	out << Keywords::Atoms::Weight << ':' << Def::print(weight) << ',';
+	out << Keywords::Atoms::Valences << ':' << Def::print(valences);
+	out << "};\n";
 }
 
-uint8_t AtomData::getRarityOf(const Symbol symbol)
+uint8_t AtomData::getRarityOf(const Symbol& symbol)
 {
 	static const std::unordered_map<Symbol, uint8_t> rarities {
 		{ "C", 1 },

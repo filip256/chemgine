@@ -1,10 +1,8 @@
 #pragma once
 
-#include "Parsers.hpp"
-
 #include <vector>
 
-template <class T>
+template <typename T>
 class Spline
 {
 private:
@@ -29,6 +27,7 @@ public:
 
 	Spline& operator=(Spline&&) = default;
 
+	const std::vector<std::pair<T, T>>& getContent() const;
 	const std::pair<T, T>& front() const;
 	const std::pair<T, T>& back() const;
 	size_t size() const;
@@ -49,28 +48,4 @@ public:
 	) const;
 
 	static constexpr size_t npos = static_cast<size_t>(-1);
-};
-
-
-template <typename T>
-class Def::Parser<Spline<T>>
-{
-public:
-	static std::optional<Spline<T>> parse(const std::string& str)
-	{
-		const auto& pointsStr = Utils::split(str, ',', true);
-
-		std::vector<std::pair<float, float>> points;
-		points.reserve(pointsStr.size());
-
-		for (size_t i = 0; i < pointsStr.size(); ++i)
-		{
-			const auto p = Def::parse<std::pair<double, double>>(pointsStr[i]);
-			if (not p)
-				return std::nullopt;
-			points.emplace_back(Utils::reversePair(*p));
-		}
-
-		return points.empty() ? std::nullopt : std::optional<Spline<float>>(Spline(std::move(points)));
-	}
 };

@@ -162,7 +162,7 @@ public:
 			baseUnitNames += ", " + DynamicAmount::getUnitSymbol(inputBaseUnits[i]);
 
 		std::string expectedUnitNames;
-		((expectedUnitNames += DynamicAmount::getUnitSymbol(InUs) + ", "), ...);
+		((expectedUnitNames += Amount<InUs>::unitSymbol() + ", "), ...);
 		expectedUnitNames.pop_back();
 		expectedUnitNames.pop_back();
 

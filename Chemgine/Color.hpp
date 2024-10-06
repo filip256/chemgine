@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Parsers.hpp"
+#include "Printers.hpp"
 #include "Keywords.hpp"
 
 #include <cstdint>
@@ -47,5 +48,20 @@ public:
 			return std::nullopt;
 
 		return Color(*r, *g, *b, *intensity);
+	}
+};
+
+template <>
+class Def::Printer<Color>
+{
+public:
+	static std::string print(const Color object)
+	{
+		return '{' +
+			Keywords::Color::R + ':' + Def::print(object.r) + ',' +
+			Keywords::Color::G + ':' + Def::print(object.g) + ',' +
+			Keywords::Color::B + ':' + Def::print(object.b) + ',' +
+			Keywords::Color::Intensity + ':' + Def::print(object.a)
+			+ '}';
 	}
 };

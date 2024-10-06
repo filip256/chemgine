@@ -16,7 +16,7 @@ public:
 	OOLDefRepository(const OOLDefRepository&) = delete;
 	OOLDefRepository(OOLDefRepository&&) = default;
 
-	bool add(DefinitionObject&& definition);
+	const DefinitionObject* add(DefinitionObject&& definition);
 
 	const DefinitionObject* getDefinition(const std::string& identifier) const;
 

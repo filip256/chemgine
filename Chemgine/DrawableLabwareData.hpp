@@ -17,5 +17,8 @@ protected:
 
 public:
 	const float textureScale;
+	const std::string textureFile;
 	sf::Texture texture;
+
+	void dumpTextures(const std::string& path) const override;
 };

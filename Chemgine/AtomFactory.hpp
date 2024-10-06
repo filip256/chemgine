@@ -8,5 +8,5 @@
 class AtomFactory
 {
 public:
-	static std::unique_ptr<const Atom> get(const Symbol symbol);
+	static std::unique_ptr<const Atom> get(const Symbol& symbol);
 };

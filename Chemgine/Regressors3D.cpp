@@ -26,6 +26,11 @@ float LinearRegressor3D::get(const float input1, const float input2) const
 	return input1 * paramX + input2 * paramY + shift;
 }
 
+std::vector<float> LinearRegressor3D::getParams() const
+{
+	return { paramX, paramY, shift };
+}
+
 bool LinearRegressor3D::isEquivalent(const Regressor3DBase& other, const float epsilon) const
 {
 	if (not Regressor3DBase::isEquivalent(other, epsilon))

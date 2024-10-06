@@ -2,6 +2,7 @@
 
 #include "Utils.hpp"
 #include "StringUtils.hpp"
+#include "Keywords.hpp"
 
 #include <vector>
 #include <string>
@@ -102,8 +103,14 @@ namespace Def
 	public:
 		static std::optional<float> parse(const std::string& str)
 		{
-			if (str.empty())
+			const auto stripped = Utils::strip(str);
+			if (stripped.empty())
 				return std::nullopt;
+
+			if (stripped == Keywords::Amounts::Min)
+				return std::numeric_limits<float>::lowest();
+			if (stripped == Keywords::Amounts::Max)
+				return std::numeric_limits<float>::max();
 
 			try
 			{
@@ -126,8 +133,14 @@ namespace Def
 	public:
 		static std::optional<double> parse(const std::string& str)
 		{
-			if (str.empty())
+			const auto stripped = Utils::strip(str);
+			if (stripped.empty())
 				return std::nullopt;
+
+			if (stripped == Keywords::Amounts::Min)
+				return std::numeric_limits<double>::lowest();
+			if (stripped == Keywords::Amounts::Max)
+				return std::numeric_limits<double>::max();
 
 			try
 			{
@@ -143,6 +156,37 @@ namespace Def
 			}
 		}
 	};
+
+	template <>
+	class Parser<long double>
+	{
+	public:
+		static std::optional<long double> parse(const std::string& str)
+		{
+			const auto stripped = Utils::strip(str);
+			if (stripped.empty())
+				return std::nullopt;
+
+			if (stripped == Keywords::Amounts::Min)
+				return std::numeric_limits<long double>::lowest();
+			if (stripped == Keywords::Amounts::Max)
+				return std::numeric_limits<long double>::max();
+
+			try
+			{
+				return std::optional<long double>(std::stold(str));
+			}
+			catch (const std::invalid_argument&)
+			{
+				return std::nullopt;
+			}
+			catch (const std::out_of_range&)
+			{
+				return std::nullopt;
+			}
+		}
+	};
+
 
 	template <>
 	class Parser<bool>
@@ -185,9 +229,15 @@ namespace Def
 			for (size_t i = 0; i < listStr.size(); ++i)
 			{
 				if (listStr[i] == '{')
+				{
 					++ignoreSections;
-				else if (listStr[i] == '}' && ignoreSections > 0)
+					continue;
+				}
+				if (listStr[i] == '}' && ignoreSections > 0)
+				{
 					--ignoreSections;
+					continue;
+				}
 
 				if (ignoreSections != 0)
 					continue;

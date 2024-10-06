@@ -1,5 +1,7 @@
 #include "StringUtils.hpp"
 
+#include <vector>
+
 bool Utils::isWhiteSpace(const char c)
 {
 	// the extra checks assure special chars don't break a std::isspace assert
@@ -77,11 +79,72 @@ std::vector<std::string> Utils::split(
 	for (size_t i = 0; i < line.size(); ++i)
 	{
 		if (line[i] == ignoreSectionBegin)
+		{
 			++ignoreSections;
-		else if(line[i] == ignoreSectionEnd && ignoreSections > 0)
+			continue;
+		}
+		if (line[i] == ignoreSectionEnd && ignoreSections > 0)
+		{
 			--ignoreSections;
-
+			continue;
+		}
 		if (ignoreSections != 0)
+			continue;
+
+		if (line[i] != separator)
+			continue;
+
+		if (i - lastSep - 1 > 0)
+		{
+			auto item = Utils::strip(line.substr(lastSep + 1, i - lastSep - 1));
+			if (ignoreEmpty == false || item.size())
+				result.emplace_back(std::move(item));
+		}
+		else if (ignoreEmpty == false)
+			result.emplace_back();
+
+		lastSep = i;
+	}
+
+	if (lastSep + 1 < line.size())
+	{
+		auto item = Utils::strip(line.substr(lastSep + 1));
+		if (ignoreEmpty == false || item.size())
+			result.emplace_back(std::move(item));
+	}
+	else if (ignoreEmpty == false)
+		result.emplace_back();
+
+	return result;
+}
+
+std::vector<std::string> Utils::split(
+	const std::string& line,
+	const char separator,
+	const std::string& ignoreSectionBegins,
+	const std::string& ignoreSectionEnds,
+	const bool ignoreEmpty)
+{
+	std::vector<std::string> result;
+	size_t lastSep = static_cast<size_t>(-1);
+	
+	std::vector<size_t> ignoreSections;
+
+	for (size_t i = 0; i < line.size(); ++i)
+	{
+		if (const auto b = ignoreSectionBegins.find(line[i]); b != std::string::npos)
+		{
+			ignoreSections.emplace_back(b);
+			continue;
+		}
+
+		if (const auto e = ignoreSectionEnds.find(line[i]); ignoreSections.size() && e == ignoreSections.back())
+		{
+			ignoreSections.pop_back();
+			continue;
+		}
+
+		if (ignoreSections.size())
 			continue;
 
 		if (line[i] != separator)

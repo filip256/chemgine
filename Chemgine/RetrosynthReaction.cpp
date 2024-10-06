@@ -70,14 +70,7 @@ std::string RetrosynthReaction::print() const
 	// catalysts
 	const auto catalysts = baseReaction.getCatalysts();
 	if (catalysts.size())
-	{
-		result += " - Catalysts:  ";
-		const auto lastC = --catalysts.end();
-		for (auto c = catalysts.begin(); c != lastC; ++c)
-			result += c->getHRTag() + ", ";
-
-		result += lastC->getHRTag() + '\n';
-	}
+		result += " - Catalysts:  " + Def::print(catalysts) + '\n';
 
 	if (baseReaction.isCutReaction())
 		return result;

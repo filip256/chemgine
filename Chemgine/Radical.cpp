@@ -2,7 +2,7 @@
 #include "DataStore.hpp"
 #include "Log.hpp"
 
-Radical::Radical(const Symbol symbol) noexcept :
+Radical::Radical(const Symbol& symbol) noexcept :
 	Atom(symbol)
 {}
 
@@ -24,7 +24,7 @@ Radical* Radical::clone() const
 	return new Radical(*this);
 }
 
-bool Radical::isDefined(const Symbol symbol)
+bool Radical::isDefined(const Symbol& symbol)
 {
 	return Atom::isDefined(symbol) && getDataStore().atoms.at(symbol).isRadical();
 }

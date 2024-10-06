@@ -23,6 +23,11 @@ float LinearRegressor2D::get(const float input) const
 	return input * paramX + shift;
 }
 
+std::vector<float> LinearRegressor2D::getParams() const
+{
+	return { paramX, shift };
+}
+
 bool LinearRegressor2D::isEquivalent(const Regressor2DBase& other, const float epsilon) const
 {
 	if (not Regressor2DBase::isEquivalent(other, epsilon))

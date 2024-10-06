@@ -197,6 +197,7 @@
     <ClCompile Include="AtomFactory.cpp" />
     <ClCompile Include="BaseContainer.cpp" />
     <ClCompile Include="BaseContainerComponent.cpp" />
+    <ClCompile Include="BaseLabwareData.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="ColorCast.cpp" />
     <ClCompile Include="Condenser.cpp" />
@@ -218,7 +219,6 @@
     <ClCompile Include="Atom.cpp" />
     <ClCompile Include="EstimatorBase.cpp" />
     <ClCompile Include="BaseLabwareComponent.cpp" />
-    <ClCompile Include="BaseLabwareData.cpp" />
     <ClCompile Include="BaseReactionCondition.cpp" />
     <ClCompile Include="Catalyst.cpp" />
     <ClCompile Include="Collision.cpp" />
@@ -306,7 +306,7 @@
     <ClInclude Include="DefinitionLocation.hpp" />
     <ClInclude Include="DefinitionObject.hpp" />
     <ClInclude Include="DefinitionParser.hpp" />
-    <ClInclude Include="DefinitionPrinter.hpp" />
+    <ClInclude Include="DerivedEstimator.hpp" />
     <ClInclude Include="DirectedGraph.hpp" />
     <ClInclude Include="DragNDropHelper.hpp" />
     <ClInclude Include="DynamicAmount.hpp" />

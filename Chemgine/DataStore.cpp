@@ -2,7 +2,6 @@
 #include "PathUtils.hpp"
 #include "DefFileParser.hpp"
 #include "DefFileAnalyzer.hpp"
-#include "DefinitionPrinter.hpp"
 #include "Log.hpp"
 
 #include <fstream>
@@ -98,21 +97,41 @@ DataStore& DataStore::load(const std::string& path)
 		++definitionCount;
 	}
 
+	estimators.dropUnusedEstimators();
 	oolDefinitions.clear();
 
 	Log(this).success("File load completed.");
 	return *this;
 }
 
-const DataStore& DataStore::dump(const std::string& path) const
+DataStore& DataStore::dump(const std::string& path)
 {
 	std::ofstream out(path);
 	if (not out.is_open())
 		Log(this).fatal("Failed to open file for write: '{0}'.", path);
 
-	for (const auto& a : atoms)
+	out << ":.\n" << "   - Chemgine Output File -\n\n   Version: 0.0.0\n   Sources:\n";
+
+	for (const auto& f : fileStore.getHistory())
+		out << "    > " << f.first << '\n';
+	out << ".:\n\n";
+
+	for (auto a = atoms.atomsBegin(); a != atoms.atomsEnd(); ++a)
+		a->second->printDefinition(out);
+	for (auto r = atoms.radicalsBegin(); r != atoms.radicalsEnd(); ++r)
+		r->second->printDefinition(out);
+
+	std::unordered_set<EstimatorId> printedEstimators;
+	for (const auto& m : molecules)
+		m.second->printDefinition(out, printedEstimators);
+	for (const auto& r : reactions)
+		r.second->printDefinition(out, printedEstimators);
+
+	const auto dir = Utils::extractDirName(path);
+	for (const auto& l : labware)
 	{
-		out << Def::print(a.second->toDefinition()) << '\n';
+		l.second->printDefinition(out);
+		l.second->dumpTextures(dir);
 	}
 
 	out.close();
@@ -129,12 +148,6 @@ DataStore& DataStore::clear()
 	atoms.clear();
 	oolDefinitions.clear();
 	fileStore.clear();
-	return *this;
-}
-
-DataStore& DataStore::saveMoleculesData(const std::string& path)
-{
-	molecules.saveToFile(path);
 	return *this;
 }
 

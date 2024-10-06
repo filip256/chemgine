@@ -7,7 +7,6 @@
 
 #include "Value.hpp"
 #include "Unit.hpp"
-#include "Linguistics.hpp"
 #include "NumericUtils.hpp"
 #include "Printers.hpp"
 
@@ -16,10 +15,10 @@
 /// If a conversion between two units is used but not defined, a compilation error will occur
 /// </summary>
 template<Unit UnitT = Unit::NONE>
-class Amount : public Value<double>
+class Amount : public Value<float>
 {
 public:
-	using StorageType = double;
+	using StorageType = float;
 
 	constexpr inline Amount() = default;
 	constexpr inline Amount(const StorageType value) noexcept;
@@ -690,6 +689,10 @@ class Def::Printer<Amount<U>>
 public:
 	static std::string print(const Amount<U> object)
 	{
-		return Linguistics::formatFloatingPoint(std::to_string(object.asStd())) + '_' + object.unitSymbol();
+		const auto valStr = Def::print(object.asStd());
+		if constexpr (U != Unit::NONE)
+			return valStr + '_' + object.unitSymbol();
+		else
+			return valStr;
 	}
 };

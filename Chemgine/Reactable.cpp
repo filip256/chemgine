@@ -57,7 +57,7 @@ std::optional<Reactable> Reactable::get(MolecularStructure&& structure)
 		return std::nullopt;
 
 	if (structure.isConcrete())
-		return Reactable(dataAccessor.get().molecules.findOrAdd(std::move(structure)), false);
+		return Reactable(dataAccessor.get().molecules.findOrAdd(std::move(structure)).id, false);
 
 	return Reactable(dataAccessor.get().genericMolecules.findOrAdd(std::move(structure)), true);
 }

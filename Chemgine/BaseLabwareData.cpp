@@ -1,7 +1,5 @@
 #include "BaseLabwareData.hpp"
 
-size_t BaseLabwareData::instanceCount = 0;
-
 BaseLabwareData::BaseLabwareData(
 	const LabwareId id,
 	const std::string& name,
@@ -13,17 +11,3 @@ BaseLabwareData::BaseLabwareData(
 	ports(std::move(ports)),
 	type(type)
 {}
-
-#ifndef NDEBUG
-void* BaseLabwareData::operator new(const size_t count)
-{
-	++instanceCount;
-	return ::operator new(count);
-}
-
-void BaseLabwareData::operator delete(void* ptr)
-{
-	--instanceCount;
-	return ::operator delete(ptr);
-}
-#endif

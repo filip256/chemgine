@@ -30,13 +30,35 @@ const EstimatorBase& EstimatorRepository::add(std::unique_ptr<const EstimatorBas
 	if (it != table.end())
 		return *it->second;
 
-	const auto inserted = table.emplace(estimator->id, std::move(estimator));
+	const auto inserted = table.emplace(estimator->getId(), std::move(estimator));
 	return *inserted.first->second;
+}
+
+void EstimatorRepository::dropUnusedEstimators()
+{
+	// TODO: somehow doesn't work, all refs >= 1
+	for (auto it = table.begin(); it != table.end();)
+	{
+		if (it->second->getRefCount() == 0)
+			it = table.erase(it);
+		else
+			++it;
+	}
 }
 
 const EstimatorBase& EstimatorRepository::at(const EstimatorId id) const
 {
 	return *table.at(id);
+}
+
+EstimatorRepository::Iterator EstimatorRepository::begin() const
+{
+	return table.begin();
+}
+
+EstimatorRepository::Iterator EstimatorRepository::end() const
+{
+	return table.end();
 }
 
 void EstimatorRepository::clear()
@@ -46,7 +68,12 @@ void EstimatorRepository::clear()
 
 EstimatorId EstimatorRepository::getFreeId() const
 {
-	size_t id = 201;
-	while (table.contains(id) && id != 0) ++id; // overflow protection
+	static EstimatorId id = 0;
+	while (table.contains(id))
+	{
+		if (id == std::numeric_limits<EstimatorId>::max())
+			Log(this).fatal("Estimator id limit reached: {0}.", id);
+		++id;
+	}
 	return id;
 }

@@ -142,7 +142,7 @@ public:
                                 {
                                     container->add(inputMolecule->first, inputMolecule->second);
                                     Log(this).info("Added {0} of {1}.",
-                                        inputMolecule->second.toString(), inputMolecule->first.data().name);
+                                        inputMolecule->second.toString(), inputMolecule->first.getData().name);
                                 }
                             }
                         }

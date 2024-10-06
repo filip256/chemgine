@@ -12,7 +12,7 @@ protected:
     const AtomData& data;
 
 public:
-    Atom(const Symbol symbol) noexcept;
+    Atom(const Symbol& symbol) noexcept;
     Atom(const Atom&) = default;
 
     virtual const AtomData& getData() const;
@@ -32,13 +32,5 @@ public:
 
     virtual Atom* clone() const;
 
-    static bool isDefined(const Symbol symbol);
-
-
-    // for memory leak checking 
-    static size_t instanceCount;
-#ifndef NDEBUG
-    void* operator new(const size_t count);
-    void operator delete(void* ptr);
-#endif
+    static bool isDefined(const Symbol& symbol);
 };

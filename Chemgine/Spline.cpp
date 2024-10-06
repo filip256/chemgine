@@ -4,7 +4,7 @@
 #include <limits>
 #include <algorithm>
 
-template <class T>
+template <typename T>
 Spline<T>::Spline(
 	std::vector<std::pair<T, T>>&& points,
 	const T maxCompressionLoss
@@ -21,7 +21,7 @@ Spline<T>::Spline(
 	compress(maxCompressionLoss);
 }
 
-template <class T>
+template <typename T>
 Spline<T>::Spline(
 	std::initializer_list<std::pair<T, T>> initializer,
 	const T maxCompressionLoss
@@ -29,31 +29,37 @@ Spline<T>::Spline(
 	Spline(std::vector<std::pair<T, T>>(initializer), maxCompressionLoss)
 {}
 
-template <class T>
+template <typename T>
 T Spline<T>::getSlope(const size_t i, const size_t j) const
 {
 	return (points[i].second - points[j].second) / (points[i].first - points[j].first);
 }
 
-template <class T>
+template <typename T>
 size_t Spline<T>::size() const
 {
 	return points.size();
 }
 
-template <class T>
+template <typename T>
+const std::vector<std::pair<T, T>>& Spline<T>::getContent() const
+{
+	return points;
+}
+
+template <typename T>
 const std::pair<T, T>& Spline<T>::front() const
 {
 	return points.front();
 }
 
-template <class T>
+template <typename T>
 const std::pair<T, T>& Spline<T>::back() const
 {
 	return points.back();
 }
 
-template <class T>
+template <typename T>
 size_t Spline<T>::getUpperBound(const T x) const
 {
 	// considering the small number of points in most splines, binary search is probably less efficient
@@ -64,7 +70,7 @@ size_t Spline<T>::getUpperBound(const T x) const
 	return npos;
 }
 
-template <class T>
+template <typename T>
 T Spline<T>::getLinearValueAt(const T x) const
 {
 	if (points.size() == 1)
@@ -82,7 +88,7 @@ T Spline<T>::getLinearValueAt(const T x) const
 	return slope * (x - points[hb].first) + points[hb].second;
 }
 
-template <class T>
+template <typename T>
 T Spline<T>::getQuadraticValueAt(const T x) const
 {
 	if (points.size() < 3)
@@ -93,7 +99,7 @@ T Spline<T>::getQuadraticValueAt(const T x) const
 	return 0;
 }
 
-template <class T>
+template <typename T>
 void Spline<T>::compress(const T maxLinearError)
 {
 	if (maxLinearError < 0.0 || points.size() < 2)
@@ -119,7 +125,7 @@ void Spline<T>::compress(const T maxLinearError)
 	points.shrink_to_fit();
 }
 
-template <class T>
+template <typename T>
 bool Spline<T>::isEquivalent(const Spline<T>& other, const T epsilon) const
 {
 	for (size_t i = 0; i < this->points.size(); ++i)

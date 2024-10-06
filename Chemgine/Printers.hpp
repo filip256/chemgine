@@ -2,12 +2,16 @@
 
 #include "Utils.hpp"
 #include "StringUtils.hpp"
+#include "NumericUtils.hpp"
+#include "Keywords.hpp"
+#include "Linguistics.hpp"
 
 #include <vector>
 #include <string>
 #include <unordered_map>
 #include <optional>
 #include <stdexcept>
+#include <format>
 
 namespace Def
 {
@@ -23,12 +27,25 @@ namespace Def
 	template <typename T, typename = void>
 	class Printer
 	{
-		static_assert(std::is_arithmetic_v<T>, "Parser: Unsupported type.");
+		static_assert(std::is_arithmetic_v<T>, "Printer: Unsupported type.");
 
 	public:
 		static std::string print(const T object)
 		{
 			return std::to_string(object);
+		}
+	};
+
+	template <typename T>
+	class Printer<T, std::enable_if_t<std::is_floating_point_v<T>>>
+	{
+	public:
+		static std::string print(const T object)
+		{
+			return 
+				Utils::equal(object, std::numeric_limits<T>::lowest()) ? Keywords::Amounts::Min :
+				Utils::equal(object, std::numeric_limits<T>::max()) ? Keywords::Amounts::Max :
+				Linguistics::formatFloatingPoint(std::format("{:.{}f}", object, 5));
 		}
 	};
 
@@ -53,16 +70,12 @@ namespace Def
 	};
 
 	template <typename T>
-	class Printer<std::vector<T>>
+	class Printer<T*>
 	{
 	public:
-		static std::string print(const std::vector<T>& object)
+		static std::string print(const T* object)
 		{
-			std::string result = "{";
-			for (size_t i = 0; i < object.size(); ++i)
-				result += Def::print(object[i]) + ',';
-			result.back() = '}';
-			return result;
+			return Linguistics::toHex(object);
 		}
 	};
 
@@ -77,11 +90,34 @@ namespace Def
 	};
 
 	template <typename T>
+	class Printer<std::vector<T>>
+	{
+	public:
+		static std::string print(const std::vector<T>& object)
+		{
+			if (object.size() == 1)
+				return Def::print(object.front());
+
+			std::string result = "{";
+			for (size_t i = 0; i < object.size(); ++i)
+				result += Def::print(object[i]) + ',';
+			result.back() = '}';
+			return result;
+		}
+	};
+
+	template <typename T>
 	class Printer<std::unordered_map<std::string, T>>
 	{
 	public:
 		static std::string print(const std::unordered_map<std::string, T>& object)
 		{
+			if (object.size() == 1)
+			{
+				const auto& p = *object.begin();
+				return p.first + ':' + Def::print(p.second);
+			}
+
 			std::string result = "{";
 			for (const auto& p : object)
 				result += p.first + ':' + Def::print(p.second) + ',';
@@ -96,6 +132,9 @@ namespace Def
 	public:
 		static std::string print(const std::unordered_set<T>& object)
 		{
+			if (object.size() == 1)
+				return Def::print(*object.begin());
+
 			std::string result = "{";
 			for (const auto& i : object)
 				result += Def::print(i) + ',';

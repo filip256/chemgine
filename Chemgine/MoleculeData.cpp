@@ -53,3 +53,62 @@ std::string MoleculeData::getHRTag() const
 {
 	return '<' + std::to_string(id) + ':' + name + '>';
 }
+
+void MoleculeData::printDefinition(
+	std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted
+) const
+{
+	meltingPointEstimator->printDefinition(out, alreadyPrinted, false);
+	boilingPointEstimator->printDefinition(out, alreadyPrinted, false);
+	solidDensityEstimator->printDefinition(out, alreadyPrinted, false);
+	liquidDensityEstimator->printDefinition(out, alreadyPrinted, false);
+	solidHeatCapacityEstimator->printDefinition(out, alreadyPrinted, false);
+	liquidHeatCapacityEstimator->printDefinition(out, alreadyPrinted, false);
+	fusionLatentHeatEstimator->printDefinition(out, alreadyPrinted, false);
+	vaporizationLatentHeatEstimator->printDefinition(out, alreadyPrinted, false);
+	sublimationLatentHeatEstimator->printDefinition(out, alreadyPrinted, false);
+	relativeSolubilityEstimator->printDefinition(out, alreadyPrinted, false);
+	henrysConstantEstimator->printDefinition(out, alreadyPrinted, false);
+
+	out << '_' << Keywords::Types::Molecule;
+	out << ':' << structure.toSMILES();
+	out << '{';
+	out << Keywords::Molecules::Name << ':' << name << ',';
+	out << Keywords::Molecules::MeltingPoint << ':';
+	meltingPointEstimator->printDefinition(out, alreadyPrinted, true);
+	out << ',';
+	out << Keywords::Molecules::BoilingPoint << ':';
+	boilingPointEstimator->printDefinition(out, alreadyPrinted, true);
+	out << ',';
+	out << Keywords::Molecules::SolidDensity << ':';
+	solidDensityEstimator->printDefinition(out, alreadyPrinted, true);
+	out << ',';
+	out << Keywords::Molecules::LiquidDensity << ':';
+	liquidDensityEstimator->printDefinition(out, alreadyPrinted, true);
+	out << ',';
+	out << Keywords::Molecules::SolidHeatCapacity << ':';
+	solidHeatCapacityEstimator->printDefinition(out, alreadyPrinted, true);
+	out << ',';
+	out << Keywords::Molecules::LiquidHeatCapacity << ':';
+	liquidHeatCapacityEstimator->printDefinition(out, alreadyPrinted, true);
+	out << ',';
+	out << Keywords::Molecules::FusionLatentHeat << ':';
+	fusionLatentHeatEstimator->printDefinition(out, alreadyPrinted, true);
+	out << ',';
+	out << Keywords::Molecules::VaporizationLatentHeat << ':';
+	vaporizationLatentHeatEstimator->printDefinition(out, alreadyPrinted, true);
+	out << ',';
+	out << Keywords::Molecules::SublimationLatentHeat << ':';
+	sublimationLatentHeatEstimator->printDefinition(out, alreadyPrinted, true);
+	out << ',';
+	out << Keywords::Molecules::RelativeSolubility << ':';
+	relativeSolubilityEstimator->printDefinition(out, alreadyPrinted, true);
+	out << ',';
+	out << Keywords::Molecules::HenryConstant << ':';
+	henrysConstantEstimator->printDefinition(out, alreadyPrinted, true);
+	out << ',';
+	out << Keywords::Molecules::Hydrophilicity << ':' << Def::print(polarity.hydrophilicity) << ',';
+	out << Keywords::Molecules::Lipophilicity << ':' << Def::print(polarity.lipophilicity) << ',';
+	out << Keywords::Molecules::Color << ':' << Def::print(color);
+	out << "};\n";
+}

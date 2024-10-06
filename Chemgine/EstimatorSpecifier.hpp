@@ -3,6 +3,7 @@
 #include "DynamicAmount.hpp"
 
 #include <vector>
+#include <iostream>
 
 class EstimatorSpecifier
 {
@@ -25,15 +26,20 @@ class Def::Parser<EstimatorSpecifier>
 public:
 	static std::optional<EstimatorSpecifier> parse(const std::string& str)
 	{
-		const auto sep = str.find("->");
-		if (sep > str.size() - 3)
+		const auto stripped = Utils::strip(str);
+		const auto sep = stripped.find("->");
+		if (sep > stripped.size() - 3)
 			return std::nullopt;
 
-		const auto outUnit = Def::parse<Unit>(str.substr(sep + 2));
+		const auto outUnit = Def::parse<Unit>(stripped.substr(sep + 2));
 		if (not outUnit)
 			return std::nullopt;
 
-		auto inUnits = Def::parse<std::vector<Unit>>(str.substr(0, sep));
+		const auto inUnitsStr = stripped.starts_with('(') ?
+			stripped.substr(1, sep - 2) :
+			stripped.substr(0, sep);
+
+		auto inUnits = Def::parse<std::vector<Unit>>(inUnitsStr);
 		if (not inUnits)
 			return std::nullopt;
 
