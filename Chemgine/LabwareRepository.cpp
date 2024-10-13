@@ -30,7 +30,7 @@ bool LabwareRepository::add<LabwareType::FLASK>(const LabwareId id, DefinitionOb
 	auto ports = definition.pullProperty(Keywords::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
 	const auto volume = definition.pullProperty(Keywords::Labware::Volume, Def::parse<Amount<Unit::LITER>>);
 	const auto tx = definition.pullProperty(Keywords::Labware::Texture);
-	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float>);
+	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_n>);
 
 	if (not(volume && ports && tx))
 	{
@@ -53,7 +53,7 @@ bool LabwareRepository::add<LabwareType::ADAPTOR>(const LabwareId id, Definition
 	auto ports = definition.pullProperty(Keywords::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
 	const auto volume = definition.pullProperty(Keywords::Labware::Volume, Def::parse<Amount<Unit::LITER>>);
 	const auto tx = definition.pullProperty(Keywords::Labware::Texture);
-	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float>);
+	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_n>);
 
 	if (not(volume && ports && tx))
 	{
@@ -80,7 +80,7 @@ bool LabwareRepository::add<LabwareType::CONDENSER>(const LabwareId id, Definiti
 	const auto tx = definition.pullProperty(Keywords::Labware::Texture);
 	const auto inner = definition.pullProperty(Keywords::Labware::InnerMask);
 	const auto coolant = definition.pullProperty(Keywords::Labware::CoolantMask);
-	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float>);
+	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_n>);
 
 	if (not(volume && length && effic && ports && tx && inner && coolant))
 	{
@@ -106,7 +106,7 @@ bool LabwareRepository::add<LabwareType::HEATSOURCE>(const LabwareId id, Definit
 	auto ports = definition.pullProperty(Keywords::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
 	const auto power = definition.pullProperty(Keywords::Labware::Power, Def::parse<Amount<Unit::WATT>>);
 	const auto tx = definition.pullProperty(Keywords::Labware::Texture);
-	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float>);
+	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_n>);
 
 	if (not(power && ports && tx))
 	{

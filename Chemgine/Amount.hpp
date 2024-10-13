@@ -1,24 +1,25 @@
 #pragma once
 
-#include <string>
-#include <limits>
-#include <cmath>
-#include <numbers>
-
+#include "Precision.hpp"
 #include "Value.hpp"
 #include "Unit.hpp"
 #include "NumericUtils.hpp"
 #include "Printers.hpp"
+
+#include <string>
+#include <limits>
+#include <cmath>
+#include <numbers>
 
 /// <summary>
 /// Stores the amount of a certain Unit and statically handles conversions between units.
 /// If a conversion between two units is used but not defined, a compilation error will occur
 /// </summary>
 template<Unit UnitT = Unit::NONE>
-class Amount : public Value<float>
+class Amount : public Value<float_n>
 {
 public:
-	using StorageType = float;
+	using StorageType = float_n;
 
 	constexpr inline Amount() = default;
 	constexpr inline Amount(const StorageType value) noexcept;

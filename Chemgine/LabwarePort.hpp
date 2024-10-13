@@ -8,12 +8,12 @@ class LabwarePort
 {
 public:
 	const PortType type;
-	const float x, y;
+	const float_n x, y;
 	const Amount<Unit::DEGREE> angle;
 
 	LabwarePort(
 		const PortType type,
-		const float x, const float y,
+		const float_n x, const float_n y,
 		const Amount<Unit::DEGREE> angle
 	) noexcept;
 };

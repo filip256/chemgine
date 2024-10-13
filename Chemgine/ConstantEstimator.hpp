@@ -17,7 +17,7 @@ public:
 	Amount<OutU> get(const Amount<InUs>...) const override final;
 
 	bool isEquivalent(const EstimatorBase& other,
-		const float epsilon = std::numeric_limits<float>::epsilon()
+		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
 	) const override final;
 
 	void printDefinition(
@@ -43,7 +43,7 @@ Amount<OutU> ConstantEstimator<OutU, InUs...>::get(const Amount<InUs>...) const
 }
 
 template<Unit OutU, Unit... InUs>
-bool ConstantEstimator<OutU, InUs...>::isEquivalent(const EstimatorBase& other, const float epsilon) const
+bool ConstantEstimator<OutU, InUs...>::isEquivalent(const EstimatorBase& other, const float_n epsilon) const
 {
 	if (not EstimatorBase::isEquivalent(other, epsilon))
 		return false;

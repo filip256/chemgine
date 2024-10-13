@@ -515,9 +515,6 @@
     <ClInclude Include="Maths.hpp">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="SizeTypedefs.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="HashCombine.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
@@ -604,9 +601,6 @@
     </ClInclude>
     <ClInclude Include="LabwareConnection.hpp">
       <Filter>Header Files\Labware</Filter>
-    </ClInclude>
-    <ClInclude Include="UIContext.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Collision.hpp">
       <Filter>Header Files\External</Filter>
@@ -923,9 +917,6 @@
     <ClInclude Include="PortType.hpp">
       <Filter>Header Files\Labware</Filter>
     </ClInclude>
-    <ClInclude Include="CountedRef.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Printers.hpp">
       <Filter>Header Files\Data\Parsers</Filter>
     </ClInclude>
@@ -934,6 +925,18 @@
     </ClInclude>
     <ClInclude Include="DerivedEstimator.hpp">
       <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="CountedRef.hpp">
+      <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="UIContext.hpp">
+      <Filter>Header Files\Graphics\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="SizeTypedefs.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Precision.hpp">
+      <Filter>Header Files\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

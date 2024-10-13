@@ -5,33 +5,33 @@
 
 #include <typeinfo>
 
-bool Regressor3DBase::isEquivalent(const Regressor3DBase& other, const float) const
+bool Regressor3DBase::isEquivalent(const Regressor3DBase& other, const float_n) const
 {
 	return typeid(*this) == typeid(other);
 }
 
 
 LinearRegressor3D::LinearRegressor3D(
-	const float paramX,
-	const float paramY,
-	const float shift
+	const float_n paramX,
+	const float_n paramY,
+	const float_n shift
 ) noexcept :
 	paramX(paramX),
 	paramY(paramY),
 	shift(shift)
 {}
 
-float LinearRegressor3D::get(const float input1, const float input2) const
+float_n LinearRegressor3D::get(const float_n input1, const float_n input2) const
 {
 	return input1 * paramX + input2 * paramY + shift;
 }
 
-std::vector<float> LinearRegressor3D::getParams() const
+std::vector<float_n> LinearRegressor3D::getParams() const
 {
 	return { paramX, paramY, shift };
 }
 
-bool LinearRegressor3D::isEquivalent(const Regressor3DBase& other, const float epsilon) const
+bool LinearRegressor3D::isEquivalent(const Regressor3DBase& other, const float_n epsilon) const
 {
 	if (not Regressor3DBase::isEquivalent(other, epsilon))
 		return false;
@@ -44,14 +44,14 @@ bool LinearRegressor3D::isEquivalent(const Regressor3DBase& other, const float e
 }
 
 LinearRegressor3D LinearRegressor3D::fit(
-	const std::vector<std::tuple<float, float, float>>& points
+	const std::vector<std::tuple<float_n, float_n, float_n>>& points
 )
 {
 	const size_t n = points.size();
 	if (n == 0)
 	{
 		Log<LinearRegressor3D>().warn("Insufficient data points for fitting regressor.");
-		return LinearRegressor3D(0.0, 0.0, std::numeric_limits<float>::quiet_NaN());
+		return LinearRegressor3D(0.0, 0.0, std::numeric_limits<float_n>::quiet_NaN());
 	}
 
 	// fallback on constant
@@ -81,13 +81,13 @@ LinearRegressor3D LinearRegressor3D::fit(
 		}
 
 		Log<LinearRegressor3D>().warn("Insufficient data points for fitting regressor.");
-		return LinearRegressor3D(0.0, 0.0, std::numeric_limits<float>::quiet_NaN());
+		return LinearRegressor3D(0.0, 0.0, std::numeric_limits<float_n>::quiet_NaN());
 	}
 
 	// https://www.statology.org/multiple-linear-regression-by-hand/
-	double sumX = 0.0, sumY = 0.0, sumR = 0.0;
-	double sumXR = 0.0, sumYR = 0.0, sumXY = 0.0;
-	double sumX2 = 0.0, sumY2 = 0.0;
+	float_n sumX = 0.0, sumY = 0.0, sumR = 0.0;
+	float_n sumXR = 0.0, sumYR = 0.0, sumXY = 0.0;
+	float_n sumX2 = 0.0, sumY2 = 0.0;
 
 	for (size_t i = 0; i < n; ++i)
 	{

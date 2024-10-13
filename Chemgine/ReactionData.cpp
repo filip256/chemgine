@@ -55,7 +55,7 @@ bool ReactionData::balance(
 	if (reactants.size() == 0 || products.size() == 0)
 		return false;
 
-	SystemMatrix<float> system;
+	SystemMatrix<float_n> system;
 	const size_t syslen = reactants.size() + products.size() - 1;
 	std::unordered_map<Symbol, size_t> sysmap;
 
@@ -68,10 +68,10 @@ bool ReactionData::balance(
 			{
 				sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
 				system.addNullRow(syslen);
-				system.back()[i] = static_cast<float>(c.second);
+				system.back()[i] = static_cast<float_n>(c.second);
 			}
 			else
-				system[sysmap[c.first]][i] = static_cast<float>(c.second);
+				system[sysmap[c.first]][i] = static_cast<float_n>(c.second);
 		}
 	}
 
@@ -83,10 +83,10 @@ bool ReactionData::balance(
 		{
 			sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
 			system.addNullRow(syslen);
-			system.back().back() = static_cast<float>(c.second);
+			system.back().back() = static_cast<float_n>(c.second);
 		}
 		else
-			system[sysmap[c.first]].back() = static_cast<float>(c.second);
+			system[sysmap[c.first]].back() = static_cast<float_n>(c.second);
 	}
 
 	for (size_t i = 1; i < products.size(); ++i)
@@ -98,10 +98,10 @@ bool ReactionData::balance(
 			{
 				sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
 				system.addNullRow(syslen);
-				system.back()[reactants.size() + i - 1] = -1 * static_cast<float>(c.second);
+				system.back()[reactants.size() + i - 1] = -1 * static_cast<float_n>(c.second);
 			}
 			else
-				system[sysmap[c.first]][reactants.size() + i - 1] = -1 * static_cast<float>(c.second);
+				system[sysmap[c.first]][reactants.size() + i - 1] = -1 * static_cast<float_n>(c.second);
 		}
 	}
 

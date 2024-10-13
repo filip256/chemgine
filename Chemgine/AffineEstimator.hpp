@@ -21,16 +21,16 @@ private:
 	) const override final;
 
 public:
-	const float vShift = 0.0;
-	const float hShift = 0.0;
-	const float scale = 1.0;
+	const float_n vShift = 0.0;
+	const float_n hShift = 0.0;
+	const float_n scale = 1.0;
 
 	AffineEstimator(
 		const EstimatorId id,
 		const EstimatorRef<OutU, InU>& base,
-		const float vShift,
-		const float hShift,
-		const float scale
+		const float_n vShift,
+		const float_n hShift,
+		const float_n scale
 	) noexcept;
 
 	Amount<OutU> get(const Amount<InU> input) const override final;
@@ -38,7 +38,7 @@ public:
 	const EstimatorRef<OutU, InU>& getBase() const;
 
 	bool isEquivalent(const EstimatorBase& other,
-		const float epsilon = std::numeric_limits<float>::epsilon()
+		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
 	) const override final;
 };
 
@@ -47,9 +47,9 @@ template<Unit OutU, Unit InU>
 AffineEstimator<OutU, InU>::AffineEstimator(
 	const EstimatorId id,
 	const EstimatorRef<OutU, InU>& base,
-	const float vShift,
-	const float hShift,
-	const float scale
+	const float_n vShift,
+	const float_n hShift,
+	const float_n scale
 ) noexcept :
 	DerivedEstimator<OutU, InU>(id),
 	vShift(vShift),
@@ -71,7 +71,7 @@ const EstimatorRef<OutU, InU>& AffineEstimator<OutU, InU>::getBase() const
 }
 
 template<Unit OutU, Unit InU>
-bool AffineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const float epsilon) const
+bool AffineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const float_n epsilon) const
 {
 	if (EstimatorBase::isEquivalent(other, epsilon) == false)
 		return false;

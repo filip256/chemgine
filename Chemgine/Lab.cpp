@@ -70,7 +70,7 @@ size_t Lab::anyIntersects(const size_t targetIdx) const
 	return npos;
 }
 
-bool Lab::tryConnect(const size_t targetIdx, const float maxSqDistance)
+bool Lab::tryConnect(const size_t targetIdx, const float_n maxSqDistance)
 {
 	for (size_t i = 0; i < systems.size(); ++i)
 	{

@@ -26,7 +26,7 @@ public:
 	Amount<OutU> get(const Amount<InU1> input1, const Amount<InU2> input2) const override final;
 
 	bool isEquivalent(const EstimatorBase& other,
-		const float epsilon = std::numeric_limits<float>::epsilon()
+		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
 	) const override final;
 
 	void printDefinition(
@@ -60,7 +60,7 @@ Amount<OutU> Regression3DEstimator<RegT, OutU, InU1, InU2>::get(const Amount<InU
 }
 
 template<typename RegT, Unit OutU, Unit InU1, Unit InU2>
-bool Regression3DEstimator<RegT, OutU, InU1, InU2>::isEquivalent(const EstimatorBase& other, const float epsilon) const
+bool Regression3DEstimator<RegT, OutU, InU1, InU2>::isEquivalent(const EstimatorBase& other, const float_n epsilon) const
 {
 	if (not UnitizedEstimator<OutU, InU1, InU2>::isEquivalent(other, epsilon))
 		return false;

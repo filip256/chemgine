@@ -18,7 +18,7 @@ public:
 		const std::string& textureFile,
 		const std::string& innerfillTextureFile,
 		const std::string& coolantfillTextureFile,
-		const float textureScale
+		const float_n textureScale
 	) noexcept;
 
 	void printDefinition(std::ostream& out) const override final;

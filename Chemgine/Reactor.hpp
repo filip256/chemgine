@@ -26,15 +26,15 @@ enum class TickMode : uint8_t
 class Reactor : public MultiLayerMixture, public Accessor<>
 {
 private:
-	double stirSpeed = 0.0;
+	float_n stirSpeed = 0.0;
 
 	FlagField<TickMode> tickMode = TickMode::ENABLE_ALL;
 
 	std::unordered_set<ConcreteReaction> cachedReactions;
 
-	double getInterLayerReactivityCoefficient(const Reactant& r1, const Reactant& r2) const;
-	double getInterLayerReactivityCoefficient(const ReactantSet& reactants) const;
-	double getCatalyticReactivityCoefficient(const ImmutableSet<Catalyst>& catalysts) const;
+	float_n getInterLayerReactivityCoefficient(const Reactant& r1, const Reactant& r2) const;
+	float_n getInterLayerReactivityCoefficient(const ReactantSet& reactants) const;
+	float_n getCatalyticReactivityCoefficient(const ImmutableSet<Catalyst>& catalysts) const;
 
 	void findNewReactions();
 	void runReactions(const Amount<Unit::SECOND> timespan);
@@ -60,7 +60,7 @@ public:
 	void add(const Amount<Unit::JOULE> heat) override final;
 	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount) override;
 	void add(Reactor& other);
-	void add(Reactor& other, const double ratio);
+	void add(Reactor& other, const float_n ratio);
 
 	FlagField<TickMode> getTickMode() const;
 	void setTickMode(const FlagField<TickMode> mode);

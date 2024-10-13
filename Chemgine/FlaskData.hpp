@@ -11,7 +11,7 @@ public:
 		std::vector<LabwarePort>&& ports,
 		const Amount<Unit::LITER> volume,
 		const std::string& textureFile,
-		const float textureScale
+		const float_n textureScale
 	) noexcept;
 
 	void printDefinition(std::ostream& out) const override final;

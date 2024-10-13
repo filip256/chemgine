@@ -41,19 +41,19 @@ constexpr uint32_t Maths::lcm(uint32_t a, uint32_t b)
 	return a / gcd(a, b) * b;
 }
 
-bool Maths::isInteger(const float v, const float precision)
+bool Maths::isInteger(const float_n v, const float_n precision)
 {
 	return std::abs(v - static_cast<int>(v)) < precision;
 }
 
-uint32_t Maths::integerCoefficient(float v)
+uint32_t Maths::integerCoefficient(float_n v)
 {
 	// find p, where p * v = int
 	if (isInteger(v, 0.05f))
 		return 1;
 
 	v = v - static_cast<int>(v);
-	float p = 1;
+	float_n p = 1;
 	do
 	{
 		v = 1 / (v - static_cast<int>(v));
@@ -63,7 +63,7 @@ uint32_t Maths::integerCoefficient(float v)
 	return static_cast<uint32_t>(p);
 }
 
-uint32_t Maths::integerCoefficient(const std::vector<float>& list)
+uint32_t Maths::integerCoefficient(const std::vector<float_n>& list)
 {
 	if (list.empty())
 		return 1;
@@ -96,22 +96,22 @@ uint64_t Maths::combinations(uint64_t n, uint64_t k)
 	return result;
 }
 
-float Maths::sqaredDistance(const float aX, const float aY, const float bX, const float bY)
+float_n Maths::sqaredDistance(const float_n aX, const float_n aY, const float_n bX, const float_n bY)
 {
 	return (aX - bX) * (aX - bX) + (aY - bY) * (aY - bY);
 }
 
-float Maths::sqaredDistance(
-	const float pX, const float pY,
-	const float rLeft, const float rTop, const float rRight, const float rBottom)
+float_n Maths::sqaredDistance(
+	const float_n pX, const float_n pY,
+	const float_n rLeft, const float_n rTop, const float_n rRight, const float_n rBottom)
 {
-	const float dx = std::max(std::max(rLeft - pX, pX - rRight), 0.0f);
-	const float dy = std::max(std::max(rTop - pY, pY - rBottom), 0.0f);
+	const float_n dx = std::max(std::max(rLeft - pX, pX - rRight), 0.0f);
+	const float_n dy = std::max(std::max(rTop - pY, pY - rBottom), 0.0f);
 	return dx * dx + dy * dy;
 }
 
-std::pair<float, float> Maths::getSlopeAndIntercept(const float aX, const float aY, const float bX, const float bY)
+std::pair<float_n, float_n> Maths::getSlopeAndIntercept(const float_n aX, const float_n aY, const float_n bX, const float_n bY)
 {
-	const float slope = (bY - aY) / (bX - aX);
+	const float_n slope = (bY - aY) / (bX - aX);
 	return std::make_pair(slope, aY - slope * aX);
 }

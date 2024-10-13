@@ -45,7 +45,7 @@ public:
 			const auto mode = definition.getDefaultProperty(Keywords::Data::Mode, EstimationMode::LINEAR,
 				Def::parse<EstimationMode>);
 			const auto loss = definition.getDefaultProperty(Keywords::Data::CompressionLoss, 0.0,
-				Def::parse<float>);
+				Def::parse<float_n>);
 
 			std::vector<DataPoint<OutU, InUs...>> dataPoints;
 			for (size_t i = 0; i < strValues->size(); ++i)
@@ -62,7 +62,7 @@ public:
 		}
 
 		if (const auto parameters = definition.getOptionalProperty(Keywords::Data::Parameters,
-			Def::parse<std::vector<float>>))
+			Def::parse<std::vector<float_n>>))
 		{
 			const auto mode = definition.getProperty(Keywords::Data::Mode, Def::parse<EstimationMode>);
 			if (not mode)
@@ -118,7 +118,7 @@ public:
 						return std::nullopt;
 
 					const auto hShift = definition.getDefaultProperty(Keywords::Data::HorizontalShift, 0.0,
-						Def::parse<float>);
+						Def::parse<float_n>);
 					return EstimatorFactory(repository).createAffine(*base, *anchorPoint, hShift);
 				}
 
@@ -133,9 +133,9 @@ public:
 				}
 
 				// manual transform
-				const auto vShift = definition.getDefaultProperty(Keywords::Data::VerticalShift, 0.0, Def::parse<float>);
-				const auto hShift = definition.getDefaultProperty(Keywords::Data::HorizontalShift, 0.0, Def::parse<float>);
-				const auto scale = definition.getDefaultProperty(Keywords::Data::Scale, 1.0, Def::parse<float>);
+				const auto vShift = definition.getDefaultProperty(Keywords::Data::VerticalShift, 0.0, Def::parse<float_n>);
+				const auto hShift = definition.getDefaultProperty(Keywords::Data::HorizontalShift, 0.0, Def::parse<float_n>);
+				const auto scale = definition.getDefaultProperty(Keywords::Data::Scale, 1.0, Def::parse<float_n>);
 
 				return EstimatorFactory(repository).createAffine(*base, vShift, hShift, scale);
 			}

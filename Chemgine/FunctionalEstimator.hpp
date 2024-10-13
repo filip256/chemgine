@@ -17,7 +17,7 @@ public:
 	) noexcept;
 
 	bool isEquivalent(const EstimatorBase& other,
-		const float epsilon = std::numeric_limits<float>::epsilon()
+		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
 	) const override final;
 
 	FunctionalEstimator* clone() const override final;
@@ -34,7 +34,7 @@ FunctionalEstimator<InArgs...>::FunctionalEstimator(
 {}
 
 template <typename... InArgs>
-bool FunctionalEstimator<InArgs...>::isEquivalent(const EstimatorBase& other, const float epsilon) const
+bool FunctionalEstimator<InArgs...>::isEquivalent(const EstimatorBase& other, const float_n epsilon) const
 {
 	return false; // functionals cannot be compared
 }

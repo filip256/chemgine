@@ -1,4 +1,5 @@
 #include "Value.hpp"
+#include "Precision.hpp"
 #include "NumericUtils.hpp"
 
 #include <limits>
@@ -108,6 +109,4 @@ constexpr bool Value<T>::oveflowsOnMultiply(const Value<T>& other) const noexcep
 }
 
 
-template class Value<float>;
-template class Value<double>;
-template class Value<long double>;
+template class Value<float_n>;

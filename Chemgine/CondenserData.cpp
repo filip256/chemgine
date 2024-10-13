@@ -10,7 +10,7 @@ CondenserData::CondenserData(
 	const std::string& textureFile,
 	const std::string& innerfillTextureFile,
 	const std::string& coolantfillTextureFile,
-	const float textureScale
+	const float_n textureScale
 ) noexcept :
 	ContainerLabwareData<2>(
 		id, name, std::move(ports), textureFile, textureScale,

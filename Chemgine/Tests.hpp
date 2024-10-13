@@ -22,9 +22,9 @@ private:
 	bool passed = true;
 	std::vector<MolecularStructure> setA, setB, setC, setD, setE, setF, setG, setM;
 	std::unordered_map<std::string, std::vector<uint8_t>> res;
-	std::unordered_map<std::string, std::vector<float>> resFloat;
+	std::unordered_map<std::string, std::vector<float_n>> resFloat;
 
-	const float massThreshold = 1.0f;
+	const float_n massThreshold = 1.0f;
 
 public:
 	void initialize()
@@ -33,7 +33,7 @@ public:
 		res.emplace(std::make_pair("==", std::vector<uint8_t>()));
 		res.emplace(std::make_pair("maximal", std::vector<uint8_t>()));
 		res.emplace(std::make_pair("addSub", std::vector<uint8_t>()));
-		resFloat.emplace(std::make_pair("mass", std::vector<float>()));
+		resFloat.emplace(std::make_pair("mass", std::vector<float_n>()));
 
 		setA.emplace_back("CN(C)C(=O)C1=CC=CC=C1");
 		setB.emplace_back("C1=CC=CC=C1R");
@@ -379,7 +379,7 @@ private:
 
 	const double waterTemperatureThreshold = 0.1;
 	const double overflowLossThreshold = 1.0e-4;
-	const double determinismEqualityThreshold = std::numeric_limits<double>::epsilon();
+	const double determinismEqualityThreshold = std::numeric_limits<float_n>::epsilon();
 
 	void runConservationOfMassTest()
 	{

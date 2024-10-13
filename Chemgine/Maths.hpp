@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Precision.hpp"
+
 #include <cstdint>
 #include <vector>
 #include <type_traits>
@@ -10,17 +12,17 @@ public:
 	static constexpr uint32_t gcd(uint32_t a, uint32_t b);
 	static constexpr uint32_t lcm(uint32_t a, uint32_t b);
 
-	static bool isInteger(const float v, const float precision = 1e-10);
+	static bool isInteger(const float_n v, const float_n precision = 1e-10);
 
 	/// <summary>
 	/// Returns the smallest integer N such that v * N is an integer.
 	/// </summary>
-	static uint32_t integerCoefficient(float v);
+	static uint32_t integerCoefficient(float_n v);
 	/// <summary>
 	/// Given a list of floating point numbers it returns the smallest integer N such that
 	/// for every element of the list Li, Li * N is an integer.
 	/// </summary>
-	static uint32_t integerCoefficient(const std::vector<float>& list);
+	static uint32_t integerCoefficient(const std::vector<float_n>& list);
 
 	/// <summary>
 	/// Returns the result of C(n, k) aka "n choose k".
@@ -30,18 +32,18 @@ public:
 	/// <summary>
 	/// Returns the squared distance between the points A and B.
 	/// </summary>
-	static float sqaredDistance(const float aX, const float aY, const float bX, const float bY);
+	static float_n sqaredDistance(const float_n aX, const float_n aY, const float_n bX, const float_n bY);
 	/// <summary>
 	/// Returns the squared distance between the point P and a straight rectangle R.
 	/// </summary>
-	static float sqaredDistance(
-		const float pX, const float pY,
-		const float rLeft, const float rTop, const float rRight, const float rBottom);
+	static float_n sqaredDistance(
+		const float_n pX, const float_n pY,
+		const float_n rLeft, const float_n rTop, const float_n rRight, const float_n rBottom);
 
 	/// <summary>
 	/// Returns the <slope, intercept> pair of the linear function between the points A and B
 	/// </summary>
-	static std::pair<float, float> getSlopeAndIntercept(const float aX, const float aY, const float bX, const float bY);
+	static std::pair<float_n, float_n> getSlopeAndIntercept(const float_n aX, const float_n aY, const float_n bX, const float_n bY);
 
 	/// <summary>
 	/// Returns the int-casted log2 of a value.

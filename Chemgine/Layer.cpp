@@ -374,8 +374,8 @@ Color Layer::getColor() const
     if (isEmpty())
         return Color();
 
-    float div = 0.0;
-    float red = 0.0, green = 0.0, blue = 0.0, alpha = 0.0;
+    float_n div = 0.0;
+    float_n red = 0.0, green = 0.0, blue = 0.0, alpha = 0.0;
     for (const auto& [_, r] : container->content)
     {
         if (r.layer == layerType)

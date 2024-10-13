@@ -3,7 +3,7 @@
 
 ShapeFill::ShapeFill(
 	const ShapeFillTexture& texture,
-	const float scale
+	const float_n scale
 ) noexcept :
 	texture(texture),
 	sprite(texture.getTexture())
@@ -39,7 +39,7 @@ void ShapeFill::setColor(const sf::Color& color) const
 	sprite.setColor(color);
 }
 
-void ShapeFill::setDrawSection(float start, float end, const sf::Color& color) const
+void ShapeFill::setDrawSection(float_n start, float_n end, const sf::Color& color) const
 {
 	start = std::max(start, 0.0f);
 	end = std::min(end, 1.0f);

@@ -31,7 +31,7 @@ protected:
 		const std::string& name,
 		std::vector<LabwarePort>&& ports,
 		const std::string& textureFile,
-		const float textureScale,
+		const float_n textureScale,
 		std::array<Amount<Unit::LITER>, C>&& volumes,
 		const std::array<Ref<const std::string>, C>& fillTextureFiles,
 		const LabwareType type
@@ -43,7 +43,7 @@ protected:
 		const std::string& name,
 		std::vector<LabwarePort>&& ports,
 		const std::string& textureFile,
-		const float textureScale,
+		const float_n textureScale,
 		const Amount<Unit::LITER> volume,
 		const LabwareType type
 	) noexcept;
@@ -72,7 +72,7 @@ ContainerLabwareData<C>::ContainerLabwareData(
 	const std::string& name,
 	std::vector<LabwarePort>&& ports,
 	const std::string& textureFile,
-	const float textureScale,
+	const float_n textureScale,
 	std::array<Amount<Unit::LITER>, C>&& volumes,
 	const std::array<Ref<const std::string>, C>& fillTextureFiles,
 	const LabwareType type
@@ -91,7 +91,7 @@ ContainerLabwareData<C>::ContainerLabwareData(
 	const std::string& name,
 	std::vector<LabwarePort>&& ports,
 	const std::string& textureFile,
-	const float textureScale,
+	const float_n textureScale,
 	const Amount<Unit::LITER> volume,
 	const LabwareType type
 ) noexcept :

@@ -28,7 +28,7 @@ public:
 	const RegT& getRegressor() const;
 
 	bool isEquivalent(const EstimatorBase& other,
-		const float epsilon = std::numeric_limits<float>::epsilon()
+		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
 	) const override final;
 
 	void printDefinition(
@@ -68,7 +68,7 @@ const RegT& Regression2DEstimator<RegT, OutU, InU>::getRegressor() const
 }
 
 template<typename RegT, Unit OutU, Unit InU>
-bool Regression2DEstimator<RegT, OutU, InU>::isEquivalent(const EstimatorBase& other, const float epsilon) const
+bool Regression2DEstimator<RegT, OutU, InU>::isEquivalent(const EstimatorBase& other, const float_n epsilon) const
 {
 	if (not UnitizedEstimator<OutU, InU>::isEquivalent(other, epsilon))
 		return false;

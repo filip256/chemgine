@@ -26,20 +26,20 @@ public:
 	EstimatorRef<OutU, InUs...> createData(
 		std::vector<DataPoint<OutU, InUs...>>&& dataPoints,
 		const EstimationMode mode,
-		const float maxCompressionLoss);
+		const float_n maxCompressionLoss);
 
 	template<Unit OutU, Unit InU>
 	EstimatorRef<OutU, InU> createAffine(
 		const EstimatorRef<OutU, InU>& base,
-		const double vShift,
-		const double hShift,
-		const double scale);
+		const float_n vShift,
+		const float_n hShift,
+		const float_n scale);
 
 	template<Unit OutU, Unit InU>
 	EstimatorRef<OutU, InU> createAffine(
 		const EstimatorRef<OutU, InU>& base,
 		const DataPoint<OutU, InU> anchorPoint,
-		const double hShift);
+		const float_n hShift);
 
 	template<Unit OutU, Unit InU>
 	EstimatorRef<OutU, InU> createAffine(
@@ -48,11 +48,11 @@ public:
 
 	template<Unit OutU, Unit InU>
 	EstimatorRef<OutU, InU> createLinearRegression(
-		const float paramX, const float shift);
+		const float_n paramX, const float_n shift);
 
 	template<Unit OutU, Unit InU1, Unit InU2>
 	EstimatorRef<OutU, InU1, InU2> createLinearRegression(
-		const float paramX, const float paramY, const float shift);
+		const float_n paramX, const float_n paramY, const float_n shift);
 };
 
 
@@ -67,7 +67,7 @@ template<Unit OutU, Unit... InUs>
 EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
 	std::vector<DataPoint<OutU, InUs...>>&& dataPoints,
 	const EstimationMode mode,
-	const float maxCompressionLoss)
+	const float_n maxCompressionLoss)
 {
 	const auto uniquePoints = ImmutableSet<DataPoint<OutU, InUs...>>::toSortedSetVector(std::move(dataPoints));
 
@@ -78,7 +78,7 @@ EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
 	const auto inputCount = sizeof...(InUs);
 	if constexpr (inputCount == 1)
 	{
-		std::vector<std::pair<float, float>> points;
+		std::vector<std::pair<float_n, float_n>> points;
 		points.reserve(uniquePoints.size());
 		std::transform(uniquePoints.begin(), uniquePoints.end(), std::back_inserter(points),
 			[](const DataPoint<OutU, InUs...>& p)
@@ -94,11 +94,11 @@ EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
 		}
 
 		// Spline 2D
-		return repository.add<SplineEstimator<OutU, InUs...>>(Spline<float>(std::move(points), maxCompressionLoss), mode);
+		return repository.add<SplineEstimator<OutU, InUs...>>(Spline<float_n>(std::move(points), maxCompressionLoss), mode);
 	}
 	else if constexpr (inputCount == 2)
 	{
-		std::vector<std::tuple<float, float, float>> points;
+		std::vector<std::tuple<float_n, float_n, float_n>> points;
 		points.reserve(uniquePoints.size());
 		std::transform(uniquePoints.begin(), uniquePoints.end(), std::back_inserter(points),
 			[](const DataPoint<OutU, InUs...>& p)
@@ -118,9 +118,9 @@ EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
 template<Unit OutU, Unit InU>
 EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 	const EstimatorRef<OutU, InU>& base,
-	const double vShift,
-	const double hShift,
-	const double scale)
+	const float_n vShift,
+	const float_n hShift,
+	const float_n scale)
 {
 	// no transform, return base
 	if (Utils::equal(vShift, 0.0) && Utils::equal(hShift, 0.0) && Utils::equal(scale, 1.0))
@@ -160,7 +160,7 @@ template<Unit OutU, Unit InU>
 EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 	const EstimatorRef<OutU, InU>& base,
 	const DataPoint<OutU, InU> anchorPoint,
-	const double hShift)
+	const float_n hShift)
 {
 	if (Utils::equal(hShift, 0.0))
 	{
@@ -187,7 +187,7 @@ EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 
 template<Unit OutU, Unit InU>
 EstimatorRef<OutU, InU> EstimatorFactory::createLinearRegression(
-	const float paramX, const float shift)
+	const float_n paramX, const float_n shift)
 {
 	return repository.add<Regression2DEstimator<LinearRegressor2D, OutU, InU>>(
 		LinearRegressor2D(paramX, shift),
@@ -196,7 +196,7 @@ EstimatorRef<OutU, InU> EstimatorFactory::createLinearRegression(
 
 template<Unit OutU, Unit InU1, Unit InU2>
 EstimatorRef<OutU, InU1, InU2> EstimatorFactory::createLinearRegression(
-	const float paramX, const float paramY, const float shift)
+	const float_n paramX, const float_n paramY, const float_n shift)
 {
 	return repository.add<Regression3DEstimator<LinearRegressor3D, OutU, InU1, InU2>>(
 		LinearRegressor3D(paramX, paramY, shift),

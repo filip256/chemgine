@@ -48,8 +48,8 @@ private:
 	std::vector<std::vector<LabwareConnection>> connections;
 
 	sf::FloatRect boundingBox = sf::FloatRect(
-		std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
-		-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
+		std::numeric_limits<float_n>::max(), std::numeric_limits<float_n>::max(),
+		-std::numeric_limits<float_n>::max(), -std::numeric_limits<float_n>::max());
 
 	BaseLabwareComponent* releaseComponent(const l_size componentIdx);
 	LabwareSystem releaseSection(
@@ -99,9 +99,9 @@ public:
 	/// between itself and the point.
 	/// Complexity: O(n)
 	/// </summary>
-	std::pair<PortIdentifier, float> findClosestPort(
+	std::pair<PortIdentifier, float_n> findClosestPort(
 		const sf::Vector2f& point,
-		const float maxSqDistance = std::numeric_limits<float>::max()
+		const float_n maxSqDistance = std::numeric_limits<float_n>::max()
 	);
 
 	/// <summary>
@@ -111,7 +111,7 @@ public:
 	/// </summary>
 	std::pair<PortIdentifier, PortIdentifier> findClosestPort(
 		LabwareSystem& other,
-		const float maxSqDistance = std::numeric_limits<float>::max()
+		const float_n maxSqDistance = std::numeric_limits<float_n>::max()
 	);
 
 	static bool isFree(const PortIdentifier& port);

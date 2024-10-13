@@ -387,7 +387,7 @@ Tasks:
      - IMPORTANT -
 
   1. size_t is only 4-bytes on x86, some custom hashes and Symbol comparison might fail on x86. Use uint64_t where possible
-  2. float comparison should use adaptive epsilon
+  DONE. float comparison should use adaptive epsilon
 
 ---
      - DEFINITION LANGUAGE -
@@ -399,8 +399,8 @@ Tasks:
   DONE. Remove loadBuiltins()'s and old CSV parsing
   DONE. Add typed estimators
   DONE. Improve list and pair formats
-  8. Add printing
-  9. Fix reaction network building
+  DONE. Add printing
+  DONE. Fix reaction network building
   10. Add definition tags
   11. Add definition override
   DONE. Allow input unit permutations
@@ -411,21 +411,21 @@ Tasks:
   DONE. Add constant and linear estimator fusing with transforms
   17. Add non-linear regressors
   18. Better ignored property check
-  19. Pass Symbol& everywhere, make symbol 8-byte
+  DONE. Pass Symbol& everywhere, make symbol 8-byte
   20. Scientific float notation for printers
+  21. Add pretty printers
 
 ---
      - DIRECT REFERENCING -
 
-  1. Use dyn allocation for all data objects
+  1. Use dyn allocation for all data objects (only GenericMolecule remaining)
   2. Rewrite accessors to work with ptrs
   3. Remove id properties
-  4. Add language referencing
 
 ---
      - PRECISION -
 
-  1. Rename all floats and doubles to typedef
+  DONE. Rename all floats and doubles to typedef
 
 ---
     - PROPER TESTING -

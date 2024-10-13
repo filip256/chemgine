@@ -5,7 +5,7 @@
 DrawablePort::DrawablePort(
 	const LabwarePort& port,
 	const sf::Vector2f& origin,
-	const float scale
+	const float_n scale
 ) noexcept :
 	type(port.type),
 	position((port.x - origin.x) * scale, (port.y - origin.y) * scale),

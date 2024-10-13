@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Precision.hpp"
 #include "EstimatorType.hpp"
 #include "CountedRef.hpp"
 
@@ -24,7 +25,7 @@ public:
 	std::string getDefIdentifier() const;
 
 	virtual bool isEquivalent(const EstimatorBase& other,
-		const float epsilon = std::numeric_limits<float>::epsilon()
+		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
 	) const;
 
 	virtual void printDefinition(

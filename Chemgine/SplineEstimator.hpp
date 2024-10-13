@@ -9,18 +9,18 @@ class SplineEstimator : public UnitizedEstimator<OutU, InU>
 {
 private:
 	const EstimationMode mode;
-	const Spline<float> spline;
+	const Spline<float_n> spline;
 
 public:
 	SplineEstimator(
 		const EstimatorId id,
-		Spline<float>&& spline,
+		Spline<float_n>&& spline,
 		const EstimationMode mode
 	) noexcept;
 
 	SplineEstimator(
 		const EstimatorId id,
-		const Spline<float>& spline,
+		const Spline<float_n>& spline,
 		const EstimationMode mode
 	) noexcept;
 
@@ -29,7 +29,7 @@ public:
 	Amount<OutU> get(const Amount<InU> input) const override final;
 
 	bool isEquivalent(const EstimatorBase& other,
-		const float epsilon = std::numeric_limits<float>::epsilon()
+		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
 	) const override final;
 
 	void printDefinition(
@@ -42,7 +42,7 @@ public:
 template<Unit OutU, Unit InU>
 SplineEstimator<OutU, InU>::SplineEstimator(
 	const EstimatorId id,
-	Spline<float>&& spline,
+	Spline<float_n>&& spline,
 	const EstimationMode mode
 ) noexcept :
 	UnitizedEstimator<OutU, InU>(id),
@@ -53,7 +53,7 @@ SplineEstimator<OutU, InU>::SplineEstimator(
 template<Unit OutU, Unit InU>
 SplineEstimator<OutU, InU>::SplineEstimator(
 	const EstimatorId id,
-	const Spline<float>& spline,
+	const Spline<float_n>& spline,
 	const EstimationMode mode
 ) noexcept :
 	SplineEstimator(id, Utils::copy(spline), mode)
@@ -72,7 +72,7 @@ Amount<OutU> SplineEstimator<OutU, InU>::get(const Amount<InU> input) const
 }
 
 template<Unit OutU, Unit InU>
-bool SplineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const float epsilon) const
+bool SplineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const float_n epsilon) const
 {
 	if (not EstimatorBase::isEquivalent(other, epsilon))
 		return false;

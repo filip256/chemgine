@@ -1,5 +1,5 @@
 #include "AtomRepository.hpp"
-#include "Parsers.hpp"
+#include "DynamicAmount.hpp"
 #include "Keywords.hpp"
 #include "Log.hpp"
 #include "Utils.hpp"
@@ -17,7 +17,7 @@ bool AtomRepository::add<AtomData>(DefinitionObject&& definition)
 	}
 
 	const auto name = definition.pullProperty(Keywords::Atoms::Name);
-	const auto weight = definition.pullProperty(Keywords::Atoms::Weight, Def::parseUnsigned<double>);
+	const auto weight = definition.pullProperty(Keywords::Atoms::Weight, Def::parse<Amount<Unit::GRAM>>);
 	auto valences = definition.pullProperty(Keywords::Atoms::Valences, Def::parse<std::vector<uint8_t>>);
 
 	if (not(name && weight && valences))

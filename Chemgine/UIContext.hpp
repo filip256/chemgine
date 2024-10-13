@@ -62,7 +62,7 @@ public:
         textTime.setPosition(sf::Vector2f(window.getSize().x - 200.0f, window.getSize().y - 22.0f));
 
         bool isInTimeSetMode = false;
-        float timeMultiplier = 1.0;
+        float_n timeMultiplier = 1.0;
         sf::Text textTimeMult("x" + std::to_string(timeMultiplier).substr(0, 4), font, 18);
         textTimeMult.setPosition(sf::Vector2f(window.getSize().x - 50.0f, window.getSize().y - 22.0f));
 

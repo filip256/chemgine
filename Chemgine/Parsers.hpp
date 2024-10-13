@@ -31,11 +31,41 @@ namespace Def
 	public:
 		static std::optional<T> parse(const std::string& str)
 		{
-			const auto r = Def::parse<int64_t>(str);
-			return r &&
-				*r >= std::numeric_limits<T>::min() && *r <= std::numeric_limits<T>::max() ?
-				std::optional<T>(*r) :
-				std::nullopt;
+			if constexpr (std::is_integral_v<T>)
+			{
+				const auto r = Def::parse<int64_t>(str);
+				return r &&
+					*r >= std::numeric_limits<T>::min() && *r <= std::numeric_limits<T>::max() ?
+					std::optional<T>(*r) :
+					std::nullopt;
+			}
+			else if constexpr (std::is_floating_point_v<T>)
+			{
+				const auto stripped = Utils::strip(str);
+				if (stripped.empty())
+					return std::nullopt;
+
+				if (stripped == Keywords::Amounts::Min)
+					return std::numeric_limits<T>::lowest();
+				if (stripped == Keywords::Amounts::Max)
+					return std::numeric_limits<T>::max();
+
+				try
+				{
+					const auto val = std::stold(stripped);
+					return val >= std::numeric_limits<T>::lowest() && val <= std::numeric_limits<T>::max() ?
+						std::optional(static_cast<T>(val)) :
+						std::nullopt;
+				}
+				catch (const std::invalid_argument&)
+				{
+					return std::nullopt;
+				}
+				catch (const std::out_of_range&)
+				{
+					return std::nullopt;
+				}
+			}
 		}
 	};
 
@@ -96,97 +126,6 @@ namespace Def
 			}
 		}
 	};
-
-	template <>
-	class Parser<float>
-	{
-	public:
-		static std::optional<float> parse(const std::string& str)
-		{
-			const auto stripped = Utils::strip(str);
-			if (stripped.empty())
-				return std::nullopt;
-
-			if (stripped == Keywords::Amounts::Min)
-				return std::numeric_limits<float>::lowest();
-			if (stripped == Keywords::Amounts::Max)
-				return std::numeric_limits<float>::max();
-
-			try
-			{
-				return std::optional<float>(std::stof(str));
-			}
-			catch (const std::invalid_argument&)
-			{
-				return std::nullopt;
-			}
-			catch (const std::out_of_range&)
-			{
-				return std::nullopt;
-			}
-		}
-	};
-
-	template <>
-	class Parser<double>
-	{
-	public:
-		static std::optional<double> parse(const std::string& str)
-		{
-			const auto stripped = Utils::strip(str);
-			if (stripped.empty())
-				return std::nullopt;
-
-			if (stripped == Keywords::Amounts::Min)
-				return std::numeric_limits<double>::lowest();
-			if (stripped == Keywords::Amounts::Max)
-				return std::numeric_limits<double>::max();
-
-			try
-			{
-				return std::optional<double>(std::stod(str));
-			}
-			catch (const std::invalid_argument&)
-			{
-				return std::nullopt;
-			}
-			catch (const std::out_of_range&)
-			{
-				return std::nullopt;
-			}
-		}
-	};
-
-	template <>
-	class Parser<long double>
-	{
-	public:
-		static std::optional<long double> parse(const std::string& str)
-		{
-			const auto stripped = Utils::strip(str);
-			if (stripped.empty())
-				return std::nullopt;
-
-			if (stripped == Keywords::Amounts::Min)
-				return std::numeric_limits<long double>::lowest();
-			if (stripped == Keywords::Amounts::Max)
-				return std::numeric_limits<long double>::max();
-
-			try
-			{
-				return std::optional<long double>(std::stold(str));
-			}
-			catch (const std::invalid_argument&)
-			{
-				return std::nullopt;
-			}
-			catch (const std::out_of_range&)
-			{
-				return std::nullopt;
-			}
-		}
-	};
-
 
 	template <>
 	class Parser<bool>

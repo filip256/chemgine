@@ -146,10 +146,10 @@ public:
 	/// If the parsing fails, a warning message is logged.
 	/// If the property isn't found or parsing fails, the given default value is returned.
 	/// </summary>
-	template<typename T, typename... Args>
+	template<typename T, typename D, typename... Args>
 	T pullDefaultProperty(
 		const std::string& key,
-		T&& defaultValue,
+		D&& defaultValue,
 		std::optional<T>(*parser)(const std::string&, Args...),
 		Args&&... parserArgs);
 
@@ -252,10 +252,10 @@ std::optional<T> DefinitionObject::pullOptionalProperty(
 	return prop;
 }
 
-template<typename T, typename... Args>
+template<typename T, typename D, typename... Args>
 T DefinitionObject::pullDefaultProperty(
 	const std::string& key,
-	T&& defaultValue,
+	D&& defaultValue,
 	std::optional<T>(*parser)(const std::string&, Args...),
 	Args&&... parserArgs)
 {

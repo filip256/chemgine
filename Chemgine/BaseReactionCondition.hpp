@@ -7,5 +7,5 @@ protected:
 	virtual ~BaseReactionCondition() = default;
 
 public:
-	virtual float fulfillmentLevel() = 0;
+	virtual float_n fulfillmentLevel() = 0;
 };

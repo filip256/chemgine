@@ -1,4 +1,5 @@
 #include "SystemMatrix.hpp"
+#include "Precision.hpp"
 #include "NumericUtils.hpp"
 
 #include <iostream>
@@ -150,6 +151,5 @@ std::vector<T>& SystemMatrix<T>::back()
 	return matrix.back();
 }
 
-template class SystemMatrix<float>;
-template class SystemMatrix<double>;
-template class SystemMatrix<long double>;
+template class SystemMatrix<float_n>;
+template class SystemMatrix<float_h>;

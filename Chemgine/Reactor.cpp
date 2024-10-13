@@ -31,7 +31,7 @@ Reactor::Reactor(
 	Reactor(atmosphere, maxVolume, atmosphere)
 {}
 
-double Reactor::getInterLayerReactivityCoefficient(const Reactant& r1, const Reactant& r2) const
+float_n Reactor::getInterLayerReactivityCoefficient(const Reactant& r1, const Reactant& r2) const
 {
 	if (r1.layer == r2.layer)
 	{
@@ -64,9 +64,9 @@ double Reactor::getInterLayerReactivityCoefficient(const Reactant& r1, const Rea
 	return 0.01;          // G-S
 }
 
-double Reactor::getInterLayerReactivityCoefficient(const ReactantSet& reactants) const
+float_n Reactor::getInterLayerReactivityCoefficient(const ReactantSet& reactants) const
 {
-	double result = 1.0;
+	float_n result = 1.0;
 	for (const auto& [_, r1] : reactants)
 		for (const auto& [_, r2] : reactants)
 		{
@@ -77,7 +77,7 @@ double Reactor::getInterLayerReactivityCoefficient(const ReactantSet& reactants)
 	return result;
 }
 
-double Reactor::getCatalyticReactivityCoefficient(const ImmutableSet<Catalyst>& catalysts) const
+float_n Reactor::getCatalyticReactivityCoefficient(const ImmutableSet<Catalyst>& catalysts) const
 {
 	// TODO: take concentration into account
 	for (size_t i = 0; i < catalysts.size(); ++i)
@@ -226,7 +226,7 @@ void Reactor::add(Reactor& other)
 	//}
 }
 
-void Reactor::add(Reactor& other, const double ratio)
+void Reactor::add(Reactor& other, const float_n ratio)
 {
 	//if (ratio >= 1.0)
 	//{

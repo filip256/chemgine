@@ -18,7 +18,7 @@ std::string EstimatorBase::getDefIdentifier() const
 	return 'd' + std::to_string(id);
 }
 
-bool EstimatorBase::isEquivalent(const EstimatorBase& other, const float epsilon) const
+bool EstimatorBase::isEquivalent(const EstimatorBase& other, const float_n epsilon) const
 {
 	return typeid(*this) == typeid(other);
 }

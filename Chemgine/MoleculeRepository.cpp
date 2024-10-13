@@ -24,9 +24,9 @@ bool MoleculeRepository::add(DefinitionObject&& definition)
 
 	const auto name = definition.pullDefaultProperty(Keywords::Molecules::Name, "?");
 	const auto hp = definition.pullDefaultProperty(Keywords::Molecules::Hydrophilicity, 1.0,
-		Def::parse<double>);
+		Def::parse<float_n>);
 	const auto lp = definition.pullDefaultProperty(Keywords::Molecules::Lipophilicity, 0.0,
-		Def::parse<double>);
+		Def::parse<float_n>);
 	const auto col = definition.pullDefaultProperty(Keywords::Molecules::Color, Color(0, 255, 255, 100),
 		Def::parse<Color>);
 	auto mp = definition.getDefinition(Keywords::Molecules::MeltingPoint,
@@ -105,7 +105,7 @@ const MoleculeData& MoleculeRepository::findOrAdd(MolecularStructure&& structure
 	auto lhc = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>(75.4840232);
 	auto flh = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(6020.0);
 	auto vlh = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(40700.0);
-	auto slh = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(std::numeric_limits<float>::max());
+	auto slh = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(std::numeric_limits<float_n>::max());
 	auto sol = estimators.add<ConstantEstimator<Unit::NONE, Unit::CELSIUS>>(1.0);
 	auto hen = estimators.add<ConstantEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>>(1000.0);
 

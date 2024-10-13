@@ -157,8 +157,8 @@ void LabwareSystem::add(PortIdentifier& srcPort, PortIdentifier& destPort)
 void LabwareSystem::clearBoundry()
 {
 	boundingBox = sf::FloatRect(
-		std::numeric_limits<float>::max(), std::numeric_limits<float>::max(),
-		-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
+		std::numeric_limits<float_n>::max(), std::numeric_limits<float_n>::max(),
+		-std::numeric_limits<float_n>::max(), -std::numeric_limits<float_n>::max());
 }
 
 void LabwareSystem::recomputeBoundry()
@@ -291,7 +291,7 @@ l_size LabwareSystem::findFirst() const
 	return components.empty() ? npos : 0;
 }
 
-std::pair<PortIdentifier, float> LabwareSystem::findClosestPort(const sf::Vector2f& point, const float maxSqDistance)
+std::pair<PortIdentifier, float_n> LabwareSystem::findClosestPort(const sf::Vector2f& point, const float_n maxSqDistance)
 {
 	auto result = std::make_pair(PortIdentifier(*this, npos, 0), -1.0f);
 
@@ -309,7 +309,7 @@ std::pair<PortIdentifier, float> LabwareSystem::findClosestPort(const sf::Vector
 
 		for (uint8_t j = 0; j < ports.size(); ++j)
 		{
-			const float dist = Maths::sqaredDistance(point.x, point.y, ports[j].position.x + offset.x, ports[j].position.y + offset.y);
+			const float_n dist = Maths::sqaredDistance(point.x, point.y, ports[j].position.x + offset.x, ports[j].position.y + offset.y);
 			if (dist <= result.second)
 			{
 				result.second = dist;
@@ -322,11 +322,11 @@ std::pair<PortIdentifier, float> LabwareSystem::findClosestPort(const sf::Vector
 	return result;
 }
 
-std::pair<PortIdentifier, PortIdentifier> LabwareSystem::findClosestPort(LabwareSystem& other, const float maxSqDistance)
+std::pair<PortIdentifier, PortIdentifier> LabwareSystem::findClosestPort(LabwareSystem& other, const float_n maxSqDistance)
 {
 	auto result = std::make_pair(PortIdentifier(*this, npos, 0), PortIdentifier(other, npos, 0));
 
-	float minDist = maxSqDistance;
+	float_n minDist = maxSqDistance;
 	for (l_size i = 0; i < components.size(); ++i)
 	{
 		const auto& ports = components[i]->getPorts();

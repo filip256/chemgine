@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Precision.hpp"
+
 #include <utility>
 #include <vector>
 
@@ -10,12 +12,12 @@ public:
 	Regressor2DBase(const Regressor2DBase&) = default;
 	virtual ~Regressor2DBase() = default;
 
-	virtual float get(const float input) const = 0;
+	virtual float_n get(const float_n input) const = 0;
 
-	virtual std::vector<float> getParams() const = 0;
+	virtual std::vector<float_n> getParams() const = 0;
 
 	virtual bool isEquivalent(const Regressor2DBase& other,
-		const float epsilon = std::numeric_limits<float>::epsilon()
+		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
 	) const;
 };
 
@@ -23,22 +25,22 @@ public:
 class LinearRegressor2D : public Regressor2DBase
 {
 public:
-	const float paramX;
-	const float shift;
+	const float_n paramX;
+	const float_n shift;
 
 	LinearRegressor2D(
-		const float paramX,
-		const float shift
+		const float_n paramX,
+		const float_n shift
 	) noexcept;
 	LinearRegressor2D(const LinearRegressor2D&) = default;
 
-	float get(const float input) const override final;
+	float_n get(const float_n input) const override final;
 
-	std::vector<float> getParams() const override final;
+	std::vector<float_n> getParams() const override final;
 
 	bool isEquivalent(const Regressor2DBase& other,
-		const float epsilon = std::numeric_limits<float>::epsilon()
+		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
 	) const override final;
 
-	static LinearRegressor2D fit(const std::vector<std::pair<float, float>>& points);
+	static LinearRegressor2D fit(const std::vector<std::pair<float_n, float_n>>& points);
 };

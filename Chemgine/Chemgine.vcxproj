@@ -315,6 +315,7 @@
     <ClInclude Include="EstimatorParsers.hpp" />
     <ClInclude Include="EstimatorSpecifier.hpp" />
     <ClInclude Include="FileStore.hpp" />
+    <ClInclude Include="Precision.hpp" />
     <ClInclude Include="MetaUtils.hpp" />
     <ClInclude Include="MoleculeId.hpp" />
     <ClInclude Include="NumericUtils.hpp" />

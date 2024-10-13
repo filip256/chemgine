@@ -1,4 +1,5 @@
 #include "Spline.hpp"
+#include "Precision.hpp"
 #include "NumericUtils.hpp"
 
 #include <limits>
@@ -134,4 +135,4 @@ bool Spline<T>::isEquivalent(const Spline<T>& other, const T epsilon) const
 	return true;
 }
 
-template class Spline<float>;
+template class Spline<float_n>;

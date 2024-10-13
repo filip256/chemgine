@@ -37,7 +37,7 @@ DataStore& DataStore::load(const std::string& path)
 		if (not analysis.failed)
 		{
 			const auto definitionsToParse = analysis.totalDefinitionCount - analysis.preparsedDefinitionCount;
-			const auto perc = static_cast<uint8_t>((static_cast<float>(definitionCount) / definitionsToParse) * 100.f);
+			const auto perc = static_cast<uint8_t>((static_cast<float_n>(definitionCount) / definitionsToParse) * 100.f);
 			Log(this).info("\r[{0}%] Parsed {1} out of {2} definitions.", perc, definitionCount, definitionsToParse);
 		}
 
