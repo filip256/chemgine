@@ -3,7 +3,7 @@
 #include "Log.hpp"
 
 Atom::Atom(const Symbol& symbol) noexcept :
-    data(dataStore().atoms.at(symbol))
+    data(Accessor<>::getDataStore().atoms.at(symbol))
 {}
 
 const AtomData& Atom::getData() const
@@ -66,5 +66,5 @@ Atom* Atom::clone() const
 
 bool Atom::isDefined(const Symbol& symbol)
 {
-    return getDataStore().atoms.contains(symbol);
+    return Accessor<>::getDataStore().atoms.contains(symbol);
 }

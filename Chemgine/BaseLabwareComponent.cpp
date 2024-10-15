@@ -9,7 +9,7 @@ BaseLabwareComponent::BaseLabwareComponent(
 	const LabwareType type
 ) noexcept :
 	id(id),
-	data(dataAccessor.getSafe().labware.at(id))
+	data(Accessor<>::getDataStore().labware.at(id))
 {
 	if (type != data.type)
 		Log(this).fatal("Labware component given by id {0} does not match the requested component type.", id);

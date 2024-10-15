@@ -4,20 +4,20 @@
 
 RetrosynthReaction::RetrosynthReaction(
 	const ReactionData& baseReaction,
-	const std::vector<Reactable>& reactants,
-	const std::vector<Reactable>& products
+	const std::vector<StructureRef>& reactants,
+	const std::vector<StructureRef>& products
 ) noexcept :
 	baseReaction(baseReaction),
-	reactants(Utils::aggregate<Reactable, uint8_t>(reactants)),
-	products(Utils::aggregate<Reactable, uint8_t>(products))
+	reactants(Utils::aggregate<StructureRef, uint8_t>(reactants)),
+	products(Utils::aggregate<StructureRef, uint8_t>(products))
 {}
 
-const std::unordered_map<Reactable, uint8_t>& RetrosynthReaction::getReactants() const
+const std::unordered_map<StructureRef, uint8_t>& RetrosynthReaction::getReactants() const
 {
 	return reactants;
 }
 
-const std::unordered_map<Reactable, uint8_t>& RetrosynthReaction::getProducts() const
+const std::unordered_map<StructureRef, uint8_t>& RetrosynthReaction::getProducts() const
 {
 	return products;
 }

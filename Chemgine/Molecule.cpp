@@ -8,7 +8,7 @@ Molecule::Molecule(const MoleculeData& data) noexcept :
 {}
 
 Molecule::Molecule(MolecularStructure&& structure) noexcept :
-	data(dataAccessor.getSafe().molecules.findOrAdd(std::move(structure))),
+	data(Accessor<>::getDataStore().molecules.findOrAddConcrete(std::move(structure))),
 	molarMass(data.getStructure().getMolarMass())
 {}
 
@@ -180,11 +180,6 @@ Amount<Unit::MOLE_RATIO> Molecule::getSolubilityAt(
 
 	const auto scale = data.relativeSolubilityEstimator->get(temperature);
 	return baseSolubility * scale.asStd();
-}
-
-std::string Molecule::getHRTag() const
-{
-	return data.getHRTag();
 }
 
 bool Molecule::operator==(const Molecule& other) const

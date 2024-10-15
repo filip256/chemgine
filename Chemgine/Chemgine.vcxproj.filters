@@ -192,7 +192,7 @@
     <ClCompile Include="SystemMatrix.cpp">
       <Filter>Source Files\DataStructures</Filter>
     </ClCompile>
-    <ClCompile Include="Reactable.cpp">
+    <ClCompile Include="StructureRef.cpp">
       <Filter>Source Files\Reactions</Filter>
     </ClCompile>
     <ClCompile Include="Maths.cpp">
@@ -295,9 +295,6 @@
       <Filter>Source Files\Reactions</Filter>
     </ClCompile>
     <ClCompile Include="GenericMoleculeData.cpp">
-      <Filter>Source Files\Molecules</Filter>
-    </ClCompile>
-    <ClCompile Include="GenericMoleculeRepository.cpp">
       <Filter>Source Files\Molecules</Filter>
     </ClCompile>
     <ClCompile Include="Symbol.cpp">
@@ -509,7 +506,7 @@
     <ClInclude Include="SystemMatrix.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
-    <ClInclude Include="Reactable.hpp">
+    <ClInclude Include="StructureRef.hpp">
       <Filter>Header Files\Reactions</Filter>
     </ClInclude>
     <ClInclude Include="Maths.hpp">
@@ -657,9 +654,6 @@
       <Filter>Header Files\Estimators</Filter>
     </ClInclude>
     <ClInclude Include="GenericMoleculeData.hpp">
-      <Filter>Header Files\Molecules</Filter>
-    </ClInclude>
-    <ClInclude Include="GenericMoleculeRepository.hpp">
       <Filter>Header Files\Molecules</Filter>
     </ClInclude>
     <ClInclude Include="Symbol.hpp">

@@ -57,7 +57,7 @@ bool MoleculeRepository::add(DefinitionObject&& definition)
 		Log(this).warn("Ignored unknown molecule property: '{0}', at: {1}.", name, definition.getLocationName());
 
 	const auto id = getFreeId();
-	table.emplace(id,
+	concreteMolecules.emplace(id,
 		std::make_unique<MoleculeData>(
 			id, name, std::move(*structure),
 			hp, lp, col,
@@ -71,24 +71,35 @@ bool MoleculeRepository::add(DefinitionObject&& definition)
 
 const MoleculeData& MoleculeRepository::at(const MoleculeId id) const
 {
-	return *table.at(id);
+	return *concreteMolecules.at(id);
 }
 
-const MoleculeData* MoleculeRepository::findFirst(const MolecularStructure& structure) const
+const MoleculeData* MoleculeRepository::findFirstConcrete(const MolecularStructure& structure) const
 {
-	for (const auto& m : table)
+	for (const auto& m : concreteMolecules)
 		if (m.second->getStructure() == structure)
 			return m.second.get();
 
 	return nullptr;
 }
 
-const MoleculeData& MoleculeRepository::findOrAdd(MolecularStructure&& structure)
+const GenericMoleculeData* MoleculeRepository::findFirstGeneric(const MolecularStructure& structure) const
 {
-	if (structure.isEmpty() || structure.isGeneric())
-		Log(this).fatal("Tried to create a concrete molecule from an empty or generic structure.");
+	for (const auto& m : genericMolecules)
+		if (m.second->getStructure() == structure)
+			return m.second.get();
 
-	const auto existing = findFirst(structure);
+	return nullptr;
+}
+
+const MoleculeData& MoleculeRepository::findOrAddConcrete(MolecularStructure&& structure)
+{
+	if (structure.isEmpty())
+		Log(this).fatal("Tried to create a concrete molecule from an empty structure.");
+	if (structure.isGeneric())
+		Log(this).fatal("Tried to create a concrete molecule from a generic structure.");
+
+	const auto existing = findFirstConcrete(structure);
 	if (existing != nullptr)
 		return *existing;
 
@@ -110,7 +121,7 @@ const MoleculeData& MoleculeRepository::findOrAdd(MolecularStructure&& structure
 	auto hen = estimators.add<ConstantEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>>(1000.0);
 
 	const auto id = getFreeId();
-	const auto& it = table.emplace(id, std::make_unique<MoleculeData>(
+	const auto it = concreteMolecules.emplace(id, std::make_unique<MoleculeData>(
 		id, structure.toSMILES(), std::move(structure),
 		hydro, lipo, color,
 		std::move(mp), std::move(bp),
@@ -122,30 +133,47 @@ const MoleculeData& MoleculeRepository::findOrAdd(MolecularStructure&& structure
 	return *it.first->second;
 }
 
+const GenericMoleculeData& MoleculeRepository::findOrAdd(MolecularStructure&& structure)
+{
+	if (structure.isEmpty())
+		Log(this).fatal("Tried to create a concrete molecule from an empty structure.");
+	if (structure.isConcrete())
+		return findOrAddConcrete(std::move(structure));
+
+	const auto existing = findFirstGeneric(structure);
+	if (existing != nullptr)
+		return *existing;
+
+	const auto id = getFreeId();
+	const auto it = genericMolecules.emplace(id, std::make_unique<GenericMoleculeData>(id, std::move(structure)));
+	return *it.first->second;
+}
+
 MoleculeRepository::Iterator MoleculeRepository::begin() const
 {
-	return table.begin();
+	return concreteMolecules.begin();
 }
 
 MoleculeRepository::Iterator MoleculeRepository::end() const
 {
-	return table.end();
+	return concreteMolecules.end();
 }
 
 size_t MoleculeRepository::size() const
 {
-	return table.size();
+	return concreteMolecules.size();
 }
 
 void MoleculeRepository::clear()
 {
-	table.clear();
+	concreteMolecules.clear();
+	genericMolecules.clear();
 }
 
 MoleculeId MoleculeRepository::getFreeId() const
 {
 	static MoleculeId id = 0;
-	while (table.contains(id))
+	while (concreteMolecules.contains(id) || genericMolecules.contains(id))
 	{
 		if (id == std::numeric_limits<MoleculeId>::max())
 			Log(this).fatal("Molecule id limit reached: {0}.", id);

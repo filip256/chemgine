@@ -260,7 +260,7 @@
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Polarity.cpp" />
     <ClCompile Include="PropertyPane.cpp" />
-    <ClCompile Include="Reactable.cpp" />
+    <ClCompile Include="StructureRef.cpp" />
     <ClCompile Include="Reactant.cpp" />
     <ClCompile Include="ReactantRef.cpp" />
     <ClCompile Include="ReactantSet.cpp" />
@@ -338,7 +338,6 @@
     <ClCompile Include="DataStore.cpp" />
     <ClCompile Include="Repository.cpp" />
     <ClCompile Include="GenericMoleculeData.cpp" />
-    <ClCompile Include="GenericMoleculeRepository.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClInclude Include="ConcreteReaction.hpp" />
     <ClInclude Include="AdaptorData.hpp" />
@@ -355,7 +354,6 @@
     <ClInclude Include="Formulas.hpp" />
     <ClInclude Include="ForwardingContainer.hpp" />
     <ClInclude Include="GenericMoleculeData.hpp" />
-    <ClInclude Include="GenericMoleculeRepository.hpp" />
     <ClInclude Include="FunctionalEstimator.hpp" />
     <ClInclude Include="HashCombine.hpp" />
     <ClInclude Include="Heatsource.hpp" />
@@ -425,7 +423,7 @@
     <ClInclude Include="PairHash.hpp" />
     <ClInclude Include="PVector.hpp" />
     <ClInclude Include="Query.hpp" />
-    <ClInclude Include="Reactable.hpp" />
+    <ClInclude Include="StructureRef.hpp" />
     <ClInclude Include="ReactionData.hpp" />
     <ClInclude Include="ReactionRepository.hpp" />
     <ClInclude Include="Reactor.hpp" />

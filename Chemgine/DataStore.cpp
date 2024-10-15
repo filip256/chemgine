@@ -10,7 +10,6 @@ DataStore::DataStore() :
 	fileStore(),
 	oolDefinitions(),
 	atoms(),
-	genericMolecules(),
 	estimators(),
 	molecules(estimators),
 	reactions(estimators, molecules),
@@ -142,17 +141,10 @@ DataStore& DataStore::clear()
 {
 	labware.clear();
 	reactions.clear();
-	genericMolecules.clear();
 	molecules.clear();
 	estimators.clear();
 	atoms.clear();
 	oolDefinitions.clear();
 	fileStore.clear();
-	return *this;
-}
-
-DataStore& DataStore::saveGenericMoleculesData(const std::string& path)
-{
-	genericMolecules.saveToFile(path);
 	return *this;
 }

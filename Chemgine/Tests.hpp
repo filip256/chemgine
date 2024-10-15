@@ -11,7 +11,7 @@
 #include "DataStore.hpp"
 #include "Reactor.hpp"
 #include "BaseLabwareComponent.hpp"
-#include "Reactable.hpp"
+#include "StructureRef.hpp"
 #include "DumpContainer.hpp"
 #include "Atmosphere.hpp"
 #include "ForwardingContainer.hpp"
@@ -862,7 +862,6 @@ public:
 	{
 		const auto begin = std::chrono::steady_clock::now();
 		//store.reactions.generateTotalSpan();
-		store.saveGenericMoleculesData("Out/genericmolecules.out.csv");
 		const auto end = std::chrono::steady_clock::now();
 
 		Log(this).info("Total span dump completed in {0}s.",

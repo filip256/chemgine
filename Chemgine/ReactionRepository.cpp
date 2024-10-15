@@ -36,11 +36,11 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 	}
 
 	// reactants
-	std::vector<std::pair<Reactable, uint8_t>> reactantIds;
+	std::vector<std::pair<StructureRef, uint8_t>> reactantIds;
 	reactantIds.reserve(spec->reactants.size());
 	for (size_t i = 0; i < spec->reactants.size(); ++i)
 	{
-		const auto r = Reactable::get(spec->reactants[i]);
+		const auto r = StructureRef::create(spec->reactants[i]);
 		if (not r)
 		{
 			Log(this).error("Malformed reactant: '{0}' in reaction with id: {1}, at: {2}.", spec->reactants[i], *id, definition.getLocationName());
@@ -50,11 +50,11 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 	}
 
 	// products
-	std::vector<std::pair<Reactable, uint8_t>> productIds;
+	std::vector<std::pair<StructureRef, uint8_t>> productIds;
 	productIds.reserve(spec->products.size());
 	for (size_t i = 0; i < spec->products.size(); ++i)
 	{
-		const auto p = Reactable::get(spec->products[i]);
+		const auto p = StructureRef::create(spec->products[i]);
 		if (not p)
 		{
 			Log(this).error("Malformed product: '{0}' in reaction with id: {1}, at: {2}.", spec->products[i], *id, definition.getLocationName());
@@ -186,7 +186,7 @@ std::unordered_set<ConcreteReaction> ReactionRepository::findOccuringReactions(c
 	return network.getOccuringReactions(reactants);
 }
 
-std::unordered_set<RetrosynthReaction> ReactionRepository::getRetrosynthReactions(const Reactable& targetProduct) const
+std::unordered_set<RetrosynthReaction> ReactionRepository::getRetrosynthReactions(const StructureRef& targetProduct) const
 {
 	return network.getRetrosynthReactions(targetProduct);
 }

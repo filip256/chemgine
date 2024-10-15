@@ -1,7 +1,6 @@
 #pragma once
 
-#include "MoleculeId.hpp"
-#include "MolecularStructure.hpp"
+#include "GenericMoleculeData.hpp"
 #include "UnitizedEstimator.hpp"
 #include "Amount.hpp"
 #include "MoleculeType.hpp"
@@ -10,13 +9,9 @@
 
 #include <string>
 
-class MoleculeData
+class MoleculeData : public GenericMoleculeData
 {
-private:
-	MolecularStructure structure;
-
 public:
-	const MoleculeId id;
 	const MoleculeType type;
 	const std::string name;
 
@@ -65,8 +60,6 @@ public:
 	~MoleculeData() = default;
 
 	const MolecularStructure& getStructure() const;
-
-	std::string getHRTag() const;
 
 	void printDefinition(
 		std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted

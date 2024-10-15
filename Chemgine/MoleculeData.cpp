@@ -20,8 +20,7 @@ MoleculeData::MoleculeData(
 	EstimatorRef<Unit::NONE, Unit::CELSIUS>&& relativeSolubilityEstimator,
 	EstimatorRef<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>&& henrysConstantEstimator
 ) noexcept :
-	id(id),
-	structure(std::move(structure)),
+	GenericMoleculeData(id, std::move(structure)),
 	type(this->structure.isOrganic() ? MoleculeType::ORGANIC : MoleculeType::INORGANIC),
 	name(name),
 	polarity(hydrophilicity, lipophilicity),
@@ -47,11 +46,6 @@ MoleculeData::MoleculeData(
 const MolecularStructure& MoleculeData::getStructure() const
 {
 	return structure;
-}
-
-std::string MoleculeData::getHRTag() const
-{
-	return '<' + std::to_string(id) + ':' + name + '>';
 }
 
 void MoleculeData::printDefinition(

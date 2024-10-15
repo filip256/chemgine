@@ -1,6 +1,6 @@
 #include "Catalyst.hpp"
 
-Catalyst::Catalyst(const Reactable& reactable, const Amount<Unit::MOLE_RATIO> idealAmount) noexcept :
+Catalyst::Catalyst(const StructureRef& reactable, const Amount<Unit::MOLE_RATIO> idealAmount) noexcept :
 	reactable(reactable),
 	idealAmount(idealAmount)
 {}
@@ -55,7 +55,7 @@ std::optional<Catalyst> Catalyst::get(
 	const std::string& smiles,
 	const Amount<Unit::MOLE_RATIO> idealAmount)
 {
-	const auto r = Reactable::get(smiles);
+	const auto r = StructureRef::create(smiles);
 	return r ? std::optional(Catalyst(*r, idealAmount)) :
 		std::nullopt;
 }

@@ -1,15 +1,15 @@
 #pragma once
 
-#include "Reactable.hpp"
+#include "StructureRef.hpp"
 #include "DynamicAmount.hpp"
 
 class Catalyst
 {
 private:
 	const Amount<Unit::MOLE_RATIO> idealAmount;
-	const Reactable reactable;
+	const StructureRef reactable;
 
-	Catalyst(const Reactable& reactable, const Amount<Unit::MOLE_RATIO> idealAmount) noexcept;
+	Catalyst(const StructureRef& reactable, const Amount<Unit::MOLE_RATIO> idealAmount) noexcept;
 
 public:
 	Catalyst(const Catalyst&) = default;
@@ -40,7 +40,7 @@ struct std::hash<Catalyst>
 {
 	size_t operator() (const Catalyst& catalyst) const
 	{
-		return std::hash<Reactable>()(catalyst.reactable);
+		return std::hash<StructureRef>()(catalyst.reactable);
 	}
 };
 

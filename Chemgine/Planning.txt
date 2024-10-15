@@ -136,9 +136,9 @@ In an optimized molecular structure there must be a way to specify which atoms a
      4. loop through all reactions and inherit any undefined properties
              
 
--- Reactables --
+-- StructureRefs --
 F. groups, backbones, atoms, organics, anorganics can all be reactants and products.
-Reactables provide access to the MolecularStructure of each of these types.
+StructureRefs provide access to the MolecularStructure of each of these types.
 They are similar to Components but with a different purpose.
     
 
@@ -228,7 +228,7 @@ Tasks:
   DONE. Molecular structure improvements: isNormalized field (checks for req methods), implied hydrogen clarifications
 ---
   1. Fix single key Repositorys
-  2. Fix Reactable id clash (Molecule/GenericMolecule)
+  2. Fix StructureRef id clash (Molecule/GenericMolecule)
   DONE. Estimator optimizer
   DONE. Use operator* instead of value() for std::optional
   DONE. Rename approximator to estimator
@@ -418,9 +418,10 @@ Tasks:
 ---
      - DIRECT REFERENCING -
 
-  1. Use dyn allocation for all data objects (only GenericMolecule remaining)
-  2. Rewrite accessors to work with ptrs
-  3. Remove id properties
+  DONE. Use dyn allocation for all data objects
+  DONE. Move GenericMoleculeRepository in MoleculeRepository
+  DONE. Remove unnecessary id properties
+  DONE. Remove id based accessing
 
 ---
      - PRECISION -

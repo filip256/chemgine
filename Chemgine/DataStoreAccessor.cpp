@@ -8,19 +8,9 @@ void DataStoreAccessor::set(const DataStore& dataStore)
 	this->dataStore = &dataStore;
 }
 
-void DataStoreAccessor::crashIfUninitialized() const
+const DataStore& DataStoreAccessor::get() const
 {
 	if (dataStore == nullptr)
 		Log(this).fatal("Tried to access a data store with an uninitialized accessor.");
-}
-
-const DataStore& DataStoreAccessor::get() const
-{
-	return *dataStore;
-}
-
-const DataStore& DataStoreAccessor::getSafe() const
-{
-	crashIfUninitialized();
 	return *dataStore;
 }

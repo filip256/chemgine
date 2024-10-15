@@ -9,8 +9,8 @@
 ReactionData::ReactionData(
 	const ReactionId id,
 	const std::string& name,
-	const std::vector<std::pair<Reactable, uint8_t>>& reactants,
-	const std::vector<std::pair<Reactable, uint8_t>>& products,
+	const std::vector<std::pair<StructureRef, uint8_t>>& reactants,
+	const std::vector<std::pair<StructureRef, uint8_t>>& products,
 	const Amount<Unit::JOULE_PER_MOLE> reactionEnergy,
 	const Amount<Unit::JOULE_PER_MOLE> activationEnergy,
 	EstimatorRef<Unit::MOLE_PER_SECOND, Unit::CELSIUS>&& tempSpeedEstimator,
@@ -24,16 +24,16 @@ ReactionData::ReactionData(
 	name(name),
 	tempSpeedEstimator(std::move(tempSpeedEstimator)),
 	concSpeedEstimator(std::move(concSpeedEstimator)),
-	reactants(Utils::flatten<Reactable, uint8_t>(reactants)),
-	products(Utils::flatten<Reactable, uint8_t>(products)),
+	reactants(Utils::flatten<StructureRef, uint8_t>(reactants)),
+	products(Utils::flatten<StructureRef, uint8_t>(products)),
 	catalysts(std::move(catalysts))
 {}
 
 ReactionData::ReactionData(
 	const ReactionId id,
 	const std::string& name,
-	const std::vector<std::pair<Reactable, uint8_t>>& reactants,
-	const std::vector<std::pair<Reactable, uint8_t>>& products,
+	const std::vector<std::pair<StructureRef, uint8_t>>& reactants,
+	const std::vector<std::pair<StructureRef, uint8_t>>& products,
 	EstimatorRef<Unit::MOLE_PER_SECOND, Unit::CELSIUS>&& tempSpeedEstimator,
 	EstimatorRef<Unit::NONE, Unit::MOLE_RATIO>&& concSpeedEstimator,
 	ImmutableSet<Catalyst>&& catalysts
@@ -43,14 +43,14 @@ ReactionData::ReactionData(
 	name(name),
 	tempSpeedEstimator(std::move(tempSpeedEstimator)),
 	concSpeedEstimator(std::move(concSpeedEstimator)),
-	reactants(Utils::flatten<Reactable, uint8_t>(reactants)),
-	products(Utils::flatten<Reactable, uint8_t>(products)),
+	reactants(Utils::flatten<StructureRef, uint8_t>(reactants)),
+	products(Utils::flatten<StructureRef, uint8_t>(products)),
 	catalysts(std::move(catalysts))
 {}
 
 bool ReactionData::balance(
-	std::vector<std::pair<Reactable, uint8_t>>& reactants,
-	std::vector<std::pair<Reactable, uint8_t>>& products)
+	std::vector<std::pair<StructureRef, uint8_t>>& reactants,
+	std::vector<std::pair<StructureRef, uint8_t>>& products)
 {
 	if (reactants.size() == 0 || products.size() == 0)
 		return false;
@@ -226,7 +226,7 @@ std::vector<std::unordered_map<c_size, c_size>> ReactionData::generateConcreteRe
 }
 
 std::pair<size_t, std::unordered_map<c_size, c_size>> ReactionData::generateRetrosynthProductMatches(
-	const Reactable& targetProduct) const
+	const StructureRef& targetProduct) const
 {
 	for (size_t i = 0; i < products.size(); ++i)
 	{
@@ -284,7 +284,7 @@ std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<R
 }
 
 RetrosynthReaction ReactionData::generateRetrosynthReaction(
-	const Reactable& targetProduct,
+	const StructureRef& targetProduct,
 	const std::pair<size_t, std::unordered_map<c_size, c_size>>& match) const
 {
 	// build concrete products
@@ -312,32 +312,32 @@ RetrosynthReaction ReactionData::generateRetrosynthReaction(
 	}
 
 	// canonicalize reactants
-	std::vector<Reactable> reactantReactables;
-	reactantReactables.reserve(substReactants.size());
+	std::vector<StructureRef> reactantStructureRefs;
+	reactantStructureRefs.reserve(substReactants.size());
 	for (size_t i = 0; i < substReactants.size(); ++i)
 	{
 		substReactants[i].canonicalize();
 		substReactants[i].recountImpliedHydrogens();
-		reactantReactables.emplace_back(*Reactable::get(std::move(substReactants[i])));
+		reactantStructureRefs.emplace_back(*StructureRef::create(std::move(substReactants[i])));
 	}
 
 	// copy products
-	std::vector<Reactable> productReactables;
-	productReactables.reserve(products.size());
-	productReactables.emplace_back(targetProduct);
+	std::vector<StructureRef> productStructureRefs;
+	productStructureRefs.reserve(products.size());
+	productStructureRefs.emplace_back(targetProduct);
 	for (size_t i = 0; i < products.size(); ++i)
 		if (i != match.first)
-			productReactables.emplace_back(products[i]);
+			productStructureRefs.emplace_back(products[i]);
 
-	return RetrosynthReaction(*this, reactantReactables, productReactables);
+	return RetrosynthReaction(*this, reactantStructureRefs, productStructureRefs);
 }
 
-const std::vector<Reactable>& ReactionData::getReactants() const
+const std::vector<StructureRef>& ReactionData::getReactants() const
 {
 	return reactants;
 }
 
-const std::vector<Reactable>& ReactionData::getProducts() const
+const std::vector<StructureRef>& ReactionData::getProducts() const
 {
 	return products;
 }
@@ -533,9 +533,9 @@ void ReactionData::printDefinition(
 
 	out << ':';
 
-	const auto compare = [](const Reactable& l, const Reactable& r) { return l.getId() < r.getId(); };
-	const auto uniqueReactants = ImmutableSet<Reactable>::toSortedSetVector(Utils::copy(reactants), compare);
-	const auto uniqueProducts = ImmutableSet<Reactable>::toSortedSetVector(Utils::copy(products), compare);
+	const auto compare = [](const StructureRef& l, const StructureRef& r) { return l.getId() < r.getId(); };
+	const auto uniqueReactants = ImmutableSet<StructureRef>::toSortedSetVector(Utils::copy(reactants), compare);
+	const auto uniqueProducts = ImmutableSet<StructureRef>::toSortedSetVector(Utils::copy(products), compare);
 
 	for (size_t i = 0; i < uniqueReactants.size() - 1; ++i)
 		out << uniqueReactants[i].getStructure().toSMILES() << '+';

@@ -5,7 +5,7 @@
 #include "BaseComponentData.hpp"
 #include "UnitizedEstimator.hpp"
 #include "ImmutableSet.hpp"
-#include "Reactable.hpp"
+#include "StructureRef.hpp"
 #include "PairHash.hpp"
 #include "Reactant.hpp"
 #include "Catalyst.hpp"
@@ -20,14 +20,14 @@ class ReactionData
 {
 private:
 	Ref<const ReactionData> baseReaction = nullRef;
-	std::vector<Reactable> reactants;
-	std::vector<Reactable> products;
+	std::vector<StructureRef> reactants;
+	std::vector<StructureRef> products;
 	ImmutableSet<Catalyst> catalysts;
 	std::unordered_map<std::pair<size_t, c_size>, std::pair<size_t, c_size>> componentMapping;
 
 	static bool balance(
-		std::vector<std::pair<Reactable, uint8_t>>& reactants,
-		std::vector<std::pair<Reactable, uint8_t>>& products);
+		std::vector<std::pair<StructureRef, uint8_t>>& reactants,
+		std::vector<std::pair<StructureRef, uint8_t>>& products);
 
 	/// <summary>
 	/// Maps every component from reactants to every component from products.
@@ -47,8 +47,8 @@ public:
 	ReactionData(
 		const ReactionId id,
 		const std::string& name,
-		const std::vector<std::pair<Reactable, uint8_t>>& reactants,
-		const std::vector<std::pair<Reactable, uint8_t>>& products,
+		const std::vector<std::pair<StructureRef, uint8_t>>& reactants,
+		const std::vector<std::pair<StructureRef, uint8_t>>& products,
 		const Amount<Unit::JOULE_PER_MOLE> reactionEnergy,
 		const Amount<Unit::JOULE_PER_MOLE> activationEnergy,
 		EstimatorRef<Unit::MOLE_PER_SECOND, Unit::CELSIUS>&& tempSpeedEstimator,
@@ -59,8 +59,8 @@ public:
 	ReactionData(
 		const ReactionId id,
 		const std::string& name,
-		const std::vector<std::pair<Reactable, uint8_t>>& reactants,
-		const std::vector<std::pair<Reactable, uint8_t>>& products,
+		const std::vector<std::pair<StructureRef, uint8_t>>& reactants,
+		const std::vector<std::pair<StructureRef, uint8_t>>& products,
 		EstimatorRef<Unit::MOLE_PER_SECOND, Unit::CELSIUS>&& tempSpeedEstimator,
 		EstimatorRef<Unit::NONE, Unit::MOLE_RATIO>&& concSpeedEstimator,
 		ImmutableSet<Catalyst>&& catalysts
@@ -83,7 +83,7 @@ public:
 	/// If successful, the index of the product and an atom map are returned,
 	/// otherwise npos is retuned.
 	/// </summary>
-	std::pair<size_t, std::unordered_map<c_size, c_size>> generateRetrosynthProductMatches(const Reactable& targetProduct) const;
+	std::pair<size_t, std::unordered_map<c_size, c_size>> generateRetrosynthProductMatches(const StructureRef& targetProduct) const;
 	
 	/// <summary>
 	/// Generetates the concrete products of the reaction for the given molecules, using the matches
@@ -99,11 +99,11 @@ public:
 	/// Radical atoms which unmatched by the target remain unsubstituted in the resulted reactants.
 	/// </summary>
 	RetrosynthReaction generateRetrosynthReaction(
-		const Reactable& targetProduct,
+		const StructureRef& targetProduct,
 		const std::pair<size_t, std::unordered_map<c_size, c_size>>& match) const;
 
-	const std::vector<Reactable>& getReactants() const;
-	const std::vector<Reactable>& getProducts() const;
+	const std::vector<StructureRef>& getReactants() const;
+	const std::vector<StructureRef>& getProducts() const;
 	const ImmutableSet<Catalyst>& getCatalysts() const;
 
 	Amount<Unit::MOLE_PER_SECOND> getSpeedAt(

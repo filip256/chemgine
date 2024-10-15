@@ -174,7 +174,7 @@ _react:X+O[Me]O->O+[Me](X)X{id:#208,name:acid-base,energy:10.0_J/mol,speed_t:$d7
 _react:O=C(O)R->O+O=C(OC(=O)R)R{id:#209,name:dehydration,catalysts:{S(=O)(=O)(O)O:5000.0_mol/mol},energy:10.0_J/mol,speed_t:$d75,speed_c:$d71};
 _data<d79>:C->mol/s{base:$d69,h_shift:20.0,scale:0.7};
 _react:O=C(O)R->O+O=C(OC(=O)R)R{id:#210,name:dehydration,energy:10.0_J/mol,speed_t:$d79,speed_c:$d71};
-_react:S(=O)(=O)(O)O+O[Me]->O+S(=O)(=O)(O)O[Me]{id:#211,name:acid-base,energy:100.0_J/mol,speed_t:_:C->mol/s{base:$d69,h_shift:20.0,scale:0.9},speed_c:$d71};
+_react:O[Me]+S(=O)(=O)(O)O->O+S(=O)(=O)(O)O[Me]{id:#211,name:acid-base,energy:100.0_J/mol,speed_t:_:C->mol/s{base:$d69,h_shift:20.0,scale:0.9},speed_c:$d71};
 _react:O=C(O)R+O[Me]->O+O=C(O[Me])R{id:#212,name:acid-base,energy:80.0_J/mol,speed_t:$d79,speed_c:$d71};
 _react:S(=O)(=O)(O)O+O=C(O[Me])R->O=C(O)R+S(=O)(=O)(O)O[Me]{id:#213,name:acid displacement,energy:20.0_J/mol,speed_t:_:C->mol/s{base:$d69,h_shift:20.0,scale:0.3},speed_c:$d71};
 _react:O=C(O)R+OC(R)R->O+O=C(OC(R)R)R{id:#214,name:cut-esterification,is_cut:true};

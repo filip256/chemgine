@@ -7,19 +7,9 @@ GenericMoleculeData::GenericMoleculeData(
 ) noexcept :
 	id(id),
 	structure(std::move(structure))
-{
-	if (this->structure.isConcrete())
-	{
-		Log(this).warn("Complete structure with id {0} defined as generic molecule.", id);
-	}
-}
+{}
 
 const MolecularStructure& GenericMoleculeData::getStructure() const
 {
 	return structure;
-}
-
-std::string GenericMoleculeData::getHRTag() const
-{
-	return '<' + std::to_string(id) + ':' + structure.toSMILES() + '>';
 }

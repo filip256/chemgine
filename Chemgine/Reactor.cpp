@@ -20,9 +20,7 @@ Reactor::Reactor(
 	const Ref<BaseContainer> overflowTarget
 ) noexcept :
 	MultiLayerMixture(atmosphere, maxVolume, overflowTarget)
-{
-	dataAccessor.crashIfUninitialized();
-}
+{}
 
 Reactor::Reactor(
 	const Ref<Atmosphere> atmosphere,

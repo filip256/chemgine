@@ -2,13 +2,15 @@
 
 #include "Repository.hpp"
 #include "MoleculeData.hpp"
+#include "GenericMoleculeData.hpp"
 #include "EstimatorRepository.hpp"
 #include "DefinitionObject.hpp"
 
 class MoleculeRepository
 {
 private:
-	std::unordered_map<MoleculeId, std::unique_ptr<const MoleculeData>> table;
+	std::unordered_map<MoleculeId, std::unique_ptr<const MoleculeData>> concreteMolecules;
+	std::unordered_map<MoleculeId, std::unique_ptr<const GenericMoleculeData>> genericMolecules;
 
 	EstimatorRepository& estimators;
 
@@ -22,9 +24,11 @@ public:
 
 	const MoleculeData& at(const MoleculeId id) const;
 
-	const MoleculeData* findFirst(const MolecularStructure& structure) const;
+	const MoleculeData* findFirstConcrete(const MolecularStructure& structure) const;
+	const GenericMoleculeData* findFirstGeneric(const MolecularStructure& structure) const;
 
-	const MoleculeData& findOrAdd(MolecularStructure&& structure);
+	const MoleculeData& findOrAddConcrete(MolecularStructure&& structure);
+	const GenericMoleculeData& findOrAdd(MolecularStructure&& structure);
 
 	using Iterator = std::unordered_map<MoleculeId, std::unique_ptr<const MoleculeData>>::const_iterator;
 	Iterator begin() const;

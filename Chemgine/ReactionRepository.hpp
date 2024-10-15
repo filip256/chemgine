@@ -2,7 +2,6 @@
 
 #include "Repository.hpp"
 #include "ReactionData.hpp"
-#include "GenericMoleculeRepository.hpp"
 #include "MoleculeRepository.hpp"
 #include "ReactionNetwork.hpp"
 #include "MoleculeRepository.hpp"
@@ -48,7 +47,7 @@ public:
 	/// <summary>
 	/// Finds all the reactions which can produce the given target and specializes them accordingly.
 	/// </summary>
-	std::unordered_set<RetrosynthReaction> getRetrosynthReactions(const Reactable& targetProduct) const;
+	std::unordered_set<RetrosynthReaction> getRetrosynthReactions(const StructureRef& targetProduct) const;
 
 	/// <summary>
 	/// Generates all the molecules which can be reached using the existing molecules and reactions.

@@ -7,7 +7,7 @@
 #include "Log.hpp"
 #include "Atom.hpp"
 #include "Tests.hpp"
-#include "Reactable.hpp"
+#include "StructureRef.hpp"
 
 #include "Reactor.hpp"
 #include "Query.hpp"
@@ -16,7 +16,7 @@
 #include "BaseLabwareData.hpp"
 #include "BaseLabwareComponent.hpp"
 #include "LabwareSystem.hpp"
-#include "Reactable.hpp"
+#include "StructureRef.hpp"
 
 #include "UIContext.hpp"
 
@@ -59,7 +59,7 @@ int main()
         std::cout << MolecularStructure("S(-O)(-O)(-O)(OCC)(OCCC(N(C)C)=O)C#N").print()<<'\n';
 
         const auto x = store.reactions.getRetrosynthReactions(
-            *Reactable::get(MolecularStructure("O(C(C)C)C(=O)C")));
+            *StructureRef::create("O(C(C)C)C(=O)C"));
 
         for (const auto& i : x)
         {
