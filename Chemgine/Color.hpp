@@ -25,16 +25,16 @@ template <>
 class Def::Parser<Color>
 {
 public:
-	static std::optional<Color> parse(const std::string& str)
+	static std::optional<::Color> parse(const std::string& str)
 	{
 		const auto props = Def::parse<std::unordered_map<std::string, std::string>>(str);
 		if (not props)
 			return std::nullopt;
 
-		const auto rIt = props->find(Keywords::Color::R);
-		const auto gIt = props->find(Keywords::Color::G);
-		const auto bIt = props->find(Keywords::Color::B);
-		const auto intensityIt = props->find(Keywords::Color::Intensity);
+		const auto rIt = props->find(Def::Color::R);
+		const auto gIt = props->find(Def::Color::G);
+		const auto bIt = props->find(Def::Color::B);
+		const auto intensityIt = props->find(Def::Color::Intensity);
 
 		if (rIt == props->end() || gIt == props->end() || bIt == props->end())
 			return std::nullopt;
@@ -47,7 +47,7 @@ public:
 		if (not (r && g && b && intensity))
 			return std::nullopt;
 
-		return Color(*r, *g, *b, *intensity);
+		return ::Color(*r, *g, *b, *intensity);
 	}
 };
 
@@ -55,13 +55,29 @@ template <>
 class Def::Printer<Color>
 {
 public:
-	static std::string print(const Color object)
+	static std::string print(const ::Color object)
 	{
-		return '{' +
-			Keywords::Color::R + ':' + Def::print(object.r) + ',' +
-			Keywords::Color::G + ':' + Def::print(object.g) + ',' +
-			Keywords::Color::B + ':' + Def::print(object.b) + ',' +
-			Keywords::Color::Intensity + ':' + Def::print(object.a)
-			+ '}';
+		std::unordered_map<std::string, uint8_t> props
+		{
+			{ Def::Color::R, object.r },
+			{ Def::Color::G, object.g },
+			{ Def::Color::B, object.b },
+			{ Def::Color::Intensity, object.a }
+		};
+
+		return Def::print(props);
+	}
+
+	static std::string prettyPrint(const ::Color object)
+	{
+		std::unordered_map<std::string, uint8_t> props
+		{
+			{ Def::Color::R, object.r },
+			{ Def::Color::G, object.g },
+			{ Def::Color::B, object.b },
+			{ Def::Color::Intensity, object.a }
+		};
+
+		return Def::prettyPrint(props);
 	}
 };

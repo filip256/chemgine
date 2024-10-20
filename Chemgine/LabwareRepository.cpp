@@ -26,11 +26,11 @@ bool LabwareRepository::checkTextureFile(std::string path, const DefinitionLocat
 template <>
 bool LabwareRepository::add<LabwareType::FLASK>(const LabwareId id, DefinitionObject&& definition)
 {
-	const auto name = definition.pullDefaultProperty(Keywords::Labware::Name, "?");
-	auto ports = definition.pullProperty(Keywords::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
-	const auto volume = definition.pullProperty(Keywords::Labware::Volume, Def::parse<Amount<Unit::LITER>>);
-	const auto tx = definition.pullProperty(Keywords::Labware::Texture);
-	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_n>);
+	const auto name = definition.pullDefaultProperty(Def::Labware::Name, "?");
+	auto ports = definition.pullProperty(Def::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
+	const auto volume = definition.pullProperty(Def::Labware::Volume, Def::parse<Amount<Unit::LITER>>);
+	const auto tx = definition.pullProperty(Def::Labware::Texture);
+	const auto txScale = definition.pullDefaultProperty(Def::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_n>);
 
 	if (not(volume && ports && tx))
 	{
@@ -49,11 +49,11 @@ bool LabwareRepository::add<LabwareType::FLASK>(const LabwareId id, DefinitionOb
 template <>
 bool LabwareRepository::add<LabwareType::ADAPTOR>(const LabwareId id, DefinitionObject&& definition)
 {
-	const auto name = definition.pullDefaultProperty(Keywords::Labware::Name, "?");
-	auto ports = definition.pullProperty(Keywords::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
-	const auto volume = definition.pullProperty(Keywords::Labware::Volume, Def::parse<Amount<Unit::LITER>>);
-	const auto tx = definition.pullProperty(Keywords::Labware::Texture);
-	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_n>);
+	const auto name = definition.pullDefaultProperty(Def::Labware::Name, "?");
+	auto ports = definition.pullProperty(Def::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
+	const auto volume = definition.pullProperty(Def::Labware::Volume, Def::parse<Amount<Unit::LITER>>);
+	const auto tx = definition.pullProperty(Def::Labware::Texture);
+	const auto txScale = definition.pullDefaultProperty(Def::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_n>);
 
 	if (not(volume && ports && tx))
 	{
@@ -72,15 +72,15 @@ bool LabwareRepository::add<LabwareType::ADAPTOR>(const LabwareId id, Definition
 template <>
 bool LabwareRepository::add<LabwareType::CONDENSER>(const LabwareId id, DefinitionObject&& definition)
 {
-	const auto name = definition.pullDefaultProperty(Keywords::Labware::Name, "?");
-	auto ports = definition.pullProperty(Keywords::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
-	const auto volume = definition.pullProperty(Keywords::Labware::Volume, Def::parse<Amount<Unit::LITER>>);
-	const auto length = definition.pullProperty(Keywords::Labware::Length, Def::parse<Amount<Unit::METER>>);
-	const auto effic = definition.pullProperty(Keywords::Labware::Efficiency, Def::parse<Amount<Unit::PER_METER>>);
-	const auto tx = definition.pullProperty(Keywords::Labware::Texture);
-	const auto inner = definition.pullProperty(Keywords::Labware::InnerMask);
-	const auto coolant = definition.pullProperty(Keywords::Labware::CoolantMask);
-	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_n>);
+	const auto name = definition.pullDefaultProperty(Def::Labware::Name, "?");
+	auto ports = definition.pullProperty(Def::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
+	const auto volume = definition.pullProperty(Def::Labware::Volume, Def::parse<Amount<Unit::LITER>>);
+	const auto length = definition.pullProperty(Def::Labware::Length, Def::parse<Amount<Unit::METER>>);
+	const auto effic = definition.pullProperty(Def::Labware::Efficiency, Def::parse<Amount<Unit::PER_METER>>);
+	const auto tx = definition.pullProperty(Def::Labware::Texture);
+	const auto inner = definition.pullProperty(Def::Labware::InnerMask);
+	const auto coolant = definition.pullProperty(Def::Labware::CoolantMask);
+	const auto txScale = definition.pullDefaultProperty(Def::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_n>);
 
 	if (not(volume && length && effic && ports && tx && inner && coolant))
 	{
@@ -102,11 +102,11 @@ bool LabwareRepository::add<LabwareType::CONDENSER>(const LabwareId id, Definiti
 template <>
 bool LabwareRepository::add<LabwareType::HEATSOURCE>(const LabwareId id, DefinitionObject&& definition)
 {
-	const auto name = definition.pullDefaultProperty(Keywords::Labware::Name, "?");
-	auto ports = definition.pullProperty(Keywords::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
-	const auto power = definition.pullProperty(Keywords::Labware::Power, Def::parse<Amount<Unit::WATT>>);
-	const auto tx = definition.pullProperty(Keywords::Labware::Texture);
-	const auto txScale = definition.pullDefaultProperty(Keywords::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_n>);
+	const auto name = definition.pullDefaultProperty(Def::Labware::Name, "?");
+	auto ports = definition.pullProperty(Def::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
+	const auto power = definition.pullProperty(Def::Labware::Power, Def::parse<Amount<Unit::WATT>>);
+	const auto tx = definition.pullProperty(Def::Labware::Texture);
+	const auto txScale = definition.pullDefaultProperty(Def::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_n>);
 
 	if (not(power && ports && tx))
 	{
@@ -130,10 +130,10 @@ bool LabwareRepository::add(DefinitionObject&& definition)
 {
 	static std::unordered_map<std::string, bool (LabwareRepository::*)(LabwareId, DefinitionObject&&)> adders =
 	{
-		{Keywords::Labware::Flask, &LabwareRepository::add<LabwareType::FLASK> },
-		{Keywords::Labware::Adaptor, &LabwareRepository::add<LabwareType::ADAPTOR> },
-		{Keywords::Labware::Condenser, &LabwareRepository::add<LabwareType::CONDENSER> },
-		{Keywords::Labware::Heatsource, &LabwareRepository::add<LabwareType::HEATSOURCE> }
+		{Def::Labware::Flask, &LabwareRepository::add<LabwareType::FLASK> },
+		{Def::Labware::Adaptor, &LabwareRepository::add<LabwareType::ADAPTOR> },
+		{Def::Labware::Condenser, &LabwareRepository::add<LabwareType::CONDENSER> },
+		{Def::Labware::Heatsource, &LabwareRepository::add<LabwareType::HEATSOURCE> }
 	};
 
 	const auto it = adders.find(definition.getSpecifier());
@@ -143,7 +143,7 @@ bool LabwareRepository::add(DefinitionObject&& definition)
 		return false;
 	}
 
-	const auto id = definition.pullProperty(Keywords::Labware::Id, Def::parseId<LabwareId>);
+	const auto id = definition.pullProperty(Def::Labware::Id, Def::parseId<LabwareId>);
 	if (not id)
 		return false;
 

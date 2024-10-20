@@ -77,4 +77,9 @@ public:
 	{
 		return Def::print(std::pair(object.getStructure().toSMILES(), object.getIdealAmount()));
 	}
+
+	static std::string prettyPrint(const Catalyst& object)
+	{
+		return Def::prettyPrint(std::pair(object.getStructure().toSMILES(), object.getIdealAmount()));
+	}
 };

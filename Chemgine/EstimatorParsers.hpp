@@ -35,16 +35,18 @@ public:
 			return std::nullopt;
 		}
 
-		if (const auto constant = definition.getOptionalProperty(Keywords::Data::Constant, Def::parse<Amount<OutU>>))
+		EstimatorFactory factory(repository);
+
+		if (const auto constant = definition.getOptionalProperty(Def::Data::Constant, Def::parse<Amount<OutU>>))
 		{
-			return EstimatorFactory(repository).createConstant<OutU, InUs...>(*constant);
+			return factory.createConstant<OutU, InUs...>(*constant);
 		}
 
-		if (const auto strValues = definition.getOptionalProperty(Keywords::Data::Values, Def::parse<std::vector<std::string>>))
+		if (const auto strValues = definition.getOptionalProperty(Def::Data::Values, Def::parse<std::vector<std::string>>))
 		{
-			const auto mode = definition.getDefaultProperty(Keywords::Data::Mode, EstimationMode::LINEAR,
+			const auto mode = definition.getDefaultProperty(Def::Data::Mode, EstimationMode::LINEAR,
 				Def::parse<EstimationMode>);
-			const auto loss = definition.getDefaultProperty(Keywords::Data::CompressionLoss, 0.0,
+			const auto loss = definition.getDefaultProperty(Def::Data::CompressionLoss, 0.0,
 				Def::parse<float_n>);
 
 			std::vector<DataPoint<OutU, InUs...>> dataPoints;
@@ -58,13 +60,13 @@ public:
 				dataPoints.emplace_back(*point);
 			}
 
-			return EstimatorFactory(repository).createData(std::move(dataPoints), mode, loss);
+			return factory.createData(std::move(dataPoints), mode, loss);
 		}
 
-		if (const auto parameters = definition.getOptionalProperty(Keywords::Data::Parameters,
+		if (const auto parameters = definition.getOptionalProperty(Def::Data::Parameters,
 			Def::parse<std::vector<float_n>>))
 		{
-			const auto mode = definition.getProperty(Keywords::Data::Mode, Def::parse<EstimationMode>);
+			const auto mode = definition.getProperty(Def::Data::Mode, Def::parse<EstimationMode>);
 			if (not mode)
 				return std::nullopt;
 
@@ -79,7 +81,7 @@ public:
 						return std::nullopt;
 					}
 
-					return EstimatorFactory(repository).createLinearRegression<OutU, InUs...>(
+					return factory.createLinearRegression<OutU, InUs...>(
 						parameters->front(), parameters->back());
 				}
 			}
@@ -94,7 +96,7 @@ public:
 						return std::nullopt;
 					}
 
-					return EstimatorFactory(repository).createLinearRegression<OutU, InUs...>(
+					return factory.createLinearRegression<OutU, InUs...>(
 						parameters->front(), (*parameters)[1], parameters->back());
 				}
 			}
@@ -106,38 +108,38 @@ public:
 		{
 			constexpr Unit InU = std::get<0>(std::make_tuple(InUs...));
 
-			const auto base = definition.getOptionalDefinition(Keywords::Data::Base,
+			const auto base = definition.getOptionalDefinition(Def::Data::Base,
 				Def::Parser<UnitizedEstimator<OutU, InU>>::parse, repository);
 			if (base)
 			{
 				// anchor transform
-				if (const auto anchorPointStr = definition.getOptionalProperty(Keywords::Data::AnchorPoint))
+				if (const auto anchorPointStr = definition.getOptionalProperty(Def::Data::AnchorPoint))
 				{
 					const auto anchorPoint = Def::parse<DataPoint<OutU, InU>>(*anchorPointStr, OutU, std::vector<Unit>{InU}, definition.getLocation());
 					if (not anchorPoint)
 						return std::nullopt;
 
-					const auto hShift = definition.getDefaultProperty(Keywords::Data::HorizontalShift, 0.0,
+					const auto hShift = definition.getDefaultProperty(Def::Data::HorizontalShift, 0.0,
 						Def::parse<float_n>);
-					return EstimatorFactory(repository).createAffine(*base, *anchorPoint, hShift);
+					return factory.createAffine(*base, *anchorPoint, hShift);
 				}
 
 				// rebase transform
-				if (const auto rebasePointStr = definition.getOptionalProperty(Keywords::Data::RebasePoint))
+				if (const auto rebasePointStr = definition.getOptionalProperty(Def::Data::RebasePoint))
 				{
 					const auto rebasePoint = Def::parse<DataPoint<OutU, InU>>(*rebasePointStr, OutU, std::vector<Unit>{InU}, definition.getLocation());
 					if (not rebasePoint)
 						return std::nullopt;
 
-					return EstimatorFactory(repository).createAffine(*base, *rebasePoint);
+					return factory.createAffine(*base, *rebasePoint);
 				}
 
 				// manual transform
-				const auto vShift = definition.getDefaultProperty(Keywords::Data::VerticalShift, 0.0, Def::parse<float_n>);
-				const auto hShift = definition.getDefaultProperty(Keywords::Data::HorizontalShift, 0.0, Def::parse<float_n>);
-				const auto scale = definition.getDefaultProperty(Keywords::Data::Scale, 1.0, Def::parse<float_n>);
+				const auto vShift = definition.getDefaultProperty(Def::Data::VerticalShift, 0.0, Def::parse<float_n>);
+				const auto hShift = definition.getDefaultProperty(Def::Data::HorizontalShift, 0.0, Def::parse<float_n>);
+				const auto scale = definition.getDefaultProperty(Def::Data::Scale, 1.0, Def::parse<float_n>);
 
-				return EstimatorFactory(repository).createAffine(*base, vShift, hShift, scale);
+				return factory.createAffine(*base, vShift, hShift, scale);
 			}
 		}
 

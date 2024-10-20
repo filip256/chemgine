@@ -7,61 +7,71 @@
 
 namespace Utils 
 {
-	template<class KeyT1, class KeyT2, class Obj>
+	template<typename KeyT1, typename KeyT2, typename Obj>
 	std::unordered_map<KeyT1, Obj> compose(
 		const std::unordered_map<KeyT1, KeyT2>& map1,
 		const std::unordered_map<KeyT2, Obj>& map2);
 
-	template<class T1, class T2>
+	template<typename T1, typename T2>
 	std::pair<T2, T1> reversePair(
 		const std::pair<T1, T2>& pair);
 
-	template<class Key, class Obj>
+	template<typename Key, typename Obj>
 	std::unordered_map<Obj, Key> reverseMap(
 		const std::unordered_map<Key, Obj>& map);
 
-	template<class Key, class Obj>
+	template<typename Key, typename Obj>
 	std::vector<Obj> extractValues(
 		const std::unordered_map<Key, Obj>& map);
 
-	template<class Key, class Obj>
+	template<typename Key, typename Obj>
 	std::unordered_set<Obj> extractUniqueValues(
 		const std::unordered_map<Key, Obj>& map);
 
-	template<class T1, class T2>
+	template<typename T1, typename T2>
 	std::vector<T1> extractFirst(
 		const std::vector<std::pair<T1, T2>>& vector);
 
-	template<class T1, class T2>
+	template<typename T1, typename T2>
 	std::vector<T2> extractSecond(
 		const std::vector<std::pair<T1, T2>>& vector);
 
-	template<class ObjT, class CntT = size_t>
+	template<typename ObjT, typename CntT = size_t>
 	std::vector<ObjT> flatten(
 		const std::vector<std::pair<ObjT, CntT>>& vector);
 
-	template<class ObjT, class CntT = size_t>
+	template<typename ObjT, typename CntT = size_t>
 	std::unordered_map<ObjT, CntT> aggregate(
 		const std::vector<ObjT>& vector);
 
-	template<class T>
+	template<typename T>
 	std::vector<std::vector<T>> getArrangementsWithRepetitions(
 		const std::vector<T>& vector, const size_t maxLength);
 
-	template<class T>
+	template<typename T>
 	T copy(const T& obj);
+
+	template<typename T>
+	T min(T arg);
+	template<typename T, typename... Args>
+	T min(T arg1, Args... args);
+
+	template<typename T>
+	T max(T arg);
+	template<typename T, typename... Args>
+	T max(T arg1, Args... args);
 };
 
 
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 std::pair<T2, T1> Utils::reversePair(
 	const std::pair<T1, T2>& pair)
 {
 	return std::make_pair(pair.second, pair.first);
 }
 
-template<class KeyT1, class KeyT2, class Obj>
+template<typename KeyT1, typename KeyT2, typename Obj>
 std::unordered_map<KeyT1, Obj> Utils::compose(
 	const std::unordered_map<KeyT1, KeyT2>& map1,
 	const std::unordered_map<KeyT2, Obj>& map2)
@@ -77,7 +87,7 @@ std::unordered_map<KeyT1, Obj> Utils::compose(
 	return result;
 }
 
-template<class Key, class Obj>
+template<typename Key, typename Obj>
 std::unordered_map<Obj, Key> Utils::reverseMap(
 	const std::unordered_map<Key, Obj>& map)
 {
@@ -90,7 +100,7 @@ std::unordered_map<Obj, Key> Utils::reverseMap(
 	return result;
 }
 
-template<class Key, class Obj>
+template<typename Key, typename Obj>
 std::vector<Obj> Utils::extractValues(
 	const std::unordered_map<Key, Obj>& map)
 {
@@ -103,7 +113,7 @@ std::vector<Obj> Utils::extractValues(
 	return result;
 }
 
-template<class Key, class Obj>
+template<typename Key, typename Obj>
 std::unordered_set<Obj> Utils::extractUniqueValues(
 	const std::unordered_map<Key, Obj>& map)
 {
@@ -116,7 +126,7 @@ std::unordered_set<Obj> Utils::extractUniqueValues(
 	return result;
 }
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 std::vector<T1> Utils::extractFirst(
 	const std::vector<std::pair<T1, T2>>& vector)
 {
@@ -130,7 +140,7 @@ std::vector<T1> Utils::extractFirst(
 	return result;
 }
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 std::vector<T2> Utils::extractSecond(
 	const std::vector<std::pair<T1, T2>>& vector)
 {
@@ -144,7 +154,7 @@ std::vector<T2> Utils::extractSecond(
 	return result;
 }
 
-template<class ObjT, class CntT>
+template<typename ObjT, typename CntT>
 std::vector<ObjT> Utils::flatten(
 	const std::vector<std::pair<ObjT, CntT>>& vector)
 {
@@ -158,7 +168,7 @@ std::vector<ObjT> Utils::flatten(
 	return result;
 }
 
-template<class ObjT, class CntT>
+template<typename ObjT, typename CntT>
 std::unordered_map<ObjT, CntT> Utils::aggregate(
 	const std::vector<ObjT>& vector)
 {
@@ -176,7 +186,7 @@ std::unordered_map<ObjT, CntT> Utils::aggregate(
 }
 
 
-template<class T>
+template<typename T>
 static void getArrangementsWithRepetitions(
 	const std::vector<T>& vector, const size_t maxLength,
 	std::vector<T>& current, std::vector<std::vector<T>>& result)
@@ -195,7 +205,7 @@ static void getArrangementsWithRepetitions(
 	}
 }
 
-template<class T>
+template<typename T>
 std::vector<std::vector<T>> Utils::getArrangementsWithRepetitions(
 	const std::vector<T>& vector, const size_t maxLength)
 {
@@ -209,8 +219,28 @@ std::vector<std::vector<T>> Utils::getArrangementsWithRepetitions(
 	return result;
 }
 
-template<class T>
+template<typename T>
 T Utils::copy(const T& obj)
 {
 	return obj;
+}
+
+template<typename T>
+T Utils::min(T arg) {
+	return arg;
+}
+
+template<typename T, typename... Args>
+T Utils::min(T arg1, Args... args) {
+	return std::min(arg1, max(args...));
+}
+
+template<typename T>
+T Utils::max(T arg) {
+	return arg;
+}
+
+template<typename T, typename... Args>
+T Utils::max(T arg1, Args... args) {
+	return std::max(arg1, max(args...));
 }

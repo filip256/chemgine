@@ -1,5 +1,6 @@
 #include "RadicalData.hpp"
 #include "DefinitionObject.hpp"
+#include "DataDumper.hpp"
 #include "Keywords.hpp"
 #include "Utils.hpp"
 #include "Log.hpp"
@@ -15,12 +16,17 @@ RadicalData::RadicalData(
 	matchables(std::move(matchables))
 {}
 
-void RadicalData::printDefinition(std::ostream& out) const
+void RadicalData::dumpDefinition(std::ostream& out, const bool prettify) const
 {
-	out << '_' << Keywords::Types::Radical;
-	out << ':' << Def::print(symbol);
-	out << '{';
-	out << Keywords::Atoms::Name << ':' << name << ',';
-	out << Keywords::Atoms::RadicalMatches << ':' << Def::print(matchables);
-	out << "};\n";
+	static const uint8_t valueOffset = Utils::max(
+		Def::Atoms::Name.size(),
+		Def::Atoms::RadicalMatches.size());
+
+	DataDumper(out, valueOffset, 0, prettify)
+		.header(Def::Types::Radical, symbol, "")
+		.beginProperties()
+		.propertyWithSep(Def::Atoms::Name, name)
+		.property(Def::Atoms::RadicalMatches, matchables)
+		.endProperties()
+		.endDefinition();
 }

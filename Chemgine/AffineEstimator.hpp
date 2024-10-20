@@ -12,12 +12,16 @@ private:
 
 	void tryPrintOOLDefinition(
 		std::ostream& out,
-		std::unordered_set<EstimatorId>& alreadyPrinted
+		const bool prettify,
+		std::unordered_set<EstimatorId>& alreadyPrinted,
+		const uint16_t baseIndent
 	) const override final;
 
 	void printILDefinition(
 		std::ostream& out,
-		std::unordered_set<EstimatorId>& alreadyPrinted
+		const bool prettify,
+		std::unordered_set<EstimatorId>& alreadyPrinted,
+		const uint16_t baseIndent
 	) const override final;
 
 public:
@@ -86,13 +90,16 @@ bool AffineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const 
 
 template<Unit OutU, Unit InU>
 void AffineEstimator<OutU, InU>::tryPrintOOLDefinition(
-	std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted) const
+	std::ostream& out,
+	const bool prettify,
+	std::unordered_set<EstimatorId>& alreadyPrinted,
+	const uint16_t baseIndent) const
 {
 	if (alreadyPrinted.contains(EstimatorBase::id))
 		return;
 
 	// try to OOL print base, since it might have multiple references
-	base->printDefinition(out, alreadyPrinted, false);
+	base->dumpDefinition(out, prettify, alreadyPrinted, false, 0);
 
 	if (this->getRefCount() == 1)
 		return;
@@ -100,29 +107,62 @@ void AffineEstimator<OutU, InU>::tryPrintOOLDefinition(
 	alreadyPrinted.emplace(EstimatorBase::id);
 
 	out << '_';
-	out << Keywords::Types::Data;
+	out << Def::Types::Data;
 	out << '<' << EstimatorBase::getDefIdentifier() << '>';
-	out << ':' << UnitizedEstimator<OutU, InU>::getUnitSpecifier();
 
-	out << '{';
-	out << Keywords::Data::Base << ':';
-	base->printDefinition(out, alreadyPrinted, true);
+	if (prettify)
+	{
+		static const uint8_t valueOffset = Utils::max(
+			Def::Data::Base.size(),
+			Def::Data::VerticalShift.size(),
+			Def::Data::HorizontalShift.size(),
+			Def::Data::Scale.size()) + 2;
 
-	if (not Utils::equal(vShift, 0.0f))
-		out << ',' << Keywords::Data::VerticalShift << ':' << Def::print(vShift);
-	if (not Utils::equal(hShift, 0.0f))
-		out << ',' << Keywords::Data::HorizontalShift << ':' << Def::print(hShift);
-	if (not Utils::equal(scale, 1.0f))
-		out << ',' << Keywords::Data::Scale << ':' << Def::print(scale);
+		out << ": " << UnitizedEstimator<OutU, InU>::getUnitSpecifier(true);
+		out << " {\n";
 
-	out << '}';
+		std::string indentStr(baseIndent, ' ');
 
-	out << ";\n";
+		out << indentStr << Def::Syntax::Indent << Def::Data::Base << ':' << std::string(valueOffset - Def::Data::Base.size(), ' ');
+		base->dumpDefinition(out, true, alreadyPrinted, true, baseIndent + Def::Syntax::Indent.size());
+
+		if (not Utils::equal(vShift, 0.0f))
+			out << ",\n" << indentStr << Def::Syntax::Indent << Def::Data::VerticalShift << ':' << std::string(valueOffset - Def::Data::VerticalShift.size(), ' ')
+			<< Def::prettyPrint(vShift);
+		if (not Utils::equal(hShift, 0.0f))
+			out << ",\n" << indentStr << Def::Syntax::Indent << Def::Data::HorizontalShift << ':' << std::string(valueOffset - Def::Data::HorizontalShift.size(), ' ')
+			<< Def::prettyPrint(hShift);
+		if (not Utils::equal(scale, 1.0f))
+			out << ",\n" << indentStr << Def::Syntax::Indent << Def::Data::Scale << ':' << std::string(valueOffset - Def::Data::Scale.size(), ' ')
+			<< Def::prettyPrint(scale);
+
+		out << indentStr << "\n};\n\n";
+	}
+	else
+	{
+		out << ':' << UnitizedEstimator<OutU, InU>::getUnitSpecifier(prettify);
+		out << '{';
+
+		out << Def::Data::Base << ':';
+		base->dumpDefinition(out, prettify, alreadyPrinted, true, 0);
+
+		if (not Utils::equal(vShift, 0.0f))
+			out << ',' << Def::Data::VerticalShift << ':' << Def::print(vShift);
+		if (not Utils::equal(hShift, 0.0f))
+			out << ',' << Def::Data::HorizontalShift << ':' << Def::print(hShift);
+		if (not Utils::equal(scale, 1.0f))
+			out << ',' << Def::Data::Scale << ':' << Def::print(scale);
+
+		out << "};\n";
+	}
 }
 
 template<Unit OutU, Unit InU>
 void AffineEstimator<OutU, InU>::printILDefinition(
-	std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted) const
+	std::ostream& out,
+	const bool prettify,
+	std::unordered_set<EstimatorId>& alreadyPrinted,
+	const uint16_t baseIndent) const
 {
 	if (alreadyPrinted.contains(EstimatorBase::id))
 	{
@@ -139,18 +179,49 @@ void AffineEstimator<OutU, InU>::printILDefinition(
 	}
 
 	out << '_';
-	out << ':' << UnitizedEstimator<OutU, InU>::getUnitSpecifier();
+	if (prettify)
+	{
+		static const uint8_t valueOffset = Utils::max(
+			Def::Data::Base.size(),
+			Def::Data::VerticalShift.size(),
+			Def::Data::HorizontalShift.size(),
+			Def::Data::Scale.size()) + 2;
 
-	out << '{';
-	out << Keywords::Data::Base << ':';
-	base->printDefinition(out, alreadyPrinted, true);
+		out << ": " << UnitizedEstimator<OutU, InU>::getUnitSpecifier(true);
+		out << " {\n";
 
-	if(not Utils::equal(vShift, 0.0f))
-		out << ',' << Keywords::Data::VerticalShift << ':' << Def::print(vShift);
-	if (not Utils::equal(hShift, 0.0f))
-		out << ',' << Keywords::Data::HorizontalShift << ':' << Def::print(hShift);
-	if (not Utils::equal(scale, 1.0f))
-		out << ',' << Keywords::Data::Scale << ':' << Def::print(scale);
+		std::string indentStr(baseIndent, ' ');
 
-	out << '}';
+		out << indentStr << Def::Syntax::Indent << Def::Data::Base << ':' << std::string(valueOffset - Def::Data::Base.size(), ' ');
+		base->dumpDefinition(out, true, alreadyPrinted, true, baseIndent + Def::Syntax::Indent.size());
+
+		if (not Utils::equal(vShift, 0.0f))
+			out << ",\n" << indentStr << Def::Syntax::Indent << Def::Data::VerticalShift << ':' << std::string(valueOffset - Def::Data::VerticalShift.size(), ' ')
+				<< Def::prettyPrint(vShift);
+		if (not Utils::equal(hShift, 0.0f))
+			out << ",\n" << indentStr << Def::Syntax::Indent << Def::Data::HorizontalShift << ':' << std::string(valueOffset - Def::Data::HorizontalShift.size(), ' ')
+				<< Def::prettyPrint(hShift);
+		if (not Utils::equal(scale, 1.0f))
+			out << ",\n" << indentStr << Def::Syntax::Indent << Def::Data::Scale << ':' << std::string(valueOffset - Def::Data::Scale.size(), ' ')
+			<< Def::prettyPrint(scale);
+
+		out << '\n' << indentStr << '}';
+	}
+	else
+	{
+		out << ':' << UnitizedEstimator<OutU, InU>::getUnitSpecifier(false);
+		out << '{';
+
+		out << Def::Data::Base << ':';
+		base->dumpDefinition(out, false, alreadyPrinted, true, 0);
+
+		if (not Utils::equal(vShift, 0.0f))
+			out << ',' << Def::Data::VerticalShift << ':' << Def::print(vShift);
+		if (not Utils::equal(hShift, 0.0f))
+			out << ',' << Def::Data::HorizontalShift << ':' << Def::print(hShift);
+		if (not Utils::equal(scale, 1.0f))
+			out << ',' << Def::Data::Scale << ':' << Def::print(scale);
+
+		out << '}';
+	}
 }

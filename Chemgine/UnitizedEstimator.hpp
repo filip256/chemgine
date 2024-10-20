@@ -7,7 +7,7 @@ template<Unit OutU, Unit... InUs>
 class UnitizedEstimator : public EstimatorBase
 {
 protected:
-	static std::string getUnitSpecifier();
+	static std::string getUnitSpecifier(const bool prettify);
 
 public:
 	using EstimatorBase::EstimatorBase;
@@ -16,7 +16,7 @@ public:
 };
 
 template<Unit OutU, Unit... InUs>
-std::string UnitizedEstimator<OutU, InUs...>::getUnitSpecifier()
+std::string UnitizedEstimator<OutU, InUs...>::getUnitSpecifier(const bool prettify)
 {
 	std::string specifier;
 	if constexpr (sizeof...(InUs) == 1)
@@ -26,11 +26,20 @@ std::string UnitizedEstimator<OutU, InUs...>::getUnitSpecifier()
 	else
 	{
 		specifier += '(';
-		((specifier += Amount<InUs>::unitSymbol() + ','), ...);
+		const auto sep = prettify ? ", " : ",";
+		((specifier += Amount<InUs>::unitSymbol() + sep), ...);
+
+		if (prettify)
+			specifier.pop_back();
 		specifier.back() = ')';
 	}
 
-	specifier += "->" + Amount<OutU>::unitSymbol();
+	if(prettify)
+		specifier += " -> ";
+	else
+		specifier += "->";
+	
+	specifier += Amount<OutU>::unitSymbol();
 	return specifier;
 }
 

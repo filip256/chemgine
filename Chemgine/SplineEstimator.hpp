@@ -32,10 +32,12 @@ public:
 		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
 	) const override final;
 
-	void printDefinition(
+	void dumpDefinition(
 		std::ostream& out,
+		const bool prettify,
 		std::unordered_set<EstimatorId>& alreadyPrinted,
-		const bool printInline
+		const bool printInline,
+		const uint16_t baseIndent
 	) const override final;
 };
 
@@ -82,8 +84,12 @@ bool SplineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const 
 }
 
 template<Unit OutU, Unit InU>
-void SplineEstimator<OutU, InU>::printDefinition(
-	std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted, const bool printInline) const
+void SplineEstimator<OutU, InU>::dumpDefinition(
+	std::ostream& out,
+	const bool prettify,
+	std::unordered_set<EstimatorId>& alreadyPrinted,
+	const bool printInline,
+	const uint16_t baseIndent) const
 {
 	if (not printInline && this->getRefCount() == 1)
 		return;
@@ -99,17 +105,40 @@ void SplineEstimator<OutU, InU>::printDefinition(
 	out << '_';
 	if (not printInline)
 	{
-		out << Keywords::Types::Data;
+		out << Def::Types::Data;
 		out << '<' << EstimatorBase::getDefIdentifier() << '>';
 	}
-	out << ':' << UnitizedEstimator<OutU, InU>::getUnitSpecifier();
 
-	out << '{';
-	if(mode != EstimationMode::LINEAR)
-		out << Keywords::Data::Mode << ':' << Def::print(mode) << ',';
-	out << Keywords::Data::Values << ':' << Def::print(spline.getContent());
-	out << '}';
+	if (prettify)
+	{
+		static const uint8_t valueOffset = Utils::max(
+			Def::Data::Mode.size(),
+			Def::Data::Values.size()) + 2;
 
-	if (not printInline)
-		out << ";\n";
+		out << ": " << UnitizedEstimator<OutU, InU>::getUnitSpecifier(true);
+		out << " {\n";
+
+		std::string indentStr(baseIndent, ' ');
+		out << indentStr << Def::Syntax::Indent << Def::Data::Mode << ':' << std::string(valueOffset - Def::Data::Mode.size(), ' ')
+			<< Def::prettyPrint(getMode()) << ",\n";
+		out << indentStr << Def::Syntax::Indent << Def::Data::Values << ':' << std::string(valueOffset - Def::Data::Values.size(), ' ')
+			<< Def::prettyPrint(spline.getContent());
+		out << '\n' << indentStr << '}';
+
+		if (not printInline)
+			out << indentStr << ";\n\n";
+	}
+	else
+	{
+		out << ':' << UnitizedEstimator<OutU, InU>::getUnitSpecifier(false);
+
+		out << '{';
+		if (mode != EstimationMode::LINEAR)
+			out << Def::Data::Mode << ':' << Def::print(mode) << ',';
+		out << Def::Data::Values << ':' << Def::print(spline.getContent());
+		out << '}';
+
+		if (not printInline)
+			out << ";\n";
+	}
 }

@@ -35,9 +35,9 @@ public:
 		if (not outUnit)
 			return std::nullopt;
 
-		const auto inUnitsStr = stripped.starts_with('(') ?
-			stripped.substr(1, sep - 2) :
-			stripped.substr(0, sep);
+		auto inUnitsStr = Utils::strip(stripped.substr(0, sep));
+		if (inUnitsStr.starts_with('(') && inUnitsStr.ends_with(')'))
+			inUnitsStr = inUnitsStr.substr(1, inUnitsStr.size() - 2);
 
 		auto inUnits = Def::parse<std::vector<Unit>>(inUnitsStr);
 		if (not inUnits)

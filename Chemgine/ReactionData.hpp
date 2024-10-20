@@ -120,8 +120,10 @@ public:
 
 	std::string getHRTag() const;
 
-	void printDefinition(
-		std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted
+	void dumpDefinition(
+		std::ostream& out,
+		const bool prettify,
+		std::unordered_set<EstimatorId>& alreadyPrinted
 	) const;
 
 	static constexpr size_t npos = static_cast<size_t>(-1);

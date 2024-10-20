@@ -16,13 +16,13 @@ public:
 	{
 		static const std::unordered_map<std::string, DefinitionType> typeMap
 		{
-			{Keywords::Types::Auto, DefinitionType::AUTO},
-			{Keywords::Types::Data, DefinitionType::DATA},
-			{Keywords::Types::Atom, DefinitionType::ATOM},
-			{Keywords::Types::Radical, DefinitionType::RADICAL},
-			{Keywords::Types::Molecule, DefinitionType::MOLECULE},
-			{Keywords::Types::Reaction, DefinitionType::REACTION},
-			{Keywords::Types::Labware, DefinitionType::LABWARE},
+			{Def::Types::Auto, DefinitionType::AUTO},
+			{Def::Types::Data, DefinitionType::DATA},
+			{Def::Types::Atom, DefinitionType::ATOM},
+			{Def::Types::Radical, DefinitionType::RADICAL},
+			{Def::Types::Molecule, DefinitionType::MOLECULE},
+			{Def::Types::Reaction, DefinitionType::REACTION},
+			{Def::Types::Labware, DefinitionType::LABWARE},
 		};
 
 		const Log<Parser<DefinitionObject>> log;

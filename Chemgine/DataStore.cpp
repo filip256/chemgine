@@ -16,6 +16,34 @@ DataStore::DataStore() :
 	labware()
 {}
 
+bool DataStore::addDefinition(DefinitionObject&& definition)
+{
+	switch (definition.getType())
+	{
+	case DefinitionType::AUTO:
+		Log(this).error("Cannot infer type for out-of-line definition, at: {0}.", definition.getLocationName());
+		return false;
+
+	case DefinitionType::DATA:
+		return oolDefinitions.add(std::move(definition));
+	case DefinitionType::ATOM:
+		return atoms.add<AtomData>(std::move(definition));
+	case DefinitionType::RADICAL:
+		return atoms.add<RadicalData>(std::move(definition));
+	case DefinitionType::MOLECULE:
+		return molecules.add(std::move(definition));
+	case DefinitionType::REACTION:
+		return reactions.add(std::move(definition));
+	case DefinitionType::LABWARE:
+		return labware.add(std::move(definition));
+
+	default:
+		Log(this).error("Unknown definition type: '{0}', at: {1}.", static_cast<uint8_t>(definition.getType()), definition.getLocationName());
+	}
+
+	return false;
+}
+
 DataStore& DataStore::load(const std::string& path)
 {
 	const auto normPath = Utils::normalizePath(path);
@@ -36,61 +64,21 @@ DataStore& DataStore::load(const std::string& path)
 		if (not analysis.failed)
 		{
 			const auto definitionsToParse = analysis.totalDefinitionCount - analysis.preparsedDefinitionCount;
-			const auto perc = static_cast<uint8_t>((static_cast<float_n>(definitionCount) / definitionsToParse) * 100.f);
-			Log(this).info("\r[{0}%] Parsed {1} out of {2} definitions.", perc, definitionCount, definitionsToParse);
+			const auto percent = static_cast<uint8_t>((static_cast<float_n>(definitionCount) / definitionsToParse) * 100.f);
+			Log(this).info("\r[{0}/{1} | {2}%] Parsing definitions...", definitionCount, definitionsToParse, percent);
 		}
 
 		auto entry = parser.nextDefinition();
-		if (parser.isOpen() == false)
-			break;
-
-		if (not entry)
+		if (not parser.isOpen())
 		{
-			Log(this).warn("Skipped invalid definition.");
-			continue;
-		}
-
-		bool success = false;
-		switch (entry->getType())
-		{
-		case DefinitionType::AUTO:
-			Log(this).error("Cannot infer type of out-of-line definition, at: {0}.", entry->getLocationName());
-			success = false;
-			break;
-
-		case DefinitionType::DATA:
-			success = oolDefinitions.add(std::move(*entry));
-			break;
-
-		case DefinitionType::ATOM:
-			success = atoms.add<AtomData>(std::move(*entry));
-			break;
-
-		case DefinitionType::RADICAL:
-			success = atoms.add<RadicalData>(std::move(*entry));
-			break;
-
-		case DefinitionType::MOLECULE:
-			success = molecules.add(std::move(*entry));
-			break;
-
-		case DefinitionType::REACTION:
-			success = reactions.add(std::move(*entry));
-			break;
-
-		case DefinitionType::LABWARE:
-			success = labware.add(std::move(*entry));
-			break;
-
-		default:
-			Log(this).error("Unknown definition type: '{0}', at: {1}.", static_cast<uint8_t>(entry->getType()), entry->getLocationName());
+			Log(this).success("Parsing completed");
 			break;
 		}
 
-		if (success == false)
+		if (not (entry && addDefinition(std::move(*entry))))
 		{
-			Log(this).warn("Skipped invalid definition, at: {0}.", entry->getLocationName());
-			continue;
+			Log(this).error("Parsing aborted due to invalid definition, at: {0}.", entry->getLocationName());
+			break;
 		}
 
 		++definitionCount;
@@ -99,7 +87,6 @@ DataStore& DataStore::load(const std::string& path)
 	estimators.dropUnusedEstimators();
 	oolDefinitions.clear();
 
-	Log(this).success("File load completed.");
 	return *this;
 }
 
@@ -109,27 +96,27 @@ DataStore& DataStore::dump(const std::string& path)
 	if (not out.is_open())
 		Log(this).fatal("Failed to open file for write: '{0}'.", path);
 
-	out << ":.\n" << "   - Chemgine Output File -\n\n   Version: 0.0.0\n   Sources:\n";
+	out << ":.\n" << "   - Chemgine Generated Definition File -\n\n   Version: 0.0.0\n   Sources:\n";
 
 	for (const auto& f : fileStore.getHistory())
 		out << "    > " << f.first << '\n';
 	out << ".:\n\n";
 
 	for (auto a = atoms.atomsBegin(); a != atoms.atomsEnd(); ++a)
-		a->second->printDefinition(out);
+		a->second->dumpDefinition(out, false);
 	for (auto r = atoms.radicalsBegin(); r != atoms.radicalsEnd(); ++r)
-		r->second->printDefinition(out);
+		r->second->dumpDefinition(out, true);
 
 	std::unordered_set<EstimatorId> printedEstimators;
 	for (const auto& m : molecules)
-		m.second->printDefinition(out, printedEstimators);
+		m.second->dumpDefinition(out, true, printedEstimators);
 	for (const auto& r : reactions)
-		r.second->printDefinition(out, printedEstimators);
+		r.second->dumpDefinition(out, true, printedEstimators);
 
 	const auto dir = Utils::extractDirName(path);
 	for (const auto& l : labware)
 	{
-		l.second->printDefinition(out);
+		l.second->dumpDefinition(out, true);
 		l.second->dumpTextures(dir);
 	}
 

@@ -10,6 +10,9 @@
 
 class DataStore
 {
+private:
+	bool addDefinition(DefinitionObject&& definition);
+
 public:
 	FileStore fileStore;
 

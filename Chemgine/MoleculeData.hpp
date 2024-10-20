@@ -61,7 +61,9 @@ public:
 
 	const MolecularStructure& getStructure() const;
 
-	void printDefinition(
-		std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted
+	void dumpDefinition(
+		std::ostream& out,
+		const bool prettify,
+		std::unordered_set<EstimatorId>& alreadyPrinted
 	) const;
 };

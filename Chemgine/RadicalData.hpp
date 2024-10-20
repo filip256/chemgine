@@ -17,7 +17,7 @@ public:
 		std::unordered_set<Symbol>&& matchables
 	) noexcept;
 
-	void printDefinition(std::ostream& out) const override final;
+	void dumpDefinition(std::ostream& out, const bool prettify) const override final;
 
 	static const std::unordered_set<Symbol> MatchAny;
 };

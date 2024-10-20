@@ -1,6 +1,7 @@
 #include "ReactionData.hpp"
 #include "SystemMatrix.hpp"
 #include "RetrosynthReaction.hpp"
+#include "DataDumper.hpp"
 #include "Maths.hpp"
 #include "PairHash.hpp"
 #include "Log.hpp"
@@ -522,52 +523,96 @@ std::string ReactionData::getHRTag() const
 	return '<' + std::to_string(id) + ':' + name + '>';
 }
 
-void ReactionData::printDefinition(
-	std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted
+void ReactionData::dumpDefinition(
+	std::ostream& out,
+	const bool prettify,
+	std::unordered_set<EstimatorId>& alreadyPrinted
 ) const
 {
-	tempSpeedEstimator->printDefinition(out, alreadyPrinted, false);
-	concSpeedEstimator->printDefinition(out, alreadyPrinted, false);
+	static const uint8_t valueOffset = Utils::max(
+		Def::Reactions::Id.size(),
+		Def::Reactions::Name.size(),
+		Def::Reactions::Catalysts.size(),
+		Def::Reactions::Energy.size(),
+		Def::Reactions::Activation.size(),
+		Def::Reactions::TemperatureSpeed.size(),
+		Def::Reactions::ConcentrationSpeed.size());
 
-	out << '_' << Keywords::Types::Reaction;
+	DataDumper dump(out, valueOffset, 0, prettify);
 
-	out << ':';
+	tempSpeedEstimator->dumpDefinition(out, prettify, alreadyPrinted, false, 0);
+	concSpeedEstimator->dumpDefinition(out, prettify, alreadyPrinted, false, 0);
 
 	const auto compare = [](const StructureRef& l, const StructureRef& r) { return l.getId() < r.getId(); };
 	const auto uniqueReactants = ImmutableSet<StructureRef>::toSortedSetVector(Utils::copy(reactants), compare);
 	const auto uniqueProducts = ImmutableSet<StructureRef>::toSortedSetVector(Utils::copy(products), compare);
 
-	for (size_t i = 0; i < uniqueReactants.size() - 1; ++i)
-		out << uniqueReactants[i].getStructure().toSMILES() << '+';
-	out << uniqueReactants.back().getStructure().toSMILES();
+	dump.header(Def::Types::Reaction, std::string(""), "");
 
-	out << "->";
+	// TODO: remove custom specifier print
+	if (prettify)
+	{
+		for (size_t i = 0; i < uniqueReactants.size() - 1; ++i)
+			out << Def::print(uniqueReactants[i].getStructure()) << " + ";
+		out << Def::print(uniqueReactants.back().getStructure());
 
-	for (size_t i = 0; i < uniqueProducts.size() - 1; ++i)
-		out << uniqueProducts[i].getStructure().toSMILES() << '+';
-	out << uniqueProducts.back().getStructure().toSMILES();
+		out << " -> ";
 
-	out << '{';
-	out << Keywords::Reactions::Id << ':' << Def::printId(id) << ',';
-	out << Keywords::Reactions::Name << ':' << name << ',';
-	if(catalysts.size())
-		out << Keywords::Reactions::Catalysts << ':' << Def::print(catalysts) << ',';
+		for (size_t i = 0; i < uniqueProducts.size() - 1; ++i)
+			out << Def::print(uniqueProducts[i].getStructure()) << " + ";
+		out << Def::print(uniqueProducts.back().getStructure());
+	}
+	else
+	{
+		for (size_t i = 0; i < uniqueReactants.size() - 1; ++i)
+			out << Def::print(uniqueReactants[i].getStructure()) << '+';
+		out << Def::print(uniqueReactants.back().getStructure());
+
+		out << "->";
+
+		for (size_t i = 0; i < uniqueProducts.size() - 1; ++i)
+			out << Def::print(uniqueProducts[i].getStructure()) << '+';
+		out << Def::print(uniqueProducts.back().getStructure());
+	}
+
+	dump.beginProperties()
+		.propertyWithSep(Def::Reactions::Id, Def::printId(id))
+		.propertyWithSep(Def::Reactions::Name, name);
+
+	if (catalysts.size())
+		dump.propertyWithSep(Def::Reactions::Catalysts, catalysts);
 
 	if (isCut)
 	{
-		out << Keywords::Reactions::IsCut << ':' << Def::print(true) << "};\n";
+		dump.property(Def::Reactions::IsCut, true)
+			.endProperties()
+			.endDefinition();
 		return;
 	}
 
 	if (reactionEnergy != 0.0)
-		out << Keywords::Reactions::Energy << ':' << Def::print(reactionEnergy) << ',';
+		dump.propertyWithSep(Def::Reactions::Energy, reactionEnergy);
 	if (activationEnergy != 0.0)
-		out << Keywords::Reactions::Activation << ':' << Def::print(activationEnergy) << ',';
+		dump.propertyWithSep(Def::Reactions::Activation, activationEnergy);
 
-	out << Keywords::Reactions::TemperatureSpeed << ':';
-	tempSpeedEstimator->printDefinition(out, alreadyPrinted, true);
-	out << ',';
-	out << Keywords::Reactions::ConcentrationSpeed << ':';
-	concSpeedEstimator->printDefinition(out, alreadyPrinted, true);
-	out << "};\n";
+	if (prettify)
+	{
+		const auto subDefIndent = valueOffset + Def::Syntax::Indent.size() + 3;
+		out << Def::Syntax::Indent << Def::Reactions::TemperatureSpeed << ':' << std::string(valueOffset - Def::Reactions::TemperatureSpeed.size(), ' ');
+		tempSpeedEstimator->dumpDefinition(out, true, alreadyPrinted, true, subDefIndent);
+		out << ",\n";
+		out << Def::Syntax::Indent << Def::Reactions::ConcentrationSpeed << ':' << std::string(valueOffset - Def::Reactions::ConcentrationSpeed.size(), ' ');
+		concSpeedEstimator->dumpDefinition(out, true, alreadyPrinted, true, subDefIndent);
+	}
+	else
+	{
+		out << Def::Reactions::TemperatureSpeed << ':';
+		tempSpeedEstimator->dumpDefinition(out, prettify, alreadyPrinted, true, Def::Syntax::Indent.size());
+		out << ',';
+		out << Def::Reactions::ConcentrationSpeed << ':';
+		concSpeedEstimator->dumpDefinition(out, prettify, alreadyPrinted, true, Def::Syntax::Indent.size());
+	}
+		
+	dump.endProperties()
+		.endDefinition();
 }

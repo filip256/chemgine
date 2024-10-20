@@ -16,9 +16,9 @@ bool AtomRepository::add<AtomData>(DefinitionObject&& definition)
 		return false;
 	}
 
-	const auto name = definition.pullProperty(Keywords::Atoms::Name);
-	const auto weight = definition.pullProperty(Keywords::Atoms::Weight, Def::parse<Amount<Unit::GRAM>>);
-	auto valences = definition.pullProperty(Keywords::Atoms::Valences, Def::parse<std::vector<uint8_t>>);
+	const auto name = definition.pullProperty(Def::Atoms::Name);
+	const auto weight = definition.pullProperty(Def::Atoms::Weight, Def::parse<Amount<Unit::GRAM>>);
+	auto valences = definition.pullProperty(Def::Atoms::Valences, Def::parse<std::vector<uint8_t>>);
 
 	if (not(name && weight && valences))
 	{
@@ -50,8 +50,8 @@ bool AtomRepository::add<RadicalData>(DefinitionObject&& definition)
 		return false;
 	}
 
-	const auto name = definition.pullDefaultProperty(Keywords::Atoms::Name, Utils::copy(symbol->getString()));
-	const auto matches = definition.pullProperty(Keywords::Atoms::RadicalMatches, Def::parse<std::vector<Symbol>>);
+	const auto name = definition.pullDefaultProperty(Def::Atoms::Name, Utils::copy(symbol->getString()));
+	const auto matches = definition.pullProperty(Def::Atoms::RadicalMatches, Def::parse<std::vector<Symbol>>);
 
 	if (not matches)
 	{

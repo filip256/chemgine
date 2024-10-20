@@ -45,9 +45,9 @@ namespace Def
 				if (stripped.empty())
 					return std::nullopt;
 
-				if (stripped == Keywords::Amounts::Min)
+				if (stripped == Def::Amounts::Min)
 					return std::numeric_limits<T>::lowest();
-				if (stripped == Keywords::Amounts::Max)
+				if (stripped == Def::Amounts::Max)
 					return std::numeric_limits<T>::max();
 
 				try
@@ -221,7 +221,7 @@ namespace Def
 	public:
 		static std::optional<std::pair<T1, T2>> parse(const std::string& str, const char sep = ':')
 		{
-			const auto& pairStr = Utils::split(removeBrackets(str), sep, '{', '}', true);
+			const auto& pairStr = Utils::split(removeBrackets(Utils::strip(str)), sep, '{', '}', true);
 			if (pairStr.size() != 2)
 				return std::nullopt;
 

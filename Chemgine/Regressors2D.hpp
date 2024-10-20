@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Precision.hpp"
+#include "EstimationMode.hpp"
 
 #include <utility>
 #include <vector>
@@ -43,4 +44,6 @@ public:
 	) const override final;
 
 	static LinearRegressor2D fit(const std::vector<std::pair<float_n, float_n>>& points);
+
+	static constexpr EstimationMode Mode = EstimationMode::LINEAR;
 };

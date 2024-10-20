@@ -2,12 +2,13 @@
 
 #include <string>
 
-namespace Keywords
+namespace Def
 {
 	namespace Syntax
 	{
 		const std::string Include = "INCLUDE";
 		const std::string IncludeAs = "AS";
+		const std::string Indent = "    ";
 	}
 
 	namespace Amounts

@@ -208,4 +208,9 @@ public:
 	{
 		return Def::print(object.getContent());
 	}
+
+	static std::string prettyPrint(const ImmutableSet<T>& object)
+	{
+		return Def::prettyPrint(object.getContent());
+	}
 };

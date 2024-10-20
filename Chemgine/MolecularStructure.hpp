@@ -3,6 +3,7 @@
 #include "Bond.hpp"
 #include "Atom.hpp"
 #include "Parsers.hpp"
+#include "Printers.hpp"
 
 #include <vector>
 #include <string>
@@ -302,3 +303,14 @@ public:
             std::optional(std::move(molecule));
     }
 };
+
+template <>
+class Def::Printer<MolecularStructure>
+{
+public:
+    static std::string print(const MolecularStructure& object)
+    {
+        return object.toSMILES();
+    }
+};
+
