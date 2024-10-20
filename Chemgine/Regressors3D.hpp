@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Precision.hpp"
+#include "EstimationMode.hpp"
 
 #include <tuple>
 #include <vector>
@@ -46,4 +47,6 @@ public:
 	) const override final;
 
 	static LinearRegressor3D fit(const std::vector<std::tuple<float_n, float_n, float_n>>& points);
+
+	static constexpr EstimationMode Mode = EstimationMode::LINEAR;
 };

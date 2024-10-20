@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DerivedEstimator.hpp"
+#include "DataDumper.hpp"
 #include "Keywords.hpp"
 #include "Printers.hpp"
 
@@ -9,16 +10,6 @@ class AffineEstimator : public DerivedEstimator<OutU, InU>
 {
 private:
 	const EstimatorRef<OutU, InU> base;
-
-	void tryPrintOOLDefinition(
-		std::ostream& out,
-		std::unordered_set<EstimatorId>& alreadyPrinted
-	) const override final;
-
-	void printILDefinition(
-		std::ostream& out,
-		std::unordered_set<EstimatorId>& alreadyPrinted
-	) const override final;
 
 public:
 	const float_n vShift = 0.0;
@@ -39,6 +30,14 @@ public:
 
 	bool isEquivalent(const EstimatorBase& other,
 		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
+	) const override final;
+
+	void dumpDefinition(
+		std::ostream& out,
+		const bool prettify,
+		std::unordered_set<EstimatorId>& alreadyPrinted,
+		const bool printInline,
+		const uint16_t baseIndent
 	) const override final;
 };
 
@@ -78,79 +77,61 @@ bool AffineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const 
 
 	const auto& oth = static_cast<decltype(*this)&>(other);
 	return
-		Utils::equal(this->vShift, oth.vShift, epsilon) &&
-		Utils::equal(this->hShift, oth.hShift, epsilon) &&
-		Utils::equal(this->scale, oth.scale, epsilon) &&
+		Utils::floatEqual(this->vShift, oth.vShift, epsilon) &&
+		Utils::floatEqual(this->hShift, oth.hShift, epsilon) &&
+		Utils::floatEqual(this->scale, oth.scale, epsilon) &&
 		this->base->isEquivalent(*oth.base);
 }
 
 template<Unit OutU, Unit InU>
-void AffineEstimator<OutU, InU>::tryPrintOOLDefinition(
-	std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted) const
-{
-	if (alreadyPrinted.contains(EstimatorBase::id))
-		return;
-
-	// try to OOL print base, since it might have multiple references
-	base->printDefinition(out, alreadyPrinted, false);
-
-	if (this->getRefCount() == 1)
-		return;
-
-	alreadyPrinted.emplace(EstimatorBase::id);
-
-	out << '_';
-	out << Keywords::Types::Data;
-	out << '<' << EstimatorBase::getDefIdentifier() << '>';
-	out << ':' << UnitizedEstimator<OutU, InU>::getUnitSpecifier();
-
-	out << '{';
-	out << Keywords::Data::Base << ':';
-	base->printDefinition(out, alreadyPrinted, true);
-
-	if (not Utils::equal(vShift, 0.0f))
-		out << ',' << Keywords::Data::VerticalShift << ':' << Def::print(vShift);
-	if (not Utils::equal(hShift, 0.0f))
-		out << ',' << Keywords::Data::HorizontalShift << ':' << Def::print(hShift);
-	if (not Utils::equal(scale, 1.0f))
-		out << ',' << Keywords::Data::Scale << ':' << Def::print(scale);
-
-	out << '}';
-
-	out << ";\n";
-}
-
-template<Unit OutU, Unit InU>
-void AffineEstimator<OutU, InU>::printILDefinition(
-	std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted) const
+void AffineEstimator<OutU, InU>::dumpDefinition(
+	std::ostream& out,
+	const bool prettify,
+	std::unordered_set<EstimatorId>& alreadyPrinted,
+	const bool printInline,
+	const uint16_t baseIndent) const
 {
 	if (alreadyPrinted.contains(EstimatorBase::id))
 	{
-		out << '$' << EstimatorBase::getDefIdentifier();
+		if(printInline)
+			out << '$' << EstimatorBase::getDefIdentifier();
 		return;
 	}
 
-	alreadyPrinted.emplace(EstimatorBase::id);
+	static const uint8_t valueOffset = Utils::max(
+		Def::Data::Base.size(),
+		Def::Data::VerticalShift.size(),
+		Def::Data::HorizontalShift.size(),
+		Def::Data::Scale.size());
 
-	if (base->getRefCount() > 1 && not alreadyPrinted.contains(base->getId()))
+	DataDumper dump(out, valueOffset, baseIndent, prettify);
+	if (not printInline)
+	{
+		// try to OOL print base, since it might have multiple references
+		dump.tryOolSubDefinition(base, alreadyPrinted);
+		if (this->getRefCount() == 1)
+			return;
+	}
+	else if(base->getRefCount() > 1 && not alreadyPrinted.contains(base->getId()))
 	{
 		Log(this).fatal("Tried to inline-print an estimator sub-definition (id: {0}) with multiple references, id: {1}.",
 			Def::print(base->getId()), Def::print(this->id));
 	}
 
-	out << '_';
-	out << ':' << UnitizedEstimator<OutU, InU>::getUnitSpecifier();
+	alreadyPrinted.emplace(EstimatorBase::id);
 
-	out << '{';
-	out << Keywords::Data::Base << ':';
-	base->printDefinition(out, alreadyPrinted, true);
+	if (printInline)
+		dump.header("", UnitizedEstimator<OutU, InU>::getUnitSpecifier(), "");
+	else
+		dump.header(Def::Types::Data, UnitizedEstimator<OutU, InU>::getUnitSpecifier(), EstimatorBase::getDefIdentifier());
 
-	if(not Utils::equal(vShift, 0.0f))
-		out << ',' << Keywords::Data::VerticalShift << ':' << Def::print(vShift);
-	if (not Utils::equal(hShift, 0.0f))
-		out << ',' << Keywords::Data::HorizontalShift << ':' << Def::print(hShift);
-	if (not Utils::equal(scale, 1.0f))
-		out << ',' << Keywords::Data::Scale << ':' << Def::print(scale);
+	dump.beginProperties()
+		.subDefinition(Def::Data::Base, base, alreadyPrinted)
+		.defaultPropertyWithSep(Def::Data::VerticalShift, vShift, 0.0f, true)
+		.defaultPropertyWithSep(Def::Data::HorizontalShift, hShift, 0.0f, true)
+		.defaultPropertyWithSep(Def::Data::Scale, scale, 1.0f, true)
+		.endProperties();
 
-	out << '}';
+	if (not printInline)
+		dump.endDefinition();
 }

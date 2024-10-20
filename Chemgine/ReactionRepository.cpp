@@ -17,7 +17,7 @@ ReactionRepository::ReactionRepository(
 
 bool ReactionRepository::add(DefinitionObject&& definition)
 {
-	auto id = definition.pullOptionalProperty(Keywords::Reactions::Id, Def::parseId<ReactionId>);
+	auto id = definition.getOptionalProperty(Def::Reactions::Id, Def::parse<ReactionId>);
 	if (not id)
 		id = getFreeId();
 	else if (table.contains(*id))
@@ -26,7 +26,7 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 		return false;
 	}
 
-	const auto name = definition.pullDefaultProperty("name", "?");
+	const auto name = definition.getDefaultProperty("name", "?");
 
 	const auto spec = Def::parse<ReactionSpecifier>(definition.getSpecifier());
 	if (not spec)
@@ -70,7 +70,7 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 	}
 
 	// catalysts
-	const auto catStr = definition.pullDefaultProperty(Keywords::Reactions::Catalysts, std::vector<std::string>(),
+	const auto catStr = definition.getDefaultProperty(Def::Reactions::Catalysts, std::vector<std::string>(),
 		Def::parse<std::vector<std::string>>);
 
 	std::vector<Catalyst> catalysts;
@@ -98,7 +98,7 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 		catalysts.emplace_back(*c);
 	}
 
-	const auto isCut = definition.pullDefaultProperty(Keywords::Reactions::IsCut, false,
+	const auto isCut = definition.getDefaultProperty(Def::Reactions::IsCut, false,
 		Def::parse<bool>);
 
 	std::unique_ptr<ReactionData> data;
@@ -114,13 +114,13 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 	}
 	else
 	{
-		const auto energy = definition.pullDefaultProperty(Keywords::Reactions::Energy, Amount<Unit::JOULE_PER_MOLE>(0.0),
+		const auto energy = definition.getDefaultProperty(Def::Reactions::Energy, Amount<Unit::JOULE_PER_MOLE>(0.0),
 			Def::parse<Amount<Unit::JOULE_PER_MOLE>>);
-		const auto activation = definition.pullDefaultProperty(Keywords::Reactions::Activation, Amount<Unit::JOULE_PER_MOLE>(0.0),
+		const auto activation = definition.getDefaultProperty(Def::Reactions::Activation, Amount<Unit::JOULE_PER_MOLE>(0.0),
 			Def::parse<Amount<Unit::JOULE_PER_MOLE>>);
-		auto tempSpeed = definition.getDefinition(Keywords::Reactions::TemperatureSpeed,
+		auto tempSpeed = definition.getDefinition(Def::Reactions::TemperatureSpeed,
 			Def::Parser<UnitizedEstimator<Unit::MOLE_PER_SECOND, Unit::CELSIUS>>::parse, estimators);
-		auto concSpeed = definition.getDefinition(Keywords::Reactions::ConcentrationSpeed,
+		auto concSpeed = definition.getDefinition(Def::Reactions::ConcentrationSpeed,
 			Def::Parser<UnitizedEstimator<Unit::NONE, Unit::MOLE_RATIO>>::parse, estimators);
 
 		data = std::make_unique<ReactionData>(
@@ -130,10 +130,6 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 			std::move(*tempSpeed), std::move(*concSpeed),
 			std::move(catalysts));
 	}
-
-	const auto& ignored = definition.getRemainingProperties();
-	for (const auto& [name, _] : ignored)
-		Log(this).warn("Ignored unknown reaction property: '{0}', at: {1}.", name, definition.getLocationName());
 
 	// create
 	if (data->mapReactantsToProducts() == false)

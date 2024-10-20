@@ -1,4 +1,5 @@
 #include "MoleculeData.hpp"
+#include "DataDumper.hpp"
 #include "Log.hpp"
 
 MoleculeData::MoleculeData(
@@ -48,61 +49,64 @@ const MolecularStructure& MoleculeData::getStructure() const
 	return structure;
 }
 
-void MoleculeData::printDefinition(
-	std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted
+void MoleculeData::dumpDefinition(
+	std::ostream& out,
+	const bool prettify, 
+	std::unordered_set<EstimatorId>& alreadyPrinted
 ) const
 {
-	meltingPointEstimator->printDefinition(out, alreadyPrinted, false);
-	boilingPointEstimator->printDefinition(out, alreadyPrinted, false);
-	solidDensityEstimator->printDefinition(out, alreadyPrinted, false);
-	liquidDensityEstimator->printDefinition(out, alreadyPrinted, false);
-	solidHeatCapacityEstimator->printDefinition(out, alreadyPrinted, false);
-	liquidHeatCapacityEstimator->printDefinition(out, alreadyPrinted, false);
-	fusionLatentHeatEstimator->printDefinition(out, alreadyPrinted, false);
-	vaporizationLatentHeatEstimator->printDefinition(out, alreadyPrinted, false);
-	sublimationLatentHeatEstimator->printDefinition(out, alreadyPrinted, false);
-	relativeSolubilityEstimator->printDefinition(out, alreadyPrinted, false);
-	henrysConstantEstimator->printDefinition(out, alreadyPrinted, false);
+	static const uint8_t valueOffset = Utils::max(
+		Def::Molecules::Name.size(),
+		Def::Molecules::MeltingPoint.size(),
+		Def::Molecules::BoilingPoint.size(),
+		Def::Molecules::SolidDensity.size(),
+		Def::Molecules::LiquidDensity.size(),
+		Def::Molecules::SolidHeatCapacity.size(),
+		Def::Molecules::LiquidHeatCapacity.size(),
+		Def::Molecules::FusionLatentHeat.size(),
+		Def::Molecules::VaporizationLatentHeat.size(),
+		Def::Molecules::SublimationLatentHeat.size(),
+		Def::Molecules::RelativeSolubility.size(),
+		Def::Molecules::HenryConstant.size(),
+		Def::Molecules::Hydrophilicity.size(),
+		Def::Molecules::Lipophilicity.size(),
+		Def::Molecules::Color.size());
 
-	out << '_' << Keywords::Types::Molecule;
-	out << ':' << structure.toSMILES();
-	out << '{';
-	out << Keywords::Molecules::Name << ':' << name << ',';
-	out << Keywords::Molecules::MeltingPoint << ':';
-	meltingPointEstimator->printDefinition(out, alreadyPrinted, true);
-	out << ',';
-	out << Keywords::Molecules::BoilingPoint << ':';
-	boilingPointEstimator->printDefinition(out, alreadyPrinted, true);
-	out << ',';
-	out << Keywords::Molecules::SolidDensity << ':';
-	solidDensityEstimator->printDefinition(out, alreadyPrinted, true);
-	out << ',';
-	out << Keywords::Molecules::LiquidDensity << ':';
-	liquidDensityEstimator->printDefinition(out, alreadyPrinted, true);
-	out << ',';
-	out << Keywords::Molecules::SolidHeatCapacity << ':';
-	solidHeatCapacityEstimator->printDefinition(out, alreadyPrinted, true);
-	out << ',';
-	out << Keywords::Molecules::LiquidHeatCapacity << ':';
-	liquidHeatCapacityEstimator->printDefinition(out, alreadyPrinted, true);
-	out << ',';
-	out << Keywords::Molecules::FusionLatentHeat << ':';
-	fusionLatentHeatEstimator->printDefinition(out, alreadyPrinted, true);
-	out << ',';
-	out << Keywords::Molecules::VaporizationLatentHeat << ':';
-	vaporizationLatentHeatEstimator->printDefinition(out, alreadyPrinted, true);
-	out << ',';
-	out << Keywords::Molecules::SublimationLatentHeat << ':';
-	sublimationLatentHeatEstimator->printDefinition(out, alreadyPrinted, true);
-	out << ',';
-	out << Keywords::Molecules::RelativeSolubility << ':';
-	relativeSolubilityEstimator->printDefinition(out, alreadyPrinted, true);
-	out << ',';
-	out << Keywords::Molecules::HenryConstant << ':';
-	henrysConstantEstimator->printDefinition(out, alreadyPrinted, true);
-	out << ',';
-	out << Keywords::Molecules::Hydrophilicity << ':' << Def::print(polarity.hydrophilicity) << ',';
-	out << Keywords::Molecules::Lipophilicity << ':' << Def::print(polarity.lipophilicity) << ',';
-	out << Keywords::Molecules::Color << ':' << Def::print(color);
-	out << "};\n";
+	DataDumper(out, valueOffset, 0, prettify)
+		.tryOolSubDefinition(meltingPointEstimator, alreadyPrinted)
+		.tryOolSubDefinition(boilingPointEstimator, alreadyPrinted)
+		.tryOolSubDefinition(solidDensityEstimator, alreadyPrinted)
+		.tryOolSubDefinition(liquidDensityEstimator, alreadyPrinted)
+		.tryOolSubDefinition(solidHeatCapacityEstimator, alreadyPrinted)
+		.tryOolSubDefinition(liquidHeatCapacityEstimator, alreadyPrinted)
+		.tryOolSubDefinition(fusionLatentHeatEstimator, alreadyPrinted)
+		.tryOolSubDefinition(vaporizationLatentHeatEstimator, alreadyPrinted)
+		.tryOolSubDefinition(sublimationLatentHeatEstimator, alreadyPrinted)
+		.tryOolSubDefinition(relativeSolubilityEstimator, alreadyPrinted)
+		.tryOolSubDefinition(henrysConstantEstimator, alreadyPrinted)
+		.header(Def::Types::Molecule, structure, "")
+		.beginProperties()
+		.propertyWithSep(Def::Molecules::Name, name)
+		.subDefinitionWithSep(Def::Molecules::MeltingPoint, meltingPointEstimator, alreadyPrinted)
+		.subDefinitionWithSep(Def::Molecules::BoilingPoint, boilingPointEstimator, alreadyPrinted)
+		.subDefinitionWithSep(Def::Molecules::SolidDensity, solidDensityEstimator, alreadyPrinted)
+		.subDefinitionWithSep(Def::Molecules::LiquidDensity, liquidDensityEstimator, alreadyPrinted)
+		.subDefinitionWithSep(Def::Molecules::SolidHeatCapacity, solidHeatCapacityEstimator, alreadyPrinted)
+		.subDefinitionWithSep(Def::Molecules::LiquidHeatCapacity, liquidHeatCapacityEstimator, alreadyPrinted)
+		.subDefinitionWithSep(Def::Molecules::FusionLatentHeat, fusionLatentHeatEstimator, alreadyPrinted)
+		.subDefinitionWithSep(Def::Molecules::VaporizationLatentHeat, vaporizationLatentHeatEstimator, alreadyPrinted)
+		.subDefinitionWithSep(Def::Molecules::SublimationLatentHeat, sublimationLatentHeatEstimator, alreadyPrinted)
+		.subDefinitionWithSep(Def::Molecules::RelativeSolubility, relativeSolubilityEstimator, alreadyPrinted)
+		.subDefinitionWithSep(Def::Molecules::HenryConstant, henrysConstantEstimator, alreadyPrinted)
+		.propertyWithSep(Def::Molecules::Hydrophilicity, polarity.hydrophilicity)
+		.propertyWithSep(Def::Molecules::Lipophilicity, polarity.lipophilicity)
+		.property(Def::Molecules::Color, color)
+		.endProperties()
+		.endDefinition();
+}
+
+void MoleculeData::print(std::ostream& out) const
+{
+	std::unordered_set<EstimatorId> history;
+	dumpDefinition(out, true, history);
 }

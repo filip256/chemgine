@@ -2,6 +2,7 @@
 
 #include "UnitizedEstimator.hpp"
 #include "EstimationMode.hpp"
+#include "DataDumper.hpp"
 #include "Spline.hpp"
 
 template<Unit OutU, Unit InU>
@@ -32,10 +33,12 @@ public:
 		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
 	) const override final;
 
-	void printDefinition(
+	void dumpDefinition(
 		std::ostream& out,
+		const bool prettify,
 		std::unordered_set<EstimatorId>& alreadyPrinted,
-		const bool printInline
+		const bool printInline,
+		const uint16_t baseIndent
 	) const override final;
 };
 
@@ -82,8 +85,12 @@ bool SplineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const 
 }
 
 template<Unit OutU, Unit InU>
-void SplineEstimator<OutU, InU>::printDefinition(
-	std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted, const bool printInline) const
+void SplineEstimator<OutU, InU>::dumpDefinition(
+	std::ostream& out,
+	const bool prettify,
+	std::unordered_set<EstimatorId>& alreadyPrinted,
+	const bool printInline,
+	const uint16_t baseIndent) const
 {
 	if (not printInline && this->getRefCount() == 1)
 		return;
@@ -96,20 +103,22 @@ void SplineEstimator<OutU, InU>::printDefinition(
 	}
 	alreadyPrinted.emplace(EstimatorBase::id);
 
-	out << '_';
-	if (not printInline)
-	{
-		out << Keywords::Types::Data;
-		out << '<' << EstimatorBase::getDefIdentifier() << '>';
-	}
-	out << ':' << UnitizedEstimator<OutU, InU>::getUnitSpecifier();
+	static const uint8_t valueOffset = Utils::max(
+		Def::Data::Mode.size(),
+		Def::Data::Values.size());
 
-	out << '{';
-	if(mode != EstimationMode::LINEAR)
-		out << Keywords::Data::Mode << ':' << Def::print(mode) << ',';
-	out << Keywords::Data::Values << ':' << Def::print(spline.getContent());
-	out << '}';
+	DataDumper dump(out, valueOffset, baseIndent, prettify);
+
+	if (printInline)
+		dump.header("", UnitizedEstimator<OutU, InU>::getUnitSpecifier(), "");
+	else
+		dump.header(Def::Types::Data, UnitizedEstimator<OutU, InU>::getUnitSpecifier(), EstimatorBase::getDefIdentifier());
+
+	dump.beginProperties()
+		.propertyWithSep(Def::Data::Mode, getMode())
+		.property(Def::Data::Values, spline.getContent())
+		.endProperties();
 
 	if (not printInline)
-		out << ";\n";
+		dump.endDefinition();
 }

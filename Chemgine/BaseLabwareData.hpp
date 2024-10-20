@@ -7,11 +7,15 @@
 
 #include "LabwareType.hpp"
 #include "LabwarePort.hpp"
+#include "DataDumper.hpp"
 
 typedef uint32_t LabwareId;
 
 class BaseLabwareData
 {
+private:
+	virtual void dumpCustomProperties(DataDumper& dump) const = 0;
+
 public:
 	const LabwareId id;
 	const LabwareType type;
@@ -28,6 +32,7 @@ public:
 	BaseLabwareData(BaseLabwareData&&) = default;
 	virtual ~BaseLabwareData() = default;
 
-	virtual void printDefinition(std::ostream& out) const = 0;
+	void dumpDefinition(std::ostream& out, const bool prettify) const;
 	virtual void dumpTextures(const std::string& path) const = 0;
+	void print(std::ostream& out = std::cout) const;
 };

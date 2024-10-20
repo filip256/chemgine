@@ -49,10 +49,10 @@ int main()
         DataStore store;
         Accessor<>::setDataStore(store);
 
-        store.load("./Data/builtin.cdef")
-            .dump("./Out/builtin.cdef")
-            .clear()
-            .load("./Out/builtin.cdef");
+        store.load("./Data/builtin.cdef");
+        store.dump("./Out/builtin.cdef");
+        store.clear();
+        store.load("./Out/builtin.cdef");
 
         std::cout << MolecularStructure("S(=O)(=O)(O)O").print() << '\n';
 
@@ -63,7 +63,8 @@ int main()
 
         for (const auto& i : x)
         {
-            std::cout << i.print() << "\n-------------------------\n";
+            i.print();
+            std::cout << "-------------------------\n\n";
         }
 
         UIContext uiContext;

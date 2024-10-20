@@ -27,12 +27,7 @@ const ReactionData& RetrosynthReaction::getBaseData() const
 	return baseReaction;
 }
 
-std::string RetrosynthReaction::getHRTag() const
-{
-	return baseReaction.getHRTag();
-}
-
-std::string RetrosynthReaction::print() const
+void RetrosynthReaction::print(std::ostream& out) const
 {
 	// reactants and products
 	TextBlock buffer;
@@ -65,23 +60,8 @@ std::string RetrosynthReaction::print() const
 		buffer.appendRight(std::to_string(lastP->second) + "x ");
 	buffer.appendRight(lastP->first.getStructure().print());
 
-	std::string result = getHRTag() + '\n' + buffer.toString() + '\n';
-
-	// catalysts
-	const auto catalysts = baseReaction.getCatalysts();
-	if (catalysts.size())
-		result += " - Catalysts:  " + Def::print(catalysts) + '\n';
-
-	if (baseReaction.isCutReaction())
-		return result;
-
-	// properties
-	result += " - Activation: " + baseReaction.activationEnergy.toString() + '\n';
-	result += " - Speed:      " + baseReaction.getSpeedAt(20.0_C, 1.0).toString() +
-		" (at " + Amount(20.0_C).toString() + ")\n";
-	result += " - Energy:     " + baseReaction.activationEnergy.toString() + '\n';
-
-	return result;
+	out << buffer << '\n';
+	baseReaction.print(out);
 }
 
 bool RetrosynthReaction::operator==(const RetrosynthReaction& other) const

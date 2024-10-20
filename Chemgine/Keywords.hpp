@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace Keywords
+namespace Def
 {
 	namespace Syntax
 	{

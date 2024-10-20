@@ -156,7 +156,7 @@ constexpr Amount<UnitT> Amount<UnitT>::operator-=(const Amount<UnitT> other) noe
 template <Unit UnitT>
 constexpr inline bool Amount<UnitT>::equals(const Amount<UnitT> other, const StorageType epsilon) const noexcept
 {
-	return Utils::equal(this->value, other.value, epsilon);
+	return Utils::floatEqual(this->value, other.value, epsilon);
 }
 
 template<Unit UnitT>
@@ -448,13 +448,13 @@ constexpr Amount<Unit::RADIAN>::Amount(const Amount<Unit::DEGREE>& degrees) noex
 template<>
 template<>
 constexpr Amount<Unit::MOLE_RATIO>::Amount(const Amount<Unit::MOLE_PERCENT>& ratio) noexcept :
-	Amount<Unit::MOLE_RATIO>(ratio.asStd() * 100.0)
+	Amount<Unit::MOLE_RATIO>(ratio.asStd() / 100.0)
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::MOLE_PERCENT>::Amount(const Amount<Unit::MOLE_RATIO>& ratio) noexcept :
-	Amount<Unit::MOLE_PERCENT>(ratio.asStd() / 100.0)
+	Amount<Unit::MOLE_PERCENT>(ratio.asStd() * 100.0)
 {}
 
 //    --- Indirect Conversions ---    //

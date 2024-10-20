@@ -471,6 +471,12 @@
     <ClCompile Include="BaseLabwareData.cpp">
       <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
+    <ClCompile Include="PrintSettings.cpp">
+      <Filter>Source Files\Data\Parsers</Filter>
+    </ClCompile>
+    <ClCompile Include="DataDumper.cpp">
+      <Filter>Source Files\Data\Parsers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -512,10 +518,7 @@
     <ClInclude Include="Maths.hpp">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="HashCombine.hpp">
-      <Filter>Header Files\DataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="PairHash.hpp">
+    <ClInclude Include="HashUtils.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
     <ClInclude Include="PVector.hpp">
@@ -899,12 +902,6 @@
     <ClInclude Include="Regressors3D.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
-    <ClInclude Include="Regression2DEstimator.hpp">
-      <Filter>Header Files\Estimators</Filter>
-    </ClInclude>
-    <ClInclude Include="Regression3DEstimator.hpp">
-      <Filter>Header Files\Estimators</Filter>
-    </ClInclude>
     <ClInclude Include="Casts.hpp">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
@@ -931,6 +928,15 @@
     </ClInclude>
     <ClInclude Include="Precision.hpp">
       <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="RegressionEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="PrintSettings.hpp">
+      <Filter>Header Files\Data\Parsers</Filter>
+    </ClInclude>
+    <ClInclude Include="DataDumper.hpp">
+      <Filter>Header Files\Data\Parsers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

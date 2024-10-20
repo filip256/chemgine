@@ -2,8 +2,6 @@
 #include "OOLDefRepository.hpp"
 #include "Keywords.hpp"
 
-using namespace Keywords;
-
 DefFileAnalyzer::DefFileAnalyzer(
 	const std::string& filePath,
 	FileStore& mainFileStore
@@ -15,7 +13,7 @@ DefFileAnalyzer::DefFileAnalyzer(
 AnalysisResult DefFileAnalyzer::analyze()
 {
 	const auto logLevel = LogBase::logLevel;
-	LogBase::logLevel = LogType::NONE;
+	//LogBase::logLevel = LogType::NONE;
 
 	AnalysisResult result;
 	if (parser.isOpen() == false)

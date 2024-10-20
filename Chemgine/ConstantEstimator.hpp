@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UnitizedEstimator.hpp"
+#include "DataDumper.hpp"
 
 template<Unit OutU, Unit... InUs>
 class ConstantEstimator : public UnitizedEstimator<OutU, InUs...>
@@ -20,10 +21,12 @@ public:
 		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
 	) const override final;
 
-	void printDefinition(
+	void dumpDefinition(
 		std::ostream& out,
+		const bool prettify,
 		std::unordered_set<EstimatorId>& alreadyPrinted,
-		const bool printInline
+		const bool printInline,
+		const uint16_t baseIndent
 	) const override final;
 };
 
@@ -53,8 +56,12 @@ bool ConstantEstimator<OutU, InUs...>::isEquivalent(const EstimatorBase& other, 
 }
 
 template<Unit OutU, Unit... InUs>
-void ConstantEstimator<OutU, InUs...>::printDefinition(
-	std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted, const bool printInline) const
+void ConstantEstimator<OutU, InUs...>::dumpDefinition(
+	std::ostream& out,
+	const bool prettify,
+	std::unordered_set<EstimatorId>& alreadyPrinted,
+	const bool printInline,
+	const uint16_t baseIndent) const
 {
 	if (not printInline && this->getRefCount() == 1)
 		return;
@@ -67,18 +74,16 @@ void ConstantEstimator<OutU, InUs...>::printDefinition(
 	}
 	alreadyPrinted.emplace(EstimatorBase::id);
 
-	out << '_';
-	if (not printInline)
-	{
-		out << Keywords::Types::Data;
-		out << '<' << EstimatorBase::getDefIdentifier() << '>';
-	}
-	out << ':' << UnitizedEstimator<OutU, InUs...>::getUnitSpecifier();
+	DataDumper dump(out, Def::Data::Constant.size(), baseIndent, prettify);
+	if (printInline)
+		dump.header("", UnitizedEstimator<OutU, InUs...>::getUnitSpecifier(), "");
+	else
+		dump.header(Def::Types::Data, UnitizedEstimator<OutU, InUs...>::getUnitSpecifier(), EstimatorBase::getDefIdentifier());
 
-	out << '{';
-	out << Keywords::Data::Constant << ':' << Def::print(constant.asStd());
-	out << '}';
+	dump.beginProperties()
+		.property(Def::Data::Constant, constant.asStd())
+		.endProperties();
 
 	if (not printInline)
-		out << ";\n";
+		dump.endDefinition();
 }

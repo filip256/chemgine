@@ -35,14 +35,57 @@ public:
 		if (not outUnit)
 			return std::nullopt;
 
-		const auto inUnitsStr = stripped.starts_with('(') ?
-			stripped.substr(1, sep - 2) :
-			stripped.substr(0, sep);
+		auto inUnitsStr = Utils::strip(stripped.substr(0, sep));
+		if (inUnitsStr.starts_with('(') && inUnitsStr.ends_with(')'))
+			inUnitsStr = inUnitsStr.substr(1, inUnitsStr.size() - 2);
 
 		auto inUnits = Def::parse<std::vector<Unit>>(inUnitsStr);
 		if (not inUnits)
 			return std::nullopt;
 
 		return EstimatorSpecifier(*outUnit, std::move(*inUnits));
+	}
+};
+
+template <>
+class Def::Printer<EstimatorSpecifier>
+{
+public:
+	static std::string print(const EstimatorSpecifier& object)
+	{
+		std::string result;
+		if (object.inUnits.size() == 1)
+			result += DynamicAmount::getUnitSymbol(object.inUnits.front());
+		else
+		{
+			result += '(';
+			for (size_t i = 0; i < object.inUnits.size() - 1; ++i)
+				result += DynamicAmount::getUnitSymbol(object.inUnits[i]) + ',';
+			result += DynamicAmount::getUnitSymbol(object.inUnits.back());
+			result + ')';
+		}
+
+		result += "->";
+		result += DynamicAmount::getUnitSymbol(object.outUnit);
+		return result;
+	}
+
+	static std::string prettyPrint(const EstimatorSpecifier& object)
+	{
+		std::string result;
+		if (object.inUnits.size() == 1)
+			result += DynamicAmount::getUnitSymbol(object.inUnits.front());
+		else
+		{
+			result += '(';
+			for (size_t i = 0; i < object.inUnits.size() - 1; ++i)
+				result += DynamicAmount::getUnitSymbol(object.inUnits[i]) + ", ";
+			result += DynamicAmount::getUnitSymbol(object.inUnits.back());
+			result += ')';
+		}
+
+		result += " -> ";
+		result += DynamicAmount::getUnitSymbol(object.outUnit);
+		return result;
 	}
 };

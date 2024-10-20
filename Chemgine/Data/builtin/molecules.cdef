@@ -11,7 +11,9 @@ _mol: O {
 	solid_density:   _: C -> g/mL { values: { -1.0 : 1.0 }},
 	liquid_density:  _: C -> g/mL { values: { 1.0 : 0.9999017 }},
 	solid_hc:        _: atm -> J/(mol*C) { values: { 1.0 : 36.0 }},
-	liquid_hc:       _: atm -> J/(mol*C) { values: { 1.0 : 75.4840232 }},
+	liquid_hc:       _: atm -> J/(mol*C) {
+	    values: { 1.0 : 75.4840232 }
+	},
 	fusion_lh:       $est@flh_0,
 	vaporization_lh: $est@vlh_0,
 	sublimation_lh:  $est@slh_0,

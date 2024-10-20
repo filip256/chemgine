@@ -1,10 +1,11 @@
 #pragma once
 
 #include "BaseComponentData.hpp"
+#include "PrintSettings.hpp"
 #include "ImmutableSet.hpp"
 #include "Symbol.hpp"
 
-#include <ostream>
+#include <iostream>
 
 class DefinitionObject;
 
@@ -36,7 +37,8 @@ public:
 	uint8_t getFittingValence(const uint8_t bonds) const override final;
 	std::string getSMILES() const override final;
 
-	virtual void printDefinition(std::ostream& out) const;
+	virtual void dumpDefinition(std::ostream& out, const bool prettify) const;
+	void print(std::ostream& out = std::cout) const;
 
 	static uint8_t getRarityOf(const Symbol& symbol);
 

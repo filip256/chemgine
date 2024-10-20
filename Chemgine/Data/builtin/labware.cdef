@@ -3,7 +3,7 @@
 .:
 
 _lab: flask {
-    id:      #201,
+    id:      201,
     name:    RBF,
     volume:  500_mL,
     ports:   { INLET: {x: 31, y: 9, angle: 0.0_o}, CONTACT: {x: 31, y: 90, angle: 0.0_o} },
@@ -11,7 +11,7 @@ _lab: flask {
 };
 
 _lab: adaptor {
-    id:      #301,
+    id:      301,
     name:    3-way Adaptor,
     volume:  50_mL,
     ports:   { OUTLET: {x: 6, y: 58, angle: 0.0_o}, OUTLET: {x: 36, y: 34, angle: 290.0_o} },
@@ -19,7 +19,7 @@ _lab: adaptor {
 };
 
 _lab: adaptor {
-    id:      #302,
+    id:      302,
     name:    Distillation Adaptor,
     volume:  50_mL,
     ports:   { INLET: {x: 11, y: 10, angle: 282.0_o}, OUTLET: {x: 39, y: 52, angle: 0.0_o} },
@@ -27,7 +27,7 @@ _lab: adaptor {
 };
 
 _lab: heatsource {
-    id:      #401,
+    id:      401,
     name:    Hotplate,
     power:   1.0_kW,
     ports:   { CONTACT: {x: 41, y: 7, angle: 0.0_o} },
@@ -35,7 +35,7 @@ _lab: heatsource {
 };
 
 _lab: condenser {
-    id:           #501,
+    id:           501,
     name:         Liebig Condenser,
     volume:       200_mL,
     length:       0.3_m,

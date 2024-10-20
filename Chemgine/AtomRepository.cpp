@@ -16,19 +16,15 @@ bool AtomRepository::add<AtomData>(DefinitionObject&& definition)
 		return false;
 	}
 
-	const auto name = definition.pullProperty(Keywords::Atoms::Name);
-	const auto weight = definition.pullProperty(Keywords::Atoms::Weight, Def::parse<Amount<Unit::GRAM>>);
-	auto valences = definition.pullProperty(Keywords::Atoms::Valences, Def::parse<std::vector<uint8_t>>);
+	const auto name = definition.getProperty(Def::Atoms::Name);
+	const auto weight = definition.getProperty(Def::Atoms::Weight, Def::parse<Amount<Unit::GRAM>>);
+	auto valences = definition.getProperty(Def::Atoms::Valences, Def::parse<std::vector<uint8_t>>);
 
 	if (not(name && weight && valences))
 	{
 		Log(this).error("Incomplete atom definition at: {0}.", definition.getLocationName());
 		return false;
 	}
-
-	const auto& ignored = definition.getRemainingProperties();
-	for (const auto& [name, _] : ignored)
-		Log(this).warn("Ignored unknown atom property: '{0}', at: {1}.", name, definition.getLocationName());
 	
 	if (not atomTable.emplace(*symbol,
 		std::make_unique<AtomData>(*symbol, *name, *weight, std::move(*valences))).second)
@@ -50,8 +46,8 @@ bool AtomRepository::add<RadicalData>(DefinitionObject&& definition)
 		return false;
 	}
 
-	const auto name = definition.pullDefaultProperty(Keywords::Atoms::Name, Utils::copy(symbol->getString()));
-	const auto matches = definition.pullProperty(Keywords::Atoms::RadicalMatches, Def::parse<std::vector<Symbol>>);
+	const auto name = definition.getDefaultProperty(Def::Atoms::Name, Utils::copy(symbol->getString()));
+	const auto matches = definition.getProperty(Def::Atoms::RadicalMatches, Def::parse<std::vector<Symbol>>);
 
 	if (not matches)
 	{
@@ -76,10 +72,6 @@ bool AtomRepository::add<RadicalData>(DefinitionObject&& definition)
 			return false;
 		}
 	}
-
-	const auto& ignored = definition.getRemainingProperties();
-	for (const auto& [name, _] : ignored)
-		Log(this).warn("Ignored unknown radical property: '{0}', at: {1}.", name, definition.getLocationName());
 
 	std::unordered_set matchSet(matches->begin(), matches->end());
 	if (not radicalTable.emplace(*symbol, 

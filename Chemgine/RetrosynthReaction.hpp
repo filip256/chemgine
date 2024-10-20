@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ReactionData.hpp"
-#include "HashCombine.hpp"
+#include "HashUtils.hpp"
 
 #include <unordered_map>
 
@@ -27,8 +27,7 @@ public:
 
 	const ReactionData& getBaseData() const;
 
-	std::string getHRTag() const;
-	std::string print() const;
+	void print(std::ostream& out = std::cout) const;
 
 	bool operator==(const RetrosynthReaction& other) const;
 	bool operator!=(const RetrosynthReaction& other) const;
@@ -44,9 +43,9 @@ struct std::hash<RetrosynthReaction>
 	{
 		size_t hash = 0;
 		for (const auto& [r, _] : reaction.reactants)
-			hashCombineWith(hash, r);
+			Utils::hashCombineWith(hash, r);
 		for (const auto& [r, _] : reaction.products)
-			hashCombineWith(hash, r);
+			Utils::hashCombineWith(hash, r);
 		return hash;
 	}
 };

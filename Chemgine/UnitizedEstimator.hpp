@@ -1,13 +1,14 @@
 #pragma once
 
 #include "EstimatorBase.hpp"
+#include "EstimatorSpecifier.hpp"
 #include "Amount.hpp"
 
 template<Unit OutU, Unit... InUs>
 class UnitizedEstimator : public EstimatorBase
 {
 protected:
-	static std::string getUnitSpecifier();
+	static EstimatorSpecifier getUnitSpecifier();
 
 public:
 	using EstimatorBase::EstimatorBase;
@@ -16,22 +17,9 @@ public:
 };
 
 template<Unit OutU, Unit... InUs>
-std::string UnitizedEstimator<OutU, InUs...>::getUnitSpecifier()
+EstimatorSpecifier UnitizedEstimator<OutU, InUs...>::getUnitSpecifier()
 {
-	std::string specifier;
-	if constexpr (sizeof...(InUs) == 1)
-	{
-		((specifier += Amount<InUs>::unitSymbol()), ...);
-	}
-	else
-	{
-		specifier += '(';
-		((specifier += Amount<InUs>::unitSymbol() + ','), ...);
-		specifier.back() = ')';
-	}
-
-	specifier += "->" + Amount<OutU>::unitSymbol();
-	return specifier;
+	return EstimatorSpecifier(OutU, { InUs... });
 }
 
 template<Unit OutU, Unit... InUs>

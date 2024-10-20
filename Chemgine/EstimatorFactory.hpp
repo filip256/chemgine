@@ -5,9 +5,10 @@
 #include "AffineEstimator.hpp"
 #include "SplineEstimator.hpp"
 #include "ConstantEstimator.hpp"
-#include "Regression2DEstimator.hpp"
-#include "Regression3DEstimator.hpp"
+#include "RegressionEstimator.hpp"
 #include "EstimatorRepository.hpp"
+#include "Regressors2D.hpp"
+#include "Regressors3D.hpp"
 #include "ImmutableSet.hpp"
 
 class EstimatorFactory
@@ -90,7 +91,7 @@ EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
 		if (uniquePoints.size() == 2)
 		{
 			if(mode == EstimationMode::LINEAR)
-				return repository.add<Regression2DEstimator<LinearRegressor2D, OutU, InUs...>>(LinearRegressor2D::fit(points), mode);
+				return repository.add<RegressionEstimator<LinearRegressor2D, OutU, InUs...>>(LinearRegressor2D::fit(points));
 		}
 
 		// Spline 2D
@@ -108,7 +109,7 @@ EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
 
 		// Linear 3D
 		if (mode == EstimationMode::LINEAR)
-			return repository.add<Regression3DEstimator<LinearRegressor3D, OutU, InUs...>>(LinearRegressor3D::fit(points), mode);
+			return repository.add<RegressionEstimator<LinearRegressor3D, OutU, InUs...>>(LinearRegressor3D::fit(points));
 	}
 
 	Log(this).fatal("Unsupported estimator data type.");
@@ -123,7 +124,7 @@ EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 	const float_n scale)
 {
 	// no transform, return base
-	if (Utils::equal(vShift, 0.0) && Utils::equal(hShift, 0.0) && Utils::equal(scale, 1.0))
+	if (Utils::floatEqual(vShift, 0.0) && Utils::floatEqual(hShift, 0.0) && Utils::floatEqual(scale, 1.0))
 		return EstimatorRef<OutU, InU>(base);
 
 	// constant folding
@@ -133,14 +134,13 @@ EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 	}
 
 	// linear folding
-	if (const auto linearBase = base.cast<Regression2DEstimator<LinearRegressor2D, OutU, InU>>())
+	if (const auto linearBase = base.cast<RegressionEstimator<LinearRegressor2D, OutU, InU>>())
 	{
 		const auto& regressor = linearBase->getRegressor();
-		return repository.add<Regression2DEstimator<LinearRegressor2D, OutU, InU>>(
+		return repository.add<RegressionEstimator<LinearRegressor2D, OutU, InU>>(
 			LinearRegressor2D(
 				/* paramX= */ regressor.paramX * scale,
-				/* shift= */ (regressor.paramX * hShift - regressor.shift) * scale + vShift),
-			EstimationMode::LINEAR);
+				/* shift= */ (regressor.paramX * hShift - regressor.shift) * scale + vShift));
 	}
 
 	// affine folding
@@ -162,7 +162,7 @@ EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 	const DataPoint<OutU, InU> anchorPoint,
 	const float_n hShift)
 {
-	if (Utils::equal(hShift, 0.0))
+	if (Utils::floatEqual(hShift, 0.0))
 	{
 		// f(X) = base(X) - base(Xr) + Yr
 		const auto vShift = anchorPoint.output - base->get(std::get<0>(anchorPoint.inputs));
@@ -189,16 +189,14 @@ template<Unit OutU, Unit InU>
 EstimatorRef<OutU, InU> EstimatorFactory::createLinearRegression(
 	const float_n paramX, const float_n shift)
 {
-	return repository.add<Regression2DEstimator<LinearRegressor2D, OutU, InU>>(
-		LinearRegressor2D(paramX, shift),
-		EstimationMode::LINEAR);
+	return repository.add<RegressionEstimator<LinearRegressor2D, OutU, InU>>(
+		LinearRegressor2D(paramX, shift));
 }
 
 template<Unit OutU, Unit InU1, Unit InU2>
 EstimatorRef<OutU, InU1, InU2> EstimatorFactory::createLinearRegression(
 	const float_n paramX, const float_n paramY, const float_n shift)
 {
-	return repository.add<Regression3DEstimator<LinearRegressor3D, OutU, InU1, InU2>>(
-		LinearRegressor3D(paramX, paramY, shift),
-		EstimationMode::LINEAR);
+	return repository.add<RegressionEstimator<LinearRegressor3D, OutU, InU1, InU2>>(
+		LinearRegressor3D(paramX, paramY, shift));
 }

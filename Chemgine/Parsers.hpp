@@ -20,9 +20,6 @@ namespace Def
 	template <typename E>
 	static std::optional<E> parseEnum(const std::string& str);
 
-	template <typename T>
-	static std::optional<T> parseId(const std::string& str);
-
 	template <typename T, typename = void>
 	class Parser
 	{
@@ -45,9 +42,9 @@ namespace Def
 				if (stripped.empty())
 					return std::nullopt;
 
-				if (stripped == Keywords::Amounts::Min)
+				if (stripped == Def::Amounts::Min)
 					return std::numeric_limits<T>::lowest();
-				if (stripped == Keywords::Amounts::Max)
+				if (stripped == Def::Amounts::Max)
 					return std::numeric_limits<T>::max();
 
 				try
@@ -221,7 +218,7 @@ namespace Def
 	public:
 		static std::optional<std::pair<T1, T2>> parse(const std::string& str, const char sep = ':')
 		{
-			const auto& pairStr = Utils::split(removeBrackets(str), sep, '{', '}', true);
+			const auto& pairStr = Utils::split(removeBrackets(Utils::strip(str)), sep, '{', '}', true);
 			if (pairStr.size() != 2)
 				return std::nullopt;
 
@@ -286,13 +283,4 @@ inline std::optional<E> Def::parseEnum(const std::string& str)
 
 	const auto val = parse<std::underlying_type_t<E>>(str);
 	return val ? std::make_optional(static_cast<E>(*val)) : std::nullopt;
-}
-
-template <typename T>
-static std::optional<T> Def::parseId(const std::string& str)
-{
-	if (str.empty() || str.front() != '#')
-		return std::nullopt;
-	
-	return parseUnsigned<T>(str.substr(1));
 }

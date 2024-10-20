@@ -6,7 +6,7 @@
 #include "UnitizedEstimator.hpp"
 #include "ImmutableSet.hpp"
 #include "StructureRef.hpp"
-#include "PairHash.hpp"
+#include "HashUtils.hpp"
 #include "Reactant.hpp"
 #include "Catalyst.hpp"
 #include "Amount.hpp"
@@ -120,9 +120,12 @@ public:
 
 	std::string getHRTag() const;
 
-	void printDefinition(
-		std::ostream& out, std::unordered_set<EstimatorId>& alreadyPrinted
+	void dumpDefinition(
+		std::ostream& out,
+		const bool prettify,
+		std::unordered_set<EstimatorId>& alreadyPrinted
 	) const;
+	void print(std::ostream& out = std::cout) const;
 
 	static constexpr size_t npos = static_cast<size_t>(-1);
 

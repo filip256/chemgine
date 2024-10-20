@@ -13,16 +13,9 @@ FlaskData::FlaskData(
 	ContainerLabwareData(id, name, std::move(ports), textureFile, textureScale, volume, LabwareType::FLASK)
 {}
 
-void FlaskData::printDefinition(std::ostream& out) const
+void FlaskData::dumpCustomProperties(DataDumper& dump) const
 {
-	out << '_' << Keywords::Types::Labware;
-	out << ':' << Def::print(type);
-	out << '{';
-	out << Keywords::Labware::Id << ':' << Def::printId(id) << ',';
-	out << Keywords::Labware::Name << ':' << name << ',';
-	out << Keywords::Labware::Ports << ':' << Def::print(ports) << ',';
-	out << Keywords::Labware::Volume << ':' << Def::print(getVolume()) << ',';
-	out << Keywords::Labware::Texture << ':' << "~/" << textureFile << ',';
-	out << Keywords::Labware::TextureScale << ':' << textureScale;
-	out << "};\n";
+	dump.propertyWithSep(Def::Labware::Volume, getVolume())
+		.propertyWithSep(Def::Labware::Texture, "~/" + textureFile)
+		.property(Def::Labware::TextureScale, textureScale);
 }

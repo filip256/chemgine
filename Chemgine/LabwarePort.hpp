@@ -33,9 +33,9 @@ public:
 		if (not props)
 			return std::nullopt;
 
-		const auto xIt = props->find(Keywords::Port::X);
-		const auto yIt = props->find(Keywords::Port::Y);
-		const auto angleIt = props->find(Keywords::Port::Angle);
+		const auto xIt = props->find(Def::Port::X);
+		const auto yIt = props->find(Def::Port::Y);
+		const auto angleIt = props->find(Def::Port::Angle);
 
 		if (xIt == props->end() || yIt == props->end() || angleIt == props->end())
 			return std::nullopt;
@@ -59,11 +59,23 @@ public:
 	{
 		std::unordered_map<std::string, std::string> props
 		{
-			{ Keywords::Port::X, Def::print(object.x) },
-			{ Keywords::Port::Y, Def::print(object.y) },
-			{ Keywords::Port::Angle, Def::print(object.angle) }
+			{ Def::Port::X, Def::print(object.x) },
+			{ Def::Port::Y, Def::print(object.y) },
+			{ Def::Port::Angle, Def::print(object.angle) }
 		};
 
 		return Def::print(std::pair(Def::print(object.type), std::move(props)));
+	}
+
+	static std::string prettyPrint(const LabwarePort& object)
+	{
+		std::unordered_map<std::string, std::string> props
+		{
+			{ Def::Port::X, Def::print(object.x) },
+			{ Def::Port::Y, Def::print(object.y) },
+			{ Def::Port::Angle, Def::print(object.angle) }
+		};
+
+		return Def::prettyPrint(std::pair(Def::prettyPrint(object.type), std::move(props)));
 	}
 };

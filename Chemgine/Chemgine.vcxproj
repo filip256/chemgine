@@ -204,6 +204,7 @@
     <ClCompile Include="CondenserData.cpp" />
     <ClCompile Include="ContentInitializer.cpp" />
     <ClCompile Include="CursorHelper.cpp" />
+    <ClCompile Include="DataDumper.cpp" />
     <ClCompile Include="DefFileAnalyzer.cpp" />
     <ClCompile Include="DefFileParser.cpp" />
     <ClCompile Include="DefinitionLocation.cpp" />
@@ -254,6 +255,7 @@
     <ClCompile Include="Molecule.cpp" />
     <ClCompile Include="MoleculeData.cpp" />
     <ClCompile Include="PathUtils.cpp" />
+    <ClCompile Include="PrintSettings.cpp" />
     <ClCompile Include="Radical.cpp" />
     <ClCompile Include="RadicalData.cpp" />
     <ClCompile Include="RandomizedParticle.cpp" />
@@ -300,6 +302,7 @@
     <ClInclude Include="BaseContainerLabwareData.hpp" />
     <ClInclude Include="CountedRef.hpp" />
     <ClInclude Include="CursorHelper.hpp" />
+    <ClInclude Include="DataDumper.hpp" />
     <ClInclude Include="DataPoint.hpp" />
     <ClInclude Include="DefFileAnalyzer.hpp" />
     <ClInclude Include="DefFileParser.hpp" />
@@ -355,7 +358,7 @@
     <ClInclude Include="ForwardingContainer.hpp" />
     <ClInclude Include="GenericMoleculeData.hpp" />
     <ClInclude Include="FunctionalEstimator.hpp" />
-    <ClInclude Include="HashCombine.hpp" />
+    <ClInclude Include="HashUtils.hpp" />
     <ClInclude Include="Heatsource.hpp" />
     <ClInclude Include="HeatsourceData.hpp" />
     <ClInclude Include="IndexMap.hpp" />
@@ -381,6 +384,7 @@
     <ClInclude Include="PathUtils.hpp" />
     <ClInclude Include="PortType.hpp" />
     <ClInclude Include="Printers.hpp" />
+    <ClInclude Include="PrintSettings.hpp" />
     <ClInclude Include="Radical.hpp" />
     <ClInclude Include="RadicalData.hpp" />
     <ClInclude Include="RandomizedParticle.hpp" />
@@ -393,8 +397,7 @@
     <ClInclude Include="ReactionNetwork.hpp" />
     <ClInclude Include="ReactionSpecifier.hpp" />
     <ClInclude Include="Ref.hpp" />
-    <ClInclude Include="Regression2DEstimator.hpp" />
-    <ClInclude Include="Regression3DEstimator.hpp" />
+    <ClInclude Include="RegressionEstimator.hpp" />
     <ClInclude Include="Regressors2D.hpp" />
     <ClInclude Include="Regressors3D.hpp" />
     <ClInclude Include="ShapeFill.hpp" />
@@ -420,7 +423,6 @@
     <ClInclude Include="MultiIndexMap.hpp" />
     <ClInclude Include="Molecule.hpp" />
     <ClInclude Include="MoleculeData.hpp" />
-    <ClInclude Include="PairHash.hpp" />
     <ClInclude Include="PVector.hpp" />
     <ClInclude Include="Query.hpp" />
     <ClInclude Include="StructureRef.hpp" />

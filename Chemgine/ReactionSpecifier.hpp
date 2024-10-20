@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Parsers.hpp"
+#include "Printers.hpp"
 
 #include <string>
 #include <vector>
@@ -55,5 +56,40 @@ public:
 
 		return std::optional<ReactionSpecifier>(std::in_place,
 			std::move(reactants), std::move(products));
+	}
+};
+
+template <>
+class Def::Printer<ReactionSpecifier>
+{
+public:
+	static std::string print(const ReactionSpecifier& object)
+	{
+		std::string result;
+		for (size_t i = 0; i < object.reactants.size() - 1; ++i)
+			result += object.reactants[i] + "+";
+		result += object.reactants.back();
+
+		result += "->";
+
+		for (size_t i = 0; i < object.products.size() - 1; ++i)
+			result += object.products[i] + "+";
+		result += object.products.back();
+		return result;
+	}
+
+	static std::string prettyPrint(const ReactionSpecifier& object)
+	{
+		std::string result;
+		for (size_t i = 0; i < object.reactants.size() - 1; ++i)
+			result += object.reactants[i] + " + ";
+		result += object.reactants.back();
+
+		result += " -> ";
+
+		for (size_t i = 0; i < object.products.size() - 1; ++i)
+			result += object.products[i] + " + ";
+		result += object.products.back();
+		return result;
 	}
 };

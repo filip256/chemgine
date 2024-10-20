@@ -8,8 +8,6 @@
 #include "Keywords.hpp"
 #include "Log.hpp"
 
-using namespace Keywords;
-
 DefFileParser::DefFileParser(
 	const std::string& filePath,
 	FileStore& fileStore,
@@ -136,14 +134,14 @@ std::string DefFileParser::nextGlobalLine()
 			break;
 
 		// include
-		if (line.starts_with(Syntax::Include))
+		if (line.starts_with(Def::Syntax::Include))
 		{
-			const auto pathEnd = line.find(Syntax::IncludeAs, Syntax::Include.size());
+			const auto pathEnd = line.find(Def::Syntax::IncludeAs, Def::Syntax::Include.size());
 			auto path = Utils::normalizePath(
-				line.substr(Syntax::Include.size(), pathEnd - Syntax::Include.size()));
+				line.substr(Def::Syntax::Include.size(), pathEnd - Def::Syntax::Include.size()));
 
 			// append dir
-			if (path.starts_with(":/"))
+			if (path.starts_with("~/"))
 				path = Utils::combinePaths(Utils::extractDirName(currentFile), path.substr(1));
 
 			include(path);
@@ -214,11 +212,11 @@ std::pair<std::string, DefinitionLocation> DefFileParser::nextDefinitionLine()
 		}
 
 		// include
-		if (line.starts_with(Syntax::Include))
+		if (line.starts_with(Def::Syntax::Include))
 		{
-			const auto pathEnd = line.find(Syntax::IncludeAs, Syntax::Include.size());
+			const auto pathEnd = line.find(Def::Syntax::IncludeAs, Def::Syntax::Include.size());
 			auto path = Utils::normalizePath(
-				line.substr(Syntax::Include.size(), pathEnd - Syntax::Include.size()));
+				line.substr(Def::Syntax::Include.size(), pathEnd - Def::Syntax::Include.size()));
 
 			// append dir
 			if (path.starts_with("~/"))
@@ -226,16 +224,16 @@ std::pair<std::string, DefinitionLocation> DefFileParser::nextDefinitionLine()
 
 			if (path.empty())
 			{
-				Log(this).error("Missing include path after '{0}' keyword, at: {1}:{2}.", Syntax::Include, currentFile, currentLine);
+				Log(this).error("Missing include path after '{0}' keyword, at: {1}:{2}.", Def::Syntax::Include, currentFile, currentLine);
 				continue;
 			}
 
 			if (pathEnd != std::string::npos)
 			{
-				auto alias = Utils::strip(line.substr(pathEnd + Syntax::IncludeAs.size()));
+				auto alias = Utils::strip(line.substr(pathEnd + Def::Syntax::IncludeAs.size()));
 				if (alias.empty())
 				{
-					Log(this).error("Missing include alias after '{0}' keyword, at: {1}:{2}.", Syntax::IncludeAs, currentFile, currentLine);
+					Log(this).error("Missing include alias after '{0}' keyword, at: {1}:{2}.", Def::Syntax::IncludeAs, currentFile, currentLine);
 					continue;
 				}
 

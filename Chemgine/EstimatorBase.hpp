@@ -28,9 +28,12 @@ public:
 		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
 	) const;
 
-	virtual void printDefinition(
+	virtual void dumpDefinition(
 		std::ostream& out,
+		const bool prettify,
 		std::unordered_set<EstimatorId>& alreadyPrinted,
-		const bool printInline
+		const bool printInline,
+		const uint16_t baseIndent
 	) const = 0;
+	void print(std::ostream& out = std::cout) const;
 };

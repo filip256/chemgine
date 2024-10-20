@@ -36,10 +36,10 @@ public:
 	{
 		static const std::unordered_map<std::string, LabwareType> typeMap
 		{
-			{Keywords::Labware::Flask, LabwareType::FLASK},
-			{Keywords::Labware::Adaptor, LabwareType::ADAPTOR},
-			{Keywords::Labware::Condenser, LabwareType::CONDENSER},
-			{Keywords::Labware::Heatsource, LabwareType::HEATSOURCE},
+			{Def::Labware::Flask, LabwareType::FLASK},
+			{Def::Labware::Adaptor, LabwareType::ADAPTOR},
+			{Def::Labware::Condenser, LabwareType::CONDENSER},
+			{Def::Labware::Heatsource, LabwareType::HEATSOURCE},
 		};
 
 		const auto typeIt = typeMap.find(Utils::strip(str));
@@ -57,10 +57,10 @@ public:
 	{
 		static const std::unordered_map<LabwareType, std::string> typeMap
 		{
-			{LabwareType::FLASK, Keywords::Labware::Flask},
-			{LabwareType::ADAPTOR, Keywords::Labware::Adaptor},
-			{LabwareType::CONDENSER, Keywords::Labware::Condenser},
-			{ LabwareType::HEATSOURCE, Keywords::Labware::Heatsource},
+			{LabwareType::FLASK, Def::Labware::Flask},
+			{LabwareType::ADAPTOR, Def::Labware::Adaptor},
+			{LabwareType::CONDENSER, Def::Labware::Condenser},
+			{ LabwareType::HEATSOURCE, Def::Labware::Heatsource},
 		};
 		return typeMap.at(object);
 	}

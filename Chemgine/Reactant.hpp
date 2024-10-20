@@ -3,7 +3,7 @@
 #include "Molecule.hpp"
 #include "LayerType.hpp"
 #include "Amount.hpp"
-#include "HashCombine.hpp"
+#include "HashUtils.hpp"
 #include "Ref.hpp"
 #include "AggregationType.hpp"
 
@@ -31,7 +31,7 @@ struct std::hash<ReactantId>
 {
 	size_t operator() (const ReactantId& id) const
 	{
-		return hashCombine(id.moleculeId, toIndex(id.layer));
+		return Utils::hashCombine(id.moleculeId, toIndex(id.layer));
 	}
 };
 

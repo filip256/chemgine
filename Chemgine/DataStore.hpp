@@ -10,6 +10,9 @@
 
 class DataStore
 {
+private:
+	bool addDefinition(DefinitionObject&& definition);
+
 public:
 	FileStore fileStore;
 
@@ -27,9 +30,9 @@ public:
 	DataStore();
 	DataStore(const DataStore&) = delete;
 
-	DataStore& load(const std::string& path);
-	DataStore& dump(const std::string& path);
-	DataStore& clear();
+	bool load(const std::string& path);
+	void dump(const std::string& path, const bool prettify = true);
+	void clear();
 
 	static constexpr size_t npos = static_cast<size_t>(-1);
 };

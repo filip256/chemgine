@@ -1,5 +1,6 @@
 #include "AtomData.hpp"
 #include "DefinitionObject.hpp"
+#include "DataDumper.hpp"
 #include "Keywords.hpp"
 #include "Printers.hpp"
 #include "Utils.hpp"
@@ -56,15 +57,26 @@ std::string AtomData::getSMILES() const
 		smiles;
 }
 
-void AtomData::printDefinition(std::ostream& out) const
+void AtomData::dumpDefinition(std::ostream& out, const bool prettify) const
 {
-	out << '_' << Keywords::Types::Atom;
-	out << ':' << Def::print(symbol);
-	out << '{';
-	out << Keywords::Atoms::Name << ':' << name << ',';
-	out << Keywords::Atoms::Weight << ':' << Def::print(weight) << ',';
-	out << Keywords::Atoms::Valences << ':' << Def::print(valences);
-	out << "};\n";
+	const static uint8_t valueOffset = Utils::max(
+		Def::Atoms::Name.size(),
+		Def::Atoms::Weight.size(),
+		Def::Atoms::Valences.size());
+
+	DataDumper(out, valueOffset, 0, prettify)
+		.header(Def::Types::Atom, symbol, "")
+		.beginProperties()
+		.propertyWithSep(Def::Atoms::Name, name)
+		.propertyWithSep(Def::Atoms::Weight, weight)
+		.property(Def::Atoms::Valences, valences)
+		.endProperties()
+		.endDefinition();
+}
+
+void AtomData::print(std::ostream& out) const
+{
+	dumpDefinition(out, true);
 }
 
 uint8_t AtomData::getRarityOf(const Symbol& symbol)

@@ -2,7 +2,7 @@
 
 #include "ReactionData.hpp"
 #include "ReactantSet.hpp"
-#include "HashCombine.hpp"
+#include "HashUtils.hpp"
 
 class ConcreteReaction
 {
@@ -48,11 +48,11 @@ struct std::hash<ConcreteReaction>
 	{
 		size_t hash = 0;
 		for (const auto& [rId, _] : reaction.reactants)
-			hashCombineWith(hash, rId);
+			Utils::hashCombineWith(hash, rId);
 		for (const auto& [pId, _] : reaction.products)
-			hashCombineWith(hash, pId);
+			Utils::hashCombineWith(hash, pId);
 		for (const auto& cat : reaction.baseReaction.getCatalysts())
-			hashCombineWith(hash, cat.getId());
+			Utils::hashCombineWith(hash, cat.getId());
 		return hash;
 	}
 };

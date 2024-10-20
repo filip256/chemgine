@@ -19,6 +19,11 @@ DefinitionObject::DefinitionObject(
 	location(std::move(location))
 {}
 
+DefinitionObject::~DefinitionObject() noexcept
+{
+	logUnusedWarnings();
+}
+
 DefinitionType DefinitionObject::getType() const
 {
 	return type;
@@ -44,19 +49,29 @@ std::string DefinitionObject::getLocationName() const
 	return location.toString();
 }
 
-const std::unordered_map<std::string, std::string>& DefinitionObject::getRemainingProperties() const
+void DefinitionObject::logUnusedWarnings() const
 {
-	return properties;
+	for (const auto& [k, _] : properties)
+		if(not accessedProperties.contains(k))
+			Log(this).warn("Unused property: '{0}', at: {1}.", k, location.toString());
+
+	for (const auto& [k, _] : ilSubDefs)
+		if (not accessedSubDefs.contains(k))
+			Log(this).warn("Unused sub-definition for property: '{0}', at: {1}.", k, location.toString());
+
+	for (const auto& [k, _] : oolSubDefs)
+		if (not accessedSubDefs.contains(k))
+			Log(this).warn("Unused sub-definition for property: '{0}', at: {1}.", k, location.toString());
 }
 
-const std::unordered_map<std::string, DefinitionObject>& DefinitionObject::getILSubDefs() const
+std::optional<std::string> DefinitionObject::getOptionalProperty(const std::string& key) const
 {
-	return ilSubDefs;
-}
+	auto it = properties.find(key);
+	if (it == properties.end())
+		return std::nullopt;
 
-const std::unordered_map<std::string, const DefinitionObject*>& DefinitionObject::getOOLSubDefs() const
-{
-	return oolSubDefs;
+	accessedProperties.emplace(key);
+	return it->second;
 }
 
 std::optional<std::string> DefinitionObject::getProperty(const std::string& key) const
@@ -68,40 +83,29 @@ std::optional<std::string> DefinitionObject::getProperty(const std::string& key)
 	return prop;
 }
 
-std::optional<std::string> DefinitionObject::getOptionalProperty(const std::string& key) const
-{
-	auto it = properties.find(key);
-	if (it == properties.end())
-		return std::nullopt;
-
-	return it->second;
-}
-
 std::string DefinitionObject::getDefaultProperty(const std::string& key, std::string&& defaultValue) const
 {
 	const auto prop = getOptionalProperty(key);
 	return prop ? *prop : defaultValue;
 }
 
-std::optional<std::string> DefinitionObject::pullProperty(const std::string& key)
+const DefinitionObject* DefinitionObject::getOptionalDefinition(const std::string& key) const
 {
-	const auto prop = getProperty(key);
-	properties.erase(key);
-	return prop;
-}
+	const auto ilDef = ilSubDefs.find(key);
+	if (ilDef != ilSubDefs.end())
+	{
+		accessedSubDefs.emplace(key);
+		return &ilDef->second;
+	}
 
-std::optional<std::string> DefinitionObject::pullOptionalProperty(const std::string& key)
-{
-	const auto prop = getOptionalProperty(key);
-	properties.erase(key);
-	return prop;
-}
+	const auto oolDef = oolSubDefs.find(key);
+	if (oolDef != oolSubDefs.end())
+	{
+		accessedSubDefs.emplace(key);
+		return oolDef->second;
+	}
 
-std::string DefinitionObject::pullDefaultProperty(const std::string& key, std::string&& defaultValue)
-{
-	const auto prop = getDefaultProperty(key, std::move(defaultValue));
-	properties.erase(key);
-	return prop;
+	return nullptr;
 }
 
 const DefinitionObject* DefinitionObject::getDefinition(const std::string& key) const
@@ -111,17 +115,4 @@ const DefinitionObject* DefinitionObject::getDefinition(const std::string& key) 
 		Log(this).error("Missing required sub-definition: '{0}', at: {1}.", key, location.toString());
 
 	return def;
-}
-
-const DefinitionObject* DefinitionObject::getOptionalDefinition(const std::string& key) const
-{
-	const auto ilDef = ilSubDefs.find(key);
-	if (ilDef != ilSubDefs.end())
-		return &ilDef->second;
-
-	const auto oolDef = oolSubDefs.find(key);
-	if (oolDef != oolSubDefs.end())
-		return oolDef->second;
-
-	return nullptr;
 }
