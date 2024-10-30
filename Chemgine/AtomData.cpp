@@ -1,16 +1,19 @@
 #include "AtomData.hpp"
+#include "Object.hpp"
+#include "DataDumper.hpp"
+#include "Keywords.hpp"
+#include "Printers.hpp"
 #include "Utils.hpp"
 
 const ImmutableSet<uint8_t> AtomData::RadicalAnyValence = { NullValence };
 
 AtomData::AtomData(
-	const AtomId id,
-	const Symbol symbol,
+	const Symbol& symbol,
 	const std::string& name,
 	const Amount<Unit::GRAM> weight,
 	ImmutableSet<uint8_t>&& valences
 ) noexcept :
-	BaseComponentData(id, weight, getRarityOf(symbol)),
+	BaseComponentData(weight, getRarityOf(symbol)),
 	symbol(symbol),
 	name(name),
 	valences(std::move(valences))
@@ -48,18 +51,35 @@ uint8_t AtomData::getFittingValence(const uint8_t bonds) const
 
 std::string AtomData::getSMILES() const
 {
-	return symbol.isSingleByte() ?
-		symbol.getAsString() :
-		'[' + symbol.getAsString() + ']';
+	const auto smiles = symbol.getString();
+	return smiles.size() > 1 ?
+		'[' + smiles + ']' :
+		smiles;
 }
 
-std::string AtomData::getBinaryId() const
+void AtomData::dumpDefinition(std::ostream& out, const bool prettify) const
 {
-	//return std::string({ static_cast<char>(id) });
-	return std::to_string(id);
+	const static uint8_t valueOffset = Utils::max(
+		Def::Atoms::Name.size(),
+		Def::Atoms::Weight.size(),
+		Def::Atoms::Valences.size());
+
+	Def::DataDumper(out, valueOffset, 0, prettify)
+		.header(Def::Types::Atom, symbol, "")
+		.beginProperties()
+		.propertyWithSep(Def::Atoms::Name, name)
+		.propertyWithSep(Def::Atoms::Weight, weight)
+		.property(Def::Atoms::Valences, valences)
+		.endProperties()
+		.endDefinition();
 }
 
-uint8_t AtomData::getRarityOf(const Symbol symbol)
+void AtomData::print(std::ostream& out) const
+{
+	dumpDefinition(out, true);
+}
+
+uint8_t AtomData::getRarityOf(const Symbol& symbol)
 {
 	static const std::unordered_map<Symbol, uint8_t> rarities {
 		{ "C", 1 },

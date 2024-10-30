@@ -1,14 +1,17 @@
 #pragma once
 
+#include "Bond.hpp"
+#include "Atom.hpp"
+#include "Parsers.hpp"
+#include "Printers.hpp"
+
 #include <vector>
 #include <string>
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
 #include <stack>
-
-#include "Bond.hpp"
-#include "Atom.hpp"
+#include <memory>
 
 class TextBlock;
 
@@ -16,7 +19,7 @@ class MolecularStructure
 {
 private:
     uint16_t impliedHydrogenCount = 0;
-    std::vector<const Atom*> atoms;
+    std::vector<std::unique_ptr<const Atom>> atoms;
     std::vector<std::vector<Bond>> bonds;
 
     void rPrint(
@@ -119,7 +122,6 @@ public:
     static constexpr c_size npos = static_cast<c_size>(-1);
 
     MolecularStructure(const std::string& smiles);
-    MolecularStructure(const std::string& serialized, const bool canonicalize);
     MolecularStructure(MolecularStructure&& structure) = default;
     ~MolecularStructure() noexcept;
 
@@ -132,7 +134,7 @@ public:
     /// </summary>
     void canonicalize();
 
-    const Atom* getAtom(const c_size idx) const;
+    const Atom& getAtom(const c_size idx) const;
 
     bool loadFromSMILES(const std::string& smiles);
     // not working for cycles :(
@@ -184,7 +186,7 @@ public:
     /// Returns a map representing a histrogram of all the atoms in this structure.
     /// Complexity: O(n)
     /// </summary>
-    std::unordered_map<AtomId, c_size> getComponentCountMap() const;
+    std::unordered_map<Symbol, c_size> getComponentCountMap() const;
 
     /// <summary>
     /// Returns true if the molecule contains no real or virtual atoms.
@@ -286,7 +288,29 @@ public:
     bool operator!=(const MolecularStructure& other) const;
     bool operator==(const std::string& other) const;
     bool operator!=(const std::string& other) const;
-
-    std::string serialize() const;
-    bool deserialize(const std::string& str);
 };
+
+
+template <>
+class Def::Parser<MolecularStructure>
+{
+public:
+    static std::optional<MolecularStructure> parse(const std::string& str)
+    {
+        MolecularStructure molecule(str);
+        return molecule.isEmpty() ?
+            std::nullopt :
+            std::optional(std::move(molecule));
+    }
+};
+
+template <>
+class Def::Printer<MolecularStructure>
+{
+public:
+    static std::string print(const MolecularStructure& object)
+    {
+        return object.toSMILES();
+    }
+};
+

@@ -1,14 +1,17 @@
 #pragma once
 
+#include <regex>
 #include <string>
 #include <vector>
 #include <format>
 #include <typeinfo>
 #include <iostream>
 #include <algorithm>
+#include <stdexcept>
 
 #include "LogType.hpp"
 #include "Linguistics.hpp"
+#include "StringUtils.hpp"
 #include "TerminalUtils.hpp"
 
 
@@ -22,7 +25,7 @@
 #else
 	#define CHEM_LOG_ERROR
 	#define CHEM_LOG_WARN
-	#define CHEM_LOG_SUCCESS
+	#define CHEM_LOG_INFO
 #endif
 
 
@@ -33,6 +36,7 @@ private:
 
 protected:
 	static uint8_t contexts;
+	static size_t foldCount;
 	static std::vector<std::string> cache;
 
 	LogBase(const void* location = nullptr) noexcept;
@@ -50,6 +54,9 @@ public:
 	static LogType logLevel;
 	static LogType printNameLevel;
 	static LogType printAddressLevel;
+
+	static std::regex logSourceFilter;
+
 	static std::ostream& outputStream;
 
 	LogBase() = delete;
@@ -63,13 +70,13 @@ private:
 	static std::string getTypeName();
 
 	const Log& log(const std::string& msg, const LogType type) const;
-	void fatalExit(const std::string& msg) const;
+	__declspec(noreturn) void fatalExit(const std::string& msg) const;
 
 public:
 	Log(const SourceT* location = nullptr) noexcept;
 
 	template <class... Args>
-	void fatal(std::format_string<Args...> format, Args&&... args) const;
+	__declspec(noreturn) void fatal(std::format_string<Args...> format, Args&&... args) const;
 	template <class... Args>
 	const Log& error(std::format_string<Args...> format, Args&&... args) const;
 	template <class... Args>
@@ -100,10 +107,10 @@ std::string Log<SourceT>::getTypeName()
 
 	auto name = std::string(typeid(SourceT).name());
 
-	if (name.starts_with("class "))
-		name = name.substr(6);
+	if (name.starts_with("class"))
+		name = name.substr(5);
 
-	std::remove_if(name.begin(), name.end(), [](const auto c) { return std::isspace(c) != 0 || c == '\n'; });
+	Utils::strip(name);
 
 	return name.size() ? name : "";
 }
@@ -111,60 +118,101 @@ std::string Log<SourceT>::getTypeName()
 template<typename SourceT>
 const Log<SourceT>& Log<SourceT>::log(const std::string& msg, const LogType type) const
 {
-	if (type > LogBase::logLevel)
+	if (type > logLevel)
 		return *this;
 
-	for (uint8_t i = 0; i < contexts; ++i)
-		LogBase::outputStream << "  ";
+	const auto typeName = getTypeName();
+	if (std::regex_match(typeName, logSourceFilter) == false)
+		return *this;
 
-	switch (type)
+	size_t suffixSize = 0;
+
+	// exit folded log sequence
+	if (foldCount != static_cast<size_t>(-1) && msg.starts_with('\r') == false)
 	{
-	case LogType::ERROR:
-		OS::setTextRed();
-		outputStream << "ERROR:   ";
-		break;
-	case LogType::WARN:
-		OS::setTextDarkYellow();
-		outputStream << "WARN:    ";
-		break;
-	case LogType::SUCCESS:
-		OS::setTextGreen();
-		outputStream << "SUCCESS: ";
-		break;
-	case LogType::INFO:
-		OS::setTextCyan();
-		outputStream << "INFO:    ";
-		break;
-	case LogType::DEBUG:
-		OS::setTextMagenta();
-		outputStream << "DEBUG:   ";
-		break;
-	case LogType::TRACE:
-		OS::setTextBlue();
-		outputStream << "TRACE:   ";
-		break;
+		foldCount = static_cast<size_t>(-1);
+		outputStream << '\n';
 	}
 
-	if (type != LogType::NONE)
-		OS::setTextWhite();
-
-	if (type <= printNameLevel)
+	if (foldCount == static_cast<size_t>(-1))
 	{
-		const auto name = getTypeName();
-		if (name.size())
+		for (uint8_t i = 0; i < contexts; ++i)
+			outputStream << "  ";
+		suffixSize += contexts * 2;
+
+		switch (type)
 		{
-			outputStream << '[' << getTypeName();
-			if (type <= printAddressLevel)
+		case LogType::ERROR:
+			OS::setTextRed();
+			outputStream << "ERROR:   ";
+			break;
+		case LogType::WARN:
+			OS::setTextDarkYellow();
+			outputStream << "WARN:    ";
+			break;
+		case LogType::SUCCESS:
+			OS::setTextGreen();
+			outputStream << "SUCCESS: ";
+			break;
+		case LogType::INFO:
+			OS::setTextCyan();
+			outputStream << "INFO:    ";
+			break;
+		case LogType::DEBUG:
+			OS::setTextMagenta();
+			outputStream << "DEBUG:   ";
+			break;
+		case LogType::TRACE:
+			OS::setTextBlue();
+			outputStream << "TRACE:   ";
+			break;
+		}
+		suffixSize += 10;
+
+
+		if (type != LogType::NONE)
+			OS::setTextWhite();
+
+		if (type <= printNameLevel)
+		{
+			if (typeName.size())
 			{
-				const auto addr = getAddress();
-				if (addr.size())
-					outputStream << ": " << getAddress();
+				outputStream << '[' << typeName;
+				if (type <= printAddressLevel)
+				{
+					if (const auto addr = getAddress(); addr.size())
+					{
+						outputStream << " <" << addr << '>';
+						suffixSize += addr.size() + 3;
+					}
+				}
+				outputStream << "]   ";
+				suffixSize += typeName.size() + 5;
 			}
-			outputStream << "] ";
 		}
 	}
 
-	outputStream << msg << '\n';
+	if (msg.starts_with('\r')) // folded log
+	{
+		// don't backspace on the first folded log
+		if (foldCount != static_cast<size_t>(-1))
+		{
+			for (size_t i = 0; i < foldCount; ++i)
+				outputStream << '\b';
+		}
+
+		outputStream << msg.substr(1);
+		foldCount = msg.size() - 1;
+	}
+	else // normal log
+	{
+		const auto splitMsg = Utils::split(msg, '\n', false);
+		outputStream << splitMsg.front() << '\n';
+
+		const std::string suffixSpace(suffixSize, ' ');
+		for (size_t i = 1; i < splitMsg.size(); ++i)
+			outputStream << suffixSpace << splitMsg[i] << '\n';
+	}
 
 	return *this;
 }
@@ -172,6 +220,14 @@ const Log<SourceT>& Log<SourceT>::log(const std::string& msg, const LogType type
 template<typename SourceT>
 void Log<SourceT>::fatalExit(const std::string& msg) const
 {
+	// exit folded log sequence
+	if (foldCount != static_cast<size_t>(-1) && msg.starts_with('\r') == false)
+	{
+		foldCount = static_cast<size_t>(-1);
+		outputStream << '\n';
+	}
+
+	outputStream << '\n';
 	OS::setTextDarkRed();
 	outputStream << "FATAL:   ";
 	OS::setTextWhite();
@@ -191,6 +247,9 @@ void Log<SourceT>::fatalExit(const std::string& msg) const
 	OS::setTextDarkRed();
 	outputStream << "\n   The execution was halted due to a fatal error!\n   Press ENTER to exit.\n";
 	OS::setTextWhite();
+
+	throw std::runtime_error("Fatal error: '" + msg + "'.");
+
 	getchar();
 	std::exit(EXIT_FAILURE);
 }

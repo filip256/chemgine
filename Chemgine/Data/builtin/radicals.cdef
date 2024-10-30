@@ -1,0 +1,28 @@
+:.
+    Built-in Radical Definitions
+.:
+
+_radical : * {
+    name:     any radical,
+    matches:  *,
+};
+
+_radical : R {
+    name:     alkyl radical,
+    matches:  C,
+};
+
+_radical : A {
+    name:     aromatic radical,
+    matches:  C,
+};
+
+_radical : X {
+    name:     halogen radical,
+    matches:  {F, Cl, Br, At, Ts},
+};
+
+_radical : Me {
+    name:     metal radical,
+    matches:  {Li, Na, K, Be, Mg, Ca, Sr, Ba},
+};

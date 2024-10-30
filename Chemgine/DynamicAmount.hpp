@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Amount.hpp"
+#include "Parsers.hpp"
+#include "Keywords.hpp"
 
 #include <optional>
 
@@ -20,6 +22,11 @@ public:
 
 	template<Unit OUnitT>
 	DynamicAmount(const Amount<OUnitT> amount) noexcept;
+
+	StorageType asKilo() const;
+	StorageType asStd() const;
+	StorageType asMilli() const;
+	StorageType asMicro() const;
 
 	std::optional<DynamicAmount> to(const Unit target) const;
 	template<Unit UnitT>
@@ -52,7 +59,7 @@ template<Unit UnitT>
 std::optional<Amount<UnitT>> DynamicAmount::to() const
 {
 	const auto converted = to(UnitT);
-	return converted.has_value() ?
+	return converted ?
 		std::optional(Amount<UnitT>(converted->value)) :
 		std::nullopt;
 }
@@ -210,11 +217,98 @@ inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::RADIA
 	}
 }
 
+template<>
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::MOLE_RATIO> amount, const Unit target)
+{
+	switch (target)
+	{
+	case Unit::MOLE_PERCENT:
+		return Amount<Unit::MOLE_PERCENT>(amount);
+	default:
+		return std::nullopt;
+	}
+}
+
+template<>
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::MOLE_PERCENT> amount, const Unit target)
+{
+	switch (target)
+	{
+	case Unit::MOLE_RATIO:
+		return Amount<Unit::MOLE_RATIO>(amount);
+	default:
+		return std::nullopt;
+	}
+}
+
 template<Unit UnitT>
 static std::optional<Amount<UnitT>> DynamicAmount::get(const StorageType value, const std::string& symbol)
 {
 	const auto temp = DynamicAmount::get(value, symbol);
-	return temp.has_value() ?
+	return temp ?
 		std::optional(temp->to<UnitT>()) :
 		std::nullopt;
 }
+
+
+//    --- Def ---    //
+
+template <>
+class Def::Parser<Unit>
+{
+public:
+	static std::optional<Unit> parse(const std::string& str)
+	{
+		return DynamicAmount::getUnitFromSymbol(Utils::strip(str));
+	}
+};
+
+
+template <Unit U>
+class Def::Parser<Amount<U>>
+{
+public:
+	static std::optional<Amount<U>> parse(const std::string& str)
+	{
+		const auto pair = Utils::split(Utils::strip(str), '_', true);
+		if (pair.empty())
+			return std::nullopt;
+
+		const auto val = Def::parse<Amount<>::StorageType>(Utils::strip(pair.front()));
+		if (not val)
+			return std::nullopt;
+
+		if (pair.size() == 1)
+			return Amount<U>(*val);
+
+		if (pair.size() == 2)
+			return DynamicAmount::get<U>(*val, pair.back());
+
+		return std::nullopt;
+	}
+};
+
+
+template <>
+class Def::Parser<DynamicAmount>
+{
+public:
+	static std::optional<DynamicAmount> parse(const std::string& str)
+	{
+		const auto pair = Utils::split(str, '_', true);
+		if (pair.empty())
+			return std::nullopt;
+
+		const auto val = Def::parse<Amount<>::StorageType>(pair.front());
+		if (not val)
+			return std::nullopt;
+
+		if (pair.size() == 1)
+			return DynamicAmount(*val, Unit::ANY);
+
+		if (pair.size() == 2)
+			return DynamicAmount::get(*val, pair.back());
+
+		return std::nullopt;
+	}
+};

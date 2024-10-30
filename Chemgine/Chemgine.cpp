@@ -7,7 +7,7 @@
 #include "Log.hpp"
 #include "Atom.hpp"
 #include "Tests.hpp"
-#include "Reactable.hpp"
+#include "StructureRef.hpp"
 
 #include "Reactor.hpp"
 #include "Query.hpp"
@@ -16,7 +16,7 @@
 #include "BaseLabwareData.hpp"
 #include "BaseLabwareComponent.hpp"
 #include "LabwareSystem.hpp"
-#include "Reactable.hpp"
+#include "StructureRef.hpp"
 
 #include "UIContext.hpp"
 
@@ -30,39 +30,40 @@
 #include "TextBlock.hpp"
 #include "Linguistics.hpp"
 #include "DynamicAmount.hpp"
+#include "PathUtils.hpp"
+
+#include <algorithm> 
 
 int main()
 {
     {
         LogBase::logLevel = LogType::DEBUG;
 
-        //#ifndef NDEBUG
         {
             TestManager tests;
             tests.runAll();
             tests.runPersist();
         }
-        //#endif
 
         DataStore store;
         Accessor<>::setDataStore(store);
 
-        store.loadAtomsData("Data/AtomData.csv")
-            .loadEstimatorsData("")
-            .loadMoleculesData("Data/MoleculeData.csv")
-            .loadGenericMoleculesData("Data/GenericMoleculeData.csv")
-            .loadReactionsData("Data/ReactionData.csv")
-            .loadLabwareData("Data/LabwareData.csv");;
+        store.load("./Data/builtin.cdef");
+        store.dump("./Out/builtin.cdef");
+        store.clear();
+        store.load("./Out/builtin.cdef");
+
+        std::cout << MolecularStructure("S(=O)(=O)(O)O").print() << '\n';
 
         std::cout << MolecularStructure("S(-O)(-O)(-O)(OCC)(OCCC(N(C)C)=O)C#N").print()<<'\n';
 
-        // TDOD: add in presentation
         const auto x = store.reactions.getRetrosynthReactions(
-            *Reactable::get(MolecularStructure("O(C(C)C)C(=O)C")));
+            *StructureRef::create("O(C(C)C)C(=O)C"));
 
         for (const auto& i : x)
         {
-            std::cout << i.print() << "\n-------------------------\n";
+            i.print();
+            std::cout << "-------------------------\n\n";
         }
 
         UIContext uiContext;
@@ -103,16 +104,8 @@ int main()
         //    .saveMoleculesData("Out/molecules.out.csv");
     }
 
-    if (Atom::instanceCount != 0)
-        Log().error("Memory leak detected: Atom ({0} unreleased instances).", Atom::instanceCount);
-    if (Bond::instanceCount != 0)
-        Log().error("Memory leak detected: Bond ({0} unreleased instances).", Bond::instanceCount);
-    if (BaseLabwareData::instanceCount != 0)
-        Log().error("Memory leak detected: BaseLabwareData ({0} unreleased instances).", BaseLabwareData::instanceCount);
     if (BaseLabwareComponent::instanceCount != 0)
         Log().error("Memory leak detected: BaseLabwareComponent ({0} unreleased instances).", BaseLabwareComponent::instanceCount);
-    if (BaseEstimator::instanceCount != 0)
-        Log().error("Memory leak detected: BaseEstimator ({0} unreleased instances).", BaseEstimator::instanceCount);
     if (BaseContainer::instanceCount != 0)
         Log().error("Memory leak detected: BaseContainer ({0} unreleased instances).", BaseContainer::instanceCount);
 

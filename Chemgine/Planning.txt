@@ -136,9 +136,9 @@ In an optimized molecular structure there must be a way to specify which atoms a
      4. loop through all reactions and inherit any undefined properties
              
 
--- Reactables --
+-- StructureRefs --
 F. groups, backbones, atoms, organics, anorganics can all be reactants and products.
-Reactables provide access to the MolecularStructure of each of these types.
+StructureRefs provide access to the MolecularStructure of each of these types.
 They are similar to Components but with a different purpose.
     
 
@@ -228,7 +228,7 @@ Tasks:
   DONE. Molecular structure improvements: isNormalized field (checks for req methods), implied hydrogen clarifications
 ---
   1. Fix single key Repositorys
-  2. Fix Reactable id clash (Molecule/GenericMolecule)
+  2. Fix StructureRef id clash (Molecule/GenericMolecule)
   DONE. Estimator optimizer
   DONE. Use operator* instead of value() for std::optional
   DONE. Rename approximator to estimator
@@ -254,7 +254,7 @@ Tasks:
   ?. Treat layers and container refs equally.
   DONE. Add get LayerType and AggregationType name strings
   15. Add more simulation-time logs
-  ?. Add getPropertyAtSTP()
+  ?. Add pullPropertyAtSTP()
   DONE. Better way to mark predefined estimator ids
   16. Make reaction tree methods iterative
   17. Consider avoiding reparsing reactions in the tree (in case of cycles)
@@ -383,6 +383,77 @@ Tasks:
   1. Add user define-able radical atoms
 ---
   1. Add user defineable specific bond properties
+---
+     - IMPORTANT -
+
+  DONE. size_t is only 4-bytes on x86, some custom hashes and Symbol comparison might fail on x86. Use uint64_t where possible
+  DONE. float comparison should use adaptive epsilon
+  2. nocexcept default ctors
+
+---
+     - DEFINITION LANGUAGE -
+
+  DONE. Add parser which splits text into defs
+  DONE. Add new parser to existing implementation
+  DONE. Add logic for multi-loads
+  DONE. Add parser for splines and radicals
+  DONE. Remove loadBuiltins()'s and old CSV parsing
+  DONE. Add typed estimators
+  DONE. Improve list and pair formats
+  DONE. Add printing
+  DONE. Fix reaction network building
+  10. Add definition tags
+  11. Add definition override
+  DONE. Allow input unit permutations
+  DONE. Add inf/-inf parsing for amounts
+  13. (?) Add input split estimator
+  DONE. Add regression estimators and higher dimension support
+  DONE. Better port and color formats
+  DONE. Add constant and linear estimator fusing with transforms
+  17. Add non-linear regressors
+  DONE. Better ignored property check
+  DONE. Pass Symbol& everywhere, make symbol 8-byte
+  20. (?) Scientific float notation for printers
+  DONE. Add pretty printers
+  22. (?) Add data store print options: pretty, print atoms in sep file
+  DONE. Get rid of special id synthax, it has no benefit
+  DONE. Add default and optional sub-definition getters
+  24. Split long lists on multiple lines for pretty prints
+  DONE. Better Def namespacing
+---
+     - DIRECT REFERENCING -
+
+  DONE. Use dyn allocation for all data objects
+  DONE. Move GenericMoleculeRepository in MoleculeRepository
+  DONE. Remove unnecessary id properties
+  DONE. Remove id based accessing
+
+---
+     - PRECISION -
+
+  DONE. Rename all floats and doubles to typedef
+
+---
+    - PROPER TESTING -
+---
+    - FULL CYCLE SUPPORT -
+---
+    - BETTER API -
+
+    1. Remove unnecesarry clone() methods, and implement the others by deriving D from Clonable<D>
+    2. Replace dynamic casts with faster variants
+    3. Remove all the operator new instance counting
+
+---
+    - SMART AMOUNTS -
+---
+    - BETTER LOGS -
+
+    1. Separate dev logs from user logs
+---
+    - LARGE DATA -
+
+    1. Make higher-order DataStore which holds a reference to a large store but brings additions without copying the data
 
 
 
@@ -562,6 +633,60 @@ Categorizations:
              another way is to add the energy and consume in the same time, potentially resuling in deep recursive calls
 
 
+   -----------------------------------------------------------------------------------------------------------------
+
+       Estimators:
+          - bases: Constant, Linear, Spline2D, ...
+          - affine transforms:
+             - shifting: shifts the base:
+                - in order to match a given reference point (Xr, Yr):
+                   - vertically: f(X) = base(X) - base(Xr) + Yr
+                   - vertically and horizontally: f(X) = base(X - Xr + Xh) - base(Xh) + Yr,
+                      where Xh is a given zero-point on base
+                   - vertically with scaling: f(X) = base(X - Xr) * Yr
+                - by a given v_shif, h_shift and scale: f(X) = base(X - h_shift) * scale + v_shift
+            - scaling: f(X) = base(X) * scale
+          - algebraic:
+             - mult: f(X) = e1(X) * e2(X)
+             - add: f(X) = e1(X) + e2(X)
+             - compose: f(X) = e2(e1(X)) 
+
+          Example: reaction speed(x_C) = mult(affine(doubles_func, h_shift: base_temp), base_speed)
+
+
+          Optimizations:
+           - affine v, h, s:
+              - on constant f(x) = c:
+                  f(x - h)*s + v = c*s + v
+
+              - on linear f(x) = x*b1 + b0:
+                   f(x - h)*s + v = ((x - h)*b1 + b0)*s + v =
+                                  = (x*b1 - h*b1 + b0)*s + v =
+                                  = x*b1*s - h*b1*s + b0*s + v =
+                                  = x*b1*s - (h*b1 - b0)*s + v
+                                      \__/   \_______________/
+                                   x*new_b1 + new_b0          new_b1 = b1*s, new_b0 = - (h*b1 - b0)*s + v
+
+              - on affine f(x) = (x - H)*S + V:
+                   f(x - h)*s + v = ((x - H - h)*S + V)*s + v
+                                  = (x*S - H*S - h*S + V)*s + v =
+                                  = x*S*s - H*S*s - h*S*s + v*s + v =
+                                  = x*S*s - (H + h)*S*s + v*(s + 1)
+                                      \_/   \_____________________/
+                                   x*new_s + new_v            new_s = S*s, new_v = - (H + h)*S*s + v*(s + 1)
+
+                 
+             
+        Estimator Ref Count:
+            Estimator E gets:
+               1 when the E is created
+              +1 when estimator E' = E would be created
+              +1 when derived estimator D(E) is created
+              -1 when derived estimator D(E) is optimized into D' = D(E)
+
+
+            CountedRef<T> could increment and decrement T's ref count safely when T is of type Countable<CountT>
+
 
           CONSIDER REMOVING THE EXISTANCE THRESHOLD
 
@@ -580,59 +705,6 @@ Categorizations:
 
 
 
-
-
-
-
-
-
     -----------------------------------------------------------------------------------------------------------------
 
-
-    Potential serialization formats:
-
-
-#tag B
-
-load : basic_chem
-
-atom : C {
-    name = "asfasf",
-    weight = 54.5_g/mol,
-    valence = [1,2,3,4],
-}
-
-radical : R {
-    match = [C, '*CC']
-}
-
-:: comment
-
-:.
-  comment
-.:
-
->> debug msg
-
-spline<id12> : C -> g/L {
-    values =  [1.0:10.0, 2.0_K:15.0_g/mL]
-}
-
-mol : O=C(C)OC=C {
-    density =   spline : C -> g/L { values = [1.0:10.0, 2.0_K:15.0_g/mL] } #empiric,
-    density =   spline<id12> #empiric,
-    density =   func<C:g/L> : x * 2 + 1
-} #empiric
-
-react : O=C(C)OC=C + O=C(C)OC=C -> O=C(C)OC=C + O=C(C)OC=C {
-    catalyst =   [C=O]
-}
-
-flask<> {
-}
-
-lab {
-}
-
-Amount<T> -> DynAmount{T}
-DynAmount{T1} -> DynAmount{T2}
+    -----------------------------------------------------------------------------------------------------------------

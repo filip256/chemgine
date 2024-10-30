@@ -4,20 +4,20 @@
 
 RetrosynthReaction::RetrosynthReaction(
 	const ReactionData& baseReaction,
-	const std::vector<Reactable>& reactants,
-	const std::vector<Reactable>& products
+	const std::vector<StructureRef>& reactants,
+	const std::vector<StructureRef>& products
 ) noexcept :
 	baseReaction(baseReaction),
-	reactants(Utils::aggregate<Reactable, uint8_t>(reactants)),
-	products(Utils::aggregate<Reactable, uint8_t>(products))
+	reactants(Utils::aggregate<StructureRef, uint8_t>(reactants)),
+	products(Utils::aggregate<StructureRef, uint8_t>(products))
 {}
 
-const std::unordered_map<Reactable, uint8_t>& RetrosynthReaction::getReactants() const
+const std::unordered_map<StructureRef, uint8_t>& RetrosynthReaction::getReactants() const
 {
 	return reactants;
 }
 
-const std::unordered_map<Reactable, uint8_t>& RetrosynthReaction::getProducts() const
+const std::unordered_map<StructureRef, uint8_t>& RetrosynthReaction::getProducts() const
 {
 	return products;
 }
@@ -27,12 +27,7 @@ const ReactionData& RetrosynthReaction::getBaseData() const
 	return baseReaction;
 }
 
-std::string RetrosynthReaction::getHRTag() const
-{
-	return baseReaction.getHRTag();
-}
-
-std::string RetrosynthReaction::print() const
+void RetrosynthReaction::print(std::ostream& out) const
 {
 	// reactants and products
 	TextBlock buffer;
@@ -65,29 +60,8 @@ std::string RetrosynthReaction::print() const
 		buffer.appendRight(std::to_string(lastP->second) + "x ");
 	buffer.appendRight(lastP->first.getStructure().print());
 
-	std::string result = getHRTag() + '\n' + buffer.toString() + '\n';
-
-	// catalysts
-	const auto catalysts = baseReaction.getCatalysts();
-	if (catalysts.size())
-	{
-		result += " - Catalysts:  ";
-		const auto lastC = --catalysts.end();
-		for (auto c = catalysts.begin(); c != lastC; ++c)
-			result += c->getHRTag() + ", ";
-
-		result += lastC->getHRTag() + '\n';
-	}
-
-	if (baseReaction.isCutReaction())
-		return result;
-
-	// properties
-	result += " - Activation: " + baseReaction.activationEnergy.toString() + '\n';
-	result += " - Speed:      " + baseReaction.baseSpeed.toString() + " at " + baseReaction.baseTemperature.toString() + " (relative)\n";
-	result += " - Energy:     " + baseReaction.activationEnergy.toString() + '\n';
-
-	return result;
+	out << buffer << '\n';
+	baseReaction.print(out);
 }
 
 bool RetrosynthReaction::operator==(const RetrosynthReaction& other) const

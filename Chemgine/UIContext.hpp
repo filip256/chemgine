@@ -10,7 +10,7 @@
 #include "Condenser.hpp"
 #include "PropertyPane.hpp"
 #include "Vapour.hpp"
-#include "DataHelpers.hpp"
+#include "Parsers.hpp"
 #include "DragNDropHelper.hpp"
 #include "CursorHelper.hpp"
 
@@ -62,7 +62,7 @@ public:
         textTime.setPosition(sf::Vector2f(window.getSize().x - 200.0f, window.getSize().y - 22.0f));
 
         bool isInTimeSetMode = false;
-        float timeMultiplier = 1.0;
+        float_n timeMultiplier = 1.0;
         sf::Text textTimeMult("x" + std::to_string(timeMultiplier).substr(0, 4), font, 18);
         textTimeMult.setPosition(sf::Vector2f(window.getSize().x - 50.0f, window.getSize().y - 22.0f));
 
@@ -133,7 +133,7 @@ public:
                     }
                     else if (event.mouseButton.button == sf::Mouse::Right)
                     {
-                        if (inputMolecule.has_value())
+                        if (inputMolecule)
                         {
                             if (const auto [sys, comp] = lab.getSystemComponentAt(mousePos); sys != Lab::npos)
                             {
@@ -142,7 +142,7 @@ public:
                                 {
                                     container->add(inputMolecule->first, inputMolecule->second);
                                     Log(this).info("Added {0} of {1}.",
-                                        inputMolecule->second.toString(), inputMolecule->first.data().name);
+                                        inputMolecule->second.toString(), inputMolecule->first.getData().name);
                                 }
                             }
                         }
@@ -201,9 +201,9 @@ public:
                     if (event.key.code == sf::Keyboard::Key::I)
                     {
                         const auto input = Input::get("Input Molecule   [SMILES]_[moles]");
-                        const auto temp = DataHelpers::parsePair<Molecule, Unit::MOLE>(input, '_');
+                        const auto temp = Def::parse<std::pair<Molecule, Amount<Unit::MOLE>>>(input, '_');
 
-                        if (temp.has_value() == false)
+                        if (not temp)
                         {
                             Log(this).error("Malformed input ignored: {0}.", input);
                             inputMolecule.reset();

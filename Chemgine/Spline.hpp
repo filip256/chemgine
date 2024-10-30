@@ -2,7 +2,7 @@
 
 #include <vector>
 
-template <class T>
+template <typename T>
 class Spline
 {
 private:
@@ -27,6 +27,7 @@ public:
 
 	Spline& operator=(Spline&&) = default;
 
+	const std::vector<std::pair<T, T>>& getContent() const;
 	const std::pair<T, T>& front() const;
 	const std::pair<T, T>& back() const;
 	size_t size() const;

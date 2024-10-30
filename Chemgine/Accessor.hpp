@@ -16,23 +16,17 @@ protected:
 	Accessor() = default;
 	virtual ~Accessor() = default;
 
+public:
 	/// <summary>
 	/// Similar to the static getDataStore but assumes that the null check has been done by the constructor
 	/// </summary>
-	const DataStore& dataStore() const;
+	static const DataStore& getDataStore();
 
-public:
 	/// <summary>
 	/// Links the accessor to a DataStore.
 	/// </summary>
 	static void setDataStore(const DataStore& dataStore);
-
-	/// <summary>
-	/// Also checks that the data accessor was set, should be called by other static methods.
-	/// </summary>
-	static const DataStore& getDataStore();
 };
-
 
 template<typename UniqueT>
 DataStoreAccessor Accessor<UniqueT>::dataAccessor = DataStoreAccessor();
@@ -45,12 +39,6 @@ void Accessor<UniqueT>::setDataStore(const DataStore& dataStore)
 
 template<typename UniqueT>
 const DataStore& Accessor<UniqueT>::getDataStore()
-{
-	return dataAccessor.getSafe();
-}
-
-template<typename UniqueT>
-const DataStore& Accessor<UniqueT>::dataStore() const
 {
 	return dataAccessor.get();
 }

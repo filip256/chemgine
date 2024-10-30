@@ -66,6 +66,8 @@ public:
 
 	size_t size() const;
 
+	void clear();
+
 	const NodeT& operator[](const size_t idx) const;
 	NodeT& operator[](const size_t idx);
 
@@ -183,6 +185,13 @@ template<class NodeT>
 size_t DirectedGraph<NodeT>::size() const
 {
 	return nodes.size();
+}
+
+template<class NodeT>
+void DirectedGraph<NodeT>::clear()
+{
+	nodes.clear();
+	edges.clear();
 }
 
 template<class NodeT>

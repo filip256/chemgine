@@ -6,7 +6,14 @@ AdaptorData::AdaptorData(
 	std::vector<LabwarePort>&& ports,
 	const Amount<Unit::LITER> volume,
 	const std::string& textureFile,
-	const float textureScale
+	const float_n textureScale
 ) noexcept :
 	ContainerLabwareData(id, name, std::move(ports), textureFile, textureScale, volume, LabwareType::ADAPTOR)
 {}
+
+void AdaptorData::dumpCustomProperties(Def::DataDumper& dump) const
+{
+	dump.propertyWithSep(Def::Labware::Volume, getVolume())
+		.propertyWithSep(Def::Labware::Texture, "~/" + textureFile)
+		.property(Def::Labware::TextureScale, textureScale);
+}

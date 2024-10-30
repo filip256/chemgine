@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ReactionData.hpp"
-#include "HashCombine.hpp"
+#include "HashUtils.hpp"
 
 #include <unordered_map>
 
@@ -9,26 +9,25 @@ class RetrosynthReaction
 {
 private:
 	const ReactionData& baseReaction;
-	std::unordered_map<Reactable, uint8_t> reactants;
-	std::unordered_map<Reactable, uint8_t> products;
+	std::unordered_map<StructureRef, uint8_t> reactants;
+	std::unordered_map<StructureRef, uint8_t> products;
 
 public:
 	RetrosynthReaction(
 		const ReactionData& baseReaction,
-		const std::vector<Reactable>& reactants,
-		const std::vector<Reactable>& products
+		const std::vector<StructureRef>& reactants,
+		const std::vector<StructureRef>& products
 	) noexcept;
 
 	RetrosynthReaction(const RetrosynthReaction&) = delete;
 	RetrosynthReaction(RetrosynthReaction&&) = default;
 
-	const std::unordered_map<Reactable, uint8_t>& getReactants() const;
-	const std::unordered_map<Reactable, uint8_t>& getProducts() const;
+	const std::unordered_map<StructureRef, uint8_t>& getReactants() const;
+	const std::unordered_map<StructureRef, uint8_t>& getProducts() const;
 
 	const ReactionData& getBaseData() const;
 
-	std::string getHRTag() const;
-	std::string print() const;
+	void print(std::ostream& out = std::cout) const;
 
 	bool operator==(const RetrosynthReaction& other) const;
 	bool operator!=(const RetrosynthReaction& other) const;
@@ -44,9 +43,9 @@ struct std::hash<RetrosynthReaction>
 	{
 		size_t hash = 0;
 		for (const auto& [r, _] : reaction.reactants)
-			hashCombineWith(hash, r);
+			Utils::hashCombineWith(hash, r);
 		for (const auto& [r, _] : reaction.products)
-			hashCombineWith(hash, r);
+			Utils::hashCombineWith(hash, r);
 		return hash;
 	}
 };

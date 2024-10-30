@@ -5,6 +5,8 @@
 enum class Unit : uint16_t
 {
 	NONE,
+	ANY,
+
 	LITER,
 	CUBIC_METER,
 	DROP,
@@ -33,6 +35,7 @@ enum class Unit : uint16_t
 	RADIAN,
 
 	MOLE_RATIO,
+	MOLE_PERCENT,
 
 	MOLE_PER_SECOND,
 	GRAM_PER_MOLE,

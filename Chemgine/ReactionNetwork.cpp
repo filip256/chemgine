@@ -144,7 +144,7 @@ std::unordered_set<ConcreteReaction> ReactionNetwork::getOccuringReactions(
 }
 
 bool ReactionNetwork::getRetrosynthReactions(
-	const Reactable& targetProduct,
+	const StructureRef& targetProduct,
 	const size_t current,
 	std::unordered_set<RetrosynthReaction>& result) const
 {
@@ -169,7 +169,7 @@ bool ReactionNetwork::getRetrosynthReactions(
 }
 
 std::unordered_set<RetrosynthReaction> ReactionNetwork::getRetrosynthReactions(
-	const Reactable& targetProduct) const
+	const StructureRef& targetProduct) const
 {
 	std::unordered_set<RetrosynthReaction> result;
 	for (size_t i = 0; i < topLayer.size(); ++i)
@@ -234,4 +234,10 @@ std::string ReactionNetwork::print() const
 
 	block.trim();
 	return block.toString();
+}
+
+void ReactionNetwork::clear()
+{
+	graph.clear();
+	topLayer.clear();
 }

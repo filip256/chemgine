@@ -1,43 +1,65 @@
 #include "ReactionData.hpp"
 #include "SystemMatrix.hpp"
+#include "ReactionSpecifier.hpp"
 #include "RetrosynthReaction.hpp"
+#include "DataDumper.hpp"
 #include "Maths.hpp"
-#include "PairHash.hpp"
+#include "HashUtils.hpp"
 #include "Log.hpp"
 #include "Utils.hpp"
 
 ReactionData::ReactionData(
 	const ReactionId id,
 	const std::string& name,
-	const std::vector<std::pair<Reactable, uint8_t>>& reactants,
-	const std::vector<std::pair<Reactable, uint8_t>>& products,
-	const Amount<Unit::MOLE_PER_SECOND> baseSpeed,
-	const Amount<Unit::CELSIUS> baseTemperature,
+	const std::vector<std::pair<StructureRef, uint8_t>>& reactants,
+	const std::vector<std::pair<StructureRef, uint8_t>>& products,
 	const Amount<Unit::JOULE_PER_MOLE> reactionEnergy,
 	const Amount<Unit::JOULE_PER_MOLE> activationEnergy,
+	EstimatorRef<Unit::MOLE_PER_SECOND, Unit::CELSIUS>&& tempSpeedEstimator,
+	EstimatorRef<Unit::NONE, Unit::MOLE_RATIO>&& concSpeedEstimator,
 	ImmutableSet<Catalyst>&& catalysts
 ) noexcept :
 	id(id),
-	baseSpeed(baseSpeed),
-	baseTemperature(baseTemperature),
+	isCut(false),
 	reactionEnergy(reactionEnergy),
 	activationEnergy(activationEnergy),
 	name(name),
-	reactants(Utils::flatten<Reactable, uint8_t>(reactants)),
-	products(Utils::flatten<Reactable, uint8_t>(products)),
+	tempSpeedEstimator(std::move(tempSpeedEstimator)),
+	concSpeedEstimator(std::move(concSpeedEstimator)),
+	reactants(Utils::flatten<StructureRef, uint8_t>(reactants)),
+	products(Utils::flatten<StructureRef, uint8_t>(products)),
+	catalysts(std::move(catalysts))
+{}
+
+ReactionData::ReactionData(
+	const ReactionId id,
+	const std::string& name,
+	const std::vector<std::pair<StructureRef, uint8_t>>& reactants,
+	const std::vector<std::pair<StructureRef, uint8_t>>& products,
+	EstimatorRef<Unit::MOLE_PER_SECOND, Unit::CELSIUS>&& tempSpeedEstimator,
+	EstimatorRef<Unit::NONE, Unit::MOLE_RATIO>&& concSpeedEstimator,
+	ImmutableSet<Catalyst>&& catalysts
+) noexcept :
+	id(id),
+	isCut(true),
+	name(name),
+	tempSpeedEstimator(std::move(tempSpeedEstimator)),
+	concSpeedEstimator(std::move(concSpeedEstimator)),
+	reactants(Utils::flatten<StructureRef, uint8_t>(reactants)),
+	products(Utils::flatten<StructureRef, uint8_t>(products)),
 	catalysts(std::move(catalysts))
 {}
 
 bool ReactionData::balance(
-	std::vector<std::pair<Reactable, uint8_t>>& reactants,
-	std::vector<std::pair<Reactable, uint8_t>>& products)
+	std::vector<std::pair<StructureRef, uint8_t>>& reactants,
+	std::vector<std::pair<StructureRef, uint8_t>>& products)
 {
 	if (reactants.size() == 0 || products.size() == 0)
 		return false;
 
-	SystemMatrix<float> system;
+	SystemMatrix<float_n> system;
 	const size_t syslen = reactants.size() + products.size() - 1;
-	std::unordered_map<AtomId, size_t> sysmap;
+	std::unordered_map<Symbol, size_t> sysmap;
 
 	for (size_t i = 0; i < reactants.size(); ++i)
 	{
@@ -48,10 +70,10 @@ bool ReactionData::balance(
 			{
 				sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
 				system.addNullRow(syslen);
-				system.back()[i] = static_cast<float>(c.second);
+				system.back()[i] = static_cast<float_n>(c.second);
 			}
 			else
-				system[sysmap[c.first]][i] = static_cast<float>(c.second);
+				system[sysmap[c.first]][i] = static_cast<float_n>(c.second);
 		}
 	}
 
@@ -63,10 +85,10 @@ bool ReactionData::balance(
 		{
 			sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
 			system.addNullRow(syslen);
-			system.back().back() = static_cast<float>(c.second);
+			system.back().back() = static_cast<float_n>(c.second);
 		}
 		else
-			system[sysmap[c.first]].back() = static_cast<float>(c.second);
+			system[sysmap[c.first]].back() = static_cast<float_n>(c.second);
 	}
 
 	for (size_t i = 1; i < products.size(); ++i)
@@ -78,10 +100,10 @@ bool ReactionData::balance(
 			{
 				sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
 				system.addNullRow(syslen);
-				system.back()[reactants.size() + i - 1] = -1 * static_cast<float>(c.second);
+				system.back()[reactants.size() + i - 1] = -1 * static_cast<float_n>(c.second);
 			}
 			else
-				system[sysmap[c.first]][reactants.size() + i - 1] = -1 * static_cast<float>(c.second);
+				system[sysmap[c.first]][reactants.size() + i - 1] = -1 * static_cast<float_n>(c.second);
 		}
 	}
 
@@ -138,7 +160,7 @@ bool ReactionData::mapReactantsToProducts()
 			productIgnore[maxIdxJ].insert(p.second);
 
 			// only save radical atoms
-			if (reactants[i].getStructure().getAtom(p.first)->isRadical())
+			if (reactants[i].getStructure().getAtom(p.first).isRadical())
 				componentMapping.emplace(std::make_pair(std::make_pair(i, p.first), std::make_pair(maxIdxJ, p.second)));
 		}
 
@@ -206,7 +228,7 @@ std::vector<std::unordered_map<c_size, c_size>> ReactionData::generateConcreteRe
 }
 
 std::pair<size_t, std::unordered_map<c_size, c_size>> ReactionData::generateRetrosynthProductMatches(
-	const Reactable& targetProduct) const
+	const StructureRef& targetProduct) const
 {
 	for (size_t i = 0; i < products.size(); ++i)
 	{
@@ -264,7 +286,7 @@ std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<R
 }
 
 RetrosynthReaction ReactionData::generateRetrosynthReaction(
-	const Reactable& targetProduct,
+	const StructureRef& targetProduct,
 	const std::pair<size_t, std::unordered_map<c_size, c_size>>& match) const
 {
 	// build concrete products
@@ -292,44 +314,51 @@ RetrosynthReaction ReactionData::generateRetrosynthReaction(
 	}
 
 	// canonicalize reactants
-	std::vector<Reactable> reactantReactables;
-	reactantReactables.reserve(substReactants.size());
+	std::vector<StructureRef> reactantStructureRefs;
+	reactantStructureRefs.reserve(substReactants.size());
 	for (size_t i = 0; i < substReactants.size(); ++i)
 	{
 		substReactants[i].canonicalize();
 		substReactants[i].recountImpliedHydrogens();
-		reactantReactables.emplace_back(*Reactable::get(std::move(substReactants[i])));
+		reactantStructureRefs.emplace_back(*StructureRef::create(std::move(substReactants[i])));
 	}
 
 	// copy products
-	std::vector<Reactable> productReactables;
-	productReactables.reserve(products.size());
-	productReactables.emplace_back(targetProduct);
+	std::vector<StructureRef> productStructureRefs;
+	productStructureRefs.reserve(products.size());
+	productStructureRefs.emplace_back(targetProduct);
 	for (size_t i = 0; i < products.size(); ++i)
 		if (i != match.first)
-			productReactables.emplace_back(products[i]);
+			productStructureRefs.emplace_back(products[i]);
 
-	return RetrosynthReaction(*this, reactantReactables, productReactables);
+	return RetrosynthReaction(*this, reactantStructureRefs, productStructureRefs);
 }
 
-const std::vector<Reactable>& ReactionData::getReactants() const
+const std::vector<StructureRef>& ReactionData::getReactants() const
 {
 	return reactants;
 }
 
-const std::vector<Reactable>& ReactionData::getProducts() const
+const std::vector<StructureRef>& ReactionData::getProducts() const
 {
 	return products;
 }
 
-const ImmutableSet<Catalyst> &ReactionData::getCatalysts() const
+const ImmutableSet<Catalyst>& ReactionData::getCatalysts() const
 {
 	return catalysts;
 }
 
+Amount<Unit::MOLE_PER_SECOND> ReactionData::getSpeedAt(
+	const Amount<Unit::CELSIUS> temperature,
+	const Amount<Unit::MOLE_RATIO> concentration) const
+{
+	return tempSpeedEstimator->get(temperature) * concSpeedEstimator->get(concentration).asStd();
+}
+
 bool ReactionData::isCutReaction() const
 {
-	return baseSpeed == 0.0;
+	return isCut;
 }
 
 bool ReactionData::isSpecializationOf(const ReactionData& other) const
@@ -493,4 +522,65 @@ void ReactionData::setBaseReaction(const ReactionData& reaction)
 std::string ReactionData::getHRTag() const
 {
 	return '<' + std::to_string(id) + ':' + name + '>';
+}
+
+void ReactionData::dumpDefinition(
+	std::ostream& out,
+	const bool prettify,
+	std::unordered_set<EstimatorId>& alreadyPrinted
+) const
+{
+	static const uint8_t valueOffset = Utils::max(
+		Def::Reactions::Id.size(),
+		Def::Reactions::Name.size(),
+		Def::Reactions::Catalysts.size(),
+		Def::Reactions::Energy.size(),
+		Def::Reactions::Activation.size(),
+		Def::Reactions::TemperatureSpeed.size(),
+		Def::Reactions::ConcentrationSpeed.size());
+
+	const auto compare = [](const StructureRef& l, const StructureRef& r) { return l.getId() < r.getId(); };
+	const auto uniqueReactants = ImmutableSet<StructureRef>::toSortedSetVector(Utils::copy(reactants), compare);
+	const auto uniqueProducts = ImmutableSet<StructureRef>::toSortedSetVector(Utils::copy(products), compare);
+
+	std::vector<std::string> reactantsStr;
+	std::vector<std::string> productsStr;
+	reactantsStr.reserve(uniqueReactants.size());
+	productsStr.reserve(uniqueProducts.size());
+	for (size_t i = 0; i < uniqueReactants.size(); ++i)
+		reactantsStr.emplace_back(Def::print(uniqueReactants[i].getStructure()));
+	for (size_t i = 0; i < uniqueProducts.size(); ++i)
+		productsStr.emplace_back(Def::print(uniqueProducts[i].getStructure()));
+
+	Def::DataDumper dump(out, valueOffset, 0, prettify);
+	dump.tryOolSubDefinition(tempSpeedEstimator, alreadyPrinted)
+		.tryOolSubDefinition(concSpeedEstimator, alreadyPrinted)
+		.header(Def::Types::Reaction, Def::ReactionSpecifier(std::move(reactantsStr), std::move(productsStr)), "")
+		.beginProperties()
+		.propertyWithSep(Def::Reactions::Id, id)
+		.propertyWithSep(Def::Reactions::Name, name);
+
+	if (catalysts.size())
+		dump.propertyWithSep(Def::Reactions::Catalysts, catalysts);
+
+	if (isCut)
+	{
+		dump.property(Def::Reactions::IsCut, true)
+			.endProperties()
+			.endDefinition();
+		return;
+	}
+
+	dump.defaultPropertyWithSep(Def::Reactions::Energy, reactionEnergy, Amount<Unit::JOULE_PER_MOLE>(0.0))
+		.defaultPropertyWithSep(Def::Reactions::Activation, activationEnergy, Amount<Unit::JOULE_PER_MOLE>(0.0))
+		.subDefinitionWithSep(Def::Reactions::TemperatureSpeed, tempSpeedEstimator, alreadyPrinted)
+		.subDefinition(Def::Reactions::ConcentrationSpeed, concSpeedEstimator, alreadyPrinted)
+		.endProperties()
+		.endDefinition();
+}
+
+void ReactionData::print(std::ostream& out) const
+{
+	std::unordered_set<EstimatorId> history;
+	dumpDefinition(out, true, history);
 }

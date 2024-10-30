@@ -54,6 +54,10 @@ public:
 	/// </summary>
 	ObjT& operator[](const size_t idx);
 
+	using Iterator = std::vector<ObjT>::const_iterator;
+	Iterator begin() const;
+	Iterator end() const;
+
 	/// <summary>
 	/// Clears the contents of the container
 	/// Complexity: O(n)
@@ -127,6 +131,19 @@ ObjT& MultiIndexMap<KeyT1, KeyT2, ObjT>::operator[](const size_t idx)
 }
 
 template <class KeyT1, class KeyT2, class ObjT>
+MultiIndexMap<KeyT1, KeyT2, ObjT>::Iterator MultiIndexMap<KeyT1, KeyT2, ObjT>::begin() const
+{
+	return objects.begin();
+}
+
+template <class KeyT1, class KeyT2, class ObjT>
+MultiIndexMap<KeyT1, KeyT2, ObjT>::Iterator MultiIndexMap<KeyT1, KeyT2, ObjT>::end() const
+{
+	return objects.end();
+}
+
+
+template <class KeyT1, class KeyT2, class ObjT>
 const ObjT* MultiIndexMap<KeyT1, KeyT2, ObjT>::findFirst(bool (*predicate) (const ObjT&)) const
 {
 	for (size_t i = 0; i < objects.size(); ++i)
@@ -139,6 +156,7 @@ template <class KeyT1, class KeyT2, class ObjT>
 void MultiIndexMap<KeyT1, KeyT2, ObjT>::clear()
 {
 	objects.clear();
+	objects.shrink_to_fit();
 	indexer1.clear();
 	indexer2.clear();
 }

@@ -1,8 +1,10 @@
 #include "MoleculeRepository.hpp"
-#include "DataHelpers.hpp"
-#include "OffsetEstimator.hpp"
-#include "ScaleEstimator.hpp"
+#include "Parsers.hpp"
+#include "EstimatorParsers.hpp"
+#include "AffineEstimator.hpp"
 #include "SplineEstimator.hpp"
+#include "UnitizedEstimator.hpp"
+#include "Keywords.hpp"
 #include "Log.hpp"
 
 #include <fstream>
@@ -11,167 +13,167 @@ MoleculeRepository::MoleculeRepository(EstimatorRepository& estimators) noexcept
 	estimators(estimators)
 {}
 
-
-bool MoleculeRepository::loadFromFile(const std::string& path)
+bool MoleculeRepository::add(Def::Object&& definition)
 {
-	std::ifstream file(path);
-
-	if (!file.is_open())
+	auto structure = Def::Parser<MolecularStructure>::parse(definition.getSpecifier());
+	if (not structure)
 	{
-		Log(this).error("Failed to open file '{0}'.", path);
+		Log(this).error("Invalid SMILES specifier: '{0}', as: {1}.", definition.getSpecifier(), definition.getLocationName());
 		return false;
 	}
 
-	//if (files::verifyChecksum(file).code != 200) //not OK
-	//	return StatusCode<>::FileCorrupted;
+	const auto name = definition.getDefaultProperty(Def::Molecules::Name, "?");
+	const auto hp = definition.getDefaultProperty(Def::Molecules::Hydrophilicity, 1.0,
+		Def::parse<float_n>);
+	const auto lp = definition.getDefaultProperty(Def::Molecules::Lipophilicity, 0.0,
+		Def::parse<float_n>);
+	const auto col = definition.getDefaultProperty(Def::Molecules::Color, Color(0, 255, 255, 100),
+		Def::parse<Color>);
+	auto mp = definition.getDefinition(Def::Molecules::MeltingPoint,
+		Def::Parser<UnitizedEstimator<Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+	auto bp = definition.getDefinition(Def::Molecules::BoilingPoint,
+		Def::Parser<UnitizedEstimator<Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+	auto sd = definition.getDefinition(Def::Molecules::SolidDensity,
+		Def::Parser<UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>::parse, estimators);
+	auto ld = definition.getDefinition(Def::Molecules::LiquidDensity,
+		Def::Parser<UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>::parse, estimators);
+	auto shc = definition.getDefinition(Def::Molecules::SolidHeatCapacity,
+		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>::parse, estimators);
+	auto lhc = definition.getDefinition(Def::Molecules::LiquidHeatCapacity,
+		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>::parse, estimators);
+	auto flh = definition.getDefinition(Def::Molecules::FusionLatentHeat,
+		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+	auto vlh = definition.getDefinition(Def::Molecules::VaporizationLatentHeat,
+		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+	auto slh = definition.getDefinition(Def::Molecules::SublimationLatentHeat,
+		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+	auto sol = definition.getDefinition(Def::Molecules::RelativeSolubility,
+		Def::Parser<UnitizedEstimator<Unit::NONE, Unit::CELSIUS>>::parse, estimators);
+	auto hen = definition.getDefinition(Def::Molecules::HenryConstant,
+		Def::Parser<UnitizedEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>>::parse, estimators);
 
-	table.clear();
-
-	//parse file
-	std::string buffer;
-	std::getline(file, buffer);
-	while (std::getline(file, buffer))
-	{
-		auto line = DataHelpers::parseList(buffer, ',');
-
-		if (line.size() != 17)
-		{
-			Log(this).error("Incompletely defined molecule skipped.");
-			continue;
-		}
-
-		if (line[1].empty())
-		{
-			Log(this).error("Failed to load molecule due to empty SMILES string.");
-			continue;
-		}
-		if (line[2].empty())
-		{
-			Log(this).warn("Empty molecule name at {0}.", line[1]);
-		}
-
-		const auto id = DataHelpers::parseId<MoleculeId>(line[0]);
-		if (id.has_value() == false)
-		{
-			Log(this).error("Missing id, molecule '{0}' skipped.", line[1]);
-			continue;
-		}
-
-		// boiling and melting points
-		const auto mpR = DataHelpers::parse<double>(line[3]);
-		const auto bpR = DataHelpers::parse<double>(line[4]);
-		const auto& mpA = estimators.add<OffsetEstimator>(estimators.at(toId(BuiltinEstimator::TORR_TO_REL_BP)), mpR.value_or(0));
-		const auto& bpA = estimators.add<OffsetEstimator>(estimators.at(toId(BuiltinEstimator::TORR_TO_REL_BP)), bpR.value_or(100));
-
-		// densities
-		const auto sdR = DataHelpers::parse<Spline<float>>(line[5]);
-		const auto ldR = DataHelpers::parse<Spline<float>>(line[6]);
-		const auto& sdA = estimators.add<SplineEstimator>(sdR.value_or(Spline<float>({ {0, 1.0} })));
-		const auto& ldA = estimators.add<SplineEstimator>(ldR.value_or(Spline<float>({ {0, 1.0} })));
-
-		// heat capacities
-		const auto shcR = DataHelpers::parse<Spline<float>>(line[7]);
-		const auto lhcR = DataHelpers::parse<Spline<float>>(line[8]);
-		const auto& shcA = estimators.add<SplineEstimator>(shcR.value_or(Spline<float>({ {36.0, 760.0} })));
-		const auto& lhcA = estimators.add<SplineEstimator>(lhcR.value_or(Spline<float>({ {75.4840232, 760.0} })));
-
-		// latent heats
-		const auto flhR = DataHelpers::parse<double>(line[9]);
-		const auto vlhR = DataHelpers::parse<double>(line[10]);
-		const auto slhR = DataHelpers::parse<double>(line[11]);
-		const auto& flhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), flhR.value_or(6020.0));
-		const auto& vlhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), vlhR.value_or(40700.0));
-		const auto& slhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), slhR.value_or(std::numeric_limits<double>::max()));
-
-		//solubility
-		const auto hydro = DataHelpers::parseUnsigned<Unit::MOLE_RATIO>(line[12]).value_or(1.0);
-		const auto lipo = DataHelpers::parseUnsigned<Unit::MOLE_RATIO>(line[13]).value_or(0.0);
-		const auto solR = DataHelpers::parse<Spline<float>>(line[14]);
-		const auto& solA = 
-			solR.has_value() ? estimators.add<SplineEstimator>(*solR) :
-			DataHelpers::parse<bool>(line[14]).value_or(false) ? estimators.at(toId(BuiltinEstimator::TEMP_TO_REL_INV_SOL)) :
-			estimators.at(toId(BuiltinEstimator::TEMP_TO_REL_SOL));
-		const auto& henryR = DataHelpers::parse<Spline<float>>(line[15]);
-		const auto& henryA = estimators.add<SplineEstimator>(henryR.value_or(Spline<float>({ {1000.0, 760.0} })));
-			
-		//color
-		const auto color = DataHelpers::parse<Color>(line[16]).value_or(Color(0, 255, 255, 100));
-
-		if (table.emplace(
-			*id,
-			line[1],
-			MoleculeData(*id, line[2], line[1], hydro, lipo, color, mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA, solA, henryA)
-		) == false)
-		{
-			Log(this).warn("Molecule with duplicate id {0} skipped.", *id);
-		}
-	}
-	file.close();
-
-	Log(this).info("Loaded {0} molecules.", table.size());
+	const auto id = getFreeId();
+	concreteMolecules.emplace(id,
+		std::make_unique<MoleculeData>(
+			id, name, std::move(*structure),
+			hp, lp, col,
+			std::move(*mp), std::move(*bp),
+			std::move(*sd), std::move(*ld),
+			std::move(*shc), std::move(*lhc), std::move(*flh),
+			std::move(*vlh), std::move(*slh), std::move(*sol), std::move(*hen)));
 
 	return true;
 }
 
-bool MoleculeRepository::saveToFile(const std::string& path)
+const MoleculeData& MoleculeRepository::at(const MoleculeId id) const
 {
-	std::ofstream file(path);
-
-	if (!file.is_open())
-	{
-		Log(this).error("Failed to open file '{0}'.", path);
-		return false;
-	}
-
-	for (size_t i = 0; i < table.size(); ++i)
-	{
-		const auto& e = table[i];
-		file << '#' << e.id << ',' << e.getStructure().toSMILES() << ',' << e.name << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << ',' << '\n';
-	}
-
-	file.close();
-	return true;
+	return *concreteMolecules.at(id);
 }
 
-size_t MoleculeRepository::findFirst(const MolecularStructure& structure) const
+const MoleculeData* MoleculeRepository::findFirstConcrete(const MolecularStructure& structure) const
 {
-	for (size_t i = 0; i < table.size(); ++i)
-		if (table[i].getStructure() == structure)
-			return i;
+	for (const auto& m : concreteMolecules)
+		if (m.second->getStructure() == structure)
+			return m.second.get();
 
-	return npos;
+	return nullptr;
 }
 
-MoleculeId MoleculeRepository::findOrAdd(MolecularStructure&& structure)
+const GenericMoleculeData* MoleculeRepository::findFirstGeneric(const MolecularStructure& structure) const
 {
-	if (structure.isEmpty() || structure.isGeneric())
-	{
-		Log(this).error("Tried to create a concrete molecule from an empty or generic structure.");
-		return 0;
-	}
+	for (const auto& m : genericMolecules)
+		if (m.second->getStructure() == structure)
+			return m.second.get();
 
-	const auto idx = findFirst(structure);
-	if (idx != npos)
-		return table[idx].id;
+	return nullptr;
+}
+
+const MoleculeData& MoleculeRepository::findOrAddConcrete(MolecularStructure&& structure)
+{
+	if (structure.isEmpty())
+		Log(this).fatal("Tried to create a concrete molecule from an empty structure.");
+	if (structure.isGeneric())
+		Log(this).fatal("Tried to create a concrete molecule from a generic structure.");
+
+	const auto existing = findFirstConcrete(structure);
+	if (existing != nullptr)
+		return *existing;
 
 	Log(this).debug("New structure discovered: \n{0}", structure.print());
 
-	const auto& mpA = estimators.add<OffsetEstimator>(estimators.at(toId(BuiltinEstimator::TORR_TO_REL_BP)), 0);
-	const auto& bpA = estimators.add<OffsetEstimator>(estimators.at(toId(BuiltinEstimator::TORR_TO_REL_BP)), 100);
-	const auto& sdA = estimators.add<SplineEstimator>(Spline<float>({ {0, 1.0f} }));
-	const auto& ldA = estimators.add<SplineEstimator>(Spline<float>({ {0, 1.0f} }));
-	const auto& shcA = estimators.add<SplineEstimator>(Spline<float>({ {36.0, 760.0} }));
-	const auto& lhcA = estimators.add<SplineEstimator>(Spline<float>({ {75.4840232, 760.0} }));
-	const auto& flhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), 6020.0f);
-	const auto& vlhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), 40700.0f);
-	const auto& slhA = estimators.add<ScaleEstimator>(estimators.at(toId(BuiltinEstimator::TDIF_TORR_TO_REL_LH)), std::numeric_limits<double>::max());
 	const auto hydro = 1.0;
 	const auto lipo = 0.0;
-	const auto& solA = estimators.at(toId(BuiltinEstimator::TEMP_TO_REL_SOL));
-	const auto& henryA = estimators.add<SplineEstimator>(Spline<float>({ {1000.0, 760.0} }));
 	const auto color = Color(0, 255, 255, 100);
+	auto mp = estimators.add<ConstantEstimator<Unit::CELSIUS, Unit::TORR>>(0.0);
+	auto bp = estimators.add<ConstantEstimator<Unit::CELSIUS, Unit::TORR>>(100.0);
+	auto sd = estimators.add<ConstantEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>(1.0);
+	auto ld = estimators.add<ConstantEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>(1.0);
+	auto shc = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>(36.0);
+	auto lhc = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>(75.4840232);
+	auto flh = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(6020.0);
+	auto vlh = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(40700.0);
+	auto slh = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(std::numeric_limits<float_n>::max());
+	auto sol = estimators.add<ConstantEstimator<Unit::NONE, Unit::CELSIUS>>(1.0);
+	auto hen = estimators.add<ConstantEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>>(1000.0);
 
 	const auto id = getFreeId();
-	table.emplace(id, std::to_string(id), MoleculeData(id, std::move(structure), hydro, lipo, color, mpA, bpA, sdA, ldA, shcA, lhcA, flhA, vlhA, slhA, solA, henryA));
+	const auto it = concreteMolecules.emplace(id, std::make_unique<MoleculeData>(
+		id, structure.toSMILES(), std::move(structure),
+		hydro, lipo, color,
+		std::move(mp), std::move(bp),
+		std::move(sd), std::move(ld),
+		std::move(shc), std::move(lhc),
+		std::move(flh), std::move(vlh), std::move(slh),
+		std::move(sol), std::move(hen)));
+
+	return *it.first->second;
+}
+
+const GenericMoleculeData& MoleculeRepository::findOrAdd(MolecularStructure&& structure)
+{
+	if (structure.isEmpty())
+		Log(this).fatal("Tried to create a concrete molecule from an empty structure.");
+	if (structure.isConcrete())
+		return findOrAddConcrete(std::move(structure));
+
+	const auto existing = findFirstGeneric(structure);
+	if (existing != nullptr)
+		return *existing;
+
+	const auto id = getFreeId();
+	const auto it = genericMolecules.emplace(id, std::make_unique<GenericMoleculeData>(id, std::move(structure)));
+	return *it.first->second;
+}
+
+MoleculeRepository::Iterator MoleculeRepository::begin() const
+{
+	return concreteMolecules.begin();
+}
+
+MoleculeRepository::Iterator MoleculeRepository::end() const
+{
+	return concreteMolecules.end();
+}
+
+size_t MoleculeRepository::size() const
+{
+	return concreteMolecules.size();
+}
+
+void MoleculeRepository::clear()
+{
+	concreteMolecules.clear();
+	genericMolecules.clear();
+}
+
+MoleculeId MoleculeRepository::getFreeId() const
+{
+	static MoleculeId id = 0;
+	while (concreteMolecules.contains(id) || genericMolecules.contains(id))
+	{
+		if (id == std::numeric_limits<MoleculeId>::max())
+			Log(this).fatal("Molecule id limit reached: {0}.", id);
+		++id;
+	}
 	return id;
 }

@@ -4,10 +4,10 @@ ParticleSystem::ParticleSystem(
 	const uint16_t particleCount,
 	const sf::Vector2f& origin,
 	const sf::Color& color,
-	const float particleSize,
+	const float_n particleSize,
 	const Amount<Unit::DEGREE> direction,
 	const Amount<Unit::DEGREE> targetDirection,
-	const float directionChangeRate,
+	const float_n directionChangeRate,
 	const Amount<Unit::PER_SECOND> speed,
 	const Amount<Unit::SECOND> lifespan
 ) noexcept :
@@ -35,12 +35,12 @@ void ParticleSystem::setTargetDirection(const Amount<Unit::DEGREE> direction)
 	targetDirection = direction;
 }
 
-void ParticleSystem::setDirectionChangeRate(const float rate)
+void ParticleSystem::setDirectionChangeRate(const float_n rate)
 {
 	directionChangeRate = rate;
 }
 
-void ParticleSystem::setParticleSize(const float size)
+void ParticleSystem::setParticleSize(const float_n size)
 {
 	particleSize = size;
 }

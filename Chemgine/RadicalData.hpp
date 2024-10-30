@@ -9,22 +9,15 @@ class AtomRepository;
 class RadicalData : public AtomData
 {
 public:
-	const std::unordered_set<AtomId> matchables;
+	const std::unordered_set<Symbol> matchables;
 
 	RadicalData(
-		const AtomId id,
-		const Symbol symbol,
+		const Symbol& symbol,
 		const std::string& name,
-		std::unordered_set<AtomId>&& matchables
+		std::unordered_set<Symbol>&& matchables
 	) noexcept;
 
-	RadicalData(
-		const AtomId id,
-		const Symbol symbol,
-		const std::string& name,
-		const std::unordered_set<Symbol>& matchables,
-		const AtomRepository& repository
-	) noexcept;
+	void dumpDefinition(std::ostream& out, const bool prettify) const override final;
 
-	static const std::unordered_set<AtomId> MatchAny;
+	static const std::unordered_set<Symbol> MatchAny;
 };

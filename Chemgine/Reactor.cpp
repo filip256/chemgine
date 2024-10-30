@@ -6,8 +6,6 @@
 
 Reactor::Reactor(const Reactor& other) noexcept :
 	MultiLayerMixture(static_cast<const MultiLayerMixture&>(other).makeCopy()),
-	temperatureSpeedEstimator(other.temperatureSpeedEstimator),
-	concentrationSpeedEstimator(other.concentrationSpeedEstimator),
 	stirSpeed(other.stirSpeed),
 	tickMode(other.tickMode)
 {
@@ -22,13 +20,7 @@ Reactor::Reactor(
 	const Ref<BaseContainer> overflowTarget
 ) noexcept :
 	MultiLayerMixture(atmosphere, maxVolume, overflowTarget)
-{
-	dataAccessor.crashIfUninitialized();
-	temperatureSpeedEstimator = &dataAccessor.get().estimators.at(
-		toId(BuiltinEstimator::TEMP_TO_REL_RSPEED));
-	concentrationSpeedEstimator = &dataAccessor.get().estimators.at(
-		toId(BuiltinEstimator::MCONC_TO_REL_RSPEED));
-}
+{}
 
 Reactor::Reactor(
 	const Ref<Atmosphere> atmosphere,
@@ -37,7 +29,7 @@ Reactor::Reactor(
 	Reactor(atmosphere, maxVolume, atmosphere)
 {}
 
-double Reactor::getInterLayerReactivityCoefficient(const Reactant& r1, const Reactant& r2) const
+float_n Reactor::getInterLayerReactivityCoefficient(const Reactant& r1, const Reactant& r2) const
 {
 	if (r1.layer == r2.layer)
 	{
@@ -70,9 +62,9 @@ double Reactor::getInterLayerReactivityCoefficient(const Reactant& r1, const Rea
 	return 0.01;          // G-S
 }
 
-double Reactor::getInterLayerReactivityCoefficient(const ReactantSet& reactants) const
+float_n Reactor::getInterLayerReactivityCoefficient(const ReactantSet& reactants) const
 {
-	double result = 1.0;
+	float_n result = 1.0;
 	for (const auto& [_, r1] : reactants)
 		for (const auto& [_, r2] : reactants)
 		{
@@ -83,7 +75,7 @@ double Reactor::getInterLayerReactivityCoefficient(const ReactantSet& reactants)
 	return result;
 }
 
-double Reactor::getCatalyticReactivityCoefficient(const ImmutableSet<Catalyst>& catalysts) const
+float_n Reactor::getCatalyticReactivityCoefficient(const ImmutableSet<Catalyst>& catalysts) const
 {
 	// TODO: take concentration into account
 	for (size_t i = 0; i < catalysts.size(); ++i)
@@ -122,10 +114,9 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 		const auto x = r.getReactantTemperature();
 
 		auto speedCoef =
-			r.getData().baseSpeed.to<Unit::MOLE>(timespan) *
+			r.getData().getSpeedAt(r.getReactantTemperature(), getAmountOf(r.getReactants()).to<Unit::MOLE_RATIO>(totalMoles))
+			.to<Unit::MOLE>(timespan) *
 			totalVolume.asStd() *
-			temperatureSpeedEstimator->get((r.getReactantTemperature() - r.getData().baseTemperature).asStd()) *
-			concentrationSpeedEstimator->get((getAmountOf(r.getReactants()) / totalMoles).asStd()) *
 			getInterLayerReactivityCoefficient(r.getReactants()) *
 			getCatalyticReactivityCoefficient(r.getCatalysts());
 		
@@ -233,7 +224,7 @@ void Reactor::add(Reactor& other)
 	//}
 }
 
-void Reactor::add(Reactor& other, const double ratio)
+void Reactor::add(Reactor& other, const float_n ratio)
 {
 	//if (ratio >= 1.0)
 	//{

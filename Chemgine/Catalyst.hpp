@@ -1,15 +1,15 @@
 #pragma once
 
-#include "Reactable.hpp"
-#include "Amount.hpp"
+#include "StructureRef.hpp"
+#include "DynamicAmount.hpp"
 
 class Catalyst
 {
 private:
 	const Amount<Unit::MOLE_RATIO> idealAmount;
-	const Reactable reactable;
+	const StructureRef reactable;
 
-	Catalyst(const Reactable& reactable, const Amount<Unit::MOLE_RATIO> idealAmount) noexcept;
+	Catalyst(const StructureRef& reactable, const Amount<Unit::MOLE_RATIO> idealAmount) noexcept;
 
 public:
 	Catalyst(const Catalyst&) = default;
@@ -40,9 +40,10 @@ struct std::hash<Catalyst>
 {
 	size_t operator() (const Catalyst& catalyst) const
 	{
-		return std::hash<Reactable>()(catalyst.reactable);
+		return std::hash<StructureRef>()(catalyst.reactable);
 	}
 };
+
 
 template<>
 struct std::less<Catalyst>
@@ -50,5 +51,35 @@ struct std::less<Catalyst>
 	bool operator() (const Catalyst& x, const Catalyst& y) const
 	{
 		return std::hash<Catalyst>()(x) < std::hash<Catalyst>()(y);
+	}
+};
+
+
+template <>
+class Def::Parser<Catalyst>
+{
+public:
+	static std::optional<Catalyst> parse(const std::string& str)
+	{
+		const auto pair = Def::parse<std::pair<std::string, Amount<Unit::MOLE_RATIO>>>(str);
+		if (not pair)
+			return std::nullopt;
+
+		return Catalyst::get(pair->first, pair->second);
+	}
+};
+
+template <>
+class Def::Printer<Catalyst>
+{
+public:
+	static std::string print(const Catalyst& object)
+	{
+		return Def::print(std::pair(object.getStructure().toSMILES(), object.getIdealAmount()));
+	}
+
+	static std::string prettyPrint(const Catalyst& object)
+	{
+		return Def::prettyPrint(std::pair(object.getStructure().toSMILES(), object.getIdealAmount()));
 	}
 };

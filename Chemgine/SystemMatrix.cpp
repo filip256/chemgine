@@ -1,4 +1,6 @@
 #include "SystemMatrix.hpp"
+#include "Precision.hpp"
+#include "NumericUtils.hpp"
 
 #include <iostream>
 #include <algorithm> 
@@ -105,7 +107,7 @@ bool SystemMatrix<T>::trySolution(const std::vector<T>& solution) const
         for (size_t j = 0; j < matrix[i].size() - 1; ++j)
             temp += matrix[i][j] * solution[j];
 
-        if (std::abs(temp - matrix[i].back()) > 1e-10)
+        if (not Utils::floatEqual(temp, matrix[i].back(), static_cast<T>(1e-10)))
             return false;
     }
     return true;
@@ -149,6 +151,5 @@ std::vector<T>& SystemMatrix<T>::back()
 	return matrix.back();
 }
 
-template class SystemMatrix<float>;
-template class SystemMatrix<double>;
-template class SystemMatrix<long double>;
+template class SystemMatrix<float_n>;
+template class SystemMatrix<float_h>;

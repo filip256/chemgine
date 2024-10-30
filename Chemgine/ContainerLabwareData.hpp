@@ -3,6 +3,7 @@
 #include "BaseContainerLabwareData.hpp"
 #include "ShapeFillTexture.hpp"
 #include "ShapeFill.hpp"
+#include "PathUtils.hpp"
 #include "Amount.hpp"
 #include "Ref.hpp"
 
@@ -30,7 +31,7 @@ protected:
 		const std::string& name,
 		std::vector<LabwarePort>&& ports,
 		const std::string& textureFile,
-		const float textureScale,
+		const float_n textureScale,
 		std::array<Amount<Unit::LITER>, C>&& volumes,
 		const std::array<Ref<const std::string>, C>& fillTextureFiles,
 		const LabwareType type
@@ -42,7 +43,7 @@ protected:
 		const std::string& name,
 		std::vector<LabwarePort>&& ports,
 		const std::string& textureFile,
-		const float textureScale,
+		const float_n textureScale,
 		const Amount<Unit::LITER> volume,
 		const LabwareType type
 	) noexcept;
@@ -59,6 +60,8 @@ public:
 	constexpr const std::array<Amount<Unit::LITER>, C>& getVolumes() const;
 	constexpr const std::array<ShapeFillTexture, C>& getFillTextures() const;
 	constexpr const std::array<ShapeFill, C> generateShapeFills() const;
+
+	void dumpTextures(const std::string& path) const override final;
 };
 
 
@@ -69,7 +72,7 @@ ContainerLabwareData<C>::ContainerLabwareData(
 	const std::string& name,
 	std::vector<LabwarePort>&& ports,
 	const std::string& textureFile,
-	const float textureScale,
+	const float_n textureScale,
 	std::array<Amount<Unit::LITER>, C>&& volumes,
 	const std::array<Ref<const std::string>, C>& fillTextureFiles,
 	const LabwareType type
@@ -88,7 +91,7 @@ ContainerLabwareData<C>::ContainerLabwareData(
 	const std::string& name,
 	std::vector<LabwarePort>&& ports,
 	const std::string& textureFile,
-	const float textureScale,
+	const float_n textureScale,
 	const Amount<Unit::LITER> volume,
 	const LabwareType type
 ) noexcept :
@@ -147,4 +150,15 @@ template<uint8_t C>
 constexpr const std::array<ShapeFill, C> ContainerLabwareData<C>::generateShapeFills() const
 {
 	return generateShapeFills(std::make_index_sequence<C>());
+}
+
+template<uint8_t C>
+void ContainerLabwareData<C>::dumpTextures(const std::string& path) const
+{
+	DrawableLabwareData::dumpTextures(path);
+	for (uint8_t i = 0; i < C; ++i)
+	{
+		fillTextures[i].getTexture().copyToImage().saveToFile(
+			Utils::combinePaths(path, "fill" + std::to_string(i) + '_' + textureFile));
+	}
 }

@@ -49,7 +49,7 @@ void inline BaseContainerComponent::draw<Reactor>(
 	const Reactor& container, const ShapeFill& fill,
 	sf::RenderTarget& target, const sf::RenderStates& states)
 {
-	float lastSection = 0.0f;
+	float_n lastSection = 0.0f;
 	for (auto l = container.getLayersUpBegin(); l != container.getLayersUpEnd(); ++l)
 	{
 		const auto layerSection = (l->second.getVolume() / container.getMaxVolume()).asStd();

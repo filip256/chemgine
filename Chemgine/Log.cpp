@@ -4,6 +4,7 @@
 #include <Windows.h>
 
 uint8_t LogBase::contexts = 0;
+size_t LogBase::foldCount = static_cast<size_t>(-1);
 std::vector<std::string> LogBase::cache;
 
 LogBase::LogBase(const void* location) noexcept :

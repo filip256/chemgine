@@ -6,8 +6,8 @@ Vapour::Vapour(
 	const sf::Vector2f& origin,
 	const sf::Color& color,
 	const Amount<Unit::DEGREE> sourceAngle,
-	const float relativeDensity,
-	const float streamIntensity
+	const float_n relativeDensity,
+	const float_n streamIntensity
 ) noexcept :
 	relativeDensity(relativeDensity),
 	streamIntensity(streamIntensity),
@@ -26,7 +26,7 @@ Amount<Unit::DEGREE> Vapour::getTargetDirection() const
 	return relativeDensity < 1.0f ? 270.0_o : 90.0_o;
 }
 
-float Vapour::getDirectionChangeRate() const
+float_n Vapour::getDirectionChangeRate() const
 {
 	return (std::abs(1.0f - relativeDensity) / streamIntensity) * 0.005;
 }
@@ -51,7 +51,7 @@ void Vapour::moveOrigin(const sf::Vector2f& offset)
 	particles.moveOrigin(offset);
 }
 
-void Vapour::setRelativeDensity(const float relativeDensity)
+void Vapour::setRelativeDensity(const float_n relativeDensity)
 {
 	this->relativeDensity = relativeDensity;
 	particles.setTargetDirection(getTargetDirection());
@@ -59,7 +59,7 @@ void Vapour::setRelativeDensity(const float relativeDensity)
 	particles.setSpeed(getSpeed());
 }
 
-void Vapour::setStreamIntensity(const float streamIntensity)
+void Vapour::setStreamIntensity(const float_n streamIntensity)
 {
 	this->streamIntensity = streamIntensity;
 	particles.setDirectionChangeRate(getDirectionChangeRate());

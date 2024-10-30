@@ -1,6 +1,7 @@
 #include "Value.hpp"
+#include "Precision.hpp"
+#include "NumericUtils.hpp"
 
-#include <cmath>
 #include <limits>
 
 template<class T>
@@ -21,7 +22,7 @@ Value<T>& Value<T>::operator=(const Value<T>& other)
 }
 
 template <class T>
-bool Value<T>::operator==(const Value<T>& other) const { return std::abs(value - other.value) <= epsilon; }
+bool Value<T>::operator==(const Value<T>& other) const { return Utils::floatEqual(value, other.value, epsilon); }
 
 template <class T>
 bool Value<T>::operator!=(const Value<T>& other) const { return !(*this == other); }
@@ -108,6 +109,4 @@ constexpr bool Value<T>::oveflowsOnMultiply(const Value<T>& other) const noexcep
 }
 
 
-template class Value<float>;
-template class Value<double>;
-template class Value<long double>;
+template class Value<float_n>;

@@ -13,6 +13,26 @@ DynamicAmount::DynamicAmount(const StorageType value, const Unit unit) noexcept 
 	unit(unit)
 {}
 
+DynamicAmount::StorageType DynamicAmount::asKilo() const
+{
+    return value / 1000.0;
+}
+
+DynamicAmount::StorageType DynamicAmount::asStd() const
+{
+    return value;
+}
+
+DynamicAmount::StorageType DynamicAmount::asMilli() const
+{
+    return value * 1000.0;
+}
+
+DynamicAmount::StorageType DynamicAmount::asMicro() const
+{
+    return value / 1000000.0;
+}
+
 std::optional<DynamicAmount> DynamicAmount::to(const Unit target) const
 {
     if (unit == target)
@@ -20,6 +40,8 @@ std::optional<DynamicAmount> DynamicAmount::to(const Unit target) const
 
     switch (unit)
     {
+    case Unit::ANY:
+        return DynamicAmount(value, target);
     case Unit::LITER:
         return DynamicAmount::cast(Amount<Unit::LITER>(value), target);
     case Unit::CUBIC_METER:
@@ -42,6 +64,10 @@ std::optional<DynamicAmount> DynamicAmount::to(const Unit target) const
         return DynamicAmount::cast(Amount<Unit::DEGREE>(value), target);
     case Unit::RADIAN:
         return DynamicAmount::cast(Amount<Unit::RADIAN>(value), target);
+    case Unit::MOLE_RATIO:
+        return DynamicAmount::cast(Amount<Unit::MOLE_RATIO>(value), target);
+    case Unit::MOLE_PERCENT:
+        return DynamicAmount::cast(Amount<Unit::MOLE_PERCENT>(value), target);
     default:
         return std::nullopt;
     }
@@ -68,6 +94,8 @@ std::string DynamicAmount::getUnitSymbol(const Unit unit)
     {
     case Unit::NONE:
         return Amount<Unit::NONE>::unitSymbol();
+    case Unit::ANY:
+        return Amount<Unit::ANY>::unitSymbol();
     case Unit::LITER:
         return Amount<Unit::LITER>::unitSymbol();
     case Unit::CUBIC_METER:
@@ -108,6 +136,8 @@ std::string DynamicAmount::getUnitSymbol(const Unit unit)
         return Amount<Unit::PER_METER>::unitSymbol();
     case Unit::MOLE_RATIO:
         return Amount<Unit::MOLE_RATIO>::unitSymbol();
+    case Unit::MOLE_PERCENT:
+        return Amount<Unit::MOLE_PERCENT>::unitSymbol();
     case Unit::MOLE_PER_SECOND:
         return Amount<Unit::MOLE_PER_SECOND>::unitSymbol();
     case Unit::GRAM_PER_MOLE:
@@ -134,6 +164,8 @@ std::string DynamicAmount::getUnitName(const Unit unit)
     {
     case Unit::NONE:
         return Amount<Unit::NONE>::unitName();
+    case Unit::ANY:
+        return Amount<Unit::ANY>::unitName();
     case Unit::LITER:
         return Amount<Unit::LITER>::unitName();
     case Unit::CUBIC_METER:
@@ -174,6 +206,8 @@ std::string DynamicAmount::getUnitName(const Unit unit)
         return Amount<Unit::PER_METER>::unitName();
     case Unit::MOLE_RATIO:
         return Amount<Unit::MOLE_RATIO>::unitName();
+    case Unit::MOLE_PERCENT:
+        return Amount<Unit::MOLE_PERCENT>::unitName();
     case Unit::MOLE_PER_SECOND:
         return Amount<Unit::MOLE_PER_SECOND>::unitName();
     case Unit::GRAM_PER_MOLE:
@@ -199,6 +233,7 @@ std::optional<Unit> DynamicAmount::getUnitFromSymbol(const std::string& symbol)
     static const std::unordered_map<std::string, Unit> symbolToUnitMap = 
     {
         {DynamicAmount::getUnitSymbol(Unit::NONE), Unit::NONE},
+        {DynamicAmount::getUnitSymbol(Unit::ANY), Unit::ANY},
         {DynamicAmount::getUnitSymbol(Unit::LITER), Unit::LITER},
         {DynamicAmount::getUnitSymbol(Unit::CUBIC_METER), Unit::CUBIC_METER},
         {DynamicAmount::getUnitSymbol(Unit::DROP), Unit::DROP},
@@ -219,6 +254,7 @@ std::optional<Unit> DynamicAmount::getUnitFromSymbol(const std::string& symbol)
         {DynamicAmount::getUnitSymbol(Unit::PER_SECOND), Unit::PER_SECOND},
         {DynamicAmount::getUnitSymbol(Unit::PER_METER), Unit::PER_METER},
         {DynamicAmount::getUnitSymbol(Unit::MOLE_RATIO), Unit::MOLE_RATIO},
+        {DynamicAmount::getUnitSymbol(Unit::MOLE_PERCENT), Unit::MOLE_PERCENT},
         {DynamicAmount::getUnitSymbol(Unit::MOLE_PER_SECOND), Unit::MOLE_PER_SECOND},
         {DynamicAmount::getUnitSymbol(Unit::GRAM_PER_MOLE), Unit::GRAM_PER_MOLE},
         {DynamicAmount::getUnitSymbol(Unit::GRAM_PER_MILLILITER), Unit::GRAM_PER_MILLILITER},
@@ -237,11 +273,11 @@ std::optional<Unit> DynamicAmount::getUnitFromSymbol(const std::string& symbol)
 std::optional<DynamicAmount> DynamicAmount::get(const StorageType value, const std::string& symbol)
 {
     auto unit = DynamicAmount::getUnitFromSymbol(symbol);
-    if (unit.has_value())
+    if (unit)
         return DynamicAmount(value, *unit);
     
     unit = DynamicAmount::getUnitFromSymbol(symbol.substr(1));
-    if (unit.has_value() == false)
+    if (not unit)
         return std::nullopt;
     
     const StorageType multiplier = *unit == Unit::CUBIC_METER ?

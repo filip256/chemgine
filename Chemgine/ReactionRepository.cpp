@@ -1,186 +1,170 @@
 #include "ReactionRepository.hpp"
-#include "DataHelpers.hpp"
-#include "Log.hpp"
+#include "ReactionSpecifier.hpp"
+#include "EstimatorParsers.hpp"
 #include "Molecule.hpp"
+#include "Keywords.hpp"
+#include "Log.hpp"
 
 #include <fstream>
 
-ReactionRepository::ReactionRepository(MoleculeRepository& molecules) noexcept :
+ReactionRepository::ReactionRepository(
+	EstimatorRepository& estimators,
+	const MoleculeRepository& molecules
+) noexcept :
+	estimators(estimators),
 	molecules(molecules)
 {}
 
-bool ReactionRepository::loadFromFile(const std::string& path)
+bool ReactionRepository::add(Def::Object&& definition)
 {
-	std::ifstream file(path);
-
-	if (!file.is_open())
+	auto id = definition.getOptionalProperty(Def::Reactions::Id, Def::parse<ReactionId>);
+	if (not id)
+		id = getFreeId();
+	else if (table.contains(*id))
 	{
-		Log(this).error("Failed to open file '{0}'.", path);
+		Log(this).error("Reaction with duplicate id: '{0}', at: {1}.", *id, definition.getLocationName());
 		return false;
 	}
 
-	//if (files::verifyChecksum(file).code != 200) //not OK
-	//	return StatusCode<>::FileCorrupted;
+	const auto name = definition.getDefaultProperty("name", "?");
 
-	table.clear();
-
-	//parse file
-	std::string buffer;
-	std::getline(file, buffer);
-	while (std::getline(file, buffer))
+	const auto spec = Def::parse<Def::ReactionSpecifier>(definition.getSpecifier());
+	if (not spec)
 	{
-		if (buffer.starts_with('\\'))
-			continue;
-
-		auto line = DataHelpers::parseList(buffer, ',');
-
-		if (line.size() != 8)
-		{
-			Log(this).error("Incompletely defined reaction skipped.");
-			continue;
-		}
-
-		const auto id = DataHelpers::parseId<ReactionId>(line[0]);
-		if (id.has_value() == false)
-		{
-			Log(this).error("Missing id, reaction skipped.");
-			continue;
-		}
-
-		// reactants
-		const auto reactants = DataHelpers::parseList(line[2], ';', true);
-		if (reactants.empty())
-		{
-			Log(this).error("Reaction without reactants with id {0} skipped.", *id);
-			continue;
-		}
-
-		std::vector<std::pair<Reactable, uint8_t>> reactantIds;
-		reactantIds.reserve(reactants.size());
-		for (size_t i = 0; i < reactants.size(); ++i)
-		{
-			const auto r = Reactable::get(reactants[i]);
-			if (r.has_value() == false)
-			{
-				Log(this).error("Ill-defined reactant '{0}' in reaction with id {1} skipped.", reactants[i], *id);
-				continue;
-			}
-			reactantIds.emplace_back(std::make_pair(*r, 0));
-		}
-
-		// products
-		const auto products = DataHelpers::parseList(line[3], ';', true);
-		if (products.empty())
-		{
-			Log(this).error("Reaction without products with id {0} skipped.", *id);
-			continue;
-		}
-
-		std::vector<std::pair<Reactable, uint8_t>> productIds;
-		productIds.reserve(products.size());
-		for (size_t i = 0; i < products.size(); ++i)
-		{
-			const auto r = Reactable::get(products[i]);
-			if (r.has_value() == false)
-			{
-				Log(this).error("Ill-defined product '{0}' in reaction with id {1} skipped.", products[i], *id);
-				continue;
-			}
-			productIds.emplace_back(std::make_pair(*r, 0));
-		}
-
-		if (ReactionData::balance(reactantIds, productIds) == false)
-		{
-			Log(this).error("Reaction with id {0} could not be balanced.", *id);
-			continue;
-		}
-
-		//speed
-		const auto speed = DataHelpers::parsePair<Unit::MOLE_PER_SECOND, Unit::CELSIUS>(line[4])
-			.value_or(std::make_pair(1.0, 20.0));
-
-		//reaction energy
-		const auto reactionEnergy = DataHelpers::parse<Unit::JOULE_PER_MOLE>(line[5]);
-
-		//activation energy
-		const auto activationEnergy = DataHelpers::parseUnsigned<Unit::JOULE_PER_MOLE>(line[6]);
-
-		//catalysts
-		const auto catStr = DataHelpers::parseList(line[7], ';', true);
-		std::vector<Catalyst> catalysts;
-		catalysts.reserve(catStr.size());
-		for (size_t i = 0; i < catStr.size(); ++i)
-		{
-			const auto pair = DataHelpers::parseList(catStr[i], '@', true);
-			if (pair.size() != 2)
-			{
-				Log(this).error("Reaction catalyst for the reaction with id {0} is ill-defined. Catalysts skipped.", *id);
-				continue;
-			}
-
-			const auto amount = DataHelpers::parseUnsigned<Unit::MOLE_RATIO>(pair.back());
-			if (amount.has_value() == false)
-			{
-				Log(this).error("Ill-defined catalyst '{0}' in reaction with id {1} skipped.", catStr[i], *id);
-				continue;
-			}
-
-			const auto c = Catalyst::get(pair.front(), *amount);
-			if (c.has_value() == false)
-			{
-				Log(this).error("Ill-defined catalyst '{0}' in reaction with id {1} skipped.", catStr[i], *id);
-				continue;
-			}
-
-			bool isUnique = true;
-			for(size_t j = 0; j < catalysts.size(); ++j)
-				if (catalysts[j].matchesWith(c->getStructure()) || c->matchesWith(catalysts[j].getStructure()))
-				{
-					isUnique = false;
-					Log(this).warn("Ingored duplicate catalyst '{0}' in reaction with id {1}.", catStr[i], *id);
-					break;
-				}
-			if (isUnique == false)
-				continue;
-
-			catalysts.emplace_back(*c);
-		}
-
-		// create
-		ReactionData data(
-			*id, line[1],
-			reactantIds, productIds, 
-			speed.first, speed.second,
-			reactionEnergy.value_or(0.0),
-			activationEnergy.value_or(0.0),
-			std::move(catalysts)
-		);
-
-		if (data.mapReactantsToProducts() == false)
-		{
-			Log(this).error("Reaction with id {0} is not a valid reaction.", *id);
-			continue;
-		}
-
-		maxReactantCount = std::max(static_cast<uint8_t>(reactantIds.size()), maxReactantCount);
-
-		if (table.emplace(
-			*id,
-			std::to_string(*id),
-			std::move(data)
-		) == false)
-		{
-			Log(this).warn("Reaction with duplicate id {0} skipped.", *id);
-		}
+		Log(this).error("Invalid reaction specifier: '{0}', at: {1}.", definition.getSpecifier(), definition.getLocationName());
+		return false;
 	}
-	file.close();
 
-	Log(this).info("Loaded {0} reactions.", table.size());
+	// reactants
+	std::vector<std::pair<StructureRef, uint8_t>> reactantIds;
+	reactantIds.reserve(spec->reactants.size());
+	for (size_t i = 0; i < spec->reactants.size(); ++i)
+	{
+		const auto r = StructureRef::create(spec->reactants[i]);
+		if (not r)
+		{
+			Log(this).error("Malformed reactant: '{0}' in reaction with id: {1}, at: {2}.", spec->reactants[i], *id, definition.getLocationName());
+			return false;
+		}
+		reactantIds.emplace_back(std::make_pair(*r, 0));
+	}
 
-	for (size_t i = 0; i < table.size(); ++i)
-		network.insert(table[i]);
+	// products
+	std::vector<std::pair<StructureRef, uint8_t>> productIds;
+	productIds.reserve(spec->products.size());
+	for (size_t i = 0; i < spec->products.size(); ++i)
+	{
+		const auto p = StructureRef::create(spec->products[i]);
+		if (not p)
+		{
+			Log(this).error("Malformed product: '{0}' in reaction with id: {1}, at: {2}.", spec->products[i], *id, definition.getLocationName());
+			return false;
+		}
+		productIds.emplace_back(std::make_pair(*p, 0));
+	}
+
+	if (ReactionData::balance(reactantIds, productIds) == false)
+	{
+		Log(this).error("Reaction with id: '{0}' could not be balanced.", *id);
+		return false;
+	}
+
+	// catalysts
+	const auto catStr = definition.getDefaultProperty(Def::Reactions::Catalysts, std::vector<std::string>(),
+		Def::parse<std::vector<std::string>>);
+
+	std::vector<Catalyst> catalysts;
+	catalysts.reserve(catStr.size());
+	for (size_t i = 0; i < catStr.size(); ++i)
+	{
+		const auto c = Def::parse<Catalyst>(catStr[i]);
+		if (not c)
+		{
+			Log(this).error("Malformed catalyst: '{0}' in reaction with id: '{1}', at: {2}.", catStr[i], *id, definition.getLocationName());
+			return false;
+		}
+
+		bool isUnique = true;
+		for (size_t j = 0; j < catalysts.size(); ++j)
+			if (catalysts[j].matchesWith(c->getStructure()) || c->matchesWith(catalysts[j].getStructure()))
+			{
+				isUnique = false;
+				Log(this).warn("Ingored duplicate catalyst '{0}' in reaction with id {1}, at: {2}.", catStr[i], *id, definition.getLocationName());
+				break;
+			}
+		if (isUnique == false)
+			continue;
+
+		catalysts.emplace_back(*c);
+	}
+
+	const auto isCut = definition.getDefaultProperty(Def::Reactions::IsCut, false,
+		Def::parse<bool>);
+
+	std::unique_ptr<ReactionData> data;
+	if (isCut)
+	{
+		EstimatorFactory factory(estimators);
+		data = std::make_unique<ReactionData>(
+			*id, name,
+			reactantIds, productIds,
+			factory.createConstant<Unit::MOLE_PER_SECOND, Unit::CELSIUS>(0.0),
+			factory.createConstant<Unit::NONE, Unit::MOLE_RATIO>(0.0),
+			std::move(catalysts));
+	}
+	else
+	{
+		const auto energy = definition.getDefaultProperty(Def::Reactions::Energy, Amount<Unit::JOULE_PER_MOLE>(0.0),
+			Def::parse<Amount<Unit::JOULE_PER_MOLE>>);
+		const auto activation = definition.getDefaultProperty(Def::Reactions::Activation, Amount<Unit::JOULE_PER_MOLE>(0.0),
+			Def::parse<Amount<Unit::JOULE_PER_MOLE>>);
+		auto tempSpeed = definition.getDefinition(Def::Reactions::TemperatureSpeed,
+			Def::Parser<UnitizedEstimator<Unit::MOLE_PER_SECOND, Unit::CELSIUS>>::parse, estimators);
+		auto concSpeed = definition.getDefinition(Def::Reactions::ConcentrationSpeed,
+			Def::Parser<UnitizedEstimator<Unit::NONE, Unit::MOLE_RATIO>>::parse, estimators);
+
+		data = std::make_unique<ReactionData>(
+			*id, name,
+			reactantIds, productIds,
+			energy, activation,
+			std::move(*tempSpeed), std::move(*concSpeed),
+			std::move(catalysts));
+	}
+
+	// create
+	if (data->mapReactantsToProducts() == false)
+	{
+		Log(this).error("Malformed reaction with id: {0}, at: {1}.", *id, definition.getLocationName());
+		return false;
+	}
+
+	maxReactantCount = std::max(static_cast<uint8_t>(reactantIds.size()), maxReactantCount);
+
+	const auto r = table.emplace(*id, std::move(data));
+	network.insert(*r.first->second);
 
 	return true;
+}
+
+ReactionRepository::Iterator ReactionRepository::begin() const
+{
+	return table.begin();
+}
+
+ReactionRepository::Iterator ReactionRepository::end() const
+{
+	return table.end();
+}
+
+size_t ReactionRepository::size() const
+{
+	return table.size();
+}
+
+void ReactionRepository::clear()
+{
+	network.clear();
+	table.clear();
 }
 
 uint8_t ReactionRepository::getMaxReactantCount() const
@@ -198,20 +182,19 @@ std::unordered_set<ConcreteReaction> ReactionRepository::findOccuringReactions(c
 	return network.getOccuringReactions(reactants);
 }
 
-std::unordered_set<RetrosynthReaction> ReactionRepository::getRetrosynthReactions(const Reactable& targetProduct) const
+std::unordered_set<RetrosynthReaction> ReactionRepository::getRetrosynthReactions(const StructureRef& targetProduct) const
 {
 	return network.getRetrosynthReactions(targetProduct);
 }
 
 size_t ReactionRepository::generateCurrentSpan() const
 {
-	const auto& molecules = this->molecules.getData().getData();
 	std::vector<Reactant> reactants;
 	reactants.reserve(molecules.size());
 
 	std::transform(
 		molecules.begin(), molecules.end(), std::back_inserter(reactants),
-		[](const MoleculeData& m) { return Reactant(Molecule(m.id), LayerType::NONE, 1.0_mol); });
+		[](const auto& mIt) { return Reactant(Molecule(*mIt.second), LayerType::NONE, 1.0_mol); });
 
 	const auto arrangements = Utils::getArrangementsWithRepetitions(reactants, maxReactantCount);
 	for(size_t i = 0; i < arrangements.size(); ++i)
@@ -224,9 +207,21 @@ size_t ReactionRepository::generateCurrentSpan() const
 
 size_t ReactionRepository::generateTotalSpan(const size_t maxIterations) const
 {
-	const size_t initialCnt = molecules.getData().getData().size();
+	const size_t initialCnt = molecules.size();
 
-	while (generateCurrentSpan() > 0 && molecules.getData().getData().size() < 1000);
+	while (generateCurrentSpan() > 0 && molecules.size() < 1000);
 
-	return molecules.getData().getData().size() - initialCnt;
+	return molecules.size() - initialCnt;
+}
+
+ReactionId ReactionRepository::getFreeId() const
+{
+	static ReactionId id = 0;
+	while (table.contains(id))
+	{
+		if (id == std::numeric_limits<ReactionId>::max())
+			Log(this).fatal("Reaction id limit reached: {0}.", id);
+		++id;
+	}
+	return id;
 }

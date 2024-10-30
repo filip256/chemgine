@@ -103,7 +103,7 @@ void MixturePropertyPane::ContentPropertyPane::draw(sf::RenderTarget& target, sf
 {
 	for (const auto& m : *subject)
 	{
-		propertyName.setString(Linguistics::capitalize(m.molecule.data().name));
+		propertyName.setString(Linguistics::capitalize(m.molecule.getData().name));
 		propertyValue.setString(m.amount.toString(12));
 		target.draw(propertyName, states);
 		target.draw(propertyValue, states);

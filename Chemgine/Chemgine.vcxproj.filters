@@ -154,6 +154,15 @@
     <Filter Include="Source Files\Terminal">
       <UniqueIdentifier>{0fedb36f-f314-4a1a-8d0c-1e540066cb3c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Data\BuiltIn">
+      <UniqueIdentifier>{f2c9daf0-f82c-4bfb-978d-e777270471f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Data\Def">
+      <UniqueIdentifier>{88932a60-5de8-4102-9970-0f78e1a9c326}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Data\Def">
+      <UniqueIdentifier>{7e7d83b0-6811-4e6e-8d28-dcd0d6fac6c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataStore.cpp">
@@ -183,7 +192,7 @@
     <ClCompile Include="SystemMatrix.cpp">
       <Filter>Source Files\DataStructures</Filter>
     </ClCompile>
-    <ClCompile Include="Reactable.cpp">
+    <ClCompile Include="StructureRef.cpp">
       <Filter>Source Files\Reactions</Filter>
     </ClCompile>
     <ClCompile Include="Maths.cpp">
@@ -197,9 +206,6 @@
     </ClCompile>
     <ClCompile Include="Constants.cpp">
       <Filter>Source Files\Data</Filter>
-    </ClCompile>
-    <ClCompile Include="LabwareDataFactory.cpp">
-      <Filter>Source Files\Labware</Filter>
     </ClCompile>
     <ClCompile Include="LabwareRepository.cpp">
       <Filter>Source Files\Labware</Filter>
@@ -224,9 +230,6 @@
     </ClCompile>
     <ClCompile Include="MoleculeData.cpp">
       <Filter>Source Files\Molecules</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseLabwareData.cpp">
-      <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
     <ClCompile Include="FlaskData.cpp">
       <Filter>Source Files\Labware\DataTypes</Filter>
@@ -282,16 +285,7 @@
     <ClCompile Include="Spline.cpp">
       <Filter>Source Files\DataStructures</Filter>
     </ClCompile>
-    <ClCompile Include="BaseEstimator.cpp">
-      <Filter>Source Files\Estimators</Filter>
-    </ClCompile>
-    <ClCompile Include="SplineEstimator.cpp">
-      <Filter>Source Files\Estimators</Filter>
-    </ClCompile>
-    <ClCompile Include="OffsetEstimator.cpp">
-      <Filter>Source Files\Estimators</Filter>
-    </ClCompile>
-    <ClCompile Include="SplitEstimator.cpp">
+    <ClCompile Include="EstimatorBase.cpp">
       <Filter>Source Files\Estimators</Filter>
     </ClCompile>
     <ClCompile Include="Formulas.cpp">
@@ -300,26 +294,11 @@
     <ClCompile Include="Catalyst.cpp">
       <Filter>Source Files\Reactions</Filter>
     </ClCompile>
-    <ClCompile Include="ScaleEstimator.cpp">
-      <Filter>Source Files\Estimators</Filter>
-    </ClCompile>
-    <ClCompile Include="ConstantEstimator.cpp">
-      <Filter>Source Files\Estimators</Filter>
-    </ClCompile>
-    <ClCompile Include="LinearEstimator.cpp">
-      <Filter>Source Files\Estimators</Filter>
-    </ClCompile>
     <ClCompile Include="GenericMoleculeData.cpp">
-      <Filter>Source Files\Molecules</Filter>
-    </ClCompile>
-    <ClCompile Include="GenericMoleculeRepository.cpp">
       <Filter>Source Files\Molecules</Filter>
     </ClCompile>
     <ClCompile Include="Symbol.cpp">
       <Filter>Source Files\Moleculars</Filter>
-    </ClCompile>
-    <ClCompile Include="Context.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Atmosphere.cpp">
       <Filter>Source Files\Mixtures\MixtureTypes</Filter>
@@ -426,9 +405,6 @@
     <ClCompile Include="MolecularStructure.cpp">
       <Filter>Source Files\Molecules</Filter>
     </ClCompile>
-    <ClCompile Include="DataHelpers.cpp">
-      <Filter>Source Files\Helpers</Filter>
-    </ClCompile>
     <ClCompile Include="CursorHelper.cpp">
       <Filter>Source Files\Graphics\UI</Filter>
     </ClCompile>
@@ -453,13 +429,58 @@
     <ClCompile Include="Input.cpp">
       <Filter>Source Files\Terminal</Filter>
     </ClCompile>
+    <ClCompile Include="ReactionSpecifier.cpp">
+      <Filter>Source Files\Reactions</Filter>
+    </ClCompile>
+    <ClCompile Include="StringUtils.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="PathUtils.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="FileParser.cpp">
+      <Filter>Source Files\Data\Def</Filter>
+    </ClCompile>
+    <ClCompile Include="Location.cpp">
+      <Filter>Source Files\Data\Def</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>Source Files\Data\Def</Filter>
+    </ClCompile>
+    <ClCompile Include="EstimatorSpecifier.cpp">
+      <Filter>Source Files\Estimators</Filter>
+    </ClCompile>
+    <ClCompile Include="FileStore.cpp">
+      <Filter>Source Files\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="FileAnalyzer.cpp">
+      <Filter>Source Files\Data\Def</Filter>
+    </ClCompile>
+    <ClCompile Include="OOLDefRepository.cpp">
+      <Filter>Source Files\Data</Filter>
+    </ClCompile>
+    <ClCompile Include="EstimatorFactory.cpp">
+      <Filter>Source Files\Estimators</Filter>
+    </ClCompile>
+    <ClCompile Include="Regressors2D.cpp">
+      <Filter>Source Files\DataStructures</Filter>
+    </ClCompile>
+    <ClCompile Include="Regressors3D.cpp">
+      <Filter>Source Files\DataStructures</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseLabwareData.cpp">
+      <Filter>Source Files\Labware\DataTypes</Filter>
+    </ClCompile>
+    <ClCompile Include="PrintSettings.cpp">
+      <Filter>Source Files\Data\Def</Filter>
+    </ClCompile>
+    <ClCompile Include="DataDumper.cpp">
+      <Filter>Source Files\Data\Def</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
       <Filter>Header Files\Data</Filter>
-    </ClInclude>
-    <ClInclude Include="DataHelpers.hpp">
-      <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="Log.hpp">
       <Filter>Header Files\Terminal</Filter>
@@ -491,19 +512,13 @@
     <ClInclude Include="SystemMatrix.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
-    <ClInclude Include="Reactable.hpp">
+    <ClInclude Include="StructureRef.hpp">
       <Filter>Header Files\Reactions</Filter>
     </ClInclude>
     <ClInclude Include="Maths.hpp">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="SizeTypedefs.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HashCombine.hpp">
-      <Filter>Header Files\DataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="PairHash.hpp">
+    <ClInclude Include="HashUtils.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
     <ClInclude Include="PVector.hpp">
@@ -534,9 +549,6 @@
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="LabwareType.hpp">
-      <Filter>Header Files\Labware</Filter>
-    </ClInclude>
-    <ClInclude Include="LabwareDataFactory.hpp">
       <Filter>Header Files\Labware</Filter>
     </ClInclude>
     <ClInclude Include="LabwareRepository.hpp">
@@ -587,14 +599,8 @@
     <ClInclude Include="LabwareSystem.hpp">
       <Filter>Header Files\Labware</Filter>
     </ClInclude>
-    <ClInclude Include="PortType.hpp">
-      <Filter>Header Files\Labware</Filter>
-    </ClInclude>
     <ClInclude Include="LabwareConnection.hpp">
       <Filter>Header Files\Labware</Filter>
-    </ClInclude>
-    <ClInclude Include="UIContext.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Collision.hpp">
       <Filter>Header Files\External</Filter>
@@ -623,16 +629,13 @@
     <ClInclude Include="ReactantSet.hpp">
       <Filter>Header Files\Reactions</Filter>
     </ClInclude>
-    <ClInclude Include="FunctionalEstimator.hpp">
-      <Filter>Header Files\Estimators</Filter>
-    </ClInclude>
     <ClInclude Include="EstimatorRepository.hpp">
       <Filter>Header Files\Estimators</Filter>
     </ClInclude>
     <ClInclude Include="Spline.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
-    <ClInclude Include="BaseEstimator.hpp">
+    <ClInclude Include="EstimatorBase.hpp">
       <Filter>Header Files\Estimators</Filter>
     </ClInclude>
     <ClInclude Include="EstimatorType.hpp">
@@ -641,31 +644,16 @@
     <ClInclude Include="SplineEstimator.hpp">
       <Filter>Header Files\Estimators</Filter>
     </ClInclude>
-    <ClInclude Include="OffsetEstimator.hpp">
-      <Filter>Header Files\Estimators</Filter>
-    </ClInclude>
-    <ClInclude Include="SplitEstimator.hpp">
-      <Filter>Header Files\Estimators</Filter>
-    </ClInclude>
     <ClInclude Include="Formulas.hpp">
       <Filter>Header Files\Data</Filter>
     </ClInclude>
     <ClInclude Include="Catalyst.hpp">
       <Filter>Header Files\Reactions</Filter>
     </ClInclude>
-    <ClInclude Include="ScaleEstimator.hpp">
-      <Filter>Header Files\Estimators</Filter>
-    </ClInclude>
     <ClInclude Include="ConstantEstimator.hpp">
       <Filter>Header Files\Estimators</Filter>
     </ClInclude>
-    <ClInclude Include="LinearEstimator.hpp">
-      <Filter>Header Files\Estimators</Filter>
-    </ClInclude>
     <ClInclude Include="GenericMoleculeData.hpp">
-      <Filter>Header Files\Molecules</Filter>
-    </ClInclude>
-    <ClInclude Include="GenericMoleculeRepository.hpp">
       <Filter>Header Files\Molecules</Filter>
     </ClInclude>
     <ClInclude Include="Symbol.hpp">
@@ -679,9 +667,6 @@
     </ClInclude>
     <ClInclude Include="FlagField.hpp">
       <Filter>Header Files\DataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="Context.hpp">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Atmosphere.hpp">
       <Filter>Header Files\Mixtures\MixtureTypes</Filter>
@@ -745,9 +730,6 @@
     </ClInclude>
     <ClInclude Include="SparseDirectedGraph.hpp">
       <Filter>Header Files\DataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="MoleculeId.hpp">
-      <Filter>Header Files\Molecules</Filter>
     </ClInclude>
     <ClInclude Include="ReactantRef.hpp">
       <Filter>Header Files\Mixtures</Filter>
@@ -848,27 +830,135 @@
     <ClInclude Include="Input.hpp">
       <Filter>Header Files\Terminal</Filter>
     </ClInclude>
+    <ClInclude Include="StringUtils.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="ReactionSpecifier.hpp">
+      <Filter>Header Files\Reactions</Filter>
+    </ClInclude>
+    <ClInclude Include="PathUtils.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="FileParser.hpp">
+      <Filter>Header Files\Data\Def</Filter>
+    </ClInclude>
+    <ClInclude Include="Location.hpp">
+      <Filter>Header Files\Data\Def</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.hpp">
+      <Filter>Header Files\Data\Def</Filter>
+    </ClInclude>
+    <ClInclude Include="Parsers.hpp">
+      <Filter>Header Files\Data\Def</Filter>
+    </ClInclude>
+    <ClInclude Include="Keywords.hpp">
+      <Filter>Header Files\Data\Def</Filter>
+    </ClInclude>
+    <ClInclude Include="EstimatorSpecifier.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="FileStore.hpp">
+      <Filter>Header Files\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="FileAnalyzer.hpp">
+      <Filter>Header Files\Data\Def</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitizedEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="OOLDefRepository.hpp">
+      <Filter>Header Files\Data</Filter>
+    </ClInclude>
+    <ClInclude Include="DataPoint.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="EstimationMode.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="EstimatorFactory.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="EstimatorParsers.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="AffineEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="NumericUtils.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="MetaUtils.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="DefinitionParser.hpp">
+      <Filter>Header Files\Data\Def</Filter>
+    </ClInclude>
+    <ClInclude Include="Regressors2D.hpp">
+      <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="Regressors3D.hpp">
+      <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="Casts.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="PortType.hpp">
+      <Filter>Header Files\Labware</Filter>
+    </ClInclude>
+    <ClInclude Include="Printers.hpp">
+      <Filter>Header Files\Data\Def</Filter>
+    </ClInclude>
+    <ClInclude Include="MoleculeId.hpp">
+      <Filter>Header Files\Molecules</Filter>
+    </ClInclude>
+    <ClInclude Include="DerivedEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="CountedRef.hpp">
+      <Filter>Header Files\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="UIContext.hpp">
+      <Filter>Header Files\Graphics\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="SizeTypedefs.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Precision.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="RegressionEstimator.hpp">
+      <Filter>Header Files\Estimators</Filter>
+    </ClInclude>
+    <ClInclude Include="PrintSettings.hpp">
+      <Filter>Header Files\Data\Def</Filter>
+    </ClInclude>
+    <ClInclude Include="DataDumper.hpp">
+      <Filter>Header Files\Data\Def</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Data\AtomData.csv">
-      <Filter>Resource Files\Data</Filter>
+    <None Include="Data\builtin.cdef">
+      <Filter>Resource Files\Data\BuiltIn</Filter>
     </None>
-    <None Include="Data\GenericMoleculeData.csv">
-      <Filter>Resource Files\Data</Filter>
+    <None Include="Data\builtin\atoms.cdef">
+      <Filter>Resource Files\Data\BuiltIn</Filter>
     </None>
-    <None Include="Data\MoleculeData.csv">
-      <Filter>Resource Files\Data</Filter>
+    <None Include="Data\builtin\estimators.cdef">
+      <Filter>Resource Files\Data\BuiltIn</Filter>
     </None>
-    <None Include="Data\ReactionData.csv">
-      <Filter>Resource Files\Data</Filter>
+    <None Include="Data\builtin\labware.cdef">
+      <Filter>Resource Files\Data\BuiltIn</Filter>
     </None>
-    <None Include="Data\LabwareData.csv">
-      <Filter>Resource Files\Data</Filter>
+    <None Include="Data\builtin\molecules.cdef">
+      <Filter>Resource Files\Data\BuiltIn</Filter>
     </None>
-    <None Include="Out\molecules.out.csv">
-      <Filter>Resource Files\Out</Filter>
+    <None Include="Data\builtin\radicals.cdef">
+      <Filter>Resource Files\Data\BuiltIn</Filter>
     </None>
-    <None Include="Out\genericmolecules.out.csv">
+    <None Include="Data\builtin\reactions.cdef">
+      <Filter>Resource Files\Data\BuiltIn</Filter>
+    </None>
+    <None Include="Out\builtin.cdef">
       <Filter>Resource Files\Out</Filter>
     </None>
   </ItemGroup>

@@ -67,7 +67,7 @@ void ReactantSet::add(const Reactant& reactant)
 
 	if (reactant.amount < 0.0)
 	{
-		Log(this).error("Tried to add a negative amount of {0}.", reactant.molecule.getHRTag());
+		Log(this).error("Tried to add a negative amount of {0}.", reactant.molecule.getStructure().toSMILES());
 		return;
 	}
 	reactants.emplace(std::make_pair(reactant.getId(), reactant.mutate(container)));

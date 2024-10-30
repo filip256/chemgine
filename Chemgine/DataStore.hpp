@@ -1,40 +1,38 @@
 #pragma once
 
 #include "AtomRepository.hpp"
-#include "GenericMoleculeRepository.hpp"
 #include "MoleculeRepository.hpp"
 #include "ReactionRepository.hpp"
 #include "LabwareRepository.hpp"
 #include "EstimatorRepository.hpp"
+#include "OOLDefRepository.hpp"
+#include "FileStore.hpp"
 
 class DataStore
 {
+private:
+	bool addDefinition(Def::Object&& definition);
+
 public:
+	FileStore fileStore;
+
+	OOLDefRepository oolDefinitions;
+
 	AtomRepository atoms;
 
 	EstimatorRepository estimators;
 
 	mutable MoleculeRepository molecules;
-	mutable GenericMoleculeRepository genericMolecules;
 	ReactionRepository reactions;
 
 	LabwareRepository labware;
 
-
 	DataStore();
 	DataStore(const DataStore&) = delete;
 
-	DataStore& loadAtomsData(const std::string& path);
+	bool load(const std::string& path);
+	void dump(const std::string& path, const bool prettify = true);
+	void clear();
 
-	DataStore& loadEstimatorsData(const std::string& path);
-	DataStore& loadMoleculesData(const std::string& path);
-	DataStore& loadGenericMoleculesData(const std::string& path);
-	DataStore& loadReactionsData(const std::string& path);
-
-	DataStore& loadLabwareData(const std::string& path);
-
-	DataStore& saveMoleculesData(const std::string& path);
-	DataStore& saveGenericMoleculesData(const std::string& path);
-	
 	static constexpr size_t npos = static_cast<size_t>(-1);
 };

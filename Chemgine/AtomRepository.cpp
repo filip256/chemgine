@@ -1,131 +1,127 @@
 #include "AtomRepository.hpp"
-#include "DataHelpers.hpp"
+#include "DynamicAmount.hpp"
+#include "Keywords.hpp"
 #include "Log.hpp"
 #include "Utils.hpp"
 
 #include <fstream>
 
-AtomRepository::~AtomRepository() noexcept
+template <>
+bool AtomRepository::add<AtomData>(Def::Object&& definition)
 {
-	for (size_t i = 0; i < table.size(); ++i)
-		delete table[i];
-}
-
-bool AtomRepository::add(const AtomData* data)
-{
-	return table.emplace(data->id, data->symbol, std::move(data));
-}
-
-void AtomRepository::loadBuiltins()
-{
-	if(contains("H") == false)
-		add<AtomData>(101, "H", "Hydrogen", 1.008, std::vector<uint8_t> { 1 });
-
-	add<RadicalData>(21, "*", "any radical", Utils::copy(RadicalData::MatchAny));
-	add<RadicalData>(22, "R", "alkyl radical", std::unordered_set<Symbol> { "C" });
-	add<RadicalData>(23, "A", "aromatic radical", std::unordered_set<Symbol> { "C" });
-	add<RadicalData>(24, "X", "halogen radical", std::unordered_set<Symbol> { "F", "Cl", "Br", "At", "Ts" });
-	add<RadicalData>(25, "Me", "metal radical", std::unordered_set<Symbol> { "Li", "Na", "K", "Be", "Mg", "Ca", "Sr", "Ba" });
-}
-
-bool AtomRepository::contains(const AtomId id) const
-{
-	return table.containsKey1(id);
-}
-
-bool AtomRepository::contains(const Symbol symbol) const
-{
-	return table.containsKey2(symbol);
-}
-
-const AtomData& AtomRepository::at(const AtomId id) const
-{
-	return *table.atKey1(id);
-}
-
-const AtomData& AtomRepository::at(const Symbol symbol) const
-{
-	return *table.atKey2(symbol);
-}
-
-std::unordered_set<AtomId> AtomRepository::getIds(const std::unordered_set<Symbol>& symbols) const
-{
-	std::unordered_set<AtomId> result;
-	result.reserve(symbols.size());
-
-	for (const auto& s : symbols)
+	const auto symbol = Def::parse<Symbol>(definition.getSpecifier());
+	if (not symbol)
 	{
-		if (contains(s) == false)
-		{
-			Log(this).error("Skipped undefined atom symbol: '{0}'.", s.getAsString());
-			continue;
-		}
-		result.emplace(at(s).id);
-	}
-
-	return result;
-}
-
-bool AtomRepository::loadFromFile(const std::string& path)
-{
-	std::ifstream file(path);
-
-	if (!file.is_open())
-	{
-		Log(this).error("Failed to open file '{0}'.", path);
+		Log(this).error("Invalid atom symbol: '{0}' at: {1}.", definition.getSpecifier(), definition.getLocationName());
 		return false;
 	}
 
-	//if (files::verifyChecksum(file).code != 200) //not OK
-	//	return StatusCode<>::FileCorrupted;
+	const auto name = definition.getProperty(Def::Atoms::Name);
+	const auto weight = definition.getProperty(Def::Atoms::Weight, Def::parse<Amount<Unit::GRAM>>);
+	auto valences = definition.getProperty(Def::Atoms::Valences, Def::parse<std::vector<uint8_t>>);
 
-	table.clear();
-
-	//parse file
-	std::string buffer;
-	std::getline(file, buffer);
-	while (std::getline(file, buffer))
+	if (not(name && weight && valences))
 	{
-		auto line = DataHelpers::parseList(buffer, ',');
-
-		const auto id = DataHelpers::parseId<AtomId>(line[0]);
-		if (id.has_value() == false)
-		{
-			Log(this).error("Missing id, atom skipped.");
-			continue;
-		}
-
-		const auto symbol = DataHelpers::parse<Symbol>(line[1]);
-		if (symbol.has_value() == false)
-		{
-			Log(this).error("Missing or invalid symbol: \"{0}\", atom skipped.", line[1]);
-			continue;
-		}
-
-		if (line[2].empty())
-		{
-			Log(this).warn("Missing name for atom '{0}'.", line[1]);
-		}
-
-		const auto weight = DataHelpers::parseUnsigned<double>(line[3]);
-
-		auto valences = DataHelpers::parseList<uint8_t>(line[4], ';', true);
-		if (valences.has_value() == false)
-		{
-			Log(this).error("Atom with invalid or missing valence with id {0} skipped.", *id);
-			continue;
-		}
-
-		if (add<AtomData>(*id, *symbol, line[2], Amount<Unit::GRAM>(weight.value_or(0)), std::move(*valences)) == false)
-		{
-			Log(this).warn("Duplicate atom with id {0} or symbol '{1}' skipped.", *id, line[1]);
-		}
+		Log(this).error("Incomplete atom definition at: {0}.", definition.getLocationName());
+		return false;
 	}
-	file.close();
-
-	Log(this).info("Loaded {0} atoms.", table.size());
-
-	loadBuiltins();
+	
+	if (not atomTable.emplace(*symbol,
+		std::make_unique<AtomData>(*symbol, *name, *weight, std::move(*valences))).second)
+	{
+		Log(this).warn("Atom with duplicate symbol: '{0}' skipped.", symbol->getString());
+		return false;
+	}
 
 	return true;
+}
+
+template <>
+bool AtomRepository::add<RadicalData>(Def::Object&& definition)
+{
+	const auto symbol = Def::parse<Symbol>(definition.getSpecifier());
+	if (not symbol)
+	{
+		Log(this).error("Invalid radical symbol: '{0}' at: {1}.", definition.getSpecifier(), definition.getLocationName());
+		return false;
+	}
+
+	const auto name = definition.getDefaultProperty(Def::Atoms::Name, Utils::copy(symbol->getString()));
+	const auto matches = definition.getProperty(Def::Atoms::RadicalMatches, Def::parse<std::vector<Symbol>>);
+
+	if (not matches)
+	{
+		Log(this).error("Incomplete radical definition at: {0}.", definition.getLocationName());
+		return false;
+	}
+
+	// check match symbols
+	for (size_t i = 0; i < matches->size(); ++i)
+	{
+		const auto& symbol = (*matches)[i];
+		if (symbol == '*') // match-any symbol
+		{
+			if(matches->size() != 1)
+				Log(this).warn("Found redundant atom match symbols in set containing the match-any symbol: '*', at: {0}.", definition.getLocationName());
+			continue;
+		}
+
+		if (contains(symbol) == false)
+		{
+			Log(this).error("Unknown atom match symbol: '{0}', at: {1}.", symbol.getString(), definition.getLocationName());
+			return false;
+		}
+	}
+
+	std::unordered_set matchSet(matches->begin(), matches->end());
+	if (not radicalTable.emplace(*symbol, 
+		std::make_unique<RadicalData>(*symbol, name, std::move(matchSet))).second)
+	{
+		Log(this).warn("Atom with duplicate symbol: '{0}' skipped.", symbol->getString());
+		return false;
+	}
+
+	return true;
+}
+
+bool AtomRepository::contains(const Symbol& symbol) const
+{
+	return atomTable.contains(symbol) || radicalTable.contains(symbol);
+}
+
+const AtomData& AtomRepository::at(const Symbol& symbol) const
+{
+	if (const auto aIt = atomTable.find(symbol); aIt != atomTable.end())
+		return *aIt->second;
+
+	if (const auto rIt = radicalTable.find(symbol); rIt != radicalTable.end())
+		return *rIt->second;
+
+	Log(this).fatal("Tried to access an atom suing an undefined symbol: '{0}'", symbol.getString());
+}
+
+AtomRepository::AtomIterator AtomRepository::atomsBegin() const
+{
+	return atomTable.begin();
+}
+
+AtomRepository::AtomIterator AtomRepository::atomsEnd() const
+{
+	return atomTable.end();
+}
+
+AtomRepository::RadicalIterator AtomRepository::radicalsBegin() const
+{
+	return radicalTable.begin();
+}
+
+AtomRepository::RadicalIterator AtomRepository::radicalsEnd() const
+{
+	return radicalTable.end();
+}
+
+void AtomRepository::clear()
+{
+	atomTable.clear();
+	radicalTable.clear();
 }

@@ -1,19 +1,20 @@
 #pragma once
 
 #include "DataStoreAccessor.hpp"
-#include "MoleculeData.hpp"
 #include "AggregationType.hpp"
+#include "MoleculeData.hpp"
+#include "Parsers.hpp"
 #include "Accessor.hpp"
 #include "Amount.hpp"
 
 class Molecule : public Accessor<>
 {
 private:
-	const MoleculeId id;
+	const MoleculeData& data;
 	Amount<Unit::GRAM_PER_MOLE> molarMass;
 
 public:
-	Molecule(const MoleculeId id) noexcept;
+	Molecule(const MoleculeData& data) noexcept;
 	Molecule(MolecularStructure&& structure) noexcept;
 	Molecule(const std::string& smiles) noexcept;
 	Molecule(const Molecule&) = default;
@@ -22,7 +23,7 @@ public:
 
 	MoleculeId getId() const;
 	Amount<Unit::GRAM_PER_MOLE> getMolarMass() const;
-	const MoleculeData& data() const;
+	const MoleculeData& getData() const;
 
 	const MolecularStructure& getStructure() const;
 
@@ -95,12 +96,8 @@ public:
 		const Polarity& solventPolarity
 	) const;
 
-	std::string getHRTag() const;
-
 	bool operator==(const Molecule& other) const;
 	bool operator!=(const Molecule& other) const;
-
-	friend struct std::hash<Molecule>;
 };
 
 template<>
@@ -108,6 +105,17 @@ struct std::hash<Molecule>
 {
 	size_t operator() (const Molecule& molecule) const
 	{
-		return std::hash<MoleculeId>()(molecule.id);
+		return std::hash<MoleculeId>()(molecule.getData().id);
+	}
+};
+
+
+template <>
+class Def::Parser<Molecule>
+{
+public:
+	static std::optional<Molecule> parse(const std::string& str)
+	{
+		return Def::parse<MolecularStructure>(str);
 	}
 };

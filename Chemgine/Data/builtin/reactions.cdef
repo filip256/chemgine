@@ -1,0 +1,117 @@
+:.
+    Built-in Reaction Definitions.
+.:
+
+INCLUDE ~/estimators.cdef AS est
+
+_react: O=C(R)O + OR -> O=C(R)OR + O {
+    id:        201,
+    name:      esterification,
+    speed_t:   _: C -> mol/s { base: $est@rtspd_0, rebase_point: {20.0 : 100.0} },
+    speed_c:   $est@rcspd_0,
+    energy:    100.0_J/mol,
+};
+
+_react: O=C(R)OR + O -> O=C(R)O + OR {
+    id:        202,
+    name:      hydrolysis,
+    speed_t:   _: C -> mol/s { base: $est@rtspd_0, rebase_point: {20.0 : 0.5} },
+    speed_c:   $est@rcspd_0,
+    energy:    0.0_J/mol,
+};
+
+_react: RO -> ROR + O {
+    id:        203,
+    name:      dehydration,
+    speed_t:   _: C -> mol/s { base: $est@rtspd_0, rebase_point: {20.0 : 1.0} },
+    speed_c:   $est@rcspd_0,
+    energy:    0.0_J/mol,
+};
+
+_react: RC=C + HH -> RCC {
+    id:        204,
+    name:      reduction,
+    speed_t:   _: C -> mol/s { base: $est@rtspd_0, rebase_point: {20.0 : 1.0} },
+    speed_c:   $est@rcspd_0,
+    energy:    0.0_J/mol,
+};
+
+_react: O=C(C)O + OR -> O=C(C)OR + O {
+    id:        205,
+    name:      esterification,
+    speed_t:   _: C -> mol/s { base: $est@rtspd_0, rebase_point: {20.0 : 0.1} },
+    speed_c:   $est@rcspd_0,
+    energy:    0.0_J/mol,
+};
+
+_react: RO -> ROR + O {
+    id:        206,
+    name:      dehydration,
+    speed_t:   _: C -> mol/s { base: $est@rtspd_0, rebase_point: {20.0 : 1.0} },
+    speed_c:   $est@rcspd_0,
+    energy:    0.0_J/mol,
+    catalysts: {O=C(R)OR : 50.0_mol%}
+};
+
+_react: [Me]O + X -> [Me]X + O {
+    id:        207,
+    name:      acid-base,
+    speed_t:   _: C -> mol/s { base: $est@rtspd_0, rebase_point: {20.0 : 0.01} },
+    speed_c:   $est@rcspd_0,
+    energy:    100.0_J/mol,
+};
+
+_react: [Me](O)O + X -> [Me](X)X + O {
+    id:        208,
+    name:      acid-base,
+    speed_t:   _: C -> mol/s { base: $est@rtspd_0, rebase_point: {20.0 : 0.01} },
+    speed_c:   $est@rcspd_0,
+    energy:    10.0_J/mol,
+};
+
+_react: O=C(R)O -> O=C(R)OC(=O)R + O {
+    id:        209,
+    name:      dehydration,
+    speed_t:   _: C -> mol/s { base: $est@rtspd_0, rebase_point: {20.0 : 0.01} },
+    speed_c:   $est@rcspd_0,
+    energy:    10.0_J/mol,
+    catalysts: {S(=O)(=O)(O)O : 50.0_mol%}
+};
+
+_react: O=C(R)O -> O=C(R)OC(=O)R + O {
+    id:        210,
+    name:      dehydration,
+    speed_t:   _: C -> mol/s { base: $est@rtspd_0, rebase_point: {20.0 : 0.7} },
+    speed_c:   $est@rcspd_0,
+    energy:    10.0_J/mol,
+};
+
+_react: [Me]O + S(=O)(=O)(O)O -> S(=O)(=O)(O)O[Me] + O {
+    id:        211,
+    name:      acid-base,
+    speed_t:   _: C -> mol/s { base: $est@rtspd_0, rebase_point: {20.0 : 0.9} },
+    speed_c:   $est@rcspd_0,
+    energy:    100.0_J/mol,
+};
+
+_react: [Me]O + RC(=O)O -> RC(=O)O[Me] + O {
+    id:        212,
+    name:      acid-base,
+    speed_t:   _: C -> mol/s { base: $est@rtspd_0, rebase_point: {20.0 : 0.7} },
+    speed_c:   $est@rcspd_0,
+    energy:    80.0_J/mol,
+};
+
+_react: RC(=O)O[Me] + S(=O)(=O)(O)O -> RC(=O)O + S(=O)(=O)(O)O[Me] {
+    id:        213,
+    name:      acid displacement,
+    speed_t:   _: C -> mol/s { base: $est@rtspd_0, rebase_point: {20.0 : 0.3} },
+    speed_c:   $est@rcspd_0,
+    energy:    20.0_J/mol,
+};
+
+_react: O=C(R)O + OC(R)R -> O=C(R)OC(R)R + O {
+    id:        214,
+    name:      cut-esterification,
+    is_cut:    true,
+};

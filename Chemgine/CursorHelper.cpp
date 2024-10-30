@@ -17,14 +17,11 @@ bool CursorHelper::setType(const sf::Cursor::Type type)
     auto c = cursors.find(type);
     if (c == cursors.end())
     {
-        auto newC = new sf::Cursor();
+        auto newC = std::make_unique<sf::Cursor>();
         if (newC->loadFromSystem(type) == false)
-        {
-            delete newC;
             return false;
-        }
 
-        c = cursors.emplace(std::make_pair(type, newC)).first;
+        c = cursors.emplace(type, std::move(newC)).first;
     }
 
     window.setMouseCursor(*c->second);

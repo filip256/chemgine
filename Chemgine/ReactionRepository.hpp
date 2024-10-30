@@ -2,25 +2,38 @@
 
 #include "Repository.hpp"
 #include "ReactionData.hpp"
-#include "GenericMoleculeRepository.hpp"
 #include "MoleculeRepository.hpp"
 #include "ReactionNetwork.hpp"
 #include "MoleculeRepository.hpp"
 
-class ReactionRepository :
-	public Repository<ReactionId, std::string, ReactionData>
+class ReactionRepository
 {
 private:
+	std::unordered_map<ReactionId, std::unique_ptr<ReactionData>> table;
+
+	EstimatorRepository& estimators;
 	const MoleculeRepository& molecules;
 
 	uint8_t maxReactantCount = 0;
 	ReactionNetwork network;
 
+	ReactionId getFreeId() const;
+
 public:
-	ReactionRepository(MoleculeRepository& molecules) noexcept;
+	ReactionRepository(
+		EstimatorRepository& estimators,
+		const MoleculeRepository& molecules
+	) noexcept;
 	ReactionRepository(const ReactionRepository&) = delete;
 
-	bool loadFromFile(const std::string& path);
+	bool add(Def::Object&& definition);
+
+	using Iterator = std::unordered_map<ReactionId, std::unique_ptr<ReactionData>>::const_iterator;
+	Iterator begin() const;
+	Iterator end() const;
+
+	size_t size() const;
+	void clear();
 
 	uint8_t getMaxReactantCount() const;
 	const ReactionNetwork& getNetwork() const;
@@ -34,7 +47,7 @@ public:
 	/// <summary>
 	/// Finds all the reactions which can produce the given target and specializes them accordingly.
 	/// </summary>
-	std::unordered_set<RetrosynthReaction> getRetrosynthReactions(const Reactable& targetProduct) const;
+	std::unordered_set<RetrosynthReaction> getRetrosynthReactions(const StructureRef& targetProduct) const;
 
 	/// <summary>
 	/// Generates all the molecules which can be reached using the existing molecules and reactions.

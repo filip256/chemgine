@@ -38,7 +38,7 @@ public:
 	std::pair<size_t, l_size> getSystemComponentAt(const sf::Vector2f& point) const;
 	size_t anyIntersects(const size_t targetIdx) const;
 
-	bool tryConnect(const size_t targetIdx, const float maxSqDistance);
+	bool tryConnect(const size_t targetIdx, const float_n maxSqDistance);
 	bool tryDissconnect(const sf::Vector2f& point);
 
 	using LabSystemsConstIterator = std::vector<LabwareSystem>::const_iterator;

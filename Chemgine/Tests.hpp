@@ -11,7 +11,7 @@
 #include "DataStore.hpp"
 #include "Reactor.hpp"
 #include "BaseLabwareComponent.hpp"
-#include "Reactable.hpp"
+#include "StructureRef.hpp"
 #include "DumpContainer.hpp"
 #include "Atmosphere.hpp"
 #include "ForwardingContainer.hpp"
@@ -22,9 +22,9 @@ private:
 	bool passed = true;
 	std::vector<MolecularStructure> setA, setB, setC, setD, setE, setF, setG, setM;
 	std::unordered_map<std::string, std::vector<uint8_t>> res;
-	std::unordered_map<std::string, std::vector<float>> resFloat;
+	std::unordered_map<std::string, std::vector<float_n>> resFloat;
 
-	const float massThreshold = 1.0f;
+	const float_n massThreshold = 1.0f;
 
 public:
 	void initialize()
@@ -33,7 +33,7 @@ public:
 		res.emplace(std::make_pair("==", std::vector<uint8_t>()));
 		res.emplace(std::make_pair("maximal", std::vector<uint8_t>()));
 		res.emplace(std::make_pair("addSub", std::vector<uint8_t>()));
-		resFloat.emplace(std::make_pair("mass", std::vector<float>()));
+		resFloat.emplace(std::make_pair("mass", std::vector<float_n>()));
 
 		setA.emplace_back("CN(C)C(=O)C1=CC=CC=C1");
 		setB.emplace_back("C1=CC=CC=C1R");
@@ -233,16 +233,6 @@ public:
 
 		for (size_t i = 0; i < setG.size(); ++i)
 		{
-			if (MolecularStructure(setG[i].serialize(), true) != setG[i])
-			{
-				Log(this).error("Test failed > MolecularStructure > serialize/deserialize > #{0} : expected= true\n{1}",
-					i, setG[i].print());
-				passed = false;
-			}
-		}
-
-		for (size_t i = 0; i < setG.size(); ++i)
-		{
 			if (MolecularStructure(setG[i].toSMILES()) != setG[i])
 			{
 				Log(this).error("Test failed > MolecularStructure > SMILES > #{0}: expected= true\n{1}",
@@ -388,8 +378,8 @@ private:
 	const Amount<Unit::SECOND> tickTimespan = 1.0_s;
 
 	const double waterTemperatureThreshold = 0.1;
-	const double overflowLossThreshold = 0.0000001;
-	const double determinismEqualityThreshold = std::numeric_limits<double>::epsilon();
+	const double overflowLossThreshold = 1.0e-4;
+	const double determinismEqualityThreshold = std::numeric_limits<float_n>::epsilon();
 
 	void runConservationOfMassTest()
 	{
@@ -400,7 +390,7 @@ private:
 			atmosphere->tick(tickTimespan);
 			const auto massAfter = reactorA->getTotalMass() + atmosphere->getTotalMass() + dumpA->getTotalMass();
 
-			if (std::abs((massAfter - massBefore).asStd()) > 1e-5)
+			if (std::abs((massAfter - massBefore).asStd()) > 1e-3)
 			{
 				Log(this).error("Test failed > Reactor > mass conservation: expected={0}   actual={1}",
 					massBefore.toString(), massAfter.toString());
@@ -831,12 +821,9 @@ public:
 		Accessor<>::setDataStore(store);
 
 		const auto begin = std::chrono::steady_clock::now();
-		store.loadAtomsData("Data/AtomData.csv")
-			.loadEstimatorsData("")
-			.loadMoleculesData("Data/MoleculeData.csv")
-			.loadGenericMoleculesData("Data/GenericMoleculeData.csv")
-			.loadReactionsData("Data/ReactionData.csv")
-			.loadLabwareData("Data/LabwareData.csv");
+
+		store.load("./Data/builtin.cdef");
+		//store.reactions.buildNetwork();
 
 		std::cout << '\n' << store.reactions.getNetwork().print() << '\n';
 
@@ -875,8 +862,6 @@ public:
 	{
 		const auto begin = std::chrono::steady_clock::now();
 		//store.reactions.generateTotalSpan();
-		store.saveGenericMoleculesData("Out/genericmolecules.out.csv")
-			.saveMoleculesData("Out/molecules.out.csv");
 		const auto end = std::chrono::steady_clock::now();
 
 		Log(this).info("Total span dump completed in {0}s.",
