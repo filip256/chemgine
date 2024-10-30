@@ -9,7 +9,7 @@ class Def::Parser<UnitizedEstimator<OutU, InUs...>>
 {
 public:
 	static std::optional<EstimatorRef<OutU, InUs...>> parse(
-		const DefinitionObject& definition,
+		const Def::Object& definition,
 		EstimatorRepository& repository)
 	{
 		const Log<Parser<UnitizedEstimator<OutU, InUs...>>> log;

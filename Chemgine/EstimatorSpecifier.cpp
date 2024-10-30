@@ -1,5 +1,7 @@
 #include "EstimatorSpecifier.hpp"
 
+using namespace Def;
+
 EstimatorSpecifier::EstimatorSpecifier(
 	const Unit outUnit,
 	std::vector<Unit>&& inUnits

@@ -104,7 +104,7 @@ void AffineEstimator<OutU, InU>::dumpDefinition(
 		Def::Data::HorizontalShift.size(),
 		Def::Data::Scale.size());
 
-	DataDumper dump(out, valueOffset, baseIndent, prettify);
+	Def::DataDumper dump(out, valueOffset, baseIndent, prettify);
 	if (not printInline)
 	{
 		// try to OOL print base, since it might have multiple references

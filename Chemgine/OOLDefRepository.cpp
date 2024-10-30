@@ -1,7 +1,7 @@
 #include "OOLDefRepository.hpp"
-#include "DefinitionObject.hpp"
+#include "Object.hpp"
 
-const DefinitionObject* OOLDefRepository::add(DefinitionObject&& definition)
+const Def::Object* OOLDefRepository::add(Def::Object&& definition)
 {
 	const auto existing = definitions.find(definition.getIdentifier());
 	if (existing != definitions.end())
@@ -12,12 +12,12 @@ const DefinitionObject* OOLDefRepository::add(DefinitionObject&& definition)
 	}
 
 	auto tempId = definition.getIdentifier();
-	const auto it = definitions.emplace(std::move(tempId), std::make_unique<const DefinitionObject>(std::move(definition)));
+	const auto it = definitions.emplace(std::move(tempId), std::make_unique<const Def::Object>(std::move(definition)));
 
 	return it.first->second.get();
 }
 
-const DefinitionObject* OOLDefRepository::getDefinition(const std::string& identifier) const
+const Def::Object* OOLDefRepository::getDefinition(const std::string& identifier) const
 {
 	const auto it = definitions.find(identifier);
 	return it != definitions.end() ? it->second.get() : nullptr;

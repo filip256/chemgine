@@ -13,7 +13,7 @@ MoleculeRepository::MoleculeRepository(EstimatorRepository& estimators) noexcept
 	estimators(estimators)
 {}
 
-bool MoleculeRepository::add(DefinitionObject&& definition)
+bool MoleculeRepository::add(Def::Object&& definition)
 {
 	auto structure = Def::Parser<MolecularStructure>::parse(definition.getSpecifier());
 	if (not structure)

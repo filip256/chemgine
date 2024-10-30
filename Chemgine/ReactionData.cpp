@@ -552,10 +552,10 @@ void ReactionData::dumpDefinition(
 	for (size_t i = 0; i < uniqueProducts.size(); ++i)
 		productsStr.emplace_back(Def::print(uniqueProducts[i].getStructure()));
 
-	DataDumper dump(out, valueOffset, 0, prettify);
+	Def::DataDumper dump(out, valueOffset, 0, prettify);
 	dump.tryOolSubDefinition(tempSpeedEstimator, alreadyPrinted)
 		.tryOolSubDefinition(concSpeedEstimator, alreadyPrinted)
-		.header(Def::Types::Reaction, ReactionSpecifier(std::move(reactantsStr), std::move(productsStr)), "")
+		.header(Def::Types::Reaction, Def::ReactionSpecifier(std::move(reactantsStr), std::move(productsStr)), "")
 		.beginProperties()
 		.propertyWithSep(Def::Reactions::Id, id)
 		.propertyWithSep(Def::Reactions::Name, name);

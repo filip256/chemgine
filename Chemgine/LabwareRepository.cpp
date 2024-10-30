@@ -7,7 +7,7 @@
 #include "Keywords.hpp"
 #include "Log.hpp"
 
-bool LabwareRepository::checkTextureFile(std::string path, const DefinitionLocation& location)
+bool LabwareRepository::checkTextureFile(std::string path, const Def::Location& location)
 {
 	if (not Utils::fileExists(path))
 	{
@@ -24,7 +24,7 @@ bool LabwareRepository::checkTextureFile(std::string path, const DefinitionLocat
 }
 
 template <>
-bool LabwareRepository::add<LabwareType::FLASK>(const LabwareId id, DefinitionObject&& definition)
+bool LabwareRepository::add<LabwareType::FLASK>(const LabwareId id, Def::Object&& definition)
 {
 	const auto name = definition.getDefaultProperty(Def::Labware::Name, "?");
 	auto ports = definition.getProperty(Def::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
@@ -47,7 +47,7 @@ bool LabwareRepository::add<LabwareType::FLASK>(const LabwareId id, DefinitionOb
 }
 
 template <>
-bool LabwareRepository::add<LabwareType::ADAPTOR>(const LabwareId id, DefinitionObject&& definition)
+bool LabwareRepository::add<LabwareType::ADAPTOR>(const LabwareId id, Def::Object&& definition)
 {
 	const auto name = definition.getDefaultProperty(Def::Labware::Name, "?");
 	auto ports = definition.getProperty(Def::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
@@ -70,7 +70,7 @@ bool LabwareRepository::add<LabwareType::ADAPTOR>(const LabwareId id, Definition
 }
 
 template <>
-bool LabwareRepository::add<LabwareType::CONDENSER>(const LabwareId id, DefinitionObject&& definition)
+bool LabwareRepository::add<LabwareType::CONDENSER>(const LabwareId id, Def::Object&& definition)
 {
 	const auto name = definition.getDefaultProperty(Def::Labware::Name, "?");
 	auto ports = definition.getProperty(Def::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
@@ -100,7 +100,7 @@ bool LabwareRepository::add<LabwareType::CONDENSER>(const LabwareId id, Definiti
 }
 
 template <>
-bool LabwareRepository::add<LabwareType::HEATSOURCE>(const LabwareId id, DefinitionObject&& definition)
+bool LabwareRepository::add<LabwareType::HEATSOURCE>(const LabwareId id, Def::Object&& definition)
 {
 	const auto name = definition.getDefaultProperty(Def::Labware::Name, "?");
 	auto ports = definition.getProperty(Def::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
@@ -122,9 +122,9 @@ bool LabwareRepository::add<LabwareType::HEATSOURCE>(const LabwareId id, Definit
 	return true;
 }
 
-bool LabwareRepository::add(DefinitionObject&& definition)
+bool LabwareRepository::add(Def::Object&& definition)
 {
-	static std::unordered_map<std::string, bool (LabwareRepository::*)(LabwareId, DefinitionObject&&)> adders =
+	static std::unordered_map<std::string, bool (LabwareRepository::*)(LabwareId, Def::Object&&)> adders =
 	{
 		{Def::Labware::Flask, &LabwareRepository::add<LabwareType::FLASK> },
 		{Def::Labware::Adaptor, &LabwareRepository::add<LabwareType::ADAPTOR> },

@@ -74,7 +74,7 @@ void ConstantEstimator<OutU, InUs...>::dumpDefinition(
 	}
 	alreadyPrinted.emplace(EstimatorBase::id);
 
-	DataDumper dump(out, Def::Data::Constant.size(), baseIndent, prettify);
+	Def::DataDumper dump(out, Def::Data::Constant.size(), baseIndent, prettify);
 	if (printInline)
 		dump.header("", UnitizedEstimator<OutU, InUs...>::getUnitSpecifier(), "");
 	else

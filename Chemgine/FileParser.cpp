@@ -1,4 +1,4 @@
-#include "DefFileParser.hpp"
+#include "FileParser.hpp"
 #include "Parsers.hpp"
 #include "StringUtils.hpp"
 #include "PathUtils.hpp"
@@ -8,7 +8,9 @@
 #include "Keywords.hpp"
 #include "Log.hpp"
 
-DefFileParser::DefFileParser(
+using namespace Def;
+
+FileParser::FileParser(
 	const std::string& filePath,
 	FileStore& fileStore,
 	const OOLDefRepository& oolDefinitions
@@ -34,7 +36,7 @@ DefFileParser::DefFileParser(
 	fileStore.setFileStatus(currentFile, ParseStatus::STARTED);
 }
 
-DefFileParser::~DefFileParser() noexcept
+FileParser::~FileParser() noexcept
 {
 	if (stream.is_open())
 	{
@@ -43,7 +45,7 @@ DefFileParser::~DefFileParser() noexcept
 	}
 }
 
-void DefFileParser::include(const std::string& filePath)
+void FileParser::include(const std::string& filePath)
 {
 	const auto status = fileStore.getFileStatus(filePath);
 	if (status == ParseStatus::COMPLETED) // skip already parsed file
@@ -55,10 +57,10 @@ void DefFileParser::include(const std::string& filePath)
 		return;
 	}
 
-	subParser = std::make_unique<DefFileParser>(filePath, fileStore, oolDefinitions);
+	subParser = std::make_unique<FileParser>(filePath, fileStore, oolDefinitions);
 }
 
-void DefFileParser::closeSubparser()
+void FileParser::closeSubparser()
 {
 	// inherit include aliases
 	includeAliases.merge(subParser->includeAliases);
@@ -70,24 +72,24 @@ void DefFileParser::closeSubparser()
 	subParser.reset(nullptr);
 }
 
-bool DefFileParser::isOpen() const
+bool FileParser::isOpen() const
 {
 	return stream.is_open();
 }
 
-DefinitionLocation DefFileParser::getCurrentLocalLocation() const
+Def::Location FileParser::getCurrentLocalLocation() const
 {
-	return isOpen() ? DefinitionLocation(currentFile, currentLine) :
-		DefinitionLocation::createEOF(currentFile);
+	return isOpen() ? Def::Location(currentFile, currentLine) :
+		Def::Location::createEOF(currentFile);
 }
 
-DefinitionLocation DefFileParser::getCurrentGlobalLocation() const
+Def::Location FileParser::getCurrentGlobalLocation() const
 {
 	return subParser ? subParser->getCurrentGlobalLocation() :
 		getCurrentLocalLocation();
 }
 
-void DefFileParser::forceFinish()
+void FileParser::forceFinish()
 {
 	if (isOpen())
 	{
@@ -96,7 +98,7 @@ void DefFileParser::forceFinish()
 	}
 }
 
-std::string DefFileParser::nextLocalLine()
+std::string FileParser::nextLocalLine()
 {
 	std::string line;
 	while (std::getline(stream, line))
@@ -114,7 +116,7 @@ std::string DefFileParser::nextLocalLine()
 	return "";
 }
 
-std::string DefFileParser::nextGlobalLine()
+std::string FileParser::nextGlobalLine()
 {
 	// finish includes first
 	if (subParser)
@@ -155,7 +157,7 @@ std::string DefFileParser::nextGlobalLine()
 	return "";
 }
 
-std::pair<std::string, DefinitionLocation> DefFileParser::nextDefinitionLine()
+std::pair<std::string, Def::Location> FileParser::nextDefinitionLine()
 {
 	// finish includes first
 	if (subParser)
@@ -281,10 +283,10 @@ std::pair<std::string, DefinitionLocation> DefFileParser::nextDefinitionLine()
 	};
 
 	forceFinish();
-	return std::make_pair("", DefinitionLocation::createEOF(currentFile));
+	return std::make_pair("", Def::Location::createEOF(currentFile));
 }
 
-std::optional<DefinitionObject> DefFileParser::nextDefinition()
+std::optional<Def::Object> FileParser::nextDefinition()
 {
 	// finish includes first
 	if (subParser)
@@ -303,6 +305,6 @@ std::optional<DefinitionObject> DefFileParser::nextDefinition()
 		return std::nullopt;
 
 	// TODO: remove dirty trick to pass subparser's inlcude aliases to this's parser (needed for the first def in a file)
-	return Def::parse<DefinitionObject>(
+	return Def::parse<Def::Object>(
 		line, std::move(location), subParser ? subParser->includeAliases : includeAliases, oolDefinitions);
 }

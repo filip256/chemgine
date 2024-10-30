@@ -26,7 +26,7 @@ public:
 	) noexcept;
 	ReactionRepository(const ReactionRepository&) = delete;
 
-	bool add(DefinitionObject&& definition);
+	bool add(Def::Object&& definition);
 
 	using Iterator = std::unordered_map<ReactionId, std::unique_ptr<ReactionData>>::const_iterator;
 	Iterator begin() const;

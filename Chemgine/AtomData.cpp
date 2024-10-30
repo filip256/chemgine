@@ -1,5 +1,5 @@
 #include "AtomData.hpp"
-#include "DefinitionObject.hpp"
+#include "Object.hpp"
 #include "DataDumper.hpp"
 #include "Keywords.hpp"
 #include "Printers.hpp"
@@ -64,7 +64,7 @@ void AtomData::dumpDefinition(std::ostream& out, const bool prettify) const
 		Def::Atoms::Weight.size(),
 		Def::Atoms::Valences.size());
 
-	DataDumper(out, valueOffset, 0, prettify)
+	Def::DataDumper(out, valueOffset, 0, prettify)
 		.header(Def::Types::Atom, symbol, "")
 		.beginProperties()
 		.propertyWithSep(Def::Atoms::Name, name)

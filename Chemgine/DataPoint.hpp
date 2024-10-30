@@ -2,7 +2,7 @@
 
 #include "Amount.hpp"
 #include "DynamicAmount.hpp"
-#include "DefinitionLocation.hpp"
+#include "Location.hpp"
 #include "Log.hpp"
 
 template<Unit OutU, Unit... InUs>
@@ -51,7 +51,7 @@ private:
 	template<std::size_t... Is>
 	static std::optional<std::tuple<Amount<InUs>...>> convertInputs(
 		const std::vector<DynamicAmount>& baseInputs,
-		const DefinitionLocation& location,
+		const Def::Location& location,
 		std::index_sequence<Is...>)
 	{
 		std::tuple<Amount<InUs>...> expectedInputs;
@@ -80,7 +80,7 @@ public:
 		const std::string& str,
 		const Unit outputBaseUnit,
 		const std::vector<Unit>& inputBaseUnits,
-		const DefinitionLocation& location
+		const Def::Location& location
 	)
 	{
 		const Log<DataPoint<OutU, InUs...>> log;

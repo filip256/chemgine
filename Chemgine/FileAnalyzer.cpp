@@ -1,16 +1,18 @@
-#include "DefFileAnalyzer.hpp"
+#include "FileAnalyzer.hpp"
 #include "OOLDefRepository.hpp"
 #include "Keywords.hpp"
 
-DefFileAnalyzer::DefFileAnalyzer(
+using namespace Def;
+
+FileAnalyzer::FileAnalyzer(
 	const std::string& filePath,
 	FileStore& mainFileStore
 ) noexcept:
 	mainFileStore(mainFileStore),
-	parser(DefFileParser(filePath, fileStore, {}))
+	parser(Def::FileParser(filePath, fileStore, {}))
 {}
 
-AnalysisResult DefFileAnalyzer::analyze()
+AnalysisResult FileAnalyzer::analyze()
 {
 	const auto logLevel = LogBase::logLevel;
 	//LogBase::logLevel = LogType::NONE;

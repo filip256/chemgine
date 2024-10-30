@@ -1,14 +1,16 @@
-#include "DefinitionObject.hpp"
+#include "Object.hpp"
 #include "DataStore.hpp"
 
-DefinitionObject::DefinitionObject(
+using namespace Def;
+
+Object::Object(
 	const DefinitionType type,
 	std::string&& identifier,
 	std::string&& specifier,
 	std::unordered_map<std::string, std::string>&& properties,
-	std::unordered_map<std::string, DefinitionObject>&& ilSubDefs,
-	std::unordered_map<std::string, const DefinitionObject*>&& oolSubDefs,
-	DefinitionLocation&& location
+	std::unordered_map<std::string, Object>&& ilSubDefs,
+	std::unordered_map<std::string, const Object*>&& oolSubDefs,
+	Def::Location&& location
 ) noexcept :
 	type(type),
 	identifier(std::move(identifier)),
@@ -19,37 +21,37 @@ DefinitionObject::DefinitionObject(
 	location(std::move(location))
 {}
 
-DefinitionObject::~DefinitionObject() noexcept
+Object::~Object() noexcept
 {
 	logUnusedWarnings();
 }
 
-DefinitionType DefinitionObject::getType() const
+DefinitionType Object::getType() const
 {
 	return type;
 }
 
-const std::string& DefinitionObject::getIdentifier() const
+const std::string& Object::getIdentifier() const
 {
 	return identifier;
 }
 
-const std::string& DefinitionObject::getSpecifier() const
+const std::string& Object::getSpecifier() const
 {
 	return specifier;
 }
 
-const DefinitionLocation& DefinitionObject::getLocation() const
+const Def::Location& Object::getLocation() const
 {
 	return location;
 }
 
-std::string DefinitionObject::getLocationName() const
+std::string Object::getLocationName() const
 {
 	return location.toString();
 }
 
-void DefinitionObject::logUnusedWarnings() const
+void Object::logUnusedWarnings() const
 {
 	for (const auto& [k, _] : properties)
 		if(not accessedProperties.contains(k))
@@ -64,7 +66,7 @@ void DefinitionObject::logUnusedWarnings() const
 			Log(this).warn("Unused sub-definition for property: '{0}', at: {1}.", k, location.toString());
 }
 
-std::optional<std::string> DefinitionObject::getOptionalProperty(const std::string& key) const
+std::optional<std::string> Object::getOptionalProperty(const std::string& key) const
 {
 	auto it = properties.find(key);
 	if (it == properties.end())
@@ -74,7 +76,7 @@ std::optional<std::string> DefinitionObject::getOptionalProperty(const std::stri
 	return it->second;
 }
 
-std::optional<std::string> DefinitionObject::getProperty(const std::string& key) const
+std::optional<std::string> Object::getProperty(const std::string& key) const
 {
 	const auto prop = getOptionalProperty(key);
 	if (not prop)
@@ -83,13 +85,13 @@ std::optional<std::string> DefinitionObject::getProperty(const std::string& key)
 	return prop;
 }
 
-std::string DefinitionObject::getDefaultProperty(const std::string& key, std::string&& defaultValue) const
+std::string Object::getDefaultProperty(const std::string& key, std::string&& defaultValue) const
 {
 	const auto prop = getOptionalProperty(key);
 	return prop ? *prop : defaultValue;
 }
 
-const DefinitionObject* DefinitionObject::getOptionalDefinition(const std::string& key) const
+const Object* Object::getOptionalDefinition(const std::string& key) const
 {
 	const auto ilDef = ilSubDefs.find(key);
 	if (ilDef != ilSubDefs.end())
@@ -108,7 +110,7 @@ const DefinitionObject* DefinitionObject::getOptionalDefinition(const std::strin
 	return nullptr;
 }
 
-const DefinitionObject* DefinitionObject::getDefinition(const std::string& key) const
+const Object* Object::getDefinition(const std::string& key) const
 {
 	const auto def = getOptionalDefinition(key);
 	if (def == nullptr)

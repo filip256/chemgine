@@ -419,7 +419,7 @@ Tasks:
   DONE. Get rid of special id synthax, it has no benefit
   DONE. Add default and optional sub-definition getters
   24. Split long lists on multiple lines for pretty prints
-
+  DONE. Better Def namespacing
 ---
      - DIRECT REFERENCING -
 

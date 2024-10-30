@@ -107,8 +107,7 @@ void SplineEstimator<OutU, InU>::dumpDefinition(
 		Def::Data::Mode.size(),
 		Def::Data::Values.size());
 
-	DataDumper dump(out, valueOffset, baseIndent, prettify);
-
+	Def::DataDumper dump(out, valueOffset, baseIndent, prettify);
 	if (printInline)
 		dump.header("", UnitizedEstimator<OutU, InU>::getUnitSpecifier(), "");
 	else

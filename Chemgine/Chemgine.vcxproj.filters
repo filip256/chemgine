@@ -157,10 +157,10 @@
     <Filter Include="Resource Files\Data\BuiltIn">
       <UniqueIdentifier>{f2c9daf0-f82c-4bfb-978d-e777270471f1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Data\Parsers">
+    <Filter Include="Header Files\Data\Def">
       <UniqueIdentifier>{88932a60-5de8-4102-9970-0f78e1a9c326}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Data\Parsers">
+    <Filter Include="Source Files\Data\Def">
       <UniqueIdentifier>{7e7d83b0-6811-4e6e-8d28-dcd0d6fac6c2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -438,14 +438,14 @@
     <ClCompile Include="PathUtils.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="DefFileParser.cpp">
-      <Filter>Source Files\Data\Parsers</Filter>
+    <ClCompile Include="FileParser.cpp">
+      <Filter>Source Files\Data\Def</Filter>
     </ClCompile>
-    <ClCompile Include="DefinitionLocation.cpp">
-      <Filter>Source Files\Data\Parsers</Filter>
+    <ClCompile Include="Location.cpp">
+      <Filter>Source Files\Data\Def</Filter>
     </ClCompile>
-    <ClCompile Include="DefinitionObject.cpp">
-      <Filter>Source Files\Data\Parsers</Filter>
+    <ClCompile Include="Object.cpp">
+      <Filter>Source Files\Data\Def</Filter>
     </ClCompile>
     <ClCompile Include="EstimatorSpecifier.cpp">
       <Filter>Source Files\Estimators</Filter>
@@ -453,8 +453,8 @@
     <ClCompile Include="FileStore.cpp">
       <Filter>Source Files\Data</Filter>
     </ClCompile>
-    <ClCompile Include="DefFileAnalyzer.cpp">
-      <Filter>Source Files\Data\Parsers</Filter>
+    <ClCompile Include="FileAnalyzer.cpp">
+      <Filter>Source Files\Data\Def</Filter>
     </ClCompile>
     <ClCompile Include="OOLDefRepository.cpp">
       <Filter>Source Files\Data</Filter>
@@ -472,10 +472,10 @@
       <Filter>Source Files\Labware\DataTypes</Filter>
     </ClCompile>
     <ClCompile Include="PrintSettings.cpp">
-      <Filter>Source Files\Data\Parsers</Filter>
+      <Filter>Source Files\Data\Def</Filter>
     </ClCompile>
     <ClCompile Include="DataDumper.cpp">
-      <Filter>Source Files\Data\Parsers</Filter>
+      <Filter>Source Files\Data\Def</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -628,9 +628,6 @@
     </ClInclude>
     <ClInclude Include="ReactantSet.hpp">
       <Filter>Header Files\Reactions</Filter>
-    </ClInclude>
-    <ClInclude Include="FunctionalEstimator.hpp">
-      <Filter>Header Files\Estimators</Filter>
     </ClInclude>
     <ClInclude Include="EstimatorRepository.hpp">
       <Filter>Header Files\Estimators</Filter>
@@ -842,20 +839,20 @@
     <ClInclude Include="PathUtils.hpp">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="DefFileParser.hpp">
-      <Filter>Header Files\Data\Parsers</Filter>
+    <ClInclude Include="FileParser.hpp">
+      <Filter>Header Files\Data\Def</Filter>
     </ClInclude>
-    <ClInclude Include="DefinitionLocation.hpp">
-      <Filter>Header Files\Data\Parsers</Filter>
+    <ClInclude Include="Location.hpp">
+      <Filter>Header Files\Data\Def</Filter>
     </ClInclude>
-    <ClInclude Include="DefinitionObject.hpp">
-      <Filter>Header Files\Data\Parsers</Filter>
+    <ClInclude Include="Object.hpp">
+      <Filter>Header Files\Data\Def</Filter>
     </ClInclude>
     <ClInclude Include="Parsers.hpp">
-      <Filter>Header Files\Data\Parsers</Filter>
+      <Filter>Header Files\Data\Def</Filter>
     </ClInclude>
     <ClInclude Include="Keywords.hpp">
-      <Filter>Header Files\Data\Parsers</Filter>
+      <Filter>Header Files\Data\Def</Filter>
     </ClInclude>
     <ClInclude Include="EstimatorSpecifier.hpp">
       <Filter>Header Files\Estimators</Filter>
@@ -863,8 +860,8 @@
     <ClInclude Include="FileStore.hpp">
       <Filter>Header Files\Data</Filter>
     </ClInclude>
-    <ClInclude Include="DefFileAnalyzer.hpp">
-      <Filter>Header Files\Data\Parsers</Filter>
+    <ClInclude Include="FileAnalyzer.hpp">
+      <Filter>Header Files\Data\Def</Filter>
     </ClInclude>
     <ClInclude Include="UnitizedEstimator.hpp">
       <Filter>Header Files\Estimators</Filter>
@@ -894,7 +891,7 @@
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="DefinitionParser.hpp">
-      <Filter>Header Files\Data\Parsers</Filter>
+      <Filter>Header Files\Data\Def</Filter>
     </ClInclude>
     <ClInclude Include="Regressors2D.hpp">
       <Filter>Header Files\DataStructures</Filter>
@@ -909,7 +906,7 @@
       <Filter>Header Files\Labware</Filter>
     </ClInclude>
     <ClInclude Include="Printers.hpp">
-      <Filter>Header Files\Data\Parsers</Filter>
+      <Filter>Header Files\Data\Def</Filter>
     </ClInclude>
     <ClInclude Include="MoleculeId.hpp">
       <Filter>Header Files\Molecules</Filter>
@@ -933,19 +930,13 @@
       <Filter>Header Files\Estimators</Filter>
     </ClInclude>
     <ClInclude Include="PrintSettings.hpp">
-      <Filter>Header Files\Data\Parsers</Filter>
+      <Filter>Header Files\Data\Def</Filter>
     </ClInclude>
     <ClInclude Include="DataDumper.hpp">
-      <Filter>Header Files\Data\Parsers</Filter>
+      <Filter>Header Files\Data\Def</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Out\molecules.out.csv">
-      <Filter>Resource Files\Out</Filter>
-    </None>
-    <None Include="Out\genericmolecules.out.csv">
-      <Filter>Resource Files\Out</Filter>
-    </None>
     <None Include="Data\builtin.cdef">
       <Filter>Resource Files\Data\BuiltIn</Filter>
     </None>

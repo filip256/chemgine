@@ -14,5 +14,5 @@ public:
 		const float_n textureScale
 	) noexcept;
 
-	void dumpCustomProperties(DataDumper& dump) const override final;
+	void dumpCustomProperties(Def::DataDumper& dump) const override final;
 };

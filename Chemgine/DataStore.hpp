@@ -11,7 +11,7 @@
 class DataStore
 {
 private:
-	bool addDefinition(DefinitionObject&& definition);
+	bool addDefinition(Def::Object&& definition);
 
 public:
 	FileStore fileStore;

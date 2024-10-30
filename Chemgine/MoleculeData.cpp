@@ -72,7 +72,7 @@ void MoleculeData::dumpDefinition(
 		Def::Molecules::Lipophilicity.size(),
 		Def::Molecules::Color.size());
 
-	DataDumper(out, valueOffset, 0, prettify)
+	Def::DataDumper(out, valueOffset, 0, prettify)
 		.tryOolSubDefinition(meltingPointEstimator, alreadyPrinted)
 		.tryOolSubDefinition(boilingPointEstimator, alreadyPrinted)
 		.tryOolSubDefinition(solidDensityEstimator, alreadyPrinted)

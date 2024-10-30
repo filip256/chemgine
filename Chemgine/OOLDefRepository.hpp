@@ -4,21 +4,24 @@
 #include <memory>
 #include <unordered_map>
 
-class DefinitionObject;
+namespace Def
+{
+	class Object;
+}
 
 class OOLDefRepository
 {
 private:
-	std::unordered_map<std::string, std::unique_ptr<const DefinitionObject>> definitions;
+	std::unordered_map<std::string, std::unique_ptr<const Def::Object>> definitions;
 
 public:
 	OOLDefRepository() = default;
 	OOLDefRepository(const OOLDefRepository&) = delete;
 	OOLDefRepository(OOLDefRepository&&) = default;
 
-	const DefinitionObject* add(DefinitionObject&& definition);
+	const Def::Object* add(Def::Object&& definition);
 
-	const DefinitionObject* getDefinition(const std::string& identifier) const;
+	const Def::Object* getDefinition(const std::string& identifier) const;
 
 	void clear();
 };

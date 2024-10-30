@@ -1,7 +1,7 @@
 #include "DataStore.hpp"
 #include "PathUtils.hpp"
-#include "DefFileParser.hpp"
-#include "DefFileAnalyzer.hpp"
+#include "FileParser.hpp"
+#include "FileAnalyzer.hpp"
 #include "Log.hpp"
 
 #include <fstream>
@@ -16,25 +16,25 @@ DataStore::DataStore() :
 	labware()
 {}
 
-bool DataStore::addDefinition(DefinitionObject&& definition)
+bool DataStore::addDefinition(Def::Object&& definition)
 {
 	switch (definition.getType())
 	{
-	case DefinitionType::AUTO:
+	case Def::DefinitionType::AUTO:
 		Log(this).error("Cannot infer type for out-of-line definition, at: {0}.", definition.getLocationName());
 		return false;
 
-	case DefinitionType::DATA:
+	case Def::DefinitionType::DATA:
 		return oolDefinitions.add(std::move(definition));
-	case DefinitionType::ATOM:
+	case Def::DefinitionType::ATOM:
 		return atoms.add<AtomData>(std::move(definition));
-	case DefinitionType::RADICAL:
+	case Def::DefinitionType::RADICAL:
 		return atoms.add<RadicalData>(std::move(definition));
-	case DefinitionType::MOLECULE:
+	case Def::DefinitionType::MOLECULE:
 		return molecules.add(std::move(definition));
-	case DefinitionType::REACTION:
+	case Def::DefinitionType::REACTION:
 		return reactions.add(std::move(definition));
-	case DefinitionType::LABWARE:
+	case Def::DefinitionType::LABWARE:
 		return labware.add(std::move(definition));
 
 	default:
@@ -48,7 +48,7 @@ bool DataStore::load(const std::string& path)
 {
 	const auto normPath = Utils::normalizePath(path);
 
-	const auto analysis = DefFileAnalyzer(normPath, fileStore).analyze();
+	const auto analysis = Def::FileAnalyzer(normPath, fileStore).analyze();
 	if (analysis.failed)
 		Log(this).warn("Pre-parse analysis failed on file: '{0}'", normPath);
 	else
@@ -59,7 +59,7 @@ bool DataStore::load(const std::string& path)
 	
 	bool success = true;
 	auto definitionCount = analysis.preparsedDefinitionCount;
-	DefFileParser parser(normPath, fileStore, oolDefinitions);
+	Def::FileParser parser(normPath, fileStore, oolDefinitions);
 	while (true)
 	{
 		if (not analysis.failed)

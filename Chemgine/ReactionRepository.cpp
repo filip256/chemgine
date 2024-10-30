@@ -15,7 +15,7 @@ ReactionRepository::ReactionRepository(
 	molecules(molecules)
 {}
 
-bool ReactionRepository::add(DefinitionObject&& definition)
+bool ReactionRepository::add(Def::Object&& definition)
 {
 	auto id = definition.getOptionalProperty(Def::Reactions::Id, Def::parse<ReactionId>);
 	if (not id)
@@ -28,7 +28,7 @@ bool ReactionRepository::add(DefinitionObject&& definition)
 
 	const auto name = definition.getDefaultProperty("name", "?");
 
-	const auto spec = Def::parse<ReactionSpecifier>(definition.getSpecifier());
+	const auto spec = Def::parse<Def::ReactionSpecifier>(definition.getSpecifier());
 	if (not spec)
 	{
 		Log(this).error("Invalid reaction specifier: '{0}', at: {1}.", definition.getSpecifier(), definition.getLocationName());

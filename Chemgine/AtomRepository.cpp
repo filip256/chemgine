@@ -7,7 +7,7 @@
 #include <fstream>
 
 template <>
-bool AtomRepository::add<AtomData>(DefinitionObject&& definition)
+bool AtomRepository::add<AtomData>(Def::Object&& definition)
 {
 	const auto symbol = Def::parse<Symbol>(definition.getSpecifier());
 	if (not symbol)
@@ -37,7 +37,7 @@ bool AtomRepository::add<AtomData>(DefinitionObject&& definition)
 }
 
 template <>
-bool AtomRepository::add<RadicalData>(DefinitionObject&& definition)
+bool AtomRepository::add<RadicalData>(Def::Object&& definition)
 {
 	const auto symbol = Def::parse<Symbol>(definition.getSpecifier());
 	if (not symbol)

@@ -105,7 +105,7 @@ void RegressionEstimator<RegT, OutU, InUs...>::dumpDefinition(
 		Def::Data::Mode.size(),
 		Def::Data::Parameters.size());
 
-	DataDumper dump(out, valueOffset, baseIndent, prettify);
+	Def::DataDumper dump(out, valueOffset, baseIndent, prettify);
 	if (printInline)
 		dump.header("", UnitizedEstimator<OutU, InUs...>::getUnitSpecifier(), "");
 	else

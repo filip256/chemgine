@@ -205,10 +205,10 @@
     <ClCompile Include="ContentInitializer.cpp" />
     <ClCompile Include="CursorHelper.cpp" />
     <ClCompile Include="DataDumper.cpp" />
-    <ClCompile Include="DefFileAnalyzer.cpp" />
-    <ClCompile Include="DefFileParser.cpp" />
-    <ClCompile Include="DefinitionLocation.cpp" />
-    <ClCompile Include="DefinitionObject.cpp" />
+    <ClCompile Include="FileAnalyzer.cpp" />
+    <ClCompile Include="FileParser.cpp" />
+    <ClCompile Include="Location.cpp" />
+    <ClCompile Include="Object.cpp" />
     <ClCompile Include="DragNDropHelper.cpp" />
     <ClCompile Include="DynamicAmount.cpp" />
     <ClCompile Include="EstimatorFactory.cpp" />
@@ -304,10 +304,10 @@
     <ClInclude Include="CursorHelper.hpp" />
     <ClInclude Include="DataDumper.hpp" />
     <ClInclude Include="DataPoint.hpp" />
-    <ClInclude Include="DefFileAnalyzer.hpp" />
-    <ClInclude Include="DefFileParser.hpp" />
-    <ClInclude Include="DefinitionLocation.hpp" />
-    <ClInclude Include="DefinitionObject.hpp" />
+    <ClInclude Include="FileAnalyzer.hpp" />
+    <ClInclude Include="FileParser.hpp" />
+    <ClInclude Include="Location.hpp" />
+    <ClInclude Include="Object.hpp" />
     <ClInclude Include="DefinitionParser.hpp" />
     <ClInclude Include="DerivedEstimator.hpp" />
     <ClInclude Include="DirectedGraph.hpp" />
@@ -357,7 +357,6 @@
     <ClInclude Include="Formulas.hpp" />
     <ClInclude Include="ForwardingContainer.hpp" />
     <ClInclude Include="GenericMoleculeData.hpp" />
-    <ClInclude Include="FunctionalEstimator.hpp" />
     <ClInclude Include="HashUtils.hpp" />
     <ClInclude Include="Heatsource.hpp" />
     <ClInclude Include="HeatsourceData.hpp" />
@@ -460,8 +459,6 @@
     <None Include="Data\builtin\radicals.cdef" />
     <None Include="Data\builtin\reactions.cdef" />
     <None Include="Out\builtin.cdef" />
-    <None Include="Out\genericmolecules.out.csv" />
-    <None Include="Out\molecules.out.csv" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Planning.txt" />

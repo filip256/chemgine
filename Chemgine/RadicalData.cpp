@@ -1,5 +1,5 @@
 #include "RadicalData.hpp"
-#include "DefinitionObject.hpp"
+#include "Object.hpp"
 #include "DataDumper.hpp"
 #include "Keywords.hpp"
 #include "Utils.hpp"
@@ -22,7 +22,7 @@ void RadicalData::dumpDefinition(std::ostream& out, const bool prettify) const
 		Def::Atoms::Name.size(),
 		Def::Atoms::RadicalMatches.size());
 
-	DataDumper(out, valueOffset, 0, prettify)
+	Def::DataDumper(out, valueOffset, 0, prettify)
 		.header(Def::Types::Radical, symbol, "")
 		.beginProperties()
 		.propertyWithSep(Def::Atoms::Name, name)

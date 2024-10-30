@@ -27,7 +27,7 @@ void BaseLabwareData::dumpDefinition(std::ostream& out, const bool prettify) con
 		Def::Labware::Texture.size(),
 		Def::Labware::TextureScale.size());
 
-	DataDumper dump(out, valueOffset, 0, prettify);
+	Def::DataDumper dump(out, valueOffset, 0, prettify);
 	dump.header(Def::Types::Labware, type, "")
 		.beginProperties()
 		.propertyWithSep(Def::Labware::Id, id)

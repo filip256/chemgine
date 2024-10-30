@@ -7,8 +7,6 @@
 
 #include <iostream>
 
-class DefinitionObject;
-
 class AtomData : public BaseComponentData
 {
 private:

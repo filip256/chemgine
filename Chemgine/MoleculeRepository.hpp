@@ -4,7 +4,7 @@
 #include "MoleculeData.hpp"
 #include "GenericMoleculeData.hpp"
 #include "EstimatorRepository.hpp"
-#include "DefinitionObject.hpp"
+#include "Object.hpp"
 
 class MoleculeRepository
 {
@@ -20,7 +20,7 @@ public:
 	MoleculeRepository(EstimatorRepository& estimators) noexcept;
 	MoleculeRepository(const MoleculeRepository&) = delete;
 
-	bool add(DefinitionObject&& definition);
+	bool add(Def::Object&& definition);
 
 	const MoleculeData& at(const MoleculeId id) const;
 

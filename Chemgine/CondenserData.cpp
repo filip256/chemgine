@@ -21,7 +21,7 @@ CondenserData::CondenserData(
 	efficiency(efficiency)
 {}
 
-void CondenserData::dumpCustomProperties(DataDumper& dump) const
+void CondenserData::dumpCustomProperties(Def::DataDumper& dump) const
 {
 	dump.propertyWithSep(Def::Labware::Volume, getVolume<0>())
 		.propertyWithSep(Def::Labware::Length, length)

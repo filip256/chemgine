@@ -2,7 +2,7 @@
 
 #include "AtomData.hpp"
 #include "RadicalData.hpp"
-#include "DefinitionObject.hpp"
+#include "Object.hpp"
 
 class AtomRepository
 {
@@ -15,7 +15,7 @@ public:
 	AtomRepository(const AtomRepository&) = delete;
 
 	template <typename AtomT>
-	bool add(DefinitionObject&& definition);
+	bool add(Def::Object&& definition);
 
 	bool contains(const Symbol& symbol) const;
 

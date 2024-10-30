@@ -2,15 +2,15 @@
 
 #include "Parsers.hpp"
 #include "Keywords.hpp"
-#include "DefinitionObject.hpp"
+#include "Object.hpp"
 
 template <>
-class Def::Parser<DefinitionObject>
+class Def::Parser<Def::Object>
 {
 public:
-	static std::optional<DefinitionObject> parse(
+	static std::optional<Def::Object> parse(
 		const std::string& str,
-		DefinitionLocation&& location,
+		Def::Location&& location,
 		const std::unordered_map<std::string, std::string>& includeAliases,
 		const OOLDefRepository& oolDefinitions)
 	{
@@ -25,7 +25,7 @@ public:
 			{Def::Types::Labware, DefinitionType::LABWARE},
 		};
 
-		const Log<Parser<DefinitionObject>> log;
+		const Log<Parser<Def::Object>> log;
 
 		if (str.starts_with('_') == false)
 		{
@@ -40,7 +40,7 @@ public:
 			idEnd = str.find('>', typeEnd + 1);
 			if (idEnd == std::string::npos)
 			{
-				Log<Parser<DefinitionObject>>().error("Missing identifier terminator: '>', at: {0}.", location.toString());
+				Log<Parser<Def::Object>>().error("Missing identifier terminator: '>', at: {0}.", location.toString());
 				return std::nullopt;
 			}
 
@@ -110,8 +110,8 @@ public:
 
 		const auto props = Utils::split(propertiesStr, ',', "{[(", "}])", true);
 		std::unordered_map<std::string, std::string> properties;
-		std::unordered_map<std::string, DefinitionObject> ilSubDefs;
-		std::unordered_map<std::string, const DefinitionObject*> oolSubDefs;
+		std::unordered_map<std::string, Def::Object> ilSubDefs;
+		std::unordered_map<std::string, const Def::Object*> oolSubDefs;
 
 		for (size_t i = 0; i < props.size(); ++i)
 		{
@@ -144,7 +144,7 @@ public:
 			// in-line sub-definition
 			if (value.starts_with('_'))
 			{
-				auto subDef = Def::parse<DefinitionObject>(
+				auto subDef = Def::parse<Def::Object>(
 					value, Utils::copy(location), includeAliases, oolDefinitions);
 				if (not subDef)
 				{
@@ -200,7 +200,7 @@ public:
 			properties.emplace(std::move(name), std::move(value));
 		}
 
-		return std::optional<DefinitionObject>(std::in_place,
+		return std::optional<Def::Object>(std::in_place,
 			type,
 			idStr.size() ? location.getFile() + '@' + idStr : "",
 			std::move(specifierStr),

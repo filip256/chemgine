@@ -1,5 +1,7 @@
 #include "DataDumper.hpp"
 
+using namespace Def;
+
 DataDumper::DataDumper(
 	std::ostream& out,
 	const uint8_t valueOffset,
