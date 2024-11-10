@@ -17,7 +17,7 @@ Reactor::Reactor(const Reactor& other) noexcept :
 Reactor::Reactor(
 	const Ref<Atmosphere> atmosphere,
 	const Amount<Unit::LITER> maxVolume,
-	const Ref<BaseContainer> overflowTarget
+	const Ref<ContainerBase> overflowTarget
 ) noexcept :
 	MultiLayerMixture(atmosphere, maxVolume, overflowTarget)
 {}
@@ -29,42 +29,42 @@ Reactor::Reactor(
 	Reactor(atmosphere, maxVolume, atmosphere)
 {}
 
-float_n Reactor::getInterLayerReactivityCoefficient(const Reactant& r1, const Reactant& r2) const
+float_s Reactor::getInterLayerReactivityCoefficient(const Reactant& r1, const Reactant& r2) const
 {
 	if (r1.layer == r2.layer)
 	{
 		if (isSolidLayer(r1.layer))
-			return 0.0001;
-		return 1.0;
+			return static_cast<float_s>(0.0001);
+		return static_cast<float_s>(1.0);
 	}
 
 	if (MultiLayerMixture::areAdjacentLayers(r1.layer, r2.layer) == false)
-		return 0.0;
+		return static_cast<float_s>(0.0);
 
 	// TODO: take into account granularity, stirring, bubbling etc.
 	if (isSolidLayer(r1.layer))
 	{
 		if (isLiquidLayer(r2.layer))
-			return 0.5;   // S-L
-		return 0.01;      // S-G
+			return static_cast<float_s>(0.5);   // S-L
+		return static_cast<float_s>(0.01);      // S-G
 	}
 
 	if (isLiquidLayer(r1.layer))
 	{
 		if (isSolidLayer(r2.layer))
-			return 0.5;   // L-S
-		return 0.1;       // L-G
+			return static_cast<float_s>(0.5);   // L-S
+		return static_cast<float_s>(0.1);       // L-G
 	}
 
 
 	if (isLiquidLayer(r2.layer))
-		return 0.1;       // G-L
-	return 0.01;          // G-S
+		return static_cast<float_s>(0.1);       // G-L
+	return static_cast<float_s>(0.01);          // G-S
 }
 
-float_n Reactor::getInterLayerReactivityCoefficient(const ReactantSet& reactants) const
+float_s Reactor::getInterLayerReactivityCoefficient(const ReactantSet& reactants) const
 {
-	float_n result = 1.0;
+	float_s result = 1.0;
 	for (const auto& [_, r1] : reactants)
 		for (const auto& [_, r2] : reactants)
 		{
@@ -75,7 +75,7 @@ float_n Reactor::getInterLayerReactivityCoefficient(const ReactantSet& reactants
 	return result;
 }
 
-float_n Reactor::getCatalyticReactivityCoefficient(const ImmutableSet<Catalyst>& catalysts) const
+float_s Reactor::getCatalyticReactivityCoefficient(const ImmutableSet<Catalyst>& catalysts) const
 {
 	// TODO: take concentration into account
 	for (size_t i = 0; i < catalysts.size(); ++i)
@@ -151,8 +151,8 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 void Reactor::runLayerEnergyConduction(const Amount<Unit::SECOND> timespan)
 {
 	// TODO: find way to determine these based on molecular composition
-	const static Amount<Unit::WATT> favourableC = 0.000005;    // as relative conductivity
-	const static Amount<Unit::WATT> unfavourableC = 0.000003;  // as relative conductivity
+	static const auto favourableC = 0.000005_W;    // as relative conductivity
+	static const auto unfavourableC = 0.000003_W;  // as relative conductivity
 
 	for (auto& l : layers)
 	{
@@ -224,7 +224,7 @@ void Reactor::add(Reactor& other)
 	//}
 }
 
-void Reactor::add(Reactor& other, const float_n ratio)
+void Reactor::add(Reactor& other, const float_s ratio)
 {
 	//if (ratio >= 1.0)
 	//{

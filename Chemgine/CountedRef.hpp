@@ -12,8 +12,7 @@ template <typename T>
 concept CountableType = requires(T t)
 {
 	// requires T derived from Countable<?>
-	//[] <typename X>(const Countable<X>&) {}(t);
-	true;
+	[] <typename X>(const Countable<X>&) {}(t);
 };
 
 
@@ -32,13 +31,20 @@ public:
 	Countable() = default;
 	Countable(const Countable&) = default;
 	Countable(Countable&&) = default;
-    virtual ~Countable() = default;
+    virtual ~Countable();
 
 	CountT getRefCount() const;
 
 	template<CountableType T>
 	friend class CountedRef;
 };
+
+template<typename CountT>
+Countable<CountT>::~Countable()
+{
+	if (count != 0)
+		Log(this).fatal("A CountedRef's lifetime exceeded the lifetime of the referenced object.");
+}
 
 template<typename CountT>
 CountT Countable<CountT>::getRefCount() const

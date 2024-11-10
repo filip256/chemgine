@@ -12,7 +12,7 @@ public:
 
     bool matches(const Atom& other) const override final;
 
-    Radical* clone() const override final;
+    std::unique_ptr<Atom> clone() const override final;
 
     static bool isDefined(const Symbol& symbol);
 };

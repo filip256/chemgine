@@ -14,6 +14,7 @@ protected:
 public:
     Atom(const Symbol& symbol) noexcept;
     Atom(const Atom&) = default;
+    virtual ~Atom() = default;
 
     virtual const AtomData& getData() const;
 
@@ -30,7 +31,7 @@ public:
     bool operator==(const Atom& other) const;
     bool operator!=(const Atom& other) const;
 
-    virtual Atom* clone() const;
+    virtual std::unique_ptr<Atom> clone() const;
 
     static bool isDefined(const Symbol& symbol);
 };

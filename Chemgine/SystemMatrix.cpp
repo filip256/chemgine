@@ -151,5 +151,5 @@ std::vector<T>& SystemMatrix<T>::back()
 	return matrix.back();
 }
 
-template class SystemMatrix<float_n>;
+template class SystemMatrix<float_s>;
 template class SystemMatrix<float_h>;

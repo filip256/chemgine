@@ -24,13 +24,13 @@ bool LabwareRepository::checkTextureFile(std::string path, const Def::Location& 
 }
 
 template <>
-bool LabwareRepository::add<LabwareType::FLASK>(const LabwareId id, Def::Object&& definition)
+bool LabwareRepository::add<LabwareType::FLASK>(const LabwareId id, const Def::Object& definition)
 {
 	const auto name = definition.getDefaultProperty(Def::Labware::Name, "?");
 	auto ports = definition.getProperty(Def::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
 	const auto volume = definition.getProperty(Def::Labware::Volume, Def::parse<Amount<Unit::LITER>>);
 	const auto tx = definition.getProperty(Def::Labware::Texture);
-	const auto txScale = definition.getDefaultProperty(Def::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_n>);
+	const auto txScale = definition.getDefaultProperty(Def::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_s>);
 
 	if (not(volume && ports && tx))
 	{
@@ -41,19 +41,19 @@ bool LabwareRepository::add<LabwareType::FLASK>(const LabwareId id, Def::Object&
 	if (not checkTextureFile(*tx, definition.getLocation()))
 		return false;
 
-	table.emplace(id,
+	labware.emplace(id,
 		std::make_unique<FlaskData>(id, name, std::move(*ports), *volume, *tx, txScale));
 	return true;
 }
 
 template <>
-bool LabwareRepository::add<LabwareType::ADAPTOR>(const LabwareId id, Def::Object&& definition)
+bool LabwareRepository::add<LabwareType::ADAPTOR>(const LabwareId id, const Def::Object& definition)
 {
 	const auto name = definition.getDefaultProperty(Def::Labware::Name, "?");
 	auto ports = definition.getProperty(Def::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
 	const auto volume = definition.getProperty(Def::Labware::Volume, Def::parse<Amount<Unit::LITER>>);
 	const auto tx = definition.getProperty(Def::Labware::Texture);
-	const auto txScale = definition.getDefaultProperty(Def::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_n>);
+	const auto txScale = definition.getDefaultProperty(Def::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_s>);
 
 	if (not(volume && ports && tx))
 	{
@@ -64,13 +64,13 @@ bool LabwareRepository::add<LabwareType::ADAPTOR>(const LabwareId id, Def::Objec
 	if (not checkTextureFile(*tx, definition.getLocation()))
 		return false;
 
-	table.emplace(id,
+	labware.emplace(id,
 		std::make_unique<AdaptorData>(id, name, std::move(*ports), *volume, *tx, txScale));
 	return true;
 }
 
 template <>
-bool LabwareRepository::add<LabwareType::CONDENSER>(const LabwareId id, Def::Object&& definition)
+bool LabwareRepository::add<LabwareType::CONDENSER>(const LabwareId id, const Def::Object& definition)
 {
 	const auto name = definition.getDefaultProperty(Def::Labware::Name, "?");
 	auto ports = definition.getProperty(Def::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
@@ -80,7 +80,7 @@ bool LabwareRepository::add<LabwareType::CONDENSER>(const LabwareId id, Def::Obj
 	const auto tx = definition.getProperty(Def::Labware::Texture);
 	const auto inner = definition.getProperty(Def::Labware::InnerMask);
 	const auto coolant = definition.getProperty(Def::Labware::CoolantMask);
-	const auto txScale = definition.getDefaultProperty(Def::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_n>);
+	const auto txScale = definition.getDefaultProperty(Def::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_s>);
 
 	if (not(volume && length && effic && ports && tx && inner && coolant))
 	{
@@ -94,19 +94,19 @@ bool LabwareRepository::add<LabwareType::CONDENSER>(const LabwareId id, Def::Obj
 		checkTextureFile(*coolant, definition.getLocation())))
 		return false;
 
-	table.emplace(id,
+	labware.emplace(id,
 		std::make_unique<CondenserData>(id, name, std::move(*ports), *volume, *length, *effic, *tx, *inner, *coolant, txScale));
 	return true;
 }
 
 template <>
-bool LabwareRepository::add<LabwareType::HEATSOURCE>(const LabwareId id, Def::Object&& definition)
+bool LabwareRepository::add<LabwareType::HEATSOURCE>(const LabwareId id, const Def::Object& definition)
 {
 	const auto name = definition.getDefaultProperty(Def::Labware::Name, "?");
 	auto ports = definition.getProperty(Def::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
 	const auto power = definition.getProperty(Def::Labware::Power, Def::parse<Amount<Unit::WATT>>);
 	const auto tx = definition.getProperty(Def::Labware::Texture);
-	const auto txScale = definition.getDefaultProperty(Def::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_n>);
+	const auto txScale = definition.getDefaultProperty(Def::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_s>);
 
 	if (not(power && ports && tx))
 	{
@@ -117,14 +117,14 @@ bool LabwareRepository::add<LabwareType::HEATSOURCE>(const LabwareId id, Def::Ob
 	if (not checkTextureFile(*tx, definition.getLocation()))
 		return false;
 
-	table.emplace(id,
+	labware.emplace(id,
 		std::make_unique<HeatsourceData>(id, name, std::move(*ports), *power, *tx, txScale));
 	return true;
 }
 
-bool LabwareRepository::add(Def::Object&& definition)
+bool LabwareRepository::add(const Def::Object& definition)
 {
-	static std::unordered_map<std::string, bool (LabwareRepository::*)(LabwareId, Def::Object&&)> adders =
+	static std::unordered_map<std::string, bool (LabwareRepository::*)(LabwareId, const Def::Object&)> adders =
 	{
 		{Def::Labware::Flask, &LabwareRepository::add<LabwareType::FLASK> },
 		{Def::Labware::Adaptor, &LabwareRepository::add<LabwareType::ADAPTOR> },
@@ -143,36 +143,51 @@ bool LabwareRepository::add(Def::Object&& definition)
 	if (not id)
 		return false;
 
-	if (table.contains(*id))
+	if (labware.contains(*id))
 	{
 		Log(this).error("Labware with duplicate id: '{0}', at: {1}.", *id, definition.getLocationName());
 		return false;
 	}
 
-	return (this->*(it->second))(*id, std::move(definition));
+	const auto success = (this->*(it->second))(*id, definition);
+	if (not success)
+		return false;
+
+	definition.logUnusedWarnings();
+	return true;
+}
+
+bool LabwareRepository::contains(const LabwareId id) const
+{
+	return labware.contains(id);
 }
 
 const BaseLabwareData& LabwareRepository::at(const LabwareId id) const
 {
-	return *table.at(id);
+	return *labware.at(id);
+}
+
+size_t LabwareRepository::totalDefinitionCount() const
+{
+	return labware.size();
 }
 
 LabwareRepository::Iterator LabwareRepository::begin() const
 {
-	return table.begin();
+	return labware.begin();
 }
 
 LabwareRepository::Iterator LabwareRepository::end() const
 {
-	return table.end();
+	return labware.end();
 }
 
 size_t LabwareRepository::size() const
 {
-	return table.size();
+	return labware.size();
 }
 
 void LabwareRepository::clear()
 {
-	table.clear();
+	labware.clear();
 }

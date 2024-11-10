@@ -745,64 +745,65 @@ _radical: X {
     matches:  { F, Cl, Br, Ts, At }
 };
 
-_data<d42>: torr -> C {
-    const:  0.0
+_data<d226>: torr -> C {
+    const:  0.0_C
 };
 
-_data<d43>: torr -> C {
+_data<d227>: torr -> C {
     mode:    LINEAR,
-    values:  { { 1.0: -16.9 }, { 100.0: 51.9 }, { 200.0: 66.5 }, { 300.0: 75.6 }, { 400.0: 83.3 }, { 500.0: 89.0 }, { 600.0: 93.3 }, { 760.0: 100.0 }, { 800.0: 101.4 }, { 900.0: 104.8 }, { 1000.0: 107.8 }, { 1400.0: 118.1 } }
+    values:  { { 1.0_torr: -16.9_C }, { 100.0_torr: 51.9_C }, { 200.0_torr: 66.5_C }, { 300.0_torr: 75.6_C }, { 400.0_torr: 83.3_C }, { 500.0_torr: 89.0_C }, { 600.0_torr: 93.3_C }, { 760.0_torr: 100.0_C }, { 800.0_torr: 101.4_C }, { 900.0_torr: 104.8_C }, { 1000.0_torr: 107.8_C }, { 1400.0_torr: 118.1_C } }
 };
 
-_data<d44>: C -> g/mL {
-    const:  1.0
+_data<d228>: C -> g/mL {
+    const:  1.0_g/mL
 };
 
-_data<d46>: torr -> J/(mol*C) {
-    const:  36.0
+_data<d230>: torr -> J/(mol*C) {
+    const:  36.0_J/(mol*C)
 };
 
-_data<d47>: torr -> J/(mol*C) {
-    const:  75.48402
+_data<d231>: torr -> J/(mol*C) {
+    const:  75.48402_J/(mol*C)
 };
 
-_data<d48>: (C, torr) -> J/mol {
-    const:  6020.0
+_data<d232>: (C, torr) -> J/mol {
+    const:  6020.0_J/mol
 };
 
-_data<d49>: (C, torr) -> J/mol {
+_data<d233>: (C, torr) -> J/mol {
     mode:    LINEAR,
     params:  { 200.0, 0.0, 40700.0 }
 };
 
-_data<d50>: (C, torr) -> J/mol {
-    const:  INF
+_data<d234>: (C, torr) -> J/mol {
+    const:  INF_J/mol
 };
 
-_data<d51>: C -> 1 {
+_data<d235>: C -> 1 {
     mode:    LINEAR,
     params:  { 0.1, 0.9 }
 };
 
-_data<d52>: C -> torr*(mol/mol) {
-    const:  1000.0
+_data<d236>: C -> torr*(mol/mol) {
+    const:  1000.0_torr*(mol/mol)
 };
 
 _mol: O {
     name:             water,
-    melting_point:    $d42,
-    boiling_point:    $d43,
-    solid_density:    $d44,
+    melting_point:    $d226,
+    boiling_point:    $d227,
+    solid_density:    $d228,
     liquid_density:   _: C -> g/mL {
-                          const:  0.9999
+                          mode:    LINEAR,
+                          values:  { { 0.0_C: 0.99989_g/mL }, { 1.0_C: 0.99992_g/mL }, { 3.0_C: 0.99996_g/mL }, { 4.0_C: 0.99995_g/mL }, { 5.0_C: 0.99993_g/mL }, { 10.0_C: 0.99965_g/mL }, { 30.0_C: 0.99567_g/mL }, { 80.0_C: 0.97176_g/mL }, { 99.0_C: 0.95909_g/mL } }
                       },
-    solid_hc:         $d46,
-    liquid_hc:        $d47,
-    fusion_lh:        $d48,
-    vaporization_lh:  $d49,
-    sublimation_lh:   $d50,
-    rel_solubility:   $d51,
-    henry_const:      $d52,
+    solid_hc:         $d230,
+    liquid_hc:        $d231,
+    fusion_lh:        $d232,
+    vaporization_lh:  $d233,
+    sublimation_lh:   $d234,
+    rel_solubility:   $d235,
+    henry_const:      $d236,
     hydrophilicity:   1.0_mol/mol,
     lipophilicity:    0.0_mol/mol,
     color:            { b: 255, r: 0, g: 100, intensity: 150 }
@@ -811,21 +812,21 @@ _mol: O {
 _mol: OC {
     name:             methanol,
     melting_point:    _: torr -> C {
-                          const:  -97.8
+                          const:  -97.8_C
                       },
     boiling_point:    _: torr -> C {
-                          base:     $d43,
+                          base:     $d227,
                           v_shift:  -35.3
                       },
-    solid_density:    $d44,
-    liquid_density:   $d44,
-    solid_hc:         $d46,
-    liquid_hc:        $d47,
-    fusion_lh:        $d48,
-    vaporization_lh:  $d49,
-    sublimation_lh:   $d50,
-    rel_solubility:   $d51,
-    henry_const:      $d52,
+    solid_density:    $d228,
+    liquid_density:   $d228,
+    solid_hc:         $d230,
+    liquid_hc:        $d231,
+    fusion_lh:        $d232,
+    vaporization_lh:  $d233,
+    sublimation_lh:   $d234,
+    rel_solubility:   $d235,
+    henry_const:      $d236,
     hydrophilicity:   1.0_mol/mol,
     lipophilicity:    0.0_mol/mol,
     color:            { b: 255, r: 0, g: 255, intensity: 100 }
@@ -834,20 +835,20 @@ _mol: OC {
 _mol: O=C(O)C {
     name:             acetic acid,
     melting_point:    _: torr -> C {
-                          const:  0.635
+                          const:  0.635_C
                       },
     boiling_point:    _: torr -> C {
-                          const:  117.9
+                          const:  117.9_C
                       },
-    solid_density:    $d44,
-    liquid_density:   $d44,
-    solid_hc:         $d46,
-    liquid_hc:        $d47,
-    fusion_lh:        $d48,
-    vaporization_lh:  $d49,
-    sublimation_lh:   $d50,
-    rel_solubility:   $d51,
-    henry_const:      $d52,
+    solid_density:    $d228,
+    liquid_density:   $d228,
+    solid_hc:         $d230,
+    liquid_hc:        $d231,
+    fusion_lh:        $d232,
+    vaporization_lh:  $d233,
+    sublimation_lh:   $d234,
+    rel_solubility:   $d235,
+    henry_const:      $d236,
     hydrophilicity:   1.0_mol/mol,
     lipophilicity:    0.0_mol/mol,
     color:            { b: 200, r: 0, g: 100, intensity: 100 }
@@ -856,20 +857,20 @@ _mol: O=C(O)C {
 _mol: O=C(OC(=O)C)C {
     name:             acetic anhydride,
     melting_point:    _: torr -> C {
-                          const:  -73.4
+                          const:  -73.4_C
                       },
     boiling_point:    _: torr -> C {
-                          const:  139.5
+                          const:  139.5_C
                       },
-    solid_density:    $d44,
-    liquid_density:   $d44,
-    solid_hc:         $d46,
-    liquid_hc:        $d47,
-    fusion_lh:        $d48,
-    vaporization_lh:  $d49,
-    sublimation_lh:   $d50,
-    rel_solubility:   $d51,
-    henry_const:      $d52,
+    solid_density:    $d228,
+    liquid_density:   $d228,
+    solid_hc:         $d230,
+    liquid_hc:        $d231,
+    fusion_lh:        $d232,
+    vaporization_lh:  $d233,
+    sublimation_lh:   $d234,
+    rel_solubility:   $d235,
+    henry_const:      $d236,
     hydrophilicity:   1.0_mol/mol,
     lipophilicity:    0.0_mol/mol,
     color:            { b: 0, r: 255, g: 0, intensity: 200 }
@@ -878,20 +879,20 @@ _mol: O=C(OC(=O)C)C {
 _mol: O=C(OC)C {
     name:             methyl acetate,
     melting_point:    _: torr -> C {
-                          const:  -98.2
+                          const:  -98.2_C
                       },
     boiling_point:    _: torr -> C {
-                          const:  56.7
+                          const:  56.7_C
                       },
-    solid_density:    $d44,
-    liquid_density:   $d44,
-    solid_hc:         $d46,
-    liquid_hc:        $d47,
-    fusion_lh:        $d48,
-    vaporization_lh:  $d49,
-    sublimation_lh:   $d50,
-    rel_solubility:   $d51,
-    henry_const:      $d52,
+    solid_density:    $d228,
+    liquid_density:   $d228,
+    solid_hc:         $d230,
+    liquid_hc:        $d231,
+    fusion_lh:        $d232,
+    vaporization_lh:  $d233,
+    sublimation_lh:   $d234,
+    rel_solubility:   $d235,
+    henry_const:      $d236,
     hydrophilicity:   1.0_mol/mol,
     lipophilicity:    0.0_mol/mol,
     color:            { b: 255, r: 0, g: 255, intensity: 100 }
@@ -900,20 +901,20 @@ _mol: O=C(OC)C {
 _mol: O(C)C {
     name:             dimethyl ether,
     melting_point:    _: torr -> C {
-                          const:  -141.5
+                          const:  -141.5_C
                       },
     boiling_point:    _: torr -> C {
-                          const:  -24.82
+                          const:  -24.82_C
                       },
-    solid_density:    $d44,
-    liquid_density:   $d44,
-    solid_hc:         $d46,
-    liquid_hc:        $d47,
-    fusion_lh:        $d48,
-    vaporization_lh:  $d49,
-    sublimation_lh:   $d50,
-    rel_solubility:   $d51,
-    henry_const:      $d52,
+    solid_density:    $d228,
+    liquid_density:   $d228,
+    solid_hc:         $d230,
+    liquid_hc:        $d231,
+    fusion_lh:        $d232,
+    vaporization_lh:  $d233,
+    sublimation_lh:   $d234,
+    rel_solubility:   $d235,
+    henry_const:      $d236,
     hydrophilicity:   1.0_mol/mol,
     lipophilicity:    0.0_mol/mol,
     color:            { b: 255, r: 0, g: 255, intensity: 100 }
@@ -922,20 +923,20 @@ _mol: O(C)C {
 _mol: HH {
     name:             hydrogen,
     melting_point:    _: torr -> C {
-                          const:  -252.76199
+                          const:  -252.76199_C
                       },
     boiling_point:    _: torr -> C {
-                          const:  -259.16
+                          const:  -259.16_C
                       },
-    solid_density:    $d44,
-    liquid_density:   $d44,
-    solid_hc:         $d46,
-    liquid_hc:        $d47,
-    fusion_lh:        $d48,
-    vaporization_lh:  $d49,
-    sublimation_lh:   $d50,
-    rel_solubility:   $d51,
-    henry_const:      $d52,
+    solid_density:    $d228,
+    liquid_density:   $d228,
+    solid_hc:         $d230,
+    liquid_hc:        $d231,
+    fusion_lh:        $d232,
+    vaporization_lh:  $d233,
+    sublimation_lh:   $d234,
+    rel_solubility:   $d235,
+    henry_const:      $d236,
     hydrophilicity:   1.0_mol/mol,
     lipophilicity:    0.0_mol/mol,
     color:            { b: 255, r: 0, g: 255, intensity: 100 }
@@ -944,46 +945,46 @@ _mol: HH {
 _mol: O=O {
     name:             oxygen,
     melting_point:    _: torr -> C {
-                          const:  -218.39999
+                          const:  -218.39999_C
                       },
     boiling_point:    _: torr -> C {
-                          const:  -182.96001
+                          const:  -182.96001_C
                       },
-    solid_density:    $d44,
-    liquid_density:   $d44,
-    solid_hc:         $d46,
-    liquid_hc:        $d47,
-    fusion_lh:        $d48,
-    vaporization_lh:  $d49,
-    sublimation_lh:   $d50,
-    rel_solubility:   $d51,
-    henry_const:      $d52,
+    solid_density:    $d228,
+    liquid_density:   $d228,
+    solid_hc:         $d230,
+    liquid_hc:        $d231,
+    fusion_lh:        $d232,
+    vaporization_lh:  $d233,
+    sublimation_lh:   $d234,
+    rel_solubility:   $d235,
+    henry_const:      $d236,
     hydrophilicity:   1.0_mol/mol,
     lipophilicity:    0.0_mol/mol,
     color:            { b: 255, r: 255, g: 255, intensity: 10 }
 };
 
-_data<d67>: torr -> C {
-    const:  -210.02
+_data<d251>: torr -> C {
+    const:  -210.02_C
 };
 
-_data<d68>: torr -> C {
-    const:  -195.78999
+_data<d252>: torr -> C {
+    const:  -195.78999_C
 };
 
 _mol: N#N {
     name:             nitrogen,
-    melting_point:    $d67,
-    boiling_point:    $d68,
-    solid_density:    $d44,
-    liquid_density:   $d44,
-    solid_hc:         $d46,
-    liquid_hc:        $d47,
-    fusion_lh:        $d48,
-    vaporization_lh:  $d49,
-    sublimation_lh:   $d50,
-    rel_solubility:   $d51,
-    henry_const:      $d52,
+    melting_point:    $d251,
+    boiling_point:    $d252,
+    solid_density:    $d228,
+    liquid_density:   $d228,
+    solid_hc:         $d230,
+    liquid_hc:        $d231,
+    fusion_lh:        $d232,
+    vaporization_lh:  $d233,
+    sublimation_lh:   $d234,
+    rel_solubility:   $d235,
+    henry_const:      $d236,
     hydrophilicity:   1.0_mol/mol,
     lipophilicity:    0.0_mol/mol,
     color:            { b: 255, r: 50, g: 200, intensity: 100 }
@@ -991,17 +992,17 @@ _mol: N#N {
 
 _mol: OC(C)C {
     name:             isopropanol,
-    melting_point:    $d67,
-    boiling_point:    $d68,
-    solid_density:    $d44,
-    liquid_density:   $d44,
-    solid_hc:         $d46,
-    liquid_hc:        $d47,
-    fusion_lh:        $d48,
-    vaporization_lh:  $d49,
-    sublimation_lh:   $d50,
-    rel_solubility:   $d51,
-    henry_const:      $d52,
+    melting_point:    $d251,
+    boiling_point:    $d252,
+    solid_density:    $d228,
+    liquid_density:   $d228,
+    solid_hc:         $d230,
+    liquid_hc:        $d231,
+    fusion_lh:        $d232,
+    vaporization_lh:  $d233,
+    sublimation_lh:   $d234,
+    rel_solubility:   $d235,
+    henry_const:      $d236,
     hydrophilicity:   1.0_mol/mol,
     lipophilicity:    0.0_mol/mol,
     color:            { b: 255, r: 0, g: 255, intensity: 100 }
@@ -1009,17 +1010,17 @@ _mol: OC(C)C {
 
 _mol: O=C(C)C {
     name:             acetone,
-    melting_point:    $d67,
-    boiling_point:    $d68,
-    solid_density:    $d44,
-    liquid_density:   $d44,
-    solid_hc:         $d46,
-    liquid_hc:        $d47,
-    fusion_lh:        $d48,
-    vaporization_lh:  $d49,
-    sublimation_lh:   $d50,
-    rel_solubility:   $d51,
-    henry_const:      $d52,
+    melting_point:    $d251,
+    boiling_point:    $d252,
+    solid_density:    $d228,
+    liquid_density:   $d228,
+    solid_hc:         $d230,
+    liquid_hc:        $d231,
+    fusion_lh:        $d232,
+    vaporization_lh:  $d233,
+    sublimation_lh:   $d234,
+    rel_solubility:   $d235,
+    henry_const:      $d236,
     hydrophilicity:   1.0_mol/mol,
     lipophilicity:    0.0_mol/mol,
     color:            { b: 255, r: 0, g: 255, intensity: 100 }
@@ -1027,36 +1028,36 @@ _mol: O=C(C)C {
 
 _mol: S(=O)(=O)(O)O {
     name:             S(=O)(=O)(O)O,
-    melting_point:    $d42,
+    melting_point:    $d226,
     boiling_point:    _: torr -> C {
-                          const:  100.0
+                          const:  100.0_C
                       },
-    solid_density:    $d44,
-    liquid_density:   $d44,
-    solid_hc:         $d46,
-    liquid_hc:        $d47,
-    fusion_lh:        $d48,
+    solid_density:    $d228,
+    liquid_density:   $d228,
+    solid_hc:         $d230,
+    liquid_hc:        $d231,
+    fusion_lh:        $d232,
     vaporization_lh:  _: (C, torr) -> J/mol {
-                          const:  40700.0
+                          const:  40700.0_J/mol
                       },
-    sublimation_lh:   $d50,
+    sublimation_lh:   $d234,
     rel_solubility:   _: C -> 1 {
                           const:  1.0
                       },
-    henry_const:      $d52,
+    henry_const:      $d236,
     hydrophilicity:   1.0_mol/mol,
     lipophilicity:    0.0_mol/mol,
     color:            { b: 255, r: 0, g: 255, intensity: 100 }
 };
 
-_data<d69>: C -> mol/s {
+_data<d253>: C -> mol/s {
     mode:    LINEAR,
-    values:  { { -INF: 0.0 }, { -40.0: 0.0625 }, { -30.0: 0.125 }, { -20.0: 0.25 }, { -10.0: 0.5 }, { 0.0: 1.0 }, { 10.0: 2.0 }, { 20.0: 4.0 }, { 50.0: 16.0 } }
+    values:  { { -INF_C: 0.0_mol/s }, { -40.0_C: 0.0625_mol/s }, { -30.0_C: 0.125_mol/s }, { -20.0_C: 0.25_mol/s }, { -10.0_C: 0.5_mol/s }, { 0.0_C: 1.0_mol/s }, { 10.0_C: 2.0_mol/s }, { 20.0_C: 4.0_mol/s }, { 50.0_C: 16.0_mol/s } }
 };
 
-_data<d71>: mol/mol -> 1 {
+_data<d255>: mol/mol -> 1 {
     mode:    LINEAR,
-    values:  { { -INF: 0.0 }, { 0.0: 0.0 }, { 0.1: 0.5 }, { 0.2: 0.66 }, { 0.4: 0.8 }, { 0.75: 0.9 }, { 1.0: 1.0 }, { INF: 1.0 } }
+    values:  { { -INF_mol/mol: 0.0 }, { 0.0_mol/mol: 0.0 }, { 0.1_mol/mol: 0.5 }, { 0.2_mol/mol: 0.66 }, { 0.4_mol/mol: 0.8 }, { 0.75_mol/mol: 0.9 }, { 1.0_mol/mol: 1.0 }, { INF_mol/mol: 1.0 } }
 };
 
 _react: O=C(O)R + OR -> O + O=C(OR)R {
@@ -1064,64 +1065,64 @@ _react: O=C(O)R + OR -> O + O=C(OR)R {
     name:        esterification,
     energy:      100.0_J/mol,
     speed_t:     _: C -> mol/s {
-                     base:     $d69,
+                     base:     $d253,
                      h_shift:  20.0,
                      scale:    100.0
                  },
-    speed_c:     $d71
+    speed_c:     $d255
 };
 
 _react: O + O=C(OR)R -> O=C(O)R + OR {
     id:          202,
     name:        hydrolysis,
     speed_t:     _: C -> mol/s {
-                     base:     $d69,
+                     base:     $d253,
                      h_shift:  20.0,
                      scale:    0.5
                  },
-    speed_c:     $d71
+    speed_c:     $d255
 };
 
-_data<d73>: C -> mol/s {
-    base:     $d69,
+_data<d257>: C -> mol/s {
+    base:     $d253,
     h_shift:  20.0
 };
 
 _react: OR -> O + O(R)R {
     id:          203,
     name:        dehydration,
-    speed_t:     $d73,
-    speed_c:     $d71
+    speed_t:     $d257,
+    speed_c:     $d255
 };
 
 _react: HH + C(=C)R -> C(C)R {
     id:          204,
     name:        reduction,
-    speed_t:     $d73,
-    speed_c:     $d71
+    speed_t:     $d257,
+    speed_c:     $d255
 };
 
 _react: O=C(O)C + OR -> O + O=C(OR)C {
     id:          205,
     name:        esterification,
     speed_t:     _: C -> mol/s {
-                     base:     $d69,
+                     base:     $d253,
                      h_shift:  20.0,
                      scale:    0.1
                  },
-    speed_c:     $d71
+    speed_c:     $d255
 };
 
 _react: OR -> O + O(R)R {
     id:          206,
     name:        dehydration,
     catalysts:   { O=C(OR)R: 0.5_mol/mol },
-    speed_t:     $d73,
-    speed_c:     $d71
+    speed_t:     $d257,
+    speed_c:     $d255
 };
 
-_data<d75>: C -> mol/s {
-    base:     $d69,
+_data<d259>: C -> mol/s {
+    base:     $d253,
     h_shift:  20.0,
     scale:    0.01
 };
@@ -1130,16 +1131,16 @@ _react: O[Me] + X -> O + [Me]X {
     id:          207,
     name:        acid-base,
     energy:      100.0_J/mol,
-    speed_t:     $d75,
-    speed_c:     $d71
+    speed_t:     $d259,
+    speed_c:     $d255
 };
 
 _react: X + O[Me]O -> O + [Me](X)X {
     id:          208,
     name:        acid-base,
     energy:      10.0_J/mol,
-    speed_t:     $d75,
-    speed_c:     $d71
+    speed_t:     $d259,
+    speed_c:     $d255
 };
 
 _react: O=C(O)R -> O + O=C(OC(=O)R)R {
@@ -1147,12 +1148,12 @@ _react: O=C(O)R -> O + O=C(OC(=O)R)R {
     name:        dehydration,
     catalysts:   { S(=O)(=O)(O)O: 0.5_mol/mol },
     energy:      10.0_J/mol,
-    speed_t:     $d75,
-    speed_c:     $d71
+    speed_t:     $d259,
+    speed_c:     $d255
 };
 
-_data<d79>: C -> mol/s {
-    base:     $d69,
+_data<d263>: C -> mol/s {
+    base:     $d253,
     h_shift:  20.0,
     scale:    0.7
 };
@@ -1161,8 +1162,8 @@ _react: O=C(O)R -> O + O=C(OC(=O)R)R {
     id:          210,
     name:        dehydration,
     energy:      10.0_J/mol,
-    speed_t:     $d79,
-    speed_c:     $d71
+    speed_t:     $d263,
+    speed_c:     $d255
 };
 
 _react: O[Me] + S(=O)(=O)(O)O -> O + S(=O)(=O)(O)O[Me] {
@@ -1170,19 +1171,19 @@ _react: O[Me] + S(=O)(=O)(O)O -> O + S(=O)(=O)(O)O[Me] {
     name:        acid-base,
     energy:      100.0_J/mol,
     speed_t:     _: C -> mol/s {
-                     base:     $d69,
+                     base:     $d253,
                      h_shift:  20.0,
                      scale:    0.9
                  },
-    speed_c:     $d71
+    speed_c:     $d255
 };
 
 _react: O=C(O)R + O[Me] -> O + O=C(O[Me])R {
     id:          212,
     name:        acid-base,
     energy:      80.0_J/mol,
-    speed_t:     $d79,
-    speed_c:     $d71
+    speed_t:     $d263,
+    speed_c:     $d255
 };
 
 _react: S(=O)(=O)(O)O + O=C(O[Me])R -> O=C(O)R + S(=O)(=O)(O)O[Me] {
@@ -1190,11 +1191,11 @@ _react: S(=O)(=O)(O)O + O=C(O[Me])R -> O=C(O)R + S(=O)(=O)(O)O[Me] {
     name:        acid displacement,
     energy:      20.0_J/mol,
     speed_t:     _: C -> mol/s {
-                     base:     $d69,
+                     base:     $d253,
                      h_shift:  20.0,
                      scale:    0.3
                  },
-    speed_c:     $d71
+    speed_c:     $d255
 };
 
 _react: O=C(O)R + OC(R)R -> O + O=C(OC(R)R)R {
@@ -1206,7 +1207,7 @@ _react: O=C(O)R + OC(R)R -> O + O=C(OC(R)R)R {
 _lab: flask {
     id:            201,
     name:          RBF,
-    ports:         { { INLET: { x: 31.0, y: 9.0, angle: 0.0_o } }, { CONTACT: { x: 31.0, y: 90.0, angle: 0.0_o } } },
+    ports:         { { INLET: { x: 31.0, y: 9.0, angle: 0.0 } }, { CONTACT: { x: 31.0, y: 90.0, angle: 0.0 } } },
     volume:        0.5_L,
     tx:            ~/jrbf500.png,
     tx_scale:      1.0
@@ -1215,7 +1216,7 @@ _lab: flask {
 _lab: condenser {
     id:            501,
     name:          Liebig Condenser,
-    ports:         { { INLET: { x: 22.0, y: 12.0, angle: 0.0_o } }, { OUTLET: { x: 22.0, y: 158.0, angle: 0.0_o } } },
+    ports:         { { INLET: { x: 22.0, y: 12.0, angle: 0.0 } }, { OUTLET: { x: 22.0, y: 158.0, angle: 0.0 } } },
     volume:        0.2_L,
     length:        0.3_m,
     effic:         0.5_/m,
@@ -1228,7 +1229,7 @@ _lab: condenser {
 _lab: adaptor {
     id:            301,
     name:          3-way Adaptor,
-    ports:         { { OUTLET: { x: 6.0, y: 58.0, angle: 0.0_o } }, { OUTLET: { x: 36.0, y: 34.0, angle: 290.0_o } } },
+    ports:         { { OUTLET: { x: 6.0, y: 58.0, angle: 0.0 } }, { OUTLET: { x: 36.0, y: 34.0, angle: 290.0 } } },
     volume:        0.05_L,
     tx:            ~/3way.png,
     tx_scale:      1.0
@@ -1237,7 +1238,7 @@ _lab: adaptor {
 _lab: adaptor {
     id:            302,
     name:          Distillation Adaptor,
-    ports:         { { INLET: { x: 11.0, y: 10.0, angle: 282.0_o } }, { OUTLET: { x: 39.0, y: 52.0, angle: 0.0_o } } },
+    ports:         { { INLET: { x: 11.0, y: 10.0, angle: 282.0 } }, { OUTLET: { x: 39.0, y: 52.0, angle: 0.0 } } },
     volume:        0.05_L,
     tx:            ~/disthead.png,
     tx_scale:      1.0
@@ -1246,7 +1247,7 @@ _lab: adaptor {
 _lab: heatsource {
     id:            401,
     name:          Hotplate,
-    ports:         { CONTACT: { x: 41.0, y: 7.0, angle: 0.0_o } },
+    ports:         { CONTACT: { x: 41.0, y: 7.0, angle: 0.0 } },
     power:         1000.0_W,
     tx:            ~/hotplate_sh2.png,
     tx_scale:      1.0

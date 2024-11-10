@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BaseContainer.hpp"
+#include "ContainerBase.hpp"
 #include "DumpContainer.hpp"
 #include "Ref.hpp"
 
@@ -10,24 +10,24 @@ class ForwardingRule
 {
 public:
 	bool (*predicate) (const Reactant&);
-	Ref<BaseContainer> target;
+	Ref<ContainerBase> target;
 };
 
-class ForwardingContainer : public BaseContainer
+class ForwardingContainer : public ContainerBase
 {
 private:
-	Ref<BaseContainer> defaultTarget = DumpContainer::GlobalDumpContainer;
+	Ref<ContainerBase> defaultTarget = DumpContainer::GlobalDumpContainer;
 	std::vector<ForwardingRule> forwardingRules;
 
 public:
 	ForwardingContainer(
 		std::initializer_list<ForwardingRule> forwardingRules,
-		Ref<BaseContainer> defaultTarget
+		Ref<ContainerBase> defaultTarget
 	) noexcept;
 
 	ForwardingContainer(
 		const std::vector<ForwardingRule>& forwardingRules,
-		Ref<BaseContainer> defaultTarget
+		Ref<ContainerBase> defaultTarget
 	) noexcept;
 
 	ForwardingContainer(const ForwardingContainer&) = delete;

@@ -13,7 +13,7 @@ MoleculeRepository::MoleculeRepository(EstimatorRepository& estimators) noexcept
 	estimators(estimators)
 {}
 
-bool MoleculeRepository::add(Def::Object&& definition)
+bool MoleculeRepository::add(const Def::Object& definition)
 {
 	auto structure = Def::Parser<MolecularStructure>::parse(definition.getSpecifier());
 	if (not structure)
@@ -21,12 +21,17 @@ bool MoleculeRepository::add(Def::Object&& definition)
 		Log(this).error("Invalid SMILES specifier: '{0}', as: {1}.", definition.getSpecifier(), definition.getLocationName());
 		return false;
 	}
+	if (findFirstConcrete(*structure) != nullptr)
+	{
+		Log(this).warn("Already defined molecule: '{0}' skipped.", definition.getSpecifier());
+		return false;
+	}
 
 	const auto name = definition.getDefaultProperty(Def::Molecules::Name, "?");
-	const auto hp = definition.getDefaultProperty(Def::Molecules::Hydrophilicity, 1.0,
-		Def::parse<float_n>);
-	const auto lp = definition.getDefaultProperty(Def::Molecules::Lipophilicity, 0.0,
-		Def::parse<float_n>);
+	const auto hp = definition.getDefaultProperty(Def::Molecules::Hydrophilicity, 1.0f,
+		Def::parse<float_s>);
+	const auto lp = definition.getDefaultProperty(Def::Molecules::Lipophilicity, 0.0f,
+		Def::parse<float_s>);
 	const auto col = definition.getDefaultProperty(Def::Molecules::Color, Color(0, 255, 255, 100),
 		Def::parse<Color>);
 	auto mp = definition.getDefinition(Def::Molecules::MeltingPoint,
@@ -62,12 +67,23 @@ bool MoleculeRepository::add(Def::Object&& definition)
 			std::move(*shc), std::move(*lhc), std::move(*flh),
 			std::move(*vlh), std::move(*slh), std::move(*sol), std::move(*hen)));
 
+	definition.logUnusedWarnings();
 	return true;
+}
+
+bool MoleculeRepository::contains(const MoleculeId id) const
+{
+	return concreteMolecules.contains(id);
 }
 
 const MoleculeData& MoleculeRepository::at(const MoleculeId id) const
 {
 	return *concreteMolecules.at(id);
+}
+
+size_t MoleculeRepository::totalDefinitionCount() const
+{
+	return concreteMolecules.size() + genericMolecules.size();
 }
 
 const MoleculeData* MoleculeRepository::findFirstConcrete(const MolecularStructure& structure) const
@@ -101,20 +117,20 @@ const MoleculeData& MoleculeRepository::findOrAddConcrete(MolecularStructure&& s
 
 	Log(this).debug("New structure discovered: \n{0}", structure.print());
 
-	const auto hydro = 1.0;
-	const auto lipo = 0.0;
+	const auto hydro = 1.0f;
+	const auto lipo = 0.0f;
 	const auto color = Color(0, 255, 255, 100);
-	auto mp = estimators.add<ConstantEstimator<Unit::CELSIUS, Unit::TORR>>(0.0);
-	auto bp = estimators.add<ConstantEstimator<Unit::CELSIUS, Unit::TORR>>(100.0);
-	auto sd = estimators.add<ConstantEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>(1.0);
-	auto ld = estimators.add<ConstantEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>(1.0);
-	auto shc = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>(36.0);
-	auto lhc = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>(75.4840232);
-	auto flh = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(6020.0);
-	auto vlh = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(40700.0);
-	auto slh = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(std::numeric_limits<float_n>::max());
-	auto sol = estimators.add<ConstantEstimator<Unit::NONE, Unit::CELSIUS>>(1.0);
-	auto hen = estimators.add<ConstantEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>>(1000.0);
+	auto mp = estimators.add<ConstantEstimator<Unit::CELSIUS, Unit::TORR>>(0.0f);
+	auto bp = estimators.add<ConstantEstimator<Unit::CELSIUS, Unit::TORR>>(100.0f);
+	auto sd = estimators.add<ConstantEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>(1.0f);
+	auto ld = estimators.add<ConstantEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>(1.0f);
+	auto shc = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>(36.0f);
+	auto lhc = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>(75.4840232f);
+	auto flh = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(6020.0f);
+	auto vlh = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(40700.0f);
+	auto slh = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(std::numeric_limits<float_s>::max());
+	auto sol = estimators.add<ConstantEstimator<Unit::NONE, Unit::CELSIUS>>(1.0f);
+	auto hen = estimators.add<ConstantEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>>(1000.0f);
 
 	const auto id = getFreeId();
 	const auto it = concreteMolecules.emplace(id, std::make_unique<MoleculeData>(

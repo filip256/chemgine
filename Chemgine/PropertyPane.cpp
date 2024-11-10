@@ -128,7 +128,7 @@ MixturePropertyPane::MixturePropertyPane(const sf::Font& font) noexcept :
 	propertyValue.setStyle(sf::Text::Bold);
 }
 
-void MixturePropertyPane::setSubject(const BaseLabwareComponent& subject)
+void MixturePropertyPane::setSubject(const LabwareComponentBase& subject)
 {
 	this->subject = subject;
 	setPosition(subject.getPosition());

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "BaseContainer.hpp"
+#include "ContainerBase.hpp"
 #include "Amount.hpp"
 
 /// <summary>
 /// Reactant container with no storage or properties. Just a dump for reactants.
 /// </summary>
-class DumpContainer final : public BaseContainer
+class DumpContainer final : public ContainerBase
 {
 private:
 	Amount<Unit::GRAM> totalMass = 0.0;

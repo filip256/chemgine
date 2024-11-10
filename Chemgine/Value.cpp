@@ -109,4 +109,4 @@ constexpr bool Value<T>::oveflowsOnMultiply(const Value<T>& other) const noexcep
 }
 
 
-template class Value<float_n>;
+template class Value<float_s>;

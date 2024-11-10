@@ -13,8 +13,8 @@ protected:
 		const LabwareType type
 	) noexcept;
 
-	virtual Ref<BaseContainer> getOverflowTarget() const = 0;
-	virtual void setOverflowTarget(const Ref<BaseContainer> target) = 0;
+	virtual Ref<ContainerBase> getOverflowTarget() const = 0;
+	virtual void setOverflowTarget(const Ref<ContainerBase> target) = 0;
 	virtual void setOverflowTarget(BaseContainerComponent& target);
 
 	template<typename C, typename = std::enable_if_t<std::is_base_of_v<Mixture, C>>>
@@ -49,7 +49,7 @@ void inline BaseContainerComponent::draw<Reactor>(
 	const Reactor& container, const ShapeFill& fill,
 	sf::RenderTarget& target, const sf::RenderStates& states)
 {
-	float_n lastSection = 0.0f;
+	float_s lastSection = 0.0f;
 	for (auto l = container.getLayersUpBegin(); l != container.getLayersUpEnd(); ++l)
 	{
 		const auto layerSection = (l->second.getVolume() / container.getMaxVolume()).asStd();

@@ -211,7 +211,7 @@ std::vector<std::vector<T>> Utils::getArrangementsWithRepetitions(
 {
 	// TODO: implement iteratively
 	std::vector<std::vector<T>> result;
-	result.reserve(std::powf(vector.size(), maxLength) + 1);
+	result.reserve(std::pow(vector.size(), maxLength) + 1);
 	std::vector<T> current;
 	current.reserve(maxLength);
 

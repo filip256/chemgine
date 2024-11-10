@@ -10,11 +10,8 @@
 
 MolecularStructure::MolecularStructure(const std::string& smiles)
 {
-    if (loadFromSMILES(smiles) == false)
-    {
-        Log(this).error("Molecule initialized with ill-formed smiles: \"{0}\".", smiles);
+    if (not loadFromSMILES(smiles))
         return;
-    }
     canonicalize();
 }
 
@@ -72,7 +69,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             }
             else
             {
-                Log(this).error("Atomic symbol '{0}' at {1} is undefined.", smiles[i], i);
+                Log(this).error("Atomic symbol '{0}' at index {1} is undefined.", smiles[i], i);
                 clear();
                 return false;
             }
@@ -106,7 +103,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
         {
             if (branches.empty())
             {
-               Log(this).error("Unpaired ')' found at {0}.", i);
+               Log(this).error("Unpaired ')' found at index {0}.", i);
                 clear();
                 return false;
             }
@@ -120,7 +117,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             const size_t t = smiles.find(']', i + 1);
             if (t == std::string::npos)
             {
-                Log(this).error("Unpaired '[' found at {0}.", i);
+                Log(this).error("Unpaired '[' found at index {0}.", i);
                 clear();
                 return false;
             }
@@ -128,7 +125,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             const Symbol& symbol(smiles.substr(i + 1, t - i - 1));
             if (Atom::isDefined(symbol) == false)
             {
-                Log(this).error("Atomic symbol '{0}' at {1} is undefined.", symbol.getString(), i);
+                Log(this).error("Atomic symbol '{0}' at index {1} is undefined.", symbol.getString(), i);
                 clear();
                 return false;
             }
@@ -165,9 +162,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
                 bondType = BondType::SINGLE;
             }
             else
-            {
-                rings.emplace(std::move(std::make_pair(label, atoms.size() - 1)));
-            }
+                rings.emplace(label, atoms.size() - 1);
             
             i += 2;
             continue;
@@ -182,13 +177,12 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
                 bonds[atoms.size() - 1].emplace_back(Bond(rings[label], bondType));
             }
             else
-            {
-                rings.emplace(std::move(std::make_pair(label, atoms.size() - 1)));
-            }
+                rings.emplace(label, atoms.size() - 1);
+
             continue;
         }
 
-        Log(this).error("Unidentified symbol '{0}' at {1} found.", smiles[i], i);
+        Log(this).error("Unidentified symbol '{0}' found at index {1}.", smiles[i], i);
         clear();
         return false;
     }
@@ -205,7 +199,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
     const auto hCount = countImpliedHydrogens();
     if(hCount == -1)
     {
-        Log(this).error("Valence of an atom was exceeded.");
+        Log(this).error("Valence of an atom was exceeded in SMILES: '{0}'.", smiles);
         clear();
         return false;
     }
@@ -430,7 +424,7 @@ std::unordered_map<Symbol, c_size> MolecularStructure::getComponentCountMap() co
         if (result.contains(atoms[i]->getData().symbol))
             ++result[atoms[i]->getData().symbol];
         else
-            result.emplace(std::move(std::make_pair(atoms[i]->getData().symbol, 1)));
+            result.emplace(atoms[i]->getData().symbol, 1);
     }
     
     if (impliedHydrogenCount == 0)
@@ -440,7 +434,7 @@ std::unordered_map<Symbol, c_size> MolecularStructure::getComponentCountMap() co
     if (result.contains(hId))
         result[hId] += impliedHydrogenCount;
     else
-        result.emplace(std::move(std::make_pair(hId, impliedHydrogenCount)));
+        result.emplace(hId, impliedHydrogenCount);
 
     return result;
 }
@@ -775,7 +769,7 @@ bool MolecularStructure::DFSCompare(
     std::unordered_map<c_size, c_size>& mapping,
     bool escapeRadicalTypes)
 {
-    mapping.emplace(std::move(std::make_pair(idxA, idxB)));
+    mapping.emplace(idxA, idxB);
     visitedB[idxB] = true;
 
     for (c_size i = 0; i < b.bonds[idxB].size(); ++i)
@@ -821,7 +815,7 @@ std::pair<std::unordered_map<c_size, c_size>, uint8_t> MolecularStructure::DFSMa
     std::unordered_set<c_size>& mappedB)
 {
     std::pair<std::unordered_map<c_size, c_size>, uint8_t> newMap;
-    newMap.first.emplace(std::move(std::make_pair(idxA, idxB)));
+    newMap.first.emplace(idxA, idxB);
     mappedA.emplace(idxA);
     mappedB.emplace(idxB);
 
@@ -976,7 +970,7 @@ void MolecularStructure::copyBranch(
 {
     // overwrites first matching radical atom
     if (destination.atoms[sdMapping[sourceIdx]]->isRadical())
-        destination.atoms[sdMapping[sourceIdx]].reset(source.atoms[sourceIdx]->clone());
+        destination.atoms[sdMapping[sourceIdx]] = source.atoms[sourceIdx]->clone();
 
     std::queue<c_size> queue;
     for (c_size i = 0; i < source.bonds[sourceIdx].size(); ++i)
@@ -992,7 +986,7 @@ void MolecularStructure::copyBranch(
         queue.pop();
 
         // add current node
-        sdMapping.insert(std::make_pair(c, destination.atoms.size()));
+        sdMapping.emplace(c, destination.atoms.size());
         destination.atoms.emplace_back(source.atoms[c]->clone());
         destination.bonds.emplace_back(std::vector<Bond>());
 
@@ -1111,7 +1105,7 @@ std::string MolecularStructure::rToSMILES(
 
             if (insertPositions[bondToNext.other] != std::string::npos)  // cycle end
             {
-                const auto [_, newHead] = cycleHeads.emplace(std::make_pair(bondToNext.other, cycleCount));
+                const auto [_, newHead] = cycleHeads.emplace(bondToNext.other, cycleCount);
                 smiles += std::to_string(cycleCount);
 
                 if (newHead)
@@ -1139,7 +1133,7 @@ std::string MolecularStructure::rToSMILES(
                 if (smiles.back() == ')')
                     continue;
 
-                const auto [_, newHead] = cycleHeads.emplace(std::make_pair(bonds[c][i].other, cycleCount));
+                const auto [_, newHead] = cycleHeads.emplace(bonds[c][i].other, cycleCount);
                 smiles += std::to_string(cycleCount);
 
                 if (newHead)
@@ -1217,10 +1211,6 @@ std::string MolecularStructure::toSMILES() const
 
     if (insertPositions[bonds.front().back().other] != std::string::npos)  // cycle end
     {
-        //const auto [_, newHead] = cycleHeads.emplace(std::make_pair(bonds.front().back().other, cycleCount));
-        //cycleHeads.emplace(std::make_pair(0, cycleCount));
-        //smiles += std::to_string(cycleCount);
-
         insertCycleHeads(smiles, insertPositions, cycleHeads);
         return smiles;
     }
@@ -1233,4 +1223,10 @@ std::string MolecularStructure::toSMILES() const
 
     insertCycleHeads(smiles, insertPositions, cycleHeads);
     return smiles;
+}
+
+std::optional<MolecularStructure> MolecularStructure::create(const std::string& smiles)
+{
+    MolecularStructure temp(smiles);
+    return temp.isEmpty() ? std::nullopt : std::optional(std::move(temp));
 }

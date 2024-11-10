@@ -377,9 +377,6 @@ Tasks:
 ---
   1. Support user defined radical atoms
 ---
-  1. Build and link boost
-  1. Add bin parser/printer
----
   1. Add user define-able radical atoms
 ---
   1. Add user defineable specific bond properties
@@ -388,7 +385,6 @@ Tasks:
 
   DONE. size_t is only 4-bytes on x86, some custom hashes and Symbol comparison might fail on x86. Use uint64_t where possible
   DONE. float comparison should use adaptive epsilon
-  2. nocexcept default ctors
 
 ---
      - DEFINITION LANGUAGE -
@@ -415,11 +411,12 @@ Tasks:
   DONE. Pass Symbol& everywhere, make symbol 8-byte
   20. (?) Scientific float notation for printers
   DONE. Add pretty printers
-  22. (?) Add data store print options: pretty, print atoms in sep file
+  22. (?) Add data store print options: pretty, print atoms in sep file, always inline
   DONE. Get rid of special id synthax, it has no benefit
   DONE. Add default and optional sub-definition getters
   24. Split long lists on multiple lines for pretty prints
   DONE. Better Def namespacing
+
 ---
      - DIRECT REFERENCING -
 
@@ -435,39 +432,57 @@ Tasks:
 
 ---
     - PROPER TESTING -
+
+    DONE. Create generic test case implementation and infrastructure
+    DONE. Split tests into files
+    DONE. Add performance test infrastructure
+    DONE. Reduce estimator trig. method calls
+    DONE. Replace log cache and add Table implementation
+    7. Add reality check tests with real life references (func tests?)
+    DONE. Add unit test for perf tests
+    DONE. Hide test setup non-error logs
+    DONE. Regex for matching subgroups (care must be taked to include setups)
+    DONE. Log hidding support
+    DONE. Use std::fixed time printing format
+    DONE. Refactor terminal color functions
+
 ---
     - FULL CYCLE SUPPORT -
----
-    - BETTER API -
-
-    1. Remove unnecesarry clone() methods, and implement the others by deriving D from Clonable<D>
-    2. Replace dynamic casts with faster variants
-    3. Remove all the operator new instance counting
-
 ---
     - SMART AMOUNTS -
 ---
     - BETTER LOGS -
 
     1. Separate dev logs from user logs
+
 ---
     - LARGE DATA -
 
     1. Make higher-order DataStore which holds a reference to a large store but brings additions without copying the data
 
+---
+    - CODE QUALITY -
 
+    1. Raise warning level and fix compilation warnings
+    DONE. Remove unnecesarry clone() methods (only atoms remain)
+    3. Replace dynamic casts with faster variants
+    DONE. Remove all the operator new instance counting
+    4. Split project into Core, UI, TestApp
+    5. Move to directory based project
+    6. Set output and intermediates dir to the solution dir /bin
+    7. noexcept default ctors
 
-KNOWN BUGS:
-  FIXED. Bad molecule print for "O=C(C)OC=C".
-  FIXED. Exception while parsing reaction: 209,dehydration,RCO,RCOCR;O,1.0@20C,,0.0,
-  FIXED. Error while parsing reactions: 212,hydrolysis,O=C(R)OCC;O,O=C(R)O;OCC,,,, and 212,hydrolysis,O=C(CC)OR;O,O=C(CC)O;OR,,,,
+---
+   - BUG FiX -
 
+    DONE. Bad molecule print for "O=C(C)OC=C".
+    DONE. Exception while parsing reaction: 209,dehydration,RCO,RCOCR;O,1.0@20C,,0.0,
+    DONE. Error while parsing reactions: 212,hydrolysis,O=C(R)OCC;O,O=C(R)O;OCC,,,, and 212,hydrolysis,O=C(CC)OR;O,O=C(CC)O;OR,,,,
+    1. When loss is set for that estimators, the actual loss is much larger than the given one. Check loss test thresholds.
+    2. Def parsing fails if definitions includes a subdefinition with an <identifier>
 
- 
-Possible optimizations:
- - keep symbols as char* to avoid uneccessary constructor for 'C'
- - avoid contains-then-access for maps
- - const fields in data objects need to be copied (git stt moved) on reallocation because of const
+---
+
 
 Categorizations:
  - When a categorization is done with a backbone or f. group, it is applied globally to all other

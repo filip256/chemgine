@@ -27,20 +27,20 @@ public:
 	EstimatorRef<OutU, InUs...> createData(
 		std::vector<DataPoint<OutU, InUs...>>&& dataPoints,
 		const EstimationMode mode,
-		const float_n maxCompressionLoss);
+		const float_s maxCompressionLoss);
 
 	template<Unit OutU, Unit InU>
 	EstimatorRef<OutU, InU> createAffine(
 		const EstimatorRef<OutU, InU>& base,
-		const float_n vShift,
-		const float_n hShift,
-		const float_n scale);
+		const float_s vShift,
+		const float_s hShift,
+		const float_s scale);
 
 	template<Unit OutU, Unit InU>
 	EstimatorRef<OutU, InU> createAffine(
 		const EstimatorRef<OutU, InU>& base,
 		const DataPoint<OutU, InU> anchorPoint,
-		const float_n hShift);
+		const float_s hShift);
 
 	template<Unit OutU, Unit InU>
 	EstimatorRef<OutU, InU> createAffine(
@@ -49,11 +49,11 @@ public:
 
 	template<Unit OutU, Unit InU>
 	EstimatorRef<OutU, InU> createLinearRegression(
-		const float_n paramX, const float_n shift);
+		const float_s paramX, const float_s shift);
 
 	template<Unit OutU, Unit InU1, Unit InU2>
 	EstimatorRef<OutU, InU1, InU2> createLinearRegression(
-		const float_n paramX, const float_n paramY, const float_n shift);
+		const float_s paramX, const float_s paramY, const float_s shift);
 };
 
 
@@ -68,7 +68,7 @@ template<Unit OutU, Unit... InUs>
 EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
 	std::vector<DataPoint<OutU, InUs...>>&& dataPoints,
 	const EstimationMode mode,
-	const float_n maxCompressionLoss)
+	const float_s maxCompressionLoss)
 {
 	const auto uniquePoints = ImmutableSet<DataPoint<OutU, InUs...>>::toSortedSetVector(std::move(dataPoints));
 
@@ -79,7 +79,7 @@ EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
 	const auto inputCount = sizeof...(InUs);
 	if constexpr (inputCount == 1)
 	{
-		std::vector<std::pair<float_n, float_n>> points;
+		std::vector<std::pair<float_s, float_s>> points;
 		points.reserve(uniquePoints.size());
 		std::transform(uniquePoints.begin(), uniquePoints.end(), std::back_inserter(points),
 			[](const DataPoint<OutU, InUs...>& p)
@@ -95,11 +95,11 @@ EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
 		}
 
 		// Spline 2D
-		return repository.add<SplineEstimator<OutU, InUs...>>(Spline<float_n>(std::move(points), maxCompressionLoss), mode);
+		return repository.add<SplineEstimator<OutU, InUs...>>(Spline<float_s>(std::move(points), maxCompressionLoss), mode);
 	}
 	else if constexpr (inputCount == 2)
 	{
-		std::vector<std::tuple<float_n, float_n, float_n>> points;
+		std::vector<std::tuple<float_s, float_s, float_s>> points;
 		points.reserve(uniquePoints.size());
 		std::transform(uniquePoints.begin(), uniquePoints.end(), std::back_inserter(points),
 			[](const DataPoint<OutU, InUs...>& p)
@@ -113,24 +113,25 @@ EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
 	}
 
 	Log(this).fatal("Unsupported estimator data type.");
+	__assume(false);
 }
 
 
 template<Unit OutU, Unit InU>
 EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 	const EstimatorRef<OutU, InU>& base,
-	const float_n vShift,
-	const float_n hShift,
-	const float_n scale)
+	const float_s vShift,
+	const float_s hShift,
+	const float_s scale)
 {
 	// no transform, return base
-	if (Utils::floatEqual(vShift, 0.0) && Utils::floatEqual(hShift, 0.0) && Utils::floatEqual(scale, 1.0))
+	if (Utils::floatEqual(vShift, 0.0f) && Utils::floatEqual(hShift, 0.0f) && Utils::floatEqual(scale, 1.0f))
 		return EstimatorRef<OutU, InU>(base);
 
 	// constant folding
 	if (const auto constBase = base.cast<ConstantEstimator<OutU, InU>>())
 	{
-		return createConstant<OutU, InU>(constBase->get(0.0) * scale + vShift);
+		return createConstant<OutU, InU>(constBase->get(0.0f) * scale + vShift);
 	}
 
 	// linear folding
@@ -148,8 +149,8 @@ EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 	{
 		return repository.add<AffineEstimator<OutU, InU>>(
 			affineBase->getBase(),
-			/* vShift= */ - (affineBase->hShift + hShift) * affineBase->scale * scale + vShift * (scale + 1.0),
-			/* hShift= */ 0.0,
+			/* vShift= */ - (affineBase->hShift + hShift) * affineBase->scale * scale + vShift * (scale + 1.0f),
+			/* hShift= */ 0.0f,
 			/* scale= */ affineBase->scale * scale);
 	}
 
@@ -160,19 +161,19 @@ template<Unit OutU, Unit InU>
 EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 	const EstimatorRef<OutU, InU>& base,
 	const DataPoint<OutU, InU> anchorPoint,
-	const float_n hShift)
+	const float_s hShift)
 {
-	if (Utils::floatEqual(hShift, 0.0))
+	if (Utils::floatEqual(hShift, 0.0f))
 	{
 		// f(X) = base(X) - base(Xr) + Yr
 		const auto vShift = anchorPoint.output - base->get(std::get<0>(anchorPoint.inputs));
-		return createAffine(base, vShift.asStd(), 0.0, 1.0);
+		return createAffine(base, vShift.asStd(), 0.0f, 1.0f);
 	}
 
 	// f(X) = base(X - Xr + Xh) - base(Xh) + Yr
 	const auto vShift = anchorPoint.output - base->get(hShift);
 	const auto newHShift = std::get<0>(anchorPoint.inputs) - hShift;
-	return createAffine(base, vShift.asStd(), newHShift.asStd(), 1.0);
+	return createAffine(base, vShift.asStd(), newHShift.asStd(), 1.0f);
 }
 
 template<Unit OutU, Unit InU>
@@ -182,12 +183,12 @@ EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 {
 	const auto hShift = std::get<0>(rebasePoint.inputs);
 	const auto scale = rebasePoint.output;
-	return createAffine(base, 0.0, hShift.asStd(), scale.asStd());
+	return createAffine(base, 0.0f, hShift.asStd(), scale.asStd());
 }
 
 template<Unit OutU, Unit InU>
 EstimatorRef<OutU, InU> EstimatorFactory::createLinearRegression(
-	const float_n paramX, const float_n shift)
+	const float_s paramX, const float_s shift)
 {
 	return repository.add<RegressionEstimator<LinearRegressor2D, OutU, InU>>(
 		LinearRegressor2D(paramX, shift));
@@ -195,7 +196,7 @@ EstimatorRef<OutU, InU> EstimatorFactory::createLinearRegression(
 
 template<Unit OutU, Unit InU1, Unit InU2>
 EstimatorRef<OutU, InU1, InU2> EstimatorFactory::createLinearRegression(
-	const float_n paramX, const float_n paramY, const float_n shift)
+	const float_s paramX, const float_s paramY, const float_s shift)
 {
 	return repository.add<RegressionEstimator<LinearRegressor3D, OutU, InU1, InU2>>(
 		LinearRegressor3D(paramX, paramY, shift));

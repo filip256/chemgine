@@ -26,15 +26,15 @@ enum class TickMode : uint8_t
 class Reactor : public MultiLayerMixture, public Accessor<>
 {
 private:
-	float_n stirSpeed = 0.0;
+	float_s stirSpeed = 0.0;
 
 	FlagField<TickMode> tickMode = TickMode::ENABLE_ALL;
 
 	std::unordered_set<ConcreteReaction> cachedReactions;
 
-	float_n getInterLayerReactivityCoefficient(const Reactant& r1, const Reactant& r2) const;
-	float_n getInterLayerReactivityCoefficient(const ReactantSet& reactants) const;
-	float_n getCatalyticReactivityCoefficient(const ImmutableSet<Catalyst>& catalysts) const;
+	float_s getInterLayerReactivityCoefficient(const Reactant& r1, const Reactant& r2) const;
+	float_s getInterLayerReactivityCoefficient(const ReactantSet& reactants) const;
+	float_s getCatalyticReactivityCoefficient(const ImmutableSet<Catalyst>& catalysts) const;
 
 	void findNewReactions();
 	void runReactions(const Amount<Unit::SECOND> timespan);
@@ -47,7 +47,7 @@ public:
 	Reactor(
 		const Ref<Atmosphere> atmosphere,
 		const Amount<Unit::LITER> maxVolume,
-		const Ref<BaseContainer> overflowTarget
+		const Ref<ContainerBase> overflowTarget
 	) noexcept;
 
 	Reactor(
@@ -60,7 +60,7 @@ public:
 	void add(const Amount<Unit::JOULE> heat) override final;
 	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount) override;
 	void add(Reactor& other);
-	void add(Reactor& other, const float_n ratio);
+	void add(Reactor& other, const float_s ratio);
 
 	FlagField<TickMode> getTickMode() const;
 	void setTickMode(const FlagField<TickMode> mode);

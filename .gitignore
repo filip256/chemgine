@@ -6,3 +6,4 @@ LineCounter.exe
 *.pyc
 dependency.png
 Chemgine/Out
+temp*

@@ -1,5 +1,10 @@
 #pragma once
 
+#include "LogType.hpp"
+#include "Linguistics.hpp"
+#include "StringUtils.hpp"
+#include "TerminalUtils.hpp"
+
 #include <regex>
 #include <string>
 #include <vector>
@@ -9,25 +14,18 @@
 #include <algorithm>
 #include <stdexcept>
 
-#include "LogType.hpp"
-#include "Linguistics.hpp"
-#include "StringUtils.hpp"
-#include "TerminalUtils.hpp"
-
-
-#ifndef NDEBUG
+#ifdef NDEBUG
+	#define CHEM_LOG_ERROR
+	#define CHEM_LOG_WARN
+	#define CHEM_LOG_INFO
+#else
 	#define CHEM_LOG_ERROR
 	#define CHEM_LOG_WARN
 	#define CHEM_LOG_SUCCESS
 	#define CHEM_LOG_INFO
 	#define CHEM_LOG_DEBUG
 	#define CHEM_LOG_TRACE
-#else
-	#define CHEM_LOG_ERROR
-	#define CHEM_LOG_WARN
-	#define CHEM_LOG_INFO
 #endif
-
 
 class LogBase
 {
@@ -37,19 +35,22 @@ private:
 protected:
 	static uint8_t contexts;
 	static size_t foldCount;
-	static std::vector<std::string> cache;
+	static std::vector<LogType> hideStack;
 
 	LogBase(const void* location = nullptr) noexcept;
 
 	std::string getAddress() const;
 
+	static void addContextIndent();
+
 public:
 	static void nest();
 	static void unnest();
 
-	static void breakline();
+	static void hide(const LogType newLevel = LogType::NONE);
+	static void unhide();
 
-	static void clearCache();
+	static void breakline();
 
 	static LogType logLevel;
 	static LogType printNameLevel;
@@ -58,6 +59,8 @@ public:
 	static std::regex logSourceFilter;
 
 	static std::ostream& outputStream;
+
+	static std::string contexIndent;
 
 	LogBase() = delete;
 };
@@ -89,9 +92,6 @@ public:
 	const Log& debug(std::format_string<Args...> format, Args&&... args) const;
 	template <class... Args>
 	const Log& trace(std::format_string<Args...> format, Args&&... args) const;
-
-	void cache(const std::string& str);
-	void printCache();
 };
 
 template<typename SourceT>
@@ -118,78 +118,82 @@ std::string Log<SourceT>::getTypeName()
 template<typename SourceT>
 const Log<SourceT>& Log<SourceT>::log(const std::string& msg, const LogType type) const
 {
-	if (type > logLevel)
-		return *this;
-
-	const auto typeName = getTypeName();
-	if (std::regex_match(typeName, logSourceFilter) == false)
-		return *this;
-
-	size_t suffixSize = 0;
-
 	// exit folded log sequence
-	if (foldCount != static_cast<size_t>(-1) && msg.starts_with('\r') == false)
+	if (foldCount != static_cast<size_t>(-1) && not msg.starts_with('\r'))
 	{
 		foldCount = static_cast<size_t>(-1);
 		outputStream << '\n';
 	}
+	
+	// dummy log (may be used to turn off folded logging)
+	if (msg == "\0")
+		return *this;
+
+	const auto typeName = getTypeName();
+	if (not std::regex_match(typeName, logSourceFilter))
+		return *this;
+
+	uint16_t suffixSize = 0;
+
 
 	if (foldCount == static_cast<size_t>(-1))
 	{
-		for (uint8_t i = 0; i < contexts; ++i)
-			outputStream << "  ";
-		suffixSize += contexts * 2;
+		addContextIndent();
 
 		switch (type)
 		{
 		case LogType::ERROR:
-			OS::setTextRed();
-			outputStream << "ERROR:   ";
+			OS::setTextColor(OS::Color::Red);
+			outputStream << "ERROR: ";
+			suffixSize += 7;
 			break;
 		case LogType::WARN:
-			OS::setTextDarkYellow();
-			outputStream << "WARN:    ";
+			OS::setTextColor(OS::Color::DarkYellow);
+			outputStream << "WARN: ";
+			suffixSize += 6;
 			break;
 		case LogType::SUCCESS:
-			OS::setTextGreen();
+			OS::setTextColor(OS::Color::Green);
 			outputStream << "SUCCESS: ";
+			suffixSize += 9;
 			break;
 		case LogType::INFO:
-			OS::setTextCyan();
-			outputStream << "INFO:    ";
+			OS::setTextColor(OS::Color::Cyan);
+			outputStream << "INFO: ";
+			suffixSize += 6;
 			break;
 		case LogType::DEBUG:
-			OS::setTextMagenta();
-			outputStream << "DEBUG:   ";
+			OS::setTextColor(OS::Color::Magenta);
+			outputStream << "DEBUG: ";
+			suffixSize += 7;
 			break;
 		case LogType::TRACE:
-			OS::setTextBlue();
-			outputStream << "TRACE:   ";
+			OS::setTextColor(OS::Color::DarkBlue);
+			outputStream << "TRACE: ";
+			suffixSize += 7;
 			break;
 		}
-		suffixSize += 10;
-
-
-		if (type != LogType::NONE)
-			OS::setTextWhite();
 
 		if (type <= printNameLevel)
 		{
 			if (typeName.size())
 			{
+				OS::setTextColor(OS::Color::DarkGrey);
 				outputStream << '[' << typeName;
 				if (type <= printAddressLevel)
 				{
 					if (const auto addr = getAddress(); addr.size())
 					{
 						outputStream << " <" << addr << '>';
-						suffixSize += addr.size() + 3;
+						suffixSize += static_cast<uint16_t>(addr.size() + 3);
 					}
 				}
-				outputStream << "]   ";
-				suffixSize += typeName.size() + 5;
+				outputStream << "] ";
+				suffixSize += static_cast<uint16_t>(typeName.size() + 3);
 			}
 		}
+
+		OS::setTextColor(OS::Color::White);
 	}
 
 	if (msg.starts_with('\r')) // folded log
@@ -211,7 +215,10 @@ const Log<SourceT>& Log<SourceT>::log(const std::string& msg, const LogType type
 
 		const std::string suffixSpace(suffixSize, ' ');
 		for (size_t i = 1; i < splitMsg.size(); ++i)
+		{
+			addContextIndent();
 			outputStream << suffixSpace << splitMsg[i] << '\n';
+		}
 	}
 
 	return *this;
@@ -228,9 +235,9 @@ void Log<SourceT>::fatalExit(const std::string& msg) const
 	}
 
 	outputStream << '\n';
-	OS::setTextDarkRed();
+	OS::setTextColor(OS::Color::DarkRed);
 	outputStream << "FATAL:   ";
-	OS::setTextWhite();
+	OS::setTextColor(OS::Color::White);
 
 	const auto name = getTypeName();
 	if (name.size())
@@ -244,13 +251,13 @@ void Log<SourceT>::fatalExit(const std::string& msg) const
 
 	outputStream << msg << '\n';
 
-	OS::setTextDarkRed();
+	OS::setTextColor(OS::Color::DarkRed);
 	outputStream << "\n   The execution was halted due to a fatal error!\n   Press ENTER to exit.\n";
-	OS::setTextWhite();
+	OS::setTextColor(OS::Color::White);
 
 	throw std::runtime_error("Fatal error: '" + msg + "'.");
 
-	getchar();
+	const auto ignored = getchar();
 	std::exit(EXIT_FAILURE);
 }
 
@@ -266,6 +273,9 @@ template <class... Args>
 const Log<SourceT>& Log<SourceT>::error(std::format_string<Args...> format, Args&&... args) const
 {
 #ifdef CHEM_LOG_ERROR
+	if (LogType::ERROR > logLevel)
+		return *this;
+
 	return log(std::vformat(format.get(), std::make_format_args(args...)), LogType::ERROR);
 #else
 	return *this;
@@ -277,6 +287,9 @@ template <class... Args>
 const Log<SourceT>& Log<SourceT>::warn(std::format_string<Args...> format, Args&&... args) const
 {
 #ifdef CHEM_LOG_WARN
+	if (LogType::WARN > logLevel)
+		return *this;
+
 	return log(std::vformat(format.get(), std::make_format_args(args...)), LogType::WARN);
 #else
 	return *this;
@@ -288,6 +301,9 @@ template <class... Args>
 const Log<SourceT>& Log<SourceT>::success(std::format_string<Args...> format, Args&&... args) const
 {
 #ifdef CHEM_LOG_SUCCESS
+	if (LogType::SUCCESS > logLevel)
+		return *this;
+
 	return log(std::vformat(format.get(), std::make_format_args(args...)), LogType::SUCCESS);
 #else
 	return *this;
@@ -299,6 +315,9 @@ template <class... Args>
 const Log<SourceT>& Log<SourceT>::info(std::format_string<Args...> format, Args&&... args) const
 {
 #ifdef CHEM_LOG_INFO
+	if (LogType::INFO > logLevel)
+		return *this;
+
 	return log(std::vformat(format.get(), std::make_format_args(args...)), LogType::INFO);
 #else
 	return *this;
@@ -310,6 +329,9 @@ template <class... Args>
 const Log<SourceT>& Log<SourceT>::debug(std::format_string<Args...> format, Args&&... args) const
 {
 #ifdef CHEM_LOG_DEBUG
+	if (LogType::DEBUG > logLevel)
+		return *this;
+
 	return log(std::vformat(format.get(), std::make_format_args(args...)), LogType::DEBUG);
 #else
 	return *this;
@@ -321,28 +343,11 @@ template <class... Args>
 const Log<SourceT>& Log<SourceT>::trace(std::format_string<Args...> format, Args&&... args) const
 {
 #ifdef CHEM_LOG_TRACE
+	if (LogType::TRACE > logLevel)
+		return *this;
+
 	return log(std::vformat(format.get(), std::make_format_args(args...)), LogType::TRACE);
 #else
 	return *this;
-#endif
-}
-
-template<typename SourceT>
-void Log<SourceT>::cache(const std::string& str)
-{
-#ifdef CHEM_LOG_TRACE
-	LogBase::cache.emplace_back("");
-	for (uint8_t i = 0; i < contexts; ++i)
-		LogBase::cache.back() += "  ";
-	LogBase::cache.back() += str;
-#endif
-}
-
-template<typename SourceT>
-void Log<SourceT>::printCache()
-{
-#ifdef CHEM_LOG_TRACE
-	for (size_t i = 0; i < LogBase::cache.size(); ++i)
-		log(LogBase::cache[i], LogType::TABLE);
 #endif
 }

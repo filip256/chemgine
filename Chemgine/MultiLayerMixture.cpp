@@ -17,7 +17,7 @@ MultiLayerMixture::MultiLayerMixture(const MultiLayerMixture& other) noexcept :
 MultiLayerMixture::MultiLayerMixture(
 	const Ref<Atmosphere> atmosphere,
 	const Amount<Unit::LITER> maxVolume,
-	const Ref<BaseContainer> overflowTarget
+	const Ref<ContainerBase> overflowTarget
 ) noexcept :
 	pressure(atmosphere->getPressure()),
 	maxVolume(maxVolume),
@@ -315,12 +315,12 @@ bool MultiLayerMixture::isEmpty() const
 	return totalMoles == 0.0_mol;
 }
 
-Ref<BaseContainer> MultiLayerMixture::getOverflowTarget() const
+Ref<ContainerBase> MultiLayerMixture::getOverflowTarget() const
 {
 	return overflowTarget;
 }
 
-void MultiLayerMixture::setOverflowTarget(const Ref<BaseContainer> target)
+void MultiLayerMixture::setOverflowTarget(const Ref<ContainerBase> target)
 {
 	if (this == &*target)
 		Log(this).warn("Overflow target set to self.");
@@ -368,7 +368,7 @@ MultiLayerMixture::LayerUpIterator MultiLayerMixture::getLayersUpEnd() const
 	return layers.crend();
 }
 
-void MultiLayerMixture::copyContentTo(Ref<BaseContainer> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer) const
+void MultiLayerMixture::copyContentTo(Ref<ContainerBase> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer) const
 {
 	if (hasLayer(sourceLayer) == false)
 		return;
@@ -386,7 +386,7 @@ void MultiLayerMixture::copyContentTo(Ref<BaseContainer> destination, const Amou
 	}
 }
 
-void MultiLayerMixture::moveContentTo(Ref<BaseContainer> destination, Amount<Unit::LITER> volume, const LayerType sourceLayer)
+void MultiLayerMixture::moveContentTo(Ref<ContainerBase> destination, Amount<Unit::LITER> volume, const LayerType sourceLayer)
 {
 	if (hasLayer(sourceLayer) == false)
 		return;

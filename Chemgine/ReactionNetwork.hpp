@@ -38,6 +38,7 @@ private:
 public:
 	ReactionNetwork() = default;
 	ReactionNetwork(const ReactionNetwork&) = delete;
+	ReactionNetwork(ReactionNetwork&&) = default;
 
 	bool insert(ReactionData& reaction);
 

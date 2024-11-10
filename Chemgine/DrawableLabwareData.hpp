@@ -11,12 +11,12 @@ protected:
 		const std::string& name,
 		std::vector<LabwarePort>&& ports,
 		const std::string& textureFile,
-		const float_n textureScale,
+		const float_s textureScale,
 		const LabwareType type
 	) noexcept;
 
 public:
-	const float_n textureScale;
+	const float_s textureScale;
 	const std::string textureFile;
 	sf::Texture texture;
 

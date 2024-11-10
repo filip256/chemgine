@@ -33,7 +33,7 @@ namespace Def
 				const auto r = Def::parse<int64_t>(str);
 				return r &&
 					*r >= std::numeric_limits<T>::min() && *r <= std::numeric_limits<T>::max() ?
-					std::optional<T>(*r) :
+					std::optional(static_cast<T>(*r)) :
 					std::nullopt;
 			}
 			else if constexpr (std::is_floating_point_v<T>)
@@ -192,7 +192,7 @@ namespace Def
 				lastSep = i;
 			}
 
-			if (ignoreEmpty == false || lastSep + 1 < listStr.size())
+			if (ignoreEmpty == false || static_cast<size_t>(lastSep + 1) < listStr.size())
 			{
 				auto r = Def::parse<T>(listStr.substr(lastSep + 1));
 				if (not r)

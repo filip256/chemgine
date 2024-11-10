@@ -64,7 +64,7 @@ namespace Def
 				for (size_t i = 0; i < object.inUnits.size() - 1; ++i)
 					result += DynamicAmount::getUnitSymbol(object.inUnits[i]) + ',';
 				result += DynamicAmount::getUnitSymbol(object.inUnits.back());
-				result + ')';
+				result += ')';
 			}
 
 			result += "->";

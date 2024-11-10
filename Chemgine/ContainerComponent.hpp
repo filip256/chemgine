@@ -32,8 +32,8 @@ protected:
 		Atmosphere& atmosphere
 	) noexcept = delete;
 
-	Ref<BaseContainer> getOverflowTarget() const override final;
-	void setOverflowTarget(const Ref<BaseContainer> target) override final;
+	Ref<ContainerBase> getOverflowTarget() const override final;
+	void setOverflowTarget(const Ref<ContainerBase> target) override final;
 	void setOverflowTarget(BaseContainerComponent& target) override final;
 
 	template<uint8_t I>
@@ -198,13 +198,13 @@ void ContainerComponent<Args...>::add(const Amount<Unit::JOULE> energy)
 }
 
 template<typename... Args>
-Ref<BaseContainer> ContainerComponent<Args...>::getOverflowTarget() const
+Ref<ContainerBase> ContainerComponent<Args...>::getOverflowTarget() const
 {
 	return getContent<0>().getOverflowTarget();
 }
 
 template<typename... Args>
-void ContainerComponent<Args...>::setOverflowTarget(const Ref<BaseContainer> target)
+void ContainerComponent<Args...>::setOverflowTarget(const Ref<ContainerBase> target)
 {
 	getContent<0>().setOverflowTarget(target);
 }

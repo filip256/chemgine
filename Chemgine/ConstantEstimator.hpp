@@ -7,6 +7,8 @@ template<Unit OutU, Unit... InUs>
 class ConstantEstimator : public UnitizedEstimator<OutU, InUs...>
 {
 private:
+	using Base = UnitizedEstimator<OutU, InUs...>;
+
 	const Amount<OutU> constant;
 
 public:
@@ -18,7 +20,7 @@ public:
 	Amount<OutU> get(const Amount<InUs>...) const override final;
 
 	bool isEquivalent(const EstimatorBase& other,
-		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
+		const float_s epsilon = std::numeric_limits<float_s>::epsilon()
 	) const override final;
 
 	void dumpDefinition(
@@ -35,7 +37,7 @@ ConstantEstimator<OutU, InUs...>::ConstantEstimator(
 	const EstimatorId id,
 	const Amount<OutU> constant
 ) noexcept :
-	UnitizedEstimator<OutU, InUs...>(id),
+	Base(id),
 	constant(constant)
 {}
 
@@ -46,7 +48,7 @@ Amount<OutU> ConstantEstimator<OutU, InUs...>::get(const Amount<InUs>...) const
 }
 
 template<Unit OutU, Unit... InUs>
-bool ConstantEstimator<OutU, InUs...>::isEquivalent(const EstimatorBase& other, const float_n epsilon) const
+bool ConstantEstimator<OutU, InUs...>::isEquivalent(const EstimatorBase& other, const float_s epsilon) const
 {
 	if (not EstimatorBase::isEquivalent(other, epsilon))
 		return false;
@@ -66,22 +68,22 @@ void ConstantEstimator<OutU, InUs...>::dumpDefinition(
 	if (not printInline && this->getRefCount() == 1)
 		return;
 
-	if (alreadyPrinted.contains(EstimatorBase::id))
+	if (alreadyPrinted.contains(Base::id))
 	{
 		if(printInline)
-			out << '$' << EstimatorBase::getDefIdentifier();
+			out << '$' << Base::getDefIdentifier();
 		return;
 	}
-	alreadyPrinted.emplace(EstimatorBase::id);
+	alreadyPrinted.emplace(Base::id);
 
-	Def::DataDumper dump(out, Def::Data::Constant.size(), baseIndent, prettify);
+	Def::DataDumper dump(out, checked_cast<uint8_t>(Def::Data::Constant.size()), baseIndent, prettify);
 	if (printInline)
-		dump.header("", UnitizedEstimator<OutU, InUs...>::getUnitSpecifier(), "");
+		dump.header("", Base::getUnitSpecifier(), "");
 	else
-		dump.header(Def::Types::Data, UnitizedEstimator<OutU, InUs...>::getUnitSpecifier(), EstimatorBase::getDefIdentifier());
+		dump.header(Def::Types::Data, Base::getUnitSpecifier(), Base::getDefIdentifier());
 
 	dump.beginProperties()
-		.property(Def::Data::Constant, constant.asStd())
+		.property(Def::Data::Constant, constant)
 		.endProperties();
 
 	if (not printInline)

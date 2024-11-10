@@ -15,12 +15,12 @@ ReactionRepository::ReactionRepository(
 	molecules(molecules)
 {}
 
-bool ReactionRepository::add(Def::Object&& definition)
+bool ReactionRepository::add(const Def::Object& definition)
 {
 	auto id = definition.getOptionalProperty(Def::Reactions::Id, Def::parse<ReactionId>);
 	if (not id)
 		id = getFreeId();
-	else if (table.contains(*id))
+	else if (reactions.contains(*id))
 	{
 		Log(this).error("Reaction with duplicate id: '{0}', at: {1}.", *id, definition.getLocationName());
 		return false;
@@ -140,31 +140,47 @@ bool ReactionRepository::add(Def::Object&& definition)
 
 	maxReactantCount = std::max(static_cast<uint8_t>(reactantIds.size()), maxReactantCount);
 
-	const auto r = table.emplace(*id, std::move(data));
+	const auto r = reactions.emplace(*id, std::move(data));
 	network.insert(*r.first->second);
 
+	definition.logUnusedWarnings();
 	return true;
+}
+
+bool ReactionRepository::contains(const ReactionId id) const
+{
+	return reactions.contains(id);
+}
+
+const ReactionData& ReactionRepository::at(const ReactionId id) const
+{
+	return *reactions.at(id);
+}
+
+size_t ReactionRepository::totalDefinitionCount() const
+{
+	return reactions.size();
 }
 
 ReactionRepository::Iterator ReactionRepository::begin() const
 {
-	return table.begin();
+	return reactions.begin();
 }
 
 ReactionRepository::Iterator ReactionRepository::end() const
 {
-	return table.end();
+	return reactions.end();
 }
 
 size_t ReactionRepository::size() const
 {
-	return table.size();
+	return reactions.size();
 }
 
 void ReactionRepository::clear()
 {
 	network.clear();
-	table.clear();
+	reactions.clear();
 }
 
 uint8_t ReactionRepository::getMaxReactantCount() const
@@ -217,7 +233,7 @@ size_t ReactionRepository::generateTotalSpan(const size_t maxIterations) const
 ReactionId ReactionRepository::getFreeId() const
 {
 	static ReactionId id = 0;
-	while (table.contains(id))
+	while (reactions.contains(id))
 	{
 		if (id == std::numeric_limits<ReactionId>::max())
 			Log(this).fatal("Reaction id limit reached: {0}.", id);

@@ -11,10 +11,10 @@ class ParticleSystem;
 class RandomizedParticle : public sf::Drawable
 {
 private:
-	static float_n getRandom();
+	static float_s getRandom();
 
 	Amount<Unit::DEGREE> direction, targetDirection;
-	float_n rotationIncrement;
+	float_s rotationIncrement;
 	Amount<Unit::PER_SECOND> speed;
 	Amount<Unit::SECOND> lifespan, idlespan;
 

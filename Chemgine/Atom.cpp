@@ -59,9 +59,9 @@ bool Atom::operator!=(const Atom& other) const
     return &this->data != &other.data;
 }
 
-Atom* Atom::clone() const
+std::unique_ptr<Atom> Atom::clone() const
 {
-    return new Atom(*this);
+    return std::make_unique<Atom>(*this);
 }
 
 bool Atom::isDefined(const Symbol& symbol)

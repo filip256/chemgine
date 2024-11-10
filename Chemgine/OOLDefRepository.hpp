@@ -23,5 +23,7 @@ public:
 
 	const Def::Object* getDefinition(const std::string& identifier) const;
 
+	size_t totalDefinitionCount() const;
+
 	void clear();
 };

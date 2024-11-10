@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BaseContainer.hpp"
+#include "ContainerBase.hpp"
 #include "ReactantSet.hpp"
 #include "ContentInitializer.hpp"
 #include "Ref.hpp"
@@ -11,7 +11,7 @@ class Catalyst;
 /// <summary>
 /// The simplest type of reactant container with internal storage.
 /// </summary>
-class Mixture : public BaseContainer
+class Mixture : public ContainerBase
 {
 protected:
 	ReactantSet content = ReactantSet(*this);
@@ -52,8 +52,8 @@ public:
 
 	virtual bool isEmpty() const = 0;
 
-	virtual Ref<BaseContainer> getOverflowTarget() const = 0;
-	virtual void setOverflowTarget(const Ref<BaseContainer> target) = 0;
+	virtual Ref<ContainerBase> getOverflowTarget() const = 0;
+	virtual void setOverflowTarget(const Ref<ContainerBase> target) = 0;
 
 	friend class Layer;
 };

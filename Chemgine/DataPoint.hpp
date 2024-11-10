@@ -16,10 +16,18 @@ public:
 		const Amount<OutU> output,
 		const std::tuple<Amount<InUs>...>& inputs
 	) noexcept;
+
+	template<typename = std::enable_if_t<(sizeof...(InUs) > 1)>>
+	DataPoint(
+		const Amount<OutU> output,
+		const Amount<InUs>... inputs
+	) noexcept;
+
 	DataPoint(const DataPoint&) = default;
 
 	bool operator==(const DataPoint& other) const;
 	bool operator<(const DataPoint& other) const;
+	bool operator>(const DataPoint& other) const;
 };
 
 template<Unit OutU, Unit... InUs>
@@ -32,6 +40,15 @@ DataPoint<OutU, InUs...>::DataPoint(
 {}
 
 template<Unit OutU, Unit... InUs>
+template<typename>
+DataPoint<OutU, InUs...>::DataPoint(
+	const Amount<OutU> output,
+	const Amount<InUs>... inputs
+) noexcept :
+	DataPoint<OutU, InUs...>(output, std::make_tuple(inputs...))
+{}
+
+template<Unit OutU, Unit... InUs>
 bool DataPoint<OutU, InUs...>::operator==(const DataPoint& other) const
 {
 	return this->output == other.output && this->inputs == other.inputs;
@@ -40,7 +57,13 @@ bool DataPoint<OutU, InUs...>::operator==(const DataPoint& other) const
 template<Unit OutU, Unit... InUs>
 bool DataPoint<OutU, InUs...>::operator<(const DataPoint& other) const
 {
-	return std::get<0>(this->inputs) < std::get<0>(other.inputs);
+	return this->inputs < other.inputs;
+}
+
+template<Unit OutU, Unit... InUs>
+bool DataPoint<OutU, InUs...>::operator>(const DataPoint& other) const
+{
+	return this->inputs > other.inputs;
 }
 
 
@@ -169,5 +192,20 @@ public:
 		log.error("Failed to convert data point inputs from base units: '{0}' to expected units: '{1}', at: {2}.",
 			baseUnitNames, expectedUnitNames, location.toString());
 		return std::nullopt;
+	}
+};
+
+template<Unit OutU, Unit... InUs>
+class Def::Printer<DataPoint<OutU, InUs...>>
+{
+public:
+	static std::string print(const DataPoint<OutU, InUs...>& object)
+	{
+		return Def::print(std::pair(object.inputs, object.output));
+	}
+
+	static std::string prettyPrint(const DataPoint<OutU, InUs...>& object)
+	{
+		return Def::prettyPrint(std::pair(object.inputs, object.output));
 	}
 };

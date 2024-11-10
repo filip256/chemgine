@@ -6,7 +6,7 @@ DrawableComponent::DrawableComponent(
 	const LabwareId id,
 	const LabwareType type
 ) noexcept :
-	BaseLabwareComponent(id, type),
+	LabwareComponentBase(id, type),
 	sprite(getData().texture)
 {
 	const auto txScale = getData().textureScale;
@@ -119,7 +119,7 @@ bool DrawableComponent::contains(const sf::Vector2f& point) const
 	return Collision::singlePixelTest(sprite, point);
 }
 
-bool DrawableComponent::intersects(const BaseLabwareComponent& other) const
+bool DrawableComponent::intersects(const LabwareComponentBase& other) const
 {
 	if (this->sprite.getGlobalBounds().intersects(other.getSprite().getGlobalBounds()) == false)
 		return false;

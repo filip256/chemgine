@@ -7,7 +7,7 @@ enum class EstimationMode
 {
 	CONSTANT,
 	LINEAR,
-	QUADRIATIC,
+	QUADRATIC,
 	CUBIC
 };
 
@@ -22,7 +22,7 @@ public:
 		{
 			{"CONSTANT", EstimationMode::CONSTANT},
 			{"LINEAR", EstimationMode::LINEAR},
-			{"QUADRIATIC", EstimationMode::QUADRIATIC},
+			{"QUADRATIC", EstimationMode::QUADRATIC},
 			{"CUBIC", EstimationMode::CUBIC},
 		};
 
@@ -43,7 +43,7 @@ public:
 		{
 			{EstimationMode::CONSTANT, "CONSTANT"},
 			{EstimationMode::LINEAR, "LINEAR"},
-			{EstimationMode::QUADRIATIC, "QUADRIATIC"},
+			{EstimationMode::QUADRATIC, "QUADRATIC"},
 			{EstimationMode::CUBIC, "CUBIC"},
 		};
 		return typeMap.at(object);

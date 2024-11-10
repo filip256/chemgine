@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BaseLabwareComponent.hpp"
+#include "LabwareComponentBase.hpp"
 #include "SizeTypedefs.hpp"
 #include "LabwareConnection.hpp"
 #include "SFML/Graphics.hpp"
@@ -26,8 +26,8 @@ public:
 	bool isValid() const;
 	l_size getComponentIndex() const;
 	uint8_t getPortIndex() const;
-	const BaseLabwareComponent& getComponent() const;
-	BaseLabwareComponent& getComponent();
+	const LabwareComponentBase& getComponent() const;
+	LabwareComponentBase& getComponent();
 	const LabwareSystem& getSystem() const;
 	LabwareSystem& getSystem();
 
@@ -44,19 +44,19 @@ class LabwareSystem : public sf::Drawable
 {
 private:
 	Ref<Lab> lab;
-	std::vector<BaseLabwareComponent*> components;
+	std::vector<std::unique_ptr<LabwareComponentBase>> components;
 	std::vector<std::vector<LabwareConnection>> connections;
 
 	sf::FloatRect boundingBox = sf::FloatRect(
-		std::numeric_limits<float_n>::max(), std::numeric_limits<float_n>::max(),
-		-std::numeric_limits<float_n>::max(), -std::numeric_limits<float_n>::max());
+		std::numeric_limits<float_s>::max(), std::numeric_limits<float_s>::max(),
+		-std::numeric_limits<float_s>::max(), -std::numeric_limits<float_s>::max());
 
-	BaseLabwareComponent* releaseComponent(const l_size componentIdx);
+	std::unique_ptr<LabwareComponentBase> releaseComponent(const l_size componentIdx);
 	LabwareSystem releaseSection(
 		const l_size componentIdx, const uint8_t portIdx,
 		std::vector<l_size>& toRemove);
 
-	void add(BaseLabwareComponent* component);
+	void add(std::unique_ptr<LabwareComponentBase>&& component);
 	static void add(PortIdentifier& otherPort, PortIdentifier& thisPort);
 
 	void clearBoundry();
@@ -72,17 +72,16 @@ private:
 
 public:
 	LabwareSystem(Lab& lab) noexcept;
-	LabwareSystem(BaseLabwareComponent* component, Lab& lab) noexcept;
+	LabwareSystem(std::unique_ptr<LabwareComponentBase>&& component, Lab& lab) noexcept;
 	LabwareSystem(const LabwareSystem&) = delete;
 	LabwareSystem(LabwareSystem&&) = default;
-	~LabwareSystem() noexcept;
 
 	LabwareSystem& operator=(LabwareSystem&&) = default;
 
 	l_size size() const;
 
-	const BaseLabwareComponent& getComponent(const size_t idx) const;
-	BaseLabwareComponent& getComponent(const size_t idx);
+	const LabwareComponentBase& getComponent(const size_t idx) const;
+	LabwareComponentBase& getComponent(const size_t idx);
 
 	void move(const sf::Vector2f& offset);
 	void rotate(const Amount<Unit::DEGREE> angle, const l_size center = 0);
@@ -99,9 +98,9 @@ public:
 	/// between itself and the point.
 	/// Complexity: O(n)
 	/// </summary>
-	std::pair<PortIdentifier, float_n> findClosestPort(
+	std::pair<PortIdentifier, float_s> findClosestPort(
 		const sf::Vector2f& point,
-		const float_n maxSqDistance = std::numeric_limits<float_n>::max()
+		const float_s maxSqDistance = std::numeric_limits<float_s>::max()
 	);
 
 	/// <summary>
@@ -111,7 +110,7 @@ public:
 	/// </summary>
 	std::pair<PortIdentifier, PortIdentifier> findClosestPort(
 		LabwareSystem& other,
-		const float_n maxSqDistance = std::numeric_limits<float_n>::max()
+		const float_s maxSqDistance = std::numeric_limits<float_s>::max()
 	);
 
 	static bool isFree(const PortIdentifier& port);

@@ -5,11 +5,11 @@
 class Vapour : public sf::Drawable
 {
 private:
-	float_n relativeDensity, streamIntensity;
+	float_s relativeDensity, streamIntensity;
 	ParticleSystem particles;
 
 	Amount<Unit::DEGREE> getTargetDirection() const;
-	float_n getDirectionChangeRate() const;
+	float_s getDirectionChangeRate() const;
 	Amount<Unit::PER_SECOND> getSpeed() const;
 
 public:
@@ -18,15 +18,15 @@ public:
 		const sf::Vector2f& origin,
 		const sf::Color& color,
 		const Amount<Unit::DEGREE> sourceAngle,
-		const float_n relativeDensity,
-		const float_n streamIntensity
+		const float_s relativeDensity,
+		const float_s streamIntensity
 	) noexcept;
 
 	void setColor(const sf::Color& color);
 	void setOrigin(const sf::Vector2f& position);
 	void moveOrigin(const sf::Vector2f& offset);
-	void setRelativeDensity(const float_n relativeDensity);
-	void setStreamIntensity(const float_n streamIntensity);
+	void setRelativeDensity(const float_s relativeDensity);
+	void setStreamIntensity(const float_s streamIntensity);
 
 	void tick(const Amount<Unit::SECOND> timespan);
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;

@@ -18,9 +18,14 @@ std::string EstimatorBase::getDefIdentifier() const
 	return 'd' + std::to_string(id);
 }
 
-bool EstimatorBase::isEquivalent(const EstimatorBase& other, const float_n epsilon) const
+bool EstimatorBase::isEquivalent(const EstimatorBase& other, const float_s epsilon) const
 {
 	return typeid(*this) == typeid(other);
+}
+
+uint16_t EstimatorBase::getNestingDepth() const
+{
+	return 0;
 }
 
 void EstimatorBase::print(std::ostream& out) const

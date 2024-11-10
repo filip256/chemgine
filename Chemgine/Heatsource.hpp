@@ -8,7 +8,7 @@
 class Heatsource : public EquipmentComponent
 {
 private:
-	Ref<BaseContainer> target;
+	Ref<ContainerBase> target;
 
 public:
 	Heatsource(
@@ -18,11 +18,11 @@ public:
 
 	const HeatsourceData& getData() const override final;
 
-	void setTarget(const Ref<BaseContainer> target);
+	void setTarget(const Ref<ContainerBase> target);
 	void setTarget(BaseContainerComponent& target);
 
-	bool tryConnect(BaseLabwareComponent& other) override final;
-	void disconnect(const Ref<BaseContainer> dump, const BaseLabwareComponent& other) override final;
+	bool tryConnect(LabwareComponentBase& other) override final;
+	void disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase& other) override final;
 
 	void tick(const Amount<Unit::SECOND> timespan) override final;
 };

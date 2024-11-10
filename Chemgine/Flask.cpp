@@ -13,7 +13,7 @@ const FlaskData& Flask::getData() const
 	return static_cast<const FlaskData&>(data);
 }
 
-bool Flask::tryConnect(BaseLabwareComponent& other)
+bool Flask::tryConnect(LabwareComponentBase& other)
 {
 	if (other.isContainer())
 	{
@@ -24,7 +24,7 @@ bool Flask::tryConnect(BaseLabwareComponent& other)
 	return false;
 }
 
-void Flask::disconnect(const Ref<BaseContainer> dump, const BaseLabwareComponent& other)
+void Flask::disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase& other)
 {
 	this->setOverflowTarget(dump);
 }

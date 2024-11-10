@@ -25,8 +25,10 @@ public:
 	std::string getDefIdentifier() const;
 
 	virtual bool isEquivalent(const EstimatorBase& other,
-		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
+		const float_s epsilon = std::numeric_limits<float_s>::epsilon()
 	) const;
+
+	virtual uint16_t getNestingDepth() const;
 
 	virtual void dumpDefinition(
 		std::ostream& out,

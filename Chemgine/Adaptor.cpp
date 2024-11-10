@@ -15,7 +15,7 @@ const AdaptorData& Adaptor::getData() const
 	return static_cast<const AdaptorData&>(data);
 }
 
-bool Adaptor::tryConnect(BaseLabwareComponent& other)
+bool Adaptor::tryConnect(LabwareComponentBase& other)
 {
 	auto& container = getContent<0>();
 	if (other.isFlask())
@@ -40,7 +40,7 @@ bool Adaptor::tryConnect(BaseLabwareComponent& other)
 	return false;
 }
 
-void Adaptor::disconnect(const Ref<BaseContainer> dump, const BaseLabwareComponent& other)
+void Adaptor::disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase& other)
 {
 	auto& container = getContent<0>();
 	if (other.isFlask())

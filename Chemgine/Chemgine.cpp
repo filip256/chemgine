@@ -6,7 +6,7 @@
 #include "DataStore.hpp"
 #include "Log.hpp"
 #include "Atom.hpp"
-#include "Tests.hpp"
+#include "TestManager.hpp"
 #include "StructureRef.hpp"
 
 #include "Reactor.hpp"
@@ -14,7 +14,7 @@
 
 #include "Amount.hpp"
 #include "BaseLabwareData.hpp"
-#include "BaseLabwareComponent.hpp"
+#include "LabwareComponentBase.hpp"
 #include "LabwareSystem.hpp"
 #include "StructureRef.hpp"
 
@@ -40,18 +40,20 @@ int main()
         LogBase::logLevel = LogType::DEBUG;
 
         {
-            TestManager tests;
-            tests.runAll();
-            tests.runPersist();
+            TestManager tests(".*");
+            tests.runUnit();
+            //tests.runPerf();
         }
 
         DataStore store;
         Accessor<>::setDataStore(store);
 
         store.load("./Data/builtin.cdef");
-        store.dump("./Out/builtin.cdef");
+        store.dump("./Out/builtin.cdef", true);
         store.clear();
         store.load("./Out/builtin.cdef");
+
+        std::cout << '\n' << store.reactions.getNetwork().print() << '\n';
 
         std::cout << MolecularStructure("S(=O)(=O)(O)O").print() << '\n';
 
@@ -88,9 +90,9 @@ int main()
 
         //while (true)
         //{
-        //    const auto begin = std::chrono::steady_clock::now();
+        //    const auto begin = std::chrono::high_resolution_clock::now();
         //    reactor.tick();
-        //    std::cout << "Tick in: " + std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - begin).count() / 1000000.0) + "s.\n";
+        //    std::cout << "Tick in: " + std::to_string(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - begin).count() / 1000000.0) + "s.\n";
         //}
 
         //MolecularStructure a("O=C(OC)C");
@@ -104,11 +106,5 @@ int main()
         //    .saveMoleculesData("Out/molecules.out.csv");
     }
 
-    if (BaseLabwareComponent::instanceCount != 0)
-        Log().error("Memory leak detected: BaseLabwareComponent ({0} unreleased instances).", BaseLabwareComponent::instanceCount);
-    if (BaseContainer::instanceCount != 0)
-        Log().error("Memory leak detected: BaseContainer ({0} unreleased instances).", BaseContainer::instanceCount);
-
-    getchar();
     return 0;
 }

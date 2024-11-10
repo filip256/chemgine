@@ -22,5 +22,6 @@ Def::EstimatorSpecifier UnitizedEstimator<OutU, InUs...>::getUnitSpecifier()
 	return Def::EstimatorSpecifier(OutU, { InUs... });
 }
 
+
 template<Unit OutU, Unit... InUs>
 using EstimatorRef = CountedRef<const UnitizedEstimator<OutU, InUs...>>;

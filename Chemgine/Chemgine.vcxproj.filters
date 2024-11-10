@@ -163,6 +163,24 @@
     <Filter Include="Source Files\Data\Def">
       <UniqueIdentifier>{7e7d83b0-6811-4e6e-8d28-dcd0d6fac6c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Tests">
+      <UniqueIdentifier>{cd41b2fe-dcc1-4974-9b93-22b1a364042e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Out\Reports">
+      <UniqueIdentifier>{a096b402-6d23-40a7-9227-021c1cbd26cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tests\Unit">
+      <UniqueIdentifier>{94fe5728-e9ba-414c-af0e-06151c51ff08}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Tests\Unit">
+      <UniqueIdentifier>{ba23cb89-5979-4630-88d7-23fd5b6afbd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tests\Performance">
+      <UniqueIdentifier>{c44102ff-fc3e-4a44-a000-096dc3236dde}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Tests\Performance">
+      <UniqueIdentifier>{67922ff5-550b-494c-b8c6-dd9a43e68bf9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataStore.cpp">
@@ -243,7 +261,7 @@
     <ClCompile Include="Atom.cpp">
       <Filter>Source Files\Moleculars\Components</Filter>
     </ClCompile>
-    <ClCompile Include="BaseLabwareComponent.cpp">
+    <ClCompile Include="LabwareComponentBase.cpp">
       <Filter>Source Files\Labware\Components</Filter>
     </ClCompile>
     <ClCompile Include="Flask.cpp">
@@ -301,9 +319,6 @@
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
     <ClCompile Include="Atmosphere.cpp">
-      <Filter>Source Files\Mixtures\MixtureTypes</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseContainer.cpp">
       <Filter>Source Files\Mixtures\MixtureTypes</Filter>
     </ClCompile>
     <ClCompile Include="Mixture.cpp">
@@ -477,6 +492,54 @@
     <ClCompile Include="DataDumper.cpp">
       <Filter>Source Files\Data\Def</Filter>
     </ClCompile>
+    <ClCompile Include="StringTable.cpp">
+      <Filter>Source Files\Terminal</Filter>
+    </ClCompile>
+    <ClCompile Include="BuildUtils.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="UnitTestSetup.cpp">
+      <Filter>Source Files\Tests\Unit</Filter>
+    </ClCompile>
+    <ClCompile Include="DefUnitTests.cpp">
+      <Filter>Source Files\Tests\Unit</Filter>
+    </ClCompile>
+    <ClCompile Include="EstimatorUnitTests.cpp">
+      <Filter>Source Files\Tests\Unit</Filter>
+    </ClCompile>
+    <ClCompile Include="MixtureUnitTests.cpp">
+      <Filter>Source Files\Tests\Unit</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleUnitTest.cpp">
+      <Filter>Source Files\Tests\Unit</Filter>
+    </ClCompile>
+    <ClCompile Include="StructureUnitTests.cpp">
+      <Filter>Source Files\Tests\Unit</Filter>
+    </ClCompile>
+    <ClCompile Include="TimingUnitTests.cpp">
+      <Filter>Source Files\Tests\Unit</Filter>
+    </ClCompile>
+    <ClCompile Include="UnitTest.cpp">
+      <Filter>Source Files\Tests\Unit</Filter>
+    </ClCompile>
+    <ClCompile Include="PerformanceReport.cpp">
+      <Filter>Source Files\Tests\Performance</Filter>
+    </ClCompile>
+    <ClCompile Include="PerfTest.cpp">
+      <Filter>Source Files\Tests\Performance</Filter>
+    </ClCompile>
+    <ClCompile Include="DefPerfTests.cpp">
+      <Filter>Source Files\Tests\Performance</Filter>
+    </ClCompile>
+    <ClCompile Include="StructurePerfTests.cpp">
+      <Filter>Source Files\Tests\Performance</Filter>
+    </ClCompile>
+    <ClCompile Include="PerfTestSetup.cpp">
+      <Filter>Source Files\Tests\Performance</Filter>
+    </ClCompile>
+    <ClCompile Include="EstimatorPerfTests.cpp">
+      <Filter>Source Files\Tests\Performance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -519,9 +582,6 @@
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="HashUtils.hpp">
-      <Filter>Header Files\DataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="PVector.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
     <ClInclude Include="Repository.hpp">
@@ -587,7 +647,7 @@
     <ClInclude Include="HeatsourceData.hpp">
       <Filter>Header Files\Labware\DataTypes</Filter>
     </ClInclude>
-    <ClInclude Include="BaseLabwareComponent.hpp">
+    <ClInclude Include="LabwareComponentBase.hpp">
       <Filter>Header Files\Labware\Components</Filter>
     </ClInclude>
     <ClInclude Include="Atom.hpp">
@@ -671,7 +731,7 @@
     <ClInclude Include="Atmosphere.hpp">
       <Filter>Header Files\Mixtures\MixtureTypes</Filter>
     </ClInclude>
-    <ClInclude Include="BaseContainer.hpp">
+    <ClInclude Include="ContainerBase.hpp">
       <Filter>Header Files\Mixtures\MixtureTypes</Filter>
     </ClInclude>
     <ClInclude Include="DumpContainer.hpp">
@@ -821,7 +881,7 @@
     <ClInclude Include="ImmutableSet.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
-    <ClInclude Include="Tests.hpp">
+    <ClInclude Include="TestManager.hpp">
       <Filter>Header Files\Tests</Filter>
     </ClInclude>
     <ClInclude Include="TerminalUtils.hpp">
@@ -934,6 +994,57 @@
     </ClInclude>
     <ClInclude Include="DataDumper.hpp">
       <Filter>Header Files\Data\Def</Filter>
+    </ClInclude>
+    <ClInclude Include="StringTable.hpp">
+      <Filter>Header Files\Terminal</Filter>
+    </ClInclude>
+    <ClInclude Include="BuildUtils.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitTestSetup.hpp">
+      <Filter>Header Files\Tests\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="DefUnitTests.hpp">
+      <Filter>Header Files\Tests\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="EstimatorUnitTests.hpp">
+      <Filter>Header Files\Tests\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="MixtureUnitTests.hpp">
+      <Filter>Header Files\Tests\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleUnitTest.hpp">
+      <Filter>Header Files\Tests\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="StructureUnitTests.hpp">
+      <Filter>Header Files\Tests\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="PerformanceReport.hpp">
+      <Filter>Header Files\Tests\Performance</Filter>
+    </ClInclude>
+    <ClInclude Include="PerfTest.hpp">
+      <Filter>Header Files\Tests\Performance</Filter>
+    </ClInclude>
+    <ClInclude Include="TimingUnitTests.hpp">
+      <Filter>Header Files\Tests\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="PropertyUnitTest.hpp">
+      <Filter>Header Files\Tests\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitTest.hpp">
+      <Filter>Header Files\Tests\Unit</Filter>
+    </ClInclude>
+    <ClInclude Include="DefPerfTests.hpp">
+      <Filter>Header Files\Tests\Performance</Filter>
+    </ClInclude>
+    <ClInclude Include="StructurePerfTests.hpp">
+      <Filter>Header Files\Tests\Performance</Filter>
+    </ClInclude>
+    <ClInclude Include="PerfTestSetup.hpp">
+      <Filter>Header Files\Tests\Performance</Filter>
+    </ClInclude>
+    <ClInclude Include="EstimatorPerfTests.hpp">
+      <Filter>Header Files\Tests\Performance</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

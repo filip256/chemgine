@@ -8,12 +8,12 @@
 #include "Accessor.hpp"
 #include "SFML/Graphics.hpp"
 
-class BaseLabwareComponent : public Accessor<>, public sf::Drawable
+class LabwareComponentBase : public Accessor<>, public sf::Drawable
 {
 protected:
 	const BaseLabwareData& data;
 
-	BaseLabwareComponent(
+	LabwareComponentBase(
 		const LabwareId id,
 		const LabwareType type
 	) noexcept;
@@ -21,7 +21,7 @@ protected:
 public:
 	const LabwareId id;
 
-	virtual ~BaseLabwareComponent() = default;
+	virtual ~LabwareComponentBase() = default;
 
 	bool isFlask() const;
 	bool isAdaptor() const;
@@ -46,34 +46,27 @@ public:
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const = 0;
 	virtual bool contains(const sf::Vector2f& point) const = 0;
-	virtual bool intersects(const BaseLabwareComponent& other) const = 0;
+	virtual bool intersects(const LabwareComponentBase& other) const = 0;
 
-	virtual bool tryConnect(BaseLabwareComponent& other);
-	virtual void disconnect(const Ref<BaseContainer> dump, const BaseLabwareComponent& other);
+	virtual bool tryConnect(LabwareComponentBase& other);
+	virtual void disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase& other);
 
 	virtual void tick(const Amount<Unit::SECOND> timespan);
 
-	template<typename L, typename = std::enable_if<std::is_base_of_v<BaseLabwareComponent, L>>>
+	template<typename L, typename = std::enable_if<std::is_base_of_v<LabwareComponentBase, L>>>
 	L& as();
-	template<typename L, typename = std::enable_if<std::is_base_of_v<BaseLabwareComponent, L>>>
+	template<typename L, typename = std::enable_if<std::is_base_of_v<LabwareComponentBase, L>>>
 	Ref<L> cast();
-
-	// for memory leak checking
-	static size_t instanceCount;
-#ifndef NDEBUG
-	void* operator new(const size_t count);
-	void operator delete(void* ptr);
-#endif
 };
 
 template<typename L, typename>
-L& BaseLabwareComponent::as()
+L& LabwareComponentBase::as()
 {
 	return Ref(*this).as<L>();
 }
 
 template<typename L, typename>
-Ref<L> BaseLabwareComponent::cast()
+Ref<L> LabwareComponentBase::cast()
 {
 	return Ref(*this).cast<L>();
 }

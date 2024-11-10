@@ -1,11 +1,11 @@
 #include "Log.hpp"
 #include "LogType.hpp"
 
-#include <Windows.h>
+#include <algorithm>
 
 uint8_t LogBase::contexts = 0;
 size_t LogBase::foldCount = static_cast<size_t>(-1);
-std::vector<std::string> LogBase::cache;
+std::vector<LogType> LogBase::hideStack = {};
 
 LogBase::LogBase(const void* location) noexcept :
 	location(location)
@@ -14,6 +14,14 @@ LogBase::LogBase(const void* location) noexcept :
 std::string LogBase::getAddress() const
 {
 	return location ? Linguistics::toHex(location) : "";
+}
+
+void LogBase::addContextIndent()
+{
+	OS::setTextColor(OS::Color::DarkGrey);
+	for (uint8_t i = 0; i < contexts; ++i)
+		outputStream << contexIndent;
+	OS::setTextColor(OS::Color::White);
 }
 
 void LogBase::nest()
@@ -28,12 +36,24 @@ void LogBase::unnest()
 		--contexts;
 }
 
+void LogBase::hide(const LogType newLevel)
+{
+	const auto level = std::min(logLevel, newLevel);
+
+	hideStack.emplace_back(logLevel);
+	logLevel = level;
+}
+
+void LogBase::unhide()
+{
+	if (hideStack.empty())
+		return;
+
+	logLevel = hideStack.back();
+	hideStack.pop_back();
+}
+
 void LogBase::breakline()
 {
 	outputStream << "\n.........................................................................\n\n";
-}
-
-void LogBase::clearCache()
-{
-	cache.clear();
 }

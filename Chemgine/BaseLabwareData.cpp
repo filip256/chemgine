@@ -14,7 +14,7 @@ BaseLabwareData::BaseLabwareData(
 
 void BaseLabwareData::dumpDefinition(std::ostream& out, const bool prettify) const
 {
-	static const uint8_t valueOffset = Utils::max(
+	static const auto valueOffset = checked_cast<uint8_t>(Utils::max(
 		Def::Labware::Id.size(),
 		Def::Labware::Name.size(),
 		Def::Labware::Ports.size(),
@@ -25,7 +25,7 @@ void BaseLabwareData::dumpDefinition(std::ostream& out, const bool prettify) con
 		Def::Labware::CoolantMask.size(),
 		Def::Labware::Ports.size(),
 		Def::Labware::Texture.size(),
-		Def::Labware::TextureScale.size());
+		Def::Labware::TextureScale.size()));
 
 	Def::DataDumper dump(out, valueOffset, 0, prettify);
 	dump.header(Def::Types::Labware, type, "")

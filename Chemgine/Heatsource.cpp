@@ -13,7 +13,7 @@ const HeatsourceData& Heatsource::getData() const
 	return static_cast<const HeatsourceData&>(data);
 }
 
-void Heatsource::setTarget(const Ref<BaseContainer> target)
+void Heatsource::setTarget(const Ref<ContainerBase> target)
 {
 	this->target = target;
 }
@@ -23,7 +23,7 @@ void Heatsource::setTarget(BaseContainerComponent& target)
 	this->target = target.getContent();
 }
 
-bool Heatsource::tryConnect(BaseLabwareComponent& other)
+bool Heatsource::tryConnect(LabwareComponentBase& other)
 {
 	if (other.isContainer())
 	{
@@ -34,7 +34,7 @@ bool Heatsource::tryConnect(BaseLabwareComponent& other)
 	return false;
 }
 
-void Heatsource::disconnect(const Ref<BaseContainer> dump, const BaseLabwareComponent& other)
+void Heatsource::disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase& other)
 {
 	this->setTarget(dump);
 }

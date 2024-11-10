@@ -10,7 +10,7 @@ Atmosphere::Atmosphere(
 	const Amount<Unit::TORR> pressure,
 	const ContentInitializer& contentInitializer,
 	const Amount<Unit::LITER> maxVolume,
-	const Ref<BaseContainer> overflowTarget
+	const Ref<ContainerBase> overflowTarget
 ) noexcept :
 	SingleLayerMixture<LayerType::GASEOUS>(temperature, pressure, contentInitializer, maxVolume, overflowTarget)
 {}

@@ -3,6 +3,8 @@
 #include "Parsers.hpp"
 #include "Keywords.hpp"
 #include "Object.hpp"
+#include "OOLDefRepository.hpp"
+#include "PathUtils.hpp"
 
 template <>
 class Def::Parser<Def::Object>

@@ -57,7 +57,7 @@ bool ReactionData::balance(
 	if (reactants.size() == 0 || products.size() == 0)
 		return false;
 
-	SystemMatrix<float_n> system;
+	SystemMatrix<float_s> system;
 	const size_t syslen = reactants.size() + products.size() - 1;
 	std::unordered_map<Symbol, size_t> sysmap;
 
@@ -70,10 +70,10 @@ bool ReactionData::balance(
 			{
 				sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
 				system.addNullRow(syslen);
-				system.back()[i] = static_cast<float_n>(c.second);
+				system.back()[i] = static_cast<float_s>(c.second);
 			}
 			else
-				system[sysmap[c.first]][i] = static_cast<float_n>(c.second);
+				system[sysmap[c.first]][i] = static_cast<float_s>(c.second);
 		}
 	}
 
@@ -85,10 +85,10 @@ bool ReactionData::balance(
 		{
 			sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
 			system.addNullRow(syslen);
-			system.back().back() = static_cast<float_n>(c.second);
+			system.back().back() = static_cast<float_s>(c.second);
 		}
 		else
-			system[sysmap[c.first]].back() = static_cast<float_n>(c.second);
+			system[sysmap[c.first]].back() = static_cast<float_s>(c.second);
 	}
 
 	for (size_t i = 1; i < products.size(); ++i)
@@ -100,10 +100,10 @@ bool ReactionData::balance(
 			{
 				sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
 				system.addNullRow(syslen);
-				system.back()[reactants.size() + i - 1] = -1 * static_cast<float_n>(c.second);
+				system.back()[reactants.size() + i - 1] = -1 * static_cast<float_s>(c.second);
 			}
 			else
-				system[sysmap[c.first]][reactants.size() + i - 1] = -1 * static_cast<float_n>(c.second);
+				system[sysmap[c.first]][reactants.size() + i - 1] = -1 * static_cast<float_s>(c.second);
 		}
 	}
 
@@ -530,14 +530,14 @@ void ReactionData::dumpDefinition(
 	std::unordered_set<EstimatorId>& alreadyPrinted
 ) const
 {
-	static const uint8_t valueOffset = Utils::max(
+	static const auto valueOffset = checked_cast<uint8_t>(Utils::max(
 		Def::Reactions::Id.size(),
 		Def::Reactions::Name.size(),
 		Def::Reactions::Catalysts.size(),
 		Def::Reactions::Energy.size(),
 		Def::Reactions::Activation.size(),
 		Def::Reactions::TemperatureSpeed.size(),
-		Def::Reactions::ConcentrationSpeed.size());
+		Def::Reactions::ConcentrationSpeed.size()));
 
 	const auto compare = [](const StructureRef& l, const StructureRef& r) { return l.getId() < r.getId(); };
 	const auto uniqueReactants = ImmutableSet<StructureRef>::toSortedSetVector(Utils::copy(reactants), compare);

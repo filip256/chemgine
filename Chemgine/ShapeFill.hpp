@@ -15,7 +15,7 @@ private:
 public:
 	ShapeFill(
 		const ShapeFillTexture& texture,
-		const float_n scale
+		const float_s scale
 	) noexcept;
 
 	void setPosition(const sf::Vector2f& position);
@@ -23,7 +23,7 @@ public:
 	void setScale(const sf::Vector2f& scale);
 	void setRotation(const Amount<Unit::DEGREE> angle);
 	void setColor(const sf::Color& color) const;
-	void setDrawSection(float_n start, float_n end, const sf::Color& color) const;
+	void setDrawSection(float_s start, float_s end, const sf::Color& color) const;
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;
 };

@@ -295,7 +295,7 @@ class Def::Parser<DynamicAmount>
 public:
 	static std::optional<DynamicAmount> parse(const std::string& str)
 	{
-		const auto pair = Utils::split(str, '_', true);
+		const auto pair = Utils::split(Utils::strip(str), '_', true);
 		if (pair.empty())
 			return std::nullopt;
 

@@ -18,8 +18,8 @@ protected:
 	Layer layer;
 	Amount<Unit::TORR> pressure;
 	const Amount<Unit::LITER> maxVolume;
-	Ref<BaseContainer> overflowTarget = DumpContainer::GlobalDumpContainer;
-	std::unordered_map<LayerType, Ref<BaseContainer>> incompatibilityTargets;
+	Ref<ContainerBase> overflowTarget = DumpContainer::GlobalDumpContainer;
+	std::unordered_map<LayerType, Ref<ContainerBase>> incompatibilityTargets;
 
 	void addToLayer(const Reactant& reactant);
 
@@ -41,7 +41,7 @@ public:
 		const Amount<Unit::TORR> pressure,
 		const ContentInitializer& contentInitializer,
 		const Amount<Unit::LITER> maxVolume,
-		const Ref<BaseContainer> overflowTarget
+		const Ref<ContainerBase> overflowTarget
 	) noexcept;
 
 	//SingleLayerMixture(SingleLayerMixture&&) = default;
@@ -54,12 +54,12 @@ public:
 	Polarity getLayerPolarity() const;
 	Color getLayerColor() const;
 
-	Ref<BaseContainer> getOverflowTarget() const override final;
-	void setOverflowTarget(const Ref<BaseContainer> target) override final;
-	void setIncompatibilityTarget(const LayerType layerType, const Ref<BaseContainer> target);
-	void setIncompatibilityTargets(const FlagField<LayerType> layerTypes, const Ref<BaseContainer> target);
-	void setAllIncompatibilityTargets(const Ref<BaseContainer> target);
-	Ref<BaseContainer> getIncompatibilityTarget(const LayerType layerType) const;
+	Ref<ContainerBase> getOverflowTarget() const override final;
+	void setOverflowTarget(const Ref<ContainerBase> target) override final;
+	void setIncompatibilityTarget(const LayerType layerType, const Ref<ContainerBase> target);
+	void setIncompatibilityTargets(const FlagField<LayerType> layerTypes, const Ref<ContainerBase> target);
+	void setAllIncompatibilityTargets(const Ref<ContainerBase> target);
+	Ref<ContainerBase> getIncompatibilityTarget(const LayerType layerType) const;
 
 	void add(const Reactant& reactant) override final;
 	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount) override final;
@@ -82,8 +82,8 @@ public:
 
 	bool isEmpty() const override final;
 
-	void copyContentTo(const Ref<BaseContainer> destination, const Amount<Unit::LITER> volume) const;
-	void moveContentTo(const Ref<BaseContainer> destination, const Amount<Unit::LITER> volume);
+	void copyContentTo(const Ref<ContainerBase> destination, const Amount<Unit::LITER> volume) const;
+	void moveContentTo(const Ref<ContainerBase> destination, const Amount<Unit::LITER> volume);
 
 	SingleLayerMixture<L> makeCopy() const;
 };
@@ -105,7 +105,7 @@ SingleLayerMixture<L>::SingleLayerMixture(
 	const Amount<Unit::TORR> pressure,
 	const ContentInitializer& contentInitializer,
 	const Amount<Unit::LITER> maxVolume,
-	const Ref<BaseContainer> overflowTarget
+	const Ref<ContainerBase> overflowTarget
 ) noexcept :
 	layer(*this, L, temperature),
 	pressure(pressure),
@@ -219,13 +219,13 @@ const Layer& SingleLayerMixture<L>::getLayer() const
 }
 
 template<LayerType L>
-Ref<BaseContainer> SingleLayerMixture<L>::getOverflowTarget() const
+Ref<ContainerBase> SingleLayerMixture<L>::getOverflowTarget() const
 {
 	return overflowTarget;
 }
 
 template<LayerType L>
-void SingleLayerMixture<L>::setOverflowTarget(const Ref<BaseContainer> target)
+void SingleLayerMixture<L>::setOverflowTarget(const Ref<ContainerBase> target)
 {
 	if (this == &*target)
 		Log(this).warn("Overflow target set to self.");
@@ -234,7 +234,7 @@ void SingleLayerMixture<L>::setOverflowTarget(const Ref<BaseContainer> target)
 }
 
 template<LayerType L>
-void SingleLayerMixture<L>::setIncompatibilityTarget(const LayerType layerType, const Ref<BaseContainer> target)
+void SingleLayerMixture<L>::setIncompatibilityTarget(const LayerType layerType, const Ref<ContainerBase> target)
 {
 	if (layerType == L)
 	{
@@ -249,23 +249,23 @@ void SingleLayerMixture<L>::setIncompatibilityTarget(const LayerType layerType, 
 }
 
 template<LayerType L>
-void SingleLayerMixture<L>::setIncompatibilityTargets(const FlagField<LayerType> layerTypes, const Ref<BaseContainer> target)
+void SingleLayerMixture<L>::setIncompatibilityTargets(const FlagField<LayerType> layerTypes, const Ref<ContainerBase> target)
 {
 	for (auto l = layerTypes.begin(); l != layerTypes.end(); ++l)
 		setIncompatibilityTarget(*l, target);
 }
 
 template<LayerType L>
-void SingleLayerMixture<L>::setAllIncompatibilityTargets(const Ref<BaseContainer> target)
+void SingleLayerMixture<L>::setAllIncompatibilityTargets(const Ref<ContainerBase> target)
 {
 	setIncompatibilityTargets(FlagField(LayerType::ANY) - L, target);
 }
 
 template<LayerType L>
-Ref<BaseContainer> SingleLayerMixture<L>::getIncompatibilityTarget(const LayerType layerType) const
+Ref<ContainerBase> SingleLayerMixture<L>::getIncompatibilityTarget(const LayerType layerType) const
 {
 	if (layerType == L)
-		return Ref<BaseContainer>::nullRef;
+		return Ref<ContainerBase>::nullRef;
 
 	return incompatibilityTargets.at(layerType);
 }
@@ -410,7 +410,7 @@ bool SingleLayerMixture<L>::isEmpty() const
 }
 
 template<LayerType L>
-void SingleLayerMixture<L>::copyContentTo(Ref<BaseContainer> destination, const Amount<Unit::LITER> volume) const
+void SingleLayerMixture<L>::copyContentTo(Ref<ContainerBase> destination, const Amount<Unit::LITER> volume) const
 {
 	// save and use initial volume
 	const auto sourceVolume = layer.volume.asStd();
@@ -423,7 +423,7 @@ void SingleLayerMixture<L>::copyContentTo(Ref<BaseContainer> destination, const 
 }
 
 template<LayerType L>
-void SingleLayerMixture<L>::moveContentTo(Ref<BaseContainer> destination, Amount<Unit::LITER> volume)
+void SingleLayerMixture<L>::moveContentTo(Ref<ContainerBase> destination, Amount<Unit::LITER> volume)
 {
 	// save and use initial volume
 	const auto sourceVolume = layer.volume.asStd();

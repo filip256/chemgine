@@ -1,6 +1,11 @@
 #pragma once
 
-#include<typeinfo>
+#include <typeinfo>
+#include <cassert>
+
+#ifdef NDEBUG
+	#define SKIP_CHECKED_CASTS
+#endif
 
 /// <summary>
 /// Checks if the source object has the same typeid as DstT.
@@ -31,4 +36,19 @@ const DstT* final_cast(const SrcT& src)
 	return final_is<DstT>(src) ?
 		static_cast<const DstT*>(&src) :
 		nullptr;
+}
+
+/// <summary>
+/// Similar to static_cast but assures no data is lost during the conversion
+/// </summary>
+template<typename DstT, typename SrcT>
+DstT checked_cast(const SrcT& src)
+{
+#ifdef SKIP_CHECKED_CASTS
+	return static_cast<SrcT>(dst);
+#else
+	const auto dst = static_cast<DstT>(src);
+	assert((src == static_cast<SrcT>(dst)) && "Checked cast failed.");
+	return dst;
+#endif
 }

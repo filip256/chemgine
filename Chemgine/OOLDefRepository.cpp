@@ -23,7 +23,14 @@ const Def::Object* OOLDefRepository::getDefinition(const std::string& identifier
 	return it != definitions.end() ? it->second.get() : nullptr;
 }
 
+size_t OOLDefRepository::totalDefinitionCount() const
+{
+	return definitions.size();
+}
+
 void OOLDefRepository::clear()
 {
+	for (const auto& [_, d] : definitions)
+		d->logUnusedWarnings();
 	definitions.clear();
 }

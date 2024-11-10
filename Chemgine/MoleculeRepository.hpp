@@ -19,10 +19,14 @@ private:
 public:
 	MoleculeRepository(EstimatorRepository& estimators) noexcept;
 	MoleculeRepository(const MoleculeRepository&) = delete;
+	MoleculeRepository(MoleculeRepository&&) = default;
 
-	bool add(Def::Object&& definition);
+	bool add(const Def::Object& definition);
 
+	bool contains(const MoleculeId id) const;
 	const MoleculeData& at(const MoleculeId id) const;
+
+	size_t totalDefinitionCount() const;
 
 	const MoleculeData* findFirstConcrete(const MolecularStructure& structure) const;
 	const GenericMoleculeData* findFirstGeneric(const MolecularStructure& structure) const;

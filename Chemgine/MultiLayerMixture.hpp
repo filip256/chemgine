@@ -16,7 +16,7 @@ protected:
 	Amount<Unit::LITER> totalVolume = 0.0;
 
 	const Amount<Unit::LITER> maxVolume;
-	Ref<BaseContainer> overflowTarget = DumpContainer::GlobalDumpContainer;
+	Ref<ContainerBase> overflowTarget = DumpContainer::GlobalDumpContainer;
 
 	std::map<LayerType, Layer> layers;
 
@@ -42,7 +42,7 @@ public:
 	MultiLayerMixture(
 		const Ref<Atmosphere> atmosphere,
 		const Amount<Unit::LITER> maxVolume,
-		const Ref<BaseContainer> overflowTarget
+		const Ref<ContainerBase> overflowTarget
 	) noexcept;
 
 	void add(const Reactant& reactant) override final;
@@ -68,8 +68,8 @@ public:
 
 	bool isEmpty() const override final;
 
-	Ref<BaseContainer> getOverflowTarget() const override final;
-	void setOverflowTarget(const Ref<BaseContainer> target) override final;
+	Ref<ContainerBase> getOverflowTarget() const override final;
+	void setOverflowTarget(const Ref<ContainerBase> target) override final;
 
 	using LayerDownIterator = std::map<LayerType, Layer>::const_iterator;
 	LayerDownIterator getLayersDownBegin() const;
@@ -79,8 +79,8 @@ public:
 	LayerUpIterator getLayersUpBegin() const;
 	LayerUpIterator getLayersUpEnd() const;
 
-	void copyContentTo(Ref<BaseContainer> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer) const;
-	void moveContentTo(Ref<BaseContainer> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer);
+	void copyContentTo(Ref<ContainerBase> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer) const;
+	void moveContentTo(Ref<ContainerBase> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer);
 
 	MultiLayerMixture makeCopy() const;
 };

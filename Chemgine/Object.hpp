@@ -49,7 +49,6 @@ namespace Def
 
 		Object(const Object&) = delete;
 		Object(Object&&) = default;
-		~Object() noexcept;
 
 		Object& operator=(Object&&) = default;
 

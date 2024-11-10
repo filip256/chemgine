@@ -6,30 +6,28 @@
 #include "Printers.hpp"
 
 template<Unit OutU, Unit InU>
-class AffineEstimator : public DerivedEstimator<OutU, InU>
+class AffineEstimator : public DerivedEstimator<EstimatorRef<OutU, InU>, OutU, InU>
 {
 private:
-	const EstimatorRef<OutU, InU> base;
+	using Base = DerivedEstimator<EstimatorRef<OutU, InU>, OutU, InU>;
 
 public:
-	const float_n vShift = 0.0;
-	const float_n hShift = 0.0;
-	const float_n scale = 1.0;
+	const float_s vShift = 0.0;
+	const float_s hShift = 0.0;
+	const float_s scale = 1.0;
 
 	AffineEstimator(
 		const EstimatorId id,
 		const EstimatorRef<OutU, InU>& base,
-		const float_n vShift,
-		const float_n hShift,
-		const float_n scale
+		const float_s vShift,
+		const float_s hShift,
+		const float_s scale
 	) noexcept;
 
 	Amount<OutU> get(const Amount<InU> input) const override final;
 
-	const EstimatorRef<OutU, InU>& getBase() const;
-
 	bool isEquivalent(const EstimatorBase& other,
-		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
+		const float_s epsilon = std::numeric_limits<float_s>::epsilon()
 	) const override final;
 
 	void dumpDefinition(
@@ -46,31 +44,24 @@ template<Unit OutU, Unit InU>
 AffineEstimator<OutU, InU>::AffineEstimator(
 	const EstimatorId id,
 	const EstimatorRef<OutU, InU>& base,
-	const float_n vShift,
-	const float_n hShift,
-	const float_n scale
+	const float_s vShift,
+	const float_s hShift,
+	const float_s scale
 ) noexcept :
-	DerivedEstimator<OutU, InU>(id),
+	Base(id, base),
 	vShift(vShift),
 	hShift(hShift),
-	scale(scale),
-	base(base)
+	scale(scale)
 {}
 
 template<Unit OutU, Unit InU>
 Amount<OutU> AffineEstimator<OutU, InU>::get(const Amount<InU> input) const
 {
-	return base->get(input - hShift) * scale + vShift;
+	return Base::getBase()->get(input - hShift) * scale + vShift;
 }
 
 template<Unit OutU, Unit InU>
-const EstimatorRef<OutU, InU>& AffineEstimator<OutU, InU>::getBase() const
-{
-	return base;
-}
-
-template<Unit OutU, Unit InU>
-bool AffineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const float_n epsilon) const
+bool AffineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const float_s epsilon) const
 {
 	if (EstimatorBase::isEquivalent(other, epsilon) == false)
 		return false;
@@ -80,7 +71,7 @@ bool AffineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const 
 		Utils::floatEqual(this->vShift, oth.vShift, epsilon) &&
 		Utils::floatEqual(this->hShift, oth.hShift, epsilon) &&
 		Utils::floatEqual(this->scale, oth.scale, epsilon) &&
-		this->base->isEquivalent(*oth.base);
+		Base::isEquivalent(oth, epsilon);
 }
 
 template<Unit OutU, Unit InU>
@@ -91,18 +82,20 @@ void AffineEstimator<OutU, InU>::dumpDefinition(
 	const bool printInline,
 	const uint16_t baseIndent) const
 {
-	if (alreadyPrinted.contains(EstimatorBase::id))
+	if (alreadyPrinted.contains(Base::id))
 	{
 		if(printInline)
-			out << '$' << EstimatorBase::getDefIdentifier();
+			out << '$' << Base::getDefIdentifier();
 		return;
 	}
 
-	static const uint8_t valueOffset = Utils::max(
+	static const auto valueOffset = checked_cast<uint8_t>(Utils::max(
 		Def::Data::Base.size(),
 		Def::Data::VerticalShift.size(),
 		Def::Data::HorizontalShift.size(),
-		Def::Data::Scale.size());
+		Def::Data::Scale.size()));
+
+	const auto& base = Base::getBase();
 
 	Def::DataDumper dump(out, valueOffset, baseIndent, prettify);
 	if (not printInline)
@@ -118,12 +111,12 @@ void AffineEstimator<OutU, InU>::dumpDefinition(
 			Def::print(base->getId()), Def::print(this->id));
 	}
 
-	alreadyPrinted.emplace(EstimatorBase::id);
+	alreadyPrinted.emplace(Base::id);
 
 	if (printInline)
-		dump.header("", UnitizedEstimator<OutU, InU>::getUnitSpecifier(), "");
+		dump.header("", Base::getUnitSpecifier(), "");
 	else
-		dump.header(Def::Types::Data, UnitizedEstimator<OutU, InU>::getUnitSpecifier(), EstimatorBase::getDefIdentifier());
+		dump.header(Def::Types::Data, Base::getUnitSpecifier(), Base::getDefIdentifier());
 
 	dump.beginProperties()
 		.subDefinition(Def::Data::Base, base, alreadyPrinted)

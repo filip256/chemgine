@@ -9,7 +9,7 @@
 class ReactionRepository
 {
 private:
-	std::unordered_map<ReactionId, std::unique_ptr<ReactionData>> table;
+	std::unordered_map<ReactionId, std::unique_ptr<ReactionData>> reactions;
 
 	EstimatorRepository& estimators;
 	const MoleculeRepository& molecules;
@@ -25,8 +25,14 @@ public:
 		const MoleculeRepository& molecules
 	) noexcept;
 	ReactionRepository(const ReactionRepository&) = delete;
+	ReactionRepository(ReactionRepository&&) = default;
 
-	bool add(Def::Object&& definition);
+	bool add(const Def::Object& definition);
+
+	bool contains(const ReactionId id) const;
+	const ReactionData& at(const ReactionId id) const;
+
+	size_t totalDefinitionCount() const;
 
 	using Iterator = std::unordered_map<ReactionId, std::unique_ptr<ReactionData>>::const_iterator;
 	Iterator begin() const;

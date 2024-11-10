@@ -7,7 +7,7 @@
 #include <fstream>
 
 template <>
-bool AtomRepository::add<AtomData>(Def::Object&& definition)
+bool AtomRepository::add<AtomData>(const Def::Object& definition)
 {
 	const auto symbol = Def::parse<Symbol>(definition.getSpecifier());
 	if (not symbol)
@@ -26,18 +26,19 @@ bool AtomRepository::add<AtomData>(Def::Object&& definition)
 		return false;
 	}
 	
-	if (not atomTable.emplace(*symbol,
+	if (not atoms.emplace(*symbol,
 		std::make_unique<AtomData>(*symbol, *name, *weight, std::move(*valences))).second)
 	{
 		Log(this).warn("Atom with duplicate symbol: '{0}' skipped.", symbol->getString());
 		return false;
 	}
 
+	definition.logUnusedWarnings();
 	return true;
 }
 
 template <>
-bool AtomRepository::add<RadicalData>(Def::Object&& definition)
+bool AtomRepository::add<RadicalData>(const Def::Object& definition)
 {
 	const auto symbol = Def::parse<Symbol>(definition.getSpecifier());
 	if (not symbol)
@@ -74,54 +75,60 @@ bool AtomRepository::add<RadicalData>(Def::Object&& definition)
 	}
 
 	std::unordered_set matchSet(matches->begin(), matches->end());
-	if (not radicalTable.emplace(*symbol, 
+	if (not radicals.emplace(*symbol, 
 		std::make_unique<RadicalData>(*symbol, name, std::move(matchSet))).second)
 	{
 		Log(this).warn("Atom with duplicate symbol: '{0}' skipped.", symbol->getString());
 		return false;
 	}
 
+	definition.logUnusedWarnings();
 	return true;
 }
 
 bool AtomRepository::contains(const Symbol& symbol) const
 {
-	return atomTable.contains(symbol) || radicalTable.contains(symbol);
+	return atoms.contains(symbol) || radicals.contains(symbol);
 }
 
 const AtomData& AtomRepository::at(const Symbol& symbol) const
 {
-	if (const auto aIt = atomTable.find(symbol); aIt != atomTable.end())
+	if (const auto aIt = atoms.find(symbol); aIt != atoms.end())
 		return *aIt->second;
 
-	if (const auto rIt = radicalTable.find(symbol); rIt != radicalTable.end())
+	if (const auto rIt = radicals.find(symbol); rIt != radicals.end())
 		return *rIt->second;
 
 	Log(this).fatal("Tried to access an atom suing an undefined symbol: '{0}'", symbol.getString());
 }
 
+size_t AtomRepository::totalDefinitionCount() const
+{
+	return atoms.size() + radicals.size();
+}
+
 AtomRepository::AtomIterator AtomRepository::atomsBegin() const
 {
-	return atomTable.begin();
+	return atoms.begin();
 }
 
 AtomRepository::AtomIterator AtomRepository::atomsEnd() const
 {
-	return atomTable.end();
+	return atoms.end();
 }
 
 AtomRepository::RadicalIterator AtomRepository::radicalsBegin() const
 {
-	return radicalTable.begin();
+	return radicals.begin();
 }
 
 AtomRepository::RadicalIterator AtomRepository::radicalsEnd() const
 {
-	return radicalTable.end();
+	return radicals.end();
 }
 
 void AtomRepository::clear()
 {
-	atomTable.clear();
-	radicalTable.clear();
+	atoms.clear();
+	radicals.clear();
 }

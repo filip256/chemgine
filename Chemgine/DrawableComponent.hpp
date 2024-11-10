@@ -1,12 +1,12 @@
 #pragma once
 
-#include "BaseLabwareComponent.hpp"
+#include "LabwareComponentBase.hpp"
 #include "DrawableLabwareData.hpp"
 #include "DrawablePort.hpp"
 #include "ShapeFill.hpp"
 #include "SFML/Graphics.hpp"
 
-class DrawableComponent : public BaseLabwareComponent
+class DrawableComponent : public LabwareComponentBase
 {
 private:
 	sf::Sprite sprite;
@@ -37,5 +37,5 @@ public:
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 	bool contains(const sf::Vector2f& point) const override final;
-	bool intersects(const BaseLabwareComponent& other) const override final;
+	bool intersects(const LabwareComponentBase& other) const override final;
 };

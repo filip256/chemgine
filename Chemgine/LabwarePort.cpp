@@ -2,7 +2,7 @@
 
 LabwarePort::LabwarePort(
 	const PortType type,
-	const float_n x, const float_n y,
+	const float_s x, const float_s y,
 	const Amount<Unit::DEGREE> angle
 ) noexcept :
 	type(type),

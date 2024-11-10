@@ -11,7 +11,7 @@ public:
 		std::vector<LabwarePort>&& ports,
 		const Amount<Unit::LITER> volume,
 		const std::string& textureFile,
-		const float_n textureScale
+		const float_s textureScale
 	) noexcept;
 
 	void dumpCustomProperties(Def::DataDumper& dump) const override final;

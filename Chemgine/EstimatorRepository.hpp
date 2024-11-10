@@ -8,7 +8,8 @@
 class EstimatorRepository
 {
 private:
-	std::unordered_map<EstimatorId, std::unique_ptr<const EstimatorBase>> table;
+	uint16_t maxEstimatorNesting = 0;
+	std::unordered_map<EstimatorId, std::unique_ptr<const EstimatorBase>> estimators;
 
 	EstimatorId getFreeId() const;
 
@@ -17,6 +18,8 @@ private:
 public:
 	EstimatorRepository() = default;
 	EstimatorRepository(const EstimatorRepository&) = delete;
+	EstimatorRepository(EstimatorRepository&&) = default;
+	~EstimatorRepository() noexcept;
 
 	/// <summary>
 	/// Builds a new estimator of the given type.
@@ -26,7 +29,10 @@ public:
 
 	void dropUnusedEstimators();
 
+	bool contains(const EstimatorId id) const;
 	const EstimatorBase& at(const EstimatorId id) const;
+
+	size_t totalDefinitionCount() const;
 
 	using Iterator = std::unordered_map<EstimatorId, std::unique_ptr<const EstimatorBase>>::const_iterator;
 	Iterator begin() const;
@@ -40,8 +46,6 @@ CountedRef<const EstT> EstimatorRepository::add(Args&&... args)
 {
 	static_assert(std::is_base_of_v<EstimatorBase, EstT>,
 		"EstimatorRepository: EstT must be a EstimatorBase derived type.");
-	static_assert(std::is_constructible_v<EstT, EstimatorId, Args... >,
-		"EstimatorRepository: Unable to construct EstT from the given Args.");
 
 	const auto id = getFreeId();
 	return static_cast<const EstT&>(add(std::make_unique<EstT>(id, std::forward<Args>(args)...)));

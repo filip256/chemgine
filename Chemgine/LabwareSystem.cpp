@@ -31,12 +31,12 @@ uint8_t PortIdentifier::getPortIndex() const
 	return portIdx;
 }
 
-const BaseLabwareComponent& PortIdentifier::getComponent() const
+const LabwareComponentBase& PortIdentifier::getComponent() const
 {
 	return *system.components[componentIdx];
 }
 
-BaseLabwareComponent& PortIdentifier::getComponent()
+LabwareComponentBase& PortIdentifier::getComponent()
 {
 	return *system.components[componentIdx];
 }
@@ -62,42 +62,33 @@ LabwareSystem::LabwareSystem(Lab& lab) noexcept :
 	lab(lab)
 {}
 
-LabwareSystem::LabwareSystem(BaseLabwareComponent* component, Lab& lab) noexcept :
+LabwareSystem::LabwareSystem(std::unique_ptr<LabwareComponentBase>&& component, Lab& lab) noexcept :
 	LabwareSystem(lab)
 {
-	add(component);
-}
-
-LabwareSystem::~LabwareSystem() noexcept
-{
-	while (components.size())
-	{
-		delete components.back();
-		components.pop_back();
-	}
+	add(std::move(component));
 }
 
 l_size LabwareSystem::size() const
 {
-	return components.size();
+	return checked_cast<l_size>(components.size());
 }
 
-const BaseLabwareComponent& LabwareSystem::getComponent(const size_t idx) const
+const LabwareComponentBase& LabwareSystem::getComponent(const size_t idx) const
 {
 	return *components[idx];
 }
 
-BaseLabwareComponent& LabwareSystem::getComponent(const size_t idx)
+LabwareComponentBase& LabwareSystem::getComponent(const size_t idx)
 {
 	return *components[idx];
 }
 
-void LabwareSystem::add(BaseLabwareComponent* component)
+void LabwareSystem::add(std::unique_ptr<LabwareComponentBase>&& component)
 {
-	components.emplace_back(component);
-	connections.emplace_back(std::vector<LabwareConnection>(component->getPorts().size(), LabwareConnection(npos, 0, 0)));
-
 	addToBoundry(component->getBounds());
+
+	connections.emplace_back(std::vector<LabwareConnection>(component->getPorts().size(), LabwareConnection(npos, 0, 0)));
+	components.emplace_back(std::move(component));
 }
 
 void LabwareSystem::add(PortIdentifier& srcPort, PortIdentifier& destPort)
@@ -126,7 +117,7 @@ void LabwareSystem::add(PortIdentifier& srcPort, PortIdentifier& destPort)
 
 	while (srcSys.size())
 	{
-		destSys.components.emplace_back(srcSys.components.back());
+		destSys.components.emplace_back(std::move(srcSys.components.back()));
 		srcSys.components.pop_back();
 
 		destSys.addToBoundry(destSys.components.back()->getBounds());
@@ -157,8 +148,8 @@ void LabwareSystem::add(PortIdentifier& srcPort, PortIdentifier& destPort)
 void LabwareSystem::clearBoundry()
 {
 	boundingBox = sf::FloatRect(
-		std::numeric_limits<float_n>::max(), std::numeric_limits<float_n>::max(),
-		-std::numeric_limits<float_n>::max(), -std::numeric_limits<float_n>::max());
+		std::numeric_limits<float_s>::max(), std::numeric_limits<float_s>::max(),
+		-std::numeric_limits<float_s>::max(), -std::numeric_limits<float_s>::max());
 }
 
 void LabwareSystem::recomputeBoundry()
@@ -291,7 +282,7 @@ l_size LabwareSystem::findFirst() const
 	return components.empty() ? npos : 0;
 }
 
-std::pair<PortIdentifier, float_n> LabwareSystem::findClosestPort(const sf::Vector2f& point, const float_n maxSqDistance)
+std::pair<PortIdentifier, float_s> LabwareSystem::findClosestPort(const sf::Vector2f& point, const float_s maxSqDistance)
 {
 	auto result = std::make_pair(PortIdentifier(*this, npos, 0), -1.0f);
 
@@ -309,7 +300,7 @@ std::pair<PortIdentifier, float_n> LabwareSystem::findClosestPort(const sf::Vect
 
 		for (uint8_t j = 0; j < ports.size(); ++j)
 		{
-			const float_n dist = Maths::sqaredDistance(point.x, point.y, ports[j].position.x + offset.x, ports[j].position.y + offset.y);
+			const float_s dist = Maths::sqaredDistance(point.x, point.y, ports[j].position.x + offset.x, ports[j].position.y + offset.y);
 			if (dist <= result.second)
 			{
 				result.second = dist;
@@ -322,11 +313,11 @@ std::pair<PortIdentifier, float_n> LabwareSystem::findClosestPort(const sf::Vect
 	return result;
 }
 
-std::pair<PortIdentifier, PortIdentifier> LabwareSystem::findClosestPort(LabwareSystem& other, const float_n maxSqDistance)
+std::pair<PortIdentifier, PortIdentifier> LabwareSystem::findClosestPort(LabwareSystem& other, const float_s maxSqDistance)
 {
 	auto result = std::make_pair(PortIdentifier(*this, npos, 0), PortIdentifier(other, npos, 0));
 
-	float_n minDist = maxSqDistance;
+	float_s minDist = maxSqDistance;
 	for (l_size i = 0; i < components.size(); ++i)
 	{
 		const auto& ports = components[i]->getPorts();
@@ -349,12 +340,12 @@ std::pair<PortIdentifier, PortIdentifier> LabwareSystem::findClosestPort(Labware
 	return result;
 }
 
-BaseLabwareComponent* LabwareSystem::releaseComponent(const l_size componentIdx)
+std::unique_ptr<LabwareComponentBase> LabwareSystem::releaseComponent(const l_size componentIdx)
 {
 	if(components.size() == 1)
 	{
 		clearBoundry();
-		const auto temp = components[componentIdx];
+		auto temp = std::move(components[componentIdx]);
 		components.erase(components.begin() + componentIdx);
 		return temp;
 	}
@@ -391,7 +382,7 @@ BaseLabwareComponent* LabwareSystem::releaseComponent(const l_size componentIdx)
 	}
 	connections.pop_back();
 
-	const auto freeComponent = components[componentIdx];
+	auto freeComponent = std::move(components[componentIdx]);
 	components.erase(components.begin() + componentIdx);
 
 	// maintain bounding box
@@ -410,7 +401,7 @@ LabwareSystem LabwareSystem::releaseSection(const l_size componentIdx, const uin
 
 	// first component
 	removeFromBoundry(components[first]->getBounds());
-	newSystem.add(components[first]);
+	newSystem.add(std::move(components[first]));
 	newSystem.connections.emplace_back(std::move(connections[first]));
 	componentsToRemove.emplace_back(first);
 
@@ -430,7 +421,7 @@ LabwareSystem LabwareSystem::releaseSection(const l_size componentIdx, const uin
 	{
 		const auto& c = queue.front();
 
-		newSystem.add(components[c.first]);
+		newSystem.add(std::move(components[c.first]));
 		newSystem.connections.emplace_back(std::move(connections[c.first]));
 		componentsToRemove.emplace_back(c.first);
 
@@ -439,7 +430,7 @@ LabwareSystem LabwareSystem::releaseSection(const l_size componentIdx, const uin
 				newSystem.connections.back()[i].otherComponent != c.second)
 			{
 				queue.push(std::make_pair(newSystem.connections.back()[i].otherComponent, c.first));
-				newSystem.connections.back()[i].otherComponent = i + newSystem.components.size();
+				newSystem.connections.back()[i].otherComponent = checked_cast<l_size>(i + newSystem.components.size());
 			}
 
 		queue.pop();
@@ -548,6 +539,6 @@ std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
 		boundingBox = components.back()->getBounds();
 	}
 
-	result.emplace_back(LabwareSystem(temp, *lab));
+	result.emplace_back(LabwareSystem(std::move(temp), *lab));
 	return result;
 }

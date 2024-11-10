@@ -8,12 +8,12 @@ class LabwarePort
 {
 public:
 	const PortType type;
-	const float_n x, y;
+	const float_s x, y;
 	const Amount<Unit::DEGREE> angle;
 
 	LabwarePort(
 		const PortType type,
-		const float_n x, const float_n y,
+		const float_s x, const float_s y,
 		const Amount<Unit::DEGREE> angle
 	) noexcept;
 };
@@ -40,8 +40,8 @@ public:
 		if (xIt == props->end() || yIt == props->end() || angleIt == props->end())
 			return std::nullopt;
 
-		const auto x = Def::parse<uint32_t>(xIt->second);
-		const auto y = Def::parse<uint32_t>(yIt->second);
+		const auto x = Def::parse<float_s>(xIt->second);
+		const auto y = Def::parse<float_s>(yIt->second);
 		const auto angle = Def::parse<Amount<Unit::DEGREE>>(angleIt->second);
 
 		if (not (x && y && angle))

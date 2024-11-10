@@ -15,7 +15,7 @@ DynamicAmount::DynamicAmount(const StorageType value, const Unit unit) noexcept 
 
 DynamicAmount::StorageType DynamicAmount::asKilo() const
 {
-    return value / 1000.0;
+    return static_cast<StorageType>(value / 1000.0);
 }
 
 DynamicAmount::StorageType DynamicAmount::asStd() const
@@ -25,12 +25,12 @@ DynamicAmount::StorageType DynamicAmount::asStd() const
 
 DynamicAmount::StorageType DynamicAmount::asMilli() const
 {
-    return value * 1000.0;
+    return static_cast<StorageType>(value * 1000.0);
 }
 
 DynamicAmount::StorageType DynamicAmount::asMicro() const
 {
-    return value / 1000000.0;
+    return static_cast<StorageType>(value / 1000000.0);
 }
 
 std::optional<DynamicAmount> DynamicAmount::to(const Unit target) const

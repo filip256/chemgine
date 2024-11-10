@@ -9,19 +9,21 @@ template<Unit OutU, Unit InU>
 class SplineEstimator : public UnitizedEstimator<OutU, InU>
 {
 private:
+	using Base = UnitizedEstimator<OutU, InU>;
+
 	const EstimationMode mode;
-	const Spline<float_n> spline;
+	const Spline<float_s> spline;
 
 public:
 	SplineEstimator(
 		const EstimatorId id,
-		Spline<float_n>&& spline,
+		Spline<float_s>&& spline,
 		const EstimationMode mode
 	) noexcept;
 
 	SplineEstimator(
 		const EstimatorId id,
-		const Spline<float_n>& spline,
+		const Spline<float_s>& spline,
 		const EstimationMode mode
 	) noexcept;
 
@@ -30,7 +32,7 @@ public:
 	Amount<OutU> get(const Amount<InU> input) const override final;
 
 	bool isEquivalent(const EstimatorBase& other,
-		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
+		const float_s epsilon = std::numeric_limits<float_s>::epsilon()
 	) const override final;
 
 	void dumpDefinition(
@@ -45,7 +47,7 @@ public:
 template<Unit OutU, Unit InU>
 SplineEstimator<OutU, InU>::SplineEstimator(
 	const EstimatorId id,
-	Spline<float_n>&& spline,
+	Spline<float_s>&& spline,
 	const EstimationMode mode
 ) noexcept :
 	UnitizedEstimator<OutU, InU>(id),
@@ -56,7 +58,7 @@ SplineEstimator<OutU, InU>::SplineEstimator(
 template<Unit OutU, Unit InU>
 SplineEstimator<OutU, InU>::SplineEstimator(
 	const EstimatorId id,
-	const Spline<float_n>& spline,
+	const Spline<float_s>& spline,
 	const EstimationMode mode
 ) noexcept :
 	SplineEstimator(id, Utils::copy(spline), mode)
@@ -75,7 +77,7 @@ Amount<OutU> SplineEstimator<OutU, InU>::get(const Amount<InU> input) const
 }
 
 template<Unit OutU, Unit InU>
-bool SplineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const float_n epsilon) const
+bool SplineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const float_s epsilon) const
 {
 	if (not EstimatorBase::isEquivalent(other, epsilon))
 		return false;
@@ -95,28 +97,41 @@ void SplineEstimator<OutU, InU>::dumpDefinition(
 	if (not printInline && this->getRefCount() == 1)
 		return;
 
-	if (alreadyPrinted.contains(EstimatorBase::id))
+	if (alreadyPrinted.contains(Base::id))
 	{
 		if (printInline)
-			out << '$' << EstimatorBase::getDefIdentifier();
+			out << '$' << Base::getDefIdentifier();
 		return;
 	}
-	alreadyPrinted.emplace(EstimatorBase::id);
+	alreadyPrinted.emplace(Base::id);
 
-	static const uint8_t valueOffset = Utils::max(
+	static const auto valueOffset = checked_cast<uint8_t>(Utils::max(
 		Def::Data::Mode.size(),
-		Def::Data::Values.size());
+		Def::Data::Values.size()));
 
 	Def::DataDumper dump(out, valueOffset, baseIndent, prettify);
 	if (printInline)
-		dump.header("", UnitizedEstimator<OutU, InU>::getUnitSpecifier(), "");
+		dump.header("", Base::getUnitSpecifier(), "");
 	else
-		dump.header(Def::Types::Data, UnitizedEstimator<OutU, InU>::getUnitSpecifier(), EstimatorBase::getDefIdentifier());
+		dump.header(Def::Types::Data, Base::getUnitSpecifier(), Base::getDefIdentifier());
 
 	dump.beginProperties()
-		.propertyWithSep(Def::Data::Mode, getMode())
-		.property(Def::Data::Values, spline.getContent())
-		.endProperties();
+		.propertyWithSep(Def::Data::Mode, getMode());
+
+	if (prettify)
+	{
+		const auto& content = spline.getContent();
+		std::vector<DataPoint<OutU, InU>> values;
+		values.reserve(content.size());
+		std::transform(content.begin(), content.end(), std::back_inserter(values),
+			[](const auto& v) { return DataPoint<OutU, InU>(v.second, v.first); });
+
+		dump.property(Def::Data::Values, values);
+	}
+	else
+		dump.property(Def::Data::Values, spline.getContent());
+	
+	dump.endProperties();
 
 	if (not printInline)
 		dump.endDefinition();

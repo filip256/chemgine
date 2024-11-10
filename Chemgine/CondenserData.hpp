@@ -18,7 +18,7 @@ public:
 		const std::string& textureFile,
 		const std::string& innerfillTextureFile,
 		const std::string& coolantfillTextureFile,
-		const float_n textureScale
+		const float_s textureScale
 	) noexcept;
 
 	void dumpCustomProperties(Def::DataDumper& dump) const override final;

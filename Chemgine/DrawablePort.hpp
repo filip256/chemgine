@@ -14,7 +14,7 @@ public:
 	DrawablePort(
 		const LabwarePort& port,
 		const sf::Vector2f& origin = sf::Vector2f(0.0f, 0.0f),
-		const float_n scale = 1.0f
+		const float_s scale = 1.0f
 	) noexcept;
 
 	void rotate(const Amount<Unit::DEGREE> angle);

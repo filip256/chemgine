@@ -113,6 +113,9 @@ namespace Def
 
 		static std::string prettyPrint(const std::vector<T>& object)
 		{
+			if (object.size() == 0)
+				return "{}";
+
 			if (object.size() == 1)
 				return Def::prettyPrint(*object.begin());
 
@@ -148,6 +151,9 @@ namespace Def
 
 		static std::string prettyPrint(const std::unordered_map<std::string, T>& object)
 		{
+			if (object.size() == 0)
+				return "{}";
+
 			if (object.size() == 1)
 			{
 				const auto& p = *object.begin();
@@ -183,6 +189,9 @@ namespace Def
 
 		static std::string prettyPrint(const std::unordered_set<T>& object)
 		{
+			if (object.size() == 0)
+				return "{}";
+
 			if (object.size() == 1)
 				return Def::prettyPrint(*object.begin());
 
@@ -193,6 +202,56 @@ namespace Def
 			result[result.size() - 2] = ' ';
 			result.back() = '}';
 			return result;
+		}
+	};
+
+	template <typename... Args>
+	class Printer<std::tuple<Args...>> {
+	private:
+		template <std::size_t... Is>
+		static void printTupleElements(
+			const std::tuple<Args...>& object, std::string& result, std::index_sequence<Is...>)
+		{
+			((result += Def::print(std::get<Is>(object)) + ','), ...);
+		}
+
+		template <std::size_t... Is>
+		static void prettyPrintTupleElements(
+			const std::tuple<Args...>& object, std::string& result, std::index_sequence<Is...>)
+		{
+			((result += Def::prettyPrint(std::get<Is>(object)) + ", "), ...);
+		}
+
+	public:
+		static std::string print(const std::tuple<Args...>& object)
+		{
+			if constexpr (sizeof...(Args) == 0)
+				return "{}";
+			else if constexpr (sizeof...(Args) == 1)
+				return Def::print(std::get<0>(object));
+			else
+			{
+				std::string result = "{";
+				printTupleElements(object, result, std::index_sequence_for<Args...>{});
+				result.back() = '}';
+				return result;
+			}
+		}
+
+		static std::string prettyPrint(const std::tuple<Args...>& object)
+		{
+			if constexpr (sizeof...(Args) == 0)
+				return "{}";
+			else if constexpr (sizeof...(Args) == 1)
+				return Def::prettyPrint(std::get<0>(object));
+			else
+			{
+				std::string result = "{ ";
+				prettyPrintTupleElements(object, result, std::index_sequence_for<Args...>{});
+				result[result.size() - 2] = ' ';
+				result.back() = '}';
+				return result;
+			}
 		}
 	};
 };

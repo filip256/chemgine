@@ -8,7 +8,7 @@ FlaskData::FlaskData(
 	std::vector<LabwarePort>&& ports,
 	const Amount<Unit::LITER> volume,
 	const std::string& textureFile,
-	const float_n textureScale
+	const float_s textureScale
 ) noexcept :
 	ContainerLabwareData(id, name, std::move(ports), textureFile, textureScale, volume, LabwareType::FLASK)
 {}

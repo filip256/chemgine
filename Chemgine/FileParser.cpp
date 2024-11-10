@@ -20,9 +20,9 @@ FileParser::FileParser(
 	oolDefinitions(oolDefinitions),
 	fileStore(fileStore)
 {
-	if (stream.is_open() == false)
+	if (not stream.is_open())
 	{
-		Log(this).error("Failed to open file for read: '{0}'.", currentFile);
+		Log(this).error("Failed to open file: '{0}' for reading.", currentFile);
 		return;
 	}
 
@@ -239,7 +239,7 @@ std::pair<std::string, Def::Location> FileParser::nextDefinitionLine()
 					continue;
 				}
 
-				if (auto status = includeAliases.emplace(std::move(alias), path); status.second == false)
+				if (auto status = includeAliases.emplace(std::move(alias), path); not status.second)
 				{
 					Log(this).warn("Redefinition of an existing include alias: '{0}: {1}', at: {2}:{3}.", alias, status.first->second, currentFile, currentLine);
 					status.first->second = path;
@@ -296,7 +296,7 @@ std::optional<Def::Object> FileParser::nextDefinition()
 			return subDef;
 
 		// continue parsing until EoF, even if error occurs
-		if (subParser->isOpen() == false)
+		if (not subParser->isOpen())
 			closeSubparser();
 	}
 

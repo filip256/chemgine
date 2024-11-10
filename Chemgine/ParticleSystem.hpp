@@ -6,8 +6,8 @@ class ParticleSystem : public sf::Drawable
 {
 private:
 	Amount<Unit::DEGREE> direction, targetDirection;
-	float_n directionChangeRate;
-	float_n particleSize;
+	float_s directionChangeRate;
+	float_s particleSize;
 	sf::Color color;
 	Amount<Unit::PER_SECOND> speed;
 	Amount<Unit::SECOND> lifespan;
@@ -20,10 +20,10 @@ public:
 		const uint16_t particleCount,
 		const sf::Vector2f& origin,
 		const sf::Color& color,
-		const float_n particleSize,
+		const float_s particleSize,
 		const Amount<Unit::DEGREE> direction,
 		const Amount<Unit::DEGREE> targetDirection,
-		const float_n directionChangeRate,
+		const float_s directionChangeRate,
 		const Amount<Unit::PER_SECOND> speed,
 		const Amount<Unit::SECOND> lifespan
 	) noexcept;
@@ -32,8 +32,8 @@ public:
 
 	void setDirection(const Amount<Unit::DEGREE> direction);
 	void setTargetDirection(const Amount<Unit::DEGREE> direction);
-	void setDirectionChangeRate(const float_n rate);
-	void setParticleSize(const float_n size);
+	void setDirectionChangeRate(const float_s rate);
+	void setParticleSize(const float_s size);
 	void setColor(const sf::Color& color);
 	void setSpeed(const Amount<Unit::PER_SECOND> speed);
 	void setLifespan(const Amount<Unit::SECOND> lifespan);

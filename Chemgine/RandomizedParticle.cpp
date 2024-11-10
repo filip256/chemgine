@@ -11,10 +11,10 @@ RandomizedParticle::RandomizedParticle(const ParticleSystem& system) noexcept :
 	idlespan = system.lifespan * abs(getRandom());
 }
 
-float_n RandomizedParticle::getRandom()
+float_s RandomizedParticle::getRandom()
 {
 	static std::minstd_rand0 generator(42);
-	static std::normal_distribution<float_n> distribution(0.0f, 0.5f);
+	static std::normal_distribution<float_s> distribution(0.0f, 0.5f);
 
 	return distribution(generator);
 }

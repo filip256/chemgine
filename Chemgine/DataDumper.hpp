@@ -95,7 +95,9 @@ namespace Def
 	template <typename T>
 	DataDumper& DataDumper::property(const std::string& name, const T& value)
 	{
-		out << baseIndent << settings.propertyIndent << name << ':';
+		if (settings.prettify)
+			out << baseIndent;
+		out << settings.propertyIndent << name << ':';
 
 		if (settings.prettify)
 			out << std::string(valueOffset - name.size(), ' ') << Def::prettyPrint(value);
@@ -157,11 +159,17 @@ namespace Def
 		const T& value,
 		HistoryT& alreadyPrinted)
 	{
-		out << baseIndent << settings.propertyIndent << name << ':';
+		if (settings.prettify)
+			out << baseIndent;
+		out << settings.propertyIndent << name << ':';
 
 		if (settings.prettify)
 			out << std::string(valueOffset - name.size(), ' ');
-		value->dumpDefinition(out, settings.prettify, alreadyPrinted, true, valueOffset + settings.propertyIndent.size() + 1);
+
+		value->dumpDefinition(
+			out, settings.prettify, alreadyPrinted, true,
+			checked_cast<uint8_t>(valueOffset + settings.propertyIndent.size() + 1)
+		);
 
 		return *this;
 	}

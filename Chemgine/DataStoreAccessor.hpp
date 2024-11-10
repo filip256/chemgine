@@ -10,6 +10,8 @@ private:
 public:
 	DataStoreAccessor() = default;
 
-	void set(const DataStore& dataStore);
 	const DataStore& get() const;
+
+	void set(const DataStore& dataStore);
+	void unset();
 };

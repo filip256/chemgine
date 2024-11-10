@@ -13,12 +13,12 @@ public:
 	Regressor2DBase(const Regressor2DBase&) = default;
 	virtual ~Regressor2DBase() = default;
 
-	virtual float_n get(const float_n input) const = 0;
+	virtual float_s get(const float_s input) const = 0;
 
-	virtual std::vector<float_n> getParams() const = 0;
+	virtual std::vector<float_s> getParams() const = 0;
 
 	virtual bool isEquivalent(const Regressor2DBase& other,
-		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
+		const float_s epsilon = std::numeric_limits<float_s>::epsilon()
 	) const;
 };
 
@@ -26,24 +26,24 @@ public:
 class LinearRegressor2D : public Regressor2DBase
 {
 public:
-	const float_n paramX;
-	const float_n shift;
+	const float_s paramX;
+	const float_s shift;
 
 	LinearRegressor2D(
-		const float_n paramX,
-		const float_n shift
+		const float_s paramX,
+		const float_s shift
 	) noexcept;
 	LinearRegressor2D(const LinearRegressor2D&) = default;
 
-	float_n get(const float_n input) const override final;
+	float_s get(const float_s input) const override final;
 
-	std::vector<float_n> getParams() const override final;
+	std::vector<float_s> getParams() const override final;
 
 	bool isEquivalent(const Regressor2DBase& other,
-		const float_n epsilon = std::numeric_limits<float_n>::epsilon()
+		const float_s epsilon = std::numeric_limits<float_s>::epsilon()
 	) const override final;
 
-	static LinearRegressor2D fit(const std::vector<std::pair<float_n, float_n>>& points);
+	static LinearRegressor2D fit(const std::vector<std::pair<float_s, float_s>>& points);
 
 	static constexpr EstimationMode Mode = EstimationMode::LINEAR;
 };

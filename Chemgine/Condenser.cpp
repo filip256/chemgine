@@ -16,7 +16,7 @@ const CondenserData& Condenser::getData() const
 	return static_cast<const CondenserData&>(data);
 }
 
-bool Condenser::tryConnect(BaseLabwareComponent& other)
+bool Condenser::tryConnect(LabwareComponentBase& other)
 {
 	auto& container = getContent<0>();
 	if (other.isFlask())
@@ -40,7 +40,7 @@ bool Condenser::tryConnect(BaseLabwareComponent& other)
 	return false;
 }
 
-void Condenser::disconnect(const Ref<BaseContainer> dump, const BaseLabwareComponent& other)
+void Condenser::disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase& other)
 {
 	this->setOverflowTarget(dump);
 }

@@ -25,12 +25,21 @@ std::string Utils::extractDirName(const std::string& path)
 		"";
 }
 
-std::string Utils::extractFileName(const std::string& path)
+std::string Utils::extractFileNameWithExtension(const std::string& path)
 {
 	const auto nameStart = path.rfind('/');
 	return nameStart != std::string::npos ?
 		path.substr(nameStart + 1) :
 		path;
+}
+
+std::string Utils::extractFileName(const std::string& path)
+{
+	const auto nameWithExt = extractFileNameWithExtension(path);
+	const auto nameEnd = nameWithExt.rfind('.');
+	return nameEnd != std::string::npos ?
+		nameWithExt.substr(0, nameEnd) :
+		nameWithExt;
 }
 
 std::string Utils::extractExtension(const std::string& path)

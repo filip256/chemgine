@@ -20,7 +20,7 @@ public:
 	void add(LabwareSystem&& system);
 
 	template <typename CompT, typename... Args, typename = std::enable_if_t<
-		std::is_base_of_v<BaseLabwareComponent, CompT> && (
+		std::is_base_of_v<LabwareComponentBase, CompT> && (
 			std::is_constructible_v<CompT, Args..., Atmosphere&> ||
 			std::is_constructible_v<CompT, Args...>
 			)>>
@@ -38,7 +38,7 @@ public:
 	std::pair<size_t, l_size> getSystemComponentAt(const sf::Vector2f& point) const;
 	size_t anyIntersects(const size_t targetIdx) const;
 
-	bool tryConnect(const size_t targetIdx, const float_n maxSqDistance);
+	bool tryConnect(const size_t targetIdx, const float_s maxSqDistance);
 	bool tryDissconnect(const sf::Vector2f& point);
 
 	using LabSystemsConstIterator = std::vector<LabwareSystem>::const_iterator;
@@ -60,12 +60,16 @@ public:
 template <typename CompT, typename... Args, typename>
 CompT& Lab::add(Args&&... args)
 {
-	CompT* temp;
-	if constexpr (std::is_constructible_v<CompT, Args...>)
-		temp = new CompT(std::forward<Args>(args)...);
-	else
-		temp = new CompT(std::forward<Args>(args)..., atmosphere);
+	static_assert(std::is_base_of_v<LabwareComponentBase, CompT>,
+		"Lab: CompT must be a LabwareComponentBase derived type.");
 
-	systems.emplace_back(temp, *this);
-	return *temp;
+	std::unique_ptr<CompT> ptr;
+	if constexpr (std::is_constructible_v<CompT, Args...>)
+		ptr = std::make_unique<CompT>(std::forward<Args>(args)...);
+	else
+		ptr = std::make_unique<CompT>(std::forward<Args>(args)..., atmosphere);
+
+	auto& ref = *ptr.get();
+	systems.emplace_back(std::move(ptr), *this);
+	return ref;
 }

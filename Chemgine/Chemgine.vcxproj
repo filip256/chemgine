@@ -191,13 +191,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="UnitTestSetup.cpp" />
     <ClCompile Include="Adaptor.cpp" />
     <ClCompile Include="AggregationType.cpp" />
     <ClCompile Include="Atmosphere.cpp" />
     <ClCompile Include="AtomFactory.cpp" />
-    <ClCompile Include="BaseContainer.cpp" />
     <ClCompile Include="BaseContainerComponent.cpp" />
     <ClCompile Include="BaseLabwareData.cpp" />
+    <ClCompile Include="BuildUtils.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="ColorCast.cpp" />
     <ClCompile Include="Condenser.cpp" />
@@ -205,9 +206,16 @@
     <ClCompile Include="ContentInitializer.cpp" />
     <ClCompile Include="CursorHelper.cpp" />
     <ClCompile Include="DataDumper.cpp" />
+    <ClCompile Include="DefPerfTests.cpp" />
+    <ClCompile Include="DefUnitTests.cpp" />
+    <ClCompile Include="EstimatorPerfTests.cpp" />
+    <ClCompile Include="EstimatorUnitTests.cpp" />
     <ClCompile Include="FileAnalyzer.cpp" />
     <ClCompile Include="FileParser.cpp" />
     <ClCompile Include="Location.cpp" />
+    <ClCompile Include="MixtureUnitTests.cpp" />
+    <ClCompile Include="ModuleUnitTest.cpp" />
+    <ClCompile Include="StructureUnitTests.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="DragNDropHelper.cpp" />
     <ClCompile Include="DynamicAmount.cpp" />
@@ -219,7 +227,7 @@
     <ClCompile Include="EstimatorRepository.cpp" />
     <ClCompile Include="Atom.cpp" />
     <ClCompile Include="EstimatorBase.cpp" />
-    <ClCompile Include="BaseLabwareComponent.cpp" />
+    <ClCompile Include="LabwareComponentBase.cpp" />
     <ClCompile Include="BaseReactionCondition.cpp" />
     <ClCompile Include="Catalyst.cpp" />
     <ClCompile Include="Collision.cpp" />
@@ -255,6 +263,9 @@
     <ClCompile Include="Molecule.cpp" />
     <ClCompile Include="MoleculeData.cpp" />
     <ClCompile Include="PathUtils.cpp" />
+    <ClCompile Include="PerformanceReport.cpp" />
+    <ClCompile Include="PerfTest.cpp" />
+    <ClCompile Include="PerfTestSetup.cpp" />
     <ClCompile Include="PrintSettings.cpp" />
     <ClCompile Include="Radical.cpp" />
     <ClCompile Include="RadicalData.cpp" />
@@ -262,6 +273,8 @@
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Polarity.cpp" />
     <ClCompile Include="PropertyPane.cpp" />
+    <ClCompile Include="StringTable.cpp" />
+    <ClCompile Include="StructurePerfTests.cpp" />
     <ClCompile Include="StructureRef.cpp" />
     <ClCompile Include="Reactant.cpp" />
     <ClCompile Include="ReactantRef.cpp" />
@@ -283,6 +296,8 @@
     <ClCompile Include="SystemMatrix.cpp" />
     <ClCompile Include="DumpContainer.cpp" />
     <ClCompile Include="TerminalUtils.cpp" />
+    <ClCompile Include="TimingUnitTests.cpp" />
+    <ClCompile Include="UnitTest.cpp" />
     <ClCompile Include="TextBlock.cpp" />
     <ClCompile Include="Value.cpp" />
     <ClCompile Include="Vapour.cpp" />
@@ -291,8 +306,9 @@
     <ClInclude Include="Amount.hpp" />
     <ClInclude Include="Atmosphere.hpp" />
     <ClInclude Include="AtomFactory.hpp" />
-    <ClInclude Include="BaseContainer.hpp" />
+    <ClInclude Include="ContainerBase.hpp" />
     <ClInclude Include="BaseContainerComponent.hpp" />
+    <ClInclude Include="BuildUtils.hpp" />
     <ClInclude Include="Casts.hpp" />
     <ClInclude Include="Color.hpp" />
     <ClInclude Include="ColorCast.hpp" />
@@ -304,9 +320,22 @@
     <ClInclude Include="CursorHelper.hpp" />
     <ClInclude Include="DataDumper.hpp" />
     <ClInclude Include="DataPoint.hpp" />
+    <ClInclude Include="UnitTestSetup.hpp" />
+    <ClInclude Include="DefPerfTests.hpp" />
+    <ClInclude Include="DefUnitTests.hpp" />
+    <ClInclude Include="EstimatorPerfTests.hpp" />
+    <ClInclude Include="EstimatorUnitTests.hpp" />
     <ClInclude Include="FileAnalyzer.hpp" />
     <ClInclude Include="FileParser.hpp" />
     <ClInclude Include="Location.hpp" />
+    <ClInclude Include="ModuleUnitTest.hpp" />
+    <ClInclude Include="PerfTestSetup.hpp" />
+    <ClInclude Include="StructurePerfTests.hpp" />
+    <ClInclude Include="StructureUnitTests.hpp" />
+    <ClInclude Include="PerformanceReport.hpp" />
+    <ClInclude Include="PerfTest.hpp" />
+    <ClInclude Include="TimingUnitTests.hpp" />
+    <ClInclude Include="PropertyUnitTest.hpp" />
     <ClInclude Include="Object.hpp" />
     <ClInclude Include="DefinitionParser.hpp" />
     <ClInclude Include="DerivedEstimator.hpp" />
@@ -333,7 +362,7 @@
     <ClCompile Include="Chemgine.cpp" />
     <ClInclude Include="EstimatorBase.hpp" />
     <ClInclude Include="BaseComponentData.hpp" />
-    <ClInclude Include="BaseLabwareComponent.hpp" />
+    <ClInclude Include="LabwareComponentBase.hpp" />
     <ClInclude Include="BaseLabwareData.hpp" />
     <ClInclude Include="BaseReactionCondition.hpp" />
     <ClInclude Include="Catalyst.hpp" />
@@ -395,6 +424,7 @@
     <ClInclude Include="ReactantSet.hpp" />
     <ClInclude Include="ReactionNetwork.hpp" />
     <ClInclude Include="ReactionSpecifier.hpp" />
+    <ClInclude Include="MixtureUnitTests.hpp" />
     <ClInclude Include="Ref.hpp" />
     <ClInclude Include="RegressionEstimator.hpp" />
     <ClInclude Include="Regressors2D.hpp" />
@@ -409,10 +439,12 @@
     <ClInclude Include="SplineEstimator.hpp" />
     <ClInclude Include="StateNucleator.hpp" />
     <ClInclude Include="STP.hpp" />
+    <ClInclude Include="StringTable.hpp" />
     <ClInclude Include="StringUtils.hpp" />
     <ClInclude Include="Symbol.hpp" />
     <ClInclude Include="DumpContainer.hpp" />
     <ClInclude Include="TerminalUtils.hpp" />
+    <ClInclude Include="UnitTest.hpp" />
     <ClInclude Include="TextBlock.hpp" />
     <ClInclude Include="UnitizedEstimator.hpp" />
     <ClInclude Include="UIContext.hpp" />
@@ -422,7 +454,6 @@
     <ClInclude Include="MultiIndexMap.hpp" />
     <ClInclude Include="Molecule.hpp" />
     <ClInclude Include="MoleculeData.hpp" />
-    <ClInclude Include="PVector.hpp" />
     <ClInclude Include="Query.hpp" />
     <ClInclude Include="StructureRef.hpp" />
     <ClInclude Include="ReactionData.hpp" />
@@ -430,7 +461,7 @@
     <ClInclude Include="Reactor.hpp" />
     <ClInclude Include="SizeTypedefs.hpp" />
     <ClInclude Include="SystemMatrix.hpp" />
-    <ClInclude Include="Tests.hpp" />
+    <ClInclude Include="TestManager.hpp" />
     <ClInclude Include="Utils.hpp" />
     <ClInclude Include="Value.hpp" />
     <ClInclude Include="Vapour.hpp" />

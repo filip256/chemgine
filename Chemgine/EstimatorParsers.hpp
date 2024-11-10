@@ -46,8 +46,8 @@ public:
 		{
 			const auto mode = definition.getDefaultProperty(Def::Data::Mode, EstimationMode::LINEAR,
 				Def::parse<EstimationMode>);
-			const auto loss = definition.getDefaultProperty(Def::Data::CompressionLoss, 0.0,
-				Def::parse<float_n>);
+			const auto loss = definition.getDefaultProperty(Def::Data::CompressionLoss, 0.0f,
+				Def::parse<float_s>);
 
 			std::vector<DataPoint<OutU, InUs...>> dataPoints;
 			for (size_t i = 0; i < strValues->size(); ++i)
@@ -64,7 +64,7 @@ public:
 		}
 
 		if (const auto parameters = definition.getOptionalProperty(Def::Data::Parameters,
-			Def::parse<std::vector<float_n>>))
+			Def::parse<std::vector<float_s>>))
 		{
 			const auto mode = definition.getProperty(Def::Data::Mode, Def::parse<EstimationMode>);
 			if (not mode)
@@ -119,8 +119,8 @@ public:
 					if (not anchorPoint)
 						return std::nullopt;
 
-					const auto hShift = definition.getDefaultProperty(Def::Data::HorizontalShift, 0.0,
-						Def::parse<float_n>);
+					const auto hShift = definition.getDefaultProperty(Def::Data::HorizontalShift, 0.0f,
+						Def::parse<float_s>);
 					return factory.createAffine(*base, *anchorPoint, hShift);
 				}
 
@@ -135,9 +135,9 @@ public:
 				}
 
 				// manual transform
-				const auto vShift = definition.getDefaultProperty(Def::Data::VerticalShift, 0.0, Def::parse<float_n>);
-				const auto hShift = definition.getDefaultProperty(Def::Data::HorizontalShift, 0.0, Def::parse<float_n>);
-				const auto scale = definition.getDefaultProperty(Def::Data::Scale, 1.0, Def::parse<float_n>);
+				const auto vShift = definition.getDefaultProperty(Def::Data::VerticalShift, 0.0f, Def::parse<float_s>);
+				const auto hShift = definition.getDefaultProperty(Def::Data::HorizontalShift, 0.0f, Def::parse<float_s>);
+				const auto scale = definition.getDefaultProperty(Def::Data::Scale, 1.0f, Def::parse<float_s>);
 
 				return factory.createAffine(*base, vShift, hShift, scale);
 			}

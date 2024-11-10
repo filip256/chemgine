@@ -14,8 +14,7 @@ FileAnalyzer::FileAnalyzer(
 
 AnalysisResult FileAnalyzer::analyze()
 {
-	const auto logLevel = LogBase::logLevel;
-	//LogBase::logLevel = LogType::NONE;
+	LogBase::hide();
 
 	AnalysisResult result;
 	if (parser.isOpen() == false)
@@ -44,6 +43,6 @@ AnalysisResult FileAnalyzer::analyze()
 
 	result.failed = false;
 
-	LogBase::logLevel = logLevel;
+	LogBase::unhide();
 	return result;
 }

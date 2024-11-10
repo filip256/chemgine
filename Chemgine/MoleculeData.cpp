@@ -55,7 +55,7 @@ void MoleculeData::dumpDefinition(
 	std::unordered_set<EstimatorId>& alreadyPrinted
 ) const
 {
-	static const uint8_t valueOffset = Utils::max(
+	static const auto valueOffset = checked_cast<uint8_t>(Utils::max(
 		Def::Molecules::Name.size(),
 		Def::Molecules::MeltingPoint.size(),
 		Def::Molecules::BoilingPoint.size(),
@@ -70,7 +70,7 @@ void MoleculeData::dumpDefinition(
 		Def::Molecules::HenryConstant.size(),
 		Def::Molecules::Hydrophilicity.size(),
 		Def::Molecules::Lipophilicity.size(),
-		Def::Molecules::Color.size());
+		Def::Molecules::Color.size()));
 
 	Def::DataDumper(out, valueOffset, 0, prettify)
 		.tryOolSubDefinition(meltingPointEstimator, alreadyPrinted)

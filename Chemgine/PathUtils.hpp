@@ -8,6 +8,7 @@ namespace Utils
 	std::string normalizePath(const std::string& path);
 
 	std::string extractDirName(const std::string& path);
+	std::string extractFileNameWithExtension(const std::string& path);
 	std::string extractFileName(const std::string& path);
 	std::string extractExtension(const std::string& path);
 

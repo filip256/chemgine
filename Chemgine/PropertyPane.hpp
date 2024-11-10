@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SFML/Graphics.hpp"
-#include "BaseLabwareComponent.hpp"
+#include "LabwareComponentBase.hpp"
 #include "Layer.hpp"
 #include "Ref.hpp"
 
@@ -45,7 +45,7 @@ class MixturePropertyPane : public sf::Drawable
 	};
 
 private:
-	Ref<const BaseLabwareComponent> subject = nullRef;
+	Ref<const LabwareComponentBase> subject = nullRef;
 	sf::Vector2f position = { 0.0f, 0.0f };
 	sf::RectangleShape background = sf::RectangleShape({ 0.0f, 0.0f });
 	sf::Text title;
@@ -56,7 +56,7 @@ private:
 public:
 	MixturePropertyPane(const sf::Font& font) noexcept;
 	
-	void setSubject(const BaseLabwareComponent& subject);
+	void setSubject(const LabwareComponentBase& subject);
 	void setPosition(const sf::Vector2f& position);
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;

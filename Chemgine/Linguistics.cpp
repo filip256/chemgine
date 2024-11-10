@@ -49,10 +49,10 @@ void Linguistics::formatFloatingPoint(std::string& str, const uint8_t maxDigits)
 	str = str.substr(0, z + 1);
 }
 
-std::string Linguistics::formatFloatingPoint(const std::string& str, const uint8_t maxDigit)
+std::string Linguistics::formatFloatingPoint(const std::string& str, const uint8_t maxDigits)
 {
 	std::string temp(str);
-	formatFloatingPoint(temp, maxDigit);
+	formatFloatingPoint(temp, maxDigits);
 	return temp;
 }
 

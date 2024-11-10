@@ -13,7 +13,7 @@ public:
 		const Amount<Unit::TORR> pressure,
 		const ContentInitializer& contentInitializer,
 		const Amount<Unit::LITER> maxVolume,
-		const Ref<BaseContainer> overflowTarget
+		const Ref<ContainerBase> overflowTarget
 	) noexcept;
 	Atmosphere(Atmosphere&&) = default;
 

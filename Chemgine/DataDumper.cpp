@@ -22,7 +22,10 @@ DataDumper& DataDumper::beginProperties()
 
 DataDumper& DataDumper::endProperties()
 {
-	out << settings.newLine << baseIndent << settings.propertyBlockEnd;
+	out << settings.newLine;
+	if (settings.prettify)
+		out << baseIndent;
+	out << settings.propertyBlockEnd;
 	return *this;
 }
 

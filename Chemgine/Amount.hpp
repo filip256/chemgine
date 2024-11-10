@@ -16,10 +16,10 @@
 /// If a conversion between two units is used but not defined, a compilation error will occur
 /// </summary>
 template<Unit UnitT = Unit::NONE>
-class Amount : public Value<float_n>
+class Amount : public Value<float_s>
 {
 public:
-	using StorageType = float_n;
+	using StorageType = float_s;
 
 	constexpr inline Amount() = default;
 	constexpr inline Amount(const StorageType value) noexcept;
@@ -163,19 +163,19 @@ template<Unit UnitT>
 constexpr Amount<>::StorageType Amount<UnitT>::asStd() const noexcept { return value; }
 
 template<Unit UnitT>
-constexpr Amount<>::StorageType Amount<UnitT>::asKilo() const noexcept { return value / 1000.0; }
+constexpr Amount<>::StorageType Amount<UnitT>::asKilo() const noexcept { return static_cast<StorageType>(value / 1000.0); }
 template<>
-constexpr Amount<>::StorageType Amount<Unit::CUBIC_METER>::asKilo() const noexcept { return value / 1000000000.0; }
+constexpr Amount<>::StorageType Amount<Unit::CUBIC_METER>::asKilo() const noexcept { return static_cast<StorageType>(value / 1000000000.0); }
 
 template<Unit UnitT>
-constexpr Amount<>::StorageType Amount<UnitT>::asMilli() const noexcept { return value * 1000.0; }
+constexpr Amount<>::StorageType Amount<UnitT>::asMilli() const noexcept { return static_cast<StorageType>(value * 1000.0); }
 template<>
-constexpr Amount<>::StorageType Amount<Unit::CUBIC_METER>::asMilli() const noexcept { return value * 1000000000.0; }
+constexpr Amount<>::StorageType Amount<Unit::CUBIC_METER>::asMilli() const noexcept { return static_cast<StorageType>(value * 1000000000.0); }
 
 template<Unit UnitT>
-constexpr Amount<>::StorageType Amount<UnitT>::asMicro() const noexcept { return value * 1000000.0; }
+constexpr Amount<>::StorageType Amount<UnitT>::asMicro() const noexcept { return static_cast<StorageType>(value * 1000000.0); }
 template<>
-constexpr Amount<>::StorageType Amount<Unit::CUBIC_METER>::asMicro() const noexcept { return value * 1000000000000000000.0; }
+constexpr Amount<>::StorageType Amount<Unit::CUBIC_METER>::asMicro() const noexcept { return static_cast<StorageType>(value * 1000000000000000000.0); }
 
 template<Unit UnitT>
 constexpr Unit Amount<UnitT>::unit() const noexcept { return UnitT; }
@@ -183,9 +183,7 @@ constexpr Unit Amount<UnitT>::unit() const noexcept { return UnitT; }
 template<Unit UnitT>
 std::string Amount<UnitT>::toString(const uint8_t maxDigits) const noexcept 
 {
-	auto str = std::to_string(value);
-	Linguistics::formatFloatingPoint(str, maxDigits);
-
+	const auto str = Linguistics::formatFloatingPoint(value, maxDigits);
 	if constexpr (UnitT != Unit::NONE)
 		return str + ' ' + Amount<UnitT>::unitSymbol();
 	else
@@ -315,26 +313,26 @@ template<>
 inline std::string Amount<Unit::TORR_MOLE_RATIO>::unitName() noexcept { return Amount<Unit::TORR>::unitName() + " * (" + Amount<Unit::MOLE>::unitName() + " / " + Amount<Unit::MOLE>::unitName() + ")"; }
 
 template<>
-inline std::string Amount<Unit::SECOND>::format() noexcept { return Linguistics::formatTime(asMilli()); }
+inline std::string Amount<Unit::SECOND>::format() noexcept { return Linguistics::formatTime(static_cast<int32_t>(asMilli())); }
 
 //    --- Direct Conversions ---    //
 
 template<>
 template<>
 constexpr Amount<Unit::LITER>::Amount(const Amount<Unit::CUBIC_METER>& cubicMeters) noexcept :
-	Value<Amount<>::StorageType>(cubicMeters.asStd() * 1000.0)
+	Value(static_cast<StorageType>(cubicMeters.asStd() * 1000.0))
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::LITER>::Amount(const Amount<Unit::DROP>& drops) noexcept :
-	Value<Amount<>::StorageType>(drops.asStd() / 20000.0)
+	Value(static_cast<StorageType>(drops.asStd() / 20000.0))
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::CUBIC_METER>::Amount(const Amount<Unit::LITER>& liters) noexcept :
-	Value<Amount<>::StorageType>(liters.asStd() / 1000.0)
+	Value(static_cast<StorageType>(liters.asStd() / 1000.0))
 {}
 
 template<>
@@ -346,7 +344,7 @@ constexpr Amount<Unit::CUBIC_METER>::Amount(const Amount<Unit::DROP>& drops) noe
 template<>
 template<>
 constexpr Amount<Unit::DROP>::Amount(const Amount<Unit::LITER>& liters) noexcept :
-	Value<Amount<>::StorageType>(liters.asStd() * 20000.0)
+	Value(static_cast<StorageType>(liters.asStd() * 20000.0))
 {}
 
 template<>
@@ -358,31 +356,31 @@ constexpr Amount<Unit::DROP>::Amount(const Amount<Unit::CUBIC_METER>& cubicMeter
 template<>
 template<>
 constexpr Amount<Unit::JOULE_PER_MOLE>::Amount(const Amount<Unit::JOULE>& joules) noexcept :
-	Value<Amount<>::StorageType>(joules.asStd())
+	Value(static_cast<StorageType>(joules.asStd()))
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::KELVIN>::Amount(const Amount<Unit::CELSIUS>& c) noexcept :
-	Value<Amount<>::StorageType>(c.asStd() + 273.15)
+	Value(static_cast<StorageType>(c.asStd() + 273.15))
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::CELSIUS>::Amount(const Amount<Unit::KELVIN>& k) noexcept :
-	Value<Amount<>::StorageType>(k.asStd() - 273.15)
+	Value(static_cast<StorageType>(k.asStd() - 273.15))
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::FAHRENHEIT>::Amount(const Amount<Unit::CELSIUS>& c) noexcept :
-	Value<Amount<>::StorageType>(c.asStd() * (9.0 / 5.0) + 32)
+	Value(static_cast<StorageType>(c.asStd() * (9.0 / 5.0) + 32))
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::CELSIUS>::Amount(const Amount<Unit::FAHRENHEIT>& f) noexcept :
-	Value<Amount<>::StorageType>(f.asStd() * (5.0 / 9.0) - 32)
+	Value(static_cast<StorageType>(f.asStd() * (5.0 / 9.0) - 32))
 {}
 
 template<>
@@ -400,19 +398,19 @@ constexpr Amount<Unit::KELVIN>::Amount(const Amount<Unit::FAHRENHEIT>& f) noexce
 template<>
 template<>
 constexpr Amount<Unit::TORR>::Amount(const Amount<Unit::PASCAL>& p) noexcept :
-	Value<Amount<>::StorageType>(p.asStd() / 133.3223684211)
+	Value(static_cast<StorageType>(p.asStd() / 133.3223684211))
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::TORR>::Amount(const Amount<Unit::ATMOSPHERE>& a) noexcept :
-	Value<Amount<>::StorageType>(a.asStd() * 760.0)
+	Value(static_cast<StorageType>(a.asStd() * 760.0))
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::PASCAL>::Amount(const Amount<Unit::TORR>& t) noexcept :
-	Value<Amount<>::StorageType>(t.asStd() * 133.3223684211)
+	Value(static_cast<StorageType>(t.asStd() * 133.3223684211))
 {}
 
 template<>
@@ -424,7 +422,7 @@ constexpr Amount<Unit::PASCAL>::Amount(const Amount<Unit::ATMOSPHERE>& a) noexce
 template<>
 template<>
 constexpr Amount<Unit::ATMOSPHERE>::Amount(const Amount<Unit::TORR>& t) noexcept :
-	Value<Amount<>::StorageType>(t.asStd() / 760.0)
+	Value(static_cast<StorageType>(t.asStd() / 760.0))
 {}
 
 template<>
@@ -436,25 +434,25 @@ constexpr Amount<Unit::ATMOSPHERE>::Amount(const Amount<Unit::PASCAL>& p) noexce
 template<>
 template<>
 constexpr Amount<Unit::DEGREE>::Amount(const Amount<Unit::RADIAN>& radians) noexcept :
-	Amount<Unit::DEGREE>(radians.asStd() * (180.0 / std::numbers::pi_v<StorageType>))
+	Amount<Unit::DEGREE>(static_cast<StorageType>(radians.asStd() * (180.0 / std::numbers::pi_v<StorageType>)))
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::RADIAN>::Amount(const Amount<Unit::DEGREE>& degrees) noexcept :
-	Amount<Unit::RADIAN>(degrees.asStd() * (std::numbers::pi_v<StorageType> / 180.0))
+	Amount<Unit::RADIAN>(static_cast<StorageType>(degrees.asStd() * (std::numbers::pi_v<StorageType> / 180.0)))
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::MOLE_RATIO>::Amount(const Amount<Unit::MOLE_PERCENT>& ratio) noexcept :
-	Amount<Unit::MOLE_RATIO>(ratio.asStd() / 100.0)
+	Amount<Unit::MOLE_RATIO>(static_cast<StorageType>(ratio.asStd() / 100.0))
 {}
 
 template<>
 template<>
 constexpr Amount<Unit::MOLE_PERCENT>::Amount(const Amount<Unit::MOLE_RATIO>& ratio) noexcept :
-	Amount<Unit::MOLE_PERCENT>(ratio.asStd() * 100.0)
+	Amount<Unit::MOLE_PERCENT>(static_cast<StorageType>(ratio.asStd() * 100.0))
 {}
 
 //    --- Indirect Conversions ---    //
@@ -477,14 +475,14 @@ template<>
 template<>
 constexpr Amount<Unit::LITER> Amount<Unit::GRAM>::to(const Amount<Unit::GRAM_PER_MILLILITER> density) const noexcept
 {
-	return (value / density.asStd()) / 1000.0;
+	return static_cast<StorageType>((value / density.asStd()) / 1000.0);
 }
 
 template<>
 template<>
 constexpr Amount<Unit::GRAM> Amount<Unit::LITER>::to(const Amount<Unit::GRAM_PER_MILLILITER> density) const noexcept
 {
-	return (value * density.asStd()) * 1000.0;
+	return static_cast<StorageType>((value * density.asStd()) * 1000.0);
 }
 
 template<>
@@ -665,22 +663,22 @@ constexpr Amount<Unit::MOLE> Amount<Unit::MOLE_PER_SECOND>::to(const Amount<Unit
 
 //    --- Literals ---    //
 
-constexpr inline Amount<Unit::LITER> operator""_L(long double value) { return value; }
-constexpr inline Amount<Unit::CUBIC_METER> operator""_m3(long double value) { return value; }
-constexpr inline Amount<Unit::GRAM> operator""_g(long double value) { return value; }
-constexpr inline Amount<Unit::MOLE> operator""_mol(long double value) { return value; }
-constexpr inline Amount<Unit::SECOND> operator""_s(long double value) { return value; }
-constexpr inline Amount<Unit::CELSIUS> operator""_C(long double value) { return value; }
-constexpr inline Amount<Unit::KELVIN> operator""_K(long double value) { return value; }
-constexpr inline Amount<Unit::FAHRENHEIT> operator""_F(long double value) { return value; }
-constexpr inline Amount<Unit::TORR> operator""_torr(long double value) { return value; }
-constexpr inline Amount<Unit::PASCAL> operator""_Pa(long double value) { return value; }
-constexpr inline Amount<Unit::ATMOSPHERE> operator""_atm(long double value) { return value; }
-constexpr inline Amount<Unit::JOULE> operator""_J(long double value) { return value; }
-constexpr inline Amount<Unit::WATT> operator""_W(long double value) { return value; }
-constexpr inline Amount<Unit::METER> operator""_m(long double value) { return value; }
-constexpr inline Amount<Unit::DEGREE> operator""_o(long double value) { return value; }
-constexpr inline Amount<Unit::RADIAN> operator""_rad(long double value) { return value; }
+constexpr inline Amount<Unit::LITER> operator""_L(long double value) { return static_cast<Amount<>::StorageType>(value); }
+constexpr inline Amount<Unit::CUBIC_METER> operator""_m3(long double value) { return static_cast<Amount<>::StorageType>(value); }
+constexpr inline Amount<Unit::GRAM> operator""_g(long double value) { return static_cast<Amount<>::StorageType>(value); }
+constexpr inline Amount<Unit::MOLE> operator""_mol(long double value) { return static_cast<Amount<>::StorageType>(value); }
+constexpr inline Amount<Unit::SECOND> operator""_s(long double value) { return static_cast<Amount<>::StorageType>(value); }
+constexpr inline Amount<Unit::CELSIUS> operator""_C(long double value) { return static_cast<Amount<>::StorageType>(value); }
+constexpr inline Amount<Unit::KELVIN> operator""_K(long double value) { return static_cast<Amount<>::StorageType>(value); }
+constexpr inline Amount<Unit::FAHRENHEIT> operator""_F(long double value) { return static_cast<Amount<>::StorageType>(value); }
+constexpr inline Amount<Unit::TORR> operator""_torr(long double value) { return static_cast<Amount<>::StorageType>(value); }
+constexpr inline Amount<Unit::PASCAL> operator""_Pa(long double value) { return static_cast<Amount<>::StorageType>(value); }
+constexpr inline Amount<Unit::ATMOSPHERE> operator""_atm(long double value) { return static_cast<Amount<>::StorageType>(value); }
+constexpr inline Amount<Unit::JOULE> operator""_J(long double value) { return static_cast<Amount<>::StorageType>(value); }
+constexpr inline Amount<Unit::WATT> operator""_W(long double value) { return static_cast<Amount<>::StorageType>(value); }
+constexpr inline Amount<Unit::METER> operator""_m(long double value) { return static_cast<Amount<>::StorageType>(value); }
+constexpr inline Amount<Unit::DEGREE> operator""_o(long double value) { return static_cast<Amount<>::StorageType>(value); }
+constexpr inline Amount<Unit::RADIAN> operator""_rad(long double value) { return static_cast<Amount<>::StorageType>(value); }
 
 //    --- Printer ---    //
 
@@ -690,7 +688,12 @@ class Def::Printer<Amount<U>>
 public:
 	static std::string print(const Amount<U> object)
 	{
-		const auto valStr = Def::print(object.asStd());
+		return Def::print(object.asStd());
+	}
+
+	static std::string prettyPrint(const Amount<U> object)
+	{
+		const auto valStr = Def::prettyPrint(object.asStd());
 		if constexpr (U != Unit::NONE)
 			return valStr + '_' + object.unitSymbol();
 		else

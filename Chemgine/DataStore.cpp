@@ -16,6 +16,17 @@ DataStore::DataStore() :
 	labware()
 {}
 
+size_t DataStore::totalDefinitionCount() const
+{
+	return 
+		oolDefinitions.totalDefinitionCount() +
+		atoms.totalDefinitionCount() +
+		estimators.totalDefinitionCount() +
+		molecules.totalDefinitionCount() +
+		reactions.totalDefinitionCount() +
+		labware.totalDefinitionCount();
+}
+
 bool DataStore::addDefinition(Def::Object&& definition)
 {
 	switch (definition.getType())
@@ -27,21 +38,20 @@ bool DataStore::addDefinition(Def::Object&& definition)
 	case Def::DefinitionType::DATA:
 		return oolDefinitions.add(std::move(definition));
 	case Def::DefinitionType::ATOM:
-		return atoms.add<AtomData>(std::move(definition));
+		return atoms.add<AtomData>(definition);
 	case Def::DefinitionType::RADICAL:
-		return atoms.add<RadicalData>(std::move(definition));
+		return atoms.add<RadicalData>(definition);
 	case Def::DefinitionType::MOLECULE:
-		return molecules.add(std::move(definition));
+		return molecules.add(definition);
 	case Def::DefinitionType::REACTION:
-		return reactions.add(std::move(definition));
+		return reactions.add(definition);
 	case Def::DefinitionType::LABWARE:
-		return labware.add(std::move(definition));
+		return labware.add(definition);
 
 	default:
 		Log(this).error("Unknown definition type: '{0}', at: {1}.", static_cast<uint8_t>(definition.getType()), definition.getLocationName());
+		return false;
 	}
-
-	return false;
 }
 
 bool DataStore::load(const std::string& path)
@@ -53,7 +63,7 @@ bool DataStore::load(const std::string& path)
 		Log(this).warn("Pre-parse analysis failed on file: '{0}'", normPath);
 	else
 	{
-		Log(this).info("Pre-parse analysis on file: '{0}':\n - Total Definitions: {1} ({2} already parsed)\n - Total Files:       {3} ({4} already parsed)",
+		Log(this).info("Pre-parse analysis on file: '{0}':\n - Top-level Definitions: {1} ({2} already parsed)\n - Files:                 {3} ({4} already parsed)",
 			normPath, analysis.totalDefinitionCount, analysis.preparsedDefinitionCount, analysis.totalFileCount, analysis.preparsedFileCount);
 	}
 	
@@ -65,7 +75,7 @@ bool DataStore::load(const std::string& path)
 		if (not analysis.failed)
 		{
 			const auto definitionsToParse = analysis.totalDefinitionCount - analysis.preparsedDefinitionCount;
-			const auto percent = static_cast<uint8_t>((static_cast<float_n>(definitionCount) / definitionsToParse) * 100.f);
+			const auto percent = static_cast<uint8_t>((static_cast<float_s>(definitionCount) / definitionsToParse) * 100.f);
 			Log(this).info("\r[{0}/{1} | {2}%] Parsing definitions...", definitionCount, definitionsToParse, percent);
 		}
 
@@ -73,16 +83,18 @@ bool DataStore::load(const std::string& path)
 		if (not parser.isOpen())
 		{
 			Log(this).success("Parsing completed.");
+			Log(this).info("Currently storing {0} definitions.", totalDefinitionCount());
 			break;
 		}
 
-		if (not (entry && addDefinition(std::move(*entry))))
+		if (not entry)
 		{
 			Log(this).error("Parsing aborted due to invalid definition.");
 			success = false;
-			break;
+			continue;
 		}
 
+		success &= addDefinition(std::move(*entry));
 		++definitionCount;
 	}
 
@@ -91,11 +103,14 @@ bool DataStore::load(const std::string& path)
 	return success;
 }
 
-void DataStore::dump(const std::string& path, const bool prettify)
+void DataStore::dump(const std::string& path, const bool prettify) const
 {
 	std::ofstream out(path);
 	if (not out.is_open())
-		Log(this).fatal("Failed to open file for write: '{0}'.", path);
+	{
+		Log(this).fatal("Failed to open file: '{0}' for writing.", path);
+		return;
+	}
 
 	out << ":.\n" << "   - Chemgine Generated Definition File -\n\n   Version: 0.0.0\n   Sources:\n";
 	for (const auto& f : fileStore.getHistory())

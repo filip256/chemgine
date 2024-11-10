@@ -26,10 +26,21 @@ public:
 	/// Links the accessor to a DataStore.
 	/// </summary>
 	static void setDataStore(const DataStore& dataStore);
+
+	/// <summary>
+	/// Unlinks the current DataStore of this accessor.
+	/// </summary>
+	static void unsetDataStore();
 };
 
 template<typename UniqueT>
 DataStoreAccessor Accessor<UniqueT>::dataAccessor = DataStoreAccessor();
+
+template<typename UniqueT>
+const DataStore& Accessor<UniqueT>::getDataStore()
+{
+	return dataAccessor.get();
+}
 
 template<typename UniqueT>
 void Accessor<UniqueT>::setDataStore(const DataStore& dataStore)
@@ -38,7 +49,7 @@ void Accessor<UniqueT>::setDataStore(const DataStore& dataStore)
 }
 
 template<typename UniqueT>
-const DataStore& Accessor<UniqueT>::getDataStore()
+void Accessor<UniqueT>::unsetDataStore()
 {
-	return dataAccessor.get();
+	dataAccessor.unset();
 }

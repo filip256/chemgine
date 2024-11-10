@@ -21,11 +21,6 @@ Object::Object(
 	location(std::move(location))
 {}
 
-Object::~Object() noexcept
-{
-	logUnusedWarnings();
-}
-
 DefinitionType Object::getType() const
 {
 	return type;

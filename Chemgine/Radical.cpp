@@ -19,9 +19,9 @@ bool Radical::matches(const Atom& other) const
 		d.matchables.contains(other.getData().symbol);
 }
 
-Radical* Radical::clone() const
+std::unique_ptr<Atom> Radical::clone() const
 {
-	return new Radical(*this);
+	return std::make_unique<Radical>(*this);
 }
 
 bool Radical::isDefined(const Symbol& symbol)

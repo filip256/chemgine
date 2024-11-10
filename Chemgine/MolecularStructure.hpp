@@ -288,6 +288,8 @@ public:
     bool operator!=(const MolecularStructure& other) const;
     bool operator==(const std::string& other) const;
     bool operator!=(const std::string& other) const;
+
+    static std::optional<MolecularStructure> create(const std::string& smiles);
 };
 
 
@@ -297,10 +299,7 @@ class Def::Parser<MolecularStructure>
 public:
     static std::optional<MolecularStructure> parse(const std::string& str)
     {
-        MolecularStructure molecule(str);
-        return molecule.isEmpty() ?
-            std::nullopt :
-            std::optional(std::move(molecule));
+        return MolecularStructure::create(str);
     }
 };
 
