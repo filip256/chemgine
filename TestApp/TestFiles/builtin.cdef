@@ -1,0 +1,10 @@
+:.
+    Built-in Includer
+.:
+
+INCLUDE ~/builtin/estimators.cdef
+INCLUDE ~/builtin/atoms.cdef
+INCLUDE ~/builtin/radicals.cdef
+INCLUDE ~/builtin/molecules.cdef
+INCLUDE ~/builtin/reactions.cdef
+INCLUDE ~/builtin/labware.cdef

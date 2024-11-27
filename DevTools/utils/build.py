@@ -15,7 +15,7 @@ def build(sln_file :str, args :list = []) -> bool:
 
 
 def build_chem_debug86() -> bool:
-    success = build("../Chemgine/Chemgine.vcxproj", 
+    success = build("../Chemgine.sln", 
     [
         "/p:Configuration=Debug",
         "/p:Platform=x86"
@@ -30,7 +30,7 @@ def build_chem_debug86() -> bool:
 
 
 def build_chem_debug64() -> bool:
-    success = build("../Chemgine/Chemgine.vcxproj", 
+    success = build("../Chemgine.sln", 
     [
         "/p:Configuration=Debug",
         "/p:Platform=x64"
@@ -45,7 +45,7 @@ def build_chem_debug64() -> bool:
 
 
 def build_chem_release86() -> bool:
-    success = build("../Chemgine/Chemgine.vcxproj", 
+    success = build("../Chemgine.sln", 
     [
         "/p:Configuration=Release",
         "/p:Platform=x86"
@@ -61,7 +61,7 @@ def build_chem_release86() -> bool:
 
 
 def build_chem_release64() -> bool:
-    success = build("../Chemgine/Chemgine.vcxproj", 
+    success = build("../Chemgine.sln", 
     [
         "/p:Configuration=Release",
         "/p:Platform=x64"
