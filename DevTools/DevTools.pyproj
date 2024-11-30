@@ -28,8 +28,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="checks\" />
+    <Folder Include="keys\" />
     <Folder Include="tools\" />
     <Folder Include="utils\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="keys\vt_api_key" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
