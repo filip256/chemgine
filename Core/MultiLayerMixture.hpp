@@ -2,7 +2,7 @@
 
 #include "Mixture.hpp"
 #include "Layer.hpp"
-#include "Atmosphere.hpp"
+#include "AtmosphereMixture.hpp"
 #include "DumpContainer.hpp"
 
 #include <map>
@@ -40,7 +40,7 @@ protected:
 
 public:
 	MultiLayerMixture(
-		const Ref<Atmosphere> atmosphere,
+		const Ref<AtmosphereMixture> atmosphere,
 		const Amount<Unit::LITER> maxVolume,
 		const Ref<ContainerBase> overflowTarget
 	) noexcept;

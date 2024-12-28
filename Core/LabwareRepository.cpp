@@ -124,7 +124,7 @@ bool LabwareRepository::add<LabwareType::HEATSOURCE>(const LabwareId id, const D
 
 bool LabwareRepository::add(const Def::Object& definition)
 {
-	static std::unordered_map<std::string, bool (LabwareRepository::*)(LabwareId, const Def::Object&)> adders =
+	static const std::unordered_map<std::string, bool (LabwareRepository::*)(LabwareId, const Def::Object&)> adders =
 	{
 		{Def::Labware::Flask, &LabwareRepository::add<LabwareType::FLASK> },
 		{Def::Labware::Adaptor, &LabwareRepository::add<LabwareType::ADAPTOR> },

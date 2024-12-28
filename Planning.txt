@@ -450,6 +450,7 @@ Tasks:
     DONE. Make separate TestApp
     DONE. Add flags to TestApp for filter, perf, unit
     DONE. Estimator perf tests should use unsorted input data
+    8. Add FPS tests
 
 ---
     - FULL CYCLE SUPPORT -
@@ -489,6 +490,26 @@ Tasks:
     2. Def parsing fails if definitions includes a subdefinition with an <identifier>
 
 ---
+
+Amounts:
+    Linear conversions ar defined between convertible base units by defining a scale and shift:
+        b = f[A->B](a) = a*scale + shift
+
+    The same does not hold for relative units. A 5C increase in temperature is equivalent with a 5K
+    increase (not -268.15K). Thus converting between relative units should only apply scale:
+        b = f[A->B](a) = a*scale
+
+    Operators:
+        A + B               -> A + B 
+
+        A * B               -> Mul<A, B>
+
+        A / B               -> Div<Rel<A>, Rel<B>>
+        A / Rel<B>          -> Div<Rel<A>, Rel<B>>
+        Rel<A> / Rel<B>     -> Div<Rel<A>, Rel<B>>
+
+        A * Rel<A>          ->   
+
 
 
 Categorizations:

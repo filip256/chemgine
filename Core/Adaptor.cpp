@@ -5,7 +5,7 @@
 
 Adaptor::Adaptor(
 	const LabwareId id,
-	Atmosphere& atmosphere
+	AtmosphereMixture& atmosphere
 ) noexcept :
 	ContainerComponent(id, LabwareType::ADAPTOR, atmosphere)
 {}

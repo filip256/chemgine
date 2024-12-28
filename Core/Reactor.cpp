@@ -14,7 +14,7 @@ Reactor::Reactor(const Reactor& other) noexcept :
 }
 
 Reactor::Reactor(
-	const Ref<Atmosphere> atmosphere,
+	const Ref<AtmosphereMixture> atmosphere,
 	const Amount<Unit::LITER> maxVolume,
 	const Ref<ContainerBase> overflowTarget
 ) noexcept :
@@ -22,7 +22,7 @@ Reactor::Reactor(
 {}
 
 Reactor::Reactor(
-	const Ref<Atmosphere> atmosphere,
+	const Ref<AtmosphereMixture> atmosphere,
 	const Amount<Unit::LITER> maxVolume
 ) noexcept :
 	Reactor(atmosphere, maxVolume, atmosphere)

@@ -4,7 +4,7 @@
 
 Condenser::Condenser(
 	const LabwareId id,
-	Atmosphere& atmosphere
+	AtmosphereMixture& atmosphere
 ) noexcept :
 	ContainerComponent(id, LabwareType::CONDENSER, atmosphere)
 {

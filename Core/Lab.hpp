@@ -1,19 +1,19 @@
 #pragma once
 
-#include "Atmosphere.hpp"
+#include "AtmosphereMixture.hpp"
 #include "LabwareSystem.hpp"
 #include "SFML/Graphics/Drawable.hpp"
 
 class Lab : public sf::Drawable
 {
 private:
-	Atmosphere atmosphere;
+	AtmosphereMixture atmosphere;
 	mutable sf::RectangleShape atmosphereOverlay;
 	std::vector<LabwareSystem> systems;
 
 public:
 	Lab() noexcept;
-	Lab(Atmosphere&& atmosphere) noexcept;
+	Lab(AtmosphereMixture&& atmosphere) noexcept;
 	Lab(const Lab&) = delete;
 	Lab(Lab&&) = default;
 
@@ -21,7 +21,7 @@ public:
 
 	template <typename CompT, typename... Args, typename = std::enable_if_t<
 		std::is_base_of_v<LabwareComponentBase, CompT> && (
-			std::is_constructible_v<CompT, Args..., Atmosphere&> ||
+			std::is_constructible_v<CompT, Args..., AtmosphereMixture&> ||
 			std::is_constructible_v<CompT, Args...>
 			)>>
 	CompT& add(Args&&... args);
@@ -31,8 +31,8 @@ public:
 	size_t getSystemCount() const;
 	const LabwareSystem& getSystem(const size_t idx) const;
 	LabwareSystem& getSystem(const size_t idx);
-	const Atmosphere& getAtmosphere() const;
-	Atmosphere& getAtmosphere();
+	const AtmosphereMixture& getAtmosphere() const;
+	AtmosphereMixture& getAtmosphere();
 
 	size_t getSystemAt(const sf::Vector2f& point) const;
 	std::pair<size_t, l_size> getSystemComponentAt(const sf::Vector2f& point) const;

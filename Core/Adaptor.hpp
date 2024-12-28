@@ -2,14 +2,14 @@
 
 #include "ContainerComponent.hpp"
 #include "AdaptorData.hpp"
-#include "Atmosphere.hpp"
+#include "AtmosphereMixture.hpp"
 
-class Adaptor : public ContainerComponent<Atmosphere>
+class Adaptor : public ContainerComponent<AtmosphereMixture>
 {
 public:
 	Adaptor(
 		const LabwareId id,
-		Atmosphere& atmosphere
+		AtmosphereMixture& atmosphere
 	) noexcept;
 
 	const AdaptorData& getData() const override final;

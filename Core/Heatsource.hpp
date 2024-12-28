@@ -3,7 +3,7 @@
 #include "EquipmentComponent.hpp"
 #include "HeatsourceData.hpp"
 #include "BaseContainerComponent.hpp"
-#include "Atmosphere.hpp"
+#include "AtmosphereMixture.hpp"
 
 class Heatsource : public EquipmentComponent
 {
@@ -13,7 +13,7 @@ private:
 public:
 	Heatsource(
 		const LabwareId id,
-		Atmosphere& atmosphere
+		AtmosphereMixture& atmosphere
 	) noexcept;
 
 	const HeatsourceData& getData() const override final;

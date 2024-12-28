@@ -139,6 +139,12 @@
     <Filter Include="Source Files\Data\Def">
       <UniqueIdentifier>{7e7d83b0-6811-4e6e-8d28-dcd0d6fac6c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Helpers\Quantities">
+      <UniqueIdentifier>{57b23e04-9861-4000-9bcb-fd76398aa833}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Helpers\Quantities">
+      <UniqueIdentifier>{c6a4fe23-2352-420d-845e-6564dfd11c9f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DataStore.cpp">
@@ -273,7 +279,7 @@
     <ClCompile Include="Symbol.cpp">
       <Filter>Source Files\Moleculars</Filter>
     </ClCompile>
-    <ClCompile Include="Atmosphere.cpp">
+    <ClCompile Include="AtmosphereMixture.cpp">
       <Filter>Source Files\Mixtures\MixtureTypes</Filter>
     </ClCompile>
     <ClCompile Include="Mixture.cpp">
@@ -446,6 +452,12 @@
     </ClCompile>
     <ClCompile Include="BuildUtils.cpp">
       <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="TypeId.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicQuantity.cpp">
+      <Filter>Source Files\Helpers\Quantities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -635,7 +647,7 @@
     <ClInclude Include="FlagField.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
-    <ClInclude Include="Atmosphere.hpp">
+    <ClInclude Include="AtmosphereMixture.hpp">
       <Filter>Header Files\Mixtures\MixtureTypes</Filter>
     </ClInclude>
     <ClInclude Include="ContainerBase.hpp">
@@ -898,6 +910,21 @@
     </ClInclude>
     <ClInclude Include="TypeUtils.hpp">
       <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="TypeId.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="BoostUnits.hpp">
+      <Filter>Header Files\Helpers\Quantities</Filter>
+    </ClInclude>
+    <ClInclude Include="Quantity.hpp">
+      <Filter>Header Files\Helpers\Quantities</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicQuantity.hpp">
+      <Filter>Header Files\Helpers\Quantities</Filter>
+    </ClInclude>
+    <ClInclude Include="Units.hpp">
+      <Filter>Header Files\Helpers\Quantities</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

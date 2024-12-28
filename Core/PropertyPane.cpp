@@ -201,7 +201,7 @@ void MixturePropertyPane::draw(sf::RenderTarget& target, sf::RenderStates states
 			contentPane.setPosition(contentPane.getPosition() + sf::Vector2f(0.0f, 130.0f));
 		}
 	}
-	else if (const auto contentCast = Ref(container).cast<const Atmosphere>())
+	else if (const auto contentCast = Ref(container).cast<const AtmosphereMixture>())
 	{
 		layerPane.setPosition(propertyName.getPosition() + sf::Vector2f(22.0f, 32.0f));
 		contentPane.setPosition(propertyName.getPosition() + sf::Vector2f(240.0f, 32.0f));

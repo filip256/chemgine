@@ -9,7 +9,7 @@ class Flask : public ContainerComponent<Reactor>
 public:
 	Flask(
 		const LabwareId id,
-		Atmosphere& atmosphere
+		AtmosphereMixture& atmosphere
 	) noexcept;
 
 	const FlaskData& getData() const override final;

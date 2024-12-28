@@ -2,7 +2,7 @@
 
 Heatsource::Heatsource(
 	const LabwareId id,
-	Atmosphere& atmosphere
+	AtmosphereMixture& atmosphere
 ) noexcept :
 	EquipmentComponent(id, LabwareType::HEATSOURCE),
 	target(atmosphere)

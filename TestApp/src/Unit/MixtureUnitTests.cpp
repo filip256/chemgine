@@ -5,7 +5,7 @@ ReactorUnitTest::ReactorUnitTest(
 	std::string&& name,
 	const Amount<Unit::LITER> maxVolume,
 	const ContentInitializer& contents,
-	Atmosphere&& atmosphere,
+	AtmosphereMixture&& atmosphere,
 	FlagField<TickMode> tickMode
 ) noexcept :
 	UnitTest(std::move(name)),
@@ -25,7 +25,7 @@ ReactorUnitTest::ReactorUnitTest(
 	const ContentInitializer& contents,
 	FlagField<TickMode> tickMode
 ) noexcept :
-	ReactorUnitTest(std::move(name), maxVolume, contents, Atmosphere::createDefaultAtmosphere(), tickMode)
+	ReactorUnitTest(std::move(name), maxVolume, contents, AtmosphereMixture::createDefaultAtmosphere(), tickMode)
 {}
 
 Amount<Unit::GRAM> ReactorUnitTest::getTotalSystemMass() const

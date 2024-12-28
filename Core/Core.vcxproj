@@ -109,7 +109,7 @@
       <PreprocessorDefinitions>SFML_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <EnablePREfast>false</EnablePREfast>
-      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\cxxopts\include;$(SolutionDir)Thirdparty\SFML\x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\boost\include;$(SolutionDir)Thirdparty\cxxopts\include;$(SolutionDir)Thirdparty\SFML\x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -133,7 +133,7 @@
       <EnablePREfast>false</EnablePREfast>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\cxxopts\include;$(SolutionDir)Thirdparty\SFML\x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\boost\include;$(SolutionDir)Thirdparty\cxxopts\include;$(SolutionDir)Thirdparty\SFML\x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
@@ -155,7 +155,7 @@
       <PreprocessorDefinitions>SFML_STATIC;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <EnablePREfast>false</EnablePREfast>
-      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\cxxopts\include;$(SolutionDir)Thirdparty\SFML\x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\boost\include;$(SolutionDir)Thirdparty\cxxopts\include;$(SolutionDir)Thirdparty\SFML\x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <LanguageStandard>stdcpp20</LanguageStandard>
@@ -186,7 +186,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\cxxopts\include;$(SolutionDir)Thirdparty\SFML\x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\boost\include;$(SolutionDir)Thirdparty\cxxopts\include;$(SolutionDir)Thirdparty\SFML\x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OmitFramePointers>true</OmitFramePointers>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -202,7 +202,7 @@
   <ItemGroup>
     <ClCompile Include="Adaptor.cpp" />
     <ClCompile Include="AggregationType.cpp" />
-    <ClCompile Include="Atmosphere.cpp" />
+    <ClCompile Include="AtmosphereMixture.cpp" />
     <ClCompile Include="AtomFactory.cpp" />
     <ClCompile Include="BaseContainerComponent.cpp" />
     <ClCompile Include="BaseLabwareData.cpp" />
@@ -213,6 +213,7 @@
     <ClCompile Include="CondenserData.cpp" />
     <ClCompile Include="ContentInitializer.cpp" />
     <ClCompile Include="DataDumper.cpp" />
+    <ClCompile Include="DynamicQuantity.cpp" />
     <ClCompile Include="FileAnalyzer.cpp" />
     <ClCompile Include="FileParser.cpp" />
     <ClCompile Include="Location.cpp" />
@@ -292,12 +293,13 @@
     <ClCompile Include="DumpContainer.cpp" />
     <ClCompile Include="TerminalUtils.cpp" />
     <ClCompile Include="TextBlock.cpp" />
+    <ClCompile Include="TypeId.cpp" />
     <ClCompile Include="Value.cpp" />
     <ClCompile Include="Vapour.cpp" />
     <ClInclude Include="Adaptor.hpp" />
     <ClInclude Include="AggregationType.hpp" />
     <ClInclude Include="Amount.hpp" />
-    <ClInclude Include="Atmosphere.hpp" />
+    <ClInclude Include="AtmosphereMixture.hpp" />
     <ClInclude Include="AtomFactory.hpp" />
     <ClInclude Include="ContainerBase.hpp" />
     <ClInclude Include="BaseContainerComponent.hpp" />
@@ -312,9 +314,11 @@
     <ClInclude Include="CountedRef.hpp" />
     <ClInclude Include="DataDumper.hpp" />
     <ClInclude Include="DataPoint.hpp" />
+    <ClInclude Include="DynamicQuantity.hpp" />
     <ClInclude Include="FileAnalyzer.hpp" />
     <ClInclude Include="FileParser.hpp" />
     <ClInclude Include="Location.hpp" />
+    <ClInclude Include="BoostUnits.hpp" />
     <ClInclude Include="Object.hpp" />
     <ClInclude Include="DefinitionParser.hpp" />
     <ClInclude Include="DerivedEstimator.hpp" />
@@ -390,6 +394,7 @@
     <ClInclude Include="PortType.hpp" />
     <ClInclude Include="Printers.hpp" />
     <ClInclude Include="PrintSettings.hpp" />
+    <ClInclude Include="Quantity.hpp" />
     <ClInclude Include="Radical.hpp" />
     <ClInclude Include="RadicalData.hpp" />
     <ClInclude Include="RandomizedParticle.hpp" />
@@ -421,6 +426,7 @@
     <ClInclude Include="DumpContainer.hpp" />
     <ClInclude Include="TerminalUtils.hpp" />
     <ClInclude Include="TextBlock.hpp" />
+    <ClInclude Include="TypeId.hpp" />
     <ClInclude Include="TypeUtils.hpp" />
     <ClInclude Include="UnitizedEstimator.hpp" />
     <ClInclude Include="UndirectedGraph.hpp" />
@@ -437,6 +443,7 @@
     <ClInclude Include="SizeTypedefs.hpp" />
     <ClInclude Include="SystemMatrix.hpp" />
     <ClInclude Include="STLUtils.hpp" />
+    <ClInclude Include="Units.hpp" />
     <ClInclude Include="Value.hpp" />
     <ClInclude Include="Vapour.hpp" />
     <ClInclude Include="ImmutableSet.hpp" />

@@ -6,7 +6,7 @@
 #include "MultiLayerMixture.hpp"
 #include "DataStoreAccessor.hpp"
 #include "ConcreteReaction.hpp"
-#include "Atmosphere.hpp"
+#include "AtmosphereMixture.hpp"
 #include "FlagField.hpp"
 #include "Accessor.hpp"
 
@@ -45,13 +45,13 @@ private:
 
 public:
 	Reactor(
-		const Ref<Atmosphere> atmosphere,
+		const Ref<AtmosphereMixture> atmosphere,
 		const Amount<Unit::LITER> maxVolume,
 		const Ref<ContainerBase> overflowTarget
 	) noexcept;
 
 	Reactor(
-		const Ref<Atmosphere> atmosphere,
+		const Ref<AtmosphereMixture> atmosphere,
 		const Amount<Unit::LITER> maxVolume
 	) noexcept;
 

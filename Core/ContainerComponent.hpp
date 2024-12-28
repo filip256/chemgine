@@ -29,7 +29,7 @@ protected:
 	inline ContainerComponent(
 		const LabwareId id,
 		const LabwareType type,
-		Atmosphere& atmosphere
+		AtmosphereMixture& atmosphere
 	) noexcept = delete;
 
 	Ref<ContainerBase> getOverflowTarget() const override final;
@@ -78,10 +78,10 @@ ContainerComponent<Args...>::ContainerComponent(
 {}
 
 template<>
-inline ContainerComponent<Atmosphere>::ContainerComponent(
+inline ContainerComponent<AtmosphereMixture>::ContainerComponent(
 	const LabwareId id,
 	const LabwareType type,
-	Atmosphere& atmosphere
+	AtmosphereMixture& atmosphere
 ) noexcept :
 	BaseContainerComponent(id, type),
 	containers(atmosphere.createSubatmosphere(getData().getVolume())),
@@ -92,7 +92,7 @@ template<>
 inline ContainerComponent<Reactor>::ContainerComponent(
 	const LabwareId id,
 	const LabwareType type,
-	Atmosphere& atmosphere
+	AtmosphereMixture& atmosphere
 ) noexcept :
 	BaseContainerComponent(id, type),
 	containers(Reactor(atmosphere, getData().getVolume(), atmosphere)),
@@ -100,14 +100,14 @@ inline ContainerComponent<Reactor>::ContainerComponent(
 {}
 
 template<>
-inline ContainerComponent<Atmosphere, Reactor>::ContainerComponent(
+inline ContainerComponent<AtmosphereMixture, Reactor>::ContainerComponent(
 	const LabwareId id,
 	const LabwareType type,
-	Atmosphere& atmosphere
+	AtmosphereMixture& atmosphere
 ) noexcept :
 	BaseContainerComponent(id, type),
 	containers(std::tuple(
-		Atmosphere(atmosphere.createSubatmosphere(getData().getVolume())),
+		AtmosphereMixture(atmosphere.createSubatmosphere(getData().getVolume())),
 		Reactor(atmosphere, getData().getVolume(), atmosphere))),
 	fills(getData().generateShapeFills())
 {}

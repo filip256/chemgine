@@ -2,10 +2,10 @@
 #include "ColorCast.hpp"
 
 Lab::Lab() noexcept :
-	atmosphere(Atmosphere::createDefaultAtmosphere())
+	atmosphere(AtmosphereMixture::createDefaultAtmosphere())
 {}
 
-Lab::Lab(Atmosphere&& atmosphere) noexcept :
+Lab::Lab(AtmosphereMixture&& atmosphere) noexcept :
 	atmosphere(std::move(atmosphere))
 {}
 
@@ -36,12 +36,12 @@ LabwareSystem& Lab::getSystem(const size_t idx)
 	return systems[idx];
 }
 
-const Atmosphere& Lab::getAtmosphere() const
+const AtmosphereMixture& Lab::getAtmosphere() const
 {
 	return atmosphere;
 }
 
-Atmosphere& Lab::getAtmosphere()
+AtmosphereMixture& Lab::getAtmosphere()
 {
 	return atmosphere;
 }

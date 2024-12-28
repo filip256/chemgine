@@ -36,8 +36,8 @@ public:
 
 
 template<>
-void inline BaseContainerComponent::draw<Atmosphere>(
-	const Atmosphere& container, const ShapeFill& fill,
+void inline BaseContainerComponent::draw<AtmosphereMixture>(
+	const AtmosphereMixture& container, const ShapeFill& fill,
 	sf::RenderTarget& target, const sf::RenderStates& states)
 {
 	fill.setColor(Utils::colorCast(container.getLayerColor()));

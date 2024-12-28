@@ -1,7 +1,7 @@
 #pragma once
 
 #include "UnitTest.hpp"
-#include "Atmosphere.hpp"
+#include "AtmosphereMixture.hpp"
 #include "Reactor.hpp"
 #include "DataStore.hpp"
 #include "ForwardingContainer.hpp"
@@ -10,7 +10,7 @@ class ReactorUnitTest : public UnitTest
 {
 protected:
 	DumpContainer dump;
-	Atmosphere atmosphere;
+	AtmosphereMixture atmosphere;
 	Reactor reactor;
 
 	Amount<Unit::GRAM> getTotalSystemMass() const;
@@ -22,7 +22,7 @@ public:
 		std::string&& name,
 		const Amount<Unit::LITER> maxVolume,
 		const ContentInitializer& contents,
-		Atmosphere&& atmosphere = Atmosphere::createDefaultAtmosphere(),
+		AtmosphereMixture&& atmosphere = AtmosphereMixture::createDefaultAtmosphere(),
 		FlagField<TickMode> tickMode = TickMode::ENABLE_ALL
 	) noexcept;
 

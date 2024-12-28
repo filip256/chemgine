@@ -92,7 +92,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SFML_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\include;$(SolutionDir)Thirdparty\SFML\x86\include;$(SolutionDir)Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\include;$(SolutionDir)Thirdparty\SFML\x86\include;$(SolutionDir)Core;%(AdditionalIncludeDirectories);$(SolutionDir)Thirdparty\boost;$(SolutionDir)Thirdparty\boost\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
@@ -111,7 +111,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SFML_STATIC;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\include;$(SolutionDir)Thirdparty\SFML\x86\include;$(SolutionDir)Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\include;$(SolutionDir)Thirdparty\SFML\x86\include;$(SolutionDir)Core;%(AdditionalIncludeDirectories);$(SolutionDir)Thirdparty\boost;$(SolutionDir)Thirdparty\boost\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
@@ -132,7 +132,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SFML_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\include;$(SolutionDir)Thirdparty\SFML\x64\include;$(SolutionDir)Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\include;$(SolutionDir)Thirdparty\SFML\x64\include;$(SolutionDir)Core;%(AdditionalIncludeDirectories);$(SolutionDir)Thirdparty\boost;$(SolutionDir)Thirdparty\boost\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
@@ -151,7 +151,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SFML_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\include;$(SolutionDir)Thirdparty\SFML\x64\include;$(SolutionDir)Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\include;$(SolutionDir)Thirdparty\SFML\x64\include;$(SolutionDir)Core;%(AdditionalIncludeDirectories);$(SolutionDir)Thirdparty\boost;$(SolutionDir)Thirdparty\boost\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>

@@ -1,6 +1,8 @@
 #include "DataStore.hpp"
 #include "UIContext.hpp"
 
+#include "Units.hpp"
+
 int main()
 {
     LogBase::logLevel = LogType::DEBUG;

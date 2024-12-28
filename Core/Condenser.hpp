@@ -1,16 +1,16 @@
 #pragma once
 
 #include "ContainerComponent.hpp"
-#include "Atmosphere.hpp"
+#include "AtmosphereMixture.hpp"
 #include "Reactor.hpp"
 #include "CondenserData.hpp"
 
-class Condenser : public ContainerComponent<Atmosphere, Reactor>
+class Condenser : public ContainerComponent<AtmosphereMixture, Reactor>
 {
 public:
 	Condenser(
 		const LabwareId id,
-		Atmosphere& atmosphere
+		AtmosphereMixture& atmosphere
 	) noexcept;
 
 	const CondenserData& getData() const override final;

@@ -15,7 +15,7 @@ MultiLayerMixture::MultiLayerMixture(const MultiLayerMixture& other) noexcept :
 }
 
 MultiLayerMixture::MultiLayerMixture(
-	const Ref<Atmosphere> atmosphere,
+	const Ref<AtmosphereMixture> atmosphere,
 	const Amount<Unit::LITER> maxVolume,
 	const Ref<ContainerBase> overflowTarget
 ) noexcept :
