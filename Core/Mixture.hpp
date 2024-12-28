@@ -18,7 +18,7 @@ protected:
 
 	Mixture(const Mixture&) noexcept;
 
-	virtual void add(const Amount<Unit::JOULE> heat, const LayerType layer) = 0;
+	virtual void add(const Quantity<Joule> heat, const LayerType layer) = 0;
 
 	virtual LayerType findLayerFor(const Reactant& reactant) const = 0;
 
@@ -39,7 +39,7 @@ public:
 
 	virtual Amount<Unit::TORR> getPressure() const = 0;
 	virtual Amount<Unit::MOLE> getTotalMoles() const = 0;
-	virtual Amount<Unit::GRAM> getTotalMass() const = 0;
+	virtual Quantity<Gram> getTotalMass() const = 0;
 	virtual Amount<Unit::LITER> getTotalVolume() const = 0;
 
 	virtual const Layer& getLayer(const LayerType layer) const = 0;

@@ -69,9 +69,9 @@ void MultiLayerMixture::addToLayer(const Reactant& reactant)
 		layer.unsetIfNucleator(reactant);
 }
 
-void MultiLayerMixture::add(const Amount<Unit::JOULE> heat, const LayerType layer)
+void MultiLayerMixture::add(const Quantity<Joule> heat, const LayerType layer)
 {
-	layers.at(layer).potentialEnergy += heat;
+	layers.at(layer).potentialEnergy += Amount<Unit::JOULE>(heat.value());
 }
 
 void MultiLayerMixture::removeNegligibles()
@@ -249,19 +249,19 @@ void MultiLayerMixture::add(const Molecule& molecule, const Amount<Unit::MOLE> a
 	add(r.mutate(findLayerFor(r)));
 }
 
-void MultiLayerMixture::add(const Amount<Unit::JOULE> heat)
+void MultiLayerMixture::add(const Quantity<Joule> heat)
 {
 	const auto lA = getLayerAbove(LayerType::SOLID);
 	const auto& lS = layers.find(LayerType::SOLID);
 
 	if (lS == layers.end())
 	{
-		layers.at(lA).potentialEnergy += heat;
+		layers.at(lA).potentialEnergy += Amount<Unit::JOULE>(heat.value());
 		return;
 	}
 
-	lS->second.potentialEnergy += heat * 0.5;
-	layers.at(lA).potentialEnergy += heat * 0.5;
+	lS->second.potentialEnergy += Amount<Unit::JOULE>((heat * 0.5f).value());
+	layers.at(lA).potentialEnergy += Amount<Unit::JOULE>((heat * 0.5f).value());
 }
 
 bool MultiLayerMixture::hasLayer(const LayerType layer) const
@@ -338,9 +338,9 @@ Amount<Unit::MOLE> MultiLayerMixture::getTotalMoles() const
 	return totalMoles;
 }
 
-Amount<Unit::GRAM> MultiLayerMixture::getTotalMass() const
+Quantity<Gram> MultiLayerMixture::getTotalMass() const
 {
-	return totalMass;
+	return Quantity<Gram>::from(totalMass.asStd());
 }
 
 Amount<Unit::LITER> MultiLayerMixture::getTotalVolume() const

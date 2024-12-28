@@ -34,7 +34,7 @@ public:
 	ForwardingContainer(ForwardingContainer&&) = default;
 
 	void add(const Reactant& reactant) override final;
-	void add(Amount<Unit::JOULE> energy) override final;
+	void add(Quantity<Joule> energy) override final;
 
 	void addRule(ForwardingRule rule);
 	ForwardingRule getRule(const size_t idx) const;

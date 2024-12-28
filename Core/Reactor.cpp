@@ -143,7 +143,7 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 			MultiLayerMixture::add(p.mutate(findLayerFor(p)));
 		}
 
-		MultiLayerMixture::add(r.getData().reactionEnergy.to<Unit::JOULE>(speedCoef), r.getReactants().any().layer);
+		MultiLayerMixture::add(Quantity<Joule>::from(r.getData().reactionEnergy.to<Unit::JOULE>(speedCoef).asStd()), r.getReactants().any().layer);
 	}
 }
 
@@ -169,8 +169,8 @@ void Reactor::runLayerEnergyConduction(const Amount<Unit::SECOND> timespan)
 				l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(l.second.moles).to<Unit::JOULE>(diff) * favourableC.to<Unit::JOULE>(timespan) :
 				l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(aboveLayer.moles).to<Unit::JOULE>(diff) * unfavourableC.to<Unit::JOULE>(timespan);
 
-			MultiLayerMixture::add(diffE, above);
-			MultiLayerMixture::add(-diffE, l.first);
+			MultiLayerMixture::add(Quantity<Joule>::from(diffE.asStd()), above);
+			MultiLayerMixture::add(Quantity<Joule>::from(-diffE.asStd()), l.first);
 		}
 
 		if (const auto below = getLayerBelow(l.first); below != LayerType::NONE)
@@ -186,8 +186,8 @@ void Reactor::runLayerEnergyConduction(const Amount<Unit::SECOND> timespan)
 				l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(l.second.moles).to<Unit::JOULE>(diff) * unfavourableC.to<Unit::JOULE>(timespan) :
 				l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(belowLayer.moles).to<Unit::JOULE>(diff) * favourableC.to<Unit::JOULE>(timespan);
 
-			MultiLayerMixture::add(diffE, below);
-			MultiLayerMixture::add(-diffE, l.first);
+			MultiLayerMixture::add(Quantity<Joule>::from(diffE.asStd()), below);
+			MultiLayerMixture::add(Quantity<Joule>::from(-diffE.asStd()), l.first);
 		}
 	}
 }
@@ -201,7 +201,7 @@ void Reactor::consumePotentialEnergy()
 	}
 }
 
-void Reactor::add(const Amount<Unit::JOULE> heat)
+void Reactor::add(const Quantity<Joule> heat)
 {
 	MultiLayerMixture::add(heat);
 }

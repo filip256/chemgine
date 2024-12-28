@@ -44,5 +44,5 @@ void Heatsource::tick(const Amount<Unit::SECOND> timespan)
 	if (target.isSet() == false)
 		return;
 
-	target->add(getData().maxPowerOutput.to<Unit::JOULE>(timespan));
+	target->add(Quantity<Joule>::from(getData().maxPowerOutput.to<Unit::JOULE>(timespan).asStd()));
 }

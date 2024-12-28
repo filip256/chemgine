@@ -10,6 +10,10 @@
 using float_q = float_s;
 
 template <typename UnitT>
+concept UnitType = boost::units::is_unit<UnitT>::value;
+
+
+template <UnitType U>
 class Quantity;
 
 template<typename QuantityT>
@@ -21,14 +25,13 @@ constexpr inline auto wrapQuantity(const QuantityT quantity) noexcept
 	return Quantity<typename QuantityT::unit_type>(quantity);
 };
 
-template <typename UnitT>
+
+template <UnitType U>
 // Class for handling compile-time unitized values.
-class Quantity : public boost::units::quantity<UnitT, float_q>
+class Quantity : public boost::units::quantity<U, float_q>
 {
-	static_assert(boost::units::is_unit<UnitT>::value || boost::units::is_dimensionless_unit<UnitT>::value,
-		"Quantity: UnitT must be a boost::units::unit specialization.");
 public:
-	using Base = boost::units::quantity<UnitT, float_q>;
+	using Base = boost::units::quantity<U, float_q>;
 
 private:
 	using Base::from_value; // Hide method
@@ -38,32 +41,32 @@ public:
 
 	constexpr Quantity(const Base quantity) noexcept;
 
-	template <typename = std::enable_if_t<boost::units::is_dimensionless_unit<UnitT>::value>>
+	template <typename = std::enable_if_t<boost::units::is_dimensionless_unit<U>::value>>
 	constexpr Quantity(const float_q value) noexcept;
 
 	template <typename SrcT>
 	static constexpr inline Quantity from(const SrcT quantity) noexcept;
 	static constexpr inline Quantity from(const float_q value) noexcept;
 
-	template <typename DstT, typename = std::enable_if_t<!boost::units::is_dimensionless_unit<DstT>::value>>
-	constexpr inline Quantity<DstT> to() const noexcept;
+	template <UnitType DstU, typename = std::enable_if_t<!boost::units::is_dimensionless_unit<DstU>::value>>
+	constexpr inline Quantity<DstU> to() const noexcept;
 
-	template <typename DstT, typename = std::enable_if_t<
-		boost::units::is_dimensionless_unit<DstT>::value&&
-		is_dimless_convertible_v<base_unit_of<UnitT>::type>>>
+	template <UnitType DstU, typename = std::enable_if_t<
+		boost::units::is_dimensionless_unit<DstU>::value&&
+		is_dimless_convertible_v<base_unit_of<U>::type>>>
 		constexpr inline auto to() const noexcept;
 
 	constexpr inline auto operator+() const noexcept;
 	constexpr inline auto operator-() const noexcept;
 
-	template <typename RhsUnitT>
-	constexpr inline auto operator+(Quantity<RhsUnitT> rhs) const noexcept;
-	template <typename RhsUnitT>
-	constexpr inline auto operator-(Quantity<RhsUnitT> rhs) const noexcept;
-	template <typename RhsUnitT>
-	constexpr inline auto operator*(Quantity<RhsUnitT> rhs) const noexcept;
-	template <typename RhsUnitT>
-	constexpr inline auto operator/(Quantity<RhsUnitT> rhs) const noexcept;
+	template <UnitType RhsU>
+	constexpr inline auto operator+(const Quantity<RhsU> rhs) const noexcept;
+	template <UnitType RhsU>
+	constexpr inline auto operator-(const Quantity<RhsU> rhs) const noexcept;
+	template <UnitType RhsU>
+	constexpr inline auto operator*(const Quantity<RhsU> rhs) const noexcept;
+	template <UnitType RhsU>
+	constexpr inline auto operator/(const Quantity<RhsU> rhs) const noexcept;
 
 	const std::string& unitSymbol() const;
 	const std::string& unitName() const;
@@ -73,174 +76,210 @@ public:
 
 	std::string toString() const;
 
+	bool oveflowsOnAdd(const Quantity other) const noexcept;
+	bool oveflowsOnMultiply(const Quantity other) const noexcept;
+
 	friend std::ostream& operator<<(std::ostream& os, const Quantity quantity)
 	{
 		return os << quantity.value() << ' ' << quantity.getUnitSymbol();
 	}
 
-	using UnitType = UnitT;
-	using BaseUnit = base_unit_of<UnitT>::type;
+	using UnitType = U;
+	using BaseUnit = base_unit_of<U>::type;
 	using StorageType = float_q;
 };
 
-template <typename UnitT>
-constexpr Quantity<UnitT>::Quantity(const Base quantity) noexcept :
+template <UnitType U>
+constexpr Quantity<U>::Quantity(const Base quantity) noexcept :
 	Base(quantity)
 {}
 
-template <typename UnitT>
+template <UnitType U>
 template <typename>
-constexpr Quantity<UnitT>::Quantity(const float_q value) noexcept :
+constexpr Quantity<U>::Quantity(const float_q value) noexcept :
 	Base(value, 0)
 {}
 
-template <typename UnitT>
+template <UnitType U>
 template <typename SrcT>
-constexpr inline Quantity<UnitT> Quantity<UnitT>::from(const SrcT quantity) noexcept
+constexpr inline Quantity<U> Quantity<U>::from(const SrcT quantity) noexcept
 {
 	return static_cast<Quantity>(quantity);
 }
 
-template <typename UnitT>
-constexpr inline Quantity<UnitT> Quantity<UnitT>::from(const float_q value) noexcept
+template <UnitType U>
+constexpr inline Quantity<U> Quantity<U>::from(const float_q value) noexcept
 {
 	return Quantity(from_value(value));
 }
 
-template <typename UnitT>
-template <typename DstT, typename>
-constexpr inline Quantity<DstT> Quantity<UnitT>::to() const noexcept
+template <UnitType U>
+template <UnitType DstU, typename>
+constexpr inline Quantity<DstU> Quantity<U>::to() const noexcept
 {
-	return static_cast<Quantity<DstT>>(*this);
+	return static_cast<Quantity<DstU>>(*this);
 }
 
-template <typename UnitT>
-template <typename DstT, typename>
-constexpr inline auto Quantity<UnitT>::to() const noexcept
+template <UnitType U>
+template <UnitType DstU, typename>
+constexpr inline auto Quantity<U>::to() const noexcept
 {
-	return Quantity<DstT>::from(Base::value());
+	return Quantity<DstU>::from(Base::value());
 }
 
-template <typename UnitT>
-constexpr inline auto Quantity<UnitT>::operator+() const noexcept
+template <UnitType U>
+constexpr inline auto Quantity<U>::operator+() const noexcept
 {
 	return wrapQuantity(+static_cast<Base>(*this));
 }
 
-template <typename UnitT>
-constexpr inline auto Quantity<UnitT>::operator-() const noexcept
+template <UnitType U>
+constexpr inline auto Quantity<U>::operator-() const noexcept
 {
 	return wrapQuantity(-static_cast<Base>(*this));
 }
 
-template <typename UnitT>
-template <typename RhsUnitT>
-constexpr inline auto Quantity<UnitT>::operator+(Quantity<RhsUnitT> rhs) const noexcept
+template <UnitType U>
+template <UnitType RhsU>
+constexpr inline auto Quantity<U>::operator+(const Quantity<RhsU> rhs) const noexcept
 {
-	return wrapQuantity(static_cast<Base>(*this) + static_cast<Quantity<RhsUnitT>::Base>(rhs));
+	return wrapQuantity(static_cast<Base>(*this) + static_cast<Quantity<RhsU>::Base>(rhs));
 }
 
-template <typename UnitT>
-template <typename RhsUnitT>
-constexpr inline auto Quantity<UnitT>::operator-(Quantity<RhsUnitT> rhs) const noexcept
+template <UnitType U>
+template <UnitType RhsU>
+constexpr inline auto Quantity<U>::operator-(const Quantity<RhsU> rhs) const noexcept
 {
-	return wrapQuantity(static_cast<Base>(*this) - static_cast<Quantity<RhsUnitT>::Base>(rhs));
+	return wrapQuantity(static_cast<Base>(*this) - static_cast<Quantity<RhsU>::Base>(rhs));
 }
 
-template <typename UnitT>
-template <typename RhsUnitT>
-constexpr inline auto Quantity<UnitT>::operator*(Quantity<RhsUnitT> rhs) const noexcept
+template <UnitType U>
+template <UnitType RhsU>
+constexpr inline auto Quantity<U>::operator*(const Quantity<RhsU> rhs) const noexcept
 {
-	return wrapQuantity(static_cast<Base>(*this) * static_cast<Quantity<RhsUnitT>::Base>(rhs));
+	return wrapQuantity(static_cast<Base>(*this) * static_cast<Quantity<RhsU>::Base>(rhs));
 }
 
-template <typename UnitT>
-template <typename RhsUnitT>
-constexpr inline auto Quantity<UnitT>::operator/(Quantity<RhsUnitT> rhs) const noexcept
+template <UnitType U>
+template <UnitType RhsU>
+constexpr inline auto Quantity<U>::operator/(const Quantity<RhsU> rhs) const noexcept
 {
-	return wrapQuantity(static_cast<Base>(*this) / static_cast<Quantity<RhsUnitT>::Base>(rhs));
+	return wrapQuantity(static_cast<Base>(*this) / static_cast<Quantity<RhsU>::Base>(rhs));
 }
 
-template<typename UnitT, typename FloatT>
-constexpr inline auto operator*(const FloatT lhs, const Quantity<UnitT> rhs)
+template<UnitType U, typename FloatT>
+constexpr inline auto operator*(const FloatT lhs, const Quantity<U> rhs)
 {
 	static_assert(std::is_floating_point_v<FloatT>, "FloatT must be a floating point type.");
-	return wrapQuantity(lhs * static_cast<Quantity<UnitT>::Base>(rhs));
+	return wrapQuantity(lhs * static_cast<Quantity<U>::Base>(rhs));
 }
 
-template<typename UnitT, typename FloatT>
-constexpr inline auto operator/(const FloatT lhs, const Quantity<UnitT> rhs)
+template<UnitType U, typename FloatT>
+constexpr inline auto operator/(const FloatT lhs, const Quantity<U> rhs)
 {
 	static_assert(std::is_floating_point_v<FloatT>, "FloatT must be a floating point type.");
-	return wrapQuantity(lhs / static_cast<Quantity<UnitT>::Base>(rhs));
+	return wrapQuantity(lhs / static_cast<Quantity<U>::Base>(rhs));
 }
 
-template <typename UnitT>
-const std::string& Quantity<UnitT>::getUnitSymbol()
+template <UnitType U>
+const std::string& Quantity<U>::getUnitSymbol()
 {
-	if constexpr (boost::units::is_dimensionless_unit<UnitT>::value)
+	if constexpr (boost::units::is_dimensionless_unit<U>::value)
 	{
 		const static std::string symbol = "1";
 		return symbol;
 	}
 	else
 	{
-		const static std::string symbol = symbol_string(UnitT{});
+		const static std::string symbol = symbol_string(U{});
 		return symbol;
 	}
 }
 
-template <typename UnitT>
-const std::string& Quantity<UnitT>::getUnitName()
+template <UnitType U>
+const std::string& Quantity<U>::getUnitName()
 {
-	if constexpr (boost::units::is_dimensionless_unit<UnitT>::value)
+	if constexpr (boost::units::is_dimensionless_unit<U>::value)
 	{
 		const static std::string name = "";
 		return name;
 	}
 	else
 	{
-		const static std::string name = name_string(UnitT{});
+		const static std::string name = name_string(U{});
 		return name;
 	}
 }
 
-template <typename UnitT>
-const std::string& Quantity<UnitT>::unitSymbol() const
+template <UnitType U>
+const std::string& Quantity<U>::unitSymbol() const
 {
 	return getUnitSymbol();
 }
 
-template <typename UnitT>
-const std::string& Quantity<UnitT>::unitName() const
+template <UnitType U>
+const std::string& Quantity<U>::unitName() const
 {
 	return getUnitName();
 }
 
-template <typename UnitT>
-std::string Quantity<UnitT>::toString() const
+template <UnitType U>
+std::string Quantity<U>::toString() const
 {
 	std::stringstream str;
 	str << *this;
 	return str.str();
 }
 
+template<UnitType U>
+bool Quantity<U>::oveflowsOnAdd(const Quantity other) const noexcept
+{
+	const auto thisVal = this->value();
+	const auto otherVal = other.value();
+
+	return
+		thisVal > 0.0 && otherVal > 0.0 ?
+			thisVal > std::numeric_limits<float_q>::max() - otherVal :
+		thisVal < 0.0 && otherVal < 0.0 ?
+			thisVal < std::numeric_limits<float_q>::min() - otherVal :
+		false;
+}
+
+template<UnitType U>
+bool Quantity<U>::oveflowsOnMultiply(const Quantity other) const noexcept
+{
+	const auto thisVal = this->Base::value();
+	const auto otherVal = other.value();
+
+	return
+		thisVal > 0.0 ?
+			(
+				otherVal > 0.0 ?
+					thisVal > std::numeric_limits<float_q>::max() / otherVal :
+					thisVal > std::numeric_limits<float_q>::min() / otherVal) :
+			(
+				otherVal > 0.0 ?
+					thisVal < std::numeric_limits<float_q>::min() / otherVal :
+					thisVal < std::numeric_limits<float_q>::max() / otherVal
+			);
+}
+
 
 // --- Printers ---
 
-template <typename UnitT>
-class Def::Printer<Quantity<UnitT>>
+template <UnitType U>
+class Def::Printer<Quantity<U>>
 {
 public:
-	static std::string print(const Quantity<UnitT> object)
+	static std::string print(const Quantity<U> object)
 	{
 		return Def::print(object.value());
 	}
 
-	static std::string prettyPrint(const Quantity<UnitT> object)
+	static std::string prettyPrint(const Quantity<U> object)
 	{
 		const auto valStr = Def::prettyPrint(object.value());
-		if constexpr (boost::units::is_dimensionless_unit<UnitT>::value)
+		if constexpr (boost::units::is_dimensionless_unit<U>::value)
 			return valStr + '_' + object.unitSymbol();
 		else
 			return valStr;

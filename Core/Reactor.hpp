@@ -57,7 +57,7 @@ public:
 
 	Reactor(Reactor&&) = default;
 
-	void add(const Amount<Unit::JOULE> heat) override final;
+	void add(const Quantity<Joule> heat) override final;
 	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount) override;
 	void add(Reactor& other);
 	void add(Reactor& other, const float_s ratio);

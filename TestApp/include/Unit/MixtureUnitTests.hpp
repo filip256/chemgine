@@ -13,7 +13,7 @@ protected:
 	AtmosphereMixture atmosphere;
 	Reactor reactor;
 
-	Amount<Unit::GRAM> getTotalSystemMass() const;
+	Quantity<Gram> getTotalSystemMass() const;
 
 	void tick(const Amount<Unit::SECOND> timespan);
 
@@ -81,7 +81,7 @@ private:
 	const float_h threshold = 1e-3;
 	const uint32_t ticks = 256;
 	const Amount<Unit::SECOND> tickTimespan = 1.0_s;
-	const Amount<Unit::JOULE> energyStep = 4000.0_J;
+	const Quantity<Joule> energyStep = 4000.0f * _Joule;
 
 public:
 	using ReactorUnitTest::ReactorUnitTest;

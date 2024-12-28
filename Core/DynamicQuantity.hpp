@@ -41,14 +41,14 @@ private:
 	using Converter = DynamicQuantity(DynamicQuantity::*)() const;
 	using ConverterMap = std::unordered_map<UnitId, DynamicQuantity::Converter>;
 
-	template<typename SrcT, typename DstT>
+	template<UnitType SrcU, UnitType DstU>
 	DynamicQuantity convert() const;
-	template<typename DstT>
+	template<UnitType DstU>
 	inline static const ConverterMap& getConvertersTo();
 
-	template<typename UnitT>
+	template<UnitType U>
 	static const std::string& symbolOf();
-	template<typename UnitT>
+	template<UnitType U>
 	static const std::string& nameOf();
 
 	using Converters = const ConverterMap& (*)();
@@ -56,7 +56,7 @@ private:
 	using Name = Utils::unique_func_t<const std::string& (*)(), 1>;
 	using UnitInfo = std::tuple<Converters, Symbol, Name>;
 
-	template<typename UnitT>
+	template<UnitType U>
 	static constexpr inline std::pair<UnitId, UnitInfo> makeUnitInfo();
 
 	template<typename InfoT>
@@ -67,13 +67,13 @@ public:
 	DynamicQuantity(const float_q value, const UnitId unit) noexcept;
 	DynamicQuantity(const DynamicQuantity&) = default;
 
-	template<typename UnitT>
-	DynamicQuantity(const Quantity<UnitT> quantity) noexcept;
+	template<UnitType U>
+	DynamicQuantity(const Quantity<U> quantity) noexcept;
 
 	float_q value() const;
 
-	template<typename DstT>
-	std::optional<Quantity<DstT>> to() const;
+	template<UnitType DstU>
+	std::optional<Quantity<DstU>> to() const;
 	std::optional<DynamicQuantity> to(const UnitId target) const;
 
 	const std::string& unitSymbol() const;
@@ -84,8 +84,8 @@ public:
 
 	static std::optional<UnitId> parseUnitSymbol(const std::string& symbol);
 
-	template <typename UnitT>
-	static std::optional<Quantity<UnitT>> parse(const float_q value, const std::string& symbol);
+	template <UnitType U>
+	static std::optional<Quantity<U>> parse(const float_q value, const std::string& symbol);
 	static std::optional<DynamicQuantity> parse(const float_q value, const std::string& symbol);
 
 	static const UnitId AnyUnitId;
@@ -93,55 +93,55 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const DynamicQuantity& quantity);
 };
 
-template<typename UnitT>
-DynamicQuantity::DynamicQuantity(const Quantity<UnitT> quantity) noexcept :
+template<UnitType U>
+DynamicQuantity::DynamicQuantity(const Quantity<U> quantity) noexcept :
 	val(quantity.value()),
-	unit(UnitId::of<UnitT>())
+	unit(UnitId::of<U>())
 {}
 
-template<typename DstT>
-std::optional<Quantity<DstT>> DynamicQuantity::to() const
+template<UnitType DstU>
+std::optional<Quantity<DstU>> DynamicQuantity::to() const
 {
-	if (unit == UnitId::of<DstT>() || unit == AnyUnitId)
-		return Quantity<DstT>::from(val);
+	if (unit == UnitId::of<DstU>() || unit == AnyUnitId)
+		return Quantity<DstU>::from(val);
 
-	const auto& converters = getConvertersTo<DstT>();
+	const auto& converters = getConvertersTo<DstU>();
 
 	const auto it = converters.find(unit);
 	return it != converters.end() ?
-		std::optional(Quantity<DstT>::from((this->*(it->second))().val)) :
+		std::optional(Quantity<DstU>::from((this->*(it->second))().val)) :
 		std::nullopt;
 }
 
-template<typename SrcT, typename DstT>
+template<UnitType SrcU, UnitType DstU>
 DynamicQuantity DynamicQuantity::convert() const
 {
-	return Quantity<SrcT>::from(val).to<DstT>();
+	return Quantity<SrcU>::from(val).to<DstU>();
 }
 
-template<typename SrcT>
+template<UnitType SrcU>
 inline const DynamicQuantity::ConverterMap& DynamicQuantity::getConvertersTo()
 {
 	static const ConverterMap empty{};
 	return empty;
 }
 
-template<typename UnitT>
+template<UnitType U>
 const std::string& DynamicQuantity::symbolOf()
 {
-	return Quantity<UnitT>::getUnitSymbol();
+	return Quantity<U>::getUnitSymbol();
 }
 
-template<typename UnitT>
+template<UnitType U>
 const std::string& DynamicQuantity::nameOf()
 {
-	return Quantity<UnitT>::getUnitName();
+	return Quantity<U>::getUnitName();
 }
 
-template<typename UnitT>
+template<UnitType U>
 constexpr inline std::pair<UnitId, DynamicQuantity::UnitInfo> DynamicQuantity::makeUnitInfo()
 {
-	return std::pair(UnitId::of<UnitT>(), std::tuple(getConvertersTo<UnitT>, symbolOf<UnitT>, nameOf<UnitT>));
+	return std::pair(UnitId::of<U>(), std::tuple(getConvertersTo<U>, symbolOf<U>, nameOf<U>));
 }
 
 template<typename InfoT>
@@ -150,12 +150,12 @@ const auto& DynamicQuantity::getUnitInfo(const UnitId unit)
 	return std::get<InfoT>(getUnitInfo(unit))();
 }
 
-template <typename UnitT>
-std::optional<Quantity<UnitT>> DynamicQuantity::parse(const float_q value, const std::string& symbol)
+template <UnitType U>
+std::optional<Quantity<U>> DynamicQuantity::parse(const float_q value, const std::string& symbol)
 {
 	const auto dynQuantity = DynamicQuantity::parse(value, symbol);
 	return dynQuantity ?
-		std::optional(dynQuantity->to<UnitT>()) :
+		std::optional(dynQuantity->to<U>()) :
 		std::nullopt;
 }
 
@@ -172,11 +172,11 @@ public:
 };
 
 
-template <typename UnitT>
-class Def::Parser<Quantity<UnitT>>
+template <UnitType U>
+class Def::Parser<Quantity<U>>
 {
 public:
-	static std::optional<Quantity<UnitT>> parse(const std::string& str)
+	static std::optional<Quantity<U>> parse(const std::string& str)
 	{
 		const auto pair = Utils::split(Utils::strip(str), '_', true);
 		if (pair.empty())
@@ -187,10 +187,10 @@ public:
 			return std::nullopt;
 
 		if (pair.size() == 1)
-			return Quantity<UnitT>::from(*val);
+			return Quantity<U>::from(*val);
 
 		if (pair.size() == 2)
-			return DynamicQuantity::parse<UnitT>(*val, pair.back());
+			return DynamicQuantity::parse<U>(*val, pair.back());
 
 		return std::nullopt;
 	}

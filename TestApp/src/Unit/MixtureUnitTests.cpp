@@ -28,7 +28,7 @@ ReactorUnitTest::ReactorUnitTest(
 	ReactorUnitTest(std::move(name), maxVolume, contents, AtmosphereMixture::createDefaultAtmosphere(), tickMode)
 {}
 
-Amount<Unit::GRAM> ReactorUnitTest::getTotalSystemMass() const
+Quantity<Gram> ReactorUnitTest::getTotalSystemMass() const
 {
 	return reactor.getTotalMass() + atmosphere.getTotalMass() + dump.getTotalMass();
 }
@@ -48,7 +48,7 @@ bool MassConservationUnitTest::run()
 		tick(tickTimespan);
 		const auto massAfter = getTotalSystemMass();
 
-		const auto error = std::abs((massAfter - massBefore).asStd());
+		const auto error = std::abs((massAfter - massBefore).value());
 		if (error > threshold)
 		{
 			Log(this).error("Mass loss: {0} exceeded the test threshold: {1} after tick {2}/{3}.",
@@ -110,8 +110,8 @@ bool DeterminismUnitTest::run()
 	auto initial = reactor.makeCopy();
 	auto copy = reactor.makeCopy();
 
-	reactor.add(10.0_J);
-	copy.add(10.0_J);
+	reactor.add(10.0f * _Joule);
+	copy.add(10.0f * _Joule);
 	reactor.tick(tickTimespan);
 	copy.tick(tickTimespan);
 
@@ -140,7 +140,7 @@ bool DeterminismUnitTest::run()
 			success = false;
 		}
 
-		error = std::abs((reactor.getTotalMass() - copy.getTotalMass()).asStd());
+		error = std::abs((reactor.getTotalMass() - copy.getTotalMass()).value());
 		if (error > threshold)
 		{
 			Log(this).error("Mass difference: {0} exceeded the test threshold: {1} after tick {2}/{3}.",
@@ -171,8 +171,8 @@ bool DeterminismUnitTest::run()
 		if (not success)
 			return false;
 
-		reactor.add(10.0_J);
-		copy.add(10.0_J);
+		reactor.add(10.0f * _Joule);
+		copy.add(10.0f * _Joule);
 		reactor.tick(tickTimespan);
 		copy.tick(tickTimespan);
 	}
@@ -198,7 +198,7 @@ bool BoilUnitTest::run()
 	StringTable logTable({"Added Energy", "Phase", "Src. Temp.", "Dst. Temp.", "Nucleator"}, false);
 
 	logTable.addEntry({
-		Amount<Unit::JOULE>(0.0).toString(),
+		Quantity<Joule>::from(0.0f).toString(),
 		std::to_string(testPhase),
 		source.getTemperature().toString(),
 		destination.getTemperature().toString(),
@@ -210,7 +210,7 @@ bool BoilUnitTest::run()
 		reactor.tick(tickTimespan);
 
 		logTable.addEntry({
-			Amount<Unit::JOULE>(energyStep * (i + 1)).toString(),
+			(float_q(i + 1) * energyStep).toString(),
 			std::to_string(testPhase),
 			source.getTemperature().toString(),
 			destination.getTemperature().toString(),

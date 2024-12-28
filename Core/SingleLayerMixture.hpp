@@ -23,7 +23,7 @@ protected:
 
 	void addToLayer(const Reactant& reactant);
 
-	void add(const Amount<Unit::JOULE> heat, const LayerType l) override final;
+	void add(const Quantity<Joule> heat, const LayerType l) override final;
 
 	LayerType findLayerFor(const Reactant& reactant) const override final;
 
@@ -63,13 +63,13 @@ public:
 
 	void add(const Reactant& reactant) override final;
 	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount) override final;
-	void add(const Amount<Unit::JOULE> heat) override final;
+	void add(const Quantity<Joule> heat) override final;
 
 	Amount<Unit::LITER> getMaxVolume() const;
 
 	Amount<Unit::TORR> getPressure() const override final;
 	Amount<Unit::MOLE> getTotalMoles() const override final;
-	Amount<Unit::GRAM> getTotalMass() const override final;
+	Quantity<Gram> getTotalMass() const override final;
 	Amount<Unit::LITER> getTotalVolume() const override final;
 
 	const Layer& getLayer(const LayerType l) const override final;
@@ -136,12 +136,12 @@ void SingleLayerMixture<L>::addToLayer(const Reactant& reactant)
 }
 
 template<LayerType L>
-void SingleLayerMixture<L>::add(const Amount<Unit::JOULE> heat, const LayerType l)
+void SingleLayerMixture<L>::add(const Quantity<Joule> heat, const LayerType l)
 {
 	if (l != L)
 		return;
 
-	layer.potentialEnergy += heat;
+	layer.potentialEnergy += Amount<Unit::JOULE>(heat.value());
 }
 
 template<LayerType L>
@@ -290,7 +290,7 @@ void SingleLayerMixture<L>::add(const Molecule& molecule, const Amount<Unit::MOL
 }
 
 template<LayerType L>
-void SingleLayerMixture<L>::add(const Amount<Unit::JOULE> heat)
+void SingleLayerMixture<L>::add(const Quantity<Joule> heat)
 {
 	add(heat, L);
 }
@@ -314,9 +314,9 @@ Amount<Unit::MOLE> SingleLayerMixture<L>::getTotalMoles() const
 }
 
 template<LayerType L>
-Amount<Unit::GRAM> SingleLayerMixture<L>::getTotalMass() const
+Quantity<Gram> SingleLayerMixture<L>::getTotalMass() const
 {
-	return layer.mass;
+	return Quantity<Gram>::from(layer.mass.asStd());
 }
 
 template<LayerType L>

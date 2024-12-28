@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ContainerBase.hpp"
-#include "Amount.hpp"
 
 /// <summary>
 /// Reactant container with no storage or properties. Just a dump for reactants.
@@ -9,15 +8,15 @@
 class DumpContainer final : public ContainerBase
 {
 private:
-	Amount<Unit::GRAM> totalMass = 0.0;
-	Amount<Unit::JOULE> totalEnergy = 0.0;
+	Quantity<Gram> totalMass = 0.0f * _Gram;
+	Quantity<Joule> totalEnergy = 0.0f * _Joule;
 
 public:
 	void add(const Reactant& reactant) override final;
-	void add(const Amount<Unit::JOULE> energy) override final;
+	void add(const Quantity<Joule> energy) override final;
 
-	Amount<Unit::GRAM> getTotalMass() const;
-	Amount<Unit::JOULE> getTotalEnergy() const;
+	Quantity<Gram> getTotalMass() const;
+	Quantity<Joule> getTotalEnergy() const;
 
 	static DumpContainer GlobalDumpContainer;
 };

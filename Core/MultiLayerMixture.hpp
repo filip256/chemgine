@@ -22,7 +22,7 @@ protected:
 
 	bool tryCreateLayer(const LayerType layer);
 	void addToLayer(const Reactant& reactant);
-	void add(const Amount<Unit::JOULE> heat, const LayerType layer) override final;
+	void add(const Quantity<Joule> heat, const LayerType layer) override final;
 
 	void removeNegligibles();
 	void checkOverflow();
@@ -47,7 +47,7 @@ public:
 
 	void add(const Reactant& reactant) override final;
 	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount) override;
-	void add(const Amount<Unit::JOULE> heat) override;
+	void add(const Quantity<Joule> heat) override;
 
 	bool hasLayer(const LayerType layer) const;
 
@@ -55,7 +55,7 @@ public:
 
 	Amount<Unit::TORR> getPressure() const override final;
 	Amount<Unit::MOLE> getTotalMoles() const override final;
-	Amount<Unit::GRAM> getTotalMass() const override final;
+	Quantity<Gram> getTotalMass() const override final;
 	Amount<Unit::LITER> getTotalVolume() const override final;
 
 	const Layer& getLayer(const LayerType layer) const override final;

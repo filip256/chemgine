@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Amount.hpp"
+#include "Units.hpp"
 
 class Reactant;
 
@@ -13,5 +13,5 @@ public:
 	virtual ~ContainerBase() = default;
 
 	virtual void add(const Reactant& reactant) = 0;
-	virtual void add(const Amount<Unit::JOULE> energy) = 0;
+	virtual void add(const Quantity<Joule> energy) = 0;
 };

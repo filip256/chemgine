@@ -57,7 +57,7 @@ public:
 	constexpr Mixture& getContent() override final;
 
 	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount) override final;
-	void add(const Amount<Unit::JOULE> energy) override final;
+	void add(const Quantity<Joule> energy) override final;
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
@@ -192,7 +192,7 @@ void ContainerComponent<Args...>::add(const Molecule& molecule, const Amount<Uni
 }
 
 template<typename... Args>
-void ContainerComponent<Args...>::add(const Amount<Unit::JOULE> energy)
+void ContainerComponent<Args...>::add(const Quantity<Joule> energy)
 {
 	getContent<0>().add(energy);
 }

@@ -56,8 +56,8 @@ void Condenser::tick(const Amount<Unit::SECOND> timespan)
 		// TODO: make hT depend on the temp difference and add conversions methods
 		const auto tempDiff = content.getLayerTemperature() - coolant.getLayerTemperature(LayerType::POLAR);
 		const auto heatTransfer = Amount<Unit::JOULE>(5.0 * tempDiff.asStd() * data.length.value() * data.efficiency.value() * timespan.asStd());
-		content.add(-heatTransfer);
-		coolant.add(heatTransfer);
+		content.add(Quantity<Joule>::from(-heatTransfer.asStd()));
+		coolant.add(Quantity<Joule>::from(heatTransfer.asStd()));
 	}
 
 	ContainerComponent::tick(timespan);

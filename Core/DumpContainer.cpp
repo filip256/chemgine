@@ -6,23 +6,23 @@ DumpContainer DumpContainer::GlobalDumpContainer = DumpContainer();
 
 void DumpContainer::add(const Reactant& reactant) 
 {
-	const auto rMass = reactant.getMass();
+	const auto rMass = reactant.getMass().asStd() * _Gram;
 	if (totalMass.oveflowsOnAdd(rMass))
 	{
 		Log(this).warn("Mass overflowed and was set to 0 (some checks might fail).");
-		totalMass = 0.0;
+		totalMass = 0.0f * _Gram;
 		return;
 	}
 
 	totalMass += rMass;
 }
 
-void DumpContainer::add(const Amount<Unit::JOULE> energy)
+void DumpContainer::add(const Quantity<Joule> energy)
 {
 	if (totalEnergy.oveflowsOnAdd(energy))
 	{
 		Log(this).warn("Energy overflowed and was set to 0 (some checks might fail).");
-		totalMass = 0.0;
+		totalEnergy = 0.0f * _Joule;
 		return;
 	}
 
@@ -30,12 +30,12 @@ void DumpContainer::add(const Amount<Unit::JOULE> energy)
 }
 
 
-Amount<Unit::GRAM> DumpContainer::getTotalMass() const
+Quantity<Gram> DumpContainer::getTotalMass() const
 {
 	return totalMass;
 }
 
-Amount<Unit::JOULE> DumpContainer::getTotalEnergy() const
+Quantity<Joule> DumpContainer::getTotalEnergy() const
 {
 	return totalEnergy;
 }

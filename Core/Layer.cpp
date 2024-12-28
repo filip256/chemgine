@@ -94,7 +94,7 @@ void Layer::consumePositivePotentialEnergy()
     }
 
     if(higherAggregationLayer != LayerType::NONE)
-        container->add(potentialEnergy, higherAggregationLayer);
+        container->add(Quantity<Joule>::from(potentialEnergy.asStd()), higherAggregationLayer);
 
     potentialEnergy = 0.0_J;
     temperature = Amount<Unit::CELSIUS>::Infinity;
@@ -148,7 +148,7 @@ void Layer::consumeNegativePotentialEnergy()
     }
 
     if (lowerAggregationLayer != LayerType::NONE)
-        container->add(potentialEnergy, lowerAggregationLayer);
+        container->add(Quantity<Joule>::from(potentialEnergy.asStd()), lowerAggregationLayer);
 
     potentialEnergy = 0.0_J;
     temperature = Amount<Unit::CELSIUS>::Infinity;
@@ -210,7 +210,7 @@ void Layer::convertTemporaryStateReactants()
                     r.amount, lH.to<Unit::MOLE>(getLeastEnergyDiff(tp)));
                 container->add(r.mutate(convMoles, LayerType::GASEOUS));
                 container->add(r.mutate(-convMoles));
-                container->add(lH.to<Unit::JOULE>(convMoles), layerType);
+                container->add(Quantity<Joule>::from(lH.to<Unit::JOULE>(convMoles).asStd()), layerType);
                 continue;
             }
 
@@ -222,7 +222,7 @@ void Layer::convertTemporaryStateReactants()
                     r.amount, lH.to<Unit::MOLE>(getLeastEnergyDiff(tp)));
                 container->add(r.mutate(convMoles, LayerType::SOLID));
                 container->add(r.mutate(-convMoles));
-                container->add(lH.to<Unit::JOULE>(convMoles), layerType);
+                container->add(Quantity<Joule>::from(lH.to<Unit::JOULE>(convMoles).asStd()), layerType);
             }
         }
     }
@@ -241,7 +241,7 @@ void Layer::convertTemporaryStateReactants()
                     r.amount, lH.to<Unit::MOLE>(getLeastEnergyDiff(ltp)));
                 container->add(r.mutate(convMoles, LayerType::POLAR));
                 container->add(r.mutate(-convMoles));
-                container->add(lH.to<Unit::JOULE>(convMoles), layerType);
+                container->add(Quantity<Joule>::from(lH.to<Unit::JOULE>(convMoles).asStd()), layerType);
             }
         }
     }
@@ -260,7 +260,7 @@ void Layer::convertTemporaryStateReactants()
                     r.amount, lH.to<Unit::MOLE>(getLeastEnergyDiff(htp)));
                 container->add(r.mutate(convMoles, LayerType::POLAR));
                 container->add(r.mutate(-convMoles));
-                container->add(lH.to<Unit::JOULE>(convMoles), layerType);
+                container->add(Quantity<Joule>::from(lH.to<Unit::JOULE>(convMoles).asStd()), layerType);
             }
         }
     }

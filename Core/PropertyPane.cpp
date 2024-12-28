@@ -165,7 +165,7 @@ void MixturePropertyPane::draw(sf::RenderTarget& target, sf::RenderStates states
 	propertyName.move(sf::Vector2f(0.0f, 20.0f));
 	propertyValue.move(sf::Vector2f(0.0f, 20.0f));
 	propertyName.setString("Mass:");
-	propertyValue.setString(container.getTotalMass().toString(6));
+	propertyValue.setString(container.getTotalMass().toString());
 	target.draw(propertyName, states);
 	target.draw(propertyValue, states);
 
