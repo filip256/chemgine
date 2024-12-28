@@ -5,16 +5,16 @@
 class CondenserData : public ContainerLabwareData<2>
 {
 public:
-	const Amount<Unit::METER> length;
-	const Amount<Unit::PER_METER> efficiency;
+	const Quantity<Meter> length;
+	const Quantity<PerMeter> efficiency;
 
 	CondenserData(
 		const LabwareId id,
 		const std::string& name,
 		std::vector<LabwarePort>&& ports,
-		const Amount<Unit::LITER> innerVolume,
-		const Amount<Unit::METER> length,
-		const Amount<Unit::PER_METER> efficiency,
+		const Quantity<Liter> innerVolume,
+		const Quantity<Meter> length,
+		const Quantity<PerMeter> efficiency,
 		const std::string& textureFile,
 		const std::string& innerfillTextureFile,
 		const std::string& coolantfillTextureFile,

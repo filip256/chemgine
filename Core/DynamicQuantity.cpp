@@ -1,5 +1,6 @@
 #include "DynamicQuantity.hpp"
 #include "Units.hpp"
+#include "Log.hpp"
 
 const UnitId DynamicQuantity::AnyUnitId = UnitId::of<AnyUnit>();
 
@@ -35,12 +36,12 @@ const DynamicQuantity::UnitInfo& DynamicQuantity::getUnitInfo(const UnitId unit)
 		makeUnitInfo<Meter>(),
 		makeUnitInfo<Degree>(),
 		makeUnitInfo<Radian>(),
+		makeUnitInfo<PerMeter>(),
 	};
 
 	const auto it = unitRegister.find(unit);
 	if (it == unitRegister.end())
-		throw;
-	// Log(*this).fatal("Unsupported unit: '{0}'.", unit.getTypeName());
+		Log<DynamicQuantity>().fatal("Unsupported unit: '{0}'.", unit.getTypeName());
 
 	return it->second;
 }
@@ -104,6 +105,7 @@ std::optional<UnitId> DynamicQuantity::parseUnitSymbol(const std::string& symbol
 		{ getUnitInfo<Symbol>(UnitId::of<Meter>()), UnitId::of<Meter>() },
 		{ getUnitInfo<Symbol>(UnitId::of<Degree>()), UnitId::of<Degree>() },
 		{ getUnitInfo<Symbol>(UnitId::of<Radian>()), UnitId::of<Radian>() },
+		{ getUnitInfo<Symbol>(UnitId::of<PerMeter>()), UnitId::of<PerMeter>() },
 	};
 
 	const auto it = symbolMap.find(symbol);

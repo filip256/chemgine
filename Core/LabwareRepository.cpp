@@ -28,7 +28,7 @@ bool LabwareRepository::add<LabwareType::FLASK>(const LabwareId id, const Def::O
 {
 	const auto name = definition.getDefaultProperty(Def::Labware::Name, "?");
 	auto ports = definition.getProperty(Def::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
-	const auto volume = definition.getProperty(Def::Labware::Volume, Def::parse<Amount<Unit::LITER>>);
+	const auto volume = definition.getProperty(Def::Labware::Volume, Def::parse<Quantity<Liter>>);
 	const auto tx = definition.getProperty(Def::Labware::Texture);
 	const auto txScale = definition.getDefaultProperty(Def::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_s>);
 
@@ -51,7 +51,7 @@ bool LabwareRepository::add<LabwareType::ADAPTOR>(const LabwareId id, const Def:
 {
 	const auto name = definition.getDefaultProperty(Def::Labware::Name, "?");
 	auto ports = definition.getProperty(Def::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
-	const auto volume = definition.getProperty(Def::Labware::Volume, Def::parse<Amount<Unit::LITER>>);
+	const auto volume = definition.getProperty(Def::Labware::Volume, Def::parse<Quantity<Liter>>);
 	const auto tx = definition.getProperty(Def::Labware::Texture);
 	const auto txScale = definition.getDefaultProperty(Def::Labware::TextureScale, 1.0f, Def::parseUnsigned<float_s>);
 
@@ -74,9 +74,9 @@ bool LabwareRepository::add<LabwareType::CONDENSER>(const LabwareId id, const De
 {
 	const auto name = definition.getDefaultProperty(Def::Labware::Name, "?");
 	auto ports = definition.getProperty(Def::Labware::Ports, Def::parse<std::vector<LabwarePort>>);
-	const auto volume = definition.getProperty(Def::Labware::Volume, Def::parse<Amount<Unit::LITER>>);
-	const auto length = definition.getProperty(Def::Labware::Length, Def::parse<Amount<Unit::METER>>);
-	const auto effic = definition.getProperty(Def::Labware::Efficiency, Def::parse<Amount<Unit::PER_METER>>);
+	const auto volume = definition.getProperty(Def::Labware::Volume, Def::parse<Quantity<Liter>>);
+	const auto length = definition.getProperty(Def::Labware::Length, Def::parse<Quantity<Meter>>);
+	const auto effic = definition.getProperty(Def::Labware::Efficiency, Def::parse<Quantity<PerMeter>>);
 	const auto tx = definition.getProperty(Def::Labware::Texture);
 	const auto inner = definition.getProperty(Def::Labware::InnerMask);
 	const auto coolant = definition.getProperty(Def::Labware::CoolantMask);

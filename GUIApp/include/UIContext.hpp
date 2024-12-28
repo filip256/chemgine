@@ -92,7 +92,7 @@ public:
         for(size_t i = 0; i < lab.getSystemCount(); ++i)
             lab.getSystem(i).move(sf::Vector2f(100 + 85 * i, 100));
 
-        //Vapour vapour(50, sf::Vector2f(500.0f, 500.0f), sf::Color(255, 255, 255, 10), 0.0_o, 0.7f, 0.5f);
+        Vapour vapour(50, sf::Vector2f(500.0f, 500.0f), sf::Color(255, 255, 255, 10), 0.0f * _Degree, 0.7f, 0.5f);
 
         //window.setFramerateLimit(300);
         window.setVerticalSyncEnabled(true);
@@ -241,7 +241,7 @@ public:
             auto cTime = tickClock.getElapsedTime();
             if (const auto timespan = (cTime - lastEnvTick).asSeconds(); timespan >= 0.01)
             {
-                //vapour.tick(timespan * timeMultiplier);
+                vapour.tick(timespan * timeMultiplier * _Second);
 
                 textTime.setString("T= " + Amount<Unit::SECOND>(gameTime.asMilliseconds() / 1000.0f).format());
 
@@ -261,7 +261,7 @@ public:
 
             window.clear();
             window.draw(lab);
-            //window.draw(vapour);
+            window.draw(vapour);
             if (drawPropertyPane)
                 window.draw(propertyPane);
             window.draw(textFPS);

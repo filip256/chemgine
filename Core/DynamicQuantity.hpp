@@ -2,6 +2,7 @@
 
 #include "TypeId.hpp"
 #include "Quantity.hpp"
+#include "Parsers.hpp"
 
 #include <tuple>
 #include <optional>
@@ -157,6 +158,68 @@ std::optional<Quantity<UnitT>> DynamicQuantity::parse(const float_q value, const
 		std::optional(dynQuantity->to<UnitT>()) :
 		std::nullopt;
 }
+
+// --- Parsers ---
+
+template <>
+class Def::Parser<UnitId>
+{
+public:
+	static std::optional<UnitId> parse(const std::string& str)
+	{
+		return DynamicQuantity::parseUnitSymbol(Utils::strip(str));
+	}
+};
+
+
+template <typename UnitT>
+class Def::Parser<Quantity<UnitT>>
+{
+public:
+	static std::optional<Quantity<UnitT>> parse(const std::string& str)
+	{
+		const auto pair = Utils::split(Utils::strip(str), '_', true);
+		if (pair.empty())
+			return std::nullopt;
+
+		const auto val = Def::parse<float_q>(Utils::strip(pair.front()));
+		if (not val)
+			return std::nullopt;
+
+		if (pair.size() == 1)
+			return Quantity<UnitT>::from(*val);
+
+		if (pair.size() == 2)
+			return DynamicQuantity::parse<UnitT>(*val, pair.back());
+
+		return std::nullopt;
+	}
+};
+
+
+template <>
+class Def::Parser<DynamicQuantity>
+{
+public:
+	static std::optional<DynamicQuantity> parse(const std::string& str)
+	{
+		const auto pair = Utils::split(Utils::strip(str), '_', true);
+		if (pair.empty())
+			return std::nullopt;
+
+		const auto val = Def::parse<float_q>(pair.front());
+		if (not val)
+			return std::nullopt;
+
+		if (pair.size() == 1)
+			return DynamicQuantity(*val, DynamicQuantity::AnyUnitId);
+
+		if (pair.size() == 2)
+			return DynamicQuantity::parse(*val, pair.back());
+
+		return std::nullopt;
+	}
+};
 
 
 // --- Macros ---

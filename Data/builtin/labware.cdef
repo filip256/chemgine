@@ -39,7 +39,7 @@ _lab: condenser {
     name:         Liebig Condenser,
     volume:       200_mL,
     length:       0.3_m,
-    effic:        0.5_/m,
+    effic:        0.5_m^-1,
     ports:        { INLET: {x: 22, y: 12, angle: 0.0_o}, OUTLET: {x: 22, y: 158, angle: 0.0_o} },
     tx:           ~/tx/liebig300.png,
     inner_mask:   ~/tx/liebig300_if.png,

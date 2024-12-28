@@ -9,7 +9,7 @@ public:
 		const LabwareId id,
 		const std::string& name,
 		std::vector<LabwarePort>&& ports,
-		const Amount<Unit::LITER> volume,
+		const Quantity<Liter> volume,
 		const std::string& textureFile,
 		const float_s textureScale
 	) noexcept;

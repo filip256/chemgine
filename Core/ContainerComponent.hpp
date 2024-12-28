@@ -84,7 +84,7 @@ inline ContainerComponent<AtmosphereMixture>::ContainerComponent(
 	AtmosphereMixture& atmosphere
 ) noexcept :
 	BaseContainerComponent(id, type),
-	containers(atmosphere.createSubatmosphere(getData().getVolume())),
+	containers(atmosphere.createSubatmosphere(Amount<Unit::LITER>(getData().getVolume().value()))),
 	fills(getData().generateShapeFills())
 {}
 
@@ -95,7 +95,7 @@ inline ContainerComponent<Reactor>::ContainerComponent(
 	AtmosphereMixture& atmosphere
 ) noexcept :
 	BaseContainerComponent(id, type),
-	containers(Reactor(atmosphere, getData().getVolume(), atmosphere)),
+	containers(Reactor(atmosphere, Amount<Unit::LITER>(getData().getVolume().value()), atmosphere)),
 	fills(getData().generateShapeFills())
 {}
 
@@ -107,8 +107,8 @@ inline ContainerComponent<AtmosphereMixture, Reactor>::ContainerComponent(
 ) noexcept :
 	BaseContainerComponent(id, type),
 	containers(std::tuple(
-		AtmosphereMixture(atmosphere.createSubatmosphere(getData().getVolume())),
-		Reactor(atmosphere, getData().getVolume(), atmosphere))),
+		AtmosphereMixture(atmosphere.createSubatmosphere(Amount<Unit::LITER>(getData().getVolume().value()))),
+		Reactor(atmosphere, Amount<Unit::LITER>(getData().getVolume().value()), atmosphere))),
 	fills(getData().generateShapeFills())
 {}
 

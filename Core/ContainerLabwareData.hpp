@@ -4,7 +4,6 @@
 #include "ShapeFillTexture.hpp"
 #include "ShapeFill.hpp"
 #include "PathUtils.hpp"
-#include "Amount.hpp"
 #include "Ref.hpp"
 
 #include <type_traits>
@@ -14,7 +13,7 @@ template<uint8_t C>
 class ContainerLabwareData : public BaseContainerLabwareData
 {
 private:
-	const std::array<Amount<Unit::LITER>, C> volumes;
+	const std::array<Quantity<Liter>, C> volumes;
 	std::array<ShapeFillTexture, C> fillTextures;
 
 	/// <summary>
@@ -32,7 +31,7 @@ protected:
 		std::vector<LabwarePort>&& ports,
 		const std::string& textureFile,
 		const float_s textureScale,
-		std::array<Amount<Unit::LITER>, C>&& volumes,
+		std::array<Quantity<Liter>, C>&& volumes,
 		const std::array<Ref<const std::string>, C>& fillTextureFiles,
 		const LabwareType type
 	) noexcept;
@@ -44,20 +43,20 @@ protected:
 		std::vector<LabwarePort>&& ports,
 		const std::string& textureFile,
 		const float_s textureScale,
-		const Amount<Unit::LITER> volume,
+		const Quantity<Liter> volume,
 		const LabwareType type
 	) noexcept;
 
 public:
-	constexpr Amount<Unit::LITER> getVolume() const override final;
+	constexpr Quantity<Liter> getVolume() const override final;
 	constexpr const ShapeFillTexture& getFillTexture() const override final;
 
 	template<uint8_t I, typename = std::enable_if_t<I < C>>
-	constexpr Amount<Unit::LITER> getVolume() const;
+	constexpr Quantity<Liter> getVolume() const;
 	template<uint8_t I, typename = std::enable_if_t<I < C>>
 	constexpr const ShapeFillTexture& getFillTexture() const;
 
-	constexpr const std::array<Amount<Unit::LITER>, C>& getVolumes() const;
+	constexpr const std::array<Quantity<Liter>, C>& getVolumes() const;
 	constexpr const std::array<ShapeFillTexture, C>& getFillTextures() const;
 	constexpr const std::array<ShapeFill, C> generateShapeFills() const;
 
@@ -73,7 +72,7 @@ ContainerLabwareData<C>::ContainerLabwareData(
 	std::vector<LabwarePort>&& ports,
 	const std::string& textureFile,
 	const float_s textureScale,
-	std::array<Amount<Unit::LITER>, C>&& volumes,
+	std::array<Quantity<Liter>, C>&& volumes,
 	const std::array<Ref<const std::string>, C>& fillTextureFiles,
 	const LabwareType type
 ) noexcept :
@@ -92,7 +91,7 @@ ContainerLabwareData<C>::ContainerLabwareData(
 	std::vector<LabwarePort>&& ports,
 	const std::string& textureFile,
 	const float_s textureScale,
-	const Amount<Unit::LITER> volume,
+	const Quantity<Liter> volume,
 	const LabwareType type
 ) noexcept :
 	BaseContainerLabwareData(id, name, std::move(ports), textureFile, textureScale, type),
@@ -103,7 +102,7 @@ ContainerLabwareData<C>::ContainerLabwareData(
 
 template<uint8_t C>
 template<uint8_t I, typename>
-constexpr Amount<Unit::LITER> ContainerLabwareData<C>::getVolume() const
+constexpr Quantity<Liter> ContainerLabwareData<C>::getVolume() const
 {
 	return volumes[I];
 }
@@ -116,7 +115,7 @@ constexpr const ShapeFillTexture& ContainerLabwareData<C>::getFillTexture() cons
 }
 
 template<uint8_t C>
-constexpr Amount<Unit::LITER>  ContainerLabwareData<C>::getVolume() const
+constexpr Quantity<Liter> ContainerLabwareData<C>::getVolume() const
 {
 	return volumes.front();
 }
@@ -128,7 +127,7 @@ constexpr const ShapeFillTexture& ContainerLabwareData<C>::getFillTexture() cons
 }
 
 template<uint8_t C>
-constexpr const std::array<Amount<Unit::LITER>, C>& ContainerLabwareData<C>::getVolumes() const
+constexpr const std::array<Quantity<Liter>, C>& ContainerLabwareData<C>::getVolumes() const
 {
 	return volumes;
 }

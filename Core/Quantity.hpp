@@ -2,10 +2,12 @@
 
 #include "BoostUnits.hpp"
 #include "MetaUtils.hpp"
+#include "Precision.hpp"
+#include "Printers.hpp"
 
 // --- Boost quantity wrapper ---
 
-using float_q = float;
+using float_q = float_s;
 
 template <typename UnitT>
 class Quantity;
@@ -224,6 +226,29 @@ std::string Quantity<UnitT>::toString() const
 }
 
 
+// --- Printers ---
+
+template <typename UnitT>
+class Def::Printer<Quantity<UnitT>>
+{
+public:
+	static std::string print(const Quantity<UnitT> object)
+	{
+		return Def::print(object.value());
+	}
+
+	static std::string prettyPrint(const Quantity<UnitT> object)
+	{
+		const auto valStr = Def::prettyPrint(object.value());
+		if constexpr (boost::units::is_dimensionless_unit<UnitT>::value)
+			return valStr + '_' + object.unitSymbol();
+		else
+			return valStr;
+	}
+};
+
+
+
 // --- Macros ---
 
 // Defines a boost::units::unit for the base_unit with the corresponding name.
@@ -352,6 +377,7 @@ std::string Quantity<UnitT>::toString() const
 			"Non-canonical unit: Inversion of a divide-composite unit.");                 \
                                                                                           \
 	using Per##Unit = boost::units::divide_typeof_helper<float_q, Unit>::type::unit_type; \
+	static constexpr auto _##Per##Unit = Quantity(1.0f * Per##Unit{});                    \
 																			              \
 	template<>                                                                            \
 	struct composite_unit_trait<Per##Unit>                                                \

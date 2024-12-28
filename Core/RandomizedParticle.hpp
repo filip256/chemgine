@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SFML/Graphics.hpp"
-#include "Amount.hpp"
+#include "Units.hpp"
 
 #include <vector>
 #include <random>
@@ -13,12 +13,12 @@ class RandomizedParticle : public sf::Drawable
 private:
 	static float_s getRandom();
 
-	Amount<Unit::DEGREE> direction, targetDirection;
+	Quantity<Degree> direction, targetDirection;
 	float_s rotationIncrement;
-	Amount<Unit::PER_SECOND> speed;
-	Amount<Unit::SECOND> lifespan, idlespan;
+	Quantity<PerSecond> speed;
+	Quantity<Second> lifespan, idlespan;
 
-	Amount<Unit::SECOND> elapsed = 0.0;
+	Quantity<Second> elapsed = 0.0f * _Second;
 	const ParticleSystem& system;
 	sf::RectangleShape shape;
 
@@ -28,7 +28,7 @@ public:
 
 	void reset();
 
-	void tick(Amount<Unit::SECOND> timespan);
+	void tick(Quantity<Second> timespan);
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;
 };

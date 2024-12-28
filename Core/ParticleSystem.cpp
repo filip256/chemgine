@@ -5,11 +5,11 @@ ParticleSystem::ParticleSystem(
 	const sf::Vector2f& origin,
 	const sf::Color& color,
 	const float_s particleSize,
-	const Amount<Unit::DEGREE> direction,
-	const Amount<Unit::DEGREE> targetDirection,
+	const Quantity<Degree> direction,
+	const Quantity<Degree> targetDirection,
 	const float_s directionChangeRate,
-	const Amount<Unit::PER_SECOND> speed,
-	const Amount<Unit::SECOND> lifespan
+	const Quantity<PerSecond> speed,
+	const Quantity<Second> lifespan
 ) noexcept :
 	origin(origin),
 	color(color),
@@ -25,12 +25,12 @@ ParticleSystem::ParticleSystem(
 		particles.emplace_back(*this);
 }
 
-void ParticleSystem::setDirection(const Amount<Unit::DEGREE> direction)
+void ParticleSystem::setDirection(const Quantity<Degree> direction)
 {
 	this->direction = direction;
 }
 
-void ParticleSystem::setTargetDirection(const Amount<Unit::DEGREE> direction)
+void ParticleSystem::setTargetDirection(const Quantity<Degree> direction)
 {
 	targetDirection = direction;
 }
@@ -50,12 +50,12 @@ void ParticleSystem::setColor(const sf::Color& color)
 	this->color = color;
 }
 
-void ParticleSystem::setSpeed(const Amount<Unit::PER_SECOND> speed)
+void ParticleSystem::setSpeed(const Quantity<PerSecond> speed)
 {
 	this->speed = speed;
 }
 
-void ParticleSystem::setLifespan(const Amount<Unit::SECOND> lifespan)
+void ParticleSystem::setLifespan(const Quantity<Second> lifespan)
 {
 	this->lifespan = lifespan;
 }
@@ -70,7 +70,7 @@ void ParticleSystem::moveOrigin(const sf::Vector2f& offset)
 	origin += offset;
 }
 
-void ParticleSystem::tick(const Amount<Unit::SECOND> timespan)
+void ParticleSystem::tick(const Quantity<Second> timespan)
 {
 	for (uint16_t i = 0; i < particles.size(); ++i)
 		particles[i].tick(timespan);

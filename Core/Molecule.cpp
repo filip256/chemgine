@@ -1,6 +1,5 @@
 #include "Molecule.hpp"
 #include "DataStore.hpp"
-#include "Amount.hpp"
 #include "Formulas.hpp"
 
 Molecule::Molecule(const MoleculeData& data) noexcept :

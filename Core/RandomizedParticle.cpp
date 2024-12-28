@@ -29,20 +29,20 @@ void RandomizedParticle::reset()
 	shape.setPosition(system.origin);
 	shape.setFillColor(system.color);
 
-	speed = system.speed - rng * 10;
-	lifespan = system.lifespan + rng * 1.5;
+	speed = system.speed - rng * 10.0f * _PerSecond;
+	lifespan = system.lifespan + rng * 1.5f * _Second;
 	rotationIncrement = Maths::clamp(0.1 / rng, 0.5, 2.0);
 
 	rng = getRandom();
-	direction = system.direction + rng * 20;
-	targetDirection = system.targetDirection + rng * 20;
+	direction = system.direction + rng * 20 * _Degree;
+	targetDirection = system.targetDirection + rng * 20 * _Degree;
 
-	elapsed = 0.0;
+	elapsed = 0.0f * _Second;
 }
 
-void RandomizedParticle::tick(Amount<Unit::SECOND> timespan)
+void RandomizedParticle::tick(Quantity<Second> timespan)
 {
-	if (idlespan > 0.0)
+	if (idlespan > 0.0f * _Second)
 	{
 		idlespan -= timespan;
 		return;
@@ -57,15 +57,15 @@ void RandomizedParticle::tick(Amount<Unit::SECOND> timespan)
 	elapsed += timespan;
 	
 	const auto& col = shape.getFillColor();
-	shape.setFillColor(sf::Color(col.r, col.g, col.b, system.color.a * ((lifespan - elapsed) / lifespan).asStd()));
+	shape.setFillColor(sf::Color(col.r, col.g, col.b, system.color.a * ((lifespan - elapsed) / lifespan).value()));
 
-	const auto distance = speed.to<Unit::NONE>(timespan).asStd();
-	const Amount<Unit::RADIAN> radians = direction;
-	shape.move(sf::Vector2f(distance * std::cosf(radians.asStd()), distance * std::sinf(radians.asStd())));
+	const auto distance = speed * timespan;
+	const auto radians = direction.to<Radian>().value();
+	shape.move(sf::Vector2f(distance * std::cosf(radians), distance * std::sinf(radians)));
 
 	auto directionIncrement = targetDirection - direction;
-	if (directionIncrement > 180.0_o)
-		directionIncrement -= 360.0_o;
+	if (directionIncrement > 180.0f * _Degree)
+		directionIncrement -= 360.0f * _Degree;
 	direction += directionIncrement * system.directionChangeRate;
 
 	shape.rotate(rotationIncrement);
@@ -73,7 +73,7 @@ void RandomizedParticle::tick(Amount<Unit::SECOND> timespan)
 
 void RandomizedParticle::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	if (idlespan > 0.0)
+	if (idlespan > 0.0f * _Second)
 		return;
 
 	target.draw(shape, states);

@@ -5,7 +5,7 @@ Vapour::Vapour(
 	const uint16_t particleCount,
 	const sf::Vector2f& origin,
 	const sf::Color& color,
-	const Amount<Unit::DEGREE> sourceAngle,
+	const Quantity<Degree> sourceAngle,
 	const float_s relativeDensity,
 	const float_s streamIntensity
 ) noexcept :
@@ -18,12 +18,12 @@ Vapour::Vapour(
 		18.0f,
 		sourceAngle,
 		getTargetDirection(), getDirectionChangeRate(), getSpeed(),
-		5.0_s)
+		5.0f * _Second)
 {}
 
-Amount<Unit::DEGREE> Vapour::getTargetDirection() const
+Quantity<Degree> Vapour::getTargetDirection() const
 {
-	return relativeDensity < 1.0f ? 270.0_o : 90.0_o;
+	return relativeDensity < 1.0f ? 270.0f * _Degree : 90.0f * _Degree;
 }
 
 float_s Vapour::getDirectionChangeRate() const
@@ -31,9 +31,9 @@ float_s Vapour::getDirectionChangeRate() const
 	return (std::abs(1.0f - relativeDensity) / streamIntensity) * 0.005f;
 }
 
-Amount<Unit::PER_SECOND> Vapour::getSpeed() const
+Quantity<PerSecond> Vapour::getSpeed() const
 {
-	return (std::abs(1.0f - relativeDensity) + streamIntensity) * 50.0f;
+	return (std::abs(1.0f - relativeDensity) + streamIntensity) * 50.0f * _PerSecond;
 }
 
 void Vapour::setColor(const sf::Color& color)
@@ -66,7 +66,7 @@ void Vapour::setStreamIntensity(const float_s streamIntensity)
 	particles.setSpeed(getSpeed());
 }
 
-void Vapour::tick(const Amount<Unit::SECOND> timespan)
+void Vapour::tick(const Quantity<Second> timespan)
 {
 	particles.tick(timespan);
 }
