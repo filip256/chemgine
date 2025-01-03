@@ -2,7 +2,6 @@
 
 #include "GenericMoleculeData.hpp"
 #include "UnitizedEstimator.hpp"
-#include "Amount.hpp"
 #include "MoleculeType.hpp"
 #include "Polarity.hpp"
 #include "Color.hpp"
@@ -19,21 +18,21 @@ public:
 
 	const Color color;
 
-	const EstimatorRef<Unit::CELSIUS, Unit::TORR> meltingPointEstimator;
-	const EstimatorRef<Unit::CELSIUS, Unit::TORR> boilingPointEstimator;
+	const EstimatorRef<AbsCelsius, Torr> meltingPointEstimator;
+	const EstimatorRef<AbsCelsius, Torr> boilingPointEstimator;
 
-	const EstimatorRef<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS> solidDensityEstimator;
-	const EstimatorRef<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS> liquidDensityEstimator;
+	const EstimatorRef<GramPerMilliLiter, Celsius> solidDensityEstimator;
+	const EstimatorRef<GramPerMilliLiter, Celsius> liquidDensityEstimator;
 
-	const EstimatorRef<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR> solidHeatCapacityEstimator;
-	const EstimatorRef<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR> liquidHeatCapacityEstimator;
+	const EstimatorRef<JoulePerMoleCelsius, Torr> solidHeatCapacityEstimator;
+	const EstimatorRef<JoulePerMoleCelsius, Torr> liquidHeatCapacityEstimator;
 
-	const EstimatorRef<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR> fusionLatentHeatEstimator;
-	const EstimatorRef<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR> vaporizationLatentHeatEstimator;
-	const EstimatorRef<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR> sublimationLatentHeatEstimator;
+	const EstimatorRef<JoulePerMole, Celsius, Torr> fusionLatentHeatEstimator;
+	const EstimatorRef<JoulePerMole, Celsius, Torr> vaporizationLatentHeatEstimator;
+	const EstimatorRef<JoulePerMole, Celsius, Torr> sublimationLatentHeatEstimator;
 
-	const EstimatorRef<Unit::NONE, Unit::CELSIUS> relativeSolubilityEstimator;
-	const EstimatorRef<Unit::TORR_MOLE_RATIO, Unit::CELSIUS> henrysConstantEstimator;
+	const EstimatorRef<Dimless, Celsius> relativeSolubilityEstimator;
+	const EstimatorRef<Torr, Celsius> henrysConstantEstimator;
 
 	MoleculeData(
 		const MoleculeId id,
@@ -42,17 +41,17 @@ public:
 		const Amount<Unit::MOLE_RATIO> hydrophilicity,
 		const Amount<Unit::MOLE_RATIO> lipophilicity,
 		const Color color,
-		EstimatorRef<Unit::CELSIUS, Unit::TORR>&& meltingPointEstimator,
-		EstimatorRef<Unit::CELSIUS, Unit::TORR>&& boilingPointEstimator,
-		EstimatorRef<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>&& solidDensityEstimator,
-		EstimatorRef<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>&& liquidDensityEstimator,
-		EstimatorRef<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>&& solidHeatCapacityEstimator,
-		EstimatorRef<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>&& liquidHeatCapacityEstimator,
-		EstimatorRef<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>&& fusionLatentHeatEstimator,
-		EstimatorRef<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>&& vaporizationLatentHeatEstimator,
-		EstimatorRef<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>&& sublimationLatentHeatEstimator,
-		EstimatorRef<Unit::NONE, Unit::CELSIUS>&& relativeSolubilityEstimator,
-		EstimatorRef<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>&& henrysConstantEstimator
+		EstimatorRef<AbsCelsius, Torr>&& meltingPointEstimator,
+		EstimatorRef<AbsCelsius, Torr>&& boilingPointEstimator,
+		EstimatorRef<GramPerMilliLiter, Celsius>&& solidDensityEstimator,
+		EstimatorRef<GramPerMilliLiter, Celsius>&& liquidDensityEstimator,
+		EstimatorRef<JoulePerMoleCelsius, Torr>&& solidHeatCapacityEstimator,
+		EstimatorRef<JoulePerMoleCelsius, Torr>&& liquidHeatCapacityEstimator,
+		EstimatorRef<JoulePerMole, Celsius, Torr>&& fusionLatentHeatEstimator,
+		EstimatorRef<JoulePerMole, Celsius, Torr>&& vaporizationLatentHeatEstimator,
+		EstimatorRef<JoulePerMole, Celsius, Torr>&& sublimationLatentHeatEstimator,
+		EstimatorRef<Dimless, Celsius>&& relativeSolubilityEstimator,
+		EstimatorRef<Torr, Celsius>&& henrysConstantEstimator
 	) noexcept;
 
 	MoleculeData(const MoleculeData&) = delete;

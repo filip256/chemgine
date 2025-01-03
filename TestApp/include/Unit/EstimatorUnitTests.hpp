@@ -16,9 +16,9 @@ protected:
 		float_s(*generator) (const float_s)
 	) noexcept;
 
-	Amount<Unit::ANY> generateAt(const float_s x);
+	Quantity<Dimless> generateAt(const float_s x);
 
-	std::vector<DataPoint<Unit::ANY, Unit::ANY>> generateData(
+	std::vector<DataPoint<Dimless, Dimless>> generateData(
 		const float_s minX, const float_s maxX, const size_t size) const;
 };
 
@@ -62,9 +62,9 @@ protected:
 		float_s(*generator) (const float_s, const float_s)
 	) noexcept;
 
-	Amount<Unit::ANY> generateAt(const float_s x1, const float_s x2);
+	Quantity<Dimless> generateAt(const float_s x1, const float_s x2);
 
-	std::vector<DataPoint<Unit::ANY, Unit::ANY, Unit::ANY>> generateData(
+	std::vector<DataPoint<Dimless, Dimless, Dimless>> generateData(
 		const float_s minX1, const float_s maxX1,
 		const float_s minX2, const float_s maxX2,
 		const size_t size) const;

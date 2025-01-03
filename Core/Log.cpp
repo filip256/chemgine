@@ -13,7 +13,8 @@ LogBase::LogBase(
 	std::string&& sourceName
 ) noexcept :
 	address(std::move(address)),
-	sourceName(std::move(sourceName))
+	sourceName(sourceName.size() < maxNameLength ?
+		std::move(sourceName) : sourceName.substr(0, maxNameLength - 3) + "...")
 {}
 
 void LogBase::log(const std::string& msg, const LogType type) const

@@ -6,7 +6,7 @@ INCLUDE ~/estimators.cdef AS est
 
 _mol: O {
 	name:            water,
-	melting_point:   _: atm -> C { values: { 1.0 : 0.0 } },
+	melting_point:   _: atm -> C_abs { values: { 1.0 : 0.0 } },
 	boiling_point:   $est@bp_w,
 	solid_density:   _: C -> g/mL { values: { -1.0 : 1.0 }},
 	liquid_density:  _: C -> g/mL { values: { {0.0 : 0.99989}, {1.0 : 0.99992}, {3.0 : 0.99996},
@@ -26,8 +26,8 @@ _mol: O {
 
 _mol: OC {
 	name:            methanol,
-	melting_point:   _: atm -> C { values: { 1.0 : -97.8 } },
-	boiling_point:   _: atm -> C { base: $est@bp_w, anchor_point: { 1.0_atm : 64.7 }},
+	melting_point:   _: atm -> C_abs { values: { 1.0 : -97.8 } },
+	boiling_point:   _: atm -> C_abs { base: $est@bp_w, anchor_point: { 1.0_atm : 64.7 }},
 	solid_density:   $est@sd_0,
 	liquid_density:  $est@ld_0,
 	solid_hc:        $est@shc_0,
@@ -41,8 +41,8 @@ _mol: OC {
 
 _mol: CC(=O)O {
 	name:            acetic acid,
-	melting_point:   _: atm -> C { values: { 1.0 : 0.635 } },
-	boiling_point:   _: atm -> C { values: { 1.0 : 117.9 } },,
+	melting_point:   _: atm -> C_abs { values: { 1.0 : 0.635 } },
+	boiling_point:   _: atm -> C_abs { values: { 1.0 : 117.9 } },,
 	solid_density:   $est@sd_0,
 	liquid_density:  $est@ld_0,
 	solid_hc:        $est@shc_0,
@@ -57,8 +57,8 @@ _mol: CC(=O)O {
 
 _mol: CC(=O)OC(=O)C {
 	name:            acetic anhydride,
-	melting_point:   _: atm -> C { values: { 1.0 : -73.4 } },
-	boiling_point:   _: atm -> C { values: { 1.0 : 139.5 } },
+	melting_point:   _: atm -> C_abs { values: { 1.0 : -73.4 } },
+	boiling_point:   _: atm -> C_abs { values: { 1.0 : 139.5 } },
 	solid_density:   $est@sd_0,
 	liquid_density:  $est@ld_0,
 	solid_hc:        $est@shc_0,
@@ -73,8 +73,8 @@ _mol: CC(=O)OC(=O)C {
 
 _mol: CC(=O)OC {
 	name:            methyl acetate,
-	melting_point:   _: atm -> C { values: { 1.0 : -98.2 } },
-	boiling_point:   _: atm -> C { values: { 1.0 : 56.7 } },
+	melting_point:   _: atm -> C_abs { values: { 1.0 : -98.2 } },
+	boiling_point:   _: atm -> C_abs { values: { 1.0 : 56.7 } },
 	solid_density:   $est@sd_0,
 	liquid_density:  $est@ld_0,
 	solid_hc:        $est@shc_0,
@@ -88,8 +88,8 @@ _mol: CC(=O)OC {
 
 _mol: COC {
 	name:            dimethyl ether,
-	melting_point:   _: atm -> C { values: { 1.0 : -141.5 } },
-	boiling_point:   _: atm -> C { values: { 1.0 : -24.82 } },
+	melting_point:   _: atm -> C_abs { values: { 1.0 : -141.5 } },
+	boiling_point:   _: atm -> C_abs { values: { 1.0 : -24.82 } },
 	solid_density:   $est@sd_0,
 	liquid_density:  $est@ld_0,
 	solid_hc:        $est@shc_0,
@@ -103,8 +103,8 @@ _mol: COC {
 
 _mol: HH {
 	name:            hydrogen,
-	melting_point:   _: atm -> C { values: { 1.0 : -252.762 } },
-	boiling_point:   _: atm -> C { values: { 1.0 : -259.16 } },
+	melting_point:   _: atm -> C_abs { values: { 1.0 : -252.762 } },
+	boiling_point:   _: atm -> C_abs { values: { 1.0 : -259.16 } },
 	solid_density:   $est@sd_0,
 	liquid_density:  $est@ld_0,
 	solid_hc:        $est@shc_0,
@@ -118,8 +118,8 @@ _mol: HH {
 
 _mol: O=O {
 	name:            oxygen,
-	melting_point:   _: atm -> C { values: { 1.0 : -218.4 } },
-	boiling_point:   _: atm -> C { values: { 1.0 : -182.96 } },
+	melting_point:   _: atm -> C_abs { values: { 1.0 : -218.4 } },
+	boiling_point:   _: atm -> C_abs { values: { 1.0 : -182.96 } },
 	solid_density:   $est@sd_0,
 	liquid_density:  $est@ld_0,
 	solid_hc:        $est@shc_0,
@@ -134,8 +134,8 @@ _mol: O=O {
 
 _mol: N#N {
 	name:            nitrogen,
-	melting_point:   _: atm -> C { values: { 1.0 : -210.02 } },
-	boiling_point:   _: atm -> C { values: { 1.0 : -195.79 } },
+	melting_point:   _: atm -> C_abs { values: { 1.0 : -210.02 } },
+	boiling_point:   _: atm -> C_abs { values: { 1.0 : -195.79 } },
 	solid_density:   $est@sd_0,
 	liquid_density:  $est@ld_0,
 	solid_hc:        $est@shc_0,
@@ -150,8 +150,8 @@ _mol: N#N {
 
 _mol: CC(O)C {
 	name:            isopropanol,
-	melting_point:   _: atm -> C { values: { 1.0 : -210.02 } },
-	boiling_point:   _: atm -> C { values: { 1.0 : -195.79 } },
+	melting_point:   _: atm -> C_abs { values: { 1.0 : -210.02 } },
+	boiling_point:   _: atm -> C_abs { values: { 1.0 : -195.79 } },
 	solid_density:   $est@sd_0,
 	liquid_density:  $est@ld_0,
 	solid_hc:        $est@shc_0,
@@ -165,8 +165,8 @@ _mol: CC(O)C {
 
 _mol: CC(=O)C {
 	name:            acetone,
-	melting_point:   _: atm -> C { values: { 1.0 : -210.02 } },
-	boiling_point:   _: atm -> C { values: { 1.0 : -195.79 } },
+	melting_point:   _: atm -> C_abs { values: { 1.0 : -210.02 } },
+	boiling_point:   _: atm -> C_abs { values: { 1.0 : -195.79 } },
 	solid_density:   $est@sd_0,
 	liquid_density:  $est@ld_0,
 	solid_hc:        $est@shc_0,

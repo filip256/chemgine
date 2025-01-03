@@ -14,6 +14,11 @@ float_q DynamicQuantity::value() const
 	return val;
 }
 
+UnitId DynamicQuantity::getUnit() const
+{
+	return unit;
+}
+
 const DynamicQuantity::UnitInfo& DynamicQuantity::getUnitInfo(const UnitId unit)
 {
 	static const std::unordered_map<UnitId, UnitInfo> unitRegister
@@ -37,6 +42,11 @@ const DynamicQuantity::UnitInfo& DynamicQuantity::getUnitInfo(const UnitId unit)
 		makeUnitInfo<Degree>(),
 		makeUnitInfo<Radian>(),
 		makeUnitInfo<PerMeter>(),
+		makeUnitInfo<MoleRatio>(),
+		makeUnitInfo<JoulePerMole>(),
+		makeUnitInfo<JoulePerMoleCelsius>(),
+		makeUnitInfo<MolePerSecond>(),
+		makeUnitInfo<GramPerMilliLiter>(),
 	};
 
 	const auto it = unitRegister.find(unit);
@@ -106,6 +116,11 @@ std::optional<UnitId> DynamicQuantity::parseUnitSymbol(const std::string& symbol
 		{ getUnitInfo<Symbol>(UnitId::of<Degree>()), UnitId::of<Degree>() },
 		{ getUnitInfo<Symbol>(UnitId::of<Radian>()), UnitId::of<Radian>() },
 		{ getUnitInfo<Symbol>(UnitId::of<PerMeter>()), UnitId::of<PerMeter>() },
+		{ getUnitInfo<Symbol>(UnitId::of<MoleRatio>()), UnitId::of<MoleRatio>() },
+		{ getUnitInfo<Symbol>(UnitId::of<JoulePerMole>()), UnitId::of<JoulePerMole>() },
+		{ getUnitInfo<Symbol>(UnitId::of<JoulePerMoleCelsius>()), UnitId::of<JoulePerMoleCelsius>() },
+		{ getUnitInfo<Symbol>(UnitId::of<MolePerSecond>()), UnitId::of<MolePerSecond>() },
+		{ getUnitInfo<Symbol>(UnitId::of<GramPerMilliLiter>()), UnitId::of<GramPerMilliLiter>() },
 	};
 
 	const auto it = symbolMap.find(symbol);

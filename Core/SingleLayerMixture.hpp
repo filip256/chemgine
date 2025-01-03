@@ -149,7 +149,7 @@ LayerType SingleLayerMixture<L>::findLayerFor(const Reactant& reactant) const
 {
 	const auto newAgg = reactant.getAggregationAt(layer.temperature);
 	const auto polarity = reactant.molecule.getPolarity();
-	const auto density = reactant.molecule.getDensityAt(layer.temperature, pressure);
+	const Amount<Unit::GRAM_PER_MILLILITER> density = reactant.molecule.getDensityAt(layer.temperature.asStd() * _Celsius, pressure.asStd() * _Torr).value();
 	return getLayerType(newAgg, polarity.getPartitionCoefficient() > 1.0, density > 1.0);
 }
 

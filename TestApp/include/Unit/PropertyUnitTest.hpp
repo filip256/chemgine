@@ -4,11 +4,11 @@
 #include "DataPoint.hpp"
 #include "ImmutableSet.hpp"
 
-template<typename ObjT, Unit OutU, Unit... InUs>
+template<typename ObjT, UnitType OutU, UnitType... InUs>
 class PropertyUnitTest : public UnitTest
 {
 public:
-	using PropertyGetter = Amount<OutU>(ObjT::*)(const Amount<InUs>...) const;
+	using PropertyGetter = Quantity<OutU>(ObjT::*)(const Quantity<InUs>...) const;
 
 private:
 	const ObjT& object;
@@ -28,7 +28,7 @@ public:
 	bool run() override final;
 };
 
-template<typename ObjT, Unit OutU, Unit... InUs>
+template<typename ObjT, UnitType OutU, UnitType... InUs>
 PropertyUnitTest<ObjT, OutU, InUs...>::PropertyUnitTest(
 	std::string&& name,
 	const ObjT& object,
@@ -43,20 +43,20 @@ PropertyUnitTest<ObjT, OutU, InUs...>::PropertyUnitTest(
 	threshold(threshold)
 {}
 
-template<typename ObjT, Unit OutU, Unit... InUs>
+template<typename ObjT, UnitType OutU, UnitType... InUs>
 bool PropertyUnitTest<ObjT, OutU, InUs...>::run()
 {
-	const auto instancedCb = [this](const Amount<InUs>... inputs) -> Amount<OutU>
-		{
-			return (this->object.*(this->getterCb))(inputs...);
-		};
+	const auto instancedCb = [this](const Quantity<InUs>... inputs) -> Quantity<OutU>
+	{
+		return (this->object.*(this->getterCb))(inputs...);
+	};
 
 	bool success = true;
 	for (size_t i = 0; i < reference.size(); ++i)
 	{
 		const auto ref = reference[i].output;
 		const auto act = std::apply(instancedCb, reference[i].inputs);
-		const auto error = std::abs((ref - act).asStd());
+		const auto error = std::abs((ref.value() - act.value()));
 		if (error > threshold)
 		{
 			Log(this).error("Error: {0} (act= {1}, ref= {2}) exceeded the test threshold: {3}.",

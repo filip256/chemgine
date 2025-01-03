@@ -108,8 +108,8 @@ bool ReactionRepository::add(const Def::Object& definition)
 		data = std::make_unique<ReactionData>(
 			*id, name,
 			reactantIds, productIds,
-			factory.createConstant<Unit::MOLE_PER_SECOND, Unit::CELSIUS>(0.0),
-			factory.createConstant<Unit::NONE, Unit::MOLE_RATIO>(0.0),
+			factory.createConstant<MolePerSecond, Celsius>(0.0f * _MolePerSecond),
+			factory.createConstant<Dimless, MoleRatio>(0.0f * _Dimless),
 			std::move(catalysts));
 	}
 	else
@@ -119,9 +119,9 @@ bool ReactionRepository::add(const Def::Object& definition)
 		const auto activation = definition.getDefaultProperty(Def::Reactions::Activation, Amount<Unit::JOULE_PER_MOLE>(0.0),
 			Def::parse<Amount<Unit::JOULE_PER_MOLE>>);
 		auto tempSpeed = definition.getDefinition(Def::Reactions::TemperatureSpeed,
-			Def::Parser<UnitizedEstimator<Unit::MOLE_PER_SECOND, Unit::CELSIUS>>::parse, estimators);
+			Def::Parser<UnitizedEstimator<MolePerSecond, Celsius>>::parse, estimators);
 		auto concSpeed = definition.getDefinition(Def::Reactions::ConcentrationSpeed,
-			Def::Parser<UnitizedEstimator<Unit::NONE, Unit::MOLE_RATIO>>::parse, estimators);
+			Def::Parser<UnitizedEstimator<Dimless, MoleRatio>>::parse, estimators);
 
 		data = std::make_unique<ReactionData>(
 			*id, name,

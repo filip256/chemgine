@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DynamicAmount.hpp"
+#include "DynamicQuantity.hpp"
 
 #include <vector>
 #include <iostream>
@@ -10,12 +10,12 @@ namespace Def
 	class EstimatorSpecifier
 	{
 	public:
-		const Unit outUnit;
-		const std::vector<Unit> inUnits;
+		const UnitId outUnit;
+		const std::vector<UnitId> inUnits;
 
 		EstimatorSpecifier(
-			const Unit outUnit,
-			std::vector<Unit>&& inUnits
+			const UnitId outUnit,
+			std::vector<UnitId>&& inUnits
 		) noexcept;
 		EstimatorSpecifier(const EstimatorSpecifier&) = delete;
 		EstimatorSpecifier(EstimatorSpecifier&&) = default;
@@ -33,7 +33,7 @@ namespace Def
 			if (sep > stripped.size() - 3)
 				return std::nullopt;
 
-			const auto outUnit = Def::parse<Unit>(stripped.substr(sep + 2));
+			const auto outUnit = Def::parse<UnitId>(stripped.substr(sep + 2));
 			if (not outUnit)
 				return std::nullopt;
 
@@ -41,7 +41,7 @@ namespace Def
 			if (inUnitsStr.starts_with('(') && inUnitsStr.ends_with(')'))
 				inUnitsStr = inUnitsStr.substr(1, inUnitsStr.size() - 2);
 
-			auto inUnits = Def::parse<std::vector<Unit>>(inUnitsStr);
+			auto inUnits = Def::parse<std::vector<UnitId>>(inUnitsStr);
 			if (not inUnits)
 				return std::nullopt;
 
@@ -57,18 +57,18 @@ namespace Def
 		{
 			std::string result;
 			if (object.inUnits.size() == 1)
-				result += DynamicAmount::getUnitSymbol(object.inUnits.front());
+				result += DynamicQuantity::getUnitSymbol(object.inUnits.front());
 			else
 			{
 				result += '(';
 				for (size_t i = 0; i < object.inUnits.size() - 1; ++i)
-					result += DynamicAmount::getUnitSymbol(object.inUnits[i]) + ',';
-				result += DynamicAmount::getUnitSymbol(object.inUnits.back());
+					result += DynamicQuantity::getUnitSymbol(object.inUnits[i]) + ',';
+				result += DynamicQuantity::getUnitSymbol(object.inUnits.back());
 				result += ')';
 			}
 
 			result += "->";
-			result += DynamicAmount::getUnitSymbol(object.outUnit);
+			result += DynamicQuantity::getUnitSymbol(object.outUnit);
 			return result;
 		}
 
@@ -76,18 +76,18 @@ namespace Def
 		{
 			std::string result;
 			if (object.inUnits.size() == 1)
-				result += DynamicAmount::getUnitSymbol(object.inUnits.front());
+				result += DynamicQuantity::getUnitSymbol(object.inUnits.front());
 			else
 			{
 				result += '(';
 				for (size_t i = 0; i < object.inUnits.size() - 1; ++i)
-					result += DynamicAmount::getUnitSymbol(object.inUnits[i]) + ", ";
-				result += DynamicAmount::getUnitSymbol(object.inUnits.back());
+					result += DynamicQuantity::getUnitSymbol(object.inUnits[i]) + ", ";
+				result += DynamicQuantity::getUnitSymbol(object.inUnits.back());
 				result += ')';
 			}
 
 			result += " -> ";
-			result += DynamicAmount::getUnitSymbol(object.outUnit);
+			result += DynamicQuantity::getUnitSymbol(object.outUnit);
 			return result;
 		}
 	};

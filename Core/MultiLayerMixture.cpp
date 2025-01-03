@@ -226,14 +226,14 @@ LayerType MultiLayerMixture::findLayerFor(const Reactant& reactant) const
 			return l.first;
 
 		const auto polarity = reactant.molecule.getPolarity();
-		const auto density = reactant.molecule.getDensityAt(l.second.temperature, pressure);
+		const Amount<Unit::GRAM_PER_MILLILITER> density = reactant.molecule.getDensityAt(l.second.temperature.asStd() * _Celsius, pressure.asStd() * _Torr).value();
 		return getLayerType(getAggregationType(l.first), polarity.getPartitionCoefficient() > 1.0, density > 1.0);
 	}
 
 	const auto defaultT = layers.at(LayerType::GASEOUS).temperature;
 	const auto newAgg = reactant.getAggregationAt(defaultT);
 	const auto polarity = reactant.molecule.getPolarity();
-	const auto density = reactant.molecule.getDensityAt(defaultT, pressure);
+	const Amount<Unit::GRAM_PER_MILLILITER> density = reactant.molecule.getDensityAt(defaultT.asStd() * _Celsius, pressure.asStd() * _Torr).value();
 	return getLayerType(newAgg, polarity.getPartitionCoefficient() > 1.0, density > 1.0);
 }
 

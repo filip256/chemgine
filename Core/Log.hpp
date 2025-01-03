@@ -53,6 +53,7 @@ public:
 	static LogType logLevel;
 	static LogType printNameLevel;
 	static LogType printAddressLevel;
+	static uint16_t maxNameLength;
 	static std::regex logSourceFilter;
 	static std::ostream& outputStream;
 	static std::string contexIndent;

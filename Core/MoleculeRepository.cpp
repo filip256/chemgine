@@ -35,27 +35,27 @@ bool MoleculeRepository::add(const Def::Object& definition)
 	const auto col = definition.getDefaultProperty(Def::Molecules::Color, Color(0, 255, 255, 100),
 		Def::parse<Color>);
 	auto mp = definition.getDefinition(Def::Molecules::MeltingPoint,
-		Def::Parser<UnitizedEstimator<Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+		Def::Parser<UnitizedEstimator<AbsCelsius, Torr>>::parse, estimators);
 	auto bp = definition.getDefinition(Def::Molecules::BoilingPoint,
-		Def::Parser<UnitizedEstimator<Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+		Def::Parser<UnitizedEstimator<AbsCelsius, Torr>>::parse, estimators);
 	auto sd = definition.getDefinition(Def::Molecules::SolidDensity,
-		Def::Parser<UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>::parse, estimators);
+		Def::Parser<UnitizedEstimator<GramPerMilliLiter, Celsius>>::parse, estimators);
 	auto ld = definition.getDefinition(Def::Molecules::LiquidDensity,
-		Def::Parser<UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>::parse, estimators);
+		Def::Parser<UnitizedEstimator<GramPerMilliLiter, Celsius>>::parse, estimators);
 	auto shc = definition.getDefinition(Def::Molecules::SolidHeatCapacity,
-		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>::parse, estimators);
+		Def::Parser<UnitizedEstimator<JoulePerMoleCelsius, Torr>>::parse, estimators);
 	auto lhc = definition.getDefinition(Def::Molecules::LiquidHeatCapacity,
-		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>::parse, estimators);
+		Def::Parser<UnitizedEstimator<JoulePerMoleCelsius, Torr>>::parse, estimators);
 	auto flh = definition.getDefinition(Def::Molecules::FusionLatentHeat,
-		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+		Def::Parser<UnitizedEstimator<JoulePerMole, Celsius, Torr>>::parse, estimators);
 	auto vlh = definition.getDefinition(Def::Molecules::VaporizationLatentHeat,
-		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+		Def::Parser<UnitizedEstimator<JoulePerMole, Celsius, Torr>>::parse, estimators);
 	auto slh = definition.getDefinition(Def::Molecules::SublimationLatentHeat,
-		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+		Def::Parser<UnitizedEstimator<JoulePerMole, Celsius, Torr>>::parse, estimators);
 	auto sol = definition.getDefinition(Def::Molecules::RelativeSolubility,
-		Def::Parser<UnitizedEstimator<Unit::NONE, Unit::CELSIUS>>::parse, estimators);
+		Def::Parser<UnitizedEstimator<Dimless, Celsius>>::parse, estimators);
 	auto hen = definition.getDefinition(Def::Molecules::HenryConstant,
-		Def::Parser<UnitizedEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>>::parse, estimators);
+		Def::Parser<UnitizedEstimator<Torr, Celsius>>::parse, estimators);
 
 	const auto id = getFreeId();
 	concreteMolecules.emplace(id,
@@ -120,17 +120,17 @@ const MoleculeData& MoleculeRepository::findOrAddConcrete(MolecularStructure&& s
 	const auto hydro = 1.0f;
 	const auto lipo = 0.0f;
 	const auto color = Color(0, 255, 255, 100);
-	auto mp = estimators.add<ConstantEstimator<Unit::CELSIUS, Unit::TORR>>(0.0f);
-	auto bp = estimators.add<ConstantEstimator<Unit::CELSIUS, Unit::TORR>>(100.0f);
-	auto sd = estimators.add<ConstantEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>(1.0f);
-	auto ld = estimators.add<ConstantEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>(1.0f);
-	auto shc = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>(36.0f);
-	auto lhc = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>(75.4840232f);
-	auto flh = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(6020.0f);
-	auto vlh = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(40700.0f);
-	auto slh = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(std::numeric_limits<float_s>::max());
-	auto sol = estimators.add<ConstantEstimator<Unit::NONE, Unit::CELSIUS>>(1.0f);
-	auto hen = estimators.add<ConstantEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>>(1000.0f);
+	auto mp = estimators.add<ConstantEstimator<AbsCelsius, Torr>>(0.0f * _AbsCelsius);
+	auto bp = estimators.add<ConstantEstimator<AbsCelsius, Torr>>(100.0f * _AbsCelsius);
+	auto sd = estimators.add<ConstantEstimator<GramPerMilliLiter, Celsius>>(1.0f * _GramPerMilliLiter);
+	auto ld = estimators.add<ConstantEstimator<GramPerMilliLiter, Celsius>>(1.0f * _GramPerMilliLiter);
+	auto shc = estimators.add<ConstantEstimator<JoulePerMoleCelsius, Torr>>(36.0f * _JoulePerMoleCelsius);
+	auto lhc = estimators.add<ConstantEstimator<JoulePerMoleCelsius, Torr>>(75.4840232f * _JoulePerMoleCelsius);
+	auto flh = estimators.add<ConstantEstimator<JoulePerMole, Celsius, Torr>>(6020.0f * _JoulePerMole);
+	auto vlh = estimators.add<ConstantEstimator<JoulePerMole, Celsius, Torr>>(40700.0f * _JoulePerMole);
+	auto slh = estimators.add<ConstantEstimator<JoulePerMole, Celsius, Torr>>(std::numeric_limits<float_s>::max() * _JoulePerMole);
+	auto sol = estimators.add<ConstantEstimator<Dimless, Celsius>>(1.0f * _Dimless);
+	auto hen = estimators.add<ConstantEstimator<Torr, Celsius>>(1000.0f * _Torr);
 
 	const auto id = getFreeId();
 	const auto it = concreteMolecules.emplace(id, std::make_unique<MoleculeData>(

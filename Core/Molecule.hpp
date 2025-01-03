@@ -30,8 +30,8 @@ public:
 	Polarity getPolarity() const;
 	Color getColor() const;
 
-	Amount<Unit::CELSIUS> getMeltingPointAt(const Amount<Unit::TORR> pressure) const;
-	Amount<Unit::CELSIUS> getBoilingPointAt(const Amount<Unit::TORR> pressure) const;
+	Quantity<AbsCelsius> getMeltingPointAt(const Quantity<Torr> pressure) const;
+	Quantity<AbsCelsius> getBoilingPointAt(const Quantity<Torr> pressure) const;
 
 	AggregationType getAggregationAt(
 		const Amount<Unit::CELSIUS> temperature,
@@ -44,9 +44,9 @@ public:
 		const AggregationType aggregation
 	) const;
 
-	Amount<Unit::GRAM_PER_MILLILITER> getDensityAt(
-		const Amount<Unit::CELSIUS> temperature,
-		const Amount<Unit::TORR> pressure
+	Quantity<GramPerMilliLiter> getDensityAt(
+		const Quantity<Celsius> temperature,
+		const Quantity<Torr> pressure
 	) const;
 
 	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getHeatCapacityAt(

@@ -14,8 +14,8 @@ ReactionData::ReactionData(
 	const std::vector<std::pair<StructureRef, uint8_t>>& products,
 	const Amount<Unit::JOULE_PER_MOLE> reactionEnergy,
 	const Amount<Unit::JOULE_PER_MOLE> activationEnergy,
-	EstimatorRef<Unit::MOLE_PER_SECOND, Unit::CELSIUS>&& tempSpeedEstimator,
-	EstimatorRef<Unit::NONE, Unit::MOLE_RATIO>&& concSpeedEstimator,
+	EstimatorRef<MolePerSecond, Celsius>&& tempSpeedEstimator,
+	EstimatorRef<Dimless, MoleRatio>&& concSpeedEstimator,
 	ImmutableSet<Catalyst>&& catalysts
 ) noexcept :
 	id(id),
@@ -35,8 +35,8 @@ ReactionData::ReactionData(
 	const std::string& name,
 	const std::vector<std::pair<StructureRef, uint8_t>>& reactants,
 	const std::vector<std::pair<StructureRef, uint8_t>>& products,
-	EstimatorRef<Unit::MOLE_PER_SECOND, Unit::CELSIUS>&& tempSpeedEstimator,
-	EstimatorRef<Unit::NONE, Unit::MOLE_RATIO>&& concSpeedEstimator,
+	EstimatorRef<MolePerSecond, Celsius>&& tempSpeedEstimator,
+	EstimatorRef<Dimless, MoleRatio>&& concSpeedEstimator,
 	ImmutableSet<Catalyst>&& catalysts
 ) noexcept :
 	id(id),
@@ -352,7 +352,7 @@ Amount<Unit::MOLE_PER_SECOND> ReactionData::getSpeedAt(
 	const Amount<Unit::CELSIUS> temperature,
 	const Amount<Unit::MOLE_RATIO> concentration) const
 {
-	return tempSpeedEstimator->get(temperature) * concSpeedEstimator->get(concentration).asStd();
+	return tempSpeedEstimator->get(temperature.asStd() * _Celsius).value() * concSpeedEstimator->get(concentration.asStd() * _MoleRatio).value();
 }
 
 bool ReactionData::isCutReaction() const

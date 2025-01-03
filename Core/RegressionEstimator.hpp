@@ -3,13 +3,13 @@
 #include "UnitizedEstimator.hpp"
 #include "EstimationMode.hpp"
 
-template<typename RegT, Unit... InUs>
-concept IsRegressor = requires(RegT reg, const Amount<InUs>... inputs) {
-	{ reg.get(inputs.asStd()...) };
+template<typename RegT, typename... InUs>
+concept IsRegressor = requires(RegT reg, const Quantity<InUs>... inputs) {
+	{ reg.get(inputs.value()...) };
 };
 
 
-template<typename RegT, Unit OutU, Unit... InUs>
+template<typename RegT, UnitType OutU, UnitType... InUs>
 class RegressionEstimator : public UnitizedEstimator<OutU, InUs...>
 {
 	static_assert(IsRegressor<RegT, InUs...>,
@@ -30,7 +30,7 @@ public:
 	EstimationMode getMode() const;
 	const RegT& getRegressor() const;
 
-	Amount<OutU> get(const Amount<InUs>... inputs) const override final;
+	Quantity<OutU> get(const Quantity<InUs>... inputs) const override final;
 
 	bool isEquivalent(const EstimatorBase& other,
 		const float_s epsilon = std::numeric_limits<float_s>::epsilon()
@@ -45,7 +45,7 @@ public:
 	) const override final;
 };
 
-template<typename RegT, Unit OutU, Unit... InUs>
+template<typename RegT, UnitType OutU, UnitType... InUs>
 RegressionEstimator<RegT, OutU, InUs...>::RegressionEstimator(
 	const EstimatorId id,
 	const RegT& regressor
@@ -54,25 +54,25 @@ RegressionEstimator<RegT, OutU, InUs...>::RegressionEstimator(
 	regressor(regressor)
 {}
 
-template<typename RegT, Unit OutU, Unit... InUs>
+template<typename RegT, UnitType OutU, UnitType... InUs>
 EstimationMode RegressionEstimator<RegT, OutU, InUs...>::getMode() const
 {
 	return RegT::Mode;
 }
 
-template<typename RegT, Unit OutU, Unit... InUs>
+template<typename RegT, UnitType OutU, UnitType... InUs>
 const RegT& RegressionEstimator<RegT, OutU, InUs...>::getRegressor() const
 {
 	return regressor;
 }
 
-template<typename RegT, Unit OutU, Unit... InUs>
-Amount<OutU> RegressionEstimator<RegT, OutU, InUs...>::get(const Amount<InUs>... inputs) const
+template<typename RegT, UnitType OutU, UnitType... InUs>
+Quantity<OutU> RegressionEstimator<RegT, OutU, InUs...>::get(const Quantity<InUs>... inputs) const
 {
-	return regressor.get(inputs.asStd()...);
+	return Quantity<OutU>::from(regressor.get(inputs.value()...));
 }
 
-template<typename RegT, Unit OutU, Unit... InUs>
+template<typename RegT, UnitType OutU, UnitType... InUs>
 bool RegressionEstimator<RegT, OutU, InUs...>::isEquivalent(const EstimatorBase& other, const float_s epsilon) const
 {
 	if (not EstimatorBase::isEquivalent(other, epsilon))
@@ -82,7 +82,7 @@ bool RegressionEstimator<RegT, OutU, InUs...>::isEquivalent(const EstimatorBase&
 	return this->regressor.isEquivalent(oth.regressor, epsilon);
 }
 
-template<typename RegT, Unit OutU, Unit... InUs>
+template<typename RegT, UnitType OutU, UnitType... InUs>
 void RegressionEstimator<RegT, OutU, InUs...>::dumpDefinition(
 	std::ostream& out,
 	const bool prettify,

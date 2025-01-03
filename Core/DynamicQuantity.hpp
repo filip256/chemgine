@@ -71,6 +71,7 @@ public:
 	DynamicQuantity(const Quantity<U> quantity) noexcept;
 
 	float_q value() const;
+	UnitId getUnit() const;
 
 	template<UnitType DstU>
 	std::optional<Quantity<DstU>> to() const;

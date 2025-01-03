@@ -5,7 +5,7 @@
 #include "DataDumper.hpp"
 #include "Spline.hpp"
 
-template<Unit OutU, Unit InU>
+template<UnitType OutU, UnitType InU>
 class SplineEstimator : public UnitizedEstimator<OutU, InU>
 {
 private:
@@ -29,7 +29,7 @@ public:
 
 	EstimationMode getMode() const;
 
-	Amount<OutU> get(const Amount<InU> input) const override final;
+	Quantity<OutU> get(const Quantity<InU> input) const override final;
 
 	bool isEquivalent(const EstimatorBase& other,
 		const float_s epsilon = std::numeric_limits<float_s>::epsilon()
@@ -44,7 +44,7 @@ public:
 	) const override final;
 };
 
-template<Unit OutU, Unit InU>
+template<UnitType OutU, UnitType InU>
 SplineEstimator<OutU, InU>::SplineEstimator(
 	const EstimatorId id,
 	Spline<float_s>&& spline,
@@ -55,7 +55,7 @@ SplineEstimator<OutU, InU>::SplineEstimator(
 	spline(std::move(spline))
 {}
 
-template<Unit OutU, Unit InU>
+template<UnitType OutU, UnitType InU>
 SplineEstimator<OutU, InU>::SplineEstimator(
 	const EstimatorId id,
 	const Spline<float_s>& spline,
@@ -64,19 +64,19 @@ SplineEstimator<OutU, InU>::SplineEstimator(
 	SplineEstimator(id, Utils::copy(spline), mode)
 {}
 
-template<Unit OutU, Unit InU>
+template<UnitType OutU, UnitType InU>
 EstimationMode SplineEstimator<OutU, InU>::getMode() const
 {
 	return mode;
 }
 
-template<Unit OutU, Unit InU>
-Amount<OutU> SplineEstimator<OutU, InU>::get(const Amount<InU> input) const
+template<UnitType OutU, UnitType InU>
+Quantity<OutU> SplineEstimator<OutU, InU>::get(const Quantity<InU> input) const
 {
-	return spline.getLinearValueAt(input.asStd());
+	return Quantity<OutU>::from(spline.getLinearValueAt(input.value()));
 }
 
-template<Unit OutU, Unit InU>
+template<UnitType OutU, UnitType InU>
 bool SplineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const float_s epsilon) const
 {
 	if (not EstimatorBase::isEquivalent(other, epsilon))
@@ -86,7 +86,7 @@ bool SplineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const 
 	return this->spline.isEquivalent(oth.spline, epsilon);
 }
 
-template<Unit OutU, Unit InU>
+template<UnitType OutU, UnitType InU>
 void SplineEstimator<OutU, InU>::dumpDefinition(
 	std::ostream& out,
 	const bool prettify,
@@ -124,7 +124,7 @@ void SplineEstimator<OutU, InU>::dumpDefinition(
 		std::vector<DataPoint<OutU, InU>> values;
 		values.reserve(content.size());
 		std::transform(content.begin(), content.end(), std::back_inserter(values),
-			[](const auto& v) { return DataPoint<OutU, InU>(v.second, v.first); });
+			[](const auto& v) { return DataPoint<OutU, InU>(Quantity<OutU>::from(v.second), Quantity<InU>::from(v.first)); });
 
 		dump.property(Def::Data::Values, values);
 	}

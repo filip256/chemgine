@@ -5,7 +5,7 @@
 #include "Keywords.hpp"
 #include "Printers.hpp"
 
-template<Unit OutU, Unit InU>
+template<UnitType OutU, UnitType InU>
 class AffineEstimator : public DerivedEstimator<EstimatorRef<OutU, InU>, OutU, InU>
 {
 private:
@@ -24,7 +24,7 @@ public:
 		const float_s scale
 	) noexcept;
 
-	Amount<OutU> get(const Amount<InU> input) const override final;
+	Quantity<OutU> get(const Quantity<InU> input) const override final;
 
 	bool isEquivalent(const EstimatorBase& other,
 		const float_s epsilon = std::numeric_limits<float_s>::epsilon()
@@ -40,7 +40,7 @@ public:
 };
 
 
-template<Unit OutU, Unit InU>
+template<UnitType OutU, UnitType InU>
 AffineEstimator<OutU, InU>::AffineEstimator(
 	const EstimatorId id,
 	const EstimatorRef<OutU, InU>& base,
@@ -54,13 +54,13 @@ AffineEstimator<OutU, InU>::AffineEstimator(
 	scale(scale)
 {}
 
-template<Unit OutU, Unit InU>
-Amount<OutU> AffineEstimator<OutU, InU>::get(const Amount<InU> input) const
+template<UnitType OutU, UnitType InU>
+Quantity<OutU> AffineEstimator<OutU, InU>::get(const Quantity<InU> input) const
 {
 	return Base::getBase()->get(input - hShift) * scale + vShift;
 }
 
-template<Unit OutU, Unit InU>
+template<UnitType OutU, UnitType InU>
 bool AffineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const float_s epsilon) const
 {
 	if (EstimatorBase::isEquivalent(other, epsilon) == false)
@@ -74,7 +74,7 @@ bool AffineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const 
 		Base::isEquivalent(oth, epsilon);
 }
 
-template<Unit OutU, Unit InU>
+template<UnitType OutU, UnitType InU>
 void AffineEstimator<OutU, InU>::dumpDefinition(
 	std::ostream& out,
 	const bool prettify,

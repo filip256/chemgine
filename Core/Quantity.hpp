@@ -68,6 +68,19 @@ public:
 	template <UnitType RhsU>
 	constexpr inline auto operator/(const Quantity<RhsU> rhs) const noexcept;
 
+	template <typename FloatT>
+	constexpr inline Quantity operator+(const FloatT rhs) const noexcept;
+	template <typename FloatT>
+	constexpr inline Quantity operator-(const FloatT rhs) const noexcept;
+	template <typename FloatT>
+	constexpr inline Quantity operator*(const FloatT rhs) const noexcept;
+	template <typename FloatT>
+	constexpr inline Quantity operator/(const FloatT rhs) const noexcept;
+
+	template <UnitType OthU>
+	constexpr inline bool equals(const Quantity<OthU> other,
+		const float_q epsilon = std::numeric_limits<StorageType>::epsilon()) const noexcept;
+
 	const std::string& unitSymbol() const;
 	const std::string& unitName() const;
 
@@ -167,6 +180,38 @@ constexpr inline auto Quantity<U>::operator/(const Quantity<RhsU> rhs) const noe
 	return wrapQuantity(static_cast<Base>(*this) / static_cast<Quantity<RhsU>::Base>(rhs));
 }
 
+template <UnitType U>
+template <typename FloatT>
+constexpr inline Quantity<U> Quantity<U>::operator+(const FloatT rhs) const noexcept
+{
+	static_assert(std::is_floating_point_v<FloatT>, "FloatT must be a floating point type.");
+	return Quantity::from(this->value() + rhs);
+}
+
+template <UnitType U>
+template <typename FloatT>
+constexpr inline Quantity<U> Quantity<U>::operator-(const FloatT rhs) const noexcept
+{
+	static_assert(std::is_floating_point_v<FloatT>, "FloatT must be a floating point type.");
+	return Quantity::from(this->value() - rhs);
+}
+
+template <UnitType U>
+template <typename FloatT>
+constexpr inline Quantity<U> Quantity<U>::operator*(const FloatT rhs) const noexcept
+{
+	static_assert(std::is_floating_point_v<FloatT>, "FloatT must be a floating point type.");
+	return Quantity::from(this->value() * rhs);
+}
+
+template <UnitType U>
+template <typename FloatT>
+constexpr inline Quantity<U> Quantity<U>::operator/(const FloatT rhs) const noexcept
+{
+	static_assert(std::is_floating_point_v<FloatT>, "FloatT must be a floating point type.");
+	return Quantity::from(this->value() / rhs);
+}
+
 template<UnitType U, typename FloatT>
 constexpr inline auto operator*(const FloatT lhs, const Quantity<U> rhs)
 {
@@ -179,6 +224,13 @@ constexpr inline auto operator/(const FloatT lhs, const Quantity<U> rhs)
 {
 	static_assert(std::is_floating_point_v<FloatT>, "FloatT must be a floating point type.");
 	return wrapQuantity(lhs / static_cast<Quantity<U>::Base>(rhs));
+}
+
+template <UnitType U>
+template <UnitType OthU>
+constexpr inline bool Quantity<U>::equals(const Quantity<OthU> other, const float_q epsilon) const noexcept
+{
+	return Utils::floatEqual(this->value(), other.value(), epsilon);
 }
 
 template <UnitType U>
@@ -332,7 +384,7 @@ public:
                                                                      \
 	inline std::string symbol_string(const Abs##Unit&)               \
 	{                                                                \
-		return symbol_string(Unit{}) + " (abs.)";                    \
+		return symbol_string(Unit{}) + "_abs";                       \
 	}                                                                \
                                                                      \
 	inline std::string name_string(const Abs##Unit&)                 \
@@ -343,7 +395,7 @@ public:
     static constexpr auto _Abs##Unit = Quantity(1.0f * Abs##Unit{}); \
 
 // Defines the conversion factor and offset between two units.
-#define CHG_UNIT_CONVERSION(Source, Destination, Factor, Offset)                                                          \
+#define CHG_UNIT_CONVERSION(Source, Destination, Factor, Offset)                                                \
 	BOOST_UNITS_DEFINE_CONVERSION_FACTOR(Source##BaseUnit, Destination, float_q, static_cast<float_q>(Factor)); \
 	BOOST_UNITS_DEFINE_CONVERSION_OFFSET(Source##BaseUnit, Destination, float_q, static_cast<float_q>(Offset)); \
 
@@ -353,6 +405,7 @@ public:
 		"Non-canonical unit: Non-root division operator.");                         \
                                                                                     \
 	using Lhs##Rhs = boost::units::multiply_typeof_helper<Lhs, Rhs>::type;          \
+    static constexpr auto _##Lhs##Rhs = Quantity(1.0f * Lhs##Rhs{});                \
                                                                                     \
 	template<>                                                                      \
 	struct composite_unit_trait<Lhs##Rhs>                                           \
@@ -379,6 +432,7 @@ public:
 			"Non-canonical unit: More than one division.");                             \
                                                                                         \
 	using Lhs##Per##Rhs = boost::units::divide_typeof_helper<Lhs, Rhs>::type;           \
+    static constexpr auto _##Lhs##Per##Rhs = Quantity(1.0f * Lhs##Per##Rhs{});          \
 																			            \
 	template<>                                                                          \
 	struct composite_unit_trait<Lhs##Per##Rhs>                                          \
@@ -440,8 +494,11 @@ public:
 	}                                                                                     \
 
 // Creates a scaled unit from another unit.
-#define CHG_SCALED_UNIT(Unit, Base, Exp, Prefix)                                  \
-	using Prefix##Unit = boost::units::make_scaled_unit<Unit, boost::units::scale<Base, boost::units::static_rational<Exp>>>::type; \
+#define CHG_SCALED_UNIT(Unit, Base, Exp, Prefix)                                    \
+	using Prefix##Unit = boost::units::make_scaled_unit<                            \
+        Unit, boost::units::scale<Base, boost::units::static_rational<Exp>>>::type; \
+                                                                                    \
+    static constexpr auto _##Prefix##Unit = Quantity(1.0f * Prefix##Unit{});        \
 
 
 // Defines a boost::units::homogeneous_system and the dimensionless unit for that system.

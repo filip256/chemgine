@@ -8,15 +8,15 @@ Estimator2DUnitTestBase::Estimator2DUnitTestBase(
 	generator(generator)
 {}
 
-Amount<Unit::ANY> Estimator2DUnitTestBase::generateAt(const float_s x)
+Quantity<Dimless> Estimator2DUnitTestBase::generateAt(const float_s x)
 {
 	return generator(x);
 }
 
-std::vector<DataPoint<Unit::ANY, Unit::ANY>> Estimator2DUnitTestBase::generateData(
+std::vector<DataPoint<Dimless, Dimless>> Estimator2DUnitTestBase::generateData(
 	const float_s minX, const float_s maxX, const size_t size) const
 {
-	std::vector<DataPoint<Unit::ANY, Unit::ANY>> data;
+	std::vector<DataPoint<Dimless, Dimless>> data;
 	data.reserve(size);
 
 	const float_s step = (maxX - minX) / (size - 1);
@@ -61,14 +61,14 @@ bool DataEstimator2DUnitTest::run()
 	const float_s step = (testMaxX - testMinX) / testSize;
 	for (float_s x = testMinX; x < testMaxX; x += step)
 	{
-		const auto ref = generateAt(x).asStd();
-		const auto act = estimator->get(x).asStd();
+		const auto ref = generateAt(x).value();
+		const auto act = estimator->get(x).value();
 		error += std::abs(ref - act);
 		++n;
 	}
 
-	const auto ref = generateAt(testMaxX).asStd();
-	const auto act = estimator->get(testMaxX).asStd();
+	const auto ref = generateAt(testMaxX).value();
+	const auto act = estimator->get(testMaxX).value();
 	error += std::abs(ref - act);
 	++n;
 	
@@ -92,17 +92,17 @@ Estimator3DUnitTestBase::Estimator3DUnitTestBase(
 	generator(generator)
 {}
 
-Amount<Unit::ANY> Estimator3DUnitTestBase::generateAt(const float_s x1, const float_s x2)
+Quantity<Dimless> Estimator3DUnitTestBase::generateAt(const float_s x1, const float_s x2)
 {
 	return generator(x1, x2);
 }
 
-std::vector<DataPoint<Unit::ANY, Unit::ANY, Unit::ANY>> Estimator3DUnitTestBase::generateData(
+std::vector<DataPoint<Dimless, Dimless, Dimless>> Estimator3DUnitTestBase::generateData(
 	const float_s minX1, const float_s maxX1,
 	const float_s minX2, const float_s maxX2,
 	const size_t size) const
 {
-	std::vector<DataPoint<Unit::ANY, Unit::ANY, Unit::ANY>> data;
+	std::vector<DataPoint<Dimless, Dimless, Dimless>> data;
 	data.reserve(size * size);
 
 	const float_s step1 = (maxX1 - minX1) / (size - 1);
@@ -155,22 +155,22 @@ bool DataEstimator3DUnitTest::run()
 	for (float_s x1 = testMinX1; x1 < testMaxX1; x1 += step1)
 		for (float_s x2 = testMinX2; x2 < testMaxX2; x2 += step2)
 		{
-			const auto ref = generateAt(x1, x2).asStd();
-			const auto act = estimator->get(x1, x2).asStd();
+			const auto ref = generateAt(x1, x2).value();
+			const auto act = estimator->get(x1, x2).value();
 			error += std::abs(ref - act);
 			++n;
 		}
 
 	for (float_s x2 = testMinX2; x2 < testMaxX2; x2 += step2)
 	{
-		const auto ref = generateAt(testMaxX1, x2).asStd();
-		const auto act = estimator->get(testMaxX1, x2).asStd();
+		const auto ref = generateAt(testMaxX1, x2).value();
+		const auto act = estimator->get(testMaxX1, x2).value();
 		error += std::abs(ref - act);
 		++n;
 	}
 
-	const auto ref = generateAt(testMaxX1, testMaxX2).asStd();
-	const auto act = estimator->get(testMaxX1, testMaxX2).asStd();
+	const auto ref = generateAt(testMaxX1, testMaxX2).value();
+	const auto act = estimator->get(testMaxX1, testMaxX2).value();
 	error += std::abs(ref - act);
 	++n;
 

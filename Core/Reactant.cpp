@@ -59,17 +59,17 @@ Amount<Unit::LITER> Reactant::getVolume() const
 
 Amount<Unit::GRAM_PER_MILLILITER> Reactant::getDensity() const
 {
-	return molecule.getDensityAt(getLayer().getTemperature(), container->getPressure());
+	return molecule.getDensityAt(getLayer().getTemperature().asStd() * _Celsius, container->getPressure().asStd() * _Torr).value();
 }
 
 Amount<Unit::CELSIUS> Reactant::getMeltingPoint() const
 {
-	return molecule.getMeltingPointAt(container->getPressure());
+	return molecule.getMeltingPointAt(container->getPressure().asStd() * _Torr).value();
 }
 
 Amount<Unit::CELSIUS> Reactant::getBoilingPoint() const
 {
-	return molecule.getBoilingPointAt(container->getPressure());
+	return molecule.getBoilingPointAt(container->getPressure().asStd() * _Torr).value();
 }
 
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> Reactant::getHeatCapacity() const

@@ -1,26 +1,26 @@
 #pragma once
 
-#include "Amount.hpp"
-#include "DynamicAmount.hpp"
+#include "Quantity.hpp"
+#include "DynamicQuantity.hpp"
 #include "Location.hpp"
 #include "Log.hpp"
 
-template<Unit OutU, Unit... InUs>
+template<UnitType OutU, UnitType... InUs>
 class DataPoint
 {
 public:
-    const Amount<OutU> output;
-    const std::tuple<Amount<InUs>...> inputs;
+    const Quantity<OutU> output;
+    const std::tuple<Quantity<InUs>...> inputs;
 
 	DataPoint(
-		const Amount<OutU> output,
-		const std::tuple<Amount<InUs>...>& inputs
+		const Quantity<OutU> output,
+		const std::tuple<Quantity<InUs>...>& inputs
 	) noexcept;
 
 	template<typename = std::enable_if_t<(sizeof...(InUs) > 1)>>
 	DataPoint(
-		const Amount<OutU> output,
-		const Amount<InUs>... inputs
+		const Quantity<OutU> output,
+		const Quantity<InUs>... inputs
 	) noexcept;
 
 	DataPoint(const DataPoint&) = default;
@@ -30,54 +30,54 @@ public:
 	bool operator>(const DataPoint& other) const;
 };
 
-template<Unit OutU, Unit... InUs>
+template<UnitType OutU, UnitType... InUs>
 DataPoint<OutU, InUs...>::DataPoint(
-	const Amount<OutU> output,
-	const std::tuple<Amount<InUs>...>& inputs
+	const Quantity<OutU> output,
+	const std::tuple<Quantity<InUs>...>& inputs
 ) noexcept :
 	output(output),
 	inputs(inputs)
 {}
 
-template<Unit OutU, Unit... InUs>
+template<UnitType OutU, UnitType... InUs>
 template<typename>
 DataPoint<OutU, InUs...>::DataPoint(
-	const Amount<OutU> output,
-	const Amount<InUs>... inputs
+	const Quantity<OutU> output,
+	const Quantity<InUs>... inputs
 ) noexcept :
 	DataPoint<OutU, InUs...>(output, std::make_tuple(inputs...))
 {}
 
-template<Unit OutU, Unit... InUs>
+template<UnitType OutU, UnitType... InUs>
 bool DataPoint<OutU, InUs...>::operator==(const DataPoint& other) const
 {
 	return this->output == other.output && this->inputs == other.inputs;
 }
 
-template<Unit OutU, Unit... InUs>
+template<UnitType OutU, UnitType... InUs>
 bool DataPoint<OutU, InUs...>::operator<(const DataPoint& other) const
 {
 	return this->inputs < other.inputs;
 }
 
-template<Unit OutU, Unit... InUs>
+template<UnitType OutU, UnitType... InUs>
 bool DataPoint<OutU, InUs...>::operator>(const DataPoint& other) const
 {
 	return this->inputs > other.inputs;
 }
 
 
-template<Unit OutU, Unit... InUs>
+template<UnitType OutU, UnitType... InUs>
 class Def::Parser<DataPoint<OutU, InUs...>>
 {
 private:
 	template<std::size_t... Is>
-	static std::optional<std::tuple<Amount<InUs>...>> convertInputs(
-		const std::vector<DynamicAmount>& baseInputs,
+	static std::optional<std::tuple<Quantity<InUs>...>> convertInputs(
+		const std::vector<DynamicQuantity>& baseInputs,
 		const Def::Location& location,
 		std::index_sequence<Is...>)
 	{
-		std::tuple<Amount<InUs>...> expectedInputs;
+		std::tuple<Quantity<InUs>...> expectedInputs;
 		auto failed = static_cast<uint8_t>(-1);
 
 		(
@@ -101,8 +101,8 @@ private:
 public:
 	static std::optional<DataPoint<OutU, InUs...>> parse(
 		const std::string& str,
-		const Unit outputBaseUnit,
-		const std::vector<Unit>& inputBaseUnits,
+		const UnitId outputBaseUnit,
+		const std::vector<UnitId>& inputBaseUnits,
 		const Def::Location& location
 	)
 	{
@@ -110,14 +110,14 @@ public:
 		const auto inputCount = sizeof...(InUs);
 
 		// parse values
-		const auto pair = Def::parse<std::pair<std::string, DynamicAmount>>(str, ':');
+		const auto pair = Def::parse<std::pair<std::string, DynamicQuantity>>(str, ':');
 		if (not pair)
 		{
 			log.error("Malfomed data point: '{0}', at: {1}.", str, location.toString());
 			return std::nullopt;
 		}
 
-		const auto rawInputs = Def::parse<std::vector<DynamicAmount>>(pair->first, ',');
+		const auto rawInputs = Def::parse<std::vector<DynamicQuantity>>(pair->first, ',');
 		if (not rawInputs)
 		{
 			log.error("Malfomed data point inputs list: '{0}', at: {1}.", pair->first, location.toString());
@@ -135,7 +135,7 @@ public:
 		if (not baseOutput)
 		{
 			log.error("Failed to convert data point output from given unit: '{0}' to base unit: '{1}', at: {2}.",
-				pair->second.getUnitSymbol(), DynamicAmount::getUnitSymbol(outputBaseUnit), location.toString());
+				pair->second.unitSymbol(), DynamicQuantity::getUnitSymbol(outputBaseUnit), location.toString());
 			return std::nullopt;
 		}
 
@@ -143,12 +143,12 @@ public:
 		if (not expectedOutput)
 		{
 			log.error("Failed to convert data point output from base unit: '{0}' to expected unit: '{1}', at: {2}.",
-				baseOutput->getUnitSymbol(), DynamicAmount::getUnitSymbol(OutU), location.toString());
+				baseOutput->unitSymbol(), Quantity<OutU>::getUnitSymbol(), location.toString());
 			return std::nullopt;
 		}
 
 		// convert inputs
-		std::vector<DynamicAmount> baseInputs;
+		std::vector<DynamicQuantity> baseInputs;
 		baseInputs.reserve(inputCount);
 		for (size_t i = 0; i < inputCount; i++)
 		{
@@ -156,7 +156,7 @@ public:
 			if (not convert)
 			{
 				log.error("Failed to convert data point input from given unit: '{0}' to base unit: '{1}', at: {2}.",
-					(*rawInputs)[i].getUnitSymbol(), DynamicAmount::getUnitSymbol(inputBaseUnits[i]), location.toString());
+					(*rawInputs)[i].unitSymbol(), DynamicQuantity::getUnitSymbol(inputBaseUnits[i]), location.toString());
 				return std::nullopt;
 			}
 
@@ -180,12 +180,12 @@ public:
 		} while (std::next_permutation(baseInputs.begin(), baseInputs.end(),
 			[](const auto& l, const auto& r) { return l.getUnit() < r.getUnit(); }));
 
-		std::string baseUnitNames = DynamicAmount::getUnitSymbol(inputBaseUnits.front());
+		std::string baseUnitNames = DynamicQuantity::getUnitSymbol(inputBaseUnits.front());
 		for (size_t i = 1; i < inputBaseUnits.size(); ++i)
-			baseUnitNames += ", " + DynamicAmount::getUnitSymbol(inputBaseUnits[i]);
+			baseUnitNames += ", " + DynamicQuantity::getUnitSymbol(inputBaseUnits[i]);
 
 		std::string expectedUnitNames;
-		((expectedUnitNames += Amount<InUs>::unitSymbol() + ", "), ...);
+		((expectedUnitNames += Quantity<InUs>::getUnitSymbol() + ", "), ...);
 		expectedUnitNames.pop_back();
 		expectedUnitNames.pop_back();
 
@@ -195,7 +195,7 @@ public:
 	}
 };
 
-template<Unit OutU, Unit... InUs>
+template<UnitType OutU, UnitType... InUs>
 class Def::Printer<DataPoint<OutU, InUs...>>
 {
 public:

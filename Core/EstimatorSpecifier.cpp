@@ -3,8 +3,8 @@
 using namespace Def;
 
 EstimatorSpecifier::EstimatorSpecifier(
-	const Unit outUnit,
-	std::vector<Unit>&& inUnits
+	const UnitId outUnit,
+	std::vector<UnitId>&& inUnits
 ) noexcept :
 	outUnit(outUnit),
 	inUnits(std::move(inUnits))

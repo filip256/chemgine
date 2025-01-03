@@ -4,7 +4,7 @@
 #include "EstimatorFactory.hpp"
 #include "EstimatorSpecifier.hpp"
 
-template<Unit OutU, Unit... InUs>
+template<UnitType OutU, UnitType... InUs>
 class Def::Parser<UnitizedEstimator<OutU, InUs...>>
 {
 public:
@@ -37,7 +37,7 @@ public:
 
 		EstimatorFactory factory(repository);
 
-		if (const auto constant = definition.getOptionalProperty(Def::Data::Constant, Def::parse<Amount<OutU>>))
+		if (const auto constant = definition.getOptionalProperty(Def::Data::Constant, Def::parse<Quantity<OutU>>))
 		{
 			return factory.createConstant<OutU, InUs...>(*constant);
 		}
@@ -106,7 +106,7 @@ public:
 
 		if constexpr (inputCount == 1)
 		{
-			constexpr Unit InU = std::get<0>(std::make_tuple(InUs...));
+			using InU = Utils::front_t<InUs...>;
 
 			const auto base = definition.getOptionalDefinition(Def::Data::Base,
 				Def::Parser<UnitizedEstimator<OutU, InU>>::parse, repository);
@@ -115,7 +115,7 @@ public:
 				// anchor transform
 				if (const auto anchorPointStr = definition.getOptionalProperty(Def::Data::AnchorPoint))
 				{
-					const auto anchorPoint = Def::parse<DataPoint<OutU, InU>>(*anchorPointStr, OutU, std::vector<Unit>{InU}, definition.getLocation());
+					const auto anchorPoint = Def::parse<DataPoint<OutU, InU>>(*anchorPointStr, UnitId::of<OutU>(), std::vector{ UnitId::of<InU>() }, definition.getLocation());
 					if (not anchorPoint)
 						return std::nullopt;
 
@@ -127,7 +127,7 @@ public:
 				// rebase transform
 				if (const auto rebasePointStr = definition.getOptionalProperty(Def::Data::RebasePoint))
 				{
-					const auto rebasePoint = Def::parse<DataPoint<OutU, InU>>(*rebasePointStr, OutU, std::vector<Unit>{InU}, definition.getLocation());
+					const auto rebasePoint = Def::parse<DataPoint<OutU, InU>>(*rebasePointStr, UnitId::of<OutU>(), std::vector{ UnitId::of<InU>() }, definition.getLocation());
 					if (not rebasePoint)
 						return std::nullopt;
 

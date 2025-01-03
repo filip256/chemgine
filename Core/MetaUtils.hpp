@@ -6,13 +6,25 @@
 
 namespace Utils
 {
-	template<typename FisrtT, typename... RestT>
-	constexpr FisrtT getFirstArg();
-
 	template<typename T>
 	bool equal(const T x, const T y);
 	template<typename T1, typename T2>
 	bool equal(const T1 x, const T2 y);
+
+	namespace
+	{
+		template <typename First, typename... Rest>
+		struct front
+		{
+			static_assert(std::is_class_v<First>, "front: First argument must be a type.");
+
+			using type = First;
+		};
+	}
+
+	// Extracts the first type out of a parameter pack.
+	template <typename... Ts>
+	using front_t = typename front<Ts...>::type;
 
 	namespace
 	{
@@ -81,12 +93,6 @@ namespace Utils
 		constexpr inline bool operator==(const unique_func_t other) const noexcept { return funcptr == other.funcptr; }
 		constexpr inline bool operator!=(const unique_func_t other) const noexcept { return funcptr != other.funcptr; }
 	};
-}
-
-template<typename FisrtT, typename... RestT>
-constexpr FisrtT Utils::getFirstArg()
-{
-	return FisrtT;
 }
 
 template<typename T>

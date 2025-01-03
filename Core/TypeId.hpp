@@ -26,6 +26,8 @@ public:
 
 	bool operator==(const TypeId other) const;
 	bool operator!=(const TypeId other) const;
+	bool operator<(const TypeId other) const;
+	bool operator>(const TypeId other) const;
 };
 
 template<>

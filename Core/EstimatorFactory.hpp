@@ -19,52 +19,52 @@ private:
 public:
 	EstimatorFactory(EstimatorRepository& repository) noexcept;
 
-	template<Unit OutU, Unit... InUs>
+	template<UnitType OutU, UnitType... InUs>
 	EstimatorRef<OutU, InUs...> createConstant(
-		const Amount<OutU> constant);
+		const Quantity<OutU> constant);
 
-	template<Unit OutU, Unit... InUs>
+	template<UnitType OutU, UnitType... InUs>
 	EstimatorRef<OutU, InUs...> createData(
 		std::vector<DataPoint<OutU, InUs...>>&& dataPoints,
 		const EstimationMode mode,
 		const float_s maxCompressionLoss);
 
-	template<Unit OutU, Unit InU>
+	template<UnitType OutU, UnitType InU>
 	EstimatorRef<OutU, InU> createAffine(
 		const EstimatorRef<OutU, InU>& base,
 		const float_s vShift,
 		const float_s hShift,
 		const float_s scale);
 
-	template<Unit OutU, Unit InU>
+	template<UnitType OutU, UnitType InU>
 	EstimatorRef<OutU, InU> createAffine(
 		const EstimatorRef<OutU, InU>& base,
 		const DataPoint<OutU, InU> anchorPoint,
 		const float_s hShift);
 
-	template<Unit OutU, Unit InU>
+	template<UnitType OutU, UnitType InU>
 	EstimatorRef<OutU, InU> createAffine(
 		const EstimatorRef<OutU, InU>& base,
 		const DataPoint<OutU, InU> rebasePoint);
 
-	template<Unit OutU, Unit InU>
+	template<UnitType OutU, UnitType InU>
 	EstimatorRef<OutU, InU> createLinearRegression(
 		const float_s paramX, const float_s shift);
 
-	template<Unit OutU, Unit InU1, Unit InU2>
+	template<UnitType OutU, UnitType InU1, UnitType InU2>
 	EstimatorRef<OutU, InU1, InU2> createLinearRegression(
 		const float_s paramX, const float_s paramY, const float_s shift);
 };
 
 
-template<Unit OutU, Unit... InUs>
+template<UnitType OutU, UnitType... InUs>
 EstimatorRef<OutU, InUs...> EstimatorFactory::createConstant(
-	const Amount<OutU> constant)
+	const Quantity<OutU> constant)
 {
 	return repository.add<ConstantEstimator<OutU, InUs...>>(constant);
 }
 
-template<Unit OutU, Unit... InUs>
+template<UnitType OutU, UnitType... InUs>
 EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
 	std::vector<DataPoint<OutU, InUs...>>&& dataPoints,
 	const EstimationMode mode,
@@ -84,7 +84,7 @@ EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
 		std::transform(uniquePoints.begin(), uniquePoints.end(), std::back_inserter(points),
 			[](const DataPoint<OutU, InUs...>& p)
 			{
-				return std::pair(std::get<0>(p.inputs).asStd(), p.output.asStd());
+				return std::pair(std::get<0>(p.inputs).value(), p.output.value());
 			}); 
 
 		// Linear 2D
@@ -104,7 +104,7 @@ EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
 		std::transform(uniquePoints.begin(), uniquePoints.end(), std::back_inserter(points),
 			[](const DataPoint<OutU, InUs...>& p)
 			{
-				return std::tuple(std::get<0>(p.inputs).asStd(), std::get<1>(p.inputs).asStd(), p.output.asStd());
+				return std::tuple(std::get<0>(p.inputs).value(), std::get<1>(p.inputs).value(), p.output.value());
 			});
 
 		// Linear 3D
@@ -117,7 +117,7 @@ EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
 }
 
 
-template<Unit OutU, Unit InU>
+template<UnitType OutU, UnitType InU>
 EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 	const EstimatorRef<OutU, InU>& base,
 	const float_s vShift,
@@ -131,7 +131,7 @@ EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 	// constant folding
 	if (const auto constBase = base.cast<ConstantEstimator<OutU, InU>>())
 	{
-		return createConstant<OutU, InU>(constBase->get(0.0f) * scale + vShift);
+		return createConstant<OutU, InU>(constBase->get(Quantity<InU>::from(0.0f)) * scale + vShift);
 	}
 
 	// linear folding
@@ -157,7 +157,7 @@ EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 	return repository.add<AffineEstimator<OutU, InU>>(base, vShift, hShift, scale);
 }
 
-template<Unit OutU, Unit InU>
+template<UnitType OutU, UnitType InU>
 EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 	const EstimatorRef<OutU, InU>& base,
 	const DataPoint<OutU, InU> anchorPoint,
@@ -167,26 +167,26 @@ EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 	{
 		// f(X) = base(X) - base(Xr) + Yr
 		const auto vShift = anchorPoint.output - base->get(std::get<0>(anchorPoint.inputs));
-		return createAffine(base, vShift.asStd(), 0.0f, 1.0f);
+		return createAffine(base, vShift.value(), 0.0f, 1.0f);
 	}
 
 	// f(X) = base(X - Xr + Xh) - base(Xh) + Yr
-	const auto vShift = anchorPoint.output - base->get(hShift);
+	const auto vShift = anchorPoint.output - base->get(Quantity<InU>::from(hShift));
 	const auto newHShift = std::get<0>(anchorPoint.inputs) - hShift;
-	return createAffine(base, vShift.asStd(), newHShift.asStd(), 1.0f);
+	return createAffine(base, vShift.value(), newHShift.value(), 1.0f);
 }
 
-template<Unit OutU, Unit InU>
+template<UnitType OutU, UnitType InU>
 EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 	const EstimatorRef<OutU, InU>& base,
 	const DataPoint<OutU, InU> rebasePoint)
 {
 	const auto hShift = std::get<0>(rebasePoint.inputs);
 	const auto scale = rebasePoint.output;
-	return createAffine(base, 0.0f, hShift.asStd(), scale.asStd());
+	return createAffine(base, 0.0f, hShift.value(), scale.value());
 }
 
-template<Unit OutU, Unit InU>
+template<UnitType OutU, UnitType InU>
 EstimatorRef<OutU, InU> EstimatorFactory::createLinearRegression(
 	const float_s paramX, const float_s shift)
 {
@@ -194,7 +194,7 @@ EstimatorRef<OutU, InU> EstimatorFactory::createLinearRegression(
 		LinearRegressor2D(paramX, shift));
 }
 
-template<Unit OutU, Unit InU1, Unit InU2>
+template<UnitType OutU, UnitType InU1, UnitType InU2>
 EstimatorRef<OutU, InU1, InU2> EstimatorFactory::createLinearRegression(
 	const float_s paramX, const float_s paramY, const float_s shift)
 {

@@ -17,8 +17,15 @@ std::string Utils::getTypeName()
 		return "";
 
 	auto name = std::string(typeid(T).name());
-	if (name.starts_with("class"))
-		name = name.substr(5);
+
+	const std::string classStr = "class ";
+	const std::string structStr = "struct ";
+
+	size_t pos;
+	while ((pos = name.find(classStr)) != std::string::npos)
+		name.erase(pos, classStr.size());
+	while ((pos = name.find(structStr)) != std::string::npos)
+		name.erase(pos, structStr.size());
 
 	Utils::strip(name);
 	return name;

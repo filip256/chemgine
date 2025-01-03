@@ -2,7 +2,7 @@
 
 #include "UnitizedEstimator.hpp"
 
-template<typename BaseRefT, Unit OutU, Unit... InUs>
+template<typename BaseRefT, UnitType OutU, UnitType... InUs>
 class DerivedEstimator : public UnitizedEstimator<OutU, InUs...>
 {
 private:
@@ -24,7 +24,7 @@ public:
 	uint16_t getNestingDepth() const override final;
 };
 
-template<typename BaseRefT, Unit OutU, Unit... InUs>
+template<typename BaseRefT, UnitType OutU, UnitType... InUs>
 DerivedEstimator<BaseRefT, OutU, InUs...>::DerivedEstimator(
 	const EstimatorId id,
 	const BaseRefT& base
@@ -33,19 +33,19 @@ DerivedEstimator<BaseRefT, OutU, InUs...>::DerivedEstimator(
 	base(base)
 {}
 
-template<typename BaseRefT, Unit OutU, Unit... InUs>
+template<typename BaseRefT, UnitType OutU, UnitType... InUs>
 const BaseRefT& DerivedEstimator<BaseRefT, OutU, InUs...>::getBase() const
 {
 	return base;
 }
 
-template<typename BaseRefT, Unit OutU, Unit... InUs>
+template<typename BaseRefT, UnitType OutU, UnitType... InUs>
 bool DerivedEstimator<BaseRefT, OutU, InUs...>::isEquivalent(const DerivedEstimator& other, const float_s epsilon) const
 {
 	return this->base->isEquivalent(*other.base);
 }
 
-template<typename BaseRefT, Unit OutU, Unit... InUs>
+template<typename BaseRefT, UnitType OutU, UnitType... InUs>
 uint16_t DerivedEstimator<BaseRefT, OutU, InUs...>::getNestingDepth() const
 {
 	return 1 + base->getNestingDepth();

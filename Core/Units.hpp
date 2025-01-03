@@ -52,9 +52,9 @@ CHG_UNIT_CONVERSION(Radian, Degree, 180.0 / std::numbers::pi, 0.0);
 
 CHG_DIV_UNIT(Gram, Mole);
 CHG_MUL_UNIT(Mole, Celsius);
-CHG_MUL_UNIT(Mole, Fahrenheit);
+CHG_DIV_UNIT(Mole, Second);
 CHG_DIV_UNIT(Joule, MoleCelsius);
-CHG_DIV_UNIT(Joule, MoleFahrenheit);
+CHG_DIV_UNIT(Joule, Mole);
 CHG_DIV_UNIT(Joule, Second);
 
 CHG_INV_UNIT(Second);

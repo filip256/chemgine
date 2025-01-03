@@ -28,3 +28,13 @@ bool TypeId::operator!=(const TypeId other) const
 {
 	return !(*this == other);
 }
+
+bool TypeId::operator<(const TypeId other) const
+{
+	return id < other.id;
+}
+
+bool TypeId::operator>(const TypeId other) const
+{
+	return id > other.id;
+}

@@ -3,21 +3,21 @@
 #include "UnitizedEstimator.hpp"
 #include "DataDumper.hpp"
 
-template<Unit OutU, Unit... InUs>
+template<UnitType OutU, UnitType... InUs>
 class ConstantEstimator : public UnitizedEstimator<OutU, InUs...>
 {
 private:
 	using Base = UnitizedEstimator<OutU, InUs...>;
 
-	const Amount<OutU> constant;
+	const Quantity<OutU> constant;
 
 public:
 	ConstantEstimator(
 		const EstimatorId id,
-		const Amount<OutU> constant
+		const Quantity<OutU> constant
 	) noexcept;
 
-	Amount<OutU> get(const Amount<InUs>...) const override final;
+	Quantity<OutU> get(const Quantity<InUs>...) const override final;
 
 	bool isEquivalent(const EstimatorBase& other,
 		const float_s epsilon = std::numeric_limits<float_s>::epsilon()
@@ -32,22 +32,22 @@ public:
 	) const override final;
 };
 
-template<Unit OutU, Unit... InUs>
+template<UnitType OutU, UnitType... InUs>
 ConstantEstimator<OutU, InUs...>::ConstantEstimator(
 	const EstimatorId id,
-	const Amount<OutU> constant
+	const Quantity<OutU> constant
 ) noexcept :
 	Base(id),
 	constant(constant)
 {}
 
-template<Unit OutU, Unit... InUs>
-Amount<OutU> ConstantEstimator<OutU, InUs...>::get(const Amount<InUs>...) const
+template<UnitType OutU, UnitType... InUs>
+Quantity<OutU> ConstantEstimator<OutU, InUs...>::get(const Quantity<InUs>...) const
 {
 	return constant;
 }
 
-template<Unit OutU, Unit... InUs>
+template<UnitType OutU, UnitType... InUs>
 bool ConstantEstimator<OutU, InUs...>::isEquivalent(const EstimatorBase& other, const float_s epsilon) const
 {
 	if (not EstimatorBase::isEquivalent(other, epsilon))
@@ -57,7 +57,7 @@ bool ConstantEstimator<OutU, InUs...>::isEquivalent(const EstimatorBase& other, 
 	return this->constant.equals(oth.constant, epsilon);
 }
 
-template<Unit OutU, Unit... InUs>
+template<UnitType OutU, UnitType... InUs>
 void ConstantEstimator<OutU, InUs...>::dumpDefinition(
 	std::ostream& out,
 	const bool prettify,
