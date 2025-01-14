@@ -9,7 +9,7 @@ const ImmutableSet<uint8_t> AtomData::RadicalAnyValence = { NullValence };
 AtomData::AtomData(
 	const Symbol& symbol,
 	const std::string& name,
-	const Amount<Unit::GRAM> weight,
+	const Quantity<Gram> weight,
 	ImmutableSet<uint8_t>&& valences
 ) noexcept :
 	BaseComponentData(weight, getRarityOf(symbol)),
@@ -20,7 +20,7 @@ AtomData::AtomData(
 
 bool AtomData::isRadical() const
 {
-	return weight == 0.0;
+	return weight == 0.0f;
 }
 
 bool AtomData::hasValence(const uint8_t v) const

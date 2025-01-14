@@ -155,7 +155,7 @@ public:
     /// <summary>
     /// Complexity: O(n)
     /// </summary>
-    Amount<Unit::GRAM_PER_MOLE> getMolarMass() const;
+    Quantity<GramPerMole> getMolarMass() const;
 
     /// <summary>
     /// Complexity: O(1) (for now)

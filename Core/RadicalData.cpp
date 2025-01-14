@@ -11,7 +11,7 @@ RadicalData::RadicalData(
 	const std::string& name,
 	std::unordered_set<Symbol>&& matchables
 ) noexcept :
-	AtomData(symbol, name, 0.0_g, Utils::copy(AtomData::RadicalAnyValence)),
+	AtomData(symbol, name, 0.0 * _Gram, Utils::copy(AtomData::RadicalAnyValence)),
 	matchables(std::move(matchables))
 {}
 

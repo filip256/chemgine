@@ -19,7 +19,7 @@ public:
 	AtomData(
 		const Symbol& symbol,
 		const std::string& name,
-		const Amount<Unit::GRAM> weight,
+		const Quantity<Gram> weight,
 		ImmutableSet<uint8_t>&& valences
 	) noexcept;
 

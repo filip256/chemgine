@@ -1,29 +1,29 @@
 #include "Formulas.hpp"
 #include "Constants.hpp"
 
-Amount<Unit::LITER> Formulas::idealGasLaw(
-	const Amount<Unit::KELVIN> temperature,
-	const Amount<Unit::ATMOSPHERE> pressure,
-	const Amount<Unit::MOLE> moles)
+Quantity<Liter> Formulas::idealGasLaw(
+	const Quantity<AbsKelvin> temperature,
+	const Quantity<Atmosphere> pressure,
+	const Quantity<Mole> moles)
 {
-	return ((moles.asStd() * temperature.asStd()) / pressure.asStd()) * Constants::IDEAL_GAS_CONSTANT / 100.0;
+	return ((moles * temperature) / pressure).value() * Constants::IDEAL_GAS_CONSTANT * _Liter / 100.0;
 }
 
-Amount<Unit::GRAM_PER_MILLILITER> Formulas::idealGasLaw(
-	const Amount<Unit::KELVIN> temperature,
-	const Amount<Unit::ATMOSPHERE> pressure,
-	const Amount<Unit::GRAM_PER_MOLE> molarMass)
+Quantity<GramPerMilliLiter> Formulas::idealGasLaw(
+	const Quantity<AbsKelvin> temperature,
+	const Quantity<Atmosphere> pressure,
+	const Quantity<GramPerMole> molarMass)
 {
-	return idealGasLaw(temperature, pressure, 1.0_mol)
-		.to<Unit::GRAM_PER_MILLILITER>(molarMass.to<Unit::GRAM>(1.0_mol));
+	return ((molarMass * _Mole) / idealGasLaw(temperature, pressure, _Mole))
+		.to<GramPerMilliLiter>();
 }
 
-Amount<Unit::JOULE_PER_MOLE_CELSIUS> Formulas::isobaricHeatCapacity(const uint8_t degreesOfFreedom)
+Quantity<JoulePerMoleCelsius> Formulas::isobaricHeatCapacity(const uint8_t degreesOfFreedom)
 {
-	return Amount<Unit::JOULE_PER_MOLE_CELSIUS>((degreesOfFreedom + 2) * Constants::IDEAL_GAS_CONSTANT / 2.0);
+	return Quantity<JoulePerMoleCelsius>::from((degreesOfFreedom + 2) * Constants::IDEAL_GAS_CONSTANT / 2.0);
 }
 
-Amount<Unit::JOULE_PER_MOLE_CELSIUS> Formulas::isochoricHeatCapacity(const uint8_t degreesOfFreedom)
+Quantity<JoulePerMoleCelsius> Formulas::isochoricHeatCapacity(const uint8_t degreesOfFreedom)
 {
-	return Amount<Unit::JOULE_PER_MOLE_CELSIUS>(degreesOfFreedom * Constants::IDEAL_GAS_CONSTANT / 2.0);
+	return Quantity<JoulePerMoleCelsius>::from(degreesOfFreedom * Constants::IDEAL_GAS_CONSTANT / 2.0);
 }

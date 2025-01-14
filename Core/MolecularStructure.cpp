@@ -349,15 +349,15 @@ c_size MolecularStructure::getImpliedHydrogenCount() const
     return impliedHydrogenCount;
 }
 
-Amount<Unit::GRAM_PER_MOLE> MolecularStructure::getMolarMass() const
+Quantity<GramPerMole> MolecularStructure::getMolarMass() const
 {
-    Amount<Unit::GRAM> cnt = 0;
+    Quantity<Gram> mass = 0;
     for (c_size i = 0; i < atoms.size(); ++i)
-    {
-        cnt += atoms[i]->getData().weight;
-    }
-    cnt += Atom("H").getData().weight * impliedHydrogenCount;
-    return cnt.to<Unit::GRAM_PER_MOLE>(Amount<Unit::MOLE>(1.0));
+        mass += atoms[i]->getData().weight;
+
+    mass += Atom("H").getData().weight * impliedHydrogenCount;
+
+    return mass / _Mole;
 }
 
 uint8_t MolecularStructure::getDegreesOfFreedom() const

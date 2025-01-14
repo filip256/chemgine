@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Amount.hpp"
+#include "Units.hpp"
 
 #include <cstdint>
 #include <string>
@@ -12,11 +12,11 @@ private:
 	uint8_t rarity = 255;
 
 public:
-	const Amount<Unit::GRAM> weight = 0.0;
+	const Quantity<Gram> weight = 0.0f * _Gram;
 
 	BaseComponentData();
 	BaseComponentData(
-		const Amount<Unit::GRAM> weight,
+		const Quantity<Gram> weight,
 		const uint8_t rarity = 255);
 	BaseComponentData(BaseComponentData&&) = default;
 	virtual ~BaseComponentData() = default;

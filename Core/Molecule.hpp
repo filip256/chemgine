@@ -11,7 +11,7 @@ class Molecule : public Accessor<>
 {
 private:
 	const MoleculeData& data;
-	Amount<Unit::GRAM_PER_MOLE> molarMass;
+	Quantity<GramPerMole> molarMass;
 
 public:
 	Molecule(const MoleculeData& data) noexcept;
@@ -22,7 +22,7 @@ public:
 	Molecule& operator=(const Molecule&) = default;
 
 	MoleculeId getId() const;
-	Amount<Unit::GRAM_PER_MOLE> getMolarMass() const;
+	Quantity<GramPerMole> getMolarMass() const;
 	const MoleculeData& getData() const;
 
 	const MolecularStructure& getStructure() const;
@@ -34,65 +34,65 @@ public:
 	Quantity<AbsCelsius> getBoilingPointAt(const Quantity<Torr> pressure) const;
 
 	AggregationType getAggregationAt(
-		const Amount<Unit::CELSIUS> temperature,
-		const Amount<Unit::TORR> pressure
+		const Quantity<AbsCelsius> temperature,
+		const Quantity<Torr> pressure
 	) const;
 
-	Amount<Unit::GRAM_PER_MILLILITER> getDensityAt(
-		const Amount<Unit::CELSIUS> temperature,
-		const Amount<Unit::TORR> pressure,
+	Quantity<GramPerMilliLiter> getDensityAt(
+		const Quantity<AbsCelsius> temperature,
+		const Quantity<Torr> pressure,
 		const AggregationType aggregation
 	) const;
 
 	Quantity<GramPerMilliLiter> getDensityAt(
-		const Quantity<Celsius> temperature,
+		const Quantity<AbsCelsius> temperature,
 		const Quantity<Torr> pressure
 	) const;
 
-	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getHeatCapacityAt(
-		const Amount<Unit::CELSIUS> temperature,
-		const Amount<Unit::TORR> pressure,
+	Quantity<JoulePerMoleCelsius> getHeatCapacityAt(
+		const Quantity<AbsCelsius> temperature,
+		const Quantity<Torr> pressure,
 		const AggregationType aggregation
 	) const;
 
-	Amount<Unit::JOULE_PER_MOLE_CELSIUS> getHeatCapacityAt(
-		const Amount<Unit::CELSIUS> temperature,
-		const Amount<Unit::TORR> pressure
+	Quantity<JoulePerMoleCelsius> getHeatCapacityAt(
+		const Quantity<AbsCelsius> temperature,
+		const Quantity<Torr> pressure
 	) const;
 
-	Amount<Unit::JOULE_PER_MOLE> getFusionHeatAt(
-		const Amount<Unit::CELSIUS> temperature,
-		const Amount<Unit::TORR> pressure
+	Quantity<JoulePerMole> getFusionHeatAt(
+		const Quantity<AbsCelsius> temperature,
+		const Quantity<Torr> pressure
 	) const;
 
-	Amount<Unit::JOULE_PER_MOLE> getVaporizationHeatAt(
-		const Amount<Unit::CELSIUS> temperature,
-		const Amount<Unit::TORR> pressure
+	Quantity<JoulePerMole> getVaporizationHeatAt(
+		const Quantity<AbsCelsius> temperature,
+		const Quantity<Torr> pressure
 	) const;
 
-	Amount<Unit::JOULE_PER_MOLE> getSublimationHeatAt(
-		const Amount<Unit::CELSIUS> temperature,
-		const Amount<Unit::TORR> pressure
+	Quantity<JoulePerMole> getSublimationHeatAt(
+		const Quantity<AbsCelsius> temperature,
+		const Quantity<Torr> pressure
 	) const;
 
-	Amount<Unit::JOULE_PER_MOLE> getLiquefactionHeatAt(
-		const Amount<Unit::CELSIUS> temperature,
-		const Amount<Unit::TORR> pressure
+	Quantity<JoulePerMole> getLiquefactionHeatAt(
+		const Quantity<AbsCelsius> temperature,
+		const Quantity<Torr> pressure
 	) const;
 
-	Amount<Unit::JOULE_PER_MOLE> getCondensationHeatAt(
-		const Amount<Unit::CELSIUS> temperature,
-		const Amount<Unit::TORR> pressure
+	Quantity<JoulePerMole> getCondensationHeatAt(
+		const Quantity<AbsCelsius> temperature,
+		const Quantity<Torr> pressure
 	) const;
 
-	Amount<Unit::JOULE_PER_MOLE> getDepositionHeatAt(
-		const Amount<Unit::CELSIUS> temperature,
-		const Amount<Unit::TORR> pressure
+	Quantity<JoulePerMole> getDepositionHeatAt(
+		const Quantity<AbsCelsius> temperature,
+		const Quantity<Torr> pressure
 	) const;
 
-	Amount<Unit::MOLE_RATIO> getSolubilityAt(
-		const Amount<Unit::CELSIUS> temperature,
-		const Amount<Unit::TORR> pressure,
+	Quantity<MoleRatio> getSolubilityAt(
+		const Quantity<AbsCelsius> temperature,
+		const Quantity<Torr> pressure,
 		const Polarity& solventPolarity
 	) const;
 

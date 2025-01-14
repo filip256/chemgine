@@ -1,23 +1,23 @@
 #pragma once
 
-#include "Amount.hpp"
+#include "Units.hpp"
 
 class Formulas
 {
 public:
-	static Amount<Unit::LITER> idealGasLaw(
-		const Amount<Unit::KELVIN> temperature,
-		const Amount<Unit::ATMOSPHERE> pressure,
-		const Amount<Unit::MOLE> moles
+	static Quantity<Liter> idealGasLaw(
+		const Quantity<AbsKelvin> temperature,
+		const Quantity<Atmosphere> pressure,
+		const Quantity<Mole> moles
 	);
 
-	static Amount<Unit::GRAM_PER_MILLILITER> idealGasLaw(
-		const Amount<Unit::KELVIN> temperature,
-		const Amount<Unit::ATMOSPHERE> pressure,
-		const Amount<Unit::GRAM_PER_MOLE> molarMass
+	static Quantity<GramPerMilliLiter> idealGasLaw(
+		const Quantity<AbsKelvin> temperature,
+		const Quantity<Atmosphere> pressure,
+		const Quantity<GramPerMole> molarMass
 	);
 
-	static Amount<Unit::JOULE_PER_MOLE_CELSIUS> isobaricHeatCapacity(const uint8_t degreesOfFreedom);
+	static Quantity<JoulePerMoleCelsius> isobaricHeatCapacity(const uint8_t degreesOfFreedom);
 
-	static Amount<Unit::JOULE_PER_MOLE_CELSIUS> isochoricHeatCapacity(const uint8_t degreesOfFreedom);
+	static Quantity<JoulePerMoleCelsius> isochoricHeatCapacity(const uint8_t degreesOfFreedom);
 };
