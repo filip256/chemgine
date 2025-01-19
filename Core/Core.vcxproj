@@ -263,6 +263,7 @@
     <ClCompile Include="MoleculeData.cpp" />
     <ClCompile Include="PathUtils.cpp" />
     <ClCompile Include="PrintSettings.cpp" />
+    <ClCompile Include="ProcessUtils.cpp" />
     <ClCompile Include="Radical.cpp" />
     <ClCompile Include="RadicalData.cpp" />
     <ClCompile Include="RandomizedParticle.cpp" />
@@ -390,6 +391,7 @@
     <ClInclude Include="PortType.hpp" />
     <ClInclude Include="Printers.hpp" />
     <ClInclude Include="PrintSettings.hpp" />
+    <ClInclude Include="ProcessUtils.hpp" />
     <ClInclude Include="Radical.hpp" />
     <ClInclude Include="RadicalData.hpp" />
     <ClInclude Include="RandomizedParticle.hpp" />

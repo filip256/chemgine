@@ -95,8 +95,10 @@ private:
 
 protected:
 	virtual void setup();
-	virtual void cleanup();
+	virtual void preTask();
 	virtual void task() = 0;
+	virtual void postTask();
+	virtual void cleanup();
 
 public:
 	TimedTest(

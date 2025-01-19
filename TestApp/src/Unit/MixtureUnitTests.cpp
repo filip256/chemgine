@@ -4,39 +4,39 @@
 ReactorUnitTest::ReactorUnitTest(
 	std::string&& name,
 	const Amount<Unit::LITER> maxVolume,
-	const ContentInitializer& contents,
-	Atmosphere&& atmosphere,
+	const ContentInitializer& content,
+	std::unique_ptr<Atmosphere>&& atmosphere,
 	FlagField<TickMode> tickMode
 ) noexcept :
 	UnitTest(std::move(name)),
 	dump(),
 	atmosphere(std::move(atmosphere)),
-	reactor(this->atmosphere, maxVolume)
+	reactor(*this->atmosphere, maxVolume)
 {
-	this->atmosphere.setOverflowTarget(dump);
+	this->atmosphere->setOverflowTarget(dump);
 	reactor.setTickMode(tickMode);
-	for (const auto& m : contents)
+	for (const auto& m : content)
 		reactor.add(m.first, m.second);
 }
 
 ReactorUnitTest::ReactorUnitTest(
 	std::string&& name,
 	const Amount<Unit::LITER> maxVolume,
-	const ContentInitializer& contents,
+	const ContentInitializer& content,
 	FlagField<TickMode> tickMode
 ) noexcept :
-	ReactorUnitTest(std::move(name), maxVolume, contents, Atmosphere::createDefaultAtmosphere(), tickMode)
+	ReactorUnitTest(std::move(name), maxVolume, content, Atmosphere::createDefaultAtmosphere(), tickMode)
 {}
 
 Amount<Unit::GRAM> ReactorUnitTest::getTotalSystemMass() const
 {
-	return reactor.getTotalMass() + atmosphere.getTotalMass() + dump.getTotalMass();
+	return reactor.getTotalMass() + atmosphere->getTotalMass() + dump.getTotalMass();
 }
 
 void ReactorUnitTest::tick(const Amount<Unit::SECOND> timespan)
 {
 	reactor.tick(timespan);
-	atmosphere.tick(timespan);
+	atmosphere->tick(timespan);
 }
 
 
@@ -79,10 +79,10 @@ bool OverflowUnitTest::run()
 	}
 
 	reactor.add(Molecule("O"), 700.0);
-	const auto atmBefore = atmosphere.getTotalVolume();
+	const auto atmBefore = atmosphere->getTotalVolume();
 	const auto reactorBefore = reactor.getTotalVolume();
 	reactor.tick(1.0_s); // only tick reactor
-	const auto atmAfter = atmosphere.getTotalVolume();
+	const auto atmAfter = atmosphere->getTotalVolume();
 	const auto reactorAfter = reactor.getTotalVolume();
 
 	error = std::abs((atmBefore + reactorBefore - atmAfter - reactorAfter).asStd());
@@ -158,7 +158,7 @@ bool DeterminismUnitTest::run()
 
 		if (not reactor.hasSameContent(copy, threshold))
 		{
-			Log(this).error("Reactors have different contents after tick {0}/{1}.", i + 1, ticks);
+			Log(this).error("Reactors have different content after tick {0}/{1}.", i + 1, ticks);
 			success = false;
 		}
 

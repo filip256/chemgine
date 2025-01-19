@@ -24,9 +24,9 @@ public:
 		const float_s loss
 	) noexcept;
 
-	void setup() override final;
-	void cleanup() override final;
+	void preTask() override final;
 	void task() override final;
+	void postTask() override final;
 };
 
 

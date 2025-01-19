@@ -34,15 +34,9 @@ DefLoadPerfTest::DefLoadPerfTest(
 	path(std::move(path))
 {}
 
-void DefLoadPerfTest::setup()
+void DefLoadPerfTest::preTask()
 {
 	Accessor<>::setDataStore(dataStore);
-}
-
-void DefLoadPerfTest::cleanup()
-{
-	dataStore.clear();
-	Accessor<>::unsetDataStore();
 }
 
 void DefLoadPerfTest::task()
@@ -50,6 +44,11 @@ void DefLoadPerfTest::task()
 	dataStore.load(path);
 }
 
+void DefLoadPerfTest::postTask()
+{
+	dataStore.clear();
+	Accessor<>::unsetDataStore();
+}
 
 DefDumpPerfTest::DefDumpPerfTest(
 	std::string&& name,
@@ -64,7 +63,7 @@ DefDumpPerfTest::DefDumpPerfTest(
 	prettify(prettify)
 {}
 
-void DefDumpPerfTest::setup()
+void DefDumpPerfTest::preTask()
 {
 	Accessor<>::setDataStore(dataStore);
 
@@ -76,17 +75,16 @@ void DefDumpPerfTest::setup()
 	LogBase::unhide();
 }
 
-void DefDumpPerfTest::cleanup()
-{
-	dataStore.clear();
-	Accessor<>::unsetDataStore();
-}
-
 void DefDumpPerfTest::task()
 {
 	dataStore.dump(outputPath, prettify);
 }
 
+void DefDumpPerfTest::postTask()
+{
+	dataStore.clear();
+	Accessor<>::unsetDataStore();
+}
 
 DefPerfTests::DefPerfTests(
 	std::string&& name,

@@ -20,21 +20,16 @@ std::vector<std::pair<float_s, float_s>> LinearSplinePerfTest::generateInput(
 	input.reserve(size);
 
 	const auto step = static_cast<float_s>(100.0 / (size - 1));
-	for (float_s x = 50.0; x > 50.0; x -= step)
+	for (float_s x = 50.0; x > -50.0; x -= step)
 		input.emplace_back(x, generator(x));
 	input.emplace_back(-50.0, generator(-50.0));
 
 	return input;
 }
 
-void LinearSplinePerfTest::setup()
+void LinearSplinePerfTest::preTask()
 {
 	inputCopy = input;
-}
-
-void LinearSplinePerfTest::cleanup()
-{
-	inputCopy.clear();
 }
 
 void LinearSplinePerfTest::task()
@@ -42,6 +37,10 @@ void LinearSplinePerfTest::task()
 	dontOptimize = static_cast<bool>(Spline<float_s>(std::move(inputCopy), loss).size());
 }
 
+void LinearSplinePerfTest::postTask()
+{
+	inputCopy.clear();
+}
 
 EstimatorPerfTests::EstimatorPerfTests(
 	std::string&& name,

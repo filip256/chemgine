@@ -447,6 +447,9 @@
     <ClCompile Include="BuildUtils.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="ProcessUtils.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -897,6 +900,9 @@
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="TypeUtils.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="ProcessUtils.hpp">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
   </ItemGroup>

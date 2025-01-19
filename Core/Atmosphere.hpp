@@ -23,5 +23,5 @@ public:
 
 	Atmosphere makeCopy() const;
 
-	static Atmosphere createDefaultAtmosphere();
+	static std::unique_ptr<Atmosphere> createDefaultAtmosphere();
 };

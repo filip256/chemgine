@@ -5,7 +5,7 @@ Lab::Lab() noexcept :
 	atmosphere(Atmosphere::createDefaultAtmosphere())
 {}
 
-Lab::Lab(Atmosphere&& atmosphere) noexcept :
+Lab::Lab(std::unique_ptr<Atmosphere>&& atmosphere) noexcept :
 	atmosphere(std::move(atmosphere))
 {}
 
@@ -38,12 +38,12 @@ LabwareSystem& Lab::getSystem(const size_t idx)
 
 const Atmosphere& Lab::getAtmosphere() const
 {
-	return atmosphere;
+	return *atmosphere;
 }
 
 Atmosphere& Lab::getAtmosphere()
 {
-	return atmosphere;
+	return *atmosphere;
 }
 
 size_t Lab::getSystemAt(const sf::Vector2f& point) const
@@ -132,14 +132,14 @@ void Lab::tick(const Amount<Unit::SECOND> timespan)
 {
 	for (size_t i = 0; i < systems.size(); ++i)
 		systems[i].tick(timespan);
-	atmosphere.tick(timespan);
+	atmosphere->tick(timespan);
 }
 
 void Lab::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	const auto screenSize = target.getSize();
 	atmosphereOverlay.setSize(sf::Vector2f(screenSize.x, screenSize.y));
-	atmosphereOverlay.setFillColor(Utils::colorCast(atmosphere.getLayerColor()));
+	atmosphereOverlay.setFillColor(Utils::colorCast(atmosphere->getLayerColor()));
 	target.draw(atmosphereOverlay, states);
 
 	for (size_t i = 0; i < systems.size(); ++i)

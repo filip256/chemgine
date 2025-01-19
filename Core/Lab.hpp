@@ -7,23 +7,19 @@
 class Lab : public sf::Drawable
 {
 private:
-	Atmosphere atmosphere;
+	std::unique_ptr<Atmosphere> atmosphere;
 	mutable sf::RectangleShape atmosphereOverlay;
 	std::vector<LabwareSystem> systems;
 
 public:
 	Lab() noexcept;
-	Lab(Atmosphere&& atmosphere) noexcept;
+	Lab(std::unique_ptr<Atmosphere>&& atmosphere) noexcept;
 	Lab(const Lab&) = delete;
 	Lab(Lab&&) = default;
 
 	void add(LabwareSystem&& system);
 
-	template <typename CompT, typename... Args, typename = std::enable_if_t<
-		std::is_base_of_v<LabwareComponentBase, CompT> && (
-			std::is_constructible_v<CompT, Args..., Atmosphere&> ||
-			std::is_constructible_v<CompT, Args...>
-			)>>
+	template <typename CompT, typename... Args>
 	CompT& add(Args&&... args);
 
 	void removeEmptySystems();
@@ -57,7 +53,7 @@ public:
 };
 
 
-template <typename CompT, typename... Args, typename>
+template <typename CompT, typename... Args>
 CompT& Lab::add(Args&&... args)
 {
 	static_assert(std::is_base_of_v<LabwareComponentBase, CompT>,
@@ -67,7 +63,7 @@ CompT& Lab::add(Args&&... args)
 	if constexpr (std::is_constructible_v<CompT, Args...>)
 		ptr = std::make_unique<CompT>(std::forward<Args>(args)...);
 	else
-		ptr = std::make_unique<CompT>(std::forward<Args>(args)..., atmosphere);
+		ptr = std::make_unique<CompT>(std::forward<Args>(args)..., *atmosphere);
 
 	auto& ref = *ptr.get();
 	systems.emplace_back(std::move(ptr), *this);
