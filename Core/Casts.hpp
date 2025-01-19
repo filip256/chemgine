@@ -39,7 +39,7 @@ const DstT* final_cast(const SrcT& src)
 }
 
 /// <summary>
-/// Similar to static_cast but assures no data is lost during the conversion
+/// Similar to static_cast but assures no data is lost during the conversion.
 /// </summary>
 template<typename DstT, typename SrcT>
 DstT checked_cast(const SrcT& src)
@@ -51,4 +51,14 @@ DstT checked_cast(const SrcT& src)
 	assert((src == static_cast<SrcT>(dst)) && "Checked cast failed.");
 	return dst;
 #endif
+}
+
+/// <summary>
+/// Casts an enum to it's underlying type.
+/// </summary>
+template<typename EnumT>
+constexpr inline auto underlying_cast(const EnumT enumValue) noexcept
+{
+	static_assert(std::is_enum_v<EnumT>, "EnumT must be an enum type.");
+	return static_cast<std::underlying_type_t<EnumT>>(enumValue);
 }

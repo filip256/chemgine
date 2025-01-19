@@ -5,11 +5,13 @@
 #include "Unit/ModuleUnitTest.hpp"
 #include "Unit/MixtureUnitTests.hpp"
 #include "Performance/DefPerfTests.hpp"
+#include "Performance/FPSPerfTests.hpp"
 #include "Performance/StructurePerfTests.hpp"
 #include "Performance/EstimatorPerfTests.hpp"
 #include "Performance/PerformanceReport.hpp"
 #include "PathUtils.hpp"
 #include "BuildUtils.hpp"
+#include "ProcessUtils.hpp"
 
 UnitTests::UnitTests(const std::regex& filter) noexcept :
 	UnitTestGroup("Unit", filter)
@@ -29,6 +31,7 @@ PerfTests::PerfTests(const std::regex& filter) noexcept :
 	registerTest<EstimatorPerfTests>("Estimator");
 	registerTest<StructurePerfTests>("Structure", "./TestFiles/builtin/radicals.cdef");
 	registerTest<DefPerfTests>("Def", "./TestFiles/builtin/radicals.cdef");
+	registerTest<FPSPerfTests>("FPS", "./TestFiles/builtin.cdef");
 }
 
 std::chrono::nanoseconds PerfTests::run(PerformanceReport& report)
@@ -66,7 +69,12 @@ void TestManager::runPerf()
 		return;
 	}
 
+	const auto normalPriority = OS::getCurrentProcessPriority();
+	OS::setCurrentProcessPriority(OS::ProcessPriority::REALTIME_PRIORITY_CLASS);
+
 	const auto current = perfTests.generateReport();
+
+	OS::setCurrentProcessPriority(normalPriority);
 
 	PerformanceReport prev;
 	const auto& buildName = Utils::getBuildTypeName();

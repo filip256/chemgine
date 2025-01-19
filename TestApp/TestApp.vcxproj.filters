@@ -78,6 +78,9 @@
     <ClCompile Include="src\Common\TestManager.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
+    <ClCompile Include="src\Performance\FPSPerfTests.cpp">
+      <Filter>Source Files\Performance</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Performance\DefPerfTests.hpp">
@@ -124,6 +127,9 @@
     </ClInclude>
     <ClInclude Include="include\Common\TestManager.hpp">
       <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Performance\FPSPerfTests.hpp">
+      <Filter>Header Files\Performance</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

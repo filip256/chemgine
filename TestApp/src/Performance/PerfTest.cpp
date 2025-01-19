@@ -28,6 +28,12 @@ TimedTest::TimedTest(
 void TimedTest::setup()
 {}
 
+void TimedTest::preTask()
+{}
+
+void TimedTest::postTask()
+{}
+
 void TimedTest::cleanup()
 {}
 
@@ -40,16 +46,18 @@ std::chrono::nanoseconds TimedTest::runCounted(const uint64_t repetitions)
 {
 	auto totalTime = std::chrono::nanoseconds(0);
 
+	setup();
 	for (uint64_t i = 0; i < repetitions; ++i)
 	{
-		setup();
+		preTask();
 		const auto start = std::chrono::high_resolution_clock::now();
 		task();
 		const auto end = std::chrono::high_resolution_clock::now();
-		cleanup();
+		postTask();
 
 		totalTime += end - start;
 	}
+	cleanup();
 
 	const auto avgTime = totalTime / repetitions;
 	return avgTime;
@@ -60,19 +68,21 @@ std::chrono::nanoseconds TimedTest::runTimed(std::chrono::nanoseconds minTime)
 	auto totalTime = std::chrono::nanoseconds(0);
 	uint64_t repetitions = 0;
 
+	setup();
 	while (minTime.count() > 0)
 	{
-		setup();
+		preTask();
 		const auto start = std::chrono::high_resolution_clock::now();
 		task();
 		const auto end = std::chrono::high_resolution_clock::now();
-		cleanup();
+		postTask();
 
 		const auto elapsed = end - start;
 		totalTime += elapsed;
 		minTime -= std::max(elapsed, std::chrono::nanoseconds(1));
 		++repetitions;
 	}
+	cleanup();
 
 	const auto avgTime = totalTime / repetitions;
 	return avgTime;

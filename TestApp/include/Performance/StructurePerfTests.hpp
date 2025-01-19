@@ -18,8 +18,8 @@ public:
 		std::string&& smiles
 	) noexcept;
 
-	void cleanup() override final;
 	void task() override final;
+	void postTask() override final;
 };
 
 

@@ -32,9 +32,9 @@ void Atmosphere::tick(const Amount<Unit::SECOND> timespan)
 	consumePotentialEnergy();
 }
 
-Atmosphere Atmosphere::createDefaultAtmosphere()
+std::unique_ptr<Atmosphere> Atmosphere::createDefaultAtmosphere()
 {
-	return Atmosphere(1.0_C, 760.0_torr,
-		{ { Molecule("N#N"), 78.084_mol }, { Molecule("O=O"), 20.946_mol } },
+	return std::make_unique<Atmosphere>(1.0_C, 760.0_torr,
+		ContentInitializer{ { Molecule("N#N"), 78.084_mol }, { Molecule("O=O"), 20.946_mol } },
 		10000.0_L, DumpContainer::GlobalDumpContainer);
 }

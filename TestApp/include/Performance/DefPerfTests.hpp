@@ -33,9 +33,9 @@ public:
 		std::string&& path
 	) noexcept;
 
-	void setup() override final;
-	void cleanup() override final;
+	void preTask() override final;
 	void task() override final;
+	void postTask() override final;
 };
 
 
@@ -57,9 +57,9 @@ public:
 		const bool prettify
 	) noexcept;
 
-	void setup() override final;
-	void cleanup() override final;
+	void preTask() override final;
 	void task() override final;
+	void postTask() override final;
 };
 
 

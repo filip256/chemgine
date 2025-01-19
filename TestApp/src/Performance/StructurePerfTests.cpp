@@ -10,16 +10,15 @@ StructureSMILESParsePerfTest::StructureSMILESParsePerfTest(
 	molecule("")
 {}
 	
-void StructureSMILESParsePerfTest::cleanup()
-{
-	molecule.clear();
-}
-
 void StructureSMILESParsePerfTest::task()
 {
 	dontOptimize = molecule.loadFromSMILES(smiles);
 }
 
+void StructureSMILESParsePerfTest::postTask()
+{
+	molecule.clear();
+}
 
 StructureOpsPerfTestBase::StructureOpsPerfTestBase(
 	const std::string& name,
