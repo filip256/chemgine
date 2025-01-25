@@ -53,6 +53,11 @@ namespace Utils
 		const std::vector<T>& vector, const size_t maxLength);
 
 	template<typename T>
+	std::vector<size_t> getSortingPermutation(const std::vector<T>& vector, bool (*lessThan)(const T&, const T&));
+	template<typename T>
+	void permute(std::vector<T>& vector, std::vector<size_t>& permutation);
+
+	template<typename T>
 	T copy(const T& obj);
 
 	template<typename T>
@@ -228,6 +233,55 @@ std::vector<std::vector<T>> Utils::getArrangementsWithRepetitions(
 
 	::getArrangementsWithRepetitions(vector, maxLength, current, result);
 	return result;
+}
+
+template<typename T>
+std::vector<size_t> Utils::getSortingPermutation(const std::vector<T>& vector, bool (*lessThan)(const T&, const T&))
+{
+	// Initialize indexMap[i] = i
+	std::vector<size_t> indexMap;
+	indexMap.reserve(vector.size());
+	for (size_t i = 0; i < vector.size(); ++i)
+		indexMap.emplace_back(i);
+
+	// Generate a mapping between each index in the sorted vector and the index of the same element in the original vector.
+	std::sort(indexMap.begin(), indexMap.end(), [&vector, lessThan](const auto& lhs, const auto& rhs)
+		{
+			return lessThan(vector[lhs], vector[rhs]);
+		});
+
+	// Reverse the mapping to obtain the permutation
+	std::vector<size_t> permutation(vector.size());
+	for (size_t i = 0; i < vector.size(); ++i)
+		permutation[indexMap[i]] = i;
+
+	return permutation;
+}
+
+template<typename T>
+void Utils::permute(std::vector<T>& vector, std::vector<size_t>& permutation)
+{
+	static constexpr auto npos = static_cast<size_t>(-1);
+
+	for (size_t i = 0; i < vector.size(); ++i)
+	{
+		if (permutation[i] == npos || permutation[i] == i)
+			continue;
+
+		auto current = i;
+		auto currentObj = std::move(vector[current]);
+
+		// Follow the permuation cycle
+		do
+		{
+			std::swap(vector[permutation[current]], currentObj);
+
+			const auto next = permutation[current];
+			permutation[current] = npos;
+			current = next;
+
+		} while (permutation[current] != npos);
+	}
 }
 
 template<typename T>

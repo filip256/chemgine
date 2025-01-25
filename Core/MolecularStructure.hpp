@@ -1,9 +1,8 @@
 #pragma once
 
-#include "Bond.hpp"
-#include "Atom.hpp"
 #include "Parsers.hpp"
 #include "Printers.hpp"
+#include "BondedAtom.hpp"
 
 #include <vector>
 #include <string>
@@ -19,14 +18,13 @@ class MolecularStructure
 {
 private:
     uint16_t impliedHydrogenCount = 0;
-    std::vector<std::unique_ptr<const Atom>> atoms;
-    std::vector<std::vector<Bond>> bonds;
+    std::vector<std::unique_ptr<BondedAtom>> atoms;
 
     void rPrint(
         TextBlock& buffer,
         const size_t x,
         const size_t y,
-        const c_size c,
+        const BondedAtom& current,
         std::vector<uint8_t>& visited,
         const bool printImpliedHydrogens) const;
 
@@ -36,7 +34,7 @@ private:
         const std::map<c_size, uint8_t>& cycleHeads);
 
     std::string rToSMILES(
-        c_size c, c_size prev,
+        const BondedAtom* current, const BondedAtom* prev,
         std::vector<size_t>& insertPositions,
         uint8_t& cycleCount,
         std::map<c_size, uint8_t>& cycleHeads,
@@ -51,7 +49,7 @@ private:
     /// If the valences of the atom aren't respected it returns -1.
     /// Complexity: O(n_bonds)
     /// </summary>
-    int8_t countImpliedHydrogens(const c_size idx) const;
+    int8_t countImpliedHydrogens(const BondedAtom& atom) const;
     /// <summary>
     /// Returns the number of required hydrogens in order to complete the molecule.
     /// If the valences of the atoms aren't respected it returns -1.
@@ -61,50 +59,39 @@ private:
 
     // basic matching
     static bool areMatching(
-        const c_size idxA, const MolecularStructure& a,
-        const c_size idxB, const MolecularStructure& b,
+        const BondedAtom& a, const BondedAtom& b,
         const bool escapeRadicalTypes);
 
     // finner matching for the compare method
     static bool areMatching(
-        const Bond& nextA, const MolecularStructure& a,
-        const Bond& nextB, const MolecularStructure& b,
+        const Bond& nextA, const Bond& nextB,
         const bool escapeRadicalTypes);
 
-    static uint8_t getBondSimilarity(
-        const c_size idxA, const MolecularStructure& a,
-        const c_size idxB, const MolecularStructure& b);
+    static uint8_t getBondSimilarity(const BondedAtom& a, const BondedAtom& b);
 
     // returns a similarity score for grading maximal mappings, a score of 0 means no matching
-    static uint8_t maximalSimilarity(
-        const Bond& nextA, const MolecularStructure& a,
-        const Bond& nextB, const MolecularStructure& b);
+    static uint8_t maximalSimilarity(const Bond& nextA, const Bond& nextB);
 
     /// <summary>
     /// Tries to find the pattern structure into the target starting from the given indexes.
     /// A cycle will match with a smaller cycle, connectivity of the mapping must be checked after this function is called
     /// If successful it returns true.
-    /// Max rec. depth: sizae of the longest atom chain in pattern
+    /// Max rec. depth: size of the longest atom chain in pattern
     /// </summary>
-    /// <param name="idxA">: starting index in target</param>
-    /// <param name="a">: target</param>
-    /// <param name="idxB">: starting index in pattern</param>
-    /// <param name="b">: pattern</param>
+    /// <param name="a">: starting atom in target</param>
+    /// <param name="b">: starting atom in pattern</param>
     /// <param name="visitedB">: vector with the size of the pattern, initilized to false</param>
     /// <param name="mapping">: empty map that will store all matching nodes at the end of the execution</param>
     static bool DFSCompare(
-        c_size idxA, const MolecularStructure& a,
-        c_size idxB, const MolecularStructure& b,
+        const BondedAtom& a, const BondedAtom& b,
         std::vector<uint8_t>& visitedB,
         std::unordered_map<c_size, c_size>& mapping,
         bool escapeRadicalTypes
     );
 
     static std::pair<std::unordered_map<c_size, c_size>, uint8_t> DFSMaximal(
-        c_size idxA, const MolecularStructure& a,
-        std::unordered_set<c_size>& mappedA,
-        c_size idxB, const MolecularStructure& b,
-        std::unordered_set<c_size>& mappedB
+        const BondedAtom& a, std::unordered_set<c_size>& mappedA,
+        const BondedAtom& b, std::unordered_set<c_size>& mappedB
     );
 
     /// <summary>
@@ -123,7 +110,6 @@ public:
 
     MolecularStructure(const std::string& smiles);
     MolecularStructure(MolecularStructure&& structure) = default;
-    ~MolecularStructure() noexcept;
 
     MolecularStructure& operator=(MolecularStructure&&) = default;
 
@@ -226,7 +212,7 @@ public:
     /// Complexity: O(n)
     /// </summary>
     /// <returns></returns>
-    uint8_t getDegreeOf(const c_size idx) const;
+    uint8_t getDegreeOf(const BondedAtom& atom) const;
 
     MolecularStructure createCopy() const;
 

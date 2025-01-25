@@ -147,9 +147,6 @@
     <ClCompile Include="Log.cpp">
       <Filter>Source Files\Terminal</Filter>
     </ClCompile>
-    <ClCompile Include="Bond.cpp">
-      <Filter>Source Files\Moleculars</Filter>
-    </ClCompile>
     <ClCompile Include="Value.cpp">
       <Filter>Source Files\Data\Values</Filter>
     </ClCompile>
@@ -270,9 +267,6 @@
     <ClCompile Include="GenericMoleculeData.cpp">
       <Filter>Source Files\Molecules</Filter>
     </ClCompile>
-    <ClCompile Include="Symbol.cpp">
-      <Filter>Source Files\Moleculars</Filter>
-    </ClCompile>
     <ClCompile Include="Atmosphere.cpp">
       <Filter>Source Files\Mixtures\MixtureTypes</Filter>
     </ClCompile>
@@ -381,9 +375,6 @@
     <ClCompile Include="Radical.cpp">
       <Filter>Source Files\Moleculars\Components</Filter>
     </ClCompile>
-    <ClCompile Include="AtomFactory.cpp">
-      <Filter>Source Files\Moleculars</Filter>
-    </ClCompile>
     <ClCompile Include="TerminalUtils.cpp">
       <Filter>Source Files\Terminal</Filter>
     </ClCompile>
@@ -450,6 +441,18 @@
     <ClCompile Include="ProcessUtils.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="AtomFactory.cpp">
+      <Filter>Source Files\Moleculars\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Bond.cpp">
+      <Filter>Source Files\Moleculars\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Symbol.cpp">
+      <Filter>Source Files\Moleculars\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="BondedAtom.cpp">
+      <Filter>Source Files\Moleculars\Components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStore.hpp">
@@ -457,12 +460,6 @@
     </ClInclude>
     <ClInclude Include="Log.hpp">
       <Filter>Header Files\Terminal</Filter>
-    </ClInclude>
-    <ClInclude Include="Bond.hpp">
-      <Filter>Header Files\Moleculars</Filter>
-    </ClInclude>
-    <ClInclude Include="BondType.hpp">
-      <Filter>Header Files\Moleculars</Filter>
     </ClInclude>
     <ClInclude Include="MultiIndexMap.hpp">
       <Filter>Header Files\DataStructures</Filter>
@@ -626,9 +623,6 @@
     <ClInclude Include="GenericMoleculeData.hpp">
       <Filter>Header Files\Molecules</Filter>
     </ClInclude>
-    <ClInclude Include="Symbol.hpp">
-      <Filter>Header Files\Moleculars</Filter>
-    </ClInclude>
     <ClInclude Include="MolecularStructure.hpp">
       <Filter>Header Files\Molecules</Filter>
     </ClInclude>
@@ -779,9 +773,6 @@
     <ClInclude Include="Radical.hpp">
       <Filter>Header Files\Moleculars\Components</Filter>
     </ClInclude>
-    <ClInclude Include="AtomFactory.hpp">
-      <Filter>Header Files\Moleculars</Filter>
-    </ClInclude>
     <ClInclude Include="ImmutableSet.hpp">
       <Filter>Header Files\DataStructures</Filter>
     </ClInclude>
@@ -904,6 +895,21 @@
     </ClInclude>
     <ClInclude Include="ProcessUtils.hpp">
       <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="BondedAtom.hpp">
+      <Filter>Header Files\Moleculars\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Bond.hpp">
+      <Filter>Header Files\Moleculars\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="BondType.hpp">
+      <Filter>Header Files\Moleculars\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Symbol.hpp">
+      <Filter>Header Files\Moleculars\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="AtomFactory.hpp">
+      <Filter>Header Files\Moleculars\Components</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

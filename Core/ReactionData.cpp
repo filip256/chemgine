@@ -256,7 +256,7 @@ std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<R
 
 	for (const auto& p : componentMapping)
 	{
-		std::unordered_map<c_size, c_size> tempMap = { {matches[p.first.first].at(p.first.second), p.second.second}};
+		std::unordered_map<c_size, c_size> tempMap = { {matches[p.first.first].at(p.first.second), p.second.second} };
 		MolecularStructure::copyBranch(
 			concreteProducts[p.second.first],
 			molecules[p.first.first].molecule.getStructure(),
@@ -275,7 +275,7 @@ std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<R
 		concreteProducts[i].canonicalize();
 		concreteProducts[i].recountImpliedHydrogens();
 
-		// TODO: add pulymer support
+		// TODO: add polymer support
 		if (concreteProducts[i].getNonVirtualAtomCount() > 100)
 			continue;
 

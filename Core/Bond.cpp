@@ -1,13 +1,19 @@
 #include "Bond.hpp"
+#include "BondedAtom.hpp"
 
-Bond::Bond(const c_size other, const BondType type) :
-	other(other),
+Bond::Bond(const BondedAtom& other, const BondType type) :
+	other(&other),
 	type(type)
 {}
 
 BondType Bond::getType() const
 {
 	return type;
+}
+
+const BondedAtom& Bond::getOther() const
+{
+	return *other;
 }
 
 uint8_t Bond::getValence() const
@@ -39,6 +45,11 @@ std::string Bond::getSMILES(const BondType type)
 	default:
 		return "?";
 	}
+}
+
+void Bond::setOther(const BondedAtom& other)
+{
+	this->other = &other;
 }
 
 BondType Bond::fromSMILES(const char symbol)

@@ -180,6 +180,7 @@ StructureUnitTests::StructureUnitTests(
 
 	registerTest<UnitTestSetup<AccessorTestSetup>>("setup", dataStore);
 
+	// TODO: should validate parsing agains molar mass at least
 	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "CN(C)C(=O)C1=CC=CC=C1");
 	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "C1=CC=CC=C1R");
 	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "CC(=O)OC");
@@ -205,6 +206,7 @@ StructureUnitTests::StructureUnitTests(
 	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "CC1CCCC2CCCCC12");
 	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "CC1=CC2=C(NC=C2)C=C1");
 	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "RC1=CC2=C(NC=C2)C=C1");
+	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "NC1C2=C1CN2");
 	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C");
 	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "N(R)C14CC(CC=C1C2=C(OR)C=CC3=C2C(=C[N]3)C4)C(=O)N(R)R");
 	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "OC1C2CC12");
@@ -230,6 +232,9 @@ StructureUnitTests::StructureUnitTests(
 	registerTest<StructureEqualityUnitTest>("equality", "COC4=C2C1=C([N]C=C1CC3(CC(CC=C23)C(=O)N(C)C)NC(C)C)C=C4", "N(R)C14CC(CC=C1C2=C(OR)C=CC3=C2C(=C[N]3)C4)C(=O)N(R)R", false);
 	registerTest<StructureEqualityUnitTest>("equality", "[Cl]", "X", false);
 
+	// TODO: should check the size of the mapping
+	// TODO: add reaction concretization tests
+	// TODO: unit tests should show failed checks at the end
 	registerTest<StructureAtomMapUnitTest>("map", "CN(C)C(=O)C1=CC=CC=C1", "C1=CC=CC=C1R", true);
 	registerTest<StructureAtomMapUnitTest>("map", "CC(=O)OC", "RC(=O)OR", true);
 	registerTest<StructureAtomMapUnitTest>("map", "CC(=O)OC", "RC(=O)O", false);

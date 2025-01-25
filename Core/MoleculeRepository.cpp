@@ -18,7 +18,7 @@ bool MoleculeRepository::add(const Def::Object& definition)
 	auto structure = Def::Parser<MolecularStructure>::parse(definition.getSpecifier());
 	if (not structure)
 	{
-		Log(this).error("Invalid SMILES specifier: '{0}', as: {1}.", definition.getSpecifier(), definition.getLocationName());
+		Log(this).error("Invalid SMILES specifier: '{0}', at: {1}.", definition.getSpecifier(), definition.getLocationName());
 		return false;
 	}
 	if (findFirstConcrete(*structure) != nullptr)

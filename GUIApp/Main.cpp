@@ -10,10 +10,9 @@ int main()
 
     store.load("./../Data/builtin.cdef");
 
-    std::cout << '\n' << store.reactions.getNetwork().print() << '\n';
+    std::cout << MolecularStructure("NC1C2=C1CN2").toSMILES() << '\n';
 
-    std::cout << MolecularStructure("S(=O)(=O)(O)O").print() << '\n';
-    std::cout << MolecularStructure("S(-O)(-O)(-O)(OCC)(OCCC(N(C)C)=O)C#N").print() << '\n';
+    std::cout << '\n' << store.reactions.getNetwork().print() << '\n';
 
     const auto x = store.reactions.getRetrosynthReactions(
         *StructureRef::create("O(C(C)C)C(=O)C"));
