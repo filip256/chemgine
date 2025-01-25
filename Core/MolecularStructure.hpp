@@ -15,12 +15,28 @@
 
 class TextBlock;
 
+class BondedAtom
+{
+public:
+    std::unique_ptr<const Atom> atom;
+    std::vector<Bond> bonds;
+
+    BondedAtom(std::unique_ptr<const Atom>&& atom) noexcept;
+    BondedAtom(const BondedAtom& other) noexcept;
+    BondedAtom(BondedAtom&& other) noexcept :
+        atom(std::move(other.atom)),
+        bonds(std::move(other.bonds))
+    {}
+
+    BondedAtom& operator=(BondedAtom&&) = default;
+};
+
+
 class MolecularStructure
 {
 private:
     uint16_t impliedHydrogenCount = 0;
-    std::vector<std::unique_ptr<const Atom>> atoms;
-    std::vector<std::vector<Bond>> bonds;
+    std::vector<BondedAtom> atoms;
 
     void rPrint(
         TextBlock& buffer,
