@@ -4,30 +4,17 @@
 #include "DataStore.hpp"
 #include "MolecularStructure.hpp"
 
-class StructureSMILESParseUnitTest : public UnitTest
+class StructureSMILESUnitTest : public UnitTest
 {
 private:
+	const Amount<Unit::GRAM_PER_MOLE> expectedMass;
 	const std::string smiles;
 
 public:
-	StructureSMILESParseUnitTest(
+	StructureSMILESUnitTest(
 		const std::string& name,
-		std::string&& smiles
-	) noexcept;
-
-	bool run() override final;
-};
-
-
-class StructureSMILESPrintUnitTest : public UnitTest
-{
-private:
-	const MolecularStructure molecule;
-
-public:
-	StructureSMILESPrintUnitTest(
-		const std::string& name,
-		const std::string& smiles
+		std::string&& smiles,
+		const Amount<Unit::GRAM_PER_MOLE> expectedMass
 	) noexcept;
 
 	bool run() override final;
@@ -104,23 +91,6 @@ public:
 		const std::string& patternSmiles,
 		const std::string& instanceSmiles,
 		const std::string& expectedSmiles
-	) noexcept;
-
-	bool run() override final;
-};
-
-
-class StructureMassUnitTest : public UnitTest
-{
-private:
-	const Amount<Unit::GRAM_PER_MOLE> expectedMass;
-	const MolecularStructure molecule;
-
-public:
-	StructureMassUnitTest(
-		const std::string& name,
-		const std::string& smiles,
-		const Amount<Unit::GRAM_PER_MOLE> expectedMass
 	) noexcept;
 
 	bool run() override final;

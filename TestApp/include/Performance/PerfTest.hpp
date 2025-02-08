@@ -90,6 +90,7 @@ class TimedTest : public PerfTest
 private:
 	const std::variant<uint64_t, std::chrono::nanoseconds> limit;
 
+	void runWarmUp();
 	std::chrono::nanoseconds runCounted(const uint64_t repetitions);
 	std::chrono::nanoseconds runTimed(std::chrono::nanoseconds minTime);
 

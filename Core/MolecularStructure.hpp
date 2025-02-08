@@ -33,12 +33,8 @@ private:
         const std::vector<size_t>& insertPositions,
         const std::map<c_size, uint8_t>& cycleHeads);
 
-    std::string rToSMILES(
-        const BondedAtom* current, const BondedAtom* prev,
-        std::vector<size_t>& insertPositions,
-        uint8_t& cycleCount,
-        std::map<c_size, uint8_t>& cycleHeads,
-        const size_t insertOffset) const;
+    static void addBond(BondedAtom& from, BondedAtom& to, const BondType bondType);
+    static bool addBondChecked(BondedAtom& from, BondedAtom& to, const BondType bondType);
 
     void removeAtom(const c_size idx);
 
@@ -123,7 +119,7 @@ public:
     const Atom& getAtom(const c_size idx) const;
 
     bool loadFromSMILES(const std::string& smiles);
-    // not working for cycles :(
+
     std::string toSMILES() const;
     std::string print() const;
 

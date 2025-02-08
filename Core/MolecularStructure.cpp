@@ -28,6 +28,26 @@ MolecularStructure::MolecularStructure(const MolecularStructure& other) noexcept
             b.setOther(*this->atoms[b.getOther().index]);
 }
 
+void MolecularStructure::addBond(BondedAtom& from, BondedAtom& to, const BondType bondType)
+{
+    from.bonds.emplace_back(Bond(to, bondType));
+    to.bonds.emplace_back(Bond(from, bondType));
+}
+
+bool MolecularStructure::addBondChecked(BondedAtom& from, BondedAtom& to, const BondType bondType)
+{
+    if (from.isSame(to))
+        return false;
+
+    const auto bondExists = std::any_of(from.bonds.begin(), from.bonds.end(),
+        [&to](const auto& b) { return b.getOther().isSame(to); });
+    if (bondExists)
+        return false;
+
+    addBond(from, to, bondType);
+    return true;
+}
+
 bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 {
     clear();
@@ -68,8 +88,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 
             if (prev != npos)
             {
-                atoms[prev]->bonds.emplace_back(Bond(*atoms.back(), bondType));
-                atoms.back()->bonds.emplace_back(Bond(*atoms[prev], bondType));
+                addBond(*atoms[prev], *atoms.back(), bondType);
                 bondType = BondType::SINGLE;
             }
 
@@ -124,8 +143,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 
             if (prev != npos)
             {
-                atoms[prev]->bonds.emplace_back(Bond(*atoms.back(), bondType));
-                atoms.back()->bonds.emplace_back(Bond(*atoms[prev], bondType));
+                addBond(*atoms[prev], *atoms.back(), bondType);
                 bondType = BondType::SINGLE;
             }
 
@@ -136,39 +154,51 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 
         if (smiles[i] == '%')
         {
-            if (i + 2 >= smiles.size() || isdigit(smiles[i + 1]) == false || isdigit(smiles[i + 2]) == false)
+            if (i + 2 >= smiles.size() || not isdigit(smiles[i + 1]) || not isdigit(smiles[i + 2]))
             {
-                Log(this).error("Two-digit ring label is missing.");
+                Log(this).error("Missing multi-digit ring label.");
                 clear();
                 return false;
             }
 
-            // TODO: uint8_t might not be enough
-            const uint8_t label = smiles[i + 1] * 10 + smiles[i + 2] - 11 * '0';
-            if (rings.contains(label))
-            {
-                atoms[rings[label]]->bonds.emplace_back(Bond(*atoms.back(), bondType));
-                atoms.back()->bonds.emplace_back(Bond(*atoms[rings[label]], bondType));
-                bondType = BondType::SINGLE;
-            }
-            else
-                rings.emplace(label, atoms.size() - 1);
-            
+            // int8_t is enough for two digits
+            const uint8_t label = (smiles[i + 1] - '0') * 10 + smiles[i + 2] - '0';
             i += 2;
+
+            if (not rings.contains(label))
+            {
+                rings.emplace(label, atoms.size() - 1);
+                continue;
+            }
+
+            if (not addBondChecked(*atoms[prev], *atoms[rings[label]], bondType))
+            {
+                Log(this).error("Illegal ring-closing bond with label: '{0}'.", label);
+                clear();
+                return false;
+            }
+
+            bondType = BondType::SINGLE;
             continue;
         }
 
         if (isdigit(smiles[i]))
         {
-            uint8_t label = smiles[i] - '0';
-            if (rings.contains(label))
+            const uint8_t label = smiles[i] - '0';
+            if (not rings.contains(label))
             {
-                atoms[rings[label]]->bonds.emplace_back(Bond(*atoms.back(), bondType));
-                atoms.back()->bonds.emplace_back(Bond(*atoms[rings[label]], bondType));
-            }
-            else
                 rings.emplace(label, atoms.size() - 1);
+                continue;
+            }
+            
+            if (not addBondChecked(*atoms[prev], *atoms[rings[label]], bondType))
+            {
+                Log(this).error("Illegal ring-closing bond with label: '{0}'.", label);
+                clear();
+                return false;
+            }
 
+            bondType = BondType::SINGLE;
             continue;
         }
 
@@ -227,8 +257,8 @@ void MolecularStructure::canonicalize()
 
                 return
                     lhsPrecedence > rhsPrecedence ? true :
-                    //lhsPrecedence == rhsPrecedence ? lhs.getValence() > rhs.getValence() : TODO: this causes issues with smiles print
-                    false;
+                    lhsPrecedence < rhsPrecedence ? false:
+                    lhs.getValence() > rhs.getValence();
             });
     }
 }
@@ -938,23 +968,14 @@ void MolecularStructure::copyBranch(
         // add bonds to existing nodes and queue non-existing nodes
         for (const auto& bond : source.atoms[c]->bonds)
         {
-            if (sdMapping.contains(bond.getOther().index))
+            if (const auto sdIt = sdMapping.find(bond.getOther().index); sdIt != sdMapping.end())
             {
-                // TODO: should have an addBond() for this
-                destination.atoms.back()->bonds.emplace_back(Bond(
-                    *destination.atoms[sdMapping.at(bond.getOther().index)],
-                    bond.getType())
-                );
+                addBond(*destination.atoms.back(), *destination.atoms[sdIt->second], bond.getType());
+                continue;
+            }
 
-                destination.atoms[sdMapping.at(bond.getOther().index)]->bonds.emplace_back(Bond(
-                    *destination.atoms.back(),
-                    bond.getType())
-                );
-            }
-            else if(not sourceIgnore.contains(bond.getOther().index))
-            {
+            if (not sourceIgnore.contains(bond.getOther().index))
                 queue.push(bond.getOther().index);
-            }
         }
     }
 
@@ -1028,95 +1049,176 @@ void MolecularStructure::insertCycleHeads(
         smiles.insert(insertPositions[h->first], std::to_string(h->second));
 }
 
-std::string MolecularStructure::rToSMILES(
-    const BondedAtom* current, const BondedAtom* prev,
-    std::vector<size_t>& insertPositions,
-    uint8_t& cycleCount,
-    std::map<c_size, uint8_t>& cycleHeads,
-    const size_t insertOffset) const
+class CycleClosureSet
 {
-    std::string smiles;
-    while (true)
+    class CycleClosure
     {
-        smiles += current->atom->getSMILES();
-        insertPositions[current->index] = insertOffset + smiles.size();
+    public:
+        const c_size idxA, idxB, tag;
 
-        if (current->bonds.size() <= 1)  // C-C-C     end of chain, only neighbour == prev
-            break;                       //     ^
+        CycleClosure(
+            const c_size idxA,
+            const c_size idxB,
+            const c_size tag
+        ) noexcept :
+            idxA(idxA),
+            idxB(idxB),
+            tag(tag)
+        {}
+        CycleClosure(const CycleClosure&) = default;
+    };
 
-        if (current->bonds.size() == 2)   // C-C-C
-        {                                 //   ^
-            const auto& bondToNext = not current->bonds.front().getOther().isSame(*prev) ?
-                current->bonds.front() :
-                current->bonds.back();
+    class ClosureComparator
+    {
+    public:
+        bool operator()(const CycleClosure& lhs, const CycleClosure& rhs) const
+        {
+            // Order the indexes because (x, y) should be equivalent to (y, x).
+            const auto [lhsMin, lhsMax] = lhs.idxA < lhs.idxB ?
+                std::pair(lhs.idxA, lhs.idxB) :
+                std::pair(lhs.idxB, lhs.idxA);
+            const auto [rhsMin, rhsMax] = rhs.idxA < rhs.idxB ?
+                std::pair(rhs.idxA, rhs.idxB) :
+                std::pair(rhs.idxB, rhs.idxA);
 
-            if (insertPositions[bondToNext.getOther().index] != std::string::npos)  // cycle end
-            {
-                const auto [_, newHead] = cycleHeads.emplace(bondToNext.getOther().index, cycleCount);
-                smiles += std::to_string(cycleCount);
+            // Sort in decreasing order of the first index, then second index.
+            return
+                lhsMin > rhsMin ? true :
+                lhsMin < rhsMin ? false :
+                lhsMax > rhsMax;
+        }
+    };
 
-                if (newHead)
-                    ++cycleCount;
+private:
+    std::set<CycleClosure, ClosureComparator> closures;
 
-                break;
-            }
-            else
-            {
-                smiles += bondToNext.getSMILES();
-                prev = current;
-                current = &bondToNext.getOther();
-            }
+public:
+    CycleClosureSet() = default;
+    CycleClosureSet(const CycleClosureSet&) = delete;
+    CycleClosureSet(CycleClosureSet&&) = default;
 
+    bool add(const c_size idxA, const c_size idxB)
+    {
+        return closures.emplace(idxA, idxB, closures.size() + 1).second;
+    }
+
+    c_size size() const
+    {
+        return static_cast<c_size>(closures.size());
+    }
+
+    using Iterator = decltype(closures)::const_iterator;
+    Iterator begin() const
+    {
+        return closures.begin();
+    }
+    Iterator end() const
+    {
+        return closures.end();
+    }
+};
+
+std::string getCycleTagString(const c_size tag)
+{
+    return tag < 10 ?
+        std::to_string(tag) :
+        '%' + std::to_string(tag);
+}
+
+void rToSMILES(
+    const BondedAtom* current, const BondedAtom* prev,
+    std::vector<size_t>& insertPositions, CycleClosureSet& cycleClosures,
+    std::string& smiles
+)
+{
+    smiles += current->atom->getSMILES();
+    insertPositions[current->index] = smiles.size();
+
+    const auto neighbourCount = current->bonds.size();
+    if (neighbourCount == 1)
+        return;
+
+    if (neighbourCount == 2)
+    {
+        const auto& nextBond = &current->bonds.front().getOther() == prev ?
+            current->bonds.back() :
+            current->bonds.front();
+        const auto next = &nextBond.getOther();
+
+        if (insertPositions[next->index] != std::string::npos)
+        {
+            if(cycleClosures.add(insertPositions[next->index], insertPositions[current->index]))
+                smiles += nextBond.getSMILES() + getCycleTagString(cycleClosures.size());
+            return;
+        }
+
+        smiles += nextBond.getSMILES();
+        rToSMILES(next, current, insertPositions, cycleClosures, smiles);
+        return;
+    }
+
+    for (c_size i = 0; i < neighbourCount - 2; ++i)
+    {
+        const auto& nextBond = current->bonds[i];
+        const auto next = &nextBond.getOther();
+        if (next == prev)
+            continue;
+
+        if (insertPositions[next->index] != std::string::npos)
+        {
+            if(cycleClosures.add(insertPositions[next->index], insertPositions[current->index]))
+                smiles += nextBond.getSMILES() + getCycleTagString(cycleClosures.size());
             continue;
         }
-                                                                //   C
-        for (c_size i = 0; i < current->bonds.size() - 1; ++i)  //   |
-        {                                                       // C-C-C
-            if (current->bonds[i].getOther().isSame(*prev))     //   ^
-                continue;
 
-            if (insertPositions[current->bonds[i].getOther().index] != std::string::npos)     // cycle end
+        smiles += '(' + nextBond.getSMILES();
+        rToSMILES(next, current, insertPositions, cycleClosures, smiles);
+        smiles += ')';
+    }
+
+    const auto& secondToLastBond = current->bonds[neighbourCount - 2];
+    const auto secondToLast = &secondToLastBond.getOther();
+    const auto& lastBond = current->bonds.back();
+    const auto last = &lastBond.getOther();
+
+    if (last != prev)
+    {
+        if (secondToLast != prev)
+        {
+            if (insertPositions[secondToLast->index] != std::string::npos)
             {
-                if (smiles.back() == ')')
-                    continue;
-
-                const auto [_, newHead] = cycleHeads.emplace(current->bonds[i].getOther().index, cycleCount);
-                smiles += std::to_string(cycleCount);
-
-                if (newHead)
-                    ++cycleCount;
+                if(cycleClosures.add(insertPositions[secondToLast->index], insertPositions[current->index]))
+                    smiles += secondToLastBond.getSMILES() + getCycleTagString(cycleClosures.size());
             }
             else
             {
-                if (current->bonds.size() >= 4)
-                {
-                    const auto temp = rToSMILES(&current->bonds[i].getOther(), current, insertPositions, cycleCount, cycleHeads, insertOffset + smiles.size() + 1);
-                    smiles += '(' + current->bonds[i].getSMILES() + temp + ')';
-                }
-                else
-                {
-                    const auto before = cycleCount;
-                    const auto temp = rToSMILES(&current->bonds[i].getOther(), current, insertPositions, cycleCount, cycleHeads, insertOffset + smiles.size());
-                    if (cycleCount == before || current->bonds.size() >= 4)
-                        smiles += '(' + current->bonds[i].getSMILES() + temp + ')';
-                    else
-                        smiles += current->bonds[i].getSMILES() + temp;
-                }
+                smiles += '(' + secondToLastBond.getSMILES();
+                rToSMILES(secondToLast, current, insertPositions, cycleClosures, smiles);
+                smiles += ')';
             }
         }
 
-        if (insertPositions[current->bonds.back().getOther().index] != std::string::npos)  // cycle end
+        if (insertPositions[last->index] != std::string::npos)
         {
-            break;
+            if(cycleClosures.add(insertPositions[last->index], insertPositions[current->index]))
+                smiles += lastBond.getSMILES() + getCycleTagString(cycleClosures.size());
+            return;
         }
-        else
-        {
-            smiles += current->bonds.back().getSMILES();
-            prev = current;
-            current = &current->bonds.back().getOther();
-        }
+
+        smiles += lastBond.getSMILES();
+        rToSMILES(last, current, insertPositions, cycleClosures, smiles);
+        return;
     }
-    return smiles;
+
+    if (insertPositions[secondToLast->index] != std::string::npos)
+    {
+        if (cycleClosures.add(insertPositions[secondToLast->index], insertPositions[current->index]))
+            smiles += secondToLastBond.getSMILES() + getCycleTagString(cycleClosures.size());
+        return;
+    }
+
+    smiles += secondToLastBond.getSMILES();
+    rToSMILES(secondToLast, current, insertPositions, cycleClosures, smiles);
 }
 
 std::string MolecularStructure::toSMILES() const
@@ -1127,49 +1229,96 @@ std::string MolecularStructure::toSMILES() const
     if (atoms.empty())
         return "";
 
-    std::vector<size_t> insertPositions(atoms.size(), std::string::npos);
-    uint8_t cycleCount = 1;
-    std::map<c_size, uint8_t> cycleHeads;
     std::string smiles;
+    smiles.reserve(atoms.size());
 
-    smiles += atoms.front()->atom->getSMILES();
+    const auto current = atoms.front().get();
+    smiles += current->atom->getSMILES();
+
+    const auto neighbourCount = current->bonds.size();
+    if (neighbourCount == 0)
+        return smiles;
+
+    std::vector<size_t> insertPositions(atoms.size(), std::string::npos);
     insertPositions.front() = smiles.size();
+    CycleClosureSet cycleClosures;
 
-    if (atoms.front()->bonds.empty())
-        return smiles;
-
-    if (atoms.front()->bonds.size() == 1)
+    if (neighbourCount == 1)
     {
-        smiles += atoms.front()->bonds.front().getSMILES();
-        smiles += rToSMILES(&atoms.front()->bonds.front().getOther(), atoms.front().get(), insertPositions, cycleCount, cycleHeads, smiles.size());
-        insertCycleHeads(smiles, insertPositions, cycleHeads);
-        return smiles;
-    }
-
-    for (c_size i = 0; i < atoms.front()->bonds.size() - 1; ++i)
-    {        
-        const auto before = cycleCount;
-        const auto temp = rToSMILES(&atoms.front()->bonds[i].getOther(), atoms.front().get(), insertPositions, cycleCount, cycleHeads, smiles.size());
-        if(cycleCount == before)
-            smiles += '(' + atoms.front()->bonds[i].getSMILES() + temp + ')';
-        else
-            smiles += atoms.front()->bonds[i].getSMILES() + temp;
-    }
-
-    if (insertPositions[atoms.front()->bonds.back().getOther().index] != std::string::npos)  // cycle end
-    {
-        insertCycleHeads(smiles, insertPositions, cycleHeads);
-        return smiles;
+        smiles += current->bonds.front().getSMILES();
+        rToSMILES(&current->bonds.front().getOther(), current, insertPositions, cycleClosures, smiles);
     }
     else
     {
-        smiles += atoms.front()->bonds.back().getSMILES();
-        const auto temp = rToSMILES(&atoms.front()->bonds.back().getOther(), atoms.front().get(), insertPositions, cycleCount, cycleHeads, smiles.size());
-        smiles += atoms.front()->bonds.back().getSMILES() + temp;
+        for (c_size i = 0; i < neighbourCount - 1; ++i)
+        {
+            const auto& nextBond = current->bonds[i];
+            const auto next = &nextBond.getOther();
+
+
+            if (insertPositions[next->index] != std::string::npos)
+            {
+                if (cycleClosures.add(insertPositions[next->index], insertPositions[current->index]))
+                    smiles += nextBond.getSMILES() + getCycleTagString(cycleClosures.size());
+                continue;
+            }
+
+            smiles += '(' + nextBond.getSMILES();
+            rToSMILES(next, current, insertPositions, cycleClosures, smiles);
+            smiles += ')';
+        }
+
+        const auto& lastBond = current->bonds.back();
+        const auto last = &lastBond.getOther();
+
+        if (insertPositions[last->index] == std::string::npos)
+        {
+            // Since this is the first atom we dont' have to check 'if(cycleClosures.add(next->index, current->index))'.
+            // We alredy know this isn't a new cycle.
+            smiles += current->bonds.back().getSMILES();
+            rToSMILES(&current->bonds.back().getOther(), current, insertPositions, cycleClosures, smiles);
+        }
     }
 
-    insertCycleHeads(smiles, insertPositions, cycleHeads);
-    return smiles;
+    for (const auto& closure : cycleClosures)
+        smiles.insert(closure.idxA, getCycleTagString(closure.tag));
+
+    if(smiles.back() != ')')
+        return smiles;
+
+    // Strip unnecessary parenthesis resulted from cycles, aka trailing ')' and their paired '('.
+    // TODO: This is a bit ineficient, smiles could be generated without these parenthesis.
+    size_t idx = smiles.size() - 1;
+    while (idx-- > 0 && smiles[idx] == ')');
+    const size_t lastIdx = idx; // Last non-')' symbol.
+
+    std::vector<size_t> removeIdx;
+    std::stack<size_t> parethesisStack;
+    while (idx-- > 0)
+    {
+        if (smiles[idx] == ')')
+            parethesisStack.push(idx);
+        else if (smiles[idx] == '(')
+        {
+            if (parethesisStack.empty())
+                removeIdx.emplace_back(idx); // These are naturally sorted in reversed order.
+            else
+                parethesisStack.pop();
+        }
+    }
+
+    std::string strippedSmiles;
+    strippedSmiles.reserve(smiles.size() - removeIdx.size() * 2);
+
+    for (size_t i = 0; i <= lastIdx; ++i)
+    {
+        if (removeIdx.size() && i == removeIdx.back())
+            removeIdx.pop_back();
+        else
+            strippedSmiles.push_back(smiles[i]);
+    }
+
+    return strippedSmiles;
 }
 
 std::optional<MolecularStructure> MolecularStructure::create(const std::string& smiles)

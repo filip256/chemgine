@@ -13,7 +13,7 @@ BondedAtom::BondedAtom(const BondedAtom& other) noexcept :
 
 bool BondedAtom::isSame(const BondedAtom& other) const
 {
-    return this->atom.get() == other.atom.get();
+    return this == &other;
 }
 
 void BondedAtom::replace(std::unique_ptr<const Atom>&& atom)

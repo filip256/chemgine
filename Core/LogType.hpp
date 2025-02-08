@@ -12,6 +12,5 @@ enum class LogType : uint8_t
 	INFO,
 	DEBUG,
 	TRACE,
-	TABLE,
 	ALL
 };

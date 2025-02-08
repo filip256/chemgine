@@ -38,14 +38,14 @@ size_t UnitTestGroup::getTestCount() const
 
 bool UnitTestGroup::run()
 {
-	bool allPassed = true;
+	std::vector<size_t> failed;
 
 	Log(this).info("{0}: Running {1} sub-tests...", getName(), testCount);
 	LogBase::nest();
 
 	for (size_t i = 0; i < tests.size(); ++i)
 	{
-		// Setups
+		// Hide setups
 		if (tests[i]->getTestCount() == 0)
 		{
 			tests[i]->run();
@@ -66,7 +66,7 @@ bool UnitTestGroup::run()
 			Log(this).info("\rTest {0} passed ({1}ms).", tests[i]->getName(), std::format("{:f}", timeInMs));
 		else
 		{
-			allPassed = false;
+			failed.emplace_back(i);
 			Log(this).error("\rTest {0} failed ({1}ms).", tests[i]->getName(), std::format("{:f}", timeInMs));
 		}
 
@@ -74,7 +74,20 @@ bool UnitTestGroup::run()
 	}
 
 	LogBase::unnest();
-	return allPassed;
+
+	if (failed.size() != 0)
+	{
+		// TODO: add incremental multi-line log support
+		std::string failedStr;
+		for (const auto& idx : failed)
+			failedStr += "\n - " + tests[idx]->getName();
+
+		Log(this).error("{0}/{1} sub-tests failed:{2}", failed.size(), tests.size(), failedStr);
+		return false;
+	}
+
+	Log(this).success("All sub-tests passed.");
+	return true;
 }
 
 bool UnitTestGroup::isSkipped(const std::regex&) const

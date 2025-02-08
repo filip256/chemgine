@@ -42,11 +42,22 @@ size_t TimedTest::getTestCount() const
 	return 1;
 }
 
+void TimedTest::runWarmUp()
+{
+	for (uint8_t i = 0; i < 10; ++i)
+	{
+		preTask();
+		task();
+		postTask();
+	}
+}
+
 std::chrono::nanoseconds TimedTest::runCounted(const uint64_t repetitions)
 {
 	auto totalTime = std::chrono::nanoseconds(0);
 
 	setup();
+	runWarmUp();
 	for (uint64_t i = 0; i < repetitions; ++i)
 	{
 		preTask();
@@ -69,6 +80,7 @@ std::chrono::nanoseconds TimedTest::runTimed(std::chrono::nanoseconds minTime)
 	uint64_t repetitions = 0;
 
 	setup();
+	runWarmUp();
 	while (minTime.count() > 0)
 	{
 		preTask();

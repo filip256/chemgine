@@ -22,6 +22,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="checks\all.py" />
+    <Compile Include="rdkit\molar_mass.py" />
     <Compile Include="tools\dep_graph.py" />
     <Compile Include="utils\av_check.py" />
     <Compile Include="utils\build.py" />
@@ -29,6 +30,7 @@
   <ItemGroup>
     <Folder Include="checks\" />
     <Folder Include="keys\" />
+    <Folder Include="rdkit\" />
     <Folder Include="tools\" />
     <Folder Include="utils\" />
   </ItemGroup>

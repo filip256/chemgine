@@ -1,48 +1,44 @@
 #include "Unit/StructureUnitTests.hpp"
 #include "MolecularStructure.hpp"
 
-StructureSMILESParseUnitTest::StructureSMILESParseUnitTest(
+StructureSMILESUnitTest::StructureSMILESUnitTest(
 	const std::string& name,
-	std::string&& smiles
+	std::string&& smiles,
+	const Amount<Unit::GRAM_PER_MOLE> expectedMass
 ) noexcept :
 	UnitTest(name + '_' + smiles),
+	expectedMass(expectedMass),
 	smiles(std::move(smiles))
 {}
 
-bool StructureSMILESParseUnitTest::run()
+bool StructureSMILESUnitTest::run()
 {
-	const auto molecule = MolecularStructure::create(smiles);
-	if (not molecule)
+	const auto parsedMolecule = MolecularStructure::create(smiles);
+	if (not parsedMolecule)
 	{
 		Log(this).error("Failed to parse input SMILES: '{0}'.", smiles);
 		return false;
 	}
 
-	return true;
-}
-
-
-StructureSMILESPrintUnitTest::StructureSMILESPrintUnitTest(
-	const std::string& name,
-	const std::string& smiles
-) noexcept :
-	UnitTest(name + '_' + smiles),
-	molecule(smiles)
-{}
-
-bool StructureSMILESPrintUnitTest::run()
-{
-	const auto smiles = molecule.toSMILES();
-	const auto dumpedMolecule = MolecularStructure::create(smiles);
-	if (not dumpedMolecule)
+	const auto actualMass = parsedMolecule->getMolarMass();
+	if (not Utils::floatEqual(actualMass.asStd(), expectedMass.asStd(), 0.005f))
 	{
-		Log(this).error("Failed to parse dumped SMILES: '{0}'.", smiles);
+		Log(this).error("Parsed molecule's molar mass: {0} does not match the expected molar mass: {1}.", actualMass.toString(), expectedMass.toString());
 		return false;
 	}
 
-	if (molecule == *dumpedMolecule)
+	const auto printedSmiles = parsedMolecule->toSMILES();
+
+	const auto printedMolecule = MolecularStructure::create(printedSmiles);
+	if (not printedMolecule)
 	{
-		Log(this).error("Equality check between dumped molecule: '{0}' and input failed.", smiles);
+		Log(this).error("Failed to parse printed SMILES: '{0}'.", printedSmiles);
+		return false;
+	}
+
+	if (*parsedMolecule != *printedMolecule)
+	{
+		Log(this).error("Equality check between printed molecule: '{0}' and input failed.", printedSmiles);
 		return false;
 	}
 
@@ -142,29 +138,6 @@ bool StructureSubstitutionUnitTest::run()
 }
 
 
-StructureMassUnitTest::StructureMassUnitTest(
-	const std::string& name,
-	const std::string& smiles,
-	const Amount<Unit::GRAM_PER_MOLE> expectedMass
-) noexcept :
-	UnitTest(name + '_' + smiles),
-	expectedMass(expectedMass),
-	molecule(smiles)
-{}
-
-bool StructureMassUnitTest::run()
-{
-	const auto mass = molecule.getMolarMass();
-	if (mass != expectedMass)
-	{
-		Log(this).error("Actual molar mass: {0} is different from the expected mass: {1}.", mass.toString(), expectedMass.toString());
-		return false;
-	}
-	return true;
-}
-
-
-
 StructureUnitTests::StructureUnitTests(
 	std::string&& name,
 	const std::regex& filter,
@@ -180,42 +153,31 @@ StructureUnitTests::StructureUnitTests(
 
 	registerTest<UnitTestSetup<AccessorTestSetup>>("setup", dataStore);
 
-	// TODO: should validate parsing agains molar mass at least
-	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "CN(C)C(=O)C1=CC=CC=C1");
-	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "C1=CC=CC=C1R");
-	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "CC(=O)OC");
-	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "CC(=O)N(C)C");
-	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "C1CC1");
-	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "CC1CCCC2CCCCC12");
-	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67");
-	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "CC1=CC2=C(NC=C2)C=C1");
-	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "RC1=CC2=C(NC=C2)C=C1");
-	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C");
-	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "N(R)C14CC(CC=C1C2=C(OR)C=CC3=C2C(=C[N]3)C4)C(=O)N(R)R");
-	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "OC1C2CC12");
-	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "CC2CCCC(C1CCCCC1)C2");
-	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "CN1CC(C=C2C1CC3=CNC4=CC=CC2=C34)C(=O)O");
-	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "[Mg](O)O");
-	registerTest<StructureSMILESParseUnitTest>("parse_SMILES", "S(-O)(-O)(-O)(OCC)(OCCC(N(C)C)=O)C#N");
-
-	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "CN(C)C(=O)C1=CC=CC=C1");
-	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "C1=CC=CC=C1R");
-	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "CC(=O)OC");
-	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "CC(=O)N(C)C");
-	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "C1CC1");
-	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "CC1CCCC2CCCCC12");
-	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "CC1=CC2=C(NC=C2)C=C1");
-	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "RC1=CC2=C(NC=C2)C=C1");
-	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "NC1C2=C1CN2");
-	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C");
-	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "N(R)C14CC(CC=C1C2=C(OR)C=CC3=C2C(=C[N]3)C4)C(=O)N(R)R");
-	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "OC1C2CC12");
-	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "CC2CCCC(C1CCCCC1)C2");
-	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "CN1CC(C=C2C1CC3=CNC4=CC=CC2=C34)C(=O)O");
-	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "[Mg](O)O");
-	registerTest<StructureSMILESPrintUnitTest>("print_SMILES", "S(-O)(-O)(-O)(OCC)(OCCC(N(C)C)=O)C#N");
+	registerTest<StructureSMILESUnitTest>("SMILES", "CN(C)C(=O)C1=CC=CC=C1", 149.19);
+	registerTest<StructureSMILESUnitTest>("SMILES", "C1=CC=CC=C1R", 77.11);
+	registerTest<StructureSMILESUnitTest>("SMILES", "CC(=O)OC", 74.08);
+	registerTest<StructureSMILESUnitTest>("SMILES", "CC(=O)N(C)C", 87.12);
+	registerTest<StructureSMILESUnitTest>("SMILES", "C1CC1", 42.08);
+	registerTest<StructureSMILESUnitTest>("SMILES", "CC1CCCC2CCCCC12", 152.28);
+	registerTest<StructureSMILESUnitTest>("SMILES", "RC1=CC2=C(NC=C2)C=C1", 116.15);
+	registerTest<StructureSMILESUnitTest>("SMILES", "NC1C2=C1CN2", 82.11);
+	registerTest<StructureSMILESUnitTest>("SMILES", "C1C2C1C2", 54.09);
+	registerTest<StructureSMILESUnitTest>("SMILES", "CC1C2C1C2", 68.12);
+	registerTest<StructureSMILESUnitTest>("SMILES", "CC1C2C1N2", 69.11);
+	registerTest<StructureSMILESUnitTest>("SMILES", "OC1C2CC12", 70.09);
+	registerTest<StructureSMILESUnitTest>("SMILES", "CNC1CC=C1C=C=CC3=C=CN3", 172.23);
+	registerTest<StructureSMILESUnitTest>("SMILES", "CN4CCC15C=CC(O)C3OC2=C(O)C=CC(=CC1)C2C345", 285.34);
+	registerTest<StructureSMILESUnitTest>("SMILES", "CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C", 352.46);
+	registerTest<StructureSMILESUnitTest>("SMILES", "CN1CC(C=C2C1CC3=CNC4=CC=CC2=C34)C(=O)O", 268.32);
+	registerTest<StructureSMILESUnitTest>("SMILES", "[Mg](O)O", 58.32);
+	registerTest<StructureSMILESUnitTest>("SMILES", "S(-O)(-O)(-O)(OCC)(OCCC(N(C)C)=O)C#N", 270.31);
+	registerTest<StructureSMILESUnitTest>("SMILES", "CC2CCCC(C1CCCCC1)C2", 180.33);
+	registerTest<StructureSMILESUnitTest>("SMILES", "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67", 254.42);
+	registerTest<StructureSMILESUnitTest>("SMILES", "C1C2C13C24C38C4%10C79C56CC5C67C89%10", 150.18);
+	registerTest<StructureSMILESUnitTest>("SMILES", "C3=CC27CC18C=CC16C=C%10CCC%12C%11C=C5C=C4C(C=C2C3)C49C5=C(C6C789)C%10%11%12", 356.47);
 
 	registerTest<StructureEqualityUnitTest>("equality", "CN(C)C(=O)C1=CC=CC=C1", "C1=CC=CC=C1R", false);
+	registerTest<StructureEqualityUnitTest>("equality", "N1(C2(C1C(C)2))", "N1(C2(C1C2(C)))", true);
 	registerTest<StructureEqualityUnitTest>("equality", "CC(=O)OC", "RC(=O)OR", false);
 	registerTest<StructureEqualityUnitTest>("equality", "CC(=O)OC", "RC(=O)O", false);
 	registerTest<StructureEqualityUnitTest>("equality", "CC(=O)N(C)C", "RC(=O)N(R)R", false);
@@ -267,12 +229,6 @@ StructureUnitTests::StructureUnitTests(
 	registerTest<StructureSubstitutionUnitTest>("substitute", "CC(C)C", "C1CCC1O", "OC1(CCC1)(C)");
 	// TODO: This will result in a valence violation. Some check in substitute would be nice
 	//registerTest<MolecularSubstitutionTest>("substitute", "CC(=C)C", "C1CCC1O", "OC1(CCC1)(=C)");
-
-	registerTest<StructureMassUnitTest>("mass", "CN(C)C(=O)C1=CC=CC=C1", 149.193);
-	registerTest<StructureMassUnitTest>("mass", "CC(=O)OC", 74.079);
-	registerTest<StructureMassUnitTest>("mass", "C1CCCC1", 70.135);
-	registerTest<StructureMassUnitTest>("mass", "CN1CC(C=C2C1CC3=CNC4=CC=CC2=C34)C(=O)O", 268.316);
-	registerTest<StructureMassUnitTest>("mass", "[Mg](O)O", 58.319);
 
 	registerTest<UnitTestSetup<AccessorTestCleanup>>("cleanup");
 	Accessor<>::unsetDataStore();
