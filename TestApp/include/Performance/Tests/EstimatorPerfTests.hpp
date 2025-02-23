@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PerfTest.hpp"
+#include "Performance/PerfTest.hpp"
 #include "Precision.hpp"
 
 class LinearSplinePerfTest : public TimedTest

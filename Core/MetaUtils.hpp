@@ -12,12 +12,18 @@ namespace Utils
 	template<typename T1, typename T2>
 	bool equal(const T1 x, const T2 y);
 
-	template <typename, template <typename> class>
-	struct is_specialization_of : std::false_type {};
-	template <typename U, template <typename> class Template>
-	struct is_specialization_of<Template<U>, Template> : std::true_type {};
+	namespace
+	{
+		template <typename, template <typename> class>
+		struct is_specialization_of : std::false_type {};
+		template <typename U, template <typename> class Template>
+		struct is_specialization_of<Template<U>, Template> : std::true_type {};
+	}
 	template <typename T, template <typename> class Template>
 	constexpr bool is_specialization_of_v = is_specialization_of<T, Template>::value;
+
+	template <typename T>
+	auto invokeOrForward(T&& obj);
 }
 
 template<typename FisrtT, typename... RestT>
@@ -39,4 +45,15 @@ template<typename T1, typename T2>
 bool Utils::equal(const T1 x, const T2 y)
 {
 	return Utils::equal(x, static_cast<T1>(y));
+}
+
+template <typename T>
+auto Utils::invokeOrForward(T&& obj)
+{
+	if constexpr (std::is_invocable_v<std::decay_t<T>>) {
+		return obj();
+	}
+	else {
+		return obj;
+	}
 }

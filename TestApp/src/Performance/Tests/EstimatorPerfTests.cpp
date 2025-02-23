@@ -1,4 +1,4 @@
-#include "Performance/EstimatorPerfTests.hpp"
+#include "Performance/Tests/EstimatorPerfTests.hpp"
 #include "Spline.hpp"
 
 LinearSplinePerfTest::LinearSplinePerfTest(
@@ -48,10 +48,10 @@ EstimatorPerfTests::EstimatorPerfTests(
 ) noexcept :
 	PerfTestGroup(std::move(name), filter)
 {
-	registerTest<LinearSplinePerfTest>("lspline_quadratic", std::chrono::seconds(10),
-		[](const float_s x) -> float_s { return x * x; }, 100'000, 0.0);
+	registerTest<LinearSplinePerfTest>("lspline_quadratic", std::chrono::seconds(5),
+		[](const float_s x) -> float_s { return x * x; }, 10'000, 0.0);
 	registerTest<LinearSplinePerfTest>("lspline_quadratic_loss", std::chrono::seconds(5),
-		[](const float_s x) -> float_s { return x * x; }, 100'000, 0.25);
+		[](const float_s x) -> float_s { return x * x; }, 10'000, 0.25);
 	registerTest<LinearSplinePerfTest>("lspline_sin", std::chrono::seconds(5),
 		[](const float_s x) -> float_s { return std::sin(x); }, 10'000, 0.0);
 	registerTest<LinearSplinePerfTest>("lspline_sin_loss", std::chrono::seconds(5),

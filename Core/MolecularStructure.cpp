@@ -10,9 +10,7 @@
 
 MolecularStructure::MolecularStructure(const std::string& smiles)
 {
-    if (not loadFromSMILES(smiles))
-        return;
-    canonicalize();
+    loadFromSMILES(smiles);
 }
 
 MolecularStructure::MolecularStructure(const MolecularStructure& other) noexcept :
@@ -224,6 +222,8 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
         return false;
     }
     impliedHydrogenCount = hCount;
+
+    canonicalize();
 
     return true;
 }
@@ -594,7 +594,7 @@ void MolecularStructure::rPrint(
         const auto hCount = countImpliedHydrogens(current);
         for (int8_t i = 0; i < hCount; ++i)
         {
-            char vC = '³', hC = 'Ä', d1C = '\\', d2C = '/';
+            const char vC = '³', hC = 'Ä', d1C = '\\', d2C = '/';
 
             if (buffer[y][x + symbSize + 1] == ' ')
             {

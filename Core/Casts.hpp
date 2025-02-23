@@ -3,10 +3,6 @@
 #include <typeinfo>
 #include <cassert>
 
-#ifdef NDEBUG
-	#define SKIP_CHECKED_CASTS
-#endif
-
 /// <summary>
 /// Checks if the source object has the same typeid as DstT.
 /// </summary>
@@ -37,6 +33,8 @@ const DstT* final_cast(const SrcT& src)
 		static_cast<const DstT*>(&src) :
 		nullptr;
 }
+
+// #define SKIP_CHECKED_CASTS
 
 /// <summary>
 /// Similar to static_cast but assures no data is lost during the conversion.

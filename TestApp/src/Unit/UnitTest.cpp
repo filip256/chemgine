@@ -63,11 +63,11 @@ bool UnitTestGroup::run()
 		const auto timeInMs = (end - start).count() / 1000000.0;
 
 		if (success)
-			Log(this).info("\rTest {0} passed ({1}ms).", tests[i]->getName(), std::format("{:f}", timeInMs));
+			Log(this).info("\rTest {0} passed ({1}ms).", tests[i]->getName(), std::format("{:.4f}", timeInMs));
 		else
 		{
 			failed.emplace_back(i);
-			Log(this).error("\rTest {0} failed ({1}ms).", tests[i]->getName(), std::format("{:f}", timeInMs));
+			Log(this).error("\rTest {0} failed ({1}ms).", tests[i]->getName(), std::format("{:.4f}", timeInMs));
 		}
 
 		Log(this).info("\0");

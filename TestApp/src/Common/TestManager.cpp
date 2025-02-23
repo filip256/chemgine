@@ -1,17 +1,16 @@
 #include "Common/TestManager.hpp"
-#include "Unit/EstimatorUnitTests.hpp"
-#include "Unit/StructureUnitTests.hpp"
-#include "Unit/DefUnitTests.hpp"
-#include "Unit/ModuleUnitTest.hpp"
-#include "Unit/MixtureUnitTests.hpp"
-#include "Performance/DefPerfTests.hpp"
-#include "Performance/FPSPerfTests.hpp"
-#include "Performance/StructurePerfTests.hpp"
-#include "Performance/EstimatorPerfTests.hpp"
+#include "Unit/Tests/EstimatorUnitTests.hpp"
+#include "Unit/Tests/StructureUnitTests.hpp"
+#include "Unit/Tests/DefUnitTests.hpp"
+#include "Unit/Tests/ModuleUnitTest.hpp"
+#include "Unit/Tests/MixtureUnitTests.hpp"
+#include "Performance/Tests/DefPerfTests.hpp"
+#include "Performance/Tests/FPSPerfTests.hpp"
+#include "Performance/Tests/StructurePerfTests.hpp"
+#include "Performance/Tests/EstimatorPerfTests.hpp"
 #include "Performance/PerformanceReport.hpp"
 #include "PathUtils.hpp"
 #include "BuildUtils.hpp"
-#include "ProcessUtils.hpp"
 
 UnitTests::UnitTests(const std::regex& filter) noexcept :
 	UnitTestGroup("Unit", filter)
@@ -34,7 +33,7 @@ PerfTests::PerfTests(const std::regex& filter) noexcept :
 	registerTest<FPSPerfTests>("FPS", "./TestFiles/builtin.cdef");
 }
 
-std::chrono::nanoseconds PerfTests::run(PerformanceReport& report)
+TimingResult PerfTests::run(PerformanceReport& report)
 {
 	timingUnitTests.run();
 	return PerfTestGroup::run(report);
@@ -69,18 +68,13 @@ void TestManager::runPerf()
 		return;
 	}
 
-	const auto normalPriority = OS::getCurrentProcessPriority();
-	OS::setCurrentProcessPriority(OS::ProcessPriority::REALTIME_PRIORITY_CLASS);
-
 	const auto current = perfTests.generateReport();
-
-	OS::setCurrentProcessPriority(normalPriority);
 
 	PerformanceReport prev;
 	const auto& buildName = Utils::getBuildTypeName();
 
 	if (prev.load("./Reports/perf_" + buildName + "_LTS.txt"))
-		Log(this).info("Performance report:\n{0}", prev.compare(current).toString());
+		Log(this).info("Performance report:\n{0}", CHG_DELAYED_EVAL(current.compare(prev).toString()));
 	else
 	{
 		Utils::createDir("./Reports");

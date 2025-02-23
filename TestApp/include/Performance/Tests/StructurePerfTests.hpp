@@ -1,18 +1,18 @@
 #pragma once
 
-#include "PerfTest.hpp"
+#include "Performance/PerfTest.hpp"
 #include "DataStore.hpp"
 #include "MolecularStructure.hpp"
 
-class StructureSMILESParsePerfTest : public TimedTest
+class StructureSMILESPerfTest : public TimedTest
 {
 private:
-	volatile bool dontOptimize;
+	volatile bool dontOptimize = true;
 	const std::string smiles;
 	MolecularStructure molecule;
 
 public:
-	StructureSMILESParsePerfTest(
+	StructureSMILESPerfTest(
 		const std::string& name,
 		const std::variant<uint64_t, std::chrono::nanoseconds> limit,
 		std::string&& smiles
@@ -26,7 +26,7 @@ public:
 class StructureOpsPerfTestBase : public TimedTest
 {
 protected:
-	volatile bool dontOptimize;
+	volatile bool dontOptimize = true;
 	const MolecularStructure target;
 	const MolecularStructure pattern;
 

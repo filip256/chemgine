@@ -1,13 +1,14 @@
 #pragma once
 
 #include "Common/TestSetup.hpp"
+#include "TimingResult.hpp"
+#include "ProcessUtils.hpp"
 #include "MetaUtils.hpp"
 
 #include <string>
 #include <vector>
 #include <memory>
 #include <variant>
-#include <chrono>
 #include <regex>
 
 class PerformanceReport;
@@ -26,7 +27,7 @@ public:
 	const std::string& getName() const;
 	virtual size_t getTestCount() const = 0;
 
-	virtual std::chrono::nanoseconds run(PerformanceReport& report) = 0;
+	virtual TimingResult run(PerformanceReport& report) = 0;
 
 	virtual bool isSkipped(const std::regex& filter) const;
 };
@@ -51,7 +52,7 @@ public:
 
 	size_t getTestCount() const override final;
 
-	std::chrono::nanoseconds run(PerformanceReport& report) override final;
+	TimingResult run(PerformanceReport& report) override final;
 
 	bool isSkipped(const std::regex& filter) const override final;
 };
@@ -72,10 +73,10 @@ size_t PerfTestSetup<SetupT>::getTestCount() const
 }
 
 template<typename SetupT>
-std::chrono::nanoseconds PerfTestSetup<SetupT>::run(PerformanceReport&)
+TimingResult PerfTestSetup<SetupT>::run(PerformanceReport&)
 {
 	setup.run();
-	return std::chrono::nanoseconds(0);
+	return TimingResult(std::chrono::nanoseconds(0), std::chrono::nanoseconds(0));
 }
 
 template<typename SetupT>
@@ -91,8 +92,11 @@ private:
 	const std::variant<uint64_t, std::chrono::nanoseconds> limit;
 
 	void runWarmUp();
-	std::chrono::nanoseconds runCounted(const uint64_t repetitions);
-	std::chrono::nanoseconds runTimed(std::chrono::nanoseconds minTime);
+	TimingResult runCounted(const uint64_t repetitions);
+	TimingResult runTimed(std::chrono::nanoseconds minTime);
+
+	OS::ExecutionConfig static stabilizeExecution();
+	void static restoreExecution(const OS::ExecutionConfig normalProperties);
 
 protected:
 	virtual void setup();
@@ -112,7 +116,7 @@ public:
 
 	size_t getTestCount() const override final;
 
-	std::chrono::nanoseconds run(PerformanceReport& report) override final;
+	TimingResult run(PerformanceReport& report) override final;
 
 	bool isSkipped(const std::regex& filter) const override final;
 };
@@ -137,7 +141,7 @@ public:
 
 	size_t getTestCount() const override final;
 
-	std::chrono::nanoseconds run(PerformanceReport& report) override;
+	TimingResult run(PerformanceReport& report) override;
 	PerformanceReport generateReport();
 
 	bool isSkipped(const std::regex& filter) const override final;

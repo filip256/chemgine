@@ -115,7 +115,7 @@ const MoleculeData& MoleculeRepository::findOrAddConcrete(MolecularStructure&& s
 	if (existing != nullptr)
 		return *existing;
 
-	Log(this).debug("New structure discovered: \n{0}", structure.print());
+	Log(this).debug("New structure discovered: \n{0}", CHG_DELAYED_EVAL(structure.print()));
 
 	const auto hydro = 1.0f;
 	const auto lipo = 0.0f;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PerfTest.hpp"
+#include "Performance/PerfTest.hpp"
 #include "DataStore.hpp"
 
 class DefPerfSetup : public TestSetup

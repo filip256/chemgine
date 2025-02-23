@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
         }
 
         const auto logLevelStr = args.count("log") ? args["log"].as<std::string>() : "INFO";
-        if (const auto logLevel = LogBase::parseLogLevel(logLevelStr))
+        if (const auto logLevel = LogBase::parseLogType(logLevelStr))
             LogBase::logLevel = *logLevel;
         else
         {

@@ -2,6 +2,7 @@
 
 #include "TerminalUtils.hpp"
 #include "Linguistics.hpp"
+#include "MetaUtils.hpp"
 #include "TypeUtils.hpp"
 #include "LogType.hpp"
 
@@ -14,22 +15,22 @@
 #include <stdexcept>
 
 #ifdef NDEBUG
-	#define CHEM_LOG_ERROR
-	#define CHEM_LOG_WARN
-	#define CHEM_LOG_INFO
+	#define CHG_LOG_ERROR
+	#define CHG_LOG_WARN
+	#define CHG_LOG_INFO
 #else
-	#define CHEM_LOG_ERROR
-	#define CHEM_LOG_WARN
-	#define CHEM_LOG_SUCCESS
-	#define CHEM_LOG_INFO
-	#define CHEM_LOG_DEBUG
-	#define CHEM_LOG_TRACE
+	#define CHG_LOG_ERROR
+	#define CHG_LOG_WARN
+	#define CHG_LOG_SUCCESS
+	#define CHG_LOG_INFO
+	#define CHG_LOG_DEBUG
+	#define CHG_LOG_TRACE
 #endif
+
+#define CHG_DELAYED_EVAL(func) [&]() { return func; }
 
 class LogBase
 {
-private:
-
 protected:
 	const std::string address;
 	const std::string sourceName;
@@ -45,7 +46,7 @@ protected:
 
 	void log(const std::string& msg, const LogType type) const;
 	template <class... Args>
-	void log(const std::format_string<Args...>& format, const LogType type, Args&&... args) const;
+	void log(const std::string& format, const LogType type, Args&&... args) const;
 
 	static void addContextIndent();
 
@@ -58,19 +59,19 @@ public:
 	static std::string contexIndent;
 
 	template <class... Args>
-	__declspec(noreturn) void fatal(const std::format_string<Args...>& format, Args&&... args) const;
+	__declspec(noreturn) void fatal(const std::string& format, Args&&... args) const;
 	template <class... Args>
-	void error(const std::format_string<Args...>& format, Args&&... args) const;
+	void error(const std::string& format, Args&&... args) const;
 	template <class... Args>
-	void warn(const std::format_string<Args...>& format, Args&&... args) const;
+	void warn(const std::string& format, Args&&... args) const;
 	template <class... Args>
-	void success(const std::format_string<Args...>& format, Args&&... args) const;
+	void success(const std::string& format, Args&&... args) const;
 	template <class... Args>
-	void info(const std::format_string<Args...>& format, Args&&... args) const;
+	void info(const std::string& format, Args&&... args) const;
 	template <class... Args>
-	void debug(const std::format_string<Args...>& format, Args&&... args) const;
+	void debug(const std::string& format, Args&&... args) const;
 	template <class... Args>
-	void trace(const std::format_string<Args...>& format, Args&&... args) const;
+	void trace(const std::string& format, Args&&... args) const;
 
 	static void nest();
 	static void unnest();
@@ -80,23 +81,33 @@ public:
 
 	static void breakline();
 
-	static std::optional<LogType> parseLogLevel(const std::string& str);
+	static std::optional<LogType> parseLogType(const std::string& str);
+	static bool isLogTypeEnabled(const LogType type);
 };
 
 template <class... Args>
-void LogBase::log(const std::format_string<Args...>& format, const LogType type, Args&&... args) const
+void LogBase::log(const std::string& format, const LogType type, Args&&... args) const
 {
-	if (type > logLevel || not std::regex_match(sourceName, logSourceFilter))
+	if (type > logLevel || (type != LogType::FATAL && not std::regex_match(sourceName, logSourceFilter)))
 		return;
 
-	log(std::vformat(format.get(), std::make_format_args(args...)), type);
+	// Values retuned from delayed-call args are temporary and need storage, normal args are stored as references.
+	const auto argStorage = std::make_tuple(Utils::invokeOrForward(std::forward<Args>(args))...);
+
+	const auto message = std::apply(
+		[&format](const auto&... pArgs) {
+			return std::vformat(format, std::make_format_args(pArgs...));
+		},
+		argStorage
+	);
+
+	log(message, type);
 }
 
 template <class... Args>
-void LogBase::fatal(const std::format_string<Args...>& format, Args&&... args) const
+void LogBase::fatal(const std::string& format, Args&&... args) const
 {
-	// Fatals are never ignored
-	log(std::vformat(format.get(), std::make_format_args(args...)), LogType::FATAL);
+	log(format, LogType::FATAL, std::forward<Args>(args)...);
 
 	OS::setTextColor(OS::Color::DarkRed);
 	outputStream << "\n   Execution aborted due to a fatal error.\n   Press ENTER to exit.\n";
@@ -111,49 +122,49 @@ void LogBase::fatal(const std::format_string<Args...>& format, Args&&... args) c
 }
 
 template <class... Args>
-void LogBase::error(const std::format_string<Args...>& format, Args&&... args) const
+void LogBase::error(const std::string& format, Args&&... args) const
 {
-#ifdef CHEM_LOG_ERROR
+#ifdef CHG_LOG_ERROR
 	log(format, LogType::ERROR, std::forward<Args>(args)...);
 #endif
 }
 
 template <class... Args>
-void LogBase::warn(const std::format_string<Args...>& format, Args&&... args) const
+void LogBase::warn(const std::string& format, Args&&... args) const
 {
-#ifdef CHEM_LOG_WARN
+#ifdef CHG_LOG_WARN
 	log(format, LogType::WARN, std::forward<Args>(args)...);
 #endif
 }
 
 template <class... Args>
-void LogBase::success(const std::format_string<Args...>& format, Args&&... args) const
+void LogBase::success(const std::string& format, Args&&... args) const
 {
-#ifdef CHEM_LOG_SUCCESS
+#ifdef CHG_LOG_SUCCESS
 	log(format, LogType::SUCCESS, std::forward<Args>(args)...);
 #endif
 }
 
 template <class... Args>
-void LogBase::info(const std::format_string<Args...>& format, Args&&... args) const
+void LogBase::info(const std::string& format, Args&&... args) const
 {
-#ifdef CHEM_LOG_INFO
+#ifdef CHG_LOG_INFO
 	log(format, LogType::INFO, std::forward<Args>(args)...);
 #endif
 }
 
 template <class... Args>
-void LogBase::debug(const std::format_string<Args...>& format, Args&&... args) const
+void LogBase::debug(const std::string& format, Args&&... args) const
 {
-#ifdef CHEM_LOG_DEBUG
+#ifdef CHG_LOG_DEBUG
 	log(format, LogType::DEBUG, std::forward<Args>(args)...);
 #endif
 }
 
 template <class... Args>
-void LogBase::trace(const std::format_string<Args...>& format, Args&&... args) const
+void LogBase::trace(const std::string& format, Args&&... args) const
 {
-#ifdef CHEM_LOG_TRACE
+#ifdef CHG_LOG_TRACE
 	log(format, LogType::TRACE, std::forward<Args>(args)...);
 #endif
 }

@@ -1,4 +1,4 @@
-#include "Unit/StructureUnitTests.hpp"
+#include "Unit/Tests/StructureUnitTests.hpp"
 #include "MolecularStructure.hpp"
 
 StructureSMILESUnitTest::StructureSMILESUnitTest(
@@ -175,6 +175,7 @@ StructureUnitTests::StructureUnitTests(
 	registerTest<StructureSMILESUnitTest>("SMILES", "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67", 254.42);
 	registerTest<StructureSMILESUnitTest>("SMILES", "C1C2C13C24C38C4%10C79C56CC5C67C89%10", 150.18);
 	registerTest<StructureSMILESUnitTest>("SMILES", "C3=CC27CC18C=CC16C=C%10CCC%12C%11C=C5C=C4C(C=C2C3)C49C5=C(C6C789)C%10%11%12", 356.47);
+	registerTest<StructureSMILESUnitTest>("SMILES", "C(C)C(CC(C(C)C(C(C)C)(C(C)C))(C(C)C)C)CC", 282.56);
 
 	registerTest<StructureEqualityUnitTest>("equality", "CN(C)C(=O)C1=CC=CC=C1", "C1=CC=CC=C1R", false);
 	registerTest<StructureEqualityUnitTest>("equality", "N1(C2(C1C(C)2))", "N1(C2(C1C2(C)))", true);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <bitset>
 #include <cstdint>
 
 namespace OS
@@ -21,5 +22,28 @@ namespace OS
 	};
 
 	ProcessPriority getCurrentProcessPriority();
-	void setCurrentProcessPriority(ProcessPriority priority);
+	void setCurrentProcessPriority(const ProcessPriority priority);
+
+
+	using ProcessorIndex = uint8_t;
+	using ProcessorAffinityMask = std::bitset<sizeof(void*) * 8>;
+
+	ProcessorAffinityMask getAvailableProcessorMask();
+	ProcessorAffinityMask getAvailablePhysicalProcessorMask();
+	ProcessorAffinityMask getLastAvailablePhysicalProcessorMask();
+	ProcessorAffinityMask setCurrentThreadProcessorAffinity(const ProcessorAffinityMask mask);
+
+
+	class ExecutionConfig
+	{
+	public:
+		ProcessorAffinityMask processorAffinityMask;
+		ProcessPriority processPriority;
+
+		ExecutionConfig(
+			ProcessorAffinityMask processorAffinityMask,
+			const ProcessPriority processPriority
+		) noexcept;
+		ExecutionConfig(const ExecutionConfig&) = default;
+	};
 }

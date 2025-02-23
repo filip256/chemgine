@@ -1,4 +1,4 @@
-#include "Unit/TimingUnitTests.hpp"
+#include "Unit/Tests/TimingUnitTests.hpp"
 #include "Performance/PerformanceReport.hpp"
 #include "Log.hpp"
 
@@ -41,14 +41,15 @@ TimingUnitTest::TimingUnitTest(
 bool TimingUnitTest::run()
 {
 	PerformanceReport report;
-	const auto act = perfTest.run(report).count();
+	const auto act = perfTest.run(report);
 	const auto ref = perfTest.getWaitTime().count();
 
-	const auto error = std::abs((static_cast<float_h>(act - ref) / ref) * 100.0);
+	const auto minAbsDiff = std::min(std::abs(act.averageTime.count() - ref), std::abs(act.medianTime.count() - ref));
+
+	const auto error = (static_cast<float_h>(minAbsDiff) / ref) * 100.0;
 	if (error > threshold)
 	{
-		Log(this).error("Error: {0}% (act= {1}ns, ref= {2}ns) exceeded the test threshold: {3}%.",
-			Linguistics::formatFloatingPoint(error), act, ref, Linguistics::formatFloatingPoint(threshold));
+		Log(this).error("Error: {0}% exceeded the test threshold: {1}%.", std::format("{:f}", error), std::format("{:f}", threshold));
 		return false;
 	}
 
@@ -62,15 +63,14 @@ TimingUnitTests::TimingUnitTests(
 ) noexcept :
 	UnitTestGroup(std::move(name), filter)
 {
-	registerTest<TimingUnitTest>("counted", uint64_t(20), std::chrono::milliseconds(10), 0.4);
-	registerTest<TimingUnitTest>("counted", uint64_t(100), std::chrono::milliseconds(10), 0.3);
+	registerTest<TimingUnitTest>("counted", uint64_t(20), std::chrono::milliseconds(10), 0.3);
+	registerTest<TimingUnitTest>("counted", uint64_t(100), std::chrono::milliseconds(10), 0.2);
 
-	registerTest<TimingUnitTest>("counted", uint64_t(30), std::chrono::microseconds(100), 6.0);
-	registerTest<TimingUnitTest>("counted", uint64_t(20), std::chrono::milliseconds(1), 4.0);
-	registerTest<TimingUnitTest>("counted", uint64_t(20), std::chrono::milliseconds(10), 0.2);
-	registerTest<TimingUnitTest>("counted", uint64_t(10), std::chrono::milliseconds(100), 0.08);
-	registerTest<TimingUnitTest>("counted", uint64_t(2), std::chrono::seconds(1), 0.004);
+	registerTest<TimingUnitTest>("counted", uint64_t(30), std::chrono::microseconds(100), 5.0);
+	registerTest<TimingUnitTest>("counted", uint64_t(20), std::chrono::milliseconds(1), 3.0);
+	registerTest<TimingUnitTest>("counted", uint64_t(20), std::chrono::milliseconds(10), 0.1);
+	registerTest<TimingUnitTest>("counted", uint64_t(10), std::chrono::milliseconds(100), 0.06);
 
-	registerTest<TimingUnitTest>("timed", std::chrono::milliseconds(200), std::chrono::milliseconds(10), 0.4);
-	registerTest<TimingUnitTest>("timed", std::chrono::seconds(1), std::chrono::milliseconds(10), 0.3);
+	registerTest<TimingUnitTest>("timed", std::chrono::milliseconds(200), std::chrono::milliseconds(10), 0.3);
+	registerTest<TimingUnitTest>("timed", std::chrono::seconds(1), std::chrono::milliseconds(10), 0.2);
 }

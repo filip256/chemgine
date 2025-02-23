@@ -1,5 +1,6 @@
-#include "Common/TestManager.hpp"
 #include "Log.hpp"
+#include "BuildUtils.hpp"
+#include "Common/TestManager.hpp"
 
 #include <cxxopts.hpp>
 
@@ -23,14 +24,19 @@ int main(int argc, char* argv[])
         }
 
         const auto logLevelStr = args.count("log") ? args["log"].as<std::string>() : "INFO";
-        if (const auto logLevel = LogBase::parseLogLevel(logLevelStr))
-            LogBase::logLevel = *logLevel;
-        else
+        const auto logLevel = LogBase::parseLogType(logLevelStr);
+        if(not logLevel)
         {
             Log().fatal("Failed to parse log level: '{0}'.", logLevelStr);
-            return 1;
+            CHG_UNREACHABLE();
         }
-
+        if (not LogBase::isLogTypeEnabled(*logLevel))
+        {
+            Log().fatal("The specified log level: '{0}' is disabled on this build.", logLevelStr);
+            CHG_UNREACHABLE();
+        }
+        LogBase::logLevel = *logLevel;
+        
         const auto filterStr = args.count("filter") ? args["filter"].as<std::string>() : ".*";
         std::regex filter(filterStr, std::regex::ECMAScript | std::regex::optimize);
 
@@ -45,13 +51,13 @@ int main(int argc, char* argv[])
     }
     catch (const cxxopts::exceptions::exception& e)
     {
-        Log().fatal("Option parsing failed.\n{0}", e.what());
-        return 1;
+        Log().fatal("Option parsing failed with error:\n{0}", e.what());
+        CHG_UNREACHABLE();
     }
     catch (const std::regex_error& e)
     {
-        Log().fatal("Regex creation failed.\n{0}", e.what());
-        return 1;
+        Log().fatal("Regex creation failed with error:\n{0}", e.what());
+        CHG_UNREACHABLE();
     }
 
 	return 0;

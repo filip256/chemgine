@@ -57,6 +57,9 @@ namespace Utils
 	template<typename T>
 	void permute(std::vector<T>& vector, std::vector<size_t>& permutation);
 
+	template<typename T, typename OutT = T>
+	OutT getAveragedMedian(std::vector<T>& values);
+
 	template<typename T>
 	T copy(const T& obj);
 
@@ -282,6 +285,23 @@ void Utils::permute(std::vector<T>& vector, std::vector<size_t>& permutation)
 
 		} while (permutation[current] != npos);
 	}
+}
+
+template<typename T, typename OutT>
+OutT Utils::getAveragedMedian(std::vector<T>& values)
+{
+	const auto mid = values.size() / 2;
+	std::nth_element(values.begin(), values.begin() + mid, values.end());
+
+	if (values.size() % 2 == 1)
+		return values[mid];
+
+	// For even sizes we need to find the (mid-1)th element too.
+	const auto mid1 = values[mid];
+	std::nth_element(values.begin(), values.begin() + mid - 1, values.end());
+	const auto mid2 = values[mid - 1];
+
+	return (mid1 + mid2) / 2.0;
 }
 
 template<typename T>

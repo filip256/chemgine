@@ -1,6 +1,8 @@
 #include "Log.hpp"
+#include "Casts.hpp"
 #include "LogType.hpp"
 #include "STLUtils.hpp"
+#include "BuildUtils.hpp"
 
 #include <unordered_map>
 
@@ -72,6 +74,8 @@ void LogBase::log(const std::string& msg, const LogType type) const
 			outputStream << "TRACE: ";
 			suffixSize += 7;
 			break;
+		default:
+			Log<LogBase>().fatal("Undefined log type: {0}", underlying_cast(type));
 		}
 
 		if (type <= printNameLevel)
@@ -164,7 +168,7 @@ void LogBase::breakline()
 	outputStream << "\n.........................................................................\n\n";
 }
 
-std::optional<LogType> LogBase::parseLogLevel(const std::string& str)
+std::optional<LogType> LogBase::parseLogType(const std::string& str)
 {
 	static const std::unordered_map<std::string, LogType> typeMap
 	{
@@ -180,4 +184,52 @@ std::optional<LogType> LogBase::parseLogLevel(const std::string& str)
 	};
 
 	return Utils::find(typeMap, str);
+}
+
+bool LogBase::isLogTypeEnabled(const LogType type)
+{
+	switch (type)
+	{
+	case LogType::FATAL:
+		return true;
+	case LogType::ERROR:
+#ifdef CHG_LOG_ERROR
+		return true;
+#else
+		return false;
+#endif
+	case LogType::WARN:
+#ifdef CHG_LOG_WARN
+		return true;
+#else
+		return false;
+#endif
+	case LogType::SUCCESS:
+#ifdef CHG_LOG_SUCCESS
+		return true;
+#else
+		return false;
+#endif
+	case LogType::INFO:
+#ifdef CHG_LOG_INFO
+		return true;
+#else
+		return false;
+#endif
+	case LogType::DEBUG:
+#ifdef CHG_LOG_DEBUG
+		return true;
+#else
+		return false;
+#endif
+	case LogType::TRACE:
+#ifdef CHG_LOG_TRACE
+		return true;
+#else
+		return false;
+#endif
+	default:
+		Log<LogBase>().fatal("Undefined log type: {0}", underlying_cast(type));
+		CHG_UNREACHABLE();
+	}
 }
