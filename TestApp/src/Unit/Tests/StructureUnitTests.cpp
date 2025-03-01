@@ -120,7 +120,7 @@ StructureSubstitutionUnitTest::StructureSubstitutionUnitTest(
 
 bool StructureSubstitutionUnitTest::run()
 {
-	auto map = instance.maximalMapTo(pattern).first;
+	const auto map = instance.maximalMapTo(pattern).first;
 	if (map.empty())
 	{
 		Log(this).error("Generating the atom mapping between instance: '{0}' and pattern: '{1}' failed.", instance.toSMILES(), pattern.toSMILES());
@@ -176,6 +176,8 @@ StructureUnitTests::StructureUnitTests(
 	registerTest<StructureSMILESUnitTest>("SMILES", "C1C2C13C24C38C4%10C79C56CC5C67C89%10", 150.18);
 	registerTest<StructureSMILESUnitTest>("SMILES", "C3=CC27CC18C=CC16C=C%10CCC%12C%11C=C5C=C4C(C=C2C3)C49C5=C(C6C789)C%10%11%12", 356.47);
 	registerTest<StructureSMILESUnitTest>("SMILES", "C(C)C(CC(C(C)C(C(C)C)(C(C)C))(C(C)C)C)CC", 282.56);
+	registerTest<StructureSMILESUnitTest>("SMILES", "HC(H)(H)C(H)(H)C(H)(H)H", 44.1);
+	registerTest<StructureSMILESUnitTest>("SMILES", "C%12C3CCC%123C", 82.15);
 
 	registerTest<StructureEqualityUnitTest>("equality", "CN(C)C(=O)C1=CC=CC=C1", "C1=CC=CC=C1R", false);
 	registerTest<StructureEqualityUnitTest>("equality", "N1(C2(C1C(C)2))", "N1(C2(C1C2(C)))", true);
@@ -228,6 +230,9 @@ StructureUnitTests::StructureUnitTests(
 	registerTest<StructureSubstitutionUnitTest>("substitute", "C(=O)O", "CC(=O)OC(C)C", "CC(=O)OC(C)C");
 	registerTest<StructureSubstitutionUnitTest>("substitute", "C1CCCC1", "C1CC(O)C1", "OC1CCCC1");
 	registerTest<StructureSubstitutionUnitTest>("substitute", "CC(C)C", "C1CCC1O", "OC1(CCC1)(C)");
+	registerTest<StructureSubstitutionUnitTest>("substitute", "C(=O)O", "CC(=O)OCCCCCCCCCCC", "O=C(OCCCCCCCCCCC)C");
+	registerTest<StructureSubstitutionUnitTest>("substitute", "C1C2C(CC(C=O)CC2CCCC)CCC1CC(=O)OC", "CC(=O)OC(CCC2C1C(C(CC(CC=C)CC)CC2)C=O)C1", "O=CC2CC1C(CC(OC(=O)C)(CC1)CC(=O)OC)C(C2)C(CCC)CC=C");
+
 	// TODO: This will result in a valence violation. Some check in substitute would be nice
 	//registerTest<MolecularSubstitutionTest>("substitute", "CC(=C)C", "C1CCC1O", "OC1(CCC1)(=C)");
 

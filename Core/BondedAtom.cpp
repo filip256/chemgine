@@ -1,22 +1,36 @@
 #include "BondedAtom.hpp"
+#include "Radical.hpp"
 
-BondedAtom::BondedAtom(std::unique_ptr<const Atom>&& atom, const c_size index) noexcept :
-    atom(std::move(atom)),
-    index(index)
+BondedAtomBase::BondedAtomBase(
+    const c_size index,
+    std::vector<Bond>&& bonds
+) noexcept :
+    index(index),
+    bonds(std::move(bonds))
 {}
 
-BondedAtom::BondedAtom(const BondedAtom& other) noexcept :
-    index(other.index),
-    atom(other.atom->clone()),
-    bonds(other.bonds)
-{}
-
-bool BondedAtom::isSame(const BondedAtom& other) const
+bool BondedAtomBase::isSame(const BondedAtomBase& other) const
 {
     return this == &other;
 }
 
-void BondedAtom::replace(std::unique_ptr<const Atom>&& atom)
+std::unique_ptr<BondedAtomBase> BondedAtomBase::create(
+    const Symbol& symbol, const c_size index, std::vector<Bond>&& bonds)
 {
-    this->atom = std::move(atom);
+    return Radical::isDefined(symbol) ?
+        static_cast<std::unique_ptr<BondedAtomBase>>(std::make_unique<BondedAtom<Radical>>(Radical(symbol), index, std::move(bonds))) :
+        static_cast<std::unique_ptr<BondedAtomBase>>(std::make_unique<BondedAtom<Atom>>(Atom(symbol), index, std::move(bonds)));
+}
+
+std::unique_ptr<BondedAtomBase> BondedAtomBase::create(
+    const Atom& atom, const c_size index, std::vector<Bond>&& bonds)
+{
+    return atom.isRadical() ?
+        static_cast<std::unique_ptr<BondedAtomBase>>(std::make_unique<BondedAtom<Radical>>(static_cast<const Radical&>(atom), index, std::move(bonds))) :
+        static_cast<std::unique_ptr<BondedAtomBase>>(std::make_unique<BondedAtom<Atom>>(atom, index, std::move(bonds)));
+}
+
+std::unique_ptr<BondedAtomBase> BondedAtomBase::mutate(const Atom& atom)
+{
+    return create(atom, index, std::move(bonds));
 }

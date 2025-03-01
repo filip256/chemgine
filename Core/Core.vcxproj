@@ -203,7 +203,6 @@
     <ClCompile Include="Adaptor.cpp" />
     <ClCompile Include="AggregationType.cpp" />
     <ClCompile Include="Atmosphere.cpp" />
-    <ClCompile Include="AtomFactory.cpp" />
     <ClCompile Include="BaseContainerComponent.cpp" />
     <ClCompile Include="BaseLabwareData.cpp" />
     <ClCompile Include="BondedAtom.cpp" />
@@ -300,7 +299,6 @@
     <ClInclude Include="AggregationType.hpp" />
     <ClInclude Include="Amount.hpp" />
     <ClInclude Include="Atmosphere.hpp" />
-    <ClInclude Include="AtomFactory.hpp" />
     <ClInclude Include="BondedAtom.hpp" />
     <ClInclude Include="ContainerBase.hpp" />
     <ClInclude Include="BaseContainerComponent.hpp" />

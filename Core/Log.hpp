@@ -14,15 +14,12 @@
 #include <iostream>
 #include <stdexcept>
 
-#ifdef NDEBUG
-	#define CHG_LOG_ERROR
-	#define CHG_LOG_WARN
-	#define CHG_LOG_INFO
-#else
-	#define CHG_LOG_ERROR
-	#define CHG_LOG_WARN
-	#define CHG_LOG_SUCCESS
-	#define CHG_LOG_INFO
+#define CHG_LOG_ERROR
+#define CHG_LOG_WARN
+#define CHG_LOG_SUCCESS
+#define CHG_LOG_INFO
+
+#ifndef NDEBUG
 	#define CHG_LOG_DEBUG
 	#define CHG_LOG_TRACE
 #endif
@@ -44,7 +41,7 @@ protected:
 		std::string&& sourceName
 	) noexcept;
 
-	void log(const std::string& msg, const LogType type) const;
+	void logFormatted(const std::string& msg, const LogType type) const;
 	template <class... Args>
 	void log(const std::string& format, const LogType type, Args&&... args) const;
 
@@ -101,7 +98,7 @@ void LogBase::log(const std::string& format, const LogType type, Args&&... args)
 		argStorage
 	);
 
-	log(message, type);
+	logFormatted(message, type);
 }
 
 template <class... Args>

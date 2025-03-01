@@ -19,7 +19,7 @@ std::unordered_map<c_size, c_size> StructureRef::matchWith(const MolecularStruct
 {
 	const auto& thisStructure = getStructure();
 	const auto map = structure.mapTo(thisStructure, true);
-	if (map.size() == thisStructure.getNonVirtualAtomCount())
+	if (map.size() == thisStructure.getNonImpliedAtomCount())
 		return map;
 
 	return std::unordered_map<c_size, c_size>();

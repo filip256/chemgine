@@ -79,7 +79,7 @@ public:
 class StructureSubstitutionPerfTest : public StructureOpsPerfTestBase
 {
 private:
-	std::unordered_map<c_size, c_size> atomMap;
+	const std::unordered_map<c_size, c_size> atomMap;
 
 public:
 	StructureSubstitutionPerfTest(

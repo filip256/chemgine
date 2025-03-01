@@ -34,7 +34,7 @@ uint8_t Atom::getPrecedence() const
     return data.getRarity();
 }
 
-std::string Atom::getSymbol() const
+std::string Atom::getSymbolStr() const
 {
     return data.symbol.getString();
 }

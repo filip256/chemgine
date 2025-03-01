@@ -45,7 +45,7 @@ template <typename EstT, typename... Args>
 CountedRef<const EstT> EstimatorRepository::add(Args&&... args)
 {
 	static_assert(std::is_base_of_v<EstimatorBase, EstT>,
-		"EstimatorRepository: EstT must be a EstimatorBase derived type.");
+		"EstimatorRepository: EstT must be an EstimatorBase derived type.");
 
 	const auto id = getFreeId();
 	return static_cast<const EstT&>(add(std::make_unique<EstT>(id, std::forward<Args>(args)...)));

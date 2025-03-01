@@ -18,7 +18,7 @@ LogBase::LogBase(
 	sourceName(std::move(sourceName))
 {}
 
-void LogBase::log(const std::string& msg, const LogType type) const
+void LogBase::logFormatted(const std::string& msg, const LogType type) const
 {
 	// exit folded log sequence
 	if (foldCount != static_cast<size_t>(-1) && not msg.starts_with('\r'))

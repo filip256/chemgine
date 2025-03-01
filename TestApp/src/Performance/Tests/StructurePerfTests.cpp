@@ -110,7 +110,8 @@ StructurePerfTests::StructurePerfTests(
 	registerTest<StructureMaximalAtomMapPerfTest>("maximal_map", std::chrono::seconds(10), "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67", "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67");
 	registerTest<StructureMaximalAtomMapPerfTest>("maximal_map", std::chrono::seconds(10), "CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C", "N(R)C14CC(CC=C1C2=C(OR)C=CC3=C2C(=C[N]3)C4)C(=O)N(R)R");
 
-	registerTest<StructureSubstitutionPerfTest>("substitute", std::chrono::seconds(8), "C(=O)O", "CC(=O)OC(C)C");
+	registerTest<StructureSubstitutionPerfTest>("substitute", std::chrono::seconds(10), "C(=O)O", "CC(=O)OCCCCCC(CCCCCC(CCC)CCC)CCCCCC");
+	registerTest<StructureSubstitutionPerfTest>("substitute", std::chrono::seconds(10), "C1C2C(CC(C=O)CC2CCCC)CCC1CC(=O)OC", "CC(=O)OC(CCC2C1C(C(CC(CC=C)CC)CC2)C=O)C1");
 
 	registerTest<PerfTestSetup<AccessorTestCleanup>>("cleanup");
 	Accessor<>::unsetDataStore();

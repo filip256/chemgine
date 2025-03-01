@@ -441,9 +441,6 @@
     <ClCompile Include="ProcessUtils.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="AtomFactory.cpp">
-      <Filter>Source Files\Moleculars\Components</Filter>
-    </ClCompile>
     <ClCompile Include="Bond.cpp">
       <Filter>Source Files\Moleculars\Components</Filter>
     </ClCompile>
@@ -451,7 +448,7 @@
       <Filter>Source Files\Moleculars\Components</Filter>
     </ClCompile>
     <ClCompile Include="BondedAtom.cpp">
-      <Filter>Source Files\Moleculars\Components</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -896,9 +893,6 @@
     <ClInclude Include="ProcessUtils.hpp">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="BondedAtom.hpp">
-      <Filter>Header Files\Moleculars\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Bond.hpp">
       <Filter>Header Files\Moleculars\Components</Filter>
     </ClInclude>
@@ -908,8 +902,8 @@
     <ClInclude Include="Symbol.hpp">
       <Filter>Header Files\Moleculars\Components</Filter>
     </ClInclude>
-    <ClInclude Include="AtomFactory.hpp">
-      <Filter>Header Files\Moleculars\Components</Filter>
+    <ClInclude Include="BondedAtom.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

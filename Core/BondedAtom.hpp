@@ -1,30 +1,80 @@
 #include "Atom.hpp"
 #include "Bond.hpp"
-#include "SizeTypedefs.hpp"
 
 #include <memory>
 #include <vector>
 
-class BondedAtom
+class BondedAtomBase
 {
-private:
-    static constexpr c_size NullIndex = static_cast<c_size>(-1);
+protected:
+    BondedAtomBase(
+        const c_size index,
+        std::vector<Bond>&& bonds
+    ) noexcept;
 
 public:
-    c_size index = NullIndex;
-    std::unique_ptr<const Atom> atom;
+    c_size index;
     std::vector<Bond> bonds;
 
-    BondedAtom(
-        std::unique_ptr<const Atom>&& atom,
-        const c_size index = NullIndex
-    ) noexcept;
-    BondedAtom(const BondedAtom& other) noexcept;
-    BondedAtom(BondedAtom&& other) noexcept = default;
+    BondedAtomBase(const BondedAtomBase&) = default;
+    BondedAtomBase(BondedAtomBase&&) = default;
 
-    BondedAtom& operator=(BondedAtom&&) = default;
+    BondedAtomBase& operator=(BondedAtomBase&&) = default;
 
-    bool isSame(const BondedAtom& other) const;
+    bool isSame(const BondedAtomBase& other) const;
 
-    void replace(std::unique_ptr<const Atom>&& atom);
+    virtual const Atom& getAtom() const = 0;
+    virtual std::unique_ptr<BondedAtomBase> clone() const = 0;
+
+    std::unique_ptr<BondedAtomBase> mutate(const Atom& atom);
+
+    static std::unique_ptr<BondedAtomBase> create(
+        const Symbol& symbol, const c_size index, std::vector<Bond>&& bonds);
+    static std::unique_ptr<BondedAtomBase> create(
+        const Atom& atom, const c_size index, std::vector<Bond>&& bonds);
 };
+
+
+template<typename AtomT>
+class BondedAtom : public BondedAtomBase
+{
+    static_assert(std::is_base_of_v<Atom, AtomT>,
+        "BondedAtom: AtomT must be an Atom derived type.");
+
+private:
+    const AtomT atom;
+
+public:
+    BondedAtom(
+        const AtomT& atom,
+        const c_size index,
+        std::vector<Bond>&& bonds
+    ) noexcept;
+    BondedAtom(const BondedAtom&) = default;
+    BondedAtom(BondedAtom&&) = default;
+
+    const AtomT& getAtom() const override final;
+    std::unique_ptr<BondedAtomBase> clone() const override final;
+};
+
+template<typename AtomT>
+BondedAtom<AtomT>::BondedAtom(
+    const AtomT& atom,
+    const c_size index,
+    std::vector<Bond>&& bonds
+) noexcept :
+    BondedAtomBase(index, std::move(bonds)),
+    atom(atom)
+{}
+
+template<typename AtomT>
+const AtomT& BondedAtom<AtomT>::getAtom() const
+{
+    return atom;
+}
+
+template<typename AtomT>
+std::unique_ptr<BondedAtomBase> BondedAtom<AtomT>::clone() const
+{
+    return std::make_unique<BondedAtom<AtomT>>(this->atom, index, Utils::copy(this->bonds));
+}

@@ -18,86 +18,21 @@ class MolecularStructure
 {
 private:
     uint16_t impliedHydrogenCount = 0;
-    std::vector<std::unique_ptr<BondedAtom>> atoms;
+    std::vector<std::unique_ptr<BondedAtomBase>> atoms;
 
-    void rPrint(
-        TextBlock& buffer,
-        const size_t x,
-        const size_t y,
-        const BondedAtom& current,
-        std::vector<uint8_t>& visited,
-        const bool printImpliedHydrogens) const;
-
-    static void insertCycleHeads(
-        std::string& smiles,
-        const std::vector<size_t>& insertPositions,
-        const std::map<c_size, uint8_t>& cycleHeads);
-
-    static void addBond(BondedAtom& from, BondedAtom& to, const BondType bondType);
-    static bool addBondChecked(BondedAtom& from, BondedAtom& to, const BondType bondType);
-
+    static void addBond(BondedAtomBase& from, BondedAtomBase& to, const BondType bondType);
+    static bool addBondChecked(BondedAtomBase& from, BondedAtomBase& to, const BondType bondType);
+    
+    BondedAtomBase* addAtom(const Symbol& symbol, BondedAtomBase* prev, const BondType bondType);
     void removeAtom(const c_size idx);
+    void mutateAtom(const c_size idx, const Atom& newAtom);
 
-    void removeUnnecessaryHydrogens();
-
-    /// <summary>
-    /// Returns the number of required hydrogens in order to complete the atom's valence.
-    /// If the valences of the atom aren't respected it returns -1.
-    /// Complexity: O(n_bonds)
-    /// </summary>
-    int8_t countImpliedHydrogens(const BondedAtom& atom) const;
     /// <summary>
     /// Returns the number of required hydrogens in order to complete the molecule.
     /// If the valences of the atoms aren't respected it returns -1.
     /// Complexity: O(n_comps * n_bonds)
     /// </summary>
     int16_t countImpliedHydrogens() const;
-
-    // basic matching
-    static bool areMatching(
-        const BondedAtom& a, const BondedAtom& b,
-        const bool escapeRadicalTypes);
-
-    // finner matching for the compare method
-    static bool areMatching(
-        const Bond& nextA, const Bond& nextB,
-        const bool escapeRadicalTypes);
-
-    static uint8_t getBondSimilarity(const BondedAtom& a, const BondedAtom& b);
-
-    // returns a similarity score for grading maximal mappings, a score of 0 means no matching
-    static uint8_t maximalSimilarity(const Bond& nextA, const Bond& nextB);
-
-    /// <summary>
-    /// Tries to find the pattern structure into the target starting from the given indexes.
-    /// A cycle will match with a smaller cycle, connectivity of the mapping must be checked after this function is called
-    /// If successful it returns true.
-    /// Max rec. depth: size of the longest atom chain in pattern
-    /// </summary>
-    /// <param name="a">: starting atom in target</param>
-    /// <param name="b">: starting atom in pattern</param>
-    /// <param name="visitedB">: vector with the size of the pattern, initilized to false</param>
-    /// <param name="mapping">: empty map that will store all matching nodes at the end of the execution</param>
-    static bool DFSCompare(
-        const BondedAtom& a, const BondedAtom& b,
-        std::vector<uint8_t>& visitedB,
-        std::unordered_map<c_size, c_size>& mapping,
-        bool escapeRadicalTypes
-    );
-
-    static std::pair<std::unordered_map<c_size, c_size>, uint8_t> DFSMaximal(
-        const BondedAtom& a, std::unordered_set<c_size>& mappedA,
-        const BondedAtom& b, std::unordered_set<c_size>& mappedB
-    );
-
-    /// <summary>
-    /// Checks if the connectivity of pattern is preserved in the target.
-    /// Complexity: O(n*m*b)
-    /// </summary>
-    static bool checkConnectivity(
-        const MolecularStructure& target,
-        const MolecularStructure& pattern,
-        const std::unordered_map<c_size, c_size>& mapping);
 
     MolecularStructure(const MolecularStructure& other) noexcept;
 
@@ -106,6 +41,8 @@ public:
 
     MolecularStructure(const std::string& smiles);
     MolecularStructure(MolecularStructure&& structure) = default;
+
+    static std::optional<MolecularStructure> create(const std::string& smiles);
 
     MolecularStructure& operator=(MolecularStructure&&) = default;
 
@@ -130,7 +67,6 @@ public:
 
     /// <summary>
     /// Complexity: O(n)
-    /// #Requires canonicalization
     /// </summary>
     c_size getRadicalAtomsCount() const;
 
@@ -147,14 +83,12 @@ public:
     /// <summary>
     /// Checks if the molecule contains no radical atoms. 
     /// Complexity: O(1)
-    /// #Requires canonicalization
     /// </summary>
     bool isConcrete() const;
 
     /// <summary>
     /// Checks if the molecule contains at least one radical atom. 
     /// Complexity: O(1)
-    /// #Requires canonicalization
     /// </summary>
     bool isGeneric() const;
 
@@ -165,7 +99,7 @@ public:
     bool isOrganic() const;
 
     /// <summary>
-    /// Returns a map representing a histrogram of all the atoms in this structure.
+    /// Returns a map representing a histogram of all the atoms in this structure.
     /// Complexity: O(n)
     /// </summary>
     std::unordered_map<Symbol, c_size> getComponentCountMap() const;
@@ -177,15 +111,22 @@ public:
     bool isEmpty() const;
 
     /// <summary>
-    /// Virtual hydrogens not included.
+    /// Returns the number of non-implied (i.e. hydrogen) atoms.
     /// Complexity: O(1)
     /// </summary>
-    inline c_size getNonVirtualAtomCount() const;
+    c_size getNonImpliedAtomCount() const;
 
     /// <summary>
+    /// Returns the total number of atoms in the molecule.
+    /// Complexity: O(1)
+    /// </summary>
+    c_size getTotalAtomCount() const;
+
+    /// <summary>
+    /// 
     /// Complexity: O(n)
     /// </summary>
-    c_size virtualBondCount() const;
+    c_size getBondCount() const;
 
     bool isCyclic() const;
     bool isConnected() const;
@@ -202,13 +143,6 @@ public:
     bool areAdjacent(const c_size idxA, const c_size idxB) const;
 
     void clear();
-
-    /// <summary>
-    /// Returns the number of bonds connected to a atoms (non-single bonds are taken into account)
-    /// Complexity: O(n)
-    /// </summary>
-    /// <returns></returns>
-    uint8_t getDegreeOf(const BondedAtom& atom) const;
 
     MolecularStructure createCopy() const;
 
@@ -255,23 +189,20 @@ public:
     static MolecularStructure addSubstituents(
         const MolecularStructure& pattern,
         const MolecularStructure& instance,
-        std::unordered_map<c_size, c_size>& ipMap,
-        bool canonicalize = true);
+        const std::unordered_map<c_size, c_size>& ipMap);
 
     /// <summary>
-    /// Returns true iff both structures represent the exact same molecule.
+    /// Returns true if both structures represent the exact same molecule.
     /// Complexity: rather large
     /// </summary>
     bool operator==(const MolecularStructure& other) const;
     /// <summary>
-    /// Returns true iff the structures represent different molecules.
+    /// Returns true if the structures represent different molecules.
     /// Complexity: rather large
     /// </summary>
     bool operator!=(const MolecularStructure& other) const;
     bool operator==(const std::string& other) const;
     bool operator!=(const std::string& other) const;
-
-    static std::optional<MolecularStructure> create(const std::string& smiles);
 };
 
 

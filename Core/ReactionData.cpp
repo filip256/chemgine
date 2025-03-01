@@ -163,21 +163,21 @@ bool ReactionData::mapReactantsToProducts()
 				componentMapping.emplace(std::make_pair(std::make_pair(i, p.first), std::make_pair(maxIdxJ, p.second)));
 		}
 
-		if (reactants[i].getStructure().getNonVirtualAtomCount() != reactantIgnore[i].size())
+		if (reactants[i].getStructure().getNonImpliedAtomCount() != reactantIgnore[i].size())
 			--i;
 	}
 
 	// check if mapping is complete
 	for (size_t i = 0; i < reactants.size(); ++i)
 	{
-		if (reactants[i].getStructure().getNonVirtualAtomCount() != reactantIgnore[i].size())
+		if (reactants[i].getStructure().getNonImpliedAtomCount() != reactantIgnore[i].size())
 		{
 			return false;
 		}
 	}
 	for (size_t i = 0; i < products.size(); ++i)
 	{
-		if (products[i].getStructure().getNonVirtualAtomCount() != productIgnore[i].size())
+		if (products[i].getStructure().getNonImpliedAtomCount() != productIgnore[i].size())
 		{
 			return false;
 		}
@@ -276,7 +276,7 @@ std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<R
 		concreteProducts[i].recountImpliedHydrogens();
 
 		// TODO: add polymer support
-		if (concreteProducts[i].getNonVirtualAtomCount() > 100)
+		if (concreteProducts[i].getNonImpliedAtomCount() > 100)
 			continue;
 
 		result.emplace_back(std::move(concreteProducts[i]));
