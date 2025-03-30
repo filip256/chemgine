@@ -10,6 +10,11 @@ int main()
 
     store.load("./../Data/builtin.cdef");
 
+    //MolecularStructure("C12CCC1C2").getMinimalCycles();
+    MolecularStructure("C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67").getMinimalCycleBasis();
+    Log().info(MolecularStructure("CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C").printInfo());
+
+
     //MolecularStructure c1("NC2C1NCC=12");
     //MolecularStructure c2("NC2C1NCC12");
     MolecularStructure c3("C3=CC27CC18C=CC16C=C%10CCC%12C%11C=C5C=C4C(C=C2C3)C49C5=C(C6C789)C%10%11%12");

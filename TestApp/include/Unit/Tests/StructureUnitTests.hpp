@@ -97,6 +97,25 @@ public:
 };
 
 
+class FundamentalCycleUnitTest : public UnitTest
+{
+private:
+	const size_t expectedCycleCount;
+	const size_t expectedTotalCyclicAtomCount;
+	const MolecularStructure molecule;
+
+public:
+	FundamentalCycleUnitTest(
+		const std::string& name,
+		const std::string& moleculeSmiles,
+		const size_t expectedCycleCount,
+		const size_t expectedTotalCyclicAtomCount
+	) noexcept;
+
+	bool run() override final;
+};
+
+
 class StructureUnitTests : public UnitTestGroup
 {
 private:

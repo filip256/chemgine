@@ -59,6 +59,7 @@ public:
 
     std::string toSMILES() const;
     std::string print() const;
+    std::string printInfo() const;
 
     /// <summary>
     /// Complexity: O(1)
@@ -69,6 +70,11 @@ public:
     /// Complexity: O(n)
     /// </summary>
     c_size getRadicalAtomsCount() const;
+
+    /// <summary>
+    /// Complexity: equal to getBondCount()
+    /// </summary>
+    c_size getCycleCount() const;
 
     /// <summary>
     /// Complexity: O(n)
@@ -123,12 +129,17 @@ public:
     c_size getTotalAtomCount() const;
 
     /// <summary>
-    /// 
+    /// Returns the number of non-implied bonds.
     /// Complexity: O(n)
     /// </summary>
     c_size getBondCount() const;
 
+    /// <summary>
+    /// Checks if the molecule contains at least one cycle.
+    /// Complexity: equal to getBondCount()
+    /// </summary>
     bool isCyclic() const;
+
     bool isConnected() const;
 
     /// <summary>
@@ -190,6 +201,15 @@ public:
         const MolecularStructure& pattern,
         const MolecularStructure& instance,
         const std::unordered_map<c_size, c_size>& ipMap);
+
+    /// <summary>
+    /// Computes and returns the fundamental cycles set of the molecule.
+    /// </summary>
+    std::vector<std::vector<c_size>> getFundamentalCycleBasis() const;
+    /// <summary>
+    /// Computes and returns the set of minimal non-overlapping cycles of the molecule.
+    /// </summary>
+    void getMinimalCycleBasis() const;
 
     /// <summary>
     /// Returns true if both structures represent the exact same molecule.

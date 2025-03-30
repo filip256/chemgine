@@ -1,6 +1,8 @@
 #include "Unit/Tests/StructureUnitTests.hpp"
 #include "MolecularStructure.hpp"
 
+#include <numeric>
+
 StructureSMILESUnitTest::StructureSMILESUnitTest(
 	const std::string& name,
 	std::string&& smiles,
@@ -138,6 +140,46 @@ bool StructureSubstitutionUnitTest::run()
 }
 
 
+FundamentalCycleUnitTest::FundamentalCycleUnitTest(
+	const std::string& name,
+	const std::string& moleculeSmiles,
+	const size_t expectedCycleCount,
+	const size_t expectedTotalCyclicAtomCount
+) noexcept :
+	UnitTest(name + '_' + moleculeSmiles),
+	molecule(moleculeSmiles),
+	expectedCycleCount(expectedCycleCount),
+	expectedTotalCyclicAtomCount(expectedTotalCyclicAtomCount)
+{}
+
+bool FundamentalCycleUnitTest::run()
+{
+	const auto cycles = molecule.getFundamentalCycleBasis();
+	if (cycles.size() != expectedCycleCount)
+	{
+		Log(this).error("Actual cycle count: {0} is different from the expected count: {1}.",
+			cycles.size(), expectedCycleCount);
+		return false;
+	}
+
+	// Counting the total amount of distinct atoms participating in cycles should
+	// be agnostic to canonicalization and the starting node of the algorithm.
+	std::unordered_set<c_size> atomSet;
+	for (const auto& cycle : cycles)
+		for (const auto atom : cycle)
+			atomSet.emplace(atom);
+
+	if (atomSet.size() != expectedTotalCyclicAtomCount)
+	{
+		Log(this).error("Actual total cyclic atom count: {0} is different from the expected atom count: {1}.",
+			atomSet.size(), expectedTotalCyclicAtomCount);
+		return false;
+	}
+
+	return true;
+}
+
+
 StructureUnitTests::StructureUnitTests(
 	std::string&& name,
 	const std::regex& filter,
@@ -235,6 +277,17 @@ StructureUnitTests::StructureUnitTests(
 
 	// TODO: This will result in a valence violation. Some check in substitute would be nice
 	//registerTest<MolecularSubstitutionTest>("substitute", "CC(=C)C", "C1CCC1O", "OC1(CCC1)(=C)");
+
+	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "CC(=O)OC(C)C", 0, 0);
+	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "OC1CCC1", 1, 4);
+	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "C1CCC(C)CC1", 1, 6);
+	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "CCC1CCC(O)CC1", 1, 6);
+	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "CC2CC(CCCC)CC(C1CCCCC1)C2", 2, 12);
+	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C", 4, 16);
+	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67", 7, 19);
+	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "C1CC12CC2", 2, 5);
+	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "C3=CC27CC18C=CC16C=C%10CCC%12C%11C=C5C=C4C(C=C2C3)C49C5=C(C6C789)C%10%11%12", 12, 28);
+	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "C1C2CC3CC23C1", 3, 7);
 
 	registerTest<UnitTestSetup<AccessorTestCleanup>>("cleanup");
 	Accessor<>::unsetDataStore();

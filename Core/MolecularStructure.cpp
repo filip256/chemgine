@@ -1,11 +1,15 @@
-#include <array>
-#include <algorithm>
-#include <queue>
-
 #include "MolecularStructure.hpp"
+
 #include "Parsers.hpp"
 #include "TextBlock.hpp"
+#include "StringTable.hpp"
 #include "Log.hpp"
+
+#include <array>
+#include <algorithm>
+#include <sstream>
+#include <bitset>
+#include <queue>
 
 MolecularStructure::MolecularStructure(const std::string& smiles)
 {
@@ -409,6 +413,11 @@ c_size MolecularStructure::getRadicalAtomsCount() const
     return cnt;
 }
 
+c_size MolecularStructure::getCycleCount() const
+{
+    return static_cast<c_size>(static_cast<int32_t>(getBondCount()) - atoms.size() + 1);
+}
+
 bool MolecularStructure::isConcrete() const
 {
     // Canonicalization ensures radical atoms are always stored at the end.
@@ -506,11 +515,10 @@ bool MolecularStructure::isConnected() const
     if (getBondCount() < atoms.size() - 1)
         return false;
 
-    std::vector<uint8_t> visited;
-    visited.resize(atoms.size(), false);
+    std::vector<uint8_t> visited(atoms.size(), false);
     std::stack<c_size> stack;
 
-    // DFS to check if all nodes are reacheable.
+    // DFS to check if all nodes are reachable.
     c_size c = 0;
     while (true)
     {
@@ -970,6 +978,7 @@ public:
     bool add(const c_size idxA, const c_size idxB);
 
     c_size size() const;
+    bool contains(const c_size idxA, const c_size idxB) const;
 
     using Iterator = decltype(closures)::const_iterator;
     Iterator begin() const;
@@ -1011,6 +1020,11 @@ bool CycleClosureSet::add(const c_size idxA, const c_size idxB)
 c_size CycleClosureSet::size() const
 {
     return static_cast<c_size>(closures.size());
+}
+
+bool CycleClosureSet::contains(const c_size idxA, const c_size idxB) const
+{
+    return closures.contains(CycleClosure(idxA, idxB, 0));
 }
 
 CycleClosureSet::Iterator CycleClosureSet::begin() const
@@ -1242,6 +1256,188 @@ std::string MolecularStructure::toSMILES() const
 // Structure Print
 //
 
+class Edge
+{
+public:
+    const c_size idxA, idxB;
+
+    Edge(
+        const c_size idxA,
+        const c_size idxB
+    ) noexcept :
+        idxA(std::min(idxA, idxB)),
+        idxB(std::max(idxA, idxB))
+    {}
+    Edge(const Edge&) = default;
+
+    bool operator==(const Edge& other) const
+    {
+        return this->idxA == other.idxA && this->idxB == other.idxB;
+    }
+};
+
+template<>
+struct std::hash<Edge>
+{
+    size_t operator() (const Edge& edge) const
+    {
+        static_assert(sizeof(c_size) * 2 <= sizeof(size_t), "Type 'c_size' is too large for perfect Edge hashing.");
+        return (static_cast<size_t>(edge.idxA) << sizeof(c_size)) | edge.idxB;
+    }
+};
+
+std::vector<std::vector<c_size>> MolecularStructure::getFundamentalCycleBasis() const
+{
+    // The cycle count is easy to compute and can be used to stop the algorithm early.
+    const auto cycleCount = getCycleCount();
+    if (cycleCount == 0)
+        return std::vector<std::vector<c_size>>();
+
+    // Paton's Algorithm
+    std::vector<c_size> parents(atoms.size(), npos);
+    constexpr auto rootParent = npos - 1; // Used to differentiate from non-visited.
+    parents.front() = rootParent;
+
+    std::stack<c_size> stack;
+    c_size c = 0;
+
+    for (const auto& b : atoms.front()->bonds)
+    {
+        const auto nextIdx = b.getOther().index;
+        stack.push(nextIdx);
+        parents[nextIdx] = 0; // The parent is the root.
+    }
+
+    std::vector<std::vector<c_size>> cycles;
+    CycleClosureSet cycleClosures;
+
+    // DFS to find the cycle closures.
+    while (stack.size())
+    {
+        c = stack.top();
+        stack.pop();
+
+        for (const auto& b : atoms[c]->bonds)
+        {
+            const auto nextIdx = b.getOther().index;
+
+            // Prev node
+            if (parents[c] == nextIdx)
+                continue;
+
+            // New node
+            if (parents[nextIdx] == npos)
+            {
+                stack.push(nextIdx);
+                parents[nextIdx] = c;
+                continue;
+            }
+
+            // Older cycle
+            if (cycleClosures.contains(c, nextIdx))
+                continue;
+
+            // New cycle
+            std::vector<c_size> cycle;
+
+            // Since we use DFS to traverse we can just intersect root->...->parents[C]->C with parents[N]->N.
+            // The intersection combined with C->N yields the cycle.
+            for (c_size i = parents[c]; i != parents[nextIdx]; i = parents[i])
+                cycle.emplace_back(i);
+
+            cycle.emplace_back(parents[nextIdx]);
+            cycle.emplace_back(nextIdx);
+            cycle.emplace_back(c);
+            cycles.emplace_back(std::move(cycle));
+            if (cycles.size() == cycleCount)
+                return cycles;
+
+            cycleClosures.add(c, nextIdx);
+        }
+    }
+
+    return cycles;
+}
+
+void MolecularStructure::getMinimalCycleBasis() const
+{
+    auto fundamentalCycles = getFundamentalCycleBasis();
+    std::sort(fundamentalCycles.begin(), fundamentalCycles.end(), [](const auto& lhs, const auto& rhs)
+        {
+            return lhs.size() < rhs.size();
+        });
+
+    // Assign an index to each unique edge.
+    std::unordered_map<Edge, c_size> edgeLabels;
+    std::vector<Edge> uniqueEdges;
+    // Skip some initial reallocations, smallest number of edges in a cycle is 3.
+    edgeLabels.reserve(fundamentalCycles.size() * 3);
+    uniqueEdges.reserve(fundamentalCycles.size() * 3);
+
+    static constexpr size_t MAX_CYCLIC_EDGE_COUNT = 64;
+    std::vector<std::bitset<MAX_CYCLIC_EDGE_COUNT>> basis;
+
+    for (const auto& cycle : fundamentalCycles)
+    {
+        std::bitset<MAX_CYCLIC_EDGE_COUNT> cycleEdges;
+
+        const Edge edge(cycle.front(), cycle.back());
+        if (const auto edgeIt = edgeLabels.find(edge); edgeIt != edgeLabels.end())
+            cycleEdges.set(edgeIt->second);
+        else
+        {
+            const auto newLabel = static_cast<c_size>(edgeLabels.size());
+            edgeLabels.emplace(edge, newLabel);
+            uniqueEdges.emplace_back(edge);
+            cycleEdges.set(newLabel);
+        }
+
+        for (size_t i = 0; i < cycle.size() - 1; ++i)
+        {
+            const Edge edge(cycle[i], cycle[i + 1]);
+            if (const auto edgeIt = edgeLabels.find(edge); edgeIt != edgeLabels.end())
+            {
+                cycleEdges.set(edgeIt->second);
+                continue;
+            }
+
+            const auto newLabel = static_cast<c_size>(edgeLabels.size());
+            edgeLabels.emplace(edge, newLabel);
+            uniqueEdges.emplace_back(edge);
+            cycleEdges.set(newLabel);
+        }
+
+        for (const auto& b : basis)
+        {
+            const auto temp = cycleEdges ^ b;
+            if (temp.count() < cycleEdges.count())
+                cycleEdges = temp;
+
+            if (cycleEdges.none())
+                break;
+        }
+
+        if (cycleEdges.none())
+            continue;
+
+        basis.emplace_back(cycleEdges);
+    }
+
+    for (const auto& c : basis)
+    {
+        for (size_t i = 0; i < c.size(); ++i)
+        {
+            if (c.test(i))
+            {
+                const auto& edge = uniqueEdges[i];
+                std::cout << edge.idxA << '-' << edge.idxB << ' ';
+            }
+        }
+        std::cout << '\n';
+    }
+}
+
+
 void rPrint(
     TextBlock& buffer,
     const size_t x,
@@ -1407,4 +1603,56 @@ std::string MolecularStructure::print() const
 
     buffer.trim();
     return buffer.toString();
+}
+
+std::string MolecularStructure::printInfo() const
+{
+    std::stringstream info;
+    const auto atomCount = atoms.size();
+    
+    info << "SMILES: " << toSMILES() << "\n";
+    StringTable adjacencyTable({ "Id", "Atom", "Bonds" }, false);
+
+    size_t maxSymbolSize = 0;
+    for (size_t i = 0; i < atomCount; ++i)
+    {
+        const auto& atom = *atoms[i];
+        std::stringstream bondStr;
+        if (atom.bonds.size() > 1)
+        {
+            for (auto b = atom.bonds.begin(); b != atom.bonds.end() - 1; ++b)
+                bondStr << b->getSMILES() << std::to_string(b->getOther().index) << ", ";
+        }
+        bondStr << atom.bonds.back().getSMILES() << std::to_string(atom.bonds.back().getOther().index);
+
+        maxSymbolSize = std::max(maxSymbolSize, atom.getAtom().getSymbolStr().size());
+        adjacencyTable.addEntry({ std::to_string(i), atom.getAtom().getSymbolStr(), bondStr.str() });
+    }
+
+    info << "Stats:\n";
+    const auto radicalAtomCount = getRadicalAtomsCount();
+    info << " - Atom count:         " << getTotalAtomCount()
+        << " (concrete: " << atomCount - radicalAtomCount
+        << ", radical: " << radicalAtomCount
+        << ", implied: " << impliedHydrogenCount << ")\n";
+
+    const auto atomHistogram = getComponentCountMap();
+    for (const auto& [symbol, count] : atomHistogram)
+        info << "      " << std::format("{:>{}}", symbol.getString(), maxSymbolSize) << " : " << count << '\n';
+
+    const auto bondCount = getBondCount();
+    info << " - Bond count:         " << bondCount + impliedHydrogenCount
+        << " (concrete: " << bondCount
+        << ", implied: " << impliedHydrogenCount << ")\n";
+    info << " - Bond sparsity:      " << std::format("{:.1f}", (1.0 - bondCount / ((atomCount * (atomCount - 1)) / 2.0)) * 100.0) << "%\n";
+
+    info << " - Molar mass:         " << getMolarMass().toString() << '\n';
+    info << " - Cycle count:        " << getCycleCount() << '\n';
+    info << " - Is organic:         " << (isOrganic() ? "Yes" : "No") << '\n';
+    info << " - Degrees of freedom: " << std::to_string(getDegreesOfFreedom()) << '\n';
+
+    info << "Adjacency table:\n";
+    adjacencyTable.dump(info);
+    
+    return info.str();
 }

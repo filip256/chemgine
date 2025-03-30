@@ -12,6 +12,9 @@ namespace Utils
 
 	template<typename T>
 	T roundTo(const T x, const uint8_t decimals);
+
+	template<typename T>
+	uint8_t getDigitCount(const T x);
 }
 
 template<typename T>
@@ -33,4 +36,14 @@ T Utils::roundTo(const T x, const uint8_t decimals)
 {
 	const T scale = std::pow(10.0, decimals);
 	return std::round(x * scale) / scale;
+}
+
+template<typename T>
+uint8_t Utils::getDigitCount(const T x)
+{
+	static_assert(std::is_integral_v<T>, "T must be an integral type");
+	return
+		x > 0 ? static_cast<uint8_t>(std::log10(x)) + 1 :
+		x < 0 ? static_cast<uint8_t>(std::log10(-x)) + 1 :
+		1; // log10(0) is undefined
 }
