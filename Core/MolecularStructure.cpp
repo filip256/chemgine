@@ -10,6 +10,7 @@
 #include <sstream>
 #include <bitset>
 #include <queue>
+#include <boost/dynamic_bitset.hpp>
 
 MolecularStructure::MolecularStructure(const std::string& smiles)
 {
@@ -1380,6 +1381,8 @@ void MolecularStructure::getMinimalCycleBasis() const
     for (const auto& cycle : fundamentalCycles)
     {
         std::bitset<MAX_CYCLIC_EDGE_COUNT> cycleEdges;
+        boost::dynamic_bitset<uint8_t> B4(16, 84);
+        std::cout << B4;
 
         const Edge edge(cycle.front(), cycle.back());
         if (const auto edgeIt = edgeLabels.find(edge); edgeIt != edgeLabels.end())
