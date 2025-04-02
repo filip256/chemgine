@@ -131,23 +131,26 @@ void MolecularStructure::canonicalize()
     }
 }
 
-// Returns the number of bonds connected to an atom (non-single bonds are taken into account)
-uint8_t getDegreeOf(const BondedAtomBase& atom)
+namespace
 {
-    uint8_t cnt = 0;
-    for (const auto& b : atom.bonds)
-        cnt += b.getValence();
-    return cnt;
-}
+    // Returns the number of bonds connected to an atom (non-single bonds are taken into account)
+    uint8_t getDegreeOf(const BondedAtomBase& atom)
+    {
+        uint8_t cnt = 0;
+        for (const auto& b : atom.bonds)
+            cnt += b.getValence();
+        return cnt;
+    }
 
-/// Returns the number of required hydrogens in order to complete the atom's valence.
-/// If the valences of the atom aren't respected it returns -1.
-int8_t getImpliedHydrogenCount(const BondedAtomBase& atom)
-{
-    const auto d = getDegreeOf(atom);
-    const auto v = atom.getAtom().getData().getFittingValence(d);
+    /// Returns the number of required hydrogens in order to complete the atom's valence.
+    /// If the valences of the atom aren't respected it returns -1.
+    int8_t getImpliedHydrogenCount(const BondedAtomBase& atom)
+    {
+        const auto d = getDegreeOf(atom);
+        const auto v = atom.getAtom().getData().getFittingValence(d);
 
-    return v == AtomData::NullValence ? -1 : v - d;
+        return v == AtomData::NullValence ? -1 : v - d;
+    }
 }
 
 int16_t MolecularStructure::countImpliedHydrogens() const
@@ -554,108 +557,111 @@ bool MolecularStructure::areAdjacent(const c_size idxA, const c_size idxB) const
     return std::any_of(atomA.bonds.begin(), atomA.bonds.end(), [&](const auto& b) { return b.getOther().isSame(atomA); });
 }
 
-bool areMatching(
-    const BondedAtomBase& a, const BondedAtomBase& b,
-    const bool escapeRadicalTypes)
+namespace
 {
-    if (a.bonds.size() != b.bonds.size())
-        return false;
-
-    return escapeRadicalTypes ?
-        b.getAtom().matches(a.getAtom()) :
-        b.getAtom().equals(a.getAtom());
-}
-
-bool areMatching(
-    const Bond& nextA, const Bond& nextB,
-    const bool escapeRadicalTypes)
-{
-    if (nextA.getType() != nextB.getType())
-        return false;
-
-    const auto& otherA = nextA.getOther();
-    const auto& otherB = nextB.getOther();
-
-    // Escape radical types
-    if (escapeRadicalTypes == true && otherB.getAtom().isRadical())
-        return otherB.getAtom().matches(otherA.getAtom());
-
-    if (not areMatching(otherA, otherB, escapeRadicalTypes))
-        return false;
-
-    // Test to see if both have the same types of bonds
-    std::array<int8_t, BondType::BOND_TYPE_COUNT> counts{ 0 };
-    for (c_size i = 0; i < otherA.bonds.size(); ++i)
+    bool areMatching(
+        const BondedAtomBase& a, const BondedAtomBase& b,
+        const bool escapeRadicalTypes)
     {
-        ++counts[otherA.bonds[i].getType()];
-        --counts[otherB.bonds[i].getType()];
+        if (a.bonds.size() != b.bonds.size())
+            return false;
+
+        return escapeRadicalTypes ?
+            b.getAtom().matches(a.getAtom()) :
+            b.getAtom().equals(a.getAtom());
     }
 
-    return std::none_of(counts.begin(), counts.end(), [](const auto& c) { return c != 0; });
-}
-
-/// <summary>
-/// Tries to find the pattern structure into the target starting from the given indexes.
-/// A cycle will match with a smaller cycle, connectivity of the mapping must be checked after this function is called
-/// If successful it returns true.
-/// Max rec. depth: size of the longest atom chain in pattern
-/// </summary>
-/// <param name="a">: starting atom in target</param>
-/// <param name="b">: starting atom in pattern</param>
-/// <param name="visitedB">: vector with the size of the pattern, initialized to false</param>
-/// <param name="mapping">: empty map that will store all matching nodes at the end of the execution</param>
-bool DFSCompare(
-    const BondedAtomBase& a, const BondedAtomBase& b,
-    std::vector<uint8_t>& visitedB,
-    std::unordered_map<c_size, c_size>& mapping,
-    bool escapeRadicalTypes)
-{
-    mapping.emplace(a.index, b.index);
-    visitedB[b.index] = true;
-
-    for (const auto& bondB : b.bonds)
+    bool areMatching(
+        const Bond& nextA, const Bond& nextB,
+        const bool escapeRadicalTypes)
     {
-        if (visitedB[bondB.getOther().index])
-            continue;
+        if (nextA.getType() != nextB.getType())
+            return false;
 
-        auto matchFound = false;
-        for (const auto& bondA : a.bonds)
+        const auto& otherA = nextA.getOther();
+        const auto& otherB = nextB.getOther();
+
+        // Escape radical types
+        if (escapeRadicalTypes == true && otherB.getAtom().isRadical())
+            return otherB.getAtom().matches(otherA.getAtom());
+
+        if (not areMatching(otherA, otherB, escapeRadicalTypes))
+            return false;
+
+        // Test to see if both have the same types of bonds
+        std::array<int8_t, BondType::BOND_TYPE_COUNT> counts{ 0 };
+        for (c_size i = 0; i < otherA.bonds.size(); ++i)
         {
-            if (mapping.contains(bondA.getOther().index) || 
-                not areMatching(bondA, bondB, escapeRadicalTypes))
-                continue;
-
-            if (DFSCompare(bondA.getOther(), bondB.getOther(), visitedB, mapping, escapeRadicalTypes))
-            {
-                matchFound = true;
-                break;
-            }
-            
-            // Revert wrong branch
-            visitedB[bondB.getOther().index] = false;
-            mapping.erase(bondA.getOther().index);
+            ++counts[otherA.bonds[i].getType()];
+            --counts[otherB.bonds[i].getType()];
         }
 
-        if (matchFound == false)
-            return false;
+        return std::none_of(counts.begin(), counts.end(), [](const auto& c) { return c != 0; });
     }
 
-    return true;
-}
-
-bool checkConnectivity(
-    const MolecularStructure& target,
-    const MolecularStructure& pattern,
-    const std::unordered_map<c_size, c_size>& mapping)
-{
-    // TODO: This checks if all the edges in the mapping are valid but it's very inefficient and it likely hides a bug.
-    for (auto const& m : mapping)
+    /// <summary>
+    /// Tries to find the pattern structure into the target starting from the given indexes.
+    /// A cycle will match with a smaller cycle, connectivity of the mapping must be checked after this function is called
+    /// If successful it returns true.
+    /// Max rec. depth: size of the longest atom chain in pattern
+    /// </summary>
+    /// <param name="a">: starting atom in target</param>
+    /// <param name="b">: starting atom in pattern</param>
+    /// <param name="visitedB">: vector with the size of the pattern, initialized to false</param>
+    /// <param name="mapping">: empty map that will store all matching nodes at the end of the execution</param>
+    bool DFSCompare(
+        const BondedAtomBase& a, const BondedAtomBase& b,
+        std::vector<uint8_t>& visitedB,
+        std::unordered_map<c_size, c_size>& mapping,
+        bool escapeRadicalTypes)
     {
-        for (auto const& n : mapping)
-            if (pattern.areAdjacent(m.second, n.second) && not target.areAdjacent(m.first, n.first))
+        mapping.emplace(a.index, b.index);
+        visitedB[b.index] = true;
+
+        for (const auto& bondB : b.bonds)
+        {
+            if (visitedB[bondB.getOther().index])
+                continue;
+
+            auto matchFound = false;
+            for (const auto& bondA : a.bonds)
+            {
+                if (mapping.contains(bondA.getOther().index) ||
+                    not areMatching(bondA, bondB, escapeRadicalTypes))
+                    continue;
+
+                if (DFSCompare(bondA.getOther(), bondB.getOther(), visitedB, mapping, escapeRadicalTypes))
+                {
+                    matchFound = true;
+                    break;
+                }
+
+                // Revert wrong branch
+                visitedB[bondB.getOther().index] = false;
+                mapping.erase(bondA.getOther().index);
+            }
+
+            if (matchFound == false)
                 return false;
+        }
+
+        return true;
     }
-    return true;
+
+    bool checkConnectivity(
+        const MolecularStructure& target,
+        const MolecularStructure& pattern,
+        const std::unordered_map<c_size, c_size>& mapping)
+    {
+        // TODO: This checks if all the edges in the mapping are valid but it's very inefficient and it likely hides a bug.
+        for (auto const& m : mapping)
+        {
+            for (auto const& n : mapping)
+                if (pattern.areAdjacent(m.second, n.second) && not target.areAdjacent(m.first, n.first))
+                    return false;
+        }
+        return true;
+    }
 }
 
 std::unordered_map<c_size, c_size> MolecularStructure::mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const
@@ -717,82 +723,85 @@ bool MolecularStructure::operator!=(const std::string& other) const
 // Maximal Mapping
 //
 
-uint8_t getBondSimilarity(const BondedAtomBase& a, const BondedAtomBase& b)
+namespace
 {
-    uint8_t score = 255;
-    std::array<int8_t, BondType::BOND_TYPE_COUNT> counts{ 0 };
-
-    for (const auto& bondA : a.bonds)
-        ++counts[bondA.getType()];
-    for (const auto& bondB : b.bonds)
-        --counts[bondB.getType()];
-
-    const uint8_t scorePerBond = a.bonds.size() / 255;
-    for (const auto& c : counts)
-        score -= c * scorePerBond;
-
-    return score;
-}
-
-uint8_t maximalSimilarity(const Bond& nextA, const Bond& nextB)
-{
-    if (nextA.getType() != nextB.getType())
-        return 0;
-
-    if (not nextB.getOther().getAtom().equals(nextA.getOther().getAtom()))
-        return 0;
-
-    return getBondSimilarity(nextA.getOther(), nextB.getOther());
-}
-
-std::pair<std::unordered_map<c_size, c_size>, uint8_t> DFSMaximal(
-    const BondedAtomBase& a, std::unordered_set<c_size>& mappedA,
-    const BondedAtomBase& b, std::unordered_set<c_size>& mappedB)
-{
-    std::pair<std::unordered_map<c_size, c_size>, uint8_t> newMap;
-    newMap.first.emplace(a.index, b.index);
-    mappedA.emplace(a.index);
-    mappedB.emplace(b.index);
-
-    for (const auto& bondB : b.bonds)
+    uint8_t getBondSimilarity(const BondedAtomBase& a, const BondedAtomBase& b)
     {
-        if (mappedB.contains(bondB.getOther().index))
-            continue;
+        uint8_t score = 255;
+        std::array<int8_t, BondType::BOND_TYPE_COUNT> counts{ 0 };
 
-        // Only the largest mapping is added into the final but states need to be copied
-        std::pair<std::unordered_map<c_size, c_size>, uint8_t> maxMapping;
-        std::unordered_set<c_size> maxMappedA;
-        std::unordered_set<c_size> maxMappedB;
         for (const auto& bondA : a.bonds)
-        {
-            if (mappedA.contains(bondA.getOther().index))
-                continue;
+            ++counts[bondA.getType()];
+        for (const auto& bondB : b.bonds)
+            --counts[bondB.getType()];
 
-            const auto score = maximalSimilarity(bondA, bondB);
-            if (score == 0)
-                continue;
+        const uint8_t scorePerBond = a.bonds.size() / 255;
+        for (const auto& c : counts)
+            score -= c * scorePerBond;
 
-            // Reversing bad branches isn't possible here, so copies are needed
-            auto mappedACopy = mappedA;
-            auto mappedBCopy = mappedB;
-            auto subMap = DFSMaximal(bondA.getOther(), mappedACopy, bondB.getOther(), mappedBCopy);
-
-            if (subMap.first.size() > maxMapping.first.size() ||
-                (subMap.first.size() == maxMapping.first.size() && score > maxMapping.second))
-            {
-                maxMapping = std::move(subMap);
-                maxMappedA = std::move(mappedACopy);
-                maxMappedB = std::move(mappedBCopy);
-            }
-        }
-
-        newMap.first.merge(std::move(maxMapping.first));
-        newMap.second = maxMapping.second;
-        mappedA.merge(std::move(maxMappedA));
-        mappedB.merge(std::move(maxMappedB));
+        return score;
     }
 
-    return newMap;
+    uint8_t maximalSimilarity(const Bond& nextA, const Bond& nextB)
+    {
+        if (nextA.getType() != nextB.getType())
+            return 0;
+
+        if (not nextB.getOther().getAtom().equals(nextA.getOther().getAtom()))
+            return 0;
+
+        return getBondSimilarity(nextA.getOther(), nextB.getOther());
+    }
+
+    std::pair<std::unordered_map<c_size, c_size>, uint8_t> DFSMaximal(
+        const BondedAtomBase& a, std::unordered_set<c_size>& mappedA,
+        const BondedAtomBase& b, std::unordered_set<c_size>& mappedB)
+    {
+        std::pair<std::unordered_map<c_size, c_size>, uint8_t> newMap;
+        newMap.first.emplace(a.index, b.index);
+        mappedA.emplace(a.index);
+        mappedB.emplace(b.index);
+
+        for (const auto& bondB : b.bonds)
+        {
+            if (mappedB.contains(bondB.getOther().index))
+                continue;
+
+            // Only the largest mapping is added into the final but states need to be copied
+            std::pair<std::unordered_map<c_size, c_size>, uint8_t> maxMapping;
+            std::unordered_set<c_size> maxMappedA;
+            std::unordered_set<c_size> maxMappedB;
+            for (const auto& bondA : a.bonds)
+            {
+                if (mappedA.contains(bondA.getOther().index))
+                    continue;
+
+                const auto score = maximalSimilarity(bondA, bondB);
+                if (score == 0)
+                    continue;
+
+                // Reversing bad branches isn't possible here, so copies are needed
+                auto mappedACopy = mappedA;
+                auto mappedBCopy = mappedB;
+                auto subMap = DFSMaximal(bondA.getOther(), mappedACopy, bondB.getOther(), mappedBCopy);
+
+                if (subMap.first.size() > maxMapping.first.size() ||
+                    (subMap.first.size() == maxMapping.first.size() && score > maxMapping.second))
+                {
+                    maxMapping = std::move(subMap);
+                    maxMappedA = std::move(mappedACopy);
+                    maxMappedB = std::move(mappedBCopy);
+                }
+            }
+
+            newMap.first.merge(std::move(maxMapping.first));
+            newMap.second = maxMapping.second;
+            mappedA.merge(std::move(maxMappedA));
+            mappedB.merge(std::move(maxMappedB));
+        }
+
+        return newMap;
+    }
 }
 
 std::pair<std::unordered_map<c_size, c_size>, uint8_t> MolecularStructure::maximalMapTo(
@@ -943,228 +952,230 @@ MolecularStructure MolecularStructure::addSubstituents(
     return result;
 }
 
-//
-// CycleClosureSet
-//
-
-class CycleClosureSet
+namespace
 {
-    class CycleClosure
+    class CycleClosureSet
     {
-    public:
-        const c_size idxA, idxB, tag;
+        class CycleClosure
+        {
+        public:
+            const c_size idxA, idxB, tag;
 
-        CycleClosure(
-            const c_size idxA,
-            const c_size idxB,
-            const c_size tag
-        ) noexcept;
-        CycleClosure(const CycleClosure&) = default;
+            CycleClosure(
+                const c_size idxA,
+                const c_size idxB,
+                const c_size tag
+            ) noexcept;
+            CycleClosure(const CycleClosure&) = default;
+        };
+
+        class ClosureComparator
+        {
+        public:
+            bool operator()(const CycleClosure& lhs, const CycleClosure& rhs) const;
+        };
+
+    private:
+        std::set<CycleClosure, ClosureComparator> closures;
+
+    public:
+        CycleClosureSet() = default;
+        CycleClosureSet(const CycleClosureSet&) = delete;
+        CycleClosureSet(CycleClosureSet&&) = default;
+
+        bool add(const c_size idxA, const c_size idxB);
+
+        c_size size() const;
+        bool contains(const c_size idxA, const c_size idxB) const;
+
+        using Iterator = decltype(closures)::const_iterator;
+        Iterator begin() const;
+        Iterator end() const;
     };
 
-    class ClosureComparator
+    CycleClosureSet::CycleClosure::CycleClosure(
+        const c_size idxA,
+        const c_size idxB,
+        const c_size tag
+    ) noexcept :
+        idxA(idxA),
+        idxB(idxB),
+        tag(tag)
+    {}
+
+    bool CycleClosureSet::ClosureComparator::operator()(const CycleClosure& lhs, const CycleClosure& rhs) const
     {
-    public:
-        bool operator()(const CycleClosure& lhs, const CycleClosure& rhs) const;
-    };
+        // Order the indexes because (x, y) should be equivalent to (y, x).
+        const auto [lhsMin, lhsMax] = lhs.idxA < lhs.idxB ?
+            std::pair(lhs.idxA, lhs.idxB) :
+            std::pair(lhs.idxB, lhs.idxA);
+        const auto [rhsMin, rhsMax] = rhs.idxA < rhs.idxB ?
+            std::pair(rhs.idxA, rhs.idxB) :
+            std::pair(rhs.idxB, rhs.idxA);
 
-private:
-    std::set<CycleClosure, ClosureComparator> closures;
+        // Sort in decreasing order of the first index, then second index.
+        return
+            lhsMin > rhsMin ? true :
+            lhsMin < rhsMin ? false :
+            lhsMax > rhsMax;
+    }
 
-public:
-    CycleClosureSet() = default;
-    CycleClosureSet(const CycleClosureSet&) = delete;
-    CycleClosureSet(CycleClosureSet&&) = default;
+    bool CycleClosureSet::add(const c_size idxA, const c_size idxB)
+    {
+        return closures.emplace(idxA, idxB, closures.size() + 1).second;
+    }
 
-    bool add(const c_size idxA, const c_size idxB);
+    c_size CycleClosureSet::size() const
+    {
+        return static_cast<c_size>(closures.size());
+    }
 
-    c_size size() const;
-    bool contains(const c_size idxA, const c_size idxB) const;
+    bool CycleClosureSet::contains(const c_size idxA, const c_size idxB) const
+    {
+        return closures.contains(CycleClosure(idxA, idxB, 0));
+    }
 
-    using Iterator = decltype(closures)::const_iterator;
-    Iterator begin() const;
-    Iterator end() const;
-};
+    CycleClosureSet::Iterator CycleClosureSet::begin() const
+    {
+        return closures.begin();
+    }
 
-CycleClosureSet::CycleClosure::CycleClosure(
-    const c_size idxA,
-    const c_size idxB,
-    const c_size tag
-) noexcept :
-    idxA(idxA),
-    idxB(idxB),
-    tag(tag)
-{}
-
-bool CycleClosureSet::ClosureComparator::operator()(const CycleClosure& lhs, const CycleClosure& rhs) const
-{
-    // Order the indexes because (x, y) should be equivalent to (y, x).
-    const auto [lhsMin, lhsMax] = lhs.idxA < lhs.idxB ?
-        std::pair(lhs.idxA, lhs.idxB) :
-        std::pair(lhs.idxB, lhs.idxA);
-    const auto [rhsMin, rhsMax] = rhs.idxA < rhs.idxB ?
-        std::pair(rhs.idxA, rhs.idxB) :
-        std::pair(rhs.idxB, rhs.idxA);
-
-    // Sort in decreasing order of the first index, then second index.
-    return
-        lhsMin > rhsMin ? true :
-        lhsMin < rhsMin ? false :
-        lhsMax > rhsMax;
-}
-
-bool CycleClosureSet::add(const c_size idxA, const c_size idxB)
-{
-    return closures.emplace(idxA, idxB, closures.size() + 1).second;
-}
-
-c_size CycleClosureSet::size() const
-{
-    return static_cast<c_size>(closures.size());
-}
-
-bool CycleClosureSet::contains(const c_size idxA, const c_size idxB) const
-{
-    return closures.contains(CycleClosure(idxA, idxB, 0));
-}
-
-CycleClosureSet::Iterator CycleClosureSet::begin() const
-{
-    return closures.begin();
-}
-
-CycleClosureSet::Iterator CycleClosureSet::end() const
-{
-    return closures.end();
+    CycleClosureSet::Iterator CycleClosureSet::end() const
+    {
+        return closures.end();
+    }
 }
 
 //
 // Serialize to SMILES
 //
 
-std::string getCycleTagString(const c_size tag)
+namespace
 {
-    return tag < 10 ?
-        std::to_string(tag) :
-        '%' + std::to_string(tag);
-}
-
-void rToSMILES(
-    const BondedAtomBase* current, const BondedAtomBase* prev,
-    std::vector<size_t>& insertPositions, CycleClosureSet& cycleClosures,
-    std::string& smiles
-);
-
-void inline rNextToSMILES(
-    const BondedAtomBase* current, const Bond& bondToNext,
-    CycleClosureSet& cycleClosures, std::vector<size_t>& insertPositions,
-    std::string& smiles)
-{
-    const auto next = &bondToNext.getOther();
-    if (insertPositions[next->index] != std::string::npos)
+    std::string getCycleTagString(const c_size tag)
     {
-        if (cycleClosures.add(insertPositions[next->index], insertPositions[current->index]))
-            smiles += bondToNext.getSMILES() + getCycleTagString(cycleClosures.size());
-        return;
+        return tag < 10 ?
+            std::to_string(tag) :
+            '%' + std::to_string(tag);
     }
 
-    smiles += '(' + bondToNext.getSMILES();
-    rToSMILES(next, current, insertPositions, cycleClosures, smiles);
-    smiles += ')';
-}
+    void rToSMILES(
+        const BondedAtomBase* current, const BondedAtomBase* prev,
+        std::vector<size_t>& insertPositions, CycleClosureSet& cycleClosures,
+        std::string& smiles
+    );
 
-bool inline lastToSMILES(
-    const BondedAtomBase* current, const Bond& bondToNext,
-    CycleClosureSet& cycleClosures, std::vector<size_t>& insertPositions,
-    std::string& smiles)
-{
-    const auto next = &bondToNext.getOther();
-    if (insertPositions[next->index] != std::string::npos)
+    void inline rNextToSMILES(
+        const BondedAtomBase* current, const Bond& bondToNext,
+        CycleClosureSet& cycleClosures, std::vector<size_t>& insertPositions,
+        std::string& smiles)
     {
-        if (cycleClosures.add(insertPositions[next->index], insertPositions[current->index]))
-            smiles += bondToNext.getSMILES() + getCycleTagString(cycleClosures.size());
-        return false;
-    }
-
-    smiles += bondToNext.getSMILES();
-    return true;
-}
-
-void rToSMILES(
-    const BondedAtomBase* current, const BondedAtomBase* prev,
-    std::vector<size_t>& insertPositions, CycleClosureSet& cycleClosures,
-    std::string& smiles)
-{
-    while (true)
-    {
-        smiles += current->getAtom().getSMILES();
-        insertPositions[current->index] = smiles.size();
-
-        const auto neighbourCount = current->bonds.size();
-
-        // ...-P-C
-        //       ^
-        if (neighbourCount == 1)
-            return;
-
-        // ...-P-C-N-...
-        //       ^
-        if (neighbourCount == 2)
+        const auto next = &bondToNext.getOther();
+        if (insertPositions[next->index] != std::string::npos)
         {
-            const auto& bondToNext = &current->bonds.front().getOther() == prev ?
-                current->bonds.back() :
-                current->bonds.front();
+            if (cycleClosures.add(insertPositions[next->index], insertPositions[current->index]))
+                smiles += bondToNext.getSMILES() + getCycleTagString(cycleClosures.size());
+            return;
+        }
 
-            if (not lastToSMILES(current, bondToNext, cycleClosures, insertPositions, smiles))
+        smiles += '(' + bondToNext.getSMILES();
+        rToSMILES(next, current, insertPositions, cycleClosures, smiles);
+        smiles += ')';
+    }
+
+    bool inline lastToSMILES(
+        const BondedAtomBase* current, const Bond& bondToNext,
+        CycleClosureSet& cycleClosures, std::vector<size_t>& insertPositions,
+        std::string& smiles)
+    {
+        const auto next = &bondToNext.getOther();
+        if (insertPositions[next->index] != std::string::npos)
+        {
+            if (cycleClosures.add(insertPositions[next->index], insertPositions[current->index]))
+                smiles += bondToNext.getSMILES() + getCycleTagString(cycleClosures.size());
+            return false;
+        }
+
+        smiles += bondToNext.getSMILES();
+        return true;
+    }
+
+    void rToSMILES(
+        const BondedAtomBase* current, const BondedAtomBase* prev,
+        std::vector<size_t>& insertPositions, CycleClosureSet& cycleClosures,
+        std::string& smiles)
+    {
+        while (true)
+        {
+            smiles += current->getAtom().getSMILES();
+            insertPositions[current->index] = smiles.size();
+
+            const auto neighbourCount = current->bonds.size();
+
+            // ...-P-C
+            //       ^
+            if (neighbourCount == 1)
+                return;
+
+            // ...-P-C-N-...
+            //       ^
+            if (neighbourCount == 2)
+            {
+                const auto& bondToNext = &current->bonds.front().getOther() == prev ?
+                    current->bonds.back() :
+                    current->bonds.front();
+
+                if (not lastToSMILES(current, bondToNext, cycleClosures, insertPositions, smiles))
+                    return;
+
+                // Advance to the next atom instead of making a new recursive call.
+                prev = current;
+                current = &bondToNext.getOther();
+                continue;
+            }
+
+            //   ...-A A-...
+            //       |/
+            // ...-P-C-N-...
+            //       ^
+            for (c_size i = 0; i < neighbourCount - 2; ++i)
+            {
+                const auto& bondToNext = current->bonds[i];
+                if (&bondToNext.getOther() != prev)
+                    rNextToSMILES(current, bondToNext, cycleClosures, insertPositions, smiles);
+            }
+
+            //   ...-N N-...
+            //       |/
+            // ...-P-C-P-...
+            //       ^
+
+            // The last neighbour has to be printed without '()' because it's the main branch.
+            // Since the last neighbour could be the previous atom, the second-to-last neighbour must also be checked.
+            const auto& secondToLastBond = current->bonds[neighbourCount - 2];
+            const auto& lastBond = current->bonds.back();
+
+            if (&lastBond.getOther() != prev)
+            {
+                if (&secondToLastBond.getOther() != prev)
+                    rNextToSMILES(current, secondToLastBond, cycleClosures, insertPositions, smiles);
+
+                if (not lastToSMILES(current, lastBond, cycleClosures, insertPositions, smiles))
+                    return;
+
+                // Advance to the next atom instead of making a new recursive call.
+                prev = current;
+                current = &lastBond.getOther();
+                continue;
+            }
+
+            if (not lastToSMILES(current, secondToLastBond, cycleClosures, insertPositions, smiles))
                 return;
 
             // Advance to the next atom instead of making a new recursive call.
             prev = current;
-            current = &bondToNext.getOther();
-            continue;
+            current = &secondToLastBond.getOther();
         }
-
-        //   ...-A A-...
-        //       |/
-        // ...-P-C-N-...
-        //       ^
-        for (c_size i = 0; i < neighbourCount - 2; ++i)
-        {
-            const auto& bondToNext = current->bonds[i];
-            if (&bondToNext.getOther() != prev)
-                rNextToSMILES(current, bondToNext, cycleClosures, insertPositions, smiles);
-        }
-
-        //   ...-N N-...
-        //       |/
-        // ...-P-C-P-...
-        //       ^
-
-        // The last neighbour has to be printed without '()' because it's the main branch.
-        // Since the last neighbour could be the previous atom, the second-to-last neighbour must also be checked.
-        const auto& secondToLastBond = current->bonds[neighbourCount - 2];
-        const auto& lastBond = current->bonds.back();
-
-        if (&lastBond.getOther() != prev)
-        {
-            if (&secondToLastBond.getOther() != prev)
-                rNextToSMILES(current, secondToLastBond, cycleClosures, insertPositions, smiles);
-
-            if (not lastToSMILES(current, lastBond, cycleClosures, insertPositions, smiles))
-                return;
-
-            // Advance to the next atom instead of making a new recursive call.
-            prev = current;
-            current = &lastBond.getOther();
-            continue;
-        }
-
-        if (not lastToSMILES(current, secondToLastBond, cycleClosures, insertPositions, smiles))
-            return;
-
-        // Advance to the next atom instead of making a new recursive call.
-        prev = current;
-        current = &secondToLastBond.getOther();
     }
 }
 
@@ -1257,25 +1268,48 @@ std::string MolecularStructure::toSMILES() const
 // Structure Print
 //
 
-class Edge
+namespace
 {
-public:
-    const c_size idxA, idxB;
+    class Edge
+    {
+    private:
+        std::pair<c_size, c_size> indices;
 
-    Edge(
+    public:
+        Edge(
+            const c_size idxA,
+            const c_size idxB
+        ) noexcept;
+        Edge(const Edge&) = default;
+
+        c_size getIdxA() const;
+        c_size getIdxB() const;
+
+        bool operator==(const Edge& other) const;
+    };
+
+    Edge::Edge(
         const c_size idxA,
         const c_size idxB
     ) noexcept :
-        idxA(std::min(idxA, idxB)),
-        idxB(std::max(idxA, idxB))
+        indices(idxA < idxB ? std::pair(idxA, idxB) : std::pair(idxB, idxA))
     {}
-    Edge(const Edge&) = default;
 
-    bool operator==(const Edge& other) const
+    c_size Edge::getIdxA() const
     {
-        return this->idxA == other.idxA && this->idxB == other.idxB;
+        return indices.first;
     }
-};
+
+    c_size Edge::getIdxB() const
+    {
+        return indices.second;
+    }
+
+    bool Edge::operator==(const Edge& other) const
+    {
+        return this->indices.first == other.indices.first && this->indices.second == other.indices.second;
+    }
+}
 
 template<>
 struct std::hash<Edge>
@@ -1283,9 +1317,100 @@ struct std::hash<Edge>
     size_t operator() (const Edge& edge) const
     {
         static_assert(sizeof(c_size) * 2 <= sizeof(size_t), "Type 'c_size' is too large for perfect Edge hashing.");
-        return (static_cast<size_t>(edge.idxA) << sizeof(c_size)) | edge.idxB;
+        return (static_cast<size_t>(edge.getIdxA()) << sizeof(c_size)) | edge.getIdxB();
     }
 };
+
+namespace
+{
+    class CycleDecoder
+    {
+    private:
+        std::vector<c_size> decodedCycle;
+        std::vector<Edge> unboundEdges;
+
+        bool add(const c_size idx);
+
+    public:
+        CycleDecoder() = default;
+        CycleDecoder(const CycleDecoder&) = delete;
+        CycleDecoder(CycleDecoder&&) = default;
+
+        bool add(const Edge edge);
+
+        std::vector<c_size>& getDecodedCycle();
+    };
+
+    bool CycleDecoder::add(const c_size idx)
+    {
+        decodedCycle.emplace_back(idx);
+
+        size_t i = 0;
+        while (i < unboundEdges.size())
+        {
+            const auto edge = unboundEdges[i];
+            if (edge.getIdxA() == decodedCycle.back())
+            {
+                if (edge.getIdxB() == decodedCycle.front())
+                    return true; // Cycle end
+
+                decodedCycle.emplace_back(edge.getIdxB());
+                Utils::swapAndPop(unboundEdges, i);
+                i = 0;
+                continue;
+            }
+            if (edge.getIdxB() == decodedCycle.back())
+            {
+                if (edge.getIdxA() == decodedCycle.front())
+                    return true; // Cycle end
+
+                decodedCycle.emplace_back(edge.getIdxA());
+                Utils::swapAndPop(unboundEdges, i);
+                i = 0;
+                continue;
+            }
+
+            ++i;
+        }
+
+        return false;
+    }
+
+    bool CycleDecoder::add(const Edge edge)
+    {
+        if (decodedCycle.empty())
+        {
+            // First edge
+            decodedCycle.emplace_back(edge.getIdxA());
+            decodedCycle.emplace_back(edge.getIdxB());
+            return false;
+        }
+
+        // Add continuous edge at the end
+        if (edge.getIdxA() == decodedCycle.back())
+        {
+            if (edge.getIdxB() == decodedCycle.front())
+                return true; // Cycle end
+
+            return add(edge.getIdxB());
+        }
+        if (edge.getIdxB() == decodedCycle.back())
+        {
+            if (edge.getIdxA() == decodedCycle.front())
+                return true; // Cycle end
+
+            return add(edge.getIdxA());
+        }
+
+        unboundEdges.emplace_back(edge);
+        return false;
+    }
+
+    std::vector<c_size>& CycleDecoder::getDecodedCycle()
+    {
+        return decodedCycle;
+    }
+}
 
 std::vector<std::vector<c_size>> MolecularStructure::getFundamentalCycleBasis() const
 {
@@ -1310,7 +1435,9 @@ std::vector<std::vector<c_size>> MolecularStructure::getFundamentalCycleBasis() 
     }
 
     std::vector<std::vector<c_size>> cycles;
-    CycleClosureSet cycleClosures;
+    std::unordered_set<Edge> cycleClosures;
+    cycles.reserve(cycleCount);
+    cycleClosures.reserve(cycleCount);
 
     // DFS to find the cycle closures.
     while (stack.size())
@@ -1335,7 +1462,7 @@ std::vector<std::vector<c_size>> MolecularStructure::getFundamentalCycleBasis() 
             }
 
             // Older cycle
-            if (cycleClosures.contains(c, nextIdx))
+            if (cycleClosures.contains(Edge(c, nextIdx)))
                 continue;
 
             // New cycle
@@ -1349,18 +1476,19 @@ std::vector<std::vector<c_size>> MolecularStructure::getFundamentalCycleBasis() 
             cycle.emplace_back(parents[nextIdx]);
             cycle.emplace_back(nextIdx);
             cycle.emplace_back(c);
+
             cycles.emplace_back(std::move(cycle));
             if (cycles.size() == cycleCount)
                 return cycles;
 
-            cycleClosures.add(c, nextIdx);
+            cycleClosures.emplace(c, nextIdx);
         }
     }
 
     return cycles;
 }
 
-void MolecularStructure::getMinimalCycleBasis() const
+std::vector<std::vector<c_size>> MolecularStructure::getMinimalCycleBasis() const
 {
     auto fundamentalCycles = getFundamentalCycleBasis();
     std::sort(fundamentalCycles.begin(), fundamentalCycles.end(), [](const auto& lhs, const auto& rhs)
@@ -1375,71 +1503,79 @@ void MolecularStructure::getMinimalCycleBasis() const
     edgeLabels.reserve(fundamentalCycles.size() * 3);
     uniqueEdges.reserve(fundamentalCycles.size() * 3);
 
-    static constexpr size_t MAX_CYCLIC_EDGE_COUNT = 64;
-    std::vector<std::bitset<MAX_CYCLIC_EDGE_COUNT>> basis;
-
     for (const auto& cycle : fundamentalCycles)
     {
-        std::bitset<MAX_CYCLIC_EDGE_COUNT> cycleEdges;
-        boost::dynamic_bitset<uint8_t> B4(16, 84);
-        std::cout << B4;
-
         const Edge edge(cycle.front(), cycle.back());
-        if (const auto edgeIt = edgeLabels.find(edge); edgeIt != edgeLabels.end())
-            cycleEdges.set(edgeIt->second);
-        else
+        if (not edgeLabels.contains(edge))
         {
             const auto newLabel = static_cast<c_size>(edgeLabels.size());
             edgeLabels.emplace(edge, newLabel);
             uniqueEdges.emplace_back(edge);
-            cycleEdges.set(newLabel);
         }
 
         for (size_t i = 0; i < cycle.size() - 1; ++i)
         {
             const Edge edge(cycle[i], cycle[i + 1]);
-            if (const auto edgeIt = edgeLabels.find(edge); edgeIt != edgeLabels.end())
-            {
-                cycleEdges.set(edgeIt->second);
+            if (edgeLabels.contains(edge))
                 continue;
-            }
 
             const auto newLabel = static_cast<c_size>(edgeLabels.size());
             edgeLabels.emplace(edge, newLabel);
             uniqueEdges.emplace_back(edge);
-            cycleEdges.set(newLabel);
+        }
+    }
+
+    // Encode each cycle C as a bitset B where B[i] = 1 if the cycle contains the i-th unique bond,
+    // then XOR it with all the previous cycles (which are smaller because of sorting) resulting in
+    // an fully independent cycle.
+    std::vector<boost::dynamic_bitset<uint16_t>> basis;
+    basis.reserve(fundamentalCycles.size());
+
+    for (const auto& cycle : fundamentalCycles)
+    {
+        boost::dynamic_bitset<uint16_t> encodedCycle(uniqueEdges.size());
+        const auto edgeIdx = edgeLabels.find(Edge(cycle.front(), cycle.back()))->second;
+        encodedCycle.set(edgeIdx);
+
+        for (size_t i = 0; i < cycle.size() - 1; ++i)
+        {
+            const auto edgeIdx = edgeLabels.find(Edge(cycle[i], cycle[i + 1]))->second;
+            encodedCycle.set(edgeIdx);
         }
 
         for (const auto& b : basis)
         {
-            const auto temp = cycleEdges ^ b;
-            if (temp.count() < cycleEdges.count())
-                cycleEdges = temp;
-
-            if (cycleEdges.none())
-                break;
+            auto temp = encodedCycle ^ b;
+            if (temp.count() < encodedCycle.count())
+                encodedCycle = std::move(temp);
         }
 
-        if (cycleEdges.none())
-            continue;
+        if (encodedCycle.none()) // The fundamental and minimal cycle bases should always have the same number of cycles.
+            Log(this).fatal("Received a fully dependent cycle as a fundamental cycle.");
 
-        basis.emplace_back(cycleEdges);
+        basis.emplace_back(encodedCycle);
     }
 
-    for (const auto& c : basis)
+    // Decode the cycles
+    std::vector<std::vector<c_size>> result;
+    result.reserve(fundamentalCycles.size());
+
+    for (const auto& cycle : basis)
     {
-        for (size_t i = 0; i < c.size(); ++i)
+        CycleDecoder decoder;
+        for (size_t i = 0; i < cycle.size(); ++i)
         {
-            if (c.test(i))
-            {
-                const auto& edge = uniqueEdges[i];
-                std::cout << edge.idxA << '-' << edge.idxB << ' ';
-            }
+            if (not cycle.test(i))
+                continue;
+            if (decoder.add(uniqueEdges[i]))
+                break; // Cycle was closed.
         }
-        std::cout << '\n';
-    }
-}
 
+        result.emplace_back(std::move(decoder.getDecodedCycle()));
+    }
+
+    return result;
+}
 
 void rPrint(
     TextBlock& buffer,

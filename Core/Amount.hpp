@@ -183,7 +183,7 @@ constexpr Unit Amount<UnitT>::unit() const noexcept { return UnitT; }
 template<Unit UnitT>
 std::string Amount<UnitT>::toString(const uint8_t maxDigits) const noexcept 
 {
-	const auto str = Linguistics::formatFloatingPoint(value, maxDigits);
+	const auto str = Utils::formatFloatingPoint(value, maxDigits);
 	if constexpr (UnitT != Unit::NONE)
 		return str + ' ' + Amount<UnitT>::unitSymbol();
 	else
@@ -313,7 +313,12 @@ template<>
 inline std::string Amount<Unit::TORR_MOLE_RATIO>::unitName() noexcept { return Amount<Unit::TORR>::unitName() + " * (" + Amount<Unit::MOLE>::unitName() + " / " + Amount<Unit::MOLE>::unitName() + ")"; }
 
 template<>
-inline std::string Amount<Unit::SECOND>::format() noexcept { return Linguistics::formatTime(static_cast<int32_t>(asMilli())); }
+inline std::string Amount<Unit::SECOND>::format() noexcept
+{
+	return Utils::formatTime(
+		std::chrono::milliseconds(static_cast<std::chrono::milliseconds::rep>(asMilli())),
+		Utils::TimeFormat::DIGITAL_HH_MM_SS);
+}
 
 //    --- Direct Conversions ---    //
 

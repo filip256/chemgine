@@ -40,6 +40,11 @@ namespace Utils
 	std::vector<T2> extractSecond(
 		const std::vector<std::pair<T1, T2>>& vector);
 
+	template<typename T>
+	void swapAndPop(std::vector<T>& vector, typename std::vector<T>::iterator it);
+	template<typename T>
+	void swapAndPop(std::vector<T>& vector, const size_t idx);
+
 	template<typename ObjT, typename CntT = size_t>
 	std::vector<ObjT> flatten(
 		const std::vector<std::pair<ObjT, CntT>>& vector);
@@ -173,6 +178,34 @@ std::vector<T2> Utils::extractSecond(
 	return result;
 }
 
+template<typename T>
+void Utils::swapAndPop(std::vector<T>& vector, typename std::vector<T>::iterator it)
+{
+	if (vector.size() <= 2)
+	{
+		vector.erase(it);
+		return;
+	}
+
+	if (it == vector.end() - 1)
+	{
+		vector.pop_back();
+		return;
+	}
+
+	auto temp = std::move(*it);
+	*it = std::move(vector.back());
+	vector.back() = std::move(temp);
+
+	vector.pop_back();
+}
+
+template<typename T>
+void Utils::swapAndPop(std::vector<T>& vector, const size_t idx)
+{
+	swapAndPop(vector, vector.begin() + idx);
+}
+
 template<typename ObjT, typename CntT>
 std::vector<ObjT> Utils::flatten(
 	const std::vector<std::pair<ObjT, CntT>>& vector)
@@ -230,7 +263,7 @@ std::vector<std::vector<T>> Utils::getArrangementsWithRepetitions(
 {
 	// TODO: implement iteratively
 	std::vector<std::vector<T>> result;
-	result.reserve(std::pow(vector.size(), maxLength) + 1);
+	result.reserve(static_cast<size_t>(std::pow(vector.size(), maxLength)) + 1);
 	std::vector<T> current;
 	current.reserve(maxLength);
 
@@ -274,7 +307,7 @@ void Utils::permute(std::vector<T>& vector, std::vector<size_t>& permutation)
 		auto current = i;
 		auto currentObj = std::move(vector[current]);
 
-		// Follow the permuation cycle
+		// Follow the permutation cycle
 		do
 		{
 			std::swap(vector[permutation[current]], currentObj);

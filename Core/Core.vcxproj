@@ -251,7 +251,7 @@
     <ClCompile Include="LabwareSystem.cpp" />
     <ClCompile Include="LayerContentIterator.cpp" />
     <ClCompile Include="LayerType.cpp" />
-    <ClCompile Include="Linguistics.cpp" />
+    <ClCompile Include="FormatUtils.cpp" />
     <ClCompile Include="LogSettings.cpp" />
     <ClCompile Include="MolecularStructure.cpp" />
     <ClCompile Include="MultiLayerMixture.cpp" />
@@ -378,13 +378,12 @@
     <ClInclude Include="LabwareSystem.hpp" />
     <ClInclude Include="LabwareType.hpp" />
     <ClInclude Include="LayerContentIterator.hpp" />
-    <ClInclude Include="Linguistics.hpp" />
+    <ClInclude Include="FormatUtils.hpp" />
     <ClInclude Include="ContentInitializer.hpp" />
     <ClInclude Include="MoleculeType.hpp" />
     <ClInclude Include="MultiLayerMixture.hpp" />
     <ClInclude Include="Layer.hpp" />
     <ClInclude Include="LayerType.hpp" />
-    <ClInclude Include="LogType.hpp" />
     <ClInclude Include="Maths.hpp" />
     <ClInclude Include="Mixture.hpp" />
     <ClInclude Include="PathUtils.hpp" />

@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
 
         if (not args.count("output"))
         {
-            Log().info("Not output file was specified, dump skipped.");
+            Log().info("No output file was specified, dump skipped.");
             return 0;
         }
 

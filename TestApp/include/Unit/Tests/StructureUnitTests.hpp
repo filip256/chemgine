@@ -100,16 +100,34 @@ public:
 class FundamentalCycleUnitTest : public UnitTest
 {
 private:
-	const size_t expectedCycleCount;
-	const size_t expectedTotalCyclicAtomCount;
+	const c_size expectedCycleCount;
+	const c_size expectedTotalCyclicAtomCount;
 	const MolecularStructure molecule;
 
 public:
 	FundamentalCycleUnitTest(
 		const std::string& name,
 		const std::string& moleculeSmiles,
-		const size_t expectedCycleCount,
-		const size_t expectedTotalCyclicAtomCount
+		const c_size expectedCycleCount,
+		const c_size expectedTotalCyclicAtomCount
+	) noexcept;
+
+	bool run() override final;
+};
+
+class MinimalCycleUnitTest : public UnitTest
+{
+private:
+	const c_size expectedTotalCyclicAtomCount;
+	const std::unordered_map<c_size, c_size> expectedCycleSizes;
+	const MolecularStructure molecule;
+
+public:
+	MinimalCycleUnitTest(
+		const std::string& name,
+		const std::string& moleculeSmiles,
+		const c_size expectedTotalCyclicAtomCount,
+	    std::unordered_map<c_size, c_size>&& expectedCycleSizes
 	) noexcept;
 
 	bool run() override final;

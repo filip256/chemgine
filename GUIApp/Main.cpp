@@ -11,7 +11,7 @@ int main()
     store.load("./../Data/builtin.cdef");
 
     //MolecularStructure("C12CCC1C2").getMinimalCycles();
-    MolecularStructure("C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67").getMinimalCycleBasis();
+    const auto d = MolecularStructure("C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67").getMinimalCycleBasis();
     Log().info(MolecularStructure("CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C").printInfo());
 
 

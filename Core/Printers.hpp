@@ -4,7 +4,7 @@
 #include "StringUtils.hpp"
 #include "NumericUtils.hpp"
 #include "Keywords.hpp"
-#include "Linguistics.hpp"
+#include "FormatUtils.hpp"
 
 #include <vector>
 #include <string>
@@ -45,7 +45,7 @@ namespace Def
 			return 
 				Utils::floatEqual(object, std::numeric_limits<T>::lowest()) ? Def::Amounts::Min :
 				Utils::floatEqual(object, std::numeric_limits<T>::max()) ? Def::Amounts::Max :
-				Linguistics::formatFloatingPoint(std::format("{:.{}f}", object, 5));
+				Utils::formatFloatingPoint(std::format("{:.{}f}", object, 5));
 		}
 	};
 
@@ -75,7 +75,7 @@ namespace Def
 	public:
 		static std::string print(const T* object)
 		{
-			return Linguistics::toHex(object);
+			return Utils::toHex(object);
 		}
 	};
 

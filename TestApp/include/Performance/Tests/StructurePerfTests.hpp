@@ -23,7 +23,22 @@ public:
 };
 
 
-class StructureOpsPerfTestBase : public TimedTest
+class StructurePerfTestBase : public TimedTest
+{
+protected:
+	volatile bool dontOptimize = true;
+	const MolecularStructure target;
+
+public:
+	StructurePerfTestBase(
+		const std::string& name,
+		const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+		const std::string& targetSmiles
+	) noexcept;
+};
+
+
+class StructureComparePerfTestBase : public TimedTest
 {
 protected:
 	volatile bool dontOptimize = true;
@@ -31,7 +46,7 @@ protected:
 	const MolecularStructure pattern;
 
 public:
-	StructureOpsPerfTestBase(
+	StructureComparePerfTestBase(
 		const std::string& name,
 		const std::variant<uint64_t, std::chrono::nanoseconds> limit,
 		const std::string& targetSmiles,
@@ -40,43 +55,43 @@ public:
 };
 
 
-class StructureEqualityPerfTest : public StructureOpsPerfTestBase
+class StructureEqualityPerfTest : public StructureComparePerfTestBase
 {
 public:
-	using StructureOpsPerfTestBase::StructureOpsPerfTestBase;
+	using StructureComparePerfTestBase::StructureComparePerfTestBase;
 
 	void task() override final;
 };
 
 
-class StructureInequalityPerfTest : public StructureOpsPerfTestBase
+class StructureInequalityPerfTest : public StructureComparePerfTestBase
 {
 public:
-	using StructureOpsPerfTestBase::StructureOpsPerfTestBase;
+	using StructureComparePerfTestBase::StructureComparePerfTestBase;
 
 	void task() override final;
 };
 
 
-class StructureAtomMapPerfTest : public StructureOpsPerfTestBase
+class StructureAtomMapPerfTest : public StructureComparePerfTestBase
 {
 public:
-	using StructureOpsPerfTestBase::StructureOpsPerfTestBase;
+	using StructureComparePerfTestBase::StructureComparePerfTestBase;
 
 	void task() override final;
 };
 
 
-class StructureMaximalAtomMapPerfTest : public StructureOpsPerfTestBase
+class StructureMaximalAtomMapPerfTest : public StructureComparePerfTestBase
 {
 public:
-	using StructureOpsPerfTestBase::StructureOpsPerfTestBase;
+	using StructureComparePerfTestBase::StructureComparePerfTestBase;
 
 	void task() override final;
 };
 
 
-class StructureSubstitutionPerfTest : public StructureOpsPerfTestBase
+class StructureSubstitutionPerfTest : public StructureComparePerfTestBase
 {
 private:
 	const std::unordered_map<c_size, c_size> atomMap;
@@ -88,6 +103,24 @@ public:
 		const std::string& patternSmiles,
 		const std::string& intanceSmiles
 	) noexcept;
+
+	void task() override final;
+};
+
+
+class StructureFundamentalCyclePerfTest : public StructurePerfTestBase
+{
+public:
+	using StructurePerfTestBase::StructurePerfTestBase;
+
+	void task() override final;
+};
+
+
+class StructureMinimalCyclePerfTest : public StructurePerfTestBase
+{
+public:
+	using StructurePerfTestBase::StructurePerfTestBase;
 
 	void task() override final;
 };

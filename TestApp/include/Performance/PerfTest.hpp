@@ -26,6 +26,7 @@ public:
 
 	const std::string& getName() const;
 	virtual size_t getTestCount() const = 0;
+	virtual std::chrono::nanoseconds getEstimatedRunTime() const = 0;
 
 	virtual TimingResult run(PerformanceReport& report) = 0;
 
@@ -51,6 +52,7 @@ public:
 	using SetupType = SetupT;
 
 	size_t getTestCount() const override final;
+	std::chrono::nanoseconds getEstimatedRunTime() const override final;
 
 	TimingResult run(PerformanceReport& report) override final;
 
@@ -69,7 +71,13 @@ PerfTestSetup<SetupT>::PerfTestSetup(
 template<typename SetupT>
 size_t PerfTestSetup<SetupT>::getTestCount() const
 {
-	return 0; // test setups should not be counted
+	return 0; // Test setups should not be counted
+}
+
+template<typename SetupT>
+std::chrono::nanoseconds PerfTestSetup<SetupT>::getEstimatedRunTime() const
+{
+	return std::chrono::milliseconds(1);
 }
 
 template<typename SetupT>
@@ -115,6 +123,7 @@ public:
 	virtual ~TimedTest() = default;
 
 	size_t getTestCount() const override final;
+	std::chrono::nanoseconds getEstimatedRunTime() const override final;
 
 	TimingResult run(PerformanceReport& report) override final;
 
@@ -126,6 +135,7 @@ class PerfTestGroup : public PerfTest
 {
 private:
 	size_t testCount = 0;
+	std::chrono::nanoseconds estimatedRunTime = std::chrono::nanoseconds(0);
 	std::vector<std::unique_ptr<PerfTest>> tests;
 	const std::regex& filter;
 
@@ -140,6 +150,7 @@ public:
 	) noexcept;
 
 	size_t getTestCount() const override final;
+	std::chrono::nanoseconds getEstimatedRunTime() const override final;
 
 	TimingResult run(PerformanceReport& report) override;
 	PerformanceReport generateReport();
@@ -167,5 +178,6 @@ void PerfTestGroup::registerTest(std::string&& name, Args&&... args)
 		return;
 
 	testCount += test->getTestCount();
+	estimatedRunTime += test->getEstimatedRunTime() + std::chrono::milliseconds(1);
 	tests.emplace_back(std::move(test));
 }

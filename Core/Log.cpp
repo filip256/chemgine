@@ -1,10 +1,36 @@
 #include "Log.hpp"
+
 #include "Casts.hpp"
-#include "LogType.hpp"
 #include "STLUtils.hpp"
+#include "PathUtils.hpp"
 #include "BuildUtils.hpp"
 
 #include <unordered_map>
+
+LogFormat::LogFormat(
+	const char* format,
+	std::source_location&& location
+) noexcept :
+	format(format),
+	location(std::move(location))
+{}
+
+LogFormat::LogFormat(
+	const std::string& format,
+	std::source_location&& location
+) noexcept :
+	LogFormat(format.c_str(), std::move(location))
+{}
+
+const char* LogFormat::getFormat() const
+{
+	return format;
+}
+
+const std::source_location& LogFormat::getLocation() const
+{
+	return location;
+}
 
 uint8_t LogBase::contexts = 0;
 size_t LogBase::foldCount = static_cast<size_t>(-1);
@@ -18,16 +44,55 @@ LogBase::LogBase(
 	sourceName(std::move(sourceName))
 {}
 
-void LogBase::logFormatted(const std::string& msg, const LogType type) const
+void LogBase::addContextIndent()
 {
-	// exit folded log sequence
+	OS::setTextColor(OS::Color::DarkGrey);
+	for (uint8_t i = 0; i < contexts; ++i)
+		outputStream << contextIndent;
+	OS::setTextColor(OS::Color::White);
+}
+
+std::string LogBase::getSourceIdentifier(const std::source_location& location, const LogType type) const
+{
+	std::string sourceStr;
+
+	if (printNameLevel.has(type) && sourceName.size())
+	{
+		sourceStr += sourceName;
+		if (printAddressLevel.has(type) && address.size())
+			sourceStr += "<" + address + '>';
+	}
+
+	if (printLocationLevel.has(type))
+	{
+		if (sourceStr.size())
+			sourceStr += '|';
+
+		// Trim the full path to start from the root of the project.
+		constexpr std::string_view basePath = "Chemgine";
+		const char* pathBegin = std::strstr(location.file_name(), basePath.data());
+		if (not pathBegin)
+			pathBegin = location.file_name();
+
+		std::string pathStr(pathBegin);
+		Utils::normalizePath(pathStr);
+
+		sourceStr += pathStr + ':' + std::to_string(location.line());
+	}
+
+	return sourceStr;
+}
+
+void LogBase::logFormatted(const std::string& msg, const std::source_location& location, const LogType type) const
+{
+	// Exit folded log sequence.
 	if (foldCount != static_cast<size_t>(-1) && not msg.starts_with('\r'))
 	{
 		foldCount = static_cast<size_t>(-1);
 		outputStream << '\n';
 	}
 
-	// dummy log (may be used to turn off folded logging)
+	// Dummy log (may be used to turn off folded logging).
 	if (msg == "\0")
 		return;
 
@@ -75,34 +140,23 @@ void LogBase::logFormatted(const std::string& msg, const LogType type) const
 			suffixSize += 7;
 			break;
 		default:
-			Log<LogBase>().fatal("Undefined log type: {0}", underlying_cast(type));
+			Log<LogBase>().fatal("Undefined log type: {0} {1}", underlying_cast(type));
 		}
 
-		if (type <= printNameLevel)
+		if (const auto sourceIdentifier = getSourceIdentifier(location, type); sourceIdentifier.size())
 		{
-			if (sourceName.size())
-			{
-				OS::setTextColor(OS::Color::DarkGrey);
-				outputStream << '[' << sourceName;
-				if (type <= printAddressLevel)
-				{
-					if (address.size())
-					{
-						outputStream << " <" << address << '>';
-						suffixSize += static_cast<uint16_t>(address.size() + 3);
-					}
-				}
-				outputStream << "] ";
-				suffixSize += static_cast<uint16_t>(sourceName.size() + 3);
-			}
+			OS::setTextColor(OS::Color::DarkGrey);
+			outputStream << '[' << sourceIdentifier << "] ";
+			suffixSize += static_cast<uint16_t>(sourceIdentifier.size() + 3);
 		}
 
 		OS::setTextColor(OS::Color::White);
 	}
 
-	if (msg.starts_with('\r')) // folded log
+	if (msg.starts_with('\r'))
 	{
-		// don't backspace on the first folded log
+		// Folded log
+		// Don't backspace on the first folded log.
 		if (foldCount != static_cast<size_t>(-1))
 		{
 			for (size_t i = 0; i < foldCount; ++i)
@@ -112,8 +166,9 @@ void LogBase::logFormatted(const std::string& msg, const LogType type) const
 		outputStream << msg.substr(1);
 		foldCount = msg.size() - 1;
 	}
-	else // normal log
+	else
 	{
+		// Normal log
 		const auto splitMsg = Utils::split(msg, '\n', false);
 		outputStream << splitMsg.front() << '\n';
 
@@ -124,14 +179,6 @@ void LogBase::logFormatted(const std::string& msg, const LogType type) const
 			outputStream << suffixSpace << splitMsg[i] << '\n';
 		}
 	}
-}
-
-void LogBase::addContextIndent()
-{
-	OS::setTextColor(OS::Color::DarkGrey);
-	for (uint8_t i = 0; i < contexts; ++i)
-		outputStream << contexIndent;
-	OS::setTextColor(OS::Color::White);
 }
 
 void LogBase::nest()

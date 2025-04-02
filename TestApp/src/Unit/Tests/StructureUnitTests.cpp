@@ -1,5 +1,7 @@
 #include "Unit/Tests/StructureUnitTests.hpp"
+
 #include "MolecularStructure.hpp"
+#include "StringTable.hpp"
 
 #include <numeric>
 
@@ -143,8 +145,8 @@ bool StructureSubstitutionUnitTest::run()
 FundamentalCycleUnitTest::FundamentalCycleUnitTest(
 	const std::string& name,
 	const std::string& moleculeSmiles,
-	const size_t expectedCycleCount,
-	const size_t expectedTotalCyclicAtomCount
+	const c_size expectedCycleCount,
+	const c_size expectedTotalCyclicAtomCount
 ) noexcept :
 	UnitTest(name + '_' + moleculeSmiles),
 	molecule(moleculeSmiles),
@@ -165,6 +167,8 @@ bool FundamentalCycleUnitTest::run()
 	// Counting the total amount of distinct atoms participating in cycles should
 	// be agnostic to canonicalization and the starting node of the algorithm.
 	std::unordered_set<c_size> atomSet;
+	atomSet.reserve(cycles.size());
+
 	for (const auto& cycle : cycles)
 		for (const auto atom : cycle)
 			atomSet.emplace(atom);
@@ -173,6 +177,70 @@ bool FundamentalCycleUnitTest::run()
 	{
 		Log(this).error("Actual total cyclic atom count: {0} is different from the expected atom count: {1}.",
 			atomSet.size(), expectedTotalCyclicAtomCount);
+		return false;
+	}
+
+	return true;
+}
+
+
+MinimalCycleUnitTest::MinimalCycleUnitTest(
+	const std::string& name,
+	const std::string& moleculeSmiles,
+	const c_size expectedTotalCyclicAtomCount,
+	std::unordered_map<c_size, c_size>&& expectedCycleSizes
+) noexcept :
+	UnitTest(name + '_' + moleculeSmiles),
+	molecule(moleculeSmiles),
+	expectedTotalCyclicAtomCount(expectedTotalCyclicAtomCount),
+	expectedCycleSizes(std::move(expectedCycleSizes))
+{}
+
+bool MinimalCycleUnitTest::run()
+{
+	const auto cycles = molecule.getMinimalCycleBasis();
+
+	std::unordered_set<c_size> atomSet;
+	atomSet.reserve(cycles.size());
+	std::unordered_map<c_size, c_size> actualCycleSizes;
+	actualCycleSizes.reserve(expectedCycleSizes.size());
+
+	for (const auto& cycle : cycles)
+	{
+		for (const auto atom : cycle)
+			atomSet.emplace(atom);
+
+		if (auto it = actualCycleSizes.find(cycle.size()); it != actualCycleSizes.end())
+			++(it->second);
+		else
+			actualCycleSizes.emplace(cycle.size(), 1);
+	}
+
+	if (atomSet.size() != expectedTotalCyclicAtomCount)
+	{
+		Log(this).error("Actual total cyclic atom count: {0} is different from the expected atom count: {1}.",
+			atomSet.size(), expectedTotalCyclicAtomCount);
+		return false;
+	}
+
+	if (actualCycleSizes != expectedCycleSizes)
+	{
+		StringTable diffTable({ "Size", "Expected", "Actual" }, false);
+		for (const auto& [refSize, refCount] : expectedCycleSizes)
+		{
+			if (const auto it = actualCycleSizes.find(refSize); it != actualCycleSizes.end())
+			{
+				diffTable.addEntry({ std::to_string(refSize), std::to_string(refCount), std::to_string(it->second) });
+				actualCycleSizes.erase(it);
+			}
+			else
+				diffTable.addEntry({ std::to_string(refSize), std::to_string(refCount), "0" });
+		}
+
+		for (const auto& [actSize, actCount] : actualCycleSizes)
+			diffTable.addEntry({ std::to_string(actSize), "0", std::to_string(actCount) });
+
+		Log(this).error("Actual cycle sizes differ from the expected sizes:\n{0}", diffTable.toString());
 		return false;
 	}
 
@@ -282,12 +350,19 @@ StructureUnitTests::StructureUnitTests(
 	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "OC1CCC1", 1, 4);
 	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "C1CCC(C)CC1", 1, 6);
 	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "CCC1CCC(O)CC1", 1, 6);
+	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "C1CC12CC2", 2, 5);
 	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "CC2CC(CCCC)CC(C1CCCCC1)C2", 2, 12);
+	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "C1C2CC3CC23C1", 3, 7);
 	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C", 4, 16);
 	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67", 7, 19);
-	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "C1CC12CC2", 2, 5);
 	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "C3=CC27CC18C=CC16C=C%10CCC%12C%11C=C5C=C4C(C=C2C3)C49C5=C(C6C789)C%10%11%12", 12, 28);
-	registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "C1C2CC3CC23C1", 3, 7);
+
+	registerTest<MinimalCycleUnitTest>("minimal_cycle", "CC(=O)OC(C)C", 0, std::unordered_map<c_size, c_size>());
+	registerTest<MinimalCycleUnitTest>("minimal_cycle", "C1CCC(C)CC1", 6, std::unordered_map<c_size, c_size>({ { 6, 1 } }));
+	registerTest<MinimalCycleUnitTest>("minimal_cycle", "C1C(CCC2)C2CCC1", 9, std::unordered_map<c_size, c_size>({ { 5, 1 }, { 6, 1 } }));
+	registerTest<MinimalCycleUnitTest>("minimal_cycle", "C1C2CC3CC23C1", 7, std::unordered_map<c_size, c_size>({ { 3, 1 }, { 4, 2 } }));
+	registerTest<MinimalCycleUnitTest>("minimal_cycle", "CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C", 16, std::unordered_map<c_size, c_size>({ { 5, 1 }, { 6, 3 } }));
+	registerTest<MinimalCycleUnitTest>("minimal_cycle", "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67", 19, std::unordered_map<c_size, c_size>({ { 4, 3 }, { 5, 1 }, { 6, 3 } }));
 
 	registerTest<UnitTestSetup<AccessorTestCleanup>>("cleanup");
 	Accessor<>::unsetDataStore();

@@ -2,7 +2,7 @@
 #include "BaseContainerComponent.hpp"
 #include "SingleLayerMixture.hpp"
 #include "MultiLayerMixture.hpp"
-#include "Linguistics.hpp"
+#include "FormatUtils.hpp"
 
 MixturePropertyPane::LayerPropertyPane::LayerPropertyPane(const sf::Font& font) noexcept :
 	title("", font, 16),
@@ -21,7 +21,7 @@ const sf::Vector2f& MixturePropertyPane::LayerPropertyPane::getPosition() const
 void MixturePropertyPane::LayerPropertyPane::setSubject(const Layer& subject)
 {
 	this->subject = subject;
-	title.setString(Linguistics::capitalize(getLayerName(subject.getType())) + " Layer:");
+	title.setString(Utils::capitalize(getLayerName(subject.getType())) + " Layer:");
 }
 
 void MixturePropertyPane::LayerPropertyPane::setPosition(const sf::Vector2f& position)
@@ -103,7 +103,7 @@ void MixturePropertyPane::ContentPropertyPane::draw(sf::RenderTarget& target, sf
 {
 	for (const auto& m : *subject)
 	{
-		propertyName.setString(Linguistics::capitalize(m.molecule.getData().name));
+		propertyName.setString(Utils::capitalize(m.molecule.getData().name));
 		propertyValue.setString(m.amount.toString(12));
 		target.draw(propertyName, states);
 		target.draw(propertyValue, states);
@@ -134,7 +134,7 @@ void MixturePropertyPane::setSubject(const LabwareComponentBase& subject)
 	setPosition(subject.getPosition());
 
 #ifndef NDEBUG
-	title.setString(subject.getData().name + " <" + Linguistics::toHex(&subject) + '>');
+	title.setString(subject.getData().name + " <" + Utils::toHex(&subject) + '>');
 #else
 	title.setString(subject.getData().name);
 #endif

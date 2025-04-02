@@ -21,7 +21,18 @@ void StructureSMILESPerfTest::postTask()
 	molecule.clear();
 }
 
-StructureOpsPerfTestBase::StructureOpsPerfTestBase(
+
+StructurePerfTestBase::StructurePerfTestBase(
+	const std::string& name,
+	const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+	const std::string& targetSmiles
+) noexcept :
+	TimedTest(name + '_' + targetSmiles, limit),
+	target(targetSmiles)
+{}
+
+
+StructureComparePerfTestBase::StructureComparePerfTestBase(
 	const std::string& name,
 	const std::variant<uint64_t, std::chrono::nanoseconds> limit,
 	const std::string& targetSmiles,
@@ -63,13 +74,25 @@ StructureSubstitutionPerfTest::StructureSubstitutionPerfTest(
 	const std::string& patternSmiles,
 	const std::string& intanceSmiles
 ) noexcept :
-	StructureOpsPerfTestBase(name, limit, patternSmiles, intanceSmiles),
+	StructureComparePerfTestBase(name, limit, patternSmiles, intanceSmiles),
 	atomMap(pattern.maximalMapTo(target).first)
 {}
 
 void StructureSubstitutionPerfTest::task()
 {
 	dontOptimize = MolecularStructure::addSubstituents(target, pattern, atomMap).isEmpty();
+}
+
+
+void StructureFundamentalCyclePerfTest::task()
+{
+	dontOptimize = static_cast<bool>(target.getFundamentalCycleBasis().size());
+}
+
+
+void StructureMinimalCyclePerfTest::task()
+{
+	dontOptimize = static_cast<bool>(target.getMinimalCycleBasis().size());
 }
 
 
@@ -112,6 +135,12 @@ StructurePerfTests::StructurePerfTests(
 
 	registerTest<StructureSubstitutionPerfTest>("substitute", std::chrono::seconds(10), "C(=O)O", "CC(=O)OCCCCCC(CCCCCC(CCC)CCC)CCCCCC");
 	registerTest<StructureSubstitutionPerfTest>("substitute", std::chrono::seconds(10), "C1C2C(CC(C=O)CC2CCCC)CCC1CC(=O)OC", "CC(=O)OC(CCC2C1C(C(CC(CC=C)CC)CC2)C=O)C1");
+
+	registerTest<StructureFundamentalCyclePerfTest>("fundamental_cycle", std::chrono::seconds(10), "CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C");
+	registerTest<StructureFundamentalCyclePerfTest>("fundamental_cycle", std::chrono::seconds(10), "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67");
+
+	registerTest<StructureMinimalCyclePerfTest>("minimal_cycle", std::chrono::seconds(10), "CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C");
+	registerTest<StructureMinimalCyclePerfTest>("minimal_cycle", std::chrono::seconds(10), "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67");
 
 	registerTest<PerfTestSetup<AccessorTestCleanup>>("cleanup");
 	Accessor<>::unsetDataStore();

@@ -44,9 +44,18 @@ size_t TimedTest::getTestCount() const
 	return 1;
 }
 
+std::chrono::nanoseconds TimedTest::getEstimatedRunTime() const
+{
+	const auto eta = std::holds_alternative<uint64_t>(limit) ?
+		std::chrono::nanoseconds(std::get<uint64_t>(limit) * 1000) :
+		std::get<std::chrono::nanoseconds>(limit);
+
+	return eta + std::chrono::milliseconds(100);
+}
+
 void TimedTest::runWarmUp()
 {
-	volatile uint8_t dontOptimize = 10;
+	volatile const uint8_t dontOptimize = 10;
 	for (uint8_t i = 0; i < dontOptimize; ++i)
 	{
 		preTask();
@@ -132,7 +141,7 @@ TimingResult TimedTest::runTimed(std::chrono::nanoseconds minTime)
 
 TimingResult TimedTest::run(PerformanceReport& report)
 {
-	const auto normalProprity = stabilizeExecution();
+	const auto normalConfig = stabilizeExecution();
 	LogBase::hide();
 
 	const auto time = std::holds_alternative<uint64_t>(limit) ?
@@ -140,7 +149,7 @@ TimingResult TimedTest::run(PerformanceReport& report)
 		runTimed(std::get<std::chrono::nanoseconds>(limit));
 
 	LogBase::unhide();
-	restoreExecution(normalProprity);
+	restoreExecution(normalConfig);
 
 	report.add(getName(), time);
 
@@ -170,11 +179,17 @@ size_t PerfTestGroup::getTestCount() const
 	return testCount;
 }
 
+std::chrono::nanoseconds PerfTestGroup::getEstimatedRunTime() const
+{
+	return estimatedRunTime;
+}
+
 TimingResult PerfTestGroup::run(PerformanceReport& report)
 {
 	TimingResult totalTime(std::chrono::nanoseconds(0), std::chrono::nanoseconds(0));
 
-	Log(this).info("{0}: Running {1} sub-tests...", getName(), testCount);
+	Log(this).info("{0}: Running {1} sub-tests... (ETA: {2})", getName(),
+		testCount, Utils::formatTime(estimatedRunTime, Utils::TimeFormat::HUMAN_HH_MM_SS));
 	LogBase::nest();
 
 	for (size_t i = 0; i < tests.size(); ++i)

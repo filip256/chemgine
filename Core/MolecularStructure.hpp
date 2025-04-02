@@ -209,7 +209,7 @@ public:
     /// <summary>
     /// Computes and returns the set of minimal non-overlapping cycles of the molecule.
     /// </summary>
-    void getMinimalCycleBasis() const;
+    std::vector<std::vector<c_size>> getMinimalCycleBasis() const;
 
     /// <summary>
     /// Returns true if both structures represent the exact same molecule.

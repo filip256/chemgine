@@ -303,7 +303,7 @@
     <ClCompile Include="AggregationType.cpp">
       <Filter>Source Files\Mixtures</Filter>
     </ClCompile>
-    <ClCompile Include="Linguistics.cpp">
+    <ClCompile Include="FormatUtils.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="ReactionNetwork.cpp">
@@ -460,9 +460,6 @@
     </ClInclude>
     <ClInclude Include="MultiIndexMap.hpp">
       <Filter>Header Files\DataStructures</Filter>
-    </ClInclude>
-    <ClInclude Include="LogType.hpp">
-      <Filter>Header Files\Terminal</Filter>
     </ClInclude>
     <ClInclude Include="Value.hpp">
       <Filter>Header Files\Data\Values</Filter>
@@ -674,7 +671,7 @@
     <ClInclude Include="Polarity.hpp">
       <Filter>Header Files\Molecules</Filter>
     </ClInclude>
-    <ClInclude Include="Linguistics.hpp">
+    <ClInclude Include="FormatUtils.hpp">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="ReactionNetwork.hpp">
