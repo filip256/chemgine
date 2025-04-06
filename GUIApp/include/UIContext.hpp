@@ -1,10 +1,8 @@
 #pragma once
 
-#include "SFML/Graphics.hpp"
 #include "Lab.hpp"
 #include "Flask.hpp"
 #include "Input.hpp"
-#include "Log.hpp"
 #include "Adaptor.hpp"
 #include "Heatsource.hpp"
 #include "Condenser.hpp"
@@ -13,6 +11,8 @@
 #include "Parsers.hpp"
 #include "Helpers/DragNDropHelper.hpp"
 #include "Helpers/CursorHelper.hpp"
+
+#include <SFML/Graphics.hpp>
 
 class UIContext
 {
@@ -90,7 +90,7 @@ public:
         //flask2.add(Molecule("O"), 10.0_mol);
 
         for(size_t i = 0; i < lab.getSystemCount(); ++i)
-            lab.getSystem(i).move(sf::Vector2f(100 + 85 * i, 100));
+            lab.getSystem(i).move(sf::Vector2f(100.0f + 85.0f * static_cast<float>(i), 100.0f));
 
         //Vapour vapour(50, sf::Vector2f(500.0f, 500.0f), sf::Color(255, 255, 255, 10), 0.0_o, 0.7f, 0.5f);
 
@@ -176,7 +176,7 @@ public:
                     }
                     else if (inHand.isSet())
                     {
-                        lab.getSystem(inHand.idx).rotate(event.mouseWheel.delta * 2);
+                        lab.getSystem(inHand.idx).rotate(event.mouseWheel.delta * 2.0f);
                     }
                 }
                 else if (event.type == sf::Event::KeyPressed)
@@ -200,7 +200,7 @@ public:
                     if (event.key.code == sf::Keyboard::Key::I)
                     {
                         const auto input = Input::get("Input Molecule   [SMILES]_[moles]");
-                        const auto temp = Def::parse<std::pair<Molecule, Amount<Unit::MOLE>>>(input, '_');
+                        const auto temp = def::parse<std::pair<Molecule, Amount<Unit::MOLE>>>(input, '_');
 
                         if (not temp)
                         {
@@ -256,7 +256,7 @@ public:
             }
 
             cTime = tickClock.getElapsedTime();
-            gameTime += sf::microseconds((cTime - lastFrame).asMicroseconds() * timeMultiplier);
+            gameTime += sf::microseconds(round_cast<sf::Int64>((cTime - lastFrame).asMicroseconds() * timeMultiplier));
             lastFrame = cTime;
 
             window.clear();

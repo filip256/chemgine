@@ -99,6 +99,8 @@ class TimedTest : public PerfTest
 private:
 	const std::variant<uint64_t, std::chrono::nanoseconds> limit;
 
+	static std::chrono::nanoseconds WarmUpTime;
+
 	void runWarmUp();
 	TimingResult runCounted(const uint64_t repetitions);
 	TimingResult runTimed(std::chrono::nanoseconds minTime);
@@ -167,7 +169,7 @@ void PerfTestGroup::registerTest(std::string&& name, Args&&... args)
 	name = getName() + '.' + name; // Append owning group name
 
 	std::unique_ptr<PerfTest> test;
-	if constexpr (Utils::is_specialization_of_v<T, PerfTestSetup>)
+	if constexpr (utils::is_specialization_of_v<T, PerfTestSetup>)
 		test = std::make_unique<T>(std::move(name), T::SetupType(std::forward<Args>(args)...));
 	else if constexpr (std::is_constructible_v<T, std::string&&, const std::regex&, Args...>)
 		test = std::make_unique<T>(std::move(name), filter, std::forward<Args>(args)...);

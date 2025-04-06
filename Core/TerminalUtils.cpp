@@ -1,15 +1,21 @@
 #include "TerminalUtils.hpp"
 
-#include <Windows.h>
+#include "Log.hpp"
+#include "Casts.hpp"
+#include "ConcurrencyUtils.hpp"
 
-void OS::setTextColor(const uint16_t color)
-{
-	static const auto handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(handle, color);
-}
+#include <Windows.h>
 
 namespace
 {
+	HANDLE getStdOutputHandle()
+	{
+		const auto handle = GetStdHandle(STD_OUTPUT_HANDLE);
+		if(handle == INVALID_HANDLE_VALUE)
+			Log().fatal("Failed to to retrieve STD_OUTPUT_HANDLE (error code: {0}).", GetLastError());
+		return handle;
+	}
+
 	bool _isRunningFromConsole()
 	{
 		const auto consoleHwnd = GetConsoleWindow();
@@ -20,6 +26,37 @@ namespace
 		GetWindowThreadProcessId(consoleHwnd, &dwProcessId);
 		return GetCurrentProcessId() != dwProcessId;
 	}
+}
+
+OS::ColorType OS::getTextColor()
+{
+	static const auto handle = getStdOutputHandle();
+
+	CONSOLE_SCREEN_BUFFER_INFO info;
+	if (not GetConsoleScreenBufferInfo(handle, &info))
+		Log().fatal("Failed to to get console screen buffer info (error code: {0}).", GetLastError());
+
+	return checked_cast<ColorType>(info.wAttributes);
+}
+
+void OS::setTextColor(const ColorType color)
+{
+	// Changing the text color is expected to always be followed by a text output procedure.
+	// A locking mechanism is needed at the call site to ensure the text has the desired color, not here.
+	CHG_NEVER_CONCURRENT();
+
+	if (color == Color::None)
+		return;
+
+	static const auto handle = getStdOutputHandle();
+	static auto currentColor = getTextColor();
+
+	if (color == currentColor)
+		return;
+
+	currentColor = color;
+	if(not SetConsoleTextAttribute(handle, color))
+		Log().fatal("Failed to to set console text attribute (error code: {0}).", GetLastError());
 }
 
 bool OS::isRunningFromConsole()

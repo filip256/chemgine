@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
             Log().fatal("The specified log level: '{0}' is disabled on this build.", logLevelStr);
             CHG_UNREACHABLE();
         }
-        LogBase::logLevel = *logLevel;
+        LogBase::settings().logLevel = *logLevel;
         
         const auto filterStr = args.count("filter") ? args["filter"].as<std::string>() : ".*";
         std::regex filter(filterStr, std::regex::ECMAScript | std::regex::optimize);

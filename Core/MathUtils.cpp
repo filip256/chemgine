@@ -1,11 +1,10 @@
-#include "Maths.hpp"
+#include "MathUtils.hpp"
 
-#include <algorithm>
 #include <numbers>
 
-constexpr uint32_t Maths::gcd(uint32_t a, uint32_t b)
+constexpr uint32_t utils::gcd(uint32_t a, uint32_t b)
 {
-	//Stein algorithm
+	// Stein's algorithm
 	if (a == 0)
 		return b;
 	if (b == 0)
@@ -36,17 +35,17 @@ constexpr uint32_t Maths::gcd(uint32_t a, uint32_t b)
 	return a << k;
 }
 
-constexpr uint32_t Maths::lcm(uint32_t a, uint32_t b)
+constexpr uint32_t utils::lcm(uint32_t a, uint32_t b)
 {
 	return a / gcd(a, b) * b;
 }
 
-bool Maths::isInteger(const float_s v, const float_s precision)
+bool utils::isInteger(const float_s v, const float_s precision)
 {
 	return std::abs(v - static_cast<int>(v)) < precision;
 }
 
-uint32_t Maths::integerCoefficient(float_s v)
+uint32_t utils::integerCoefficient(float_s v)
 {
 	// find p, where p * v = int
 	if (isInteger(v, 0.05f))
@@ -63,7 +62,7 @@ uint32_t Maths::integerCoefficient(float_s v)
 	return static_cast<uint32_t>(p);
 }
 
-uint32_t Maths::integerCoefficient(const std::vector<float_s>& list)
+uint32_t utils::integerCoefficient(const std::vector<float_s>& list)
 {
 	if (list.empty())
 		return 1;
@@ -76,7 +75,7 @@ uint32_t Maths::integerCoefficient(const std::vector<float_s>& list)
 	return r;
 }
 
-uint64_t Maths::combinations(uint64_t n, uint64_t k)
+uint64_t utils::combinations(uint64_t n, uint64_t k)
 {
 	if (k > n) 
 		return 0;
@@ -96,12 +95,7 @@ uint64_t Maths::combinations(uint64_t n, uint64_t k)
 	return result;
 }
 
-float_s Maths::sqaredDistance(const float_s aX, const float_s aY, const float_s bX, const float_s bY)
-{
-	return (aX - bX) * (aX - bX) + (aY - bY) * (aY - bY);
-}
-
-float_s Maths::sqaredDistance(
+float_s utils::squaredDistance(
 	const float_s pX, const float_s pY,
 	const float_s rLeft, const float_s rTop, const float_s rRight, const float_s rBottom)
 {
@@ -110,7 +104,7 @@ float_s Maths::sqaredDistance(
 	return dx * dx + dy * dy;
 }
 
-std::pair<float_s, float_s> Maths::getSlopeAndIntercept(const float_s aX, const float_s aY, const float_s bX, const float_s bY)
+std::pair<float_s, float_s> utils::getSlopeAndIntercept(const float_s aX, const float_s aY, const float_s bX, const float_s bY)
 {
 	const float_s slope = (bY - aY) / (bX - aX);
 	return std::make_pair(slope, aY - slope * aX);

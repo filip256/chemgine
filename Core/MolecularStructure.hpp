@@ -2,7 +2,7 @@
 
 #include "Parsers.hpp"
 #include "Printers.hpp"
-#include "BondedAtom.hpp"
+#include "ASCIIStructurePrinter.hpp"
 
 #include <vector>
 #include <string>
@@ -11,8 +11,6 @@
 #include <unordered_set>
 #include <stack>
 #include <memory>
-
-class TextBlock;
 
 class MolecularStructure
 {
@@ -34,6 +32,9 @@ private:
     /// </summary>
     int16_t countImpliedHydrogens() const;
 
+    bool isFullyConnected() const;
+
+    MolecularStructure() = default;
     MolecularStructure(const MolecularStructure& other) noexcept;
 
 public:
@@ -42,10 +43,24 @@ public:
     MolecularStructure(const std::string& smiles);
     MolecularStructure(MolecularStructure&& structure) = default;
 
-    static std::optional<MolecularStructure> create(const std::string& smiles);
-
     MolecularStructure& operator=(MolecularStructure&&) = default;
 
+    static std::optional<MolecularStructure> fromSMILES(const std::string& smiles);
+    static std::optional<MolecularStructure> fromASCII(const std::string& ascii);
+    static std::optional<MolecularStructure> fromMolBin(std::istream& is);
+    static std::optional<MolecularStructure> loadMolBinFile(const std::string& path);
+
+    std::string toSMILES(const c_size startAtomIdx = 0) const;
+    ColoredTextBlock toASCII(const ASCII::PrintOptions options = ASCII::PrintOptions::Default) const;
+    void toMolBin(std::ostream& os) const;
+    void toMolBinFile(const std::string& path) const;
+
+private:
+    bool loadFromSMILES(const std::string& smiles);
+    bool loadFromASCII(const std::string& ascii);
+    bool loadFromMolBin(std::istream& is);
+
+public:
     /// <summary>
     /// Sorts atoms and bonds in decreasing order of atom precedence.
     /// Normalization simplifies algorithms and speeds up comparison.
@@ -54,12 +69,15 @@ public:
     void canonicalize();
 
     const Atom& getAtom(const c_size idx) const;
+    const BondedAtomBase& getBondedAtom(const c_size idx) const;
 
-    bool loadFromSMILES(const std::string& smiles);
-
-    std::string toSMILES() const;
-    std::string print() const;
     std::string printInfo() const;
+
+    /// <summary>
+    /// Returns the number of required hydrogens in order to complete the atom's valence.
+    /// If the valences of the atom aren't respected it returns -1.
+    /// </summary>
+    static int8_t getImpliedHydrogenCount(const BondedAtomBase& atom);
 
     /// <summary>
     /// Complexity: O(1)
@@ -202,14 +220,15 @@ public:
         const MolecularStructure& instance,
         const std::unordered_map<c_size, c_size>& ipMap);
 
+    using Cycle = std::vector<const BondedAtomBase*>;
     /// <summary>
     /// Computes and returns the fundamental cycles set of the molecule.
     /// </summary>
-    std::vector<std::vector<c_size>> getFundamentalCycleBasis() const;
+    std::vector<Cycle> getFundamentalCycleBasis() const;
     /// <summary>
     /// Computes and returns the set of minimal non-overlapping cycles of the molecule.
     /// </summary>
-    std::vector<std::vector<c_size>> getMinimalCycleBasis() const;
+    std::vector<Cycle> getMinimalCycleBasis() const;
 
     /// <summary>
     /// Returns true if both structures represent the exact same molecule.
@@ -227,17 +246,17 @@ public:
 
 
 template <>
-class Def::Parser<MolecularStructure>
+class def::Parser<MolecularStructure>
 {
 public:
     static std::optional<MolecularStructure> parse(const std::string& str)
     {
-        return MolecularStructure::create(str);
+        return MolecularStructure::fromSMILES(str);
     }
 };
 
 template <>
-class Def::Printer<MolecularStructure>
+class def::Printer<MolecularStructure>
 {
 public:
     static std::string print(const MolecularStructure& object)

@@ -56,12 +56,12 @@ struct std::less<Catalyst>
 
 
 template <>
-class Def::Parser<Catalyst>
+class def::Parser<Catalyst>
 {
 public:
 	static std::optional<Catalyst> parse(const std::string& str)
 	{
-		const auto pair = Def::parse<std::pair<std::string, Amount<Unit::MOLE_RATIO>>>(str);
+		const auto pair = def::parse<std::pair<std::string, Amount<Unit::MOLE_RATIO>>>(str);
 		if (not pair)
 			return std::nullopt;
 
@@ -70,16 +70,16 @@ public:
 };
 
 template <>
-class Def::Printer<Catalyst>
+class def::Printer<Catalyst>
 {
 public:
 	static std::string print(const Catalyst& object)
 	{
-		return Def::print(std::pair(object.getStructure().toSMILES(), object.getIdealAmount()));
+		return def::print(std::pair(object.getStructure().toSMILES(), object.getIdealAmount()));
 	}
 
 	static std::string prettyPrint(const Catalyst& object)
 	{
-		return Def::prettyPrint(std::pair(object.getStructure().toSMILES(), object.getIdealAmount()));
+		return def::prettyPrint(std::pair(object.getStructure().toSMILES(), object.getIdealAmount()));
 	}
 };

@@ -4,7 +4,8 @@
 #include "DrawableLabwareData.hpp"
 #include "DrawablePort.hpp"
 #include "ShapeFill.hpp"
-#include "SFML/Graphics.hpp"
+
+#include <SFML/Graphics.hpp>
 
 class DrawableComponent : public LabwareComponentBase
 {

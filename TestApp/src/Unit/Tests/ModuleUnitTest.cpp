@@ -34,7 +34,7 @@ ModuleUnitTest::ModuleUnitTest(
 	const std::regex& filter,
 	const std::string& defModulePath
 ) noexcept:
-	UnitTestGroup(name + '_' + Utils::extractFileName(defModulePath), filter)
+	UnitTestGroup(name + '_' + utils::extractFileName(defModulePath), filter)
 {
 	Accessor<>::setDataStore(dataStore);
 

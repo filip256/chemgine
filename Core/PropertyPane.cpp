@@ -21,7 +21,7 @@ const sf::Vector2f& MixturePropertyPane::LayerPropertyPane::getPosition() const
 void MixturePropertyPane::LayerPropertyPane::setSubject(const Layer& subject)
 {
 	this->subject = subject;
-	title.setString(Utils::capitalize(getLayerName(subject.getType())) + " Layer:");
+	title.setString(utils::capitalize(getLayerName(subject.getType())) + " Layer:");
 }
 
 void MixturePropertyPane::LayerPropertyPane::setPosition(const sf::Vector2f& position)
@@ -103,7 +103,7 @@ void MixturePropertyPane::ContentPropertyPane::draw(sf::RenderTarget& target, sf
 {
 	for (const auto& m : *subject)
 	{
-		propertyName.setString(Utils::capitalize(m.molecule.getData().name));
+		propertyName.setString(utils::capitalize(m.molecule.getData().name));
 		propertyValue.setString(m.amount.toString(12));
 		target.draw(propertyName, states);
 		target.draw(propertyValue, states);
@@ -134,7 +134,7 @@ void MixturePropertyPane::setSubject(const LabwareComponentBase& subject)
 	setPosition(subject.getPosition());
 
 #ifndef NDEBUG
-	title.setString(subject.getData().name + " <" + Utils::toHex(&subject) + '>');
+	title.setString(subject.getData().name + " <" + utils::toHex(&subject) + '>');
 #else
 	title.setString(subject.getData().name);
 #endif

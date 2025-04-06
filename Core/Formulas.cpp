@@ -6,7 +6,7 @@ Amount<Unit::LITER> Formulas::idealGasLaw(
 	const Amount<Unit::ATMOSPHERE> pressure,
 	const Amount<Unit::MOLE> moles)
 {
-	return ((moles.asStd() * temperature.asStd()) / pressure.asStd()) * Constants::IDEAL_GAS_CONSTANT / 100.0;
+	return ((moles.asStd() * temperature.asStd()) / pressure.asStd()) * Constants::IDEAL_GAS_CONSTANT / 100.0f;
 }
 
 Amount<Unit::GRAM_PER_MILLILITER> Formulas::idealGasLaw(
@@ -20,10 +20,10 @@ Amount<Unit::GRAM_PER_MILLILITER> Formulas::idealGasLaw(
 
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> Formulas::isobaricHeatCapacity(const uint8_t degreesOfFreedom)
 {
-	return Amount<Unit::JOULE_PER_MOLE_CELSIUS>((degreesOfFreedom + 2) * Constants::IDEAL_GAS_CONSTANT / 2.0);
+	return Amount<Unit::JOULE_PER_MOLE_CELSIUS>((degreesOfFreedom + 2) * Constants::IDEAL_GAS_CONSTANT / 2.0f);
 }
 
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> Formulas::isochoricHeatCapacity(const uint8_t degreesOfFreedom)
 {
-	return Amount<Unit::JOULE_PER_MOLE_CELSIUS>(degreesOfFreedom * Constants::IDEAL_GAS_CONSTANT / 2.0);
+	return Amount<Unit::JOULE_PER_MOLE_CELSIUS>(degreesOfFreedom * Constants::IDEAL_GAS_CONSTANT / 2.0f);
 }

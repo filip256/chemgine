@@ -25,7 +25,7 @@ void ForwardingContainer::add(const Reactant& reactant)
 
 void ForwardingContainer::add(Amount<Unit::JOULE> energy)
 {
-	energy /= forwardingRules.size();
+	energy /= static_cast<Amount<>::StorageType>(forwardingRules.size());
 	for (size_t i = 0; i < forwardingRules.size(); ++i)
 		forwardingRules[i].target->add(energy);
 }

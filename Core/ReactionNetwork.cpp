@@ -221,7 +221,7 @@ void ReactionNetwork::print(const size_t current, TextBlock& block, size_t& y, s
 
 std::string ReactionNetwork::print() const
 {
-	TextBlock block(100, 20);
+	TextBlock block;
 
 	size_t y = 0;
 	for (size_t i = 0; i < topLayer.size(); ++i)
@@ -232,7 +232,6 @@ std::string ReactionNetwork::print() const
 		++y;
 	}
 
-	block.trim();
 	return block.toString();
 }
 

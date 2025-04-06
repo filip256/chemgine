@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace Def
+namespace def
 {
 	namespace Syntax
 	{

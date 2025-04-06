@@ -43,9 +43,9 @@ struct std::hash<RetrosynthReaction>
 	{
 		size_t hash = 0;
 		for (const auto& [r, _] : reaction.reactants)
-			Utils::hashCombineWith(hash, r);
+			utils::hashCombineWith(hash, r);
 		for (const auto& [r, _] : reaction.products)
-			Utils::hashCombineWith(hash, r);
+			utils::hashCombineWith(hash, r);
 		return hash;
 	}
 };

@@ -1,6 +1,6 @@
 #include "EstimatorSpecifier.hpp"
 
-using namespace Def;
+using namespace def;
 
 EstimatorSpecifier::EstimatorSpecifier(
 	const Unit outUnit,

@@ -10,7 +10,7 @@
 #include <optional>
 #include <stdexcept>
 
-namespace Def
+namespace def
 {
 	template <typename T, typename... Args>
 	static std::optional<T> parse(const std::string& str, Args&&... args);
@@ -30,7 +30,7 @@ namespace Def
 		{
 			if constexpr (std::is_integral_v<T>)
 			{
-				const auto r = Def::parse<int64_t>(str);
+				const auto r = def::parse<int64_t>(str);
 				return r &&
 					*r >= std::numeric_limits<T>::min() && *r <= std::numeric_limits<T>::max() ?
 					std::optional(static_cast<T>(*r)) :
@@ -38,19 +38,20 @@ namespace Def
 			}
 			else if constexpr (std::is_floating_point_v<T>)
 			{
-				const auto stripped = Utils::strip(str);
+				const auto stripped = utils::strip(str);
 				if (stripped.empty())
 					return std::nullopt;
 
-				if (stripped == Def::Amounts::Min)
+				if (stripped == def::Amounts::Min)
 					return std::numeric_limits<T>::lowest();
-				if (stripped == Def::Amounts::Max)
+				if (stripped == def::Amounts::Max)
 					return std::numeric_limits<T>::max();
 
 				try
 				{
-					const auto val = std::stold(stripped);
-					return val >= std::numeric_limits<T>::lowest() && val <= std::numeric_limits<T>::max() ?
+					size_t pos = 0;
+					const auto val = std::stold(stripped, &pos);
+					return pos == str.size() && val >= std::numeric_limits<T>::lowest() && val <= std::numeric_limits<T>::max() ?
 						std::optional(static_cast<T>(val)) :
 						std::nullopt;
 				}
@@ -72,7 +73,7 @@ namespace Def
 	public:
 		static std::optional<std::string> parse(const std::string& str)
 		{
-			return Utils::strip(str);
+			return utils::strip(str);
 		}
 	};
 
@@ -87,7 +88,9 @@ namespace Def
 
 			try
 			{
-				return std::optional<int64_t>(std::stoll(str));
+				size_t pos = 0;
+				const auto val = std::stoll(str, &pos);
+				return pos == str.size() ? std::optional(val) : std::nullopt;
 			}
 			catch (const std::invalid_argument&)
 			{
@@ -111,7 +114,9 @@ namespace Def
 
 			try
 			{
-				return std::optional<int64_t>(std::stoull(str));
+				size_t pos = 0;
+				const auto val = std::stoull(str, &pos);
+				return pos == str.size() ? std::optional(val) : std::nullopt;
 			}
 			catch (const std::invalid_argument&)
 			{
@@ -183,7 +188,7 @@ namespace Def
 
 				if (ignoreEmpty == false || i - lastSep - 1 > 0)
 				{
-					auto r = Def::parse<T>(listStr.substr(lastSep + 1, i - lastSep - 1));
+					auto r = def::parse<T>(utils::strip(listStr.substr(lastSep + 1, i - lastSep - 1)));
 					if(not r)
 						return std::nullopt;
 
@@ -194,7 +199,7 @@ namespace Def
 
 			if (ignoreEmpty == false || static_cast<size_t>(lastSep + 1) < listStr.size())
 			{
-				auto r = Def::parse<T>(listStr.substr(lastSep + 1));
+				auto r = def::parse<T>(utils::strip(listStr.substr(lastSep + 1)));
 				if (not r)
 					return std::nullopt;
 
@@ -218,15 +223,15 @@ namespace Def
 	public:
 		static std::optional<std::pair<T1, T2>> parse(const std::string& str, const char sep = ':')
 		{
-			const auto& pairStr = Utils::split(removeBrackets(Utils::strip(str)), sep, '{', '}', true);
+			const auto& pairStr = utils::split(removeBrackets(utils::strip(str)), sep, '{', '}', true);
 			if (pairStr.size() != 2)
 				return std::nullopt;
 
-			const auto val1 = Def::parse<T1>(pairStr.front());
+			const auto val1 = def::parse<T1>(utils::strip(pairStr.front()));
 			if (not val1)
 				return std::nullopt;
 
-			const auto val2 = Def::parse<T2>(pairStr.back());
+			const auto val2 = def::parse<T2>(utils::strip(pairStr.back()));
 			if (not val2)
 				return std::nullopt;
 
@@ -240,7 +245,7 @@ namespace Def
 	public:
 		static std::optional<std::unordered_map<std::string, T>> parse(const std::string& str)
 		{
-			auto entries = Def::parse<std::vector<std::pair<std::string, std::string>>>(str);
+			auto entries = def::parse<std::vector<std::pair<std::string, std::string>>>(str);
 			if (not entries)
 				return std::nullopt;
 
@@ -248,7 +253,8 @@ namespace Def
 			result.reserve(entries->size());
 			for (size_t i = 0; i < entries->size(); ++i)
 			{
-				auto value = Def::parse<T>((*entries)[i].second);
+				utils::strip((*entries)[i].second);
+				auto value = def::parse<T>((*entries)[i].second);
 				if (not value)
 					return std::nullopt;
 
@@ -262,22 +268,22 @@ namespace Def
 
 
 template <typename T, typename... Args>
-inline std::optional<T> Def::parse(const std::string& str, Args&&... args)
+inline std::optional<T> def::parse(const std::string& str, Args&&... args)
 {
-	return Def::Parser<T>::parse(str, std::forward<Args>(args)...);
+	return def::Parser<T>::parse(str, std::forward<Args>(args)...);
 }
 
 template <typename T>
-inline std::optional<T> Def::parseUnsigned(const std::string& str)
+inline std::optional<T> def::parseUnsigned(const std::string& str)
 {
-	const auto r = Def::Parser<T>::parse(str);
+	const auto r = def::Parser<T>::parse(str);
 	return not r || *r < 0 ?
 		std::nullopt :
 		std::optional(r);
 }
 
 template <typename E>
-inline std::optional<E> Def::parseEnum(const std::string& str)
+inline std::optional<E> def::parseEnum(const std::string& str)
 {
 	static_assert(std::is_enum_v<E>, "Enum Parser: Unsupported non-enum type.");
 

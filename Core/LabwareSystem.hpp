@@ -3,7 +3,8 @@
 #include "LabwareComponentBase.hpp"
 #include "SizeTypedefs.hpp"
 #include "LabwareConnection.hpp"
-#include "SFML/Graphics.hpp"
+
+#include <SFML/Graphics.hpp>
 
 #include <limits>
 

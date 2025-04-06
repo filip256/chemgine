@@ -38,13 +38,13 @@ bool LabwareComponentBase::isContainer() const
 	return false;
 }
 
-bool LabwareComponentBase::tryConnect(LabwareComponentBase& other)
+bool LabwareComponentBase::tryConnect(LabwareComponentBase&)
 {
 	return false;
 }
 
-void LabwareComponentBase::disconnect(Ref<ContainerBase> dump, const LabwareComponentBase& other)
+void LabwareComponentBase::disconnect(Ref<ContainerBase>, const LabwareComponentBase&)
 {}
 
-void LabwareComponentBase::tick(const Amount<Unit::SECOND> timespan)
+void LabwareComponentBase::tick(const Amount<Unit::SECOND>)
 {}

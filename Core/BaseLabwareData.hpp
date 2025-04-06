@@ -14,7 +14,7 @@ typedef uint32_t LabwareId;
 class BaseLabwareData
 {
 private:
-	virtual void dumpCustomProperties(Def::DataDumper& dump) const = 0;
+	virtual void dumpCustomProperties(def::DataDumper& dump) const = 0;
 
 public:
 	const LabwareId id;

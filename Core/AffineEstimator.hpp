@@ -68,9 +68,9 @@ bool AffineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const 
 
 	const auto& oth = static_cast<decltype(*this)&>(other);
 	return
-		Utils::floatEqual(this->vShift, oth.vShift, epsilon) &&
-		Utils::floatEqual(this->hShift, oth.hShift, epsilon) &&
-		Utils::floatEqual(this->scale, oth.scale, epsilon) &&
+		utils::floatEqual(this->vShift, oth.vShift, epsilon) &&
+		utils::floatEqual(this->hShift, oth.hShift, epsilon) &&
+		utils::floatEqual(this->scale, oth.scale, epsilon) &&
 		Base::isEquivalent(oth, epsilon);
 }
 
@@ -89,15 +89,15 @@ void AffineEstimator<OutU, InU>::dumpDefinition(
 		return;
 	}
 
-	static const auto valueOffset = checked_cast<uint8_t>(Utils::max(
-		Def::Data::Base.size(),
-		Def::Data::VerticalShift.size(),
-		Def::Data::HorizontalShift.size(),
-		Def::Data::Scale.size()));
+	static const auto valueOffset = checked_cast<uint8_t>(utils::max(
+		def::Data::Base.size(),
+		def::Data::VerticalShift.size(),
+		def::Data::HorizontalShift.size(),
+		def::Data::Scale.size()));
 
 	const auto& base = Base::getBase();
 
-	Def::DataDumper dump(out, valueOffset, baseIndent, prettify);
+	def::DataDumper dump(out, valueOffset, baseIndent, prettify);
 	if (not printInline)
 	{
 		// try to OOL print base, since it might have multiple references
@@ -108,7 +108,7 @@ void AffineEstimator<OutU, InU>::dumpDefinition(
 	else if(base->getRefCount() > 1 && not alreadyPrinted.contains(base->getId()))
 	{
 		Log(this).fatal("Tried to inline-print an estimator sub-definition (id: {0}) with multiple references, id: {1}.",
-			Def::print(base->getId()), Def::print(this->id));
+			def::print(base->getId()), def::print(this->id));
 	}
 
 	alreadyPrinted.emplace(Base::id);
@@ -116,13 +116,13 @@ void AffineEstimator<OutU, InU>::dumpDefinition(
 	if (printInline)
 		dump.header("", Base::getUnitSpecifier(), "");
 	else
-		dump.header(Def::Types::Data, Base::getUnitSpecifier(), Base::getDefIdentifier());
+		dump.header(def::Types::Data, Base::getUnitSpecifier(), Base::getDefIdentifier());
 
 	dump.beginProperties()
-		.subDefinition(Def::Data::Base, base, alreadyPrinted)
-		.defaultPropertyWithSep(Def::Data::VerticalShift, vShift, 0.0f, true)
-		.defaultPropertyWithSep(Def::Data::HorizontalShift, hShift, 0.0f, true)
-		.defaultPropertyWithSep(Def::Data::Scale, scale, 1.0f, true)
+		.subDefinition(def::Data::Base, base, alreadyPrinted)
+		.defaultPropertyWithSep(def::Data::VerticalShift, vShift, 0.0f, true)
+		.defaultPropertyWithSep(def::Data::HorizontalShift, hShift, 0.0f, true)
+		.defaultPropertyWithSep(def::Data::Scale, scale, 1.0f, true)
 		.endProperties();
 
 	if (not printInline)

@@ -27,7 +27,7 @@ public:
 	ReactionRepository(const ReactionRepository&) = delete;
 	ReactionRepository(ReactionRepository&&) = default;
 
-	bool add(const Def::Object& definition);
+	bool add(const def::Object& definition);
 
 	bool contains(const ReactionId id) const;
 	const ReactionData& at(const ReactionId id) const;

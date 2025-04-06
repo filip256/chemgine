@@ -1,6 +1,6 @@
 #include "RandomizedParticle.hpp"
 #include "ParticleSystem.hpp"
-#include "Maths.hpp"
+#include "MathUtils.hpp"
 
 #include <cmath>
 
@@ -23,26 +23,26 @@ void RandomizedParticle::reset()
 {
 	auto rng = getRandom();
 
-	const auto size = system.particleSize + rng * 10;
+	const auto size = system.particleSize + rng * 10.0f;
 	shape.setSize(sf::Vector2f(size, size));
 	shape.setOrigin(shape.getSize() / 2.0f);
 	shape.setPosition(system.origin);
 	shape.setFillColor(system.color);
 
-	speed = system.speed - rng * 10;
-	lifespan = system.lifespan + rng * 1.5;
-	rotationIncrement = Maths::clamp(0.1 / rng, 0.5, 2.0);
+	speed = system.speed - rng * 10.0f;
+	lifespan = system.lifespan + rng * 1.5f;
+	rotationIncrement = std::clamp(0.1f / rng, 0.5f, 2.0f);
 
 	rng = getRandom();
-	direction = system.direction + rng * 20;
-	targetDirection = system.targetDirection + rng * 20;
+	direction = system.direction + rng * 20.0f;
+	targetDirection = system.targetDirection + rng * 20.0f;
 
 	elapsed = 0.0;
 }
 
 void RandomizedParticle::tick(Amount<Unit::SECOND> timespan)
 {
-	if (idlespan > 0.0)
+	if (idlespan > 0.0f)
 	{
 		idlespan -= timespan;
 		return;
@@ -57,7 +57,8 @@ void RandomizedParticle::tick(Amount<Unit::SECOND> timespan)
 	elapsed += timespan;
 	
 	const auto& col = shape.getFillColor();
-	shape.setFillColor(sf::Color(col.r, col.g, col.b, system.color.a * ((lifespan - elapsed) / lifespan).asStd()));
+	const auto fadeMultiplier = ((lifespan - elapsed) / lifespan).asStd();
+	shape.setFillColor(sf::Color(col.r, col.g, col.b, static_cast<sf::Uint8>(system.color.a * fadeMultiplier)));
 
 	const auto distance = speed.to<Unit::NONE>(timespan).asStd();
 	const Amount<Unit::RADIAN> radians = direction;
@@ -73,7 +74,7 @@ void RandomizedParticle::tick(Amount<Unit::SECOND> timespan)
 
 void RandomizedParticle::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	if (idlespan > 0.0)
+	if (idlespan > 0.0f)
 		return;
 
 	target.draw(shape, states);

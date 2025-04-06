@@ -22,7 +22,7 @@ Value<T>& Value<T>::operator=(const Value<T>& other)
 }
 
 template <class T>
-bool Value<T>::operator==(const Value<T>& other) const { return Utils::floatEqual(value, other.value, epsilon); }
+bool Value<T>::operator==(const Value<T>& other) const { return utils::floatEqual(value, other.value, epsilon); }
 
 template <class T>
 bool Value<T>::operator!=(const Value<T>& other) const { return !(*this == other); }

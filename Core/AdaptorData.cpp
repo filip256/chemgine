@@ -11,9 +11,9 @@ AdaptorData::AdaptorData(
 	ContainerLabwareData(id, name, std::move(ports), textureFile, textureScale, volume, LabwareType::ADAPTOR)
 {}
 
-void AdaptorData::dumpCustomProperties(Def::DataDumper& dump) const
+void AdaptorData::dumpCustomProperties(def::DataDumper& dump) const
 {
-	dump.propertyWithSep(Def::Labware::Volume, getVolume())
-		.propertyWithSep(Def::Labware::Texture, "~/" + textureFile)
-		.property(Def::Labware::TextureScale, textureScale);
+	dump.propertyWithSep(def::Labware::Volume, getVolume())
+		.propertyWithSep(def::Labware::Texture, "~/" + textureFile)
+		.property(def::Labware::TextureScale, textureScale);
 }

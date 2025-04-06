@@ -3,7 +3,7 @@
 #include "FileParser.hpp"
 #include "FileStore.hpp"
 
-namespace Def
+namespace def
 {
 	class AnalysisResult
 	{
@@ -20,7 +20,7 @@ namespace Def
 	private:
 		FileStore& mainFileStore;
 		FileStore fileStore;
-		Def::FileParser parser;
+		def::FileParser parser;
 
 	public:
 		FileAnalyzer(

@@ -1,6 +1,6 @@
 #include "BuildUtils.hpp"
 
-const std::string& Utils::getBuildTypeName()
+const std::string& utils::getBuildTypeName()
 {
 #ifdef NDEBUG
 	static const std::string buildTypeName = "RELEASE";

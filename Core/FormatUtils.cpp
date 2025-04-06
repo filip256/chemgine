@@ -4,19 +4,19 @@
 #include <sstream>
 #include <iomanip>
 
-void Utils::pluralize(std::string& str)
+void utils::pluralize(std::string& str)
 {
 	str += 's';
 }
 
-std::string Utils::pluralize(const std::string& str)
+std::string utils::pluralize(const std::string& str)
 {
 	std::string temp(str);
 	pluralize(temp);
 	return temp;
 }
 
-void Utils::capitalize(std::string& str)
+void utils::capitalize(std::string& str)
 {
 	if (str.empty() || str.front() < 'a' || str.front() > 'z')
 		return;
@@ -24,14 +24,14 @@ void Utils::capitalize(std::string& str)
 	str.front() -= ' ';
 }
 
-std::string Utils::capitalize(const std::string& str)
+std::string utils::capitalize(const std::string& str)
 {
 	std::string temp(str);
 	capitalize(temp);
 	return temp;
 }
 
-void Utils::formatFloatingPoint(std::string& str, const uint8_t maxDigits)
+void utils::formatFloatingPoint(std::string& str, const uint8_t maxDigits)
 {
 	str = str.substr(0, maxDigits);
 
@@ -49,37 +49,43 @@ void Utils::formatFloatingPoint(std::string& str, const uint8_t maxDigits)
 	str = str.substr(0, z + 1);
 }
 
-std::string Utils::formatFloatingPoint(const std::string& str, const uint8_t maxDigits)
+std::string utils::formatFloatingPoint(const std::string& str, const uint8_t maxDigits)
 {
 	std::string temp(str);
 	formatFloatingPoint(temp, maxDigits);
 	return temp;
 }
 
-void Utils::padFront(std::string& str, const size_t minLenght, const char padding)
+void utils::padLeft(std::string& str, const size_t minLength, const char padding)
 {
-	const auto padLen = minLenght - str.size();
-	if (minLenght <= str.size())
-		return;
-	
-	str = std::string(minLenght - str.size(), padding) + str;
+	if (minLength > str.size())
+		str = std::string(minLength - str.size(), padding) + str;
 }
 
-std::string Utils::padFront(const std::string& str, const size_t minLength, const char padding)
+std::string utils::padLeft(const std::string& str, const size_t minLength, const char padding)
 {
-	std::string temp(str);
-	padFront(temp, minLength, padding);
-	return temp;
+	return minLength > str.size() ? std::string(minLength - str.size(), padding) + str : str;
 }
 
-std::string Utils::toHex(const uint64_t value)
+void utils::padRight(std::string& str, const size_t minLength, const char padding)
+{
+	if (minLength > str.size())
+		str += std::string(minLength - str.size(), padding);
+}
+
+std::string utils::padRight(const std::string& str, const size_t minLength, const char padding)
+{
+	return minLength > str.size() ? str + std::string(minLength - str.size(), padding) : str;
+}
+
+std::string utils::toHex(const uint64_t value)
 {
 	std::stringstream ss;
 	ss << std::hex << std::showbase << value;
 	return ss.str();
 }
 
-std::string Utils::toHex(const void* ptr)
+std::string utils::toHex(const void* ptr)
 {
 	return toHex(reinterpret_cast<uint64_t>(ptr));
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AggregationType.hpp"
-#include "Maths.hpp"
+#include "MathUtils.hpp"
 
 enum class LayerType : uint8_t
 {
@@ -23,9 +23,9 @@ enum class LayerType : uint8_t
 
 
 
-static inline constexpr uint8_t toIndex(const LayerType type)
+static inline uint8_t toIndex(const LayerType type)
 {
-	return Maths::ilog2(static_cast<uint8_t>(type));
+	return utils::ilog2(static_cast<uint8_t>(type));
 }
 
 static inline constexpr bool isRealLayer(const LayerType type)
@@ -48,7 +48,7 @@ static inline constexpr bool isSolidLayer(const LayerType type)
 	return type == LayerType::SOLID;
 }
 
-static inline constexpr bool getLayerCount()
+static inline bool getLayerCount()
 {
 	return toIndex(LayerType::LAST);
 }

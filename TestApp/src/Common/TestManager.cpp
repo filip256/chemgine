@@ -17,7 +17,7 @@ UnitTests::UnitTests(const std::regex& filter) noexcept :
 {
 	registerTest<EstimatorUnitTests>("Estimator");
 	registerTest<StructureUnitTests>("Structure", "./TestFiles/builtin/radicals.cdef");
-	registerTest<DefUnitTests>("Def", "./TestFiles/builtin/radicals.cdef");
+	registerTest<DefUnitTests>("def", "./TestFiles/builtin/radicals.cdef");
 	registerTest<ModuleUnitTest>("Module", "./TestFiles/builtin.cdef");
 	registerTest<MixtureUnitTests>("Mixture", "./TestFiles/builtin.cdef");
 }
@@ -29,7 +29,7 @@ PerfTests::PerfTests(const std::regex& filter) noexcept :
 {
 	registerTest<EstimatorPerfTests>("Estimator");
 	registerTest<StructurePerfTests>("Structure", "./TestFiles/builtin/radicals.cdef");
-	registerTest<DefPerfTests>("Def", "./TestFiles/builtin/radicals.cdef");
+	registerTest<DefPerfTests>("def", "./TestFiles/builtin/radicals.cdef");
 	registerTest<FPSPerfTests>("FPS", "./TestFiles/builtin.cdef");
 }
 
@@ -71,13 +71,13 @@ void TestManager::runPerf()
 	const auto current = perfTests.generateReport();
 
 	PerformanceReport prev;
-	const auto& buildName = Utils::getBuildTypeName();
+	const auto& buildName = utils::getBuildTypeName();
 
 	if (prev.load("./Reports/perf_" + buildName + "_LTS.txt"))
 		Log(this).info("Performance report:\n{0}", CHG_DELAYED_EVAL(current.compare(prev).toString()));
 	else
 	{
-		Utils::createDir("./Reports");
+		utils::createDir("./Reports");
 		Log(this).warn("Missing previous performance report.");
 	}
 

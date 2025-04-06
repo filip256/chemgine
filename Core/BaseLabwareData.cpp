@@ -14,25 +14,25 @@ BaseLabwareData::BaseLabwareData(
 
 void BaseLabwareData::dumpDefinition(std::ostream& out, const bool prettify) const
 {
-	static const auto valueOffset = checked_cast<uint8_t>(Utils::max(
-		Def::Labware::Id.size(),
-		Def::Labware::Name.size(),
-		Def::Labware::Ports.size(),
-		Def::Labware::Volume.size(),
-		Def::Labware::Length.size(),
-		Def::Labware::Efficiency.size(),
-		Def::Labware::InnerMask.size(),
-		Def::Labware::CoolantMask.size(),
-		Def::Labware::Ports.size(),
-		Def::Labware::Texture.size(),
-		Def::Labware::TextureScale.size()));
+	static const auto valueOffset = checked_cast<uint8_t>(utils::max(
+		def::Labware::Id.size(),
+		def::Labware::Name.size(),
+		def::Labware::Ports.size(),
+		def::Labware::Volume.size(),
+		def::Labware::Length.size(),
+		def::Labware::Efficiency.size(),
+		def::Labware::InnerMask.size(),
+		def::Labware::CoolantMask.size(),
+		def::Labware::Ports.size(),
+		def::Labware::Texture.size(),
+		def::Labware::TextureScale.size()));
 
-	Def::DataDumper dump(out, valueOffset, 0, prettify);
-	dump.header(Def::Types::Labware, type, "")
+	def::DataDumper dump(out, valueOffset, 0, prettify);
+	dump.header(def::Types::Labware, type, "")
 		.beginProperties()
-		.propertyWithSep(Def::Labware::Id, id)
-		.propertyWithSep(Def::Labware::Name, name)
-		.propertyWithSep(Def::Labware::Ports, ports);
+		.propertyWithSep(def::Labware::Id, id)
+		.propertyWithSep(def::Labware::Name, name)
+		.propertyWithSep(def::Labware::Ports, ports);
 
 	dumpCustomProperties(dump);
 	dump.endProperties()

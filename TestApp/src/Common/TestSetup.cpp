@@ -29,7 +29,7 @@ CreateDirTestSetup::CreateDirTestSetup(
 
 void CreateDirTestSetup::run()
 {
-	Utils::createDir(directory);
+	utils::createDir(directory);
 }
 
 
@@ -41,5 +41,5 @@ RemoveDirTestSetup::RemoveDirTestSetup(
 
 void RemoveDirTestSetup::run()
 {
-	Utils::removeDir(directory);
+	utils::removeDir(directory);
 }

@@ -1,5 +1,5 @@
 #include "RetrosynthReaction.hpp"
-#include "TextBlock.hpp"
+#include "Buffer2D.hpp"
 
 RetrosynthReaction::RetrosynthReaction(
 	const ReactionData& baseReaction,
@@ -7,8 +7,8 @@ RetrosynthReaction::RetrosynthReaction(
 	const std::vector<StructureRef>& products
 ) noexcept :
 	baseReaction(baseReaction),
-	reactants(Utils::aggregate<StructureRef, uint8_t>(reactants)),
-	products(Utils::aggregate<StructureRef, uint8_t>(products))
+	reactants(utils::aggregate<StructureRef, uint8_t>(reactants)),
+	products(utils::aggregate<StructureRef, uint8_t>(products))
 {}
 
 const std::unordered_map<StructureRef, uint8_t>& RetrosynthReaction::getReactants() const
@@ -29,18 +29,18 @@ const ReactionData& RetrosynthReaction::getBaseData() const
 void RetrosynthReaction::print(std::ostream& out) const
 {
 	// reactants and products
-	TextBlock buffer;
+	ColoredTextBlock buffer;
 	const auto lastR = --reactants.end();
 	for(auto r = reactants.begin(); r != lastR; ++r)
 	{
 		if(r->second > 1)
 			buffer.appendRight(std::to_string(r->second) + "x ");
-		buffer.appendRight(r->first.getStructure().print());
+		buffer.appendRight(r->first.getStructure().toASCII());
 		buffer.appendRight(" + ");
 	}
 	if (lastR->second > 1)
 		buffer.appendRight(std::to_string(lastR->second) + "x ");
-	buffer.appendRight(lastR->first.getStructure().print());
+	buffer.appendRight(lastR->first.getStructure().toASCII());
 
 	if(baseReaction.isCutReaction())
 		buffer.appendRight(" ÄXÄ> ");
@@ -52,12 +52,12 @@ void RetrosynthReaction::print(std::ostream& out) const
 	{
 		if (p->second > 1)
 			buffer.appendRight(std::to_string(p->second) + "x ");
-		buffer.appendRight(p->first.getStructure().print());
+		buffer.appendRight(p->first.getStructure().toASCII());
 		buffer.appendRight(" + ");
 	}
 	if (lastP->second > 1)
 		buffer.appendRight(std::to_string(lastP->second) + "x ");
-	buffer.appendRight(lastP->first.getStructure().print());
+	buffer.appendRight(lastP->first.getStructure().toASCII());
 
 	out << buffer << '\n';
 	baseReaction.print(out);

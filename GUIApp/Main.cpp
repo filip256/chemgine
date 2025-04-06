@@ -1,19 +1,19 @@
 #include "DataStore.hpp"
 #include "UIContext.hpp"
 
+#include "BinUtils.hpp"
+
 int main()
 {
-    LogBase::logLevel = LogType::DEBUG;
+    LogBase::settings().logLevel = LogType::INFO;
 
     DataStore store;
     Accessor<>::setDataStore(store);
-
     store.load("./../Data/builtin.cdef");
 
     //MolecularStructure("C12CCC1C2").getMinimalCycles();
     const auto d = MolecularStructure("C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67").getMinimalCycleBasis();
-    Log().info(MolecularStructure("CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C").printInfo());
-
+    Log().info(MolecularStructure("COC1C=C2C(=CC=1)NCC2CCN(C)C").printInfo());
 
     //MolecularStructure c1("NC2C1NCC=12");
     //MolecularStructure c2("NC2C1NCC12");

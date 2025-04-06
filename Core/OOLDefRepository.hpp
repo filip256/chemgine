@@ -4,7 +4,7 @@
 #include <memory>
 #include <unordered_map>
 
-namespace Def
+namespace def
 {
 	class Object;
 }
@@ -12,16 +12,16 @@ namespace Def
 class OOLDefRepository
 {
 private:
-	std::unordered_map<std::string, std::unique_ptr<const Def::Object>> definitions;
+	std::unordered_map<std::string, std::unique_ptr<const def::Object>> definitions;
 
 public:
 	OOLDefRepository() = default;
 	OOLDefRepository(const OOLDefRepository&) = delete;
 	OOLDefRepository(OOLDefRepository&&) = default;
 
-	const Def::Object* add(Def::Object&& definition);
+	const def::Object* add(def::Object&& definition);
 
-	const Def::Object* getDefinition(const std::string& identifier) const;
+	const def::Object* getDefinition(const std::string& identifier) const;
 
 	size_t totalDefinitionCount() const;
 

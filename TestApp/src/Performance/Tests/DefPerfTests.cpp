@@ -95,10 +95,10 @@ DefPerfTests::DefPerfTests(
 {
 	registerTest<PerfTestSetup<CreateDirTestSetup>>("setup", "./temp");
 
-	registerTest<PerfTestSetup<DefPerfSetup>>("setup", Utils::copy(inputPath), "./temp/builtin.cdef", false);
+	registerTest<PerfTestSetup<DefPerfSetup>>("setup", utils::copy(inputPath), "./temp/builtin.cdef", false);
 	registerTest<DefLoadPerfTest>("load", std::chrono::seconds(20), "./temp/builtin.cdef");
 
-	registerTest<PerfTestSetup<DefPerfSetup>>("setup", Utils::copy(inputPath), "./temp/builtin_pretty.cdef", true);
+	registerTest<PerfTestSetup<DefPerfSetup>>("setup", utils::copy(inputPath), "./temp/builtin_pretty.cdef", true);
 	registerTest<DefLoadPerfTest>("load_pretty", std::chrono::seconds(20), "./temp/builtin_pretty.cdef");
 
 	// Disabled for now since dump does SSD writes

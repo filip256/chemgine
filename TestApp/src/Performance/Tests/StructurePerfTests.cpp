@@ -1,26 +1,26 @@
 #include "Performance/Tests/StructurePerfTests.hpp"
 
+//
+// StructureSMILESPerfTest
+//
+
 StructureSMILESPerfTest::StructureSMILESPerfTest(
 	const std::string& name,
 	const std::variant<uint64_t, std::chrono::nanoseconds> limit,
 	std::string&& smiles
 ) noexcept:
 	TimedTest(name + '_' + smiles, limit),
-	smiles(std::move(smiles)),
-	molecule("")
+	smiles(std::move(smiles))
 {}
 	
 void StructureSMILESPerfTest::task()
 {
-	molecule.loadFromSMILES(smiles);
-	dontOptimize = (molecule.toSMILES().empty());
+	dontOptimize = (MolecularStructure::fromSMILES(smiles)->toSMILES().empty());
 }
 
-void StructureSMILESPerfTest::postTask()
-{
-	molecule.clear();
-}
-
+//
+// StructurePerfTestBase
+//
 
 StructurePerfTestBase::StructurePerfTestBase(
 	const std::string& name,
@@ -31,6 +31,9 @@ StructurePerfTestBase::StructurePerfTestBase(
 	target(targetSmiles)
 {}
 
+//
+// StructureComparePerfTestBase
+//
 
 StructureComparePerfTestBase::StructureComparePerfTestBase(
 	const std::string& name,
@@ -43,30 +46,45 @@ StructureComparePerfTestBase::StructureComparePerfTestBase(
 	pattern(patternSmiles)
 {}
 
+//
+// StructureEqualityPerfTest
+//
 
 void StructureEqualityPerfTest::task()
 {
 	dontOptimize = (target == pattern);
 }
 
+//
+// StructureInequalityPerfTest
+//
 
 void StructureInequalityPerfTest::task()
 {
 	dontOptimize = (target != pattern);
 }
 
+//
+// StructureAtomMapPerfTest
+//
 
 void StructureAtomMapPerfTest::task()
 {
 	dontOptimize = static_cast<bool>(target.mapTo(pattern, true).size());
 }
 
+//
+// StructureMaximalAtomMapPerfTest
+//
 
 void StructureMaximalAtomMapPerfTest::task()
 {
 	dontOptimize = static_cast<bool>(target.maximalMapTo(pattern).first.size());
 }
 
+//
+// StructureSubstitutionPerfTest
+//
 
 StructureSubstitutionPerfTest::StructureSubstitutionPerfTest(
 	const std::string& name,
@@ -83,18 +101,63 @@ void StructureSubstitutionPerfTest::task()
 	dontOptimize = MolecularStructure::addSubstituents(target, pattern, atomMap).isEmpty();
 }
 
+//
+// StructureFundamentalCyclePerfTest
+//
 
 void StructureFundamentalCyclePerfTest::task()
 {
 	dontOptimize = static_cast<bool>(target.getFundamentalCycleBasis().size());
 }
 
+//
+// StructureMinimalCyclePerfTest
+//
 
 void StructureMinimalCyclePerfTest::task()
 {
 	dontOptimize = static_cast<bool>(target.getMinimalCycleBasis().size());
 }
 
+//
+// ASCIIPrintfTest
+//
+
+void ASCIIPrintTest::task()
+{
+	dontOptimize = static_cast<bool>(target.toASCII().toString().size());
+}
+
+//
+// ASCIIParseTest
+//
+
+ASCIIParseTest::ASCIIParseTest(
+	const std::string& name,
+	const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+	const std::string& smiles
+) noexcept :
+	TimedTest(name + '_' + smiles, limit),
+	ascii(generateASCII(smiles))
+{}
+
+std::string ASCIIParseTest::generateASCII(const std::string& smiles)
+{
+	const auto molecule = MolecularStructure::fromSMILES(smiles);
+	if (not molecule)
+		Log<ASCIIParseTest>().fatal("Failed to initialize test due to invalid SMILES: '{0}'.", smiles);
+
+	return molecule->toASCII().toString().toString();
+}
+
+void ASCIIParseTest::task()
+{
+	dontOptimize = MolecularStructure::fromASCII(ascii)->isEmpty();
+}
+
+//
+// StructurePerfTests
+//
 
 StructurePerfTests::StructurePerfTests(
 	std::string&& name,
@@ -141,6 +204,11 @@ StructurePerfTests::StructurePerfTests(
 
 	registerTest<StructureMinimalCyclePerfTest>("minimal_cycle", std::chrono::seconds(10), "CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C");
 	registerTest<StructureMinimalCyclePerfTest>("minimal_cycle", std::chrono::seconds(10), "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67");
+
+	registerTest<ASCIIPrintTest>("ascii_print", std::chrono::seconds(30), "CCN(CC)C(=O)C1CN(C2CC3=CNC4=CC=CC(=C34)C2=C1)C");
+	registerTest<ASCIIPrintTest>("ascii_print", std::chrono::seconds(30), "CC(=O)OC1=C2OC4C(OC(C)=O)C=CC3C5CC(C=C1)=C2C34CCN5C");
+	registerTest<ASCIIParseTest>("ascii_parse", std::chrono::seconds(10), "CCN(CC)C(=O)C1CN(C2CC3=CNC4=CC=CC(=C34)C2=C1)C");
+	registerTest<ASCIIParseTest>("ascii_parse", std::chrono::seconds(10), "CC(=O)OC1=C2OC4C(OC(C)=O)C=CC3C5CC(C=C1)=C2C34CCN5C");
 
 	registerTest<PerfTestSetup<AccessorTestCleanup>>("cleanup");
 	Accessor<>::unsetDataStore();

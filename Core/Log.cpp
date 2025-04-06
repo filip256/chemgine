@@ -4,6 +4,9 @@
 #include "STLUtils.hpp"
 #include "PathUtils.hpp"
 #include "BuildUtils.hpp"
+#include "StringUtils.hpp"
+#include "ConcurrencyUtils.hpp"
+#include "ColoredString.hpp"
 
 #include <unordered_map>
 
@@ -37,18 +40,18 @@ size_t LogBase::foldCount = static_cast<size_t>(-1);
 std::vector<LogType> LogBase::hideStack = {};
 
 LogBase::LogBase(
-	std::string&& address,
-	std::string&& sourceName
+	const void* address,
+	const std::type_index sourceType
 ) noexcept :
-	address(std::move(address)),
-	sourceName(std::move(sourceName))
+	address(address),
+	sourceType(sourceType)
 {}
 
 void LogBase::addContextIndent()
 {
 	OS::setTextColor(OS::Color::DarkGrey);
 	for (uint8_t i = 0; i < contexts; ++i)
-		outputStream << contextIndent;
+		settings().outputStream << "ù   ";
 	OS::setTextColor(OS::Color::White);
 }
 
@@ -56,26 +59,21 @@ std::string LogBase::getSourceIdentifier(const std::source_location& location, c
 {
 	std::string sourceStr;
 
-	if (printNameLevel.has(type) && sourceName.size())
+	if (settings().printNameLevel.has(type) && sourceType != typeid(void))
 	{
-		sourceStr += sourceName;
-		if (printAddressLevel.has(type) && address.size())
-			sourceStr += "<" + address + '>';
+		sourceStr += utils::demangleTypeName(sourceType.name());
+
+		if (settings().printAddressLevel.has(type) && address)
+			sourceStr += '<' + utils::toHex(address) + '>';
 	}
 
-	if (printLocationLevel.has(type))
+	if (settings().printLocationLevel.has(type))
 	{
 		if (sourceStr.size())
 			sourceStr += '|';
 
-		// Trim the full path to start from the root of the project.
-		constexpr std::string_view basePath = "Chemgine";
-		const char* pathBegin = std::strstr(location.file_name(), basePath.data());
-		if (not pathBegin)
-			pathBegin = location.file_name();
-
-		std::string pathStr(pathBegin);
-		Utils::normalizePath(pathStr);
+		auto pathStr = utils::getRelativePathToProjectRoot(location.file_name());
+		utils::normalizePath(pathStr);
 
 		sourceStr += pathStr + ':' + std::to_string(location.line());
 	}
@@ -85,11 +83,15 @@ std::string LogBase::getSourceIdentifier(const std::source_location& location, c
 
 void LogBase::logFormatted(const std::string& msg, const std::source_location& location, const LogType type) const
 {
+	CHG_MUTEX_LOCK();
+
+	auto& out = settings().outputStream;
+
 	// Exit folded log sequence.
 	if (foldCount != static_cast<size_t>(-1) && not msg.starts_with('\r'))
 	{
 		foldCount = static_cast<size_t>(-1);
-		outputStream << '\n';
+		out << '\n';
 	}
 
 	// Dummy log (may be used to turn off folded logging).
@@ -102,51 +104,29 @@ void LogBase::logFormatted(const std::string& msg, const std::source_location& l
 	{
 		addContextIndent();
 
-		switch (type)
+		static const std::unordered_map<LogType, ColoredString> tags
 		{
-		case LogType::FATAL:
-			OS::setTextColor(OS::Color::DarkRed);
-			outputStream << "FATAL: ";
-			suffixSize += 7;
-			break;
-		case LogType::ERROR:
-			OS::setTextColor(OS::Color::Red);
-			outputStream << "ERROR: ";
-			suffixSize += 7;
-			break;
-		case LogType::WARN:
-			OS::setTextColor(OS::Color::DarkYellow);
-			outputStream << "WARN: ";
-			suffixSize += 6;
-			break;
-		case LogType::SUCCESS:
-			OS::setTextColor(OS::Color::Green);
-			outputStream << "SUCCESS: ";
-			suffixSize += 9;
-			break;
-		case LogType::INFO:
-			OS::setTextColor(OS::Color::Cyan);
-			outputStream << "INFO: ";
-			suffixSize += 6;
-			break;
-		case LogType::DEBUG:
-			OS::setTextColor(OS::Color::Magenta);
-			outputStream << "DEBUG: ";
-			suffixSize += 7;
-			break;
-		case LogType::TRACE:
-			OS::setTextColor(OS::Color::DarkBlue);
-			outputStream << "TRACE: ";
-			suffixSize += 7;
-			break;
-		default:
-			Log<LogBase>().fatal("Undefined log type: {0} {1}", underlying_cast(type));
+			{LogType::FATAL, ColoredString("FATAL:", OS::Color::DarkRed)},
+			{LogType::ERROR, ColoredString("ERROR:", OS::Color::Red)},
+			{LogType::WARN, ColoredString("WARN:", OS::Color::DarkYellow)},
+			{LogType::SUCCESS, ColoredString("SUCCESS:", OS::Color::Green)},
+			{LogType::INFO, ColoredString("INFO:", OS::Color::Cyan)},
+			{LogType::DEBUG, ColoredString("DEBUG:", OS::Color::Magenta)},
+			{LogType::TRACE, ColoredString("TARCE:", OS::Color::DarkBlue)},
+		};
+
+		if (const auto tagIt = tags.find(type); tagIt != tags.end())
+		{
+			out << tagIt->second << ' ';
+			suffixSize += static_cast<uint8_t>(tagIt->second.size() + 1);
 		}
+		else
+			Log<LogBase>().fatal("Unknown log type: {0}.", underlying_cast(type));
 
 		if (const auto sourceIdentifier = getSourceIdentifier(location, type); sourceIdentifier.size())
 		{
 			OS::setTextColor(OS::Color::DarkGrey);
-			outputStream << '[' << sourceIdentifier << "] ";
+			out << '[' << sourceIdentifier << "] ";
 			suffixSize += static_cast<uint16_t>(sourceIdentifier.size() + 3);
 		}
 
@@ -160,23 +140,23 @@ void LogBase::logFormatted(const std::string& msg, const std::source_location& l
 		if (foldCount != static_cast<size_t>(-1))
 		{
 			for (size_t i = 0; i < foldCount; ++i)
-				outputStream << '\b';
+				out << '\b';
 		}
 
-		outputStream << msg.substr(1);
+		out << msg.c_str() + 1;
 		foldCount = msg.size() - 1;
 	}
 	else
 	{
 		// Normal log
-		const auto splitMsg = Utils::split(msg, '\n', false);
-		outputStream << splitMsg.front() << '\n';
+		const auto splitMsg = utils::split(msg, '\n', false);
+		out << splitMsg.front() << '\n';
 
 		const std::string suffixSpace(suffixSize, ' ');
 		for (size_t i = 1; i < splitMsg.size(); ++i)
 		{
 			addContextIndent();
-			outputStream << suffixSpace << splitMsg[i] << '\n';
+			out << suffixSpace << splitMsg[i] << '\n';
 		}
 	}
 }
@@ -195,10 +175,10 @@ void LogBase::unnest()
 
 void LogBase::hide(const LogType newLevel)
 {
-	const auto level = std::min(logLevel, newLevel);
+	const auto level = std::min(settings().logLevel, newLevel);
 
-	hideStack.emplace_back(logLevel);
-	logLevel = level;
+	hideStack.emplace_back(settings().logLevel);
+	settings().logLevel = level;
 }
 
 void LogBase::unhide()
@@ -206,13 +186,13 @@ void LogBase::unhide()
 	if (hideStack.empty())
 		return;
 
-	logLevel = hideStack.back();
+	settings().logLevel = hideStack.back();
 	hideStack.pop_back();
 }
 
 void LogBase::breakline()
 {
-	outputStream << "\n.........................................................................\n\n";
+	settings().outputStream << "\n.........................................................................\n\n";
 }
 
 std::optional<LogType> LogBase::parseLogType(const std::string& str)
@@ -230,7 +210,7 @@ std::optional<LogType> LogBase::parseLogType(const std::string& str)
 		{"ALL", LogType::ALL},
 	};
 
-	return Utils::find(typeMap, str);
+	return utils::find(typeMap, str);
 }
 
 bool LogBase::isLogTypeEnabled(const LogType type)
@@ -279,4 +259,39 @@ bool LogBase::isLogTypeEnabled(const LogType type)
 		Log<LogBase>().fatal("Undefined log type: {0}", underlying_cast(type));
 		CHG_UNREACHABLE();
 	}
+}
+
+LogBase::Settings::Settings(
+	LogType logLevel,
+	FlagField<LogType> printNameLevel,
+	FlagField<LogType> printAddressLevel,
+	FlagField<LogType> printLocationLevel,
+	std::regex&& logSourceFilter,
+	std::ostream& outputStream
+) noexcept :
+	logLevel(logLevel),
+	printNameLevel(printNameLevel),
+	printAddressLevel(printAddressLevel),
+	printLocationLevel(printLocationLevel),
+	logSourceFilter(std::move(logSourceFilter)),
+	outputStream(outputStream)
+{
+#ifdef CHG_UNSINK_STDIO
+	std::ios::sync_with_stdio(false);
+#endif
+}
+
+LogBase::Settings& LogBase::settings()
+{
+	static Settings settings
+	(
+		LogType::ALL, // logLevel
+		FlagField(LogType::DEBUG) | LogType::WARN | LogType::ERROR | LogType::FATAL, // printNameLevel
+		FlagField(LogType::DEBUG) | LogType::WARN | LogType::ERROR | LogType::FATAL, // printAddressLevel
+		FlagField(LogType::DEBUG) | LogType::WARN | LogType::ERROR | LogType::FATAL, // printLocationLevel
+		std::regex(), // logSourceFilter
+		std::clog // outputStream
+	);
+
+	return settings;
 }

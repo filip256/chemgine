@@ -5,7 +5,7 @@
 #include <vector>
 #include <iostream>
 
-namespace Def
+namespace def
 {
 	class EstimatorSpecifier
 	{
@@ -28,20 +28,20 @@ namespace Def
 	public:
 		static std::optional<EstimatorSpecifier> parse(const std::string& str)
 		{
-			const auto stripped = Utils::strip(str);
+			const auto stripped = utils::strip(str);
 			const auto sep = stripped.find("->");
 			if (sep > stripped.size() - 3)
 				return std::nullopt;
 
-			const auto outUnit = Def::parse<Unit>(stripped.substr(sep + 2));
+			const auto outUnit = def::parse<Unit>(stripped.substr(sep + 2));
 			if (not outUnit)
 				return std::nullopt;
 
-			auto inUnitsStr = Utils::strip(stripped.substr(0, sep));
+			auto inUnitsStr = utils::strip(stripped.substr(0, sep));
 			if (inUnitsStr.starts_with('(') && inUnitsStr.ends_with(')'))
 				inUnitsStr = inUnitsStr.substr(1, inUnitsStr.size() - 2);
 
-			auto inUnits = Def::parse<std::vector<Unit>>(inUnitsStr);
+			auto inUnits = def::parse<std::vector<Unit>>(inUnitsStr);
 			if (not inUnits)
 				return std::nullopt;
 

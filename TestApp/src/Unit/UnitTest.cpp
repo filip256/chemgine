@@ -67,7 +67,7 @@ bool UnitTestGroup::run()
 		else
 		{
 			failed.emplace_back(i);
-			Log(this).error("\rTest {0} failed ({1}ms).", tests[i]->getName(), std::format("{:.4f}", timeInMs));
+			Log(this).info("\rTest {0} failed ({1}ms).", tests[i]->getName(), std::format("{:.4f}", timeInMs));
 		}
 
 		Log(this).info("\0");

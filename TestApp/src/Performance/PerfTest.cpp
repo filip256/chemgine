@@ -18,6 +18,7 @@ bool PerfTest::isSkipped(const std::regex& filter) const
 	return not std::regex_match(name, filter);
 }
 
+std::chrono::nanoseconds TimedTest::WarmUpTime = std::chrono::seconds(2);
 
 TimedTest::TimedTest(
 	std::string&& name,
@@ -50,17 +51,21 @@ std::chrono::nanoseconds TimedTest::getEstimatedRunTime() const
 		std::chrono::nanoseconds(std::get<uint64_t>(limit) * 1000) :
 		std::get<std::chrono::nanoseconds>(limit);
 
-	return eta + std::chrono::milliseconds(100);
+	return eta + WarmUpTime + std::chrono::milliseconds(100);
 }
 
 void TimedTest::runWarmUp()
 {
-	volatile const uint8_t dontOptimize = 10;
-	for (uint8_t i = 0; i < dontOptimize; ++i)
+	auto minTime = WarmUpTime;
+	while (minTime.count() > 0)
 	{
+		const auto start = std::chrono::high_resolution_clock::now();
 		preTask();
 		task();
 		postTask();
+		const auto time = std::chrono::high_resolution_clock::now() - start;
+
+		minTime -= std::max(time, std::chrono::nanoseconds(1));
 	}
 }
 
@@ -105,7 +110,7 @@ TimingResult TimedTest::runCounted(const uint64_t repetitions)
 	cleanup();
 
 	const auto avgTime = totalTime / repetitions;
-	const auto medianTime = std::chrono::nanoseconds(Utils::getAveragedMedian(timeHistory));
+	const auto medianTime = std::chrono::nanoseconds(utils::getAveragedMedian(timeHistory));
 
 	return { avgTime, medianTime };
 }
@@ -134,7 +139,7 @@ TimingResult TimedTest::runTimed(std::chrono::nanoseconds minTime)
 	cleanup();
 
 	const auto avgTime = totalTime / timeHistory.size();
-	const auto medianTime = std::chrono::nanoseconds(Utils::getAveragedMedian(timeHistory));
+	const auto medianTime = std::chrono::nanoseconds(utils::getAveragedMedian(timeHistory));
 
 	return { avgTime, medianTime };
 }
@@ -189,7 +194,7 @@ TimingResult PerfTestGroup::run(PerformanceReport& report)
 	TimingResult totalTime(std::chrono::nanoseconds(0), std::chrono::nanoseconds(0));
 
 	Log(this).info("{0}: Running {1} sub-tests... (ETA: {2})", getName(),
-		testCount, Utils::formatTime(estimatedRunTime, Utils::TimeFormat::HUMAN_HH_MM_SS));
+		testCount, utils::formatTime(estimatedRunTime, utils::TimeFormat::HUMAN_HH_MM_SS));
 	LogBase::nest();
 
 	for (size_t i = 0; i < tests.size(); ++i)

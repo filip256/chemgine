@@ -15,9 +15,9 @@ ReactionRepository::ReactionRepository(
 	molecules(molecules)
 {}
 
-bool ReactionRepository::add(const Def::Object& definition)
+bool ReactionRepository::add(const def::Object& definition)
 {
-	auto id = definition.getOptionalProperty(Def::Reactions::Id, Def::parse<ReactionId>);
+	auto id = definition.getOptionalProperty(def::Reactions::Id, def::parse<ReactionId>);
 	if (not id)
 		id = getFreeId();
 	else if (reactions.contains(*id))
@@ -28,7 +28,7 @@ bool ReactionRepository::add(const Def::Object& definition)
 
 	const auto name = definition.getDefaultProperty("name", "?");
 
-	const auto spec = Def::parse<Def::ReactionSpecifier>(definition.getSpecifier());
+	const auto spec = def::parse<def::ReactionSpecifier>(definition.getSpecifier());
 	if (not spec)
 	{
 		Log(this).error("Invalid reaction specifier: '{0}', at: {1}.", definition.getSpecifier(), definition.getLocationName());
@@ -70,14 +70,14 @@ bool ReactionRepository::add(const Def::Object& definition)
 	}
 
 	// catalysts
-	const auto catStr = definition.getDefaultProperty(Def::Reactions::Catalysts, std::vector<std::string>(),
-		Def::parse<std::vector<std::string>>);
+	const auto catStr = definition.getDefaultProperty(def::Reactions::Catalysts, std::vector<std::string>(),
+		def::parse<std::vector<std::string>>);
 
 	std::vector<Catalyst> catalysts;
 	catalysts.reserve(catStr.size());
 	for (size_t i = 0; i < catStr.size(); ++i)
 	{
-		const auto c = Def::parse<Catalyst>(catStr[i]);
+		const auto c = def::parse<Catalyst>(catStr[i]);
 		if (not c)
 		{
 			Log(this).error("Malformed catalyst: '{0}' in reaction with id: '{1}', at: {2}.", catStr[i], *id, definition.getLocationName());
@@ -98,8 +98,8 @@ bool ReactionRepository::add(const Def::Object& definition)
 		catalysts.emplace_back(*c);
 	}
 
-	const auto isCut = definition.getDefaultProperty(Def::Reactions::IsCut, false,
-		Def::parse<bool>);
+	const auto isCut = definition.getDefaultProperty(def::Reactions::IsCut, false,
+		def::parse<bool>);
 
 	std::unique_ptr<ReactionData> data;
 	if (isCut)
@@ -114,14 +114,14 @@ bool ReactionRepository::add(const Def::Object& definition)
 	}
 	else
 	{
-		const auto energy = definition.getDefaultProperty(Def::Reactions::Energy, Amount<Unit::JOULE_PER_MOLE>(0.0),
-			Def::parse<Amount<Unit::JOULE_PER_MOLE>>);
-		const auto activation = definition.getDefaultProperty(Def::Reactions::Activation, Amount<Unit::JOULE_PER_MOLE>(0.0),
-			Def::parse<Amount<Unit::JOULE_PER_MOLE>>);
-		auto tempSpeed = definition.getDefinition(Def::Reactions::TemperatureSpeed,
-			Def::Parser<UnitizedEstimator<Unit::MOLE_PER_SECOND, Unit::CELSIUS>>::parse, estimators);
-		auto concSpeed = definition.getDefinition(Def::Reactions::ConcentrationSpeed,
-			Def::Parser<UnitizedEstimator<Unit::NONE, Unit::MOLE_RATIO>>::parse, estimators);
+		const auto energy = definition.getDefaultProperty(def::Reactions::Energy, Amount<Unit::JOULE_PER_MOLE>(0.0),
+			def::parse<Amount<Unit::JOULE_PER_MOLE>>);
+		const auto activation = definition.getDefaultProperty(def::Reactions::Activation, Amount<Unit::JOULE_PER_MOLE>(0.0),
+			def::parse<Amount<Unit::JOULE_PER_MOLE>>);
+		auto tempSpeed = definition.getDefinition(def::Reactions::TemperatureSpeed,
+			def::Parser<UnitizedEstimator<Unit::MOLE_PER_SECOND, Unit::CELSIUS>>::parse, estimators);
+		auto concSpeed = definition.getDefinition(def::Reactions::ConcentrationSpeed,
+			def::Parser<UnitizedEstimator<Unit::NONE, Unit::MOLE_RATIO>>::parse, estimators);
 
 		data = std::make_unique<ReactionData>(
 			*id, name,
@@ -212,7 +212,7 @@ size_t ReactionRepository::generateCurrentSpan() const
 		molecules.begin(), molecules.end(), std::back_inserter(reactants),
 		[](const auto& mIt) { return Reactant(Molecule(*mIt.second), LayerType::NONE, 1.0_mol); });
 
-	const auto arrangements = Utils::getArrangementsWithRepetitions(reactants, maxReactantCount);
+	const auto arrangements = utils::getArrangementsWithRepetitions(reactants, maxReactantCount);
 	for(size_t i = 0; i < arrangements.size(); ++i)
 	{
 		findOccuringReactions(arrangements[i]);

@@ -13,12 +13,12 @@ DrawableLabwareData::DrawableLabwareData(
 ) noexcept :
 	BaseLabwareData(id, name, std::move(ports), type),
 	textureScale(textureScale),
-	textureFile(Utils::extractFileNameWithExtension(textureFile))
+	textureFile(utils::extractFileNameWithExtension(textureFile))
 {
 	Collision::createTextureAndBitmask(texture, textureFile);
 }
 
 void DrawableLabwareData::dumpTextures(const std::string& path) const
 {
-	texture.copyToImage().saveToFile(Utils::combinePaths(path, textureFile));
+	texture.copyToImage().saveToFile(utils::combinePaths(path, textureFile));
 }

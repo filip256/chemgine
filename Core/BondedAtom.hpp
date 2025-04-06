@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Atom.hpp"
 #include "Bond.hpp"
 
@@ -18,6 +20,7 @@ public:
 
     BondedAtomBase(const BondedAtomBase&) = default;
     BondedAtomBase(BondedAtomBase&&) = default;
+    virtual ~BondedAtomBase() = default;
 
     BondedAtomBase& operator=(BondedAtomBase&&) = default;
 
@@ -25,6 +28,8 @@ public:
 
     virtual const Atom& getAtom() const = 0;
     virtual std::unique_ptr<BondedAtomBase> clone() const = 0;
+
+    const Bond* getBondTo(const BondedAtomBase& other) const;
 
     std::unique_ptr<BondedAtomBase> mutate(const Atom& atom);
 
@@ -76,5 +81,5 @@ const AtomT& BondedAtom<AtomT>::getAtom() const
 template<typename AtomT>
 std::unique_ptr<BondedAtomBase> BondedAtom<AtomT>::clone() const
 {
-    return std::make_unique<BondedAtom<AtomT>>(this->atom, index, Utils::copy(this->bonds));
+    return std::make_unique<BondedAtom<AtomT>>(this->atom, index, utils::copy(this->bonds));
 }

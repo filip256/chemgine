@@ -286,7 +286,7 @@ std::pair<PortIdentifier, float_s> LabwareSystem::findClosestPort(const sf::Vect
 {
 	auto result = std::make_pair(PortIdentifier(*this, npos, 0), -1.0f);
 
-	if (Maths::sqaredDistance(
+	if (utils::squaredDistance(
 		point.x, point.y,
 		boundingBox.left, boundingBox.top, boundingBox.left + boundingBox.width, boundingBox.top + boundingBox.height) > maxSqDistance)
 		return result;
@@ -300,7 +300,7 @@ std::pair<PortIdentifier, float_s> LabwareSystem::findClosestPort(const sf::Vect
 
 		for (uint8_t j = 0; j < ports.size(); ++j)
 		{
-			const float_s dist = Maths::sqaredDistance(point.x, point.y, ports[j].position.x + offset.x, ports[j].position.y + offset.y);
+			const float_s dist = utils::squaredDistance(point.x, point.y, ports[j].position.x + offset.x, ports[j].position.y + offset.y);
 			if (dist <= result.second)
 			{
 				result.second = dist;

@@ -15,7 +15,7 @@ bool DefUnitTest::run()
 	bool success = true;
 
 	const std::unordered_map<std::string, std::string> includeAliases;
-	auto def = Def::parse<Def::Object>(defLine, Def::Location(getName(), 0), includeAliases, dataStore.oolDefinitions);
+	auto def = def::parse<def::Object>(defLine, def::Location(getName(), 0), includeAliases, dataStore.oolDefinitions);
 	if (not def)
 	{
 		Log(this).error("Failed to parse definition: \n{0}", defLine);
@@ -66,7 +66,7 @@ bool DefLoadUnitTest::run()
 	if (success != expectedSuccess)
 	{
 		Log(this).error("Actual load status: '{0}' does not match expected status: '{1}'.", path,
-			Def::print(success), Def::print(expectedSuccess));
+			def::print(success), def::print(expectedSuccess));
 		return false;
 	}
 
@@ -142,7 +142,7 @@ DefUnitTests::DefUnitTests(
 	registerTest<UnitTestSetup<AccessorTestSetup>>("setup", dataStore);
 
 	registerTest<DefClearUnitTest>("clear_base", dataStore);
-	registerTest<DefLoadUnitTest>("load_base", dataStore, Utils::copy(baseDefFilePath), true);
+	registerTest<DefLoadUnitTest>("load_base", dataStore, utils::copy(baseDefFilePath), true);
 
 	registerTest<DefUnitTest>("atom",
 		"_atom:   Fe{"

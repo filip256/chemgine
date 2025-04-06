@@ -16,7 +16,7 @@ public:
 	AtomRepository(AtomRepository&&) = default;
 
 	template <typename AtomT>
-	bool add(const Def::Object& definition);
+	bool add(const def::Object& definition);
 
 	bool contains(const Symbol& symbol) const;
 	const AtomData& at(const Symbol& symbol) const;

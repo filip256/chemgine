@@ -9,7 +9,6 @@ class StructureSMILESPerfTest : public TimedTest
 private:
 	volatile bool dontOptimize = true;
 	const std::string smiles;
-	MolecularStructure molecule;
 
 public:
 	StructureSMILESPerfTest(
@@ -19,7 +18,6 @@ public:
 	) noexcept;
 
 	void task() override final;
-	void postTask() override final;
 };
 
 
@@ -121,6 +119,34 @@ class StructureMinimalCyclePerfTest : public StructurePerfTestBase
 {
 public:
 	using StructurePerfTestBase::StructurePerfTestBase;
+
+	void task() override final;
+};
+
+
+class ASCIIPrintTest : public StructurePerfTestBase
+{
+public:
+	using StructurePerfTestBase::StructurePerfTestBase;
+
+	void task() override final;
+};
+
+
+class ASCIIParseTest : public TimedTest
+{
+private:
+	volatile bool dontOptimize = true;
+	const std::string ascii;
+
+	static std::string generateASCII(const std::string& smiles);
+
+public:
+	ASCIIParseTest(
+		const std::string& name,
+		const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+		const std::string& smiles
+	) noexcept;
 
 	void task() override final;
 };

@@ -115,6 +115,7 @@ public:
 	bool run() override final;
 };
 
+
 class MinimalCycleUnitTest : public UnitTest
 {
 private:
@@ -128,6 +129,38 @@ public:
 		const std::string& moleculeSmiles,
 		const c_size expectedTotalCyclicAtomCount,
 	    std::unordered_map<c_size, c_size>&& expectedCycleSizes
+	) noexcept;
+
+	bool run() override final;
+};
+
+
+class ASCIIPrintUnitTest : public UnitTest
+{
+private:
+	const bool allowLinearCycleExpansion;
+	const MolecularStructure molecule;
+
+public:
+	ASCIIPrintUnitTest(
+		const std::string& name,
+		const std::string& moleculeSmiles,
+		const bool allowLinearCycleExpansion
+	) noexcept;
+
+	bool run() override final;
+};
+
+
+class MolBinUnitTest : public UnitTest
+{
+private:
+	const MolecularStructure molecule;
+
+public:
+	MolBinUnitTest(
+		const std::string& name,
+		const std::string& moleculeSmiles
 	) noexcept;
 
 	bool run() override final;

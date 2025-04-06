@@ -2,14 +2,14 @@
 #include "OOLDefRepository.hpp"
 #include "Keywords.hpp"
 
-using namespace Def;
+using namespace def;
 
 FileAnalyzer::FileAnalyzer(
 	const std::string& filePath,
 	FileStore& mainFileStore
 ) noexcept:
 	mainFileStore(mainFileStore),
-	parser(Def::FileParser(filePath, fileStore, {}))
+	parser(def::FileParser(filePath, fileStore, {}))
 {}
 
 AnalysisResult FileAnalyzer::analyze()

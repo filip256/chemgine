@@ -156,13 +156,13 @@ bool DeterminismUnitTest::run()
 			success = false;
 		}
 
-		if (not reactor.hasSameContent(copy, threshold))
+		if (not reactor.hasSameContent(copy, static_cast<Amount<>::StorageType>(threshold)))
 		{
 			Log(this).error("Reactors have different content after tick {0}/{1}.", i + 1, ticks);
 			success = false;
 		}
 
-		if (not reactor.hasSameLayers(copy, threshold))
+		if (not reactor.hasSameLayers(copy, static_cast<Amount<>::StorageType>(threshold)))
 		{
 			Log(this).error("Reactors have different layers after tick {0}/{1}.", i + 1, ticks);
 			success = false;
@@ -210,7 +210,7 @@ bool BoilUnitTest::run()
 		reactor.tick(tickTimespan);
 
 		logTable.addEntry({
-			Amount<Unit::JOULE>(energyStep * (i + 1)).toString(),
+			Amount<Unit::JOULE>(energyStep * static_cast<float>(i + 1)).toString(),
 			std::to_string(testPhase),
 			source.getTemperature().toString(),
 			destination.getTemperature().toString(),

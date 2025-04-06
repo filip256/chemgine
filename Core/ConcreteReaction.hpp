@@ -48,11 +48,11 @@ struct std::hash<ConcreteReaction>
 	{
 		size_t hash = 0;
 		for (const auto& [rId, _] : reaction.reactants)
-			Utils::hashCombineWith(hash, rId);
+			utils::hashCombineWith(hash, rId);
 		for (const auto& [pId, _] : reaction.products)
-			Utils::hashCombineWith(hash, pId);
+			utils::hashCombineWith(hash, pId);
 		for (const auto& cat : reaction.baseReaction.getCatalysts())
-			Utils::hashCombineWith(hash, cat.getId());
+			utils::hashCombineWith(hash, cat.getId());
 		return hash;
 	}
 };

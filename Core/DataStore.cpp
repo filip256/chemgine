@@ -27,25 +27,25 @@ size_t DataStore::totalDefinitionCount() const
 		labware.totalDefinitionCount();
 }
 
-bool DataStore::addDefinition(Def::Object&& definition)
+bool DataStore::addDefinition(def::Object&& definition)
 {
 	switch (definition.getType())
 	{
-	case Def::DefinitionType::AUTO:
+	case def::DefinitionType::AUTO:
 		Log(this).error("Cannot infer type for out-of-line definition, at: {0}.", definition.getLocationName());
 		return false;
 
-	case Def::DefinitionType::DATA:
+	case def::DefinitionType::DATA:
 		return oolDefinitions.add(std::move(definition));
-	case Def::DefinitionType::ATOM:
+	case def::DefinitionType::ATOM:
 		return atoms.add<AtomData>(definition);
-	case Def::DefinitionType::RADICAL:
+	case def::DefinitionType::RADICAL:
 		return atoms.add<RadicalData>(definition);
-	case Def::DefinitionType::MOLECULE:
+	case def::DefinitionType::MOLECULE:
 		return molecules.add(definition);
-	case Def::DefinitionType::REACTION:
+	case def::DefinitionType::REACTION:
 		return reactions.add(definition);
-	case Def::DefinitionType::LABWARE:
+	case def::DefinitionType::LABWARE:
 		return labware.add(definition);
 
 	default:
@@ -56,9 +56,9 @@ bool DataStore::addDefinition(Def::Object&& definition)
 
 bool DataStore::load(const std::string& path)
 {
-	const auto normPath = Utils::normalizePath(path);
+	const auto normPath = utils::normalizePath(path);
 
-	const auto analysis = Def::FileAnalyzer(normPath, fileStore).analyze();
+	const auto analysis = def::FileAnalyzer(normPath, fileStore).analyze();
 	if (analysis.failed)
 		Log(this).warn("Pre-parse analysis failed on file: '{0}'", normPath);
 	else
@@ -69,7 +69,7 @@ bool DataStore::load(const std::string& path)
 	
 	bool success = true;
 	auto definitionCount = analysis.preparsedDefinitionCount;
-	Def::FileParser parser(normPath, fileStore, oolDefinitions);
+	def::FileParser parser(normPath, fileStore, oolDefinitions);
 	while (true)
 	{
 		if (not analysis.failed)
@@ -128,7 +128,7 @@ void DataStore::dump(const std::string& path, const bool prettify) const
 	for (const auto& r : reactions)
 		r.second->dumpDefinition(out, prettify, printedEstimators);
 
-	const auto dir = Utils::extractDirName(path);
+	const auto dir = utils::extractDirName(path);
 	for (const auto& l : labware)
 	{
 		l.second->dumpDefinition(out, prettify);

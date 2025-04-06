@@ -13,7 +13,7 @@ enum class EstimationMode
 
 
 template <>
-class Def::Parser<EstimationMode>
+class def::Parser<EstimationMode>
 {
 public:
 	static std::optional<EstimationMode> parse(const std::string& str)
@@ -26,12 +26,12 @@ public:
 			{"CUBIC", EstimationMode::CUBIC},
 		};
 
-		return Utils::find(typeMap, str);
+		return utils::find(typeMap, str);
 	}
 };
 
 template <>
-class Def::Printer<EstimationMode>
+class def::Printer<EstimationMode>
 {
 public:
 	static std::string print(const EstimationMode object)

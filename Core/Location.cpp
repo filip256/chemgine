@@ -1,6 +1,6 @@
 #include "Location.hpp"
 
-using namespace Def;
+using namespace def;
 
 Location::Location(
 	const std::string& file,

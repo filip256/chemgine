@@ -55,7 +55,7 @@ bool PerformanceReport::load(const std::string& path)
 	std::string line;
 	while (std::getline(file, line))
 	{
-		const auto pair = Def::parse<std::pair<std::string, std::pair<int64_t, int64_t>>>(line);
+		const auto pair = def::parse<std::pair<std::string, std::pair<int64_t, int64_t>>>(line);
 		if (not pair)
 		{
 			Log(this).error("Invalid report line: '{0}' in file: '{1}'.", line, path);
@@ -75,7 +75,7 @@ void PerformanceReport::dump(std::ostream& out) const
 {
 	out << timestamp << '\n';
 	for (const auto& [k, t] : timeTable)
-		out << Def::print(std::pair(k, std::pair(t.averageTime.count(), t.medianTime.count()))) << '\n';
+		out << def::print(std::pair(k, std::pair(t.averageTime.count(), t.medianTime.count()))) << '\n';
 }
 
 void PerformanceReport::dump(const std::string& path) const

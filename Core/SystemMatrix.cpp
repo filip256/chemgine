@@ -107,7 +107,7 @@ bool SystemMatrix<T>::trySolution(const std::vector<T>& solution) const
         for (size_t j = 0; j < matrix[i].size() - 1; ++j)
             temp += matrix[i][j] * solution[j];
 
-        if (not Utils::floatEqual(temp, matrix[i].back(), static_cast<T>(1e-10)))
+        if (not utils::floatEqual(temp, matrix[i].back(), static_cast<T>(1e-10)))
             return false;
     }
     return true;

@@ -18,7 +18,7 @@ enum class PortType : uint8_t
 
 
 template <>
-class Def::Parser<PortType>
+class def::Parser<PortType>
 {
 public:
 	static std::optional<PortType> parse(const std::string& str)
@@ -33,12 +33,12 @@ public:
 			{"CONTACT", PortType::CONTACT},
 		};
 
-		return Utils::find(typeMap, str);
+		return utils::find(typeMap, str);
 	}
 };
 
 template <>
-class Def::Printer<PortType>
+class def::Printer<PortType>
 {
 public:
 	static std::string print(const PortType object)
