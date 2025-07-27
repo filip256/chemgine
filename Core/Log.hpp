@@ -1,76 +1,145 @@
 #pragma once
 
 #include "TerminalUtils.hpp"
-#include "Linguistics.hpp"
+#include "FormatUtils.hpp"
+#include "MetaUtils.hpp"
 #include "TypeUtils.hpp"
-#include "LogType.hpp"
+#include "FlagField.hpp"
+#include "ExceptionUtils.hpp"
 
 #include <regex>
 #include <string>
 #include <vector>
 #include <format>
+#include <cstdint>
 #include <optional>
 #include <iostream>
-#include <stdexcept>
+#include <typeindex>
+#include <source_location>
 
-#ifdef NDEBUG
-	#define CHEM_LOG_ERROR
-	#define CHEM_LOG_WARN
-	#define CHEM_LOG_INFO
-#else
-	#define CHEM_LOG_ERROR
-	#define CHEM_LOG_WARN
-	#define CHEM_LOG_SUCCESS
-	#define CHEM_LOG_INFO
-	#define CHEM_LOG_DEBUG
-	#define CHEM_LOG_TRACE
+#define CHG_LOG_ERROR
+#define CHG_LOG_WARN
+#define CHG_LOG_SUCCESS
+#define CHG_LOG_INFO
+
+#ifndef NDEBUG
+	#define CHG_LOG_DEBUG
+	#define CHG_LOG_TRACE
 #endif
+
+#define CHG_DELAYED_EVAL(func) [&]() { return func; }
+
+//
+// LogType
+//
+
+enum class LogType : uint8_t
+{
+	NONE = 0,
+	FATAL = 1 << 0,
+	ERROR = 1 << 1,
+	WARN = 1 << 2,
+	SUCCESS = 1 << 3,
+	INFO = 1 << 4,
+	DEBUG = 1 << 5,
+	TRACE = 1 << 6,
+	ALL = 0xFF
+};
+
+//
+// LogFormat
+//
+
+class LogFormat
+{
+private:
+	const char* format;
+	std::source_location location;
+
+public:
+	LogFormat(
+		const char* format,
+		std::source_location&& location = std::source_location::current()
+	) noexcept;
+	LogFormat(
+		const std::string& format,
+		std::source_location&& location = std::source_location::current()
+	) noexcept;
+	LogFormat(const LogFormat&) = delete;
+	LogFormat(LogFormat&&) = default;
+
+	const char* getFormat() const;
+	const std::source_location& getLocation() const;
+};
+
+//
+// Log
+//
 
 class LogBase
 {
-private:
+	class Settings
+	{
+	public:
+		LogType logLevel;
+		FlagField<LogType> printNameLevel;
+		FlagField<LogType> printAddressLevel;
+		FlagField<LogType> printLocationLevel;
+		std::regex logSourceFilter;
+		std::ostream& outputStream;
 
-protected:
-	const std::string address;
-	const std::string sourceName;
+		Settings(
+			LogType logLevel,
+			FlagField<LogType> printNameLevel,
+			FlagField<LogType> printAddressLevel,
+			FlagField<LogType> printLocationLevel,
+			std::regex&& logSourceFilter,
+			std::ostream& outputStream
+		) noexcept;
+		Settings(const Settings&) = delete;
+		Settings(Settings&&) = default;
+	};
+
+private:
+	const void* address;
+	const std::type_index sourceType;
 
 	static uint8_t contexts;
 	static size_t foldCount;
 	static std::vector<LogType> hideStack;
 
-	LogBase(
-		std::string&& address,
-		std::string&& sourceName
-	) noexcept;
-
-	void log(const std::string& msg, const LogType type) const;
-	template <class... Args>
-	void log(const std::format_string<Args...>& format, const LogType type, Args&&... args) const;
-
 	static void addContextIndent();
 
-public:
-	static LogType logLevel;
-	static LogType printNameLevel;
-	static LogType printAddressLevel;
-	static std::regex logSourceFilter;
-	static std::ostream& outputStream;
-	static std::string contexIndent;
+	std::string getSourceIdentifier(const std::source_location& location, const LogType type) const;
 
 	template <class... Args>
-	__declspec(noreturn) void fatal(const std::format_string<Args...>& format, Args&&... args) const;
+	void log(const LogFormat& format, const LogType type, Args&&... args) const;
+
+protected:
+	void logFormatted(const std::string& msg, const std::source_location& location, const LogType type) const;
+
+	LogBase(
+		const void* address,
+		const std::type_index sourceType
+	) noexcept;
+	LogBase(const LogBase&) = delete;
+	LogBase(LogBase&&) = delete;
+
+public:
 	template <class... Args>
-	void error(const std::format_string<Args...>& format, Args&&... args) const;
+	[[noreturn]] void fatal(const LogFormat& format, Args&&... args) const;
 	template <class... Args>
-	void warn(const std::format_string<Args...>& format, Args&&... args) const;
+	void error(const LogFormat& format, Args&&... args) const;
 	template <class... Args>
-	void success(const std::format_string<Args...>& format, Args&&... args) const;
+	void warn(const LogFormat& format, Args&&... args) const;
 	template <class... Args>
-	void info(const std::format_string<Args...>& format, Args&&... args) const;
+	void success(const LogFormat& format, Args&&... args) const;
 	template <class... Args>
-	void debug(const std::format_string<Args...>& format, Args&&... args) const;
+	void info(const LogFormat& format, Args&&... args) const;
 	template <class... Args>
-	void trace(const std::format_string<Args...>& format, Args&&... args) const;
+	void debug(const LogFormat& format, Args&&... args) const;
+	template <class... Args>
+	void trace(const LogFormat& format, Args&&... args) const;
 
 	static void nest();
 	static void unnest();
@@ -80,81 +149,101 @@ public:
 
 	static void breakline();
 
-	static std::optional<LogType> parseLogLevel(const std::string& str);
+	static std::optional<LogType> parseLogType(const std::string& str);
+	static bool isLogTypeEnabled(const LogType type);
+
+	static Settings& settings();
 };
 
 template <class... Args>
-void LogBase::log(const std::format_string<Args...>& format, const LogType type, Args&&... args) const
+void LogBase::log(const LogFormat& format, const LogType type, Args&&... args) const
 {
-	if (type > logLevel || not std::regex_match(sourceName, logSourceFilter))
+	if (type > settings().logLevel && type != LogType::FATAL)
 		return;
 
-	log(std::vformat(format.get(), std::make_format_args(args...)), type);
+	// Check if log filter matches the source name, fatal logs are never ignored.
+	// TODO: Demangling could be slow.
+	if (type != LogType::FATAL && settings().logSourceFilter.mark_count() && sourceType != typeid(void) &&
+		not std::regex_match(utils::demangleTypeName(sourceType.name()), settings().logSourceFilter))
+		return;
+
+	// Values retuned from delayed-call args are temporary and need storage, normal args are stored as references.
+	const auto argStorage = std::make_tuple(utils::invokeOrForward(std::forward<Args>(args))...);
+	const auto formatStr = format.getFormat();
+
+	const auto message = std::apply(
+		[&](const auto&... pArgs) {
+			return std::vformat(formatStr, std::make_format_args(pArgs...));
+		},
+		argStorage
+	);
+
+	logFormatted(message, format.getLocation(), type);
 }
 
 template <class... Args>
-void LogBase::fatal(const std::format_string<Args...>& format, Args&&... args) const
+void LogBase::fatal(const LogFormat& format, Args&&... args) const
 {
-	// Fatals are never ignored
-	log(std::vformat(format.get(), std::make_format_args(args...)), LogType::FATAL);
+	log(std::move(format), LogType::FATAL, std::forward<Args>(args)...);
 
 	OS::setTextColor(OS::Color::DarkRed);
-	outputStream << "\n   Execution aborted due to a fatal error.\n   Press ENTER to exit.\n";
+	settings().outputStream << "\n   Execution aborted due to a fatal error.\n   Press ENTER to exit.\n";
+	settings().outputStream.flush();
 	OS::setTextColor(OS::Color::White);
 
 #ifndef NDEBUG
-	throw std::runtime_error("Fatal error.");
+	CHG_THROW("Chemgine encountered a fatal error.");
 #endif
 
-	const auto ignored = getchar();
+	[[maybe_unused]] const auto ignored = getchar();
 	std::exit(EXIT_FAILURE);
 }
 
 template <class... Args>
-void LogBase::error(const std::format_string<Args...>& format, Args&&... args) const
+void LogBase::error(const LogFormat& format, Args&&... args) const
 {
-#ifdef CHEM_LOG_ERROR
-	log(format, LogType::ERROR, std::forward<Args>(args)...);
+#ifdef CHG_LOG_ERROR
+	log(std::move(format), LogType::ERROR, std::forward<Args>(args)...);
 #endif
 }
 
 template <class... Args>
-void LogBase::warn(const std::format_string<Args...>& format, Args&&... args) const
+void LogBase::warn(const LogFormat& format, Args&&... args) const
 {
-#ifdef CHEM_LOG_WARN
-	log(format, LogType::WARN, std::forward<Args>(args)...);
+#ifdef CHG_LOG_WARN
+	log(std::move(format), LogType::WARN, std::forward<Args>(args)...);
 #endif
 }
 
 template <class... Args>
-void LogBase::success(const std::format_string<Args...>& format, Args&&... args) const
+void LogBase::success(const LogFormat& format, Args&&... args) const
 {
-#ifdef CHEM_LOG_SUCCESS
-	log(format, LogType::SUCCESS, std::forward<Args>(args)...);
+#ifdef CHG_LOG_SUCCESS
+	log(std::move(format), LogType::SUCCESS, std::forward<Args>(args)...);
 #endif
 }
 
 template <class... Args>
-void LogBase::info(const std::format_string<Args...>& format, Args&&... args) const
+void LogBase::info(const LogFormat& format, Args&&... args) const
 {
-#ifdef CHEM_LOG_INFO
-	log(format, LogType::INFO, std::forward<Args>(args)...);
+#ifdef CHG_LOG_INFO
+	log(std::move(format), LogType::INFO, std::forward<Args>(args)...);
 #endif
 }
 
 template <class... Args>
-void LogBase::debug(const std::format_string<Args...>& format, Args&&... args) const
+void LogBase::debug(const LogFormat& format, Args&&... args) const
 {
-#ifdef CHEM_LOG_DEBUG
-	log(format, LogType::DEBUG, std::forward<Args>(args)...);
+#ifdef CHG_LOG_DEBUG
+	log(std::move(format), LogType::DEBUG, std::forward<Args>(args)...);
 #endif
 }
 
 template <class... Args>
-void LogBase::trace(const std::format_string<Args...>& format, Args&&... args) const
+void LogBase::trace(const LogFormat& format, Args&&... args) const
 {
-#ifdef CHEM_LOG_TRACE
-	log(format, LogType::TRACE, std::forward<Args>(args)...);
+#ifdef CHG_LOG_TRACE
+	log(std::move(format), LogType::TRACE, std::forward<Args>(args)...);
 #endif
 }
 
@@ -168,5 +257,5 @@ public:
 
 template<typename SourceT>
 Log<SourceT>::Log(const SourceT* address) noexcept :
-	LogBase(address ? Linguistics::toHex(address) : "", Utils::getTypeName<SourceT>())
+	LogBase(address, typeid(SourceT))
 {}

@@ -2,7 +2,7 @@
 
 #include <vector>
 
-bool Utils::isWhiteSpace(const char c)
+bool utils::isWhiteSpace(const char c)
 {
 	// the extra checks assure special chars don't break a std::isspace assert
 	return c >= -1 && c <= 255 ? std::isspace(c) : false;
@@ -19,19 +19,19 @@ static std::pair<size_t, size_t> getStripInterval(const std::string& str, bool (
 	return std::make_pair(start, end);
 }
 
-void Utils::strip(std::string& str, bool (*pred)(char))
+void utils::strip(std::string& str, bool (*pred)(char))
 {
 	const auto interval = getStripInterval(str, pred);
     str = str.substr(interval.first, interval.second - interval.first);
 }
 
-std::string Utils::strip(const std::string& str, bool (*pred)(char))
+std::string utils::strip(const std::string& str, bool (*pred)(char))
 {
 	const auto interval = getStripInterval(str, pred);
 	return str.substr(interval.first, interval.second - interval.first);
 }
 
-std::vector<std::string> Utils::split(const std::string& line, const char separator, const bool ignoreEmpty)
+std::vector<std::string> utils::split(const std::string& line, const char separator, const bool ignoreEmpty)
 {
 	std::vector<std::string> result;
 	size_t lastSep = static_cast<size_t>(-1);
@@ -65,7 +65,7 @@ std::vector<std::string> Utils::split(const std::string& line, const char separa
 	return result;
 }
 
-std::vector<std::string> Utils::split(
+std::vector<std::string> utils::split(
 	const std::string& line,
 	const char separator,
 	const char ignoreSectionBegin,
@@ -96,7 +96,7 @@ std::vector<std::string> Utils::split(
 
 		if (i - lastSep - 1 > 0)
 		{
-			auto item = Utils::strip(line.substr(lastSep + 1, i - lastSep - 1));
+			auto item = utils::strip(line.substr(lastSep + 1, i - lastSep - 1));
 			if (ignoreEmpty == false || item.size())
 				result.emplace_back(std::move(item));
 		}
@@ -108,7 +108,7 @@ std::vector<std::string> Utils::split(
 
 	if (lastSep + 1 < line.size())
 	{
-		auto item = Utils::strip(line.substr(lastSep + 1));
+		auto item = utils::strip(line.substr(lastSep + 1));
 		if (ignoreEmpty == false || item.size())
 			result.emplace_back(std::move(item));
 	}
@@ -118,7 +118,7 @@ std::vector<std::string> Utils::split(
 	return result;
 }
 
-std::vector<std::string> Utils::split(
+std::vector<std::string> utils::split(
 	const std::string& line,
 	const char separator,
 	const std::string& ignoreSectionBegins,
@@ -152,7 +152,7 @@ std::vector<std::string> Utils::split(
 
 		if (i - lastSep - 1 > 0)
 		{
-			auto item = Utils::strip(line.substr(lastSep + 1, i - lastSep - 1));
+			auto item = utils::strip(line.substr(lastSep + 1, i - lastSep - 1));
 			if (ignoreEmpty == false || item.size())
 				result.emplace_back(std::move(item));
 		}
@@ -164,7 +164,7 @@ std::vector<std::string> Utils::split(
 
 	if (lastSep + 1 < line.size())
 	{
-		auto item = Utils::strip(line.substr(lastSep + 1));
+		auto item = utils::strip(line.substr(lastSep + 1));
 		if (ignoreEmpty == false || item.size())
 			result.emplace_back(std::move(item));
 	}
@@ -174,9 +174,9 @@ std::vector<std::string> Utils::split(
 	return result;
 }
 
-std::vector<std::vector<std::string>> Utils::splitLists(const std::string& line, const char outerSeparator, const char innerSeparator, const bool ignoreEmpty)
+std::vector<std::vector<std::string>> utils::splitLists(const std::string& line, const char outerSeparator, const char innerSeparator, const bool ignoreEmpty)
 {
-	const auto outer = Utils::split(line, outerSeparator, ignoreEmpty);
+	const auto outer = utils::split(line, outerSeparator, ignoreEmpty);
 	std::vector<std::vector<std::string>> result;
 	result.reserve(outer.size());
 

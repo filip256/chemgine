@@ -1,9 +1,10 @@
 #pragma once
 
-#include "SFML/Graphics.hpp"
 #include "LabwareComponentBase.hpp"
 #include "Layer.hpp"
 #include "Ref.hpp"
+
+#include <SFML/Graphics.hpp>
 
 class MixturePropertyPane : public sf::Drawable
 {

@@ -1,6 +1,6 @@
 #include "PrintSettings.hpp"
 
-using namespace Def;
+using namespace def;
 
 const PrintSettings PrintSettings::Minimal = PrintSettings(false, "", ":", ",", "", "{", "}", ";\n");
 const PrintSettings PrintSettings::Pretty = PrintSettings(true, "\n", ": ", ",", "    ", " {", "}", ";\n");

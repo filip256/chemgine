@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace Def
+namespace def
 {
 	class ReactionSpecifier
 	{
@@ -36,22 +36,22 @@ namespace Def
 			const auto reactantsStr = str.substr(0, sep);
 			const auto productsStr = str.substr(sep + 2);
 
-			auto reactants = Utils::split(reactantsStr, '+', false);
-			auto products = Utils::split(productsStr, '+', false);
+			auto reactants = utils::split(reactantsStr, '+', false);
+			auto products = utils::split(productsStr, '+', false);
 
 			if (reactants.empty() || products.empty())
 				return std::nullopt;
 
 			for (size_t i = 0; i < reactants.size(); ++i)
 			{
-				Utils::strip(reactants[i]);
+				utils::strip(reactants[i]);
 				if (reactants[i].empty())
 					return std::nullopt;
 			}
 
 			for (size_t i = 0; i < products.size(); ++i)
 			{
-				Utils::strip(products[i]);
+				utils::strip(products[i]);
 				if (products[i].empty())
 					return std::nullopt;
 			}

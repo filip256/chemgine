@@ -30,7 +30,7 @@ public:
 
 	size_t totalDefinitionCount() const;
 
-	bool addDefinition(Def::Object&& definition);
+	bool addDefinition(def::Object&& definition);
 
 	bool load(const std::string& path);
 	void dump(const std::string& path, const bool prettify = true) const;

@@ -14,7 +14,7 @@ Spline<T>::Spline(
 	std::sort(points.begin(), points.end(), [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; });
 	points.erase(std::unique(
 			points.begin(),points.end(),
-		[](const auto& lhs, const auto& rhs) { return Utils::floatEqual(lhs.first, rhs.first); }),
+		[](const auto& lhs, const auto& rhs) { return utils::floatEqual(lhs.first, rhs.first); }),
 		points.end());
 
 	this->points = std::move(points);
@@ -64,6 +64,7 @@ template <typename T>
 size_t Spline<T>::getUpperBound(const T x) const
 {
 	// considering the small number of points in most splines, binary search is probably less efficient
+	// TODO: implement binary search for large splines
 	for (size_t i = 0; i < points.size(); ++i)
 		if (points[i].first > x)
 			return i;
@@ -111,7 +112,7 @@ void Spline<T>::compress(const T maxLinearError)
 	{
 		const T slope = getSlope(i - 1, i + 1);
 		const T after = (slope * (points[i].first - points[i - 1].first) + points[i - 1].second);
-		if (Utils::floatEqual(points[i].second, after, maxLinearError))
+		if (utils::floatEqual(points[i].second, after, maxLinearError))
 		{
 			points.erase(points.begin() + i);
 			if (points.size() < 3)
@@ -120,7 +121,7 @@ void Spline<T>::compress(const T maxLinearError)
 		--i;
 	}
 
-	if (points.size() == 2 && Utils::floatEqual(points.front().second, points.back().second, maxLinearError))
+	if (points.size() == 2 && utils::floatEqual(points.front().second, points.back().second, maxLinearError))
 		points.pop_back();
 
 	points.shrink_to_fit();
@@ -130,7 +131,7 @@ template <typename T>
 bool Spline<T>::isEquivalent(const Spline<T>& other, const T epsilon) const
 {
 	for (size_t i = 0; i < this->points.size(); ++i)
-		if (not Utils::floatEqual(this->points[i].second, other.getLinearValueAt(this->points[i].first), epsilon))
+		if (not utils::floatEqual(this->points[i].second, other.getLinearValueAt(this->points[i].first), epsilon))
 			return false;
 	return true;
 }

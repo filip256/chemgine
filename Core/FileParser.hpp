@@ -8,7 +8,7 @@
 class FileStore;
 class OOLDefRepository;
 
-namespace Def
+namespace def
 {
 	class FileParser
 	{
@@ -49,13 +49,13 @@ namespace Def
 		/// Returns the location of the last returned line in the current
 		/// definiton file.
 		/// </summary>
-		Def::Location getCurrentLocalLocation() const;
+		def::Location getCurrentLocalLocation() const;
 
 		/// <summary>
 		/// Returns the location of the last returned line of the currently 
 		/// parsed definition file, taking into account included files.
 		/// </summary>
-		Def::Location getCurrentGlobalLocation() const;
+		def::Location getCurrentGlobalLocation() const;
 
 		/// <summary>
 		/// Returns the next non-empty line of the current definition file or
@@ -74,12 +74,12 @@ namespace Def
 		/// included files, together with the location where the definition
 		/// started.
 		/// </summary>
-		std::pair<std::string, Def::Location> nextDefinitionLine();
+		std::pair<std::string, def::Location> nextDefinitionLine();
 
 		/// <summary>
-		/// Returns the next parsed Def::Object if parsing succeeds and
+		/// Returns the next parsed def::Object if parsing succeeds and
 		/// std::nullopt otherwise.
 		/// </summary>
-		std::optional<Def::Object> nextDefinition();
+		std::optional<def::Object> nextDefinition();
 	};
 }

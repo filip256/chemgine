@@ -61,7 +61,7 @@ SplineEstimator<OutU, InU>::SplineEstimator(
 	const Spline<float_s>& spline,
 	const EstimationMode mode
 ) noexcept :
-	SplineEstimator(id, Utils::copy(spline), mode)
+	SplineEstimator(id, utils::copy(spline), mode)
 {}
 
 template<Unit OutU, Unit InU>
@@ -105,18 +105,18 @@ void SplineEstimator<OutU, InU>::dumpDefinition(
 	}
 	alreadyPrinted.emplace(Base::id);
 
-	static const auto valueOffset = checked_cast<uint8_t>(Utils::max(
-		Def::Data::Mode.size(),
-		Def::Data::Values.size()));
+	static const auto valueOffset = checked_cast<uint8_t>(utils::max(
+		def::Data::Mode.size(),
+		def::Data::Values.size()));
 
-	Def::DataDumper dump(out, valueOffset, baseIndent, prettify);
+	def::DataDumper dump(out, valueOffset, baseIndent, prettify);
 	if (printInline)
 		dump.header("", Base::getUnitSpecifier(), "");
 	else
-		dump.header(Def::Types::Data, Base::getUnitSpecifier(), Base::getDefIdentifier());
+		dump.header(def::Types::Data, Base::getUnitSpecifier(), Base::getDefIdentifier());
 
 	dump.beginProperties()
-		.propertyWithSep(Def::Data::Mode, getMode());
+		.propertyWithSep(def::Data::Mode, getMode());
 
 	if (prettify)
 	{
@@ -126,10 +126,10 @@ void SplineEstimator<OutU, InU>::dumpDefinition(
 		std::transform(content.begin(), content.end(), std::back_inserter(values),
 			[](const auto& v) { return DataPoint<OutU, InU>(v.second, v.first); });
 
-		dump.property(Def::Data::Values, values);
+		dump.property(def::Data::Values, values);
 	}
 	else
-		dump.property(Def::Data::Values, spline.getContent());
+		dump.property(def::Data::Values, spline.getContent());
 	
 	dump.endProperties();
 

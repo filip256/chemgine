@@ -8,7 +8,7 @@ template<Unit OutU, Unit... InUs>
 class UnitizedEstimator : public EstimatorBase
 {
 protected:
-	static Def::EstimatorSpecifier getUnitSpecifier();
+	static def::EstimatorSpecifier getUnitSpecifier();
 
 public:
 	using EstimatorBase::EstimatorBase;
@@ -17,9 +17,9 @@ public:
 };
 
 template<Unit OutU, Unit... InUs>
-Def::EstimatorSpecifier UnitizedEstimator<OutU, InUs...>::getUnitSpecifier()
+def::EstimatorSpecifier UnitizedEstimator<OutU, InUs...>::getUnitSpecifier()
 {
-	return Def::EstimatorSpecifier(OutU, { InUs... });
+	return def::EstimatorSpecifier(OutU, { InUs... });
 }
 
 

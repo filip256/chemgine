@@ -12,17 +12,17 @@ class LabwareRepository
 private:
 	std::unordered_map<LabwareId, std::unique_ptr<const BaseLabwareData>> labware;
 
-	bool checkTextureFile(std::string path, const Def::Location& location);
+	bool checkTextureFile(std::string path, const def::Location& location);
 
 	template <LabwareType T>
-	bool add(const LabwareId id, const Def::Object& definition) = delete;
+	bool add(const LabwareId id, const def::Object& definition) = delete;
 
 public:
 	LabwareRepository() = default;
 	LabwareRepository(const LabwareRepository&) = delete;
 	LabwareRepository(LabwareRepository&&) = default;
 
-	bool add(const Def::Object& definition);
+	bool add(const def::Object& definition);
 
 	bool contains(const LabwareId id) const;
 	const BaseLabwareData& at(const LabwareId id) const;

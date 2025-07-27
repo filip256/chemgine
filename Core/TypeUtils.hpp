@@ -1,25 +1,25 @@
 #pragma once
 
-#include "StringUtils.hpp"
-
 #include <string>
 
-namespace Utils
+namespace utils
 {
+	void demangleTypeName(std::string& name);
+	std::string demangleTypeName(const std::string& name);
+
 	template<typename T>
 	std::string getTypeName();
 }
 
 template<typename T>
-std::string Utils::getTypeName()
+std::string utils::getTypeName()
 {
 	if constexpr (std::is_same<T, void>())
 		return "";
-
-	auto name = std::string(typeid(T).name());
-	if (name.starts_with("class"))
-		name = name.substr(5);
-
-	Utils::strip(name);
-	return name;
+	else
+	{
+		auto name = std::string(typeid(T).name());
+		demangleTypeName(name);
+		return name;
+	}
 }

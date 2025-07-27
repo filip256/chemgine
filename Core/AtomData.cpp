@@ -50,7 +50,7 @@ uint8_t AtomData::getFittingValence(const uint8_t bonds) const
 
 std::string AtomData::getSMILES() const
 {
-	const auto smiles = symbol.getString();
+	const auto smiles = symbol.str();
 	return smiles.size() > 1 ?
 		'[' + smiles + ']' :
 		smiles;
@@ -58,17 +58,17 @@ std::string AtomData::getSMILES() const
 
 void AtomData::dumpDefinition(std::ostream& out, const bool prettify) const
 {
-	static const auto valueOffset = checked_cast<uint8_t>(Utils::max(
-		Def::Atoms::Name.size(),
-		Def::Atoms::Weight.size(),
-		Def::Atoms::Valences.size()));
+	static const auto valueOffset = checked_cast<uint8_t>(utils::max(
+		def::Atoms::Name.size(),
+		def::Atoms::Weight.size(),
+		def::Atoms::Valences.size()));
 
-	Def::DataDumper(out, valueOffset, 0, prettify)
-		.header(Def::Types::Atom, symbol, "")
+	def::DataDumper(out, valueOffset, 0, prettify)
+		.header(def::Types::Atom, symbol, "")
 		.beginProperties()
-		.propertyWithSep(Def::Atoms::Name, name)
-		.propertyWithSep(Def::Atoms::Weight, weight)
-		.property(Def::Atoms::Valences, valences)
+		.propertyWithSep(def::Atoms::Name, name)
+		.propertyWithSep(def::Atoms::Weight, weight)
+		.property(def::Atoms::Valences, valences)
 		.endProperties()
 		.endDefinition();
 }

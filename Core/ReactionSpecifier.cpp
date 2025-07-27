@@ -1,6 +1,6 @@
 #include "ReactionSpecifier.hpp"
 
-using namespace Def;
+using namespace def;
 
 ReactionSpecifier::ReactionSpecifier(
 	std::vector<std::string>&& reactants,

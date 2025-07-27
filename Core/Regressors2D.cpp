@@ -35,8 +35,8 @@ bool LinearRegressor2D::isEquivalent(const Regressor2DBase& other, const float_s
 
 	const auto& oth = static_cast<decltype(*this)&>(other);
 	return
-		Utils::floatEqual(this->paramX, oth.paramX, epsilon) &&
-		Utils::floatEqual(this->shift, oth.shift, epsilon);
+		utils::floatEqual(this->paramX, oth.paramX, epsilon) &&
+		utils::floatEqual(this->shift, oth.shift, epsilon);
 }
 
 LinearRegressor2D LinearRegressor2D::fit(

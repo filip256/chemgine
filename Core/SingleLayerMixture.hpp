@@ -326,7 +326,7 @@ Amount<Unit::LITER> SingleLayerMixture<L>::getTotalVolume() const
 }
 
 template<LayerType L>
-const Layer& SingleLayerMixture<L>::getLayer(const LayerType l) const
+const Layer& SingleLayerMixture<L>::getLayer(const LayerType) const
 {
 	return layer;
 }
@@ -368,37 +368,37 @@ Color SingleLayerMixture<L>::getLayerColor() const
 }
 
 template<LayerType L>
-Amount<Unit::CELSIUS> SingleLayerMixture<L>::getLayerTemperature(const LayerType l) const
+Amount<Unit::CELSIUS> SingleLayerMixture<L>::getLayerTemperature(const LayerType) const
 {
 	return layer.temperature;
 }
 
 template<LayerType L>
-Amount<Unit::JOULE_PER_MOLE_CELSIUS> SingleLayerMixture<L>::getLayerHeatCapacity(const LayerType l) const
+Amount<Unit::JOULE_PER_MOLE_CELSIUS> SingleLayerMixture<L>::getLayerHeatCapacity(const LayerType) const
 {
 	return layer.getHeatCapacity();
 }
 
 template<LayerType L>
-Amount<Unit::JOULE_PER_CELSIUS> SingleLayerMixture<L>::getLayerTotalHeatCapacity(const LayerType l) const
+Amount<Unit::JOULE_PER_CELSIUS> SingleLayerMixture<L>::getLayerTotalHeatCapacity(const LayerType) const
 {
 	return layer.getTotalHeatCapacity();
 }
 
 template<LayerType L>
-Amount<Unit::JOULE_PER_MOLE> SingleLayerMixture<L>::getLayerKineticEnergy(const LayerType l) const
+Amount<Unit::JOULE_PER_MOLE> SingleLayerMixture<L>::getLayerKineticEnergy(const LayerType) const
 {
 	return layer.getKineticEnergy();
 }
 
 template<LayerType L>
-Polarity SingleLayerMixture<L>::getLayerPolarity(const LayerType l) const
+Polarity SingleLayerMixture<L>::getLayerPolarity(const LayerType) const
 {
 	return layer.getPolarity();
 }
 
 template<LayerType L>
-Color SingleLayerMixture<L>::getLayerColor(const LayerType l) const
+Color SingleLayerMixture<L>::getLayerColor(const LayerType) const
 {
 	return layer.getColor();
 }

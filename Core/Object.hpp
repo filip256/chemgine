@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <optional>
 
-namespace Def
+namespace def
 {
 	enum class DefinitionType
 	{
@@ -27,7 +27,7 @@ namespace Def
 		const DefinitionType type;
 		const std::string identifier;
 		const std::string specifier;
-		const Def::Location location;
+		const def::Location location;
 
 		mutable std::unordered_set<std::string> accessedProperties;
 		mutable std::unordered_set<std::string> accessedSubDefs;
@@ -44,7 +44,7 @@ namespace Def
 			std::unordered_map<std::string, std::string>&& properties,
 			std::unordered_map<std::string, Object>&& ilSubDefs,
 			std::unordered_map<std::string, const Object*>&& oolSubDefs,
-			Def::Location&& location
+			def::Location&& location
 		) noexcept;
 
 		Object(const Object&) = delete;
@@ -56,7 +56,7 @@ namespace Def
 		const std::string& getIdentifier() const;
 		const std::string& getSpecifier() const;
 
-		const Def::Location& getLocation() const;
+		const def::Location& getLocation() const;
 		std::string getLocationName() const;
 
 		void logUnusedWarnings() const;

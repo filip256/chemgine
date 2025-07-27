@@ -76,14 +76,14 @@ void ConstantEstimator<OutU, InUs...>::dumpDefinition(
 	}
 	alreadyPrinted.emplace(Base::id);
 
-	Def::DataDumper dump(out, checked_cast<uint8_t>(Def::Data::Constant.size()), baseIndent, prettify);
+	def::DataDumper dump(out, checked_cast<uint8_t>(def::Data::Constant.size()), baseIndent, prettify);
 	if (printInline)
 		dump.header("", Base::getUnitSpecifier(), "");
 	else
-		dump.header(Def::Types::Data, Base::getUnitSpecifier(), Base::getDefIdentifier());
+		dump.header(def::Types::Data, Base::getUnitSpecifier(), Base::getDefIdentifier());
 
 	dump.beginProperties()
-		.property(Def::Data::Constant, constant)
+		.property(def::Data::Constant, constant)
 		.endProperties();
 
 	if (not printInline)

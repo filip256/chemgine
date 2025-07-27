@@ -6,7 +6,8 @@
 #include "Molecule.hpp"
 #include "Mixture.hpp"
 #include "Accessor.hpp"
-#include "SFML/Graphics.hpp"
+
+#include <SFML/Graphics.hpp>
 
 class LabwareComponentBase : public Accessor<>, public sf::Drawable
 {

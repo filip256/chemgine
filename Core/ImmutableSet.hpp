@@ -201,16 +201,16 @@ bool ImmutableSet<T>::operator!=(const ImmutableSet& other) const
 
 
 template <typename T>
-class Def::Printer<ImmutableSet<T>>
+class def::Printer<ImmutableSet<T>>
 {
 public:
 	static std::string print(const ImmutableSet<T>& object)
 	{
-		return Def::print(object.getContent());
+		return def::print(object.getContent());
 	}
 
 	static std::string prettyPrint(const ImmutableSet<T>& object)
 	{
-		return Def::prettyPrint(object.getContent());
+		return def::prettyPrint(object.getContent());
 	}
 };

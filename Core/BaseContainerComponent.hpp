@@ -3,7 +3,7 @@
 #include "DrawableComponent.hpp"
 #include "BaseContainerLabwareData.hpp"
 #include "Reactor.hpp"
-#include "ColorCast.hpp"
+#include "SFMLUtils.hpp"
 
 class BaseContainerComponent : public DrawableComponent
 {
@@ -40,7 +40,7 @@ void inline BaseContainerComponent::draw<Atmosphere>(
 	const Atmosphere& container, const ShapeFill& fill,
 	sf::RenderTarget& target, const sf::RenderStates& states)
 {
-	fill.setColor(Utils::colorCast(container.getLayerColor()));
+	fill.setColor(utils::colorCast(container.getLayerColor()));
 	target.draw(fill, states);
 }
 
@@ -53,7 +53,7 @@ void inline BaseContainerComponent::draw<Reactor>(
 	for (auto l = container.getLayersUpBegin(); l != container.getLayersUpEnd(); ++l)
 	{
 		const auto layerSection = (l->second.getVolume() / container.getMaxVolume()).asStd();
-		fill.setDrawSection(lastSection, lastSection + layerSection, Utils::colorCast(l->second.getColor()));
+		fill.setDrawSection(lastSection, lastSection + layerSection, utils::colorCast(l->second.getColor()));
 		lastSection += layerSection;
 
 		target.draw(fill, states);

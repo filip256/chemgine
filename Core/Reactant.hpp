@@ -31,7 +31,7 @@ struct std::hash<ReactantId>
 {
 	size_t operator() (const ReactantId& id) const
 	{
-		return Utils::hashCombine(id.moleculeId, toIndex(id.layer));
+		return utils::hashCombine(id.moleculeId, toIndex(id.layer));
 	}
 };
 

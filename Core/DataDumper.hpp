@@ -7,13 +7,13 @@
 
 #include <ostream>
 
-namespace Def
+namespace def
 {
 	class DataDumper
 	{
 	private:
 		std::ostream& out;
-		const Def::PrintSettings& settings;
+		const def::PrintSettings& settings;
 		const uint8_t valueOffset;
 		std::string baseIndent;
 
@@ -88,7 +88,7 @@ namespace Def
 		if (idendtifier.size())
 			out << '<' << idendtifier << '>';
 
-		out << settings.specifierSep << (settings.prettify ? Def::prettyPrint(specifier) : Def::print(specifier));
+		out << settings.specifierSep << (settings.prettify ? def::prettyPrint(specifier) : def::print(specifier));
 		return *this;
 	}
 
@@ -100,9 +100,9 @@ namespace Def
 		out << settings.propertyIndent << name << ':';
 
 		if (settings.prettify)
-			out << std::string(valueOffset - name.size(), ' ') << Def::prettyPrint(value);
+			out << std::string(valueOffset - name.size(), ' ') << def::prettyPrint(value);
 		else
-			out << Def::print(value);
+			out << def::print(value);
 
 		return *this;
 	}
@@ -127,7 +127,7 @@ namespace Def
 		const T& value,
 		const T& defaultValue)
 	{
-		if (not Utils::equal(value, defaultValue))
+		if (not utils::equal(value, defaultValue))
 			property(name, value);
 		return *this;
 	}
@@ -139,7 +139,7 @@ namespace Def
 		const T& defaultValue,
 		const bool preSep)
 	{
-		if (not Utils::equal(value, defaultValue))
+		if (not utils::equal(value, defaultValue))
 			propertyWithSep(name, value, preSep);
 		return *this;
 	}

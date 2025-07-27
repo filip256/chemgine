@@ -1,7 +1,7 @@
 #include "Object.hpp"
 #include "DataStore.hpp"
 
-using namespace Def;
+using namespace def;
 
 Object::Object(
 	const DefinitionType type,
@@ -10,7 +10,7 @@ Object::Object(
 	std::unordered_map<std::string, std::string>&& properties,
 	std::unordered_map<std::string, Object>&& ilSubDefs,
 	std::unordered_map<std::string, const Object*>&& oolSubDefs,
-	Def::Location&& location
+	def::Location&& location
 ) noexcept :
 	type(type),
 	identifier(std::move(identifier)),
@@ -36,7 +36,7 @@ const std::string& Object::getSpecifier() const
 	return specifier;
 }
 
-const Def::Location& Object::getLocation() const
+const def::Location& Object::getLocation() const
 {
 	return location;
 }

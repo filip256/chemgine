@@ -34,9 +34,9 @@ uint8_t Atom::getPrecedence() const
     return data.getRarity();
 }
 
-std::string Atom::getSymbol() const
+const Symbol& Atom::getSymbol() const
 {
-    return data.symbol.getString();
+    return data.symbol;
 }
 
 std::string Atom::getSMILES() const
@@ -51,12 +51,12 @@ std::unordered_map<Symbol, c_size> Atom::getComponentCountMap() const
 
 bool Atom::operator==(const Atom& other) const
 {
-    return &this->data == &other.data;
+    return this->data.symbol == other.data.symbol;
 }
 
 bool Atom::operator!=(const Atom& other) const
 {
-    return &this->data != &other.data;
+    return this->data.symbol != other.data.symbol;
 }
 
 std::unique_ptr<Atom> Atom::clone() const

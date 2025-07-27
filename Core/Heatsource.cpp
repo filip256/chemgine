@@ -34,7 +34,7 @@ bool Heatsource::tryConnect(LabwareComponentBase& other)
 	return false;
 }
 
-void Heatsource::disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase& other)
+void Heatsource::disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase&)
 {
 	this->setTarget(dump);
 }

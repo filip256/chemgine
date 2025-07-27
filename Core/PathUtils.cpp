@@ -5,20 +5,20 @@
 #include <algorithm>
 #include <filesystem>
 
-void Utils::normalizePath(std::string& path)
+void utils::normalizePath(std::string& path)
 {
-	Utils::strip(path);
+	utils::strip(path);
 	std::replace(path.begin(), path.end(), '\\', '/');
 }
 
-std::string Utils::normalizePath(const std::string& path)
+std::string utils::normalizePath(const std::string& path)
 {
 	auto temp = path;
 	normalizePath(temp);
 	return temp;
 }
 
-std::string Utils::extractDirName(const std::string& path)
+std::string utils::extractDirName(const std::string& path)
 {
 	const auto dirEnd = path.rfind('/');
 	return dirEnd != std::string::npos ?
@@ -26,7 +26,7 @@ std::string Utils::extractDirName(const std::string& path)
 		"";
 }
 
-std::string Utils::extractFileNameWithExtension(const std::string& path)
+std::string utils::extractFileNameWithExtension(const std::string& path)
 {
 	const auto nameStart = path.rfind('/');
 	return nameStart != std::string::npos ?
@@ -34,7 +34,7 @@ std::string Utils::extractFileNameWithExtension(const std::string& path)
 		path;
 }
 
-std::string Utils::extractFileName(const std::string& path)
+std::string utils::extractFileName(const std::string& path)
 {
 	const auto nameWithExt = extractFileNameWithExtension(path);
 	const auto nameEnd = nameWithExt.rfind('.');
@@ -43,7 +43,7 @@ std::string Utils::extractFileName(const std::string& path)
 		nameWithExt;
 }
 
-std::string Utils::extractExtension(const std::string& path)
+std::string utils::extractExtension(const std::string& path)
 {
 	const auto extStart = path.rfind('.');
 	return extStart != std::string::npos ?
@@ -51,7 +51,7 @@ std::string Utils::extractExtension(const std::string& path)
 		"";
 }
 
-std::string Utils::combinePaths(const std::string& path1, const std::string& path2)
+std::string utils::combinePaths(const std::string& path1, const std::string& path2)
 {
 	if (path1.ends_with('/'))
 	{
@@ -65,13 +65,19 @@ std::string Utils::combinePaths(const std::string& path1, const std::string& pat
 		path1 + '/' + path2;
 }
 
-bool Utils::fileExists(const std::string& path)
+std::string utils::getRelativePathToProjectRoot(const char* fullPath)
+{
+	constexpr std::string_view basePath = "Chemgine";
+	const char* pathBegin = std::strstr(fullPath, basePath.data());
+	return std::string(pathBegin != nullptr ? pathBegin : fullPath);
+}
+
+bool utils::fileExists(const std::string& path)
 {
 	return std::filesystem::exists(path);
 }
 
-
-void Utils::createDir(const std::string& path)
+void utils::createDir(const std::string& path)
 {
 	try
 	{
@@ -84,8 +90,7 @@ void Utils::createDir(const std::string& path)
 	}
 }
 
-
-void Utils::removeDir(const std::string& path)
+void utils::removeDir(const std::string& path)
 {
 	try
 	{

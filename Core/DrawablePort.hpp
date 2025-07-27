@@ -1,7 +1,8 @@
 #pragma once
 
 #include "LabwarePort.hpp"
-#include "SFML/Graphics.hpp"
+
+#include <SFML/Graphics.hpp>
 
 class DrawablePort
 {

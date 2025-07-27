@@ -25,8 +25,8 @@ int main(int argc, char* argv[])
         }
 
         const auto logLevelStr = args.count("log") ? args["log"].as<std::string>() : "INFO";
-        if (const auto logLevel = LogBase::parseLogLevel(logLevelStr))
-            LogBase::logLevel = *logLevel;
+        if (const auto logLevel = LogBase::parseLogType(logLevelStr))
+            LogBase::settings().logLevel = *logLevel;
         else
         {
             Log().fatal("Failed to parse log level: '{0}'.", logLevelStr);
@@ -50,12 +50,14 @@ int main(int argc, char* argv[])
 
         if (not args.count("output"))
         {
-            Log().info("Not output file was specified, dump skipped.");
+            Log().info("No output file was specified, dump skipped.");
             return 0;
         }
 
         const auto outputFile = args["output"].as<std::string>();
-        Utils::createDir(Utils::extractDirName(outputFile));
+        const auto dirName = utils::extractDirName(outputFile);
+        if(dirName.size())
+            utils::createDir(dirName);
 
         const auto prettify = args["pretty"].as<bool>();
         dataStore.dump(outputFile, prettify);

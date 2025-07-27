@@ -156,7 +156,7 @@ constexpr Amount<UnitT> Amount<UnitT>::operator-=(const Amount<UnitT> other) noe
 template <Unit UnitT>
 constexpr inline bool Amount<UnitT>::equals(const Amount<UnitT> other, const StorageType epsilon) const noexcept
 {
-	return Utils::floatEqual(this->value, other.value, epsilon);
+	return utils::floatEqual(this->value, other.value, epsilon);
 }
 
 template<Unit UnitT>
@@ -183,7 +183,7 @@ constexpr Unit Amount<UnitT>::unit() const noexcept { return UnitT; }
 template<Unit UnitT>
 std::string Amount<UnitT>::toString(const uint8_t maxDigits) const noexcept 
 {
-	const auto str = Linguistics::formatFloatingPoint(value, maxDigits);
+	const auto str = utils::formatFloatingPoint(value, maxDigits);
 	if constexpr (UnitT != Unit::NONE)
 		return str + ' ' + Amount<UnitT>::unitSymbol();
 	else
@@ -313,7 +313,12 @@ template<>
 inline std::string Amount<Unit::TORR_MOLE_RATIO>::unitName() noexcept { return Amount<Unit::TORR>::unitName() + " * (" + Amount<Unit::MOLE>::unitName() + " / " + Amount<Unit::MOLE>::unitName() + ")"; }
 
 template<>
-inline std::string Amount<Unit::SECOND>::format() noexcept { return Linguistics::formatTime(static_cast<int32_t>(asMilli())); }
+inline std::string Amount<Unit::SECOND>::format() noexcept
+{
+	return utils::formatTime(
+		std::chrono::milliseconds(static_cast<std::chrono::milliseconds::rep>(asMilli())),
+		utils::TimeFormat::DIGITAL_HH_MM_SS);
+}
 
 //    --- Direct Conversions ---    //
 
@@ -683,17 +688,17 @@ constexpr inline Amount<Unit::RADIAN> operator""_rad(long double value) { return
 //    --- Printer ---    //
 
 template <Unit U>
-class Def::Printer<Amount<U>>
+class def::Printer<Amount<U>>
 {
 public:
 	static std::string print(const Amount<U> object)
 	{
-		return Def::print(object.asStd());
+		return def::print(object.asStd());
 	}
 
 	static std::string prettyPrint(const Amount<U> object)
 	{
-		const auto valStr = Def::prettyPrint(object.asStd());
+		const auto valStr = def::prettyPrint(object.asStd());
 		if constexpr (U != Unit::NONE)
 			return valStr + '_' + object.unitSymbol();
 		else

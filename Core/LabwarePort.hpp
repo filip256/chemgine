@@ -20,29 +20,29 @@ public:
 
 
 template <>
-class Def::Parser<LabwarePort>
+class def::Parser<LabwarePort>
 {
 public:
 	static std::optional<LabwarePort> parse(const std::string& str)
 	{
-		const auto pair = Def::parse<std::pair<PortType, std::string>>(str);
+		const auto pair = def::parse<std::pair<PortType, std::string>>(str);
 		if (not pair)
 			return std::nullopt;
 
-		const auto props = Def::parse<std::unordered_map<std::string, std::string>>(pair->second);
+		const auto props = def::parse<std::unordered_map<std::string, std::string>>(pair->second);
 		if (not props)
 			return std::nullopt;
 
-		const auto xIt = props->find(Def::Port::X);
-		const auto yIt = props->find(Def::Port::Y);
-		const auto angleIt = props->find(Def::Port::Angle);
+		const auto xIt = props->find(def::Port::X);
+		const auto yIt = props->find(def::Port::Y);
+		const auto angleIt = props->find(def::Port::Angle);
 
 		if (xIt == props->end() || yIt == props->end() || angleIt == props->end())
 			return std::nullopt;
 
-		const auto x = Def::parse<float_s>(xIt->second);
-		const auto y = Def::parse<float_s>(yIt->second);
-		const auto angle = Def::parse<Amount<Unit::DEGREE>>(angleIt->second);
+		const auto x = def::parse<float_s>(xIt->second);
+		const auto y = def::parse<float_s>(yIt->second);
+		const auto angle = def::parse<Amount<Unit::DEGREE>>(angleIt->second);
 
 		if (not (x && y && angle))
 			return std::nullopt;
@@ -52,30 +52,30 @@ public:
 };
 
 template <>
-class Def::Printer<LabwarePort>
+class def::Printer<LabwarePort>
 {
 public:
 	static std::string print(const LabwarePort& object)
 	{
 		std::unordered_map<std::string, std::string> props
 		{
-			{ Def::Port::X, Def::print(object.x) },
-			{ Def::Port::Y, Def::print(object.y) },
-			{ Def::Port::Angle, Def::print(object.angle) }
+			{ def::Port::X, def::print(object.x) },
+			{ def::Port::Y, def::print(object.y) },
+			{ def::Port::Angle, def::print(object.angle) }
 		};
 
-		return Def::print(std::pair(Def::print(object.type), std::move(props)));
+		return def::print(std::pair(def::print(object.type), std::move(props)));
 	}
 
 	static std::string prettyPrint(const LabwarePort& object)
 	{
 		std::unordered_map<std::string, std::string> props
 		{
-			{ Def::Port::X, Def::print(object.x) },
-			{ Def::Port::Y, Def::print(object.y) },
-			{ Def::Port::Angle, Def::print(object.angle) }
+			{ def::Port::X, def::print(object.x) },
+			{ def::Port::Y, def::print(object.y) },
+			{ def::Port::Angle, def::print(object.angle) }
 		};
 
-		return Def::prettyPrint(std::pair(Def::prettyPrint(object.type), std::move(props)));
+		return def::prettyPrint(std::pair(def::prettyPrint(object.type), std::move(props)));
 	}
 };

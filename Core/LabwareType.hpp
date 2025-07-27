@@ -29,35 +29,35 @@ static inline constexpr bool hasMultiLayerStorage(const LabwareType type)
 }
 
 template <>
-class Def::Parser<LabwareType>
+class def::Parser<LabwareType>
 {
 public:
 	static std::optional<LabwareType> parse(const std::string& str)
 	{
 		static const std::unordered_map<std::string, LabwareType> typeMap
 		{
-			{Def::Labware::Flask, LabwareType::FLASK},
-			{Def::Labware::Adaptor, LabwareType::ADAPTOR},
-			{Def::Labware::Condenser, LabwareType::CONDENSER},
-			{Def::Labware::Heatsource, LabwareType::HEATSOURCE},
+			{def::Labware::Flask, LabwareType::FLASK},
+			{def::Labware::Adaptor, LabwareType::ADAPTOR},
+			{def::Labware::Condenser, LabwareType::CONDENSER},
+			{def::Labware::Heatsource, LabwareType::HEATSOURCE},
 		};
 
-		return Utils::find(typeMap, str);
+		return utils::find(typeMap, str);
 	}
 };
 
 template <>
-class Def::Printer<LabwareType>
+class def::Printer<LabwareType>
 {
 public:
 	static std::string print(const LabwareType object)
 	{
 		static const std::unordered_map<LabwareType, std::string> typeMap
 		{
-			{LabwareType::FLASK, Def::Labware::Flask},
-			{LabwareType::ADAPTOR, Def::Labware::Adaptor},
-			{LabwareType::CONDENSER, Def::Labware::Condenser},
-			{ LabwareType::HEATSOURCE, Def::Labware::Heatsource},
+			{LabwareType::FLASK, def::Labware::Flask},
+			{LabwareType::ADAPTOR, def::Labware::Adaptor},
+			{LabwareType::CONDENSER, def::Labware::Condenser},
+			{ LabwareType::HEATSOURCE, def::Labware::Heatsource},
 		};
 
 		return typeMap.at(object);

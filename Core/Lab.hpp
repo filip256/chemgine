@@ -2,7 +2,8 @@
 
 #include "Atmosphere.hpp"
 #include "LabwareSystem.hpp"
-#include "SFML/Graphics/Drawable.hpp"
+
+#include <SFML/Graphics/Drawable.hpp>
 
 class Lab : public sf::Drawable
 {

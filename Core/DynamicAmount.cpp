@@ -280,9 +280,9 @@ std::optional<DynamicAmount> DynamicAmount::get(const StorageType value, const s
     if (not unit)
         return std::nullopt;
     
-    const StorageType multiplier = *unit == Unit::CUBIC_METER ?
-        1000000.0 :
-        1000.0;
+    const auto multiplier = *unit == Unit::CUBIC_METER ?
+        1000000.0f :
+        1000.0f;
     
     switch (symbol.front())
     {

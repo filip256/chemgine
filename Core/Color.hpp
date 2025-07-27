@@ -22,27 +22,27 @@ public:
 
 
 template <>
-class Def::Parser<Color>
+class def::Parser<Color>
 {
 public:
 	static std::optional<::Color> parse(const std::string& str)
 	{
-		const auto props = Def::parse<std::unordered_map<std::string, std::string>>(str);
+		const auto props = def::parse<std::unordered_map<std::string, std::string>>(str);
 		if (not props)
 			return std::nullopt;
 
-		const auto rIt = props->find(Def::Color::R);
-		const auto gIt = props->find(Def::Color::G);
-		const auto bIt = props->find(Def::Color::B);
-		const auto intensityIt = props->find(Def::Color::Intensity);
+		const auto rIt = props->find(def::Color::R);
+		const auto gIt = props->find(def::Color::G);
+		const auto bIt = props->find(def::Color::B);
+		const auto intensityIt = props->find(def::Color::Intensity);
 
 		if (rIt == props->end() || gIt == props->end() || bIt == props->end())
 			return std::nullopt;
 
-		const auto r = Def::parse<uint8_t>(rIt->second);
-		const auto g = Def::parse<uint8_t>(gIt->second);
-		const auto b = Def::parse<uint8_t>(bIt->second);
-		const auto intensity = Def::parse<uint8_t>(intensityIt->second);
+		const auto r = def::parse<uint8_t>(rIt->second);
+		const auto g = def::parse<uint8_t>(gIt->second);
+		const auto b = def::parse<uint8_t>(bIt->second);
+		const auto intensity = def::parse<uint8_t>(intensityIt->second);
 
 		if (not (r && g && b && intensity))
 			return std::nullopt;
@@ -52,32 +52,32 @@ public:
 };
 
 template <>
-class Def::Printer<Color>
+class def::Printer<Color>
 {
 public:
 	static std::string print(const ::Color object)
 	{
 		std::unordered_map<std::string, uint8_t> props
 		{
-			{ Def::Color::R, object.r },
-			{ Def::Color::G, object.g },
-			{ Def::Color::B, object.b },
-			{ Def::Color::Intensity, object.a }
+			{ def::Color::R, object.r },
+			{ def::Color::G, object.g },
+			{ def::Color::B, object.b },
+			{ def::Color::Intensity, object.a }
 		};
 
-		return Def::print(props);
+		return def::print(props);
 	}
 
 	static std::string prettyPrint(const ::Color object)
 	{
 		std::unordered_map<std::string, uint8_t> props
 		{
-			{ Def::Color::R, object.r },
-			{ Def::Color::G, object.g },
-			{ Def::Color::B, object.b },
-			{ Def::Color::Intensity, object.a }
+			{ def::Color::R, object.r },
+			{ def::Color::G, object.g },
+			{ def::Color::B, object.b },
+			{ def::Color::Intensity, object.a }
 		};
 
-		return Def::prettyPrint(props);
+		return def::prettyPrint(props);
 	}
 };

@@ -159,6 +159,6 @@ void ContainerLabwareData<C>::dumpTextures(const std::string& path) const
 	for (uint8_t i = 0; i < C; ++i)
 	{
 		fillTextures[i].getTexture().copyToImage().saveToFile(
-			Utils::combinePaths(path, "fill" + std::to_string(i) + '_' + textureFile));
+			utils::combinePaths(path, "fill" + std::to_string(i) + '_' + textureFile));
 	}
 }

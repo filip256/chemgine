@@ -11,21 +11,21 @@ RadicalData::RadicalData(
 	const std::string& name,
 	std::unordered_set<Symbol>&& matchables
 ) noexcept :
-	AtomData(symbol, name, 0.0_g, Utils::copy(AtomData::RadicalAnyValence)),
+	AtomData(symbol, name, 0.0_g, utils::copy(AtomData::RadicalAnyValence)),
 	matchables(std::move(matchables))
 {}
 
 void RadicalData::dumpDefinition(std::ostream& out, const bool prettify) const
 {
-	static const auto valueOffset = checked_cast<uint8_t>(Utils::max(
-		Def::Atoms::Name.size(),
-		Def::Atoms::RadicalMatches.size()));
+	static const auto valueOffset = checked_cast<uint8_t>(utils::max(
+		def::Atoms::Name.size(),
+		def::Atoms::RadicalMatches.size()));
 
-	Def::DataDumper(out, valueOffset, 0, prettify)
-		.header(Def::Types::Radical, symbol, "")
+	def::DataDumper(out, valueOffset, 0, prettify)
+		.header(def::Types::Radical, symbol, "")
 		.beginProperties()
-		.propertyWithSep(Def::Atoms::Name, name)
-		.property(Def::Atoms::RadicalMatches, matchables)
+		.propertyWithSep(def::Atoms::Name, name)
+		.property(def::Atoms::RadicalMatches, matchables)
 		.endProperties()
 		.endDefinition();
 }

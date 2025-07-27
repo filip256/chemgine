@@ -1,7 +1,8 @@
 #pragma once
 
-#include "SFML/Graphics.hpp"
 #include "Amount.hpp"
+
+#include <SFML/Graphics.hpp>
 
 #include <vector>
 #include <random>

@@ -1,5 +1,5 @@
 #include "Lab.hpp"
-#include "ColorCast.hpp"
+#include "SFMLUtils.hpp"
 
 Lab::Lab() noexcept :
 	atmosphere(Atmosphere::createDefaultAtmosphere())
@@ -137,9 +137,8 @@ void Lab::tick(const Amount<Unit::SECOND> timespan)
 
 void Lab::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	const auto screenSize = target.getSize();
-	atmosphereOverlay.setSize(sf::Vector2f(screenSize.x, screenSize.y));
-	atmosphereOverlay.setFillColor(Utils::colorCast(atmosphere->getLayerColor()));
+	atmosphereOverlay.setSize(utils::vectorCast<float>(target.getSize()));
+	atmosphereOverlay.setFillColor(utils::colorCast(atmosphere->getLayerColor()));
 	target.draw(atmosphereOverlay, states);
 
 	for (size_t i = 0; i < systems.size(); ++i)

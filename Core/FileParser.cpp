@@ -8,14 +8,14 @@
 #include "Keywords.hpp"
 #include "Log.hpp"
 
-using namespace Def;
+using namespace def;
 
 FileParser::FileParser(
 	const std::string& filePath,
 	FileStore& fileStore,
 	const OOLDefRepository& oolDefinitions
 ) noexcept :
-	currentFile(Utils::normalizePath(filePath)),
+	currentFile(utils::normalizePath(filePath)),
 	stream(currentFile),
 	oolDefinitions(oolDefinitions),
 	fileStore(fileStore)
@@ -77,13 +77,13 @@ bool FileParser::isOpen() const
 	return stream.is_open();
 }
 
-Def::Location FileParser::getCurrentLocalLocation() const
+def::Location FileParser::getCurrentLocalLocation() const
 {
-	return isOpen() ? Def::Location(currentFile, currentLine) :
-		Def::Location::createEOF(currentFile);
+	return isOpen() ? def::Location(currentFile, currentLine) :
+		def::Location::createEOF(currentFile);
 }
 
-Def::Location FileParser::getCurrentGlobalLocation() const
+def::Location FileParser::getCurrentGlobalLocation() const
 {
 	return subParser ? subParser->getCurrentGlobalLocation() :
 		getCurrentLocalLocation();
@@ -105,7 +105,7 @@ std::string FileParser::nextLocalLine()
 	{
 		++currentLine;
 
-		Utils::strip(line);
+		utils::strip(line);
 		if (line.empty())
 			continue;
 
@@ -136,15 +136,15 @@ std::string FileParser::nextGlobalLine()
 			break;
 
 		// include
-		if (line.starts_with(Def::Syntax::Include))
+		if (line.starts_with(def::Syntax::Include))
 		{
-			const auto pathEnd = line.find(Def::Syntax::IncludeAs, Def::Syntax::Include.size());
-			auto path = Utils::normalizePath(
-				line.substr(Def::Syntax::Include.size(), pathEnd - Def::Syntax::Include.size()));
+			const auto pathEnd = line.find(def::Syntax::IncludeAs, def::Syntax::Include.size());
+			auto path = utils::normalizePath(
+				line.substr(def::Syntax::Include.size(), pathEnd - def::Syntax::Include.size()));
 
 			// append dir
 			if (path.starts_with("~/"))
-				path = Utils::combinePaths(Utils::extractDirName(currentFile), path.substr(1));
+				path = utils::combinePaths(utils::extractDirName(currentFile), path.substr(1));
 
 			include(path);
 			return nextGlobalLine();
@@ -157,7 +157,7 @@ std::string FileParser::nextGlobalLine()
 	return "";
 }
 
-std::pair<std::string, Def::Location> FileParser::nextDefinitionLine()
+std::pair<std::string, def::Location> FileParser::nextDefinitionLine()
 {
 	// finish includes first
 	if (subParser)
@@ -208,34 +208,34 @@ std::pair<std::string, Def::Location> FileParser::nextDefinitionLine()
 		if (line.starts_with(">>"))
 		{
 			line = line.substr(2);
-			Utils::strip(line);
+			utils::strip(line);
 			Log(this).debug("{0}", line);
 			continue;
 		}
 
 		// include
-		if (line.starts_with(Def::Syntax::Include))
+		if (line.starts_with(def::Syntax::Include))
 		{
-			const auto pathEnd = line.find(Def::Syntax::IncludeAs, Def::Syntax::Include.size());
-			auto path = Utils::normalizePath(
-				line.substr(Def::Syntax::Include.size(), pathEnd - Def::Syntax::Include.size()));
+			const auto pathEnd = line.find(def::Syntax::IncludeAs, def::Syntax::Include.size());
+			auto path = utils::normalizePath(
+				line.substr(def::Syntax::Include.size(), pathEnd - def::Syntax::Include.size()));
 
 			// append dir
 			if (path.starts_with("~/"))
-				path = Utils::combinePaths(Utils::extractDirName(currentFile), path.substr(1));
+				path = utils::combinePaths(utils::extractDirName(currentFile), path.substr(1));
 
 			if (path.empty())
 			{
-				Log(this).error("Missing include path after '{0}' keyword, at: {1}:{2}.", Def::Syntax::Include, currentFile, currentLine);
+				Log(this).error("Missing include path after '{0}' keyword, at: {1}:{2}.", def::Syntax::Include, currentFile, currentLine);
 				continue;
 			}
 
 			if (pathEnd != std::string::npos)
 			{
-				auto alias = Utils::strip(line.substr(pathEnd + Def::Syntax::IncludeAs.size()));
+				auto alias = utils::strip(line.substr(pathEnd + def::Syntax::IncludeAs.size()));
 				if (alias.empty())
 				{
-					Log(this).error("Missing include alias after '{0}' keyword, at: {1}:{2}.", Def::Syntax::IncludeAs, currentFile, currentLine);
+					Log(this).error("Missing include alias after '{0}' keyword, at: {1}:{2}.", def::Syntax::IncludeAs, currentFile, currentLine);
 					continue;
 				}
 
@@ -283,10 +283,10 @@ std::pair<std::string, Def::Location> FileParser::nextDefinitionLine()
 	};
 
 	forceFinish();
-	return std::make_pair("", Def::Location::createEOF(currentFile));
+	return std::make_pair("", def::Location::createEOF(currentFile));
 }
 
-std::optional<Def::Object> FileParser::nextDefinition()
+std::optional<def::Object> FileParser::nextDefinition()
 {
 	// finish includes first
 	if (subParser)
@@ -305,6 +305,6 @@ std::optional<Def::Object> FileParser::nextDefinition()
 		return std::nullopt;
 
 	// TODO: remove dirty trick to pass subparser's inlcude aliases to this's parser (needed for the first def in a file)
-	return Def::parse<Def::Object>(
+	return def::parse<def::Object>(
 		line, std::move(location), subParser ? subParser->includeAliases : includeAliases, oolDefinitions);
 }

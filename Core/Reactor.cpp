@@ -86,8 +86,8 @@ float_s Reactor::getCatalyticReactivityCoefficient(const ImmutableSet<Catalyst>&
 void Reactor::findNewReactions()
 {
 	// TODO: optimize (perhaps a generator would be good)
-	const auto reactants = Utils::extractValues(content.getReactants());
-	const auto arrangements = Utils::getArrangementsWithRepetitions(
+	const auto reactants = utils::extractValues(content.getReactants());
+	const auto arrangements = utils::getArrangementsWithRepetitions(
 		reactants, dataAccessor.get().reactions.getMaxReactantCount());
 
 	for (size_t i = 0; i < arrangements.size(); ++i)

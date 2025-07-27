@@ -4,7 +4,7 @@
 #include "StringUtils.hpp"
 #include "NumericUtils.hpp"
 #include "Keywords.hpp"
-#include "Linguistics.hpp"
+#include "FormatUtils.hpp"
 
 #include <vector>
 #include <string>
@@ -14,7 +14,7 @@
 #include <format>
 #include <ostream>
 
-namespace Def
+namespace def
 {
 	template <typename T, typename... Args>
 	static std::string print(const T& object, Args&&... arg);
@@ -43,9 +43,9 @@ namespace Def
 		static std::string print(const T object)
 		{
 			return 
-				Utils::floatEqual(object, std::numeric_limits<T>::lowest()) ? Def::Amounts::Min :
-				Utils::floatEqual(object, std::numeric_limits<T>::max()) ? Def::Amounts::Max :
-				Linguistics::formatFloatingPoint(std::format("{:.{}f}", object, 5));
+				utils::floatEqual(object, std::numeric_limits<T>::lowest()) ? def::Amounts::Min :
+				utils::floatEqual(object, std::numeric_limits<T>::max()) ? def::Amounts::Max :
+				utils::formatFloatingPoint(std::format("{:.{}f}", object, 5));
 		}
 	};
 
@@ -55,7 +55,7 @@ namespace Def
 	public:
 		static std::string print(const std::string& str)
 		{
-			return Utils::strip(str);
+			return utils::strip(str);
 		}
 	};
 
@@ -75,7 +75,7 @@ namespace Def
 	public:
 		static std::string print(const T* object)
 		{
-			return Linguistics::toHex(object);
+			return utils::toHex(object);
 		}
 	};
 
@@ -85,12 +85,12 @@ namespace Def
 	public:
 		static std::string print(const std::pair<T1, T2>& object)
 		{
-			return '{' + Def::print(object.first) + ':' + Def::print(object.second) + '}';
+			return '{' + def::print(object.first) + ':' + def::print(object.second) + '}';
 		}
 
 		static std::string prettyPrint(const std::pair<T1, T2>& object)
 		{
-			return "{ " + Def::prettyPrint(object.first) + ": " + Def::prettyPrint(object.second) + " }";
+			return "{ " + def::prettyPrint(object.first) + ": " + def::prettyPrint(object.second) + " }";
 		}
 	};
 
@@ -101,11 +101,11 @@ namespace Def
 		static std::string print(const std::vector<T>& object)
 		{
 			if (object.size() == 1)
-				return Def::print(object.front());
+				return def::print(object.front());
 
 			std::string result = "{";
 			for (size_t i = 0; i < object.size(); ++i)
-				result += Def::print(object[i]) + ',';
+				result += def::print(object[i]) + ',';
 
 			result.back() = '}';
 			return result;
@@ -117,11 +117,11 @@ namespace Def
 				return "{}";
 
 			if (object.size() == 1)
-				return Def::prettyPrint(*object.begin());
+				return def::prettyPrint(*object.begin());
 
 			std::string result = "{ ";
 			for (size_t i = 0; i < object.size(); ++i)
-				result += Def::prettyPrint(object[i]) + ", ";
+				result += def::prettyPrint(object[i]) + ", ";
 
 			result[result.size() - 2] = ' ';
 			result.back() = '}';
@@ -138,12 +138,12 @@ namespace Def
 			if (object.size() == 1)
 			{
 				const auto& p = *object.begin();
-				return p.first + ':' + Def::print(p.second);
+				return p.first + ':' + def::print(p.second);
 			}
 
 			std::string result = "{";
 			for (const auto& p : object)
-				result += p.first + ':' + Def::print(p.second) + ',';
+				result += p.first + ':' + def::print(p.second) + ',';
 
 			result.back() = '}';
 			return result;
@@ -157,12 +157,12 @@ namespace Def
 			if (object.size() == 1)
 			{
 				const auto& p = *object.begin();
-				return p.first + ": " + Def::prettyPrint(p.second);
+				return p.first + ": " + def::prettyPrint(p.second);
 			}
 
 			std::string result = "{ ";
 			for (const auto& p : object)
-				result += p.first + ": " + Def::prettyPrint(p.second) + ", ";
+				result += p.first + ": " + def::prettyPrint(p.second) + ", ";
 
 			result[result.size() - 2] = ' ';
 			result.back() = '}';
@@ -177,11 +177,11 @@ namespace Def
 		static std::string print(const std::unordered_set<T>& object)
 		{
 			if (object.size() == 1)
-				return Def::print(*object.begin());
+				return def::print(*object.begin());
 
 			std::string result = "{";
 			for (const auto& i : object)
-				result += Def::print(i) + ',';
+				result += def::print(i) + ',';
 
 			result.back() = '}';
 			return result;
@@ -193,11 +193,11 @@ namespace Def
 				return "{}";
 
 			if (object.size() == 1)
-				return Def::prettyPrint(*object.begin());
+				return def::prettyPrint(*object.begin());
 
 			std::string result = "{ ";
 			for (const auto& i : object)
-				result += Def::prettyPrint(i) + ", ";
+				result += def::prettyPrint(i) + ", ";
 
 			result[result.size() - 2] = ' ';
 			result.back() = '}';
@@ -212,14 +212,14 @@ namespace Def
 		static void printTupleElements(
 			const std::tuple<Args...>& object, std::string& result, std::index_sequence<Is...>)
 		{
-			((result += Def::print(std::get<Is>(object)) + ','), ...);
+			((result += def::print(std::get<Is>(object)) + ','), ...);
 		}
 
 		template <std::size_t... Is>
 		static void prettyPrintTupleElements(
 			const std::tuple<Args...>& object, std::string& result, std::index_sequence<Is...>)
 		{
-			((result += Def::prettyPrint(std::get<Is>(object)) + ", "), ...);
+			((result += def::prettyPrint(std::get<Is>(object)) + ", "), ...);
 		}
 
 	public:
@@ -228,7 +228,7 @@ namespace Def
 			if constexpr (sizeof...(Args) == 0)
 				return "{}";
 			else if constexpr (sizeof...(Args) == 1)
-				return Def::print(std::get<0>(object));
+				return def::print(std::get<0>(object));
 			else
 			{
 				std::string result = "{";
@@ -243,7 +243,7 @@ namespace Def
 			if constexpr (sizeof...(Args) == 0)
 				return "{}";
 			else if constexpr (sizeof...(Args) == 1)
-				return Def::prettyPrint(std::get<0>(object));
+				return def::prettyPrint(std::get<0>(object));
 			else
 			{
 				std::string result = "{ ";
@@ -257,11 +257,10 @@ namespace Def
 };
 
 
-
 template <typename T, typename... Args>
-inline std::string Def::print(const T& object, Args&&... args)
+inline std::string def::print(const T& object, Args&&... args)
 {
-	return Def::Printer<T>::print(object, std::forward<Args>(args)...);
+	return def::Printer<T>::print(object, std::forward<Args>(args)...);
 }
 
 namespace
@@ -270,20 +269,20 @@ namespace
 	struct has_pretty_print : std::false_type {};
 
 	template <typename T>
-	struct has_pretty_print<T, std::void_t<decltype(&Def::Printer<T>::prettyPrint)>> : std::true_type {};
+	struct has_pretty_print<T, std::void_t<decltype(&def::Printer<T>::prettyPrint)>> : std::true_type {};
 }
 
 template <typename T, typename... Args>
-inline std::string Def::prettyPrint(const T& object, Args&&... args)
+inline std::string def::prettyPrint(const T& object, Args&&... args)
 {
 	if constexpr (has_pretty_print<T>::value) 
-		return Def::Printer<T>::prettyPrint(object, std::forward<Args>(args)...);
+		return def::Printer<T>::prettyPrint(object, std::forward<Args>(args)...);
 	else
-		return Def::Printer<T>::print(object, std::forward<Args>(args)...);
+		return def::Printer<T>::print(object, std::forward<Args>(args)...);
 }
 
 template <typename E, typename>
-static std::string Def::printEnum(const E object)
+static std::string def::printEnum(const E object)
 {
 	return std::to_string(static_cast<std::underlying_type_t<E>>(object));
 }

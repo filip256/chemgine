@@ -251,30 +251,30 @@ static std::optional<Amount<UnitT>> DynamicAmount::get(const StorageType value, 
 }
 
 
-//    --- Def ---    //
+//    --- def ---    //
 
 template <>
-class Def::Parser<Unit>
+class def::Parser<Unit>
 {
 public:
 	static std::optional<Unit> parse(const std::string& str)
 	{
-		return DynamicAmount::getUnitFromSymbol(Utils::strip(str));
+		return DynamicAmount::getUnitFromSymbol(utils::strip(str));
 	}
 };
 
 
 template <Unit U>
-class Def::Parser<Amount<U>>
+class def::Parser<Amount<U>>
 {
 public:
 	static std::optional<Amount<U>> parse(const std::string& str)
 	{
-		const auto pair = Utils::split(Utils::strip(str), '_', true);
+		const auto pair = utils::split(utils::strip(str), '_', true);
 		if (pair.empty())
 			return std::nullopt;
 
-		const auto val = Def::parse<Amount<>::StorageType>(Utils::strip(pair.front()));
+		const auto val = def::parse<Amount<>::StorageType>(utils::strip(pair.front()));
 		if (not val)
 			return std::nullopt;
 
@@ -290,16 +290,16 @@ public:
 
 
 template <>
-class Def::Parser<DynamicAmount>
+class def::Parser<DynamicAmount>
 {
 public:
 	static std::optional<DynamicAmount> parse(const std::string& str)
 	{
-		const auto pair = Utils::split(Utils::strip(str), '_', true);
+		const auto pair = utils::split(utils::strip(str), '_', true);
 		if (pair.empty())
 			return std::nullopt;
 
-		const auto val = Def::parse<Amount<>::StorageType>(pair.front());
+		const auto val = def::parse<Amount<>::StorageType>(pair.front());
 		if (not val)
 			return std::nullopt;
 

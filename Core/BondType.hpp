@@ -14,4 +14,6 @@ enum BondType : uint8_t
     AROMATIC,
     LEVO_SINGLE,
     DEXTRO_SINGLE,
+
+    BOND_TYPE_COUNT
 };

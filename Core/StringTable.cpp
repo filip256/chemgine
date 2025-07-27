@@ -58,7 +58,7 @@ void StringTable::clear()
 void StringTable::dump(std::ostream& out) const
 {
 	const auto widths = getMaxWidths();
-	const auto totalWidth = std::accumulate(widths.begin(), widths.end(), 0);
+	const auto totalWidth = std::accumulate(widths.begin(), widths.end(), size_t(0));
 
 	// top line
 	out << 'Ú';
@@ -72,7 +72,7 @@ void StringTable::dump(std::ostream& out) const
 	for (size_t i = 0; i < header.size(); ++i)
 	{
 		const auto pad = (widths[i] - header[i].size()) / 2.0f;
-		out << std::string(std::ceil(pad), ' ') << header[i] << std::string(std::floor(pad), ' ') << '³';
+		out << std::string(static_cast<size_t>(std::ceil(pad)), ' ') << header[i] << std::string(static_cast<size_t>(pad), ' ') << '³';
 	}
 	out << '\n';
 

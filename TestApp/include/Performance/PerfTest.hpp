@@ -1,13 +1,14 @@
 #pragma once
 
 #include "Common/TestSetup.hpp"
+#include "TimingResult.hpp"
+#include "ProcessUtils.hpp"
 #include "MetaUtils.hpp"
 
 #include <string>
 #include <vector>
 #include <memory>
 #include <variant>
-#include <chrono>
 #include <regex>
 
 class PerformanceReport;
@@ -25,8 +26,9 @@ public:
 
 	const std::string& getName() const;
 	virtual size_t getTestCount() const = 0;
+	virtual std::chrono::nanoseconds getEstimatedRunTime() const = 0;
 
-	virtual std::chrono::nanoseconds run(PerformanceReport& report) = 0;
+	virtual TimingResult run(PerformanceReport& report) = 0;
 
 	virtual bool isSkipped(const std::regex& filter) const;
 };
@@ -50,8 +52,9 @@ public:
 	using SetupType = SetupT;
 
 	size_t getTestCount() const override final;
+	std::chrono::nanoseconds getEstimatedRunTime() const override final;
 
-	std::chrono::nanoseconds run(PerformanceReport& report) override final;
+	TimingResult run(PerformanceReport& report) override final;
 
 	bool isSkipped(const std::regex& filter) const override final;
 };
@@ -68,14 +71,20 @@ PerfTestSetup<SetupT>::PerfTestSetup(
 template<typename SetupT>
 size_t PerfTestSetup<SetupT>::getTestCount() const
 {
-	return 0; // test setups should not be counted
+	return 0; // Test setups should not be counted
 }
 
 template<typename SetupT>
-std::chrono::nanoseconds PerfTestSetup<SetupT>::run(PerformanceReport&)
+std::chrono::nanoseconds PerfTestSetup<SetupT>::getEstimatedRunTime() const
+{
+	return std::chrono::milliseconds(1);
+}
+
+template<typename SetupT>
+TimingResult PerfTestSetup<SetupT>::run(PerformanceReport&)
 {
 	setup.run();
-	return std::chrono::nanoseconds(0);
+	return TimingResult(std::chrono::nanoseconds(0), std::chrono::nanoseconds(0));
 }
 
 template<typename SetupT>
@@ -90,8 +99,14 @@ class TimedTest : public PerfTest
 private:
 	const std::variant<uint64_t, std::chrono::nanoseconds> limit;
 
-	std::chrono::nanoseconds runCounted(const uint64_t repetitions);
-	std::chrono::nanoseconds runTimed(std::chrono::nanoseconds minTime);
+	static std::chrono::nanoseconds WarmUpTime;
+
+	void runWarmUp();
+	TimingResult runCounted(const uint64_t repetitions);
+	TimingResult runTimed(std::chrono::nanoseconds minTime);
+
+	OS::ExecutionConfig static stabilizeExecution();
+	void static restoreExecution(const OS::ExecutionConfig normalProperties);
 
 protected:
 	virtual void setup();
@@ -110,8 +125,9 @@ public:
 	virtual ~TimedTest() = default;
 
 	size_t getTestCount() const override final;
+	std::chrono::nanoseconds getEstimatedRunTime() const override final;
 
-	std::chrono::nanoseconds run(PerformanceReport& report) override final;
+	TimingResult run(PerformanceReport& report) override final;
 
 	bool isSkipped(const std::regex& filter) const override final;
 };
@@ -121,6 +137,7 @@ class PerfTestGroup : public PerfTest
 {
 private:
 	size_t testCount = 0;
+	std::chrono::nanoseconds estimatedRunTime = std::chrono::nanoseconds(0);
 	std::vector<std::unique_ptr<PerfTest>> tests;
 	const std::regex& filter;
 
@@ -135,8 +152,9 @@ public:
 	) noexcept;
 
 	size_t getTestCount() const override final;
+	std::chrono::nanoseconds getEstimatedRunTime() const override final;
 
-	std::chrono::nanoseconds run(PerformanceReport& report) override;
+	TimingResult run(PerformanceReport& report) override;
 	PerformanceReport generateReport();
 
 	bool isSkipped(const std::regex& filter) const override final;
@@ -151,7 +169,7 @@ void PerfTestGroup::registerTest(std::string&& name, Args&&... args)
 	name = getName() + '.' + name; // Append owning group name
 
 	std::unique_ptr<PerfTest> test;
-	if constexpr (Utils::is_specialization_of_v<T, PerfTestSetup>)
+	if constexpr (utils::is_specialization_of_v<T, PerfTestSetup>)
 		test = std::make_unique<T>(std::move(name), T::SetupType(std::forward<Args>(args)...));
 	else if constexpr (std::is_constructible_v<T, std::string&&, const std::regex&, Args...>)
 		test = std::make_unique<T>(std::move(name), filter, std::forward<Args>(args)...);
@@ -162,5 +180,6 @@ void PerfTestGroup::registerTest(std::string&& name, Args&&... args)
 		return;
 
 	testCount += test->getTestCount();
+	estimatedRunTime += test->getEstimatedRunTime() + std::chrono::milliseconds(1);
 	tests.emplace_back(std::move(test));
 }

@@ -86,7 +86,7 @@ public:
 	std::pair<size_t, std::unordered_map<c_size, c_size>> generateRetrosynthProductMatches(const StructureRef& targetProduct) const;
 	
 	/// <summary>
-	/// Generetates the concrete products of the reaction for the given molecules, using the matches
+	/// Generates the concrete products of the reaction for the given molecules, using the matches
 	/// resulted from generateConcreteReactantMatches(...).
 	/// </summary>
 	std::vector<Molecule> generateConcreteProducts(
@@ -94,7 +94,7 @@ public:
 		const std::vector<std::unordered_map<c_size, c_size>>& matches) const;
 
 	/// <summary>
-	/// Generetates the concrete reactants of the reaction leading to the given target, using the matches
+	/// Generates the concrete reactants of the reaction leading to the given target, using the matches
 	/// resulted from generateConcreteProductMatches(...).
 	/// Radical atoms which unmatched by the target remain unsubstituted in the resulted reactants.
 	/// </summary>

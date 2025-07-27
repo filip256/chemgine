@@ -2,7 +2,7 @@
 
 #include "ReactionData.hpp"
 #include "DirectedGraph.hpp"
-#include "TextBlock.hpp"
+#include "Buffer2D.hpp"
 #include "ConcreteReaction.hpp"
 #include "RetrosynthReaction.hpp"
 

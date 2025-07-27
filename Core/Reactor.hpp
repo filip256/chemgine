@@ -12,7 +12,7 @@
 
 enum class TickMode : uint8_t
 {
-	ENABLE_NONE = 0,
+	DISABLE_ALL = 0,
 
 	ENABLE_OVERFLOW = 1 << 0,
 	ENABLE_NEGLIGIBLES = 1 << 1,

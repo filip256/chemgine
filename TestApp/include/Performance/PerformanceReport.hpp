@@ -1,6 +1,7 @@
 #pragma once
 
 #include "StringTable.hpp"
+#include "Performance/TimingResult.hpp"
 
 #include <string>
 #include <chrono>
@@ -10,14 +11,14 @@ class PerformanceReport
 {
 private:
 	std::string timestamp = "";
-	std::map<std::string, std::chrono::nanoseconds> timeTable;
+	std::map<std::string, TimingResult> timeTable;
 
 public:
 	PerformanceReport() = default;
 	PerformanceReport(const PerformanceReport&) = default;
 	PerformanceReport(PerformanceReport&&) = default;
 
-	void add(const std::string& key, const std::chrono::nanoseconds& time);
+	void add(const std::string& key, const TimingResult& time);
 	void merge(PerformanceReport&& other);
 	void setTimestamp();
 

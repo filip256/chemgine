@@ -125,7 +125,7 @@ EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 	const float_s scale)
 {
 	// no transform, return base
-	if (Utils::floatEqual(vShift, 0.0f) && Utils::floatEqual(hShift, 0.0f) && Utils::floatEqual(scale, 1.0f))
+	if (utils::floatEqual(vShift, 0.0f) && utils::floatEqual(hShift, 0.0f) && utils::floatEqual(scale, 1.0f))
 		return EstimatorRef<OutU, InU>(base);
 
 	// constant folding
@@ -163,7 +163,7 @@ EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 	const DataPoint<OutU, InU> anchorPoint,
 	const float_s hShift)
 {
-	if (Utils::floatEqual(hShift, 0.0f))
+	if (utils::floatEqual(hShift, 0.0f))
 	{
 		// f(X) = base(X) - base(Xr) + Yr
 		const auto vShift = anchorPoint.output - base->get(std::get<0>(anchorPoint.inputs));

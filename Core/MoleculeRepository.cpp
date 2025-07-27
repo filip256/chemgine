@@ -13,12 +13,12 @@ MoleculeRepository::MoleculeRepository(EstimatorRepository& estimators) noexcept
 	estimators(estimators)
 {}
 
-bool MoleculeRepository::add(const Def::Object& definition)
+bool MoleculeRepository::add(const def::Object& definition)
 {
-	auto structure = Def::Parser<MolecularStructure>::parse(definition.getSpecifier());
+	auto structure = def::Parser<MolecularStructure>::parse(definition.getSpecifier());
 	if (not structure)
 	{
-		Log(this).error("Invalid SMILES specifier: '{0}', as: {1}.", definition.getSpecifier(), definition.getLocationName());
+		Log(this).error("Invalid SMILES specifier: '{0}', at: {1}.", definition.getSpecifier(), definition.getLocationName());
 		return false;
 	}
 	if (findFirstConcrete(*structure) != nullptr)
@@ -27,35 +27,35 @@ bool MoleculeRepository::add(const Def::Object& definition)
 		return false;
 	}
 
-	const auto name = definition.getDefaultProperty(Def::Molecules::Name, "?");
-	const auto hp = definition.getDefaultProperty(Def::Molecules::Hydrophilicity, 1.0f,
-		Def::parse<float_s>);
-	const auto lp = definition.getDefaultProperty(Def::Molecules::Lipophilicity, 0.0f,
-		Def::parse<float_s>);
-	const auto col = definition.getDefaultProperty(Def::Molecules::Color, Color(0, 255, 255, 100),
-		Def::parse<Color>);
-	auto mp = definition.getDefinition(Def::Molecules::MeltingPoint,
-		Def::Parser<UnitizedEstimator<Unit::CELSIUS, Unit::TORR>>::parse, estimators);
-	auto bp = definition.getDefinition(Def::Molecules::BoilingPoint,
-		Def::Parser<UnitizedEstimator<Unit::CELSIUS, Unit::TORR>>::parse, estimators);
-	auto sd = definition.getDefinition(Def::Molecules::SolidDensity,
-		Def::Parser<UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>::parse, estimators);
-	auto ld = definition.getDefinition(Def::Molecules::LiquidDensity,
-		Def::Parser<UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>::parse, estimators);
-	auto shc = definition.getDefinition(Def::Molecules::SolidHeatCapacity,
-		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>::parse, estimators);
-	auto lhc = definition.getDefinition(Def::Molecules::LiquidHeatCapacity,
-		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>::parse, estimators);
-	auto flh = definition.getDefinition(Def::Molecules::FusionLatentHeat,
-		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>::parse, estimators);
-	auto vlh = definition.getDefinition(Def::Molecules::VaporizationLatentHeat,
-		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>::parse, estimators);
-	auto slh = definition.getDefinition(Def::Molecules::SublimationLatentHeat,
-		Def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>::parse, estimators);
-	auto sol = definition.getDefinition(Def::Molecules::RelativeSolubility,
-		Def::Parser<UnitizedEstimator<Unit::NONE, Unit::CELSIUS>>::parse, estimators);
-	auto hen = definition.getDefinition(Def::Molecules::HenryConstant,
-		Def::Parser<UnitizedEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>>::parse, estimators);
+	const auto name = definition.getDefaultProperty(def::Molecules::Name, "?");
+	const auto hp = definition.getDefaultProperty(def::Molecules::Hydrophilicity, 1.0f,
+		def::parse<Amount<Unit::MOLE_RATIO>>);
+	const auto lp = definition.getDefaultProperty(def::Molecules::Lipophilicity, 0.0f,
+		def::parse<Amount<Unit::MOLE_RATIO>>);
+	const auto col = definition.getDefaultProperty(def::Molecules::Color, Color(0, 255, 255, 100),
+		def::parse<Color>);
+	auto mp = definition.getDefinition(def::Molecules::MeltingPoint,
+		def::Parser<UnitizedEstimator<Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+	auto bp = definition.getDefinition(def::Molecules::BoilingPoint,
+		def::Parser<UnitizedEstimator<Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+	auto sd = definition.getDefinition(def::Molecules::SolidDensity,
+		def::Parser<UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>::parse, estimators);
+	auto ld = definition.getDefinition(def::Molecules::LiquidDensity,
+		def::Parser<UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>::parse, estimators);
+	auto shc = definition.getDefinition(def::Molecules::SolidHeatCapacity,
+		def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>::parse, estimators);
+	auto lhc = definition.getDefinition(def::Molecules::LiquidHeatCapacity,
+		def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>::parse, estimators);
+	auto flh = definition.getDefinition(def::Molecules::FusionLatentHeat,
+		def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+	auto vlh = definition.getDefinition(def::Molecules::VaporizationLatentHeat,
+		def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+	auto slh = definition.getDefinition(def::Molecules::SublimationLatentHeat,
+		def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>::parse, estimators);
+	auto sol = definition.getDefinition(def::Molecules::RelativeSolubility,
+		def::Parser<UnitizedEstimator<Unit::NONE, Unit::CELSIUS>>::parse, estimators);
+	auto hen = definition.getDefinition(def::Molecules::HenryConstant,
+		def::Parser<UnitizedEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>>::parse, estimators);
 
 	const auto id = getFreeId();
 	concreteMolecules.emplace(id,
@@ -115,7 +115,7 @@ const MoleculeData& MoleculeRepository::findOrAddConcrete(MolecularStructure&& s
 	if (existing != nullptr)
 		return *existing;
 
-	Log(this).debug("New structure discovered: \n{0}", structure.print());
+	Log(this).debug("New structure discovered: \n{0}", CHG_DELAYED_EVAL(structure.toASCII().toString().toString()));
 
 	const auto hydro = 1.0f;
 	const auto lipo = 0.0f;

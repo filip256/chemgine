@@ -2,7 +2,7 @@
 
 #include "Unit/UnitTest.hpp"
 #include "Performance/PerfTest.hpp"
-#include "Unit/TimingUnitTests.hpp"
+#include "Unit/Tests/TimingUnitTests.hpp"
 
 class UnitTests : public UnitTestGroup
 {
@@ -19,7 +19,7 @@ private:
 public:
 	PerfTests(const std::regex& filter) noexcept;
 
-	std::chrono::nanoseconds run(PerformanceReport& report) override final;
+	TimingResult run(PerformanceReport& report) override final;
 };
 
 

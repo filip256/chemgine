@@ -7,27 +7,27 @@
 #include "PathUtils.hpp"
 
 template <>
-class Def::Parser<Def::Object>
+class def::Parser<def::Object>
 {
 public:
-	static std::optional<Def::Object> parse(
+	static std::optional<def::Object> parse(
 		const std::string& str,
-		Def::Location&& location,
+		def::Location&& location,
 		const std::unordered_map<std::string, std::string>& includeAliases,
 		const OOLDefRepository& oolDefinitions)
 	{
 		static const std::unordered_map<std::string, DefinitionType> typeMap
 		{
-			{Def::Types::Auto, DefinitionType::AUTO},
-			{Def::Types::Data, DefinitionType::DATA},
-			{Def::Types::Atom, DefinitionType::ATOM},
-			{Def::Types::Radical, DefinitionType::RADICAL},
-			{Def::Types::Molecule, DefinitionType::MOLECULE},
-			{Def::Types::Reaction, DefinitionType::REACTION},
-			{Def::Types::Labware, DefinitionType::LABWARE},
+			{def::Types::Auto, DefinitionType::AUTO},
+			{def::Types::Data, DefinitionType::DATA},
+			{def::Types::Atom, DefinitionType::ATOM},
+			{def::Types::Radical, DefinitionType::RADICAL},
+			{def::Types::Molecule, DefinitionType::MOLECULE},
+			{def::Types::Reaction, DefinitionType::REACTION},
+			{def::Types::Labware, DefinitionType::LABWARE},
 		};
 
-		const Log<Parser<Def::Object>> log;
+		const Log<Parser<def::Object>> log;
 
 		if (str.starts_with('_') == false)
 		{
@@ -42,7 +42,7 @@ public:
 			idEnd = str.find('>', typeEnd + 1);
 			if (idEnd == std::string::npos)
 			{
-				Log<Parser<Def::Object>>().error("Missing identifier terminator: '>', at: {0}.", location.toString());
+				Log<Parser<def::Object>>().error("Missing identifier terminator: '>', at: {0}.", location.toString());
 				return std::nullopt;
 			}
 
@@ -77,7 +77,7 @@ public:
 		}
 
 		// parse type
-		const auto typeStr = Utils::strip(str.substr(1, typeEnd - 1));
+		const auto typeStr = utils::strip(str.substr(1, typeEnd - 1));
 		const auto typeIt = typeMap.find(typeStr);
 		if (typeIt == typeMap.end())
 		{
@@ -87,7 +87,7 @@ public:
 		const auto type = typeIt->second;
 
 		// parse identifier (optional)
-		const auto idStr = idEnd != typeEnd ? Utils::strip(str.substr(typeEnd + 1, idEnd - typeEnd - 1)) : "";
+		const auto idStr = idEnd != typeEnd ? utils::strip(str.substr(typeEnd + 1, idEnd - typeEnd - 1)) : "";
 		if (const auto illegalIdx = idStr.find_first_of(" .~;:'\"<>(){}~`!@#$%^&*()-+[]{}|?,/\\"); illegalIdx != std::string::npos)
 		{
 			log.error("Identifier: '{0}' contains illegal symbol: '{1}', at: {2}.", idStr, idStr[illegalIdx], location.toString());
@@ -95,7 +95,7 @@ public:
 		}
 
 		// parse specifier
-		auto specifierStr = Utils::strip(str.substr(specifierBegin + 1, specifierEnd - specifierBegin - 1));
+		auto specifierStr = utils::strip(str.substr(specifierBegin + 1, specifierEnd - specifierBegin - 1));
 		if (specifierStr.empty())
 		{
 			log.error("Definition with missing specifier: '{0}', at: {1}.", str, location.toString());
@@ -110,10 +110,10 @@ public:
 			return std::nullopt;
 		}
 
-		const auto props = Utils::split(propertiesStr, ',', "{[(", "}])", true);
+		const auto props = utils::split(propertiesStr, ',', "{[(", "}])", true);
 		std::unordered_map<std::string, std::string> properties;
-		std::unordered_map<std::string, Def::Object> ilSubDefs;
-		std::unordered_map<std::string, const Def::Object*> oolSubDefs;
+		std::unordered_map<std::string, def::Object> ilSubDefs;
+		std::unordered_map<std::string, const def::Object*> oolSubDefs;
 
 		for (size_t i = 0; i < props.size(); ++i)
 		{
@@ -124,7 +124,7 @@ public:
 				return std::nullopt;
 			}
 
-			auto name = Utils::strip(props[i].substr(0, nameEnd));
+			auto name = utils::strip(props[i].substr(0, nameEnd));
 			if (name.empty())
 			{
 				log.error("Definition property with missing name: '{0}', at: {1}.", props[i], location.toString());
@@ -136,7 +136,7 @@ public:
 				return std::nullopt;
 			}
 
-			auto value = Utils::strip(props[i].substr(nameEnd + 1));
+			auto value = utils::strip(props[i].substr(nameEnd + 1));
 			if (value.empty())
 			{
 				log.error("Definition property with missing value: '{0}', at: {1}.", props[i], location.toString());
@@ -146,8 +146,8 @@ public:
 			// in-line sub-definition
 			if (value.starts_with('_'))
 			{
-				auto subDef = Def::parse<Def::Object>(
-					value, Utils::copy(location), includeAliases, oolDefinitions);
+				auto subDef = def::parse<def::Object>(
+					value, utils::copy(location), includeAliases, oolDefinitions);
 				if (not subDef)
 				{
 					log.error("Failed to parse in-line sub-definition: '{0}', at: {1}.", value, location.toString());
@@ -196,13 +196,13 @@ public:
 
 			// relative path
 			if (value.starts_with("~/"))
-				value = Utils::combinePaths(Utils::extractDirName(location.getFile()), value.substr(1));
+				value = utils::combinePaths(utils::extractDirName(location.getFile()), value.substr(1));
 
 			// normal properties
 			properties.emplace(std::move(name), std::move(value));
 		}
 
-		return std::optional<Def::Object>(std::in_place,
+		return std::optional<def::Object>(std::in_place,
 			type,
 			idStr.size() ? location.getFile() + '@' + idStr : "",
 			std::move(specifierStr),

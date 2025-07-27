@@ -95,6 +95,12 @@
       <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\SFML\x86\include;$(SolutionDir)\Thirdparty\cxxopts\include;$(MSBuildProjectDirectory)\include;$(SolutionDir)Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -116,6 +122,13 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -135,6 +148,12 @@
       <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\SFML\x64\include;$(SolutionDir)\Thirdparty\cxxopts\include;$(MSBuildProjectDirectory)\include;$(SolutionDir)Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -156,6 +175,13 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -170,18 +196,19 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="src\Common\TestManager.cpp" />
     <ClCompile Include="src\Common\TestSetup.cpp" />
-    <ClCompile Include="src\Performance\DefPerfTests.cpp" />
-    <ClCompile Include="src\Performance\EstimatorPerfTests.cpp" />
-    <ClCompile Include="src\Performance\FPSPerfTests.cpp" />
+    <ClCompile Include="src\Performance\Tests\DefPerfTests.cpp" />
+    <ClCompile Include="src\Performance\Tests\EstimatorPerfTests.cpp" />
+    <ClCompile Include="src\Performance\Tests\FPSPerfTests.cpp" />
     <ClCompile Include="src\Performance\PerformanceReport.cpp" />
     <ClCompile Include="src\Performance\PerfTest.cpp" />
-    <ClCompile Include="src\Performance\StructurePerfTests.cpp" />
-    <ClCompile Include="src\Unit\DefUnitTests.cpp" />
-    <ClCompile Include="src\Unit\EstimatorUnitTests.cpp" />
-    <ClCompile Include="src\Unit\MixtureUnitTests.cpp" />
-    <ClCompile Include="src\Unit\ModuleUnitTest.cpp" />
-    <ClCompile Include="src\Unit\StructureUnitTests.cpp" />
-    <ClCompile Include="src\Unit\TimingUnitTests.cpp" />
+    <ClCompile Include="src\Performance\Tests\StructurePerfTests.cpp" />
+    <ClCompile Include="src\Performance\TimingResult.cpp" />
+    <ClCompile Include="src\Unit\Tests\DefUnitTests.cpp" />
+    <ClCompile Include="src\Unit\Tests\EstimatorUnitTests.cpp" />
+    <ClCompile Include="src\Unit\Tests\MixtureUnitTests.cpp" />
+    <ClCompile Include="src\Unit\Tests\ModuleUnitTest.cpp" />
+    <ClCompile Include="src\Unit\Tests\StructureUnitTests.cpp" />
+    <ClCompile Include="src\Unit\Tests\TimingUnitTests.cpp" />
     <ClCompile Include="src\Unit\UnitTest.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -190,21 +217,22 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Performance\FPSPerfTests.hpp" />
+    <ClInclude Include="include\Performance\Tests\FPSPerfTests.hpp" />
     <ClInclude Include="include\Common\TestSetup.hpp" />
-    <ClInclude Include="include\Performance\DefPerfTests.hpp" />
-    <ClInclude Include="include\Performance\EstimatorPerfTests.hpp" />
+    <ClInclude Include="include\Performance\Tests\DefPerfTests.hpp" />
+    <ClInclude Include="include\Performance\Tests\EstimatorPerfTests.hpp" />
     <ClInclude Include="include\Performance\PerformanceReport.hpp" />
     <ClInclude Include="include\Performance\PerfTest.hpp" />
-    <ClInclude Include="include\Performance\StructurePerfTests.hpp" />
+    <ClInclude Include="include\Performance\Tests\StructurePerfTests.hpp" />
     <ClInclude Include="include\Common\TestManager.hpp" />
-    <ClInclude Include="include\Unit\DefUnitTests.hpp" />
-    <ClInclude Include="include\Unit\EstimatorUnitTests.hpp" />
-    <ClInclude Include="include\Unit\MixtureUnitTests.hpp" />
-    <ClInclude Include="include\Unit\ModuleUnitTest.hpp" />
-    <ClInclude Include="include\Unit\PropertyUnitTest.hpp" />
-    <ClInclude Include="include\Unit\StructureUnitTests.hpp" />
-    <ClInclude Include="include\Unit\TimingUnitTests.hpp" />
+    <ClInclude Include="include\Performance\TimingResult.hpp" />
+    <ClInclude Include="include\Unit\Tests\DefUnitTests.hpp" />
+    <ClInclude Include="include\Unit\Tests\EstimatorUnitTests.hpp" />
+    <ClInclude Include="include\Unit\Tests\MixtureUnitTests.hpp" />
+    <ClInclude Include="include\Unit\Tests\ModuleUnitTest.hpp" />
+    <ClInclude Include="include\Unit\Tests\PropertyUnitTest.hpp" />
+    <ClInclude Include="include\Unit\Tests\StructureUnitTests.hpp" />
+    <ClInclude Include="include\Unit\Tests\TimingUnitTests.hpp" />
     <ClInclude Include="include\Unit\UnitTest.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

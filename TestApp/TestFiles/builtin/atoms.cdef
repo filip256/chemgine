@@ -90,7 +90,7 @@ _atom: Si {
 _atom: P {
     name:       phosphorus,
     weight:     30.974_g,
-    valences:   {5}
+    valences:   {3, 5}
 };
 
 _atom: S {

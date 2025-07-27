@@ -11,6 +11,8 @@ private:
 	const std::string symbol;
 
 public:
+	using SizeT = uint8_t;
+
 	Symbol(const std::string& str) noexcept;
 	Symbol(std::string&& str) noexcept;
 	Symbol(const char chr) noexcept;
@@ -19,7 +21,9 @@ public:
 	Symbol(const Symbol&) = default;
 	Symbol(Symbol&&) = default;
 
-	const std::string& getString() const;
+	const std::string& str() const;
+
+	const SizeT size() const;
 
 	bool operator==(const Symbol& other) const;
 	bool operator!=(const Symbol& other) const;
@@ -31,6 +35,10 @@ public:
 	friend struct std::hash<Symbol>;
 };
 
+//
+// Extras
+//
+
 template<>
 struct std::hash<Symbol>
 {
@@ -41,22 +49,37 @@ struct std::hash<Symbol>
 };
 
 template <>
-class Def::Parser<Symbol>
+class def::Parser<Symbol>
 {
 public:
 	static std::optional<Symbol> parse(const std::string& str)
 	{
-		const auto stripped = Utils::strip(str);
+		const auto stripped = utils::strip(str);
 		return Symbol(stripped);
 	}
 };
 
 template <>
-class Def::Printer<Symbol>
+class def::Printer<Symbol>
 {
 public:
 	static std::string print(const Symbol& object)
 	{
-		return object.getString();
+		return object.str();
+	}
+};
+
+template<>
+struct std::formatter<Symbol>
+{
+	constexpr auto parse(format_parse_context& ctx)
+	{
+		return ctx.begin();
+	}
+
+	template <typename FormatContext>
+	auto format(const Symbol& symbol, FormatContext& ctx) const
+	{
+		return format_to(ctx.out(), "{}", symbol.str());
 	}
 };

@@ -1,6 +1,6 @@
 #include "DataDumper.hpp"
 
-using namespace Def;
+using namespace def;
 
 DataDumper::DataDumper(
 	std::ostream& out,
@@ -9,7 +9,7 @@ DataDumper::DataDumper(
 	const bool prettify
 ) noexcept :
 	out(out),
-	settings(prettify ? Def::PrintSettings::Pretty : Def::PrintSettings::Minimal),
+	settings(prettify ? def::PrintSettings::Pretty : def::PrintSettings::Minimal),
 	valueOffset(valueOffset + 2),
 	baseIndent(std::string(baseIndent, ' '))
 {}

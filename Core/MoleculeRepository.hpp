@@ -21,7 +21,7 @@ public:
 	MoleculeRepository(const MoleculeRepository&) = delete;
 	MoleculeRepository(MoleculeRepository&&) = default;
 
-	bool add(const Def::Object& definition);
+	bool add(const def::Object& definition);
 
 	bool contains(const MoleculeId id) const;
 	const MoleculeData& at(const MoleculeId id) const;

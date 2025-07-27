@@ -21,13 +21,13 @@ CondenserData::CondenserData(
 	efficiency(efficiency)
 {}
 
-void CondenserData::dumpCustomProperties(Def::DataDumper& dump) const
+void CondenserData::dumpCustomProperties(def::DataDumper& dump) const
 {
-	dump.propertyWithSep(Def::Labware::Volume, getVolume<0>())
-		.propertyWithSep(Def::Labware::Length, length)
-		.propertyWithSep(Def::Labware::Efficiency, efficiency)
-		.propertyWithSep(Def::Labware::Texture, "~/" + textureFile)
-		.propertyWithSep(Def::Labware::InnerMask, "~/fill0_" + textureFile)
-		.propertyWithSep(Def::Labware::CoolantMask, "~/fill1_" + textureFile)
-		.property(Def::Labware::TextureScale, textureScale);
+	dump.propertyWithSep(def::Labware::Volume, getVolume<0>())
+		.propertyWithSep(def::Labware::Length, length)
+		.propertyWithSep(def::Labware::Efficiency, efficiency)
+		.propertyWithSep(def::Labware::Texture, "~/" + textureFile)
+		.propertyWithSep(def::Labware::InnerMask, "~/fill0_" + textureFile)
+		.propertyWithSep(def::Labware::CoolantMask, "~/fill1_" + textureFile)
+		.property(def::Labware::TextureScale, textureScale);
 }

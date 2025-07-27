@@ -2,7 +2,7 @@
 		
 #include <utility>
 
-namespace Utils
+namespace utils
 {
     template<typename T>
     inline void hashCombineWith(size_t& prev, const T& last) noexcept
@@ -31,8 +31,9 @@ struct std::hash<std::pair<T1, T2>>
 {
     size_t operator() (const std::pair<T1, T2>& pair) const noexcept
     {
-        size_t hash = 0;
-        Utils::hashCombine(hash, pair.first, pair.second);
-        return hash;
+        if constexpr (sizeof(T1) + sizeof(T2) <= sizeof(size_t))
+            return (static_cast<size_t>(pair.first) << sizeof(T2)) | pair.second;
+        else
+            return utils::hashCombine(pair.first, pair.second);
     }
 };

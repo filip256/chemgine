@@ -1,5 +1,5 @@
 #include "Vapour.hpp"
-#include "Maths.hpp"
+#include "MathUtils.hpp"
 
 Vapour::Vapour(
 	const uint16_t particleCount,

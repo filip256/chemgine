@@ -415,7 +415,7 @@ Tasks:
   DONE. Get rid of special id synthax, it has no benefit
   DONE. Add default and optional sub-definition getters
   24. Split long lists on multiple lines for pretty prints
-  DONE. Better Def namespacing
+  DONE. Better def namespacing
   25. Write def parser with a stack, rather than subparser
   DONE. Make a DefParse Tool
 
@@ -486,7 +486,7 @@ Tasks:
     DONE. Exception while parsing reaction: 209,dehydration,RCO,RCOCR;O,1.0@20C,,0.0,
     DONE. Error while parsing reactions: 212,hydrolysis,O=C(R)OCC;O,O=C(R)O;OCC,,,, and 212,hydrolysis,O=C(CC)OR;O,O=C(CC)O;OR,,,,
     1. When loss is set for that estimators, the actual loss is much larger than the given one. Check loss test thresholds.
-    2. Def parsing fails if definitions includes a subdefinition with an <identifier>
+    2. def parsing fails if definitions includes a subdefinition with an <identifier>
 
 ---
 

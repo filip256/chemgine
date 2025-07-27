@@ -68,13 +68,13 @@ bool DataPoint<OutU, InUs...>::operator>(const DataPoint& other) const
 
 
 template<Unit OutU, Unit... InUs>
-class Def::Parser<DataPoint<OutU, InUs...>>
+class def::Parser<DataPoint<OutU, InUs...>>
 {
 private:
 	template<std::size_t... Is>
 	static std::optional<std::tuple<Amount<InUs>...>> convertInputs(
 		const std::vector<DynamicAmount>& baseInputs,
-		const Def::Location& location,
+		const def::Location& location,
 		std::index_sequence<Is...>)
 	{
 		std::tuple<Amount<InUs>...> expectedInputs;
@@ -103,21 +103,21 @@ public:
 		const std::string& str,
 		const Unit outputBaseUnit,
 		const std::vector<Unit>& inputBaseUnits,
-		const Def::Location& location
+		const def::Location& location
 	)
 	{
 		const Log<DataPoint<OutU, InUs...>> log;
 		const auto inputCount = sizeof...(InUs);
 
 		// parse values
-		const auto pair = Def::parse<std::pair<std::string, DynamicAmount>>(str, ':');
+		const auto pair = def::parse<std::pair<std::string, DynamicAmount>>(str, ':');
 		if (not pair)
 		{
 			log.error("Malfomed data point: '{0}', at: {1}.", str, location.toString());
 			return std::nullopt;
 		}
 
-		const auto rawInputs = Def::parse<std::vector<DynamicAmount>>(pair->first, ',');
+		const auto rawInputs = def::parse<std::vector<DynamicAmount>>(pair->first, ',');
 		if (not rawInputs)
 		{
 			log.error("Malfomed data point inputs list: '{0}', at: {1}.", pair->first, location.toString());
@@ -196,16 +196,16 @@ public:
 };
 
 template<Unit OutU, Unit... InUs>
-class Def::Printer<DataPoint<OutU, InUs...>>
+class def::Printer<DataPoint<OutU, InUs...>>
 {
 public:
 	static std::string print(const DataPoint<OutU, InUs...>& object)
 	{
-		return Def::print(std::pair(object.inputs, object.output));
+		return def::print(std::pair(object.inputs, object.output));
 	}
 
 	static std::string prettyPrint(const DataPoint<OutU, InUs...>& object)
 	{
-		return Def::prettyPrint(std::pair(object.inputs, object.output));
+		return def::prettyPrint(std::pair(object.inputs, object.output));
 	}
 };

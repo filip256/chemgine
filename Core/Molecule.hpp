@@ -111,11 +111,11 @@ struct std::hash<Molecule>
 
 
 template <>
-class Def::Parser<Molecule>
+class def::Parser<Molecule>
 {
 public:
 	static std::optional<Molecule> parse(const std::string& str)
 	{
-		return Def::parse<MolecularStructure>(str);
+		return def::parse<MolecularStructure>(str);
 	}
 };

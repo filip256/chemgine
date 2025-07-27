@@ -1,6 +1,6 @@
 #include "Regressors3D.hpp"
 #include "NumericUtils.hpp"
-#include "Maths.hpp"
+#include "MathUtils.hpp"
 #include "Log.hpp"
 
 #include <typeinfo>
@@ -38,9 +38,9 @@ bool LinearRegressor3D::isEquivalent(const Regressor3DBase& other, const float_s
 
 	const auto& oth = static_cast<decltype(*this)&>(other);
 	return
-		Utils::floatEqual(this->paramX, oth.paramX, epsilon) &&
-		Utils::floatEqual(this->paramY, oth.paramY, epsilon) &&
-		Utils::floatEqual(this->shift, oth.shift, epsilon);
+		utils::floatEqual(this->paramX, oth.paramX, epsilon) &&
+		utils::floatEqual(this->paramY, oth.paramY, epsilon) &&
+		utils::floatEqual(this->shift, oth.shift, epsilon);
 }
 
 LinearRegressor3D LinearRegressor3D::fit(
@@ -68,15 +68,15 @@ LinearRegressor3D LinearRegressor3D::fit(
 		const auto r1 = std::get<2>(points.front());
 		const auto r2 = std::get<2>(points.back());
 
-		if (Utils::floatEqual(y1, y2))
+		if (utils::floatEqual(y1, y2))
 		{
-			const auto temp = Maths::getSlopeAndIntercept(x1, r1, x2, r2);
+			const auto temp = utils::getSlopeAndIntercept(x1, r1, x2, r2);
 			return LinearRegressor3D(temp.first, 0.0, temp.second);
 		}
 
-		if (Utils::floatEqual(x1, x2))
+		if (utils::floatEqual(x1, x2))
 		{
-			const auto temp = Maths::getSlopeAndIntercept(y1, r1, y2, r2);
+			const auto temp = utils::getSlopeAndIntercept(y1, r1, y2, r2);
 			return LinearRegressor3D(0.0, temp.first, temp.second);
 		}
 

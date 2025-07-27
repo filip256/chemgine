@@ -1,5 +1,7 @@
 #include "Performance/PerfTest.hpp"
 #include "Performance/PerformanceReport.hpp"
+#include "STLUtils.hpp"
+#include "Casts.hpp"
 #include "Log.hpp"
 
 PerfTest::PerfTest(std::string&& name) noexcept :
@@ -16,6 +18,7 @@ bool PerfTest::isSkipped(const std::regex& filter) const
 	return not std::regex_match(name, filter);
 }
 
+std::chrono::nanoseconds TimedTest::WarmUpTime = std::chrono::seconds(2);
 
 TimedTest::TimedTest(
 	std::string&& name,
@@ -42,65 +45,120 @@ size_t TimedTest::getTestCount() const
 	return 1;
 }
 
-std::chrono::nanoseconds TimedTest::runCounted(const uint64_t repetitions)
+std::chrono::nanoseconds TimedTest::getEstimatedRunTime() const
+{
+	const auto eta = std::holds_alternative<uint64_t>(limit) ?
+		std::chrono::nanoseconds(std::get<uint64_t>(limit) * 1000) :
+		std::get<std::chrono::nanoseconds>(limit);
+
+	return eta + WarmUpTime + std::chrono::milliseconds(100);
+}
+
+void TimedTest::runWarmUp()
+{
+	auto minTime = WarmUpTime;
+	while (minTime.count() > 0)
+	{
+		const auto start = std::chrono::high_resolution_clock::now();
+		preTask();
+		task();
+		postTask();
+		const auto time = std::chrono::high_resolution_clock::now() - start;
+
+		minTime -= std::max(time, std::chrono::nanoseconds(1));
+	}
+}
+
+OS::ExecutionConfig TimedTest::stabilizeExecution()
+{
+	static const auto processorMask = OS::getAvailablePhysicalProcessorMask();
+	const auto normalProcessorAffinity = OS::setCurrentThreadProcessorAffinity(processorMask);
+
+	const auto normalPriority = OS::getCurrentProcessPriority();
+	OS::setCurrentProcessPriority(OS::ProcessPriority::REALTIME_PRIORITY_CLASS);
+
+	return { normalProcessorAffinity, normalPriority };
+}
+
+void TimedTest::restoreExecution(const OS::ExecutionConfig normalProperties)
+{
+	OS::setCurrentProcessPriority(normalProperties.processPriority);
+	OS::setCurrentThreadProcessorAffinity(normalProperties.processorAffinityMask);
+}
+
+TimingResult TimedTest::runCounted(const uint64_t repetitions)
 {
 	auto totalTime = std::chrono::nanoseconds(0);
+	std::vector<uint32_t> timeHistory;
+	timeHistory.reserve(repetitions);
 
 	setup();
+	runWarmUp();
+
 	for (uint64_t i = 0; i < repetitions; ++i)
 	{
 		preTask();
 		const auto start = std::chrono::high_resolution_clock::now();
 		task();
-		const auto end = std::chrono::high_resolution_clock::now();
+		const auto time = std::chrono::high_resolution_clock::now() - start;
 		postTask();
 
-		totalTime += end - start;
+		totalTime += time;
+		timeHistory.emplace_back(checked_cast<uint32_t>(time.count()));
 	}
+
 	cleanup();
 
 	const auto avgTime = totalTime / repetitions;
-	return avgTime;
+	const auto medianTime = std::chrono::nanoseconds(utils::getAveragedMedian(timeHistory));
+
+	return { avgTime, medianTime };
 }
 
-std::chrono::nanoseconds TimedTest::runTimed(std::chrono::nanoseconds minTime)
+TimingResult TimedTest::runTimed(std::chrono::nanoseconds minTime)
 {
 	auto totalTime = std::chrono::nanoseconds(0);
-	uint64_t repetitions = 0;
+	std::vector<uint32_t> timeHistory;
 
 	setup();
+	runWarmUp();
+
 	while (minTime.count() > 0)
 	{
 		preTask();
 		const auto start = std::chrono::high_resolution_clock::now();
 		task();
-		const auto end = std::chrono::high_resolution_clock::now();
+		const auto time = std::chrono::high_resolution_clock::now() - start;
 		postTask();
 
-		const auto elapsed = end - start;
-		totalTime += elapsed;
-		minTime -= std::max(elapsed, std::chrono::nanoseconds(1));
-		++repetitions;
+		totalTime += time;
+		timeHistory.emplace_back(checked_cast<uint32_t>(time.count()));
+		minTime -= std::max(time, std::chrono::nanoseconds(1));
 	}
+
 	cleanup();
 
-	const auto avgTime = totalTime / repetitions;
-	return avgTime;
+	const auto avgTime = totalTime / timeHistory.size();
+	const auto medianTime = std::chrono::nanoseconds(utils::getAveragedMedian(timeHistory));
+
+	return { avgTime, medianTime };
 }
 
-std::chrono::nanoseconds TimedTest::run(PerformanceReport& report)
+TimingResult TimedTest::run(PerformanceReport& report)
 {
+	const auto normalConfig = stabilizeExecution();
 	LogBase::hide();
 
-	const auto avgTime = std::holds_alternative<uint64_t>(limit) ?
+	const auto time = std::holds_alternative<uint64_t>(limit) ?
 		runCounted(std::get<uint64_t>(limit)) :
 		runTimed(std::get<std::chrono::nanoseconds>(limit));
 
 	LogBase::unhide();
+	restoreExecution(normalConfig);
 
-	report.add(getName(), avgTime);
+	report.add(getName(), time);
 
-	return avgTime;
+	return time;
 }
 
 bool TimedTest::isSkipped(const std::regex& filter) const
@@ -126,11 +184,17 @@ size_t PerfTestGroup::getTestCount() const
 	return testCount;
 }
 
-std::chrono::nanoseconds PerfTestGroup::run(PerformanceReport& report)
+std::chrono::nanoseconds PerfTestGroup::getEstimatedRunTime() const
 {
-	std::chrono::nanoseconds totalTime(0);
+	return estimatedRunTime;
+}
 
-	Log(this).info("{0}: Running {1} sub-tests...", getName(), testCount);
+TimingResult PerfTestGroup::run(PerformanceReport& report)
+{
+	TimingResult totalTime(std::chrono::nanoseconds(0), std::chrono::nanoseconds(0));
+
+	Log(this).info("{0}: Running {1} sub-tests... (ETA: {2})", getName(),
+		testCount, utils::formatTime(estimatedRunTime, utils::TimeFormat::HUMAN_HH_MM_SS));
 	LogBase::nest();
 
 	for (size_t i = 0; i < tests.size(); ++i)
@@ -149,9 +213,12 @@ std::chrono::nanoseconds PerfTestGroup::run(PerformanceReport& report)
 		LogBase::unnest();
 
 		totalTime += time;
-		const auto timeInMs = time.count() / 1'000'000.0;
+		
+		const auto avgTimeInMs = time.averageTime.count() / 1'000'000.0;
+		const auto medianTimeInMs = time.medianTime.count() / 1'000'000.0;
 
-		Log(this).info("\rTest {0} took {1}ms on average.", tests[i]->getName(), std::format("{:f}", timeInMs));
+		Log(this).info("\rTest {0} took {1}ms (avg) / {2}ms (med).",
+			tests[i]->getName(), std::format("{:.4f}", avgTimeInMs), std::format("{:.4f}", medianTimeInMs));
 		Log(this).info("\0");
 	}
 

@@ -109,10 +109,15 @@
       <PreprocessorDefinitions>SFML_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <EnablePREfast>false</EnablePREfast>
-      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\cxxopts\include;$(SolutionDir)Thirdparty\SFML\x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\boost\include;$(SolutionDir)Thirdparty\cxxopts\include;$(SolutionDir)Thirdparty\SFML\x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,8 +138,13 @@
       <EnablePREfast>false</EnablePREfast>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\cxxopts\include;$(SolutionDir)Thirdparty\SFML\x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\boost\include;$(SolutionDir)Thirdparty\cxxopts\include;$(SolutionDir)Thirdparty\SFML\x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,12 +165,18 @@
       <PreprocessorDefinitions>SFML_STATIC;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <EnablePREfast>false</EnablePREfast>
-      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\cxxopts\include;$(SolutionDir)Thirdparty\SFML\x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\boost\include;$(SolutionDir)Thirdparty\cxxopts\include;$(SolutionDir)Thirdparty\SFML\x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -186,9 +202,15 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\cxxopts\include;$(SolutionDir)Thirdparty\SFML\x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\boost\include;$(SolutionDir)Thirdparty\cxxopts\include;$(SolutionDir)Thirdparty\SFML\x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OmitFramePointers>true</OmitFramePointers>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <TreatAngleIncludeAsExternal>true</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -202,13 +224,17 @@
   <ItemGroup>
     <ClCompile Include="Adaptor.cpp" />
     <ClCompile Include="AggregationType.cpp" />
+    <ClCompile Include="ASCIIUtils.cpp" />
     <ClCompile Include="Atmosphere.cpp" />
-    <ClCompile Include="AtomFactory.cpp" />
     <ClCompile Include="BaseContainerComponent.cpp" />
     <ClCompile Include="BaseLabwareData.cpp" />
+    <ClCompile Include="BinUtils.cpp" />
+    <ClCompile Include="BondedAtom.cpp" />
+    <ClCompile Include="Buffer2D.cpp" />
     <ClCompile Include="BuildUtils.cpp" />
     <ClCompile Include="Color.cpp" />
-    <ClCompile Include="ColorCast.cpp" />
+    <ClCompile Include="ColoredString.cpp" />
+    <ClCompile Include="ConcurrencyUtils.cpp" />
     <ClCompile Include="Condenser.cpp" />
     <ClCompile Include="CondenserData.cpp" />
     <ClCompile Include="ContentInitializer.cpp" />
@@ -251,12 +277,11 @@
     <ClCompile Include="LabwareSystem.cpp" />
     <ClCompile Include="LayerContentIterator.cpp" />
     <ClCompile Include="LayerType.cpp" />
-    <ClCompile Include="Linguistics.cpp" />
-    <ClCompile Include="LogSettings.cpp" />
+    <ClCompile Include="FormatUtils.cpp" />
     <ClCompile Include="MolecularStructure.cpp" />
     <ClCompile Include="MultiLayerMixture.cpp" />
     <ClCompile Include="Layer.cpp" />
-    <ClCompile Include="Maths.cpp" />
+    <ClCompile Include="MathUtils.cpp" />
     <ClCompile Include="Mixture.cpp" />
     <ClCompile Include="MoleculeRepository.cpp" />
     <ClCompile Include="Molecule.cpp" />
@@ -270,7 +295,9 @@
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Polarity.cpp" />
     <ClCompile Include="PropertyPane.cpp" />
+    <ClCompile Include="SFMLUtils.cpp" />
     <ClCompile Include="StringTable.cpp" />
+    <ClCompile Include="ASCIIStructurePrinter.cpp" />
     <ClCompile Include="StructureRef.cpp" />
     <ClCompile Include="Reactant.cpp" />
     <ClCompile Include="ReactantRef.cpp" />
@@ -292,30 +319,39 @@
     <ClCompile Include="SystemMatrix.cpp" />
     <ClCompile Include="DumpContainer.cpp" />
     <ClCompile Include="TerminalUtils.cpp" />
-    <ClCompile Include="TextBlock.cpp" />
+    <ClCompile Include="TypeUtils.cpp" />
     <ClCompile Include="Value.cpp" />
     <ClCompile Include="Vapour.cpp" />
     <ClInclude Include="Adaptor.hpp" />
     <ClInclude Include="AggregationType.hpp" />
     <ClInclude Include="Amount.hpp" />
+    <ClInclude Include="ASCIIUtils.hpp" />
     <ClInclude Include="Atmosphere.hpp" />
-    <ClInclude Include="AtomFactory.hpp" />
+    <ClInclude Include="AverageStream.hpp" />
+    <ClInclude Include="BinUtils.hpp" />
+    <ClInclude Include="BondedAtom.hpp" />
+    <ClInclude Include="ColoredString.hpp" />
     <ClInclude Include="ContainerBase.hpp" />
     <ClInclude Include="BaseContainerComponent.hpp" />
     <ClInclude Include="BuildUtils.hpp" />
     <ClInclude Include="Casts.hpp" />
     <ClInclude Include="Color.hpp" />
-    <ClInclude Include="ColorCast.hpp" />
     <ClInclude Include="Condenser.hpp" />
     <ClInclude Include="CondenserData.hpp" />
     <ClInclude Include="ContainerComponent.hpp" />
     <ClInclude Include="BaseContainerLabwareData.hpp" />
     <ClInclude Include="CountedRef.hpp" />
+    <ClInclude Include="CyclicRef.hpp" />
     <ClInclude Include="DataDumper.hpp" />
     <ClInclude Include="DataPoint.hpp" />
+    <ClInclude Include="DoubleEnded.hpp" />
+    <ClInclude Include="ExceptionUtils.hpp" />
     <ClInclude Include="FileAnalyzer.hpp" />
     <ClInclude Include="FileParser.hpp" />
+    <ClInclude Include="IntrinsicUtils.hpp" />
+    <ClInclude Include="HLine.hpp" />
     <ClInclude Include="Location.hpp" />
+    <ClInclude Include="ConcurrencyUtils.hpp" />
     <ClInclude Include="Object.hpp" />
     <ClInclude Include="DefinitionParser.hpp" />
     <ClInclude Include="DerivedEstimator.hpp" />
@@ -326,6 +362,7 @@
     <ClInclude Include="EstimatorParsers.hpp" />
     <ClInclude Include="EstimatorSpecifier.hpp" />
     <ClInclude Include="FileStore.hpp" />
+    <ClInclude Include="Point.hpp" />
     <ClInclude Include="Precision.hpp" />
     <ClInclude Include="MetaUtils.hpp" />
     <ClInclude Include="MoleculeId.hpp" />
@@ -378,14 +415,13 @@
     <ClInclude Include="LabwareSystem.hpp" />
     <ClInclude Include="LabwareType.hpp" />
     <ClInclude Include="LayerContentIterator.hpp" />
-    <ClInclude Include="Linguistics.hpp" />
+    <ClInclude Include="FormatUtils.hpp" />
     <ClInclude Include="ContentInitializer.hpp" />
     <ClInclude Include="MoleculeType.hpp" />
     <ClInclude Include="MultiLayerMixture.hpp" />
     <ClInclude Include="Layer.hpp" />
     <ClInclude Include="LayerType.hpp" />
-    <ClInclude Include="LogType.hpp" />
-    <ClInclude Include="Maths.hpp" />
+    <ClInclude Include="MathUtils.hpp" />
     <ClInclude Include="Mixture.hpp" />
     <ClInclude Include="PathUtils.hpp" />
     <ClInclude Include="PortType.hpp" />
@@ -407,6 +443,7 @@
     <ClInclude Include="RegressionEstimator.hpp" />
     <ClInclude Include="Regressors2D.hpp" />
     <ClInclude Include="Regressors3D.hpp" />
+    <ClInclude Include="SFMLUtils.hpp" />
     <ClInclude Include="ShapeFill.hpp" />
     <ClInclude Include="ShapeFillTexture.hpp" />
     <ClInclude Include="AffineEstimator.hpp" />
@@ -419,11 +456,13 @@
     <ClInclude Include="STP.hpp" />
     <ClInclude Include="StringTable.hpp" />
     <ClInclude Include="StringUtils.hpp" />
+    <ClInclude Include="ASCIIStructurePrinter.hpp" />
     <ClInclude Include="Symbol.hpp" />
     <ClInclude Include="DumpContainer.hpp" />
     <ClInclude Include="TerminalUtils.hpp" />
-    <ClInclude Include="TextBlock.hpp" />
+    <ClInclude Include="Buffer2D.hpp" />
     <ClInclude Include="TypeUtils.hpp" />
+    <ClInclude Include="UndirectedEdge.hpp" />
     <ClInclude Include="UnitizedEstimator.hpp" />
     <ClInclude Include="UndirectedGraph.hpp" />
     <ClInclude Include="Unit.hpp" />
@@ -442,7 +481,6 @@
     <ClInclude Include="Value.hpp" />
     <ClInclude Include="Vapour.hpp" />
     <ClInclude Include="ImmutableSet.hpp" />
-    <ClInclude Include="VectorUtils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Atom.hpp" />
