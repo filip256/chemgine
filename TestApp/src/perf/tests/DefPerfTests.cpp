@@ -1,4 +1,4 @@
-#include "Performance/Tests/DefPerfTests.hpp"
+#include "perf/tests/DefPerfTests.hpp"
 
 DefPerfSetup::DefPerfSetup(
 	std::string&& inputPath,
@@ -27,7 +27,7 @@ void DefPerfSetup::run()
 
 DefLoadPerfTest::DefLoadPerfTest(
 	std::string&& name,
-	const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+	const std::variant<size_t, std::chrono::nanoseconds> limit,
 	std::string&& path
 ) noexcept :
 	TimedTest(std::move(name), limit),
@@ -52,7 +52,7 @@ void DefLoadPerfTest::postTask()
 
 DefDumpPerfTest::DefDumpPerfTest(
 	std::string&& name,
-	const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+	const std::variant<size_t, std::chrono::nanoseconds> limit,
 	std::string&& inputPath,
 	std::string&& outputPath,
 	const bool prettify

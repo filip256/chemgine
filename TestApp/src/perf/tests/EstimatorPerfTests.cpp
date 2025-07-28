@@ -1,9 +1,9 @@
-#include "Performance/Tests/EstimatorPerfTests.hpp"
+#include "perf/tests/EstimatorPerfTests.hpp"
 #include "Spline.hpp"
 
 LinearSplinePerfTest::LinearSplinePerfTest(
 	std::string&& name,
-	const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+	const std::variant<size_t, std::chrono::nanoseconds> limit,
 	float_s(*generator) (const float_s),
 	const uint32_t size,
 	const float_s loss

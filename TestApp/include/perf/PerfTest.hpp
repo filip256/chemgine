@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Common/TestSetup.hpp"
+#include "common/TestSetup.hpp"
 #include "TimingResult.hpp"
 #include "ProcessUtils.hpp"
 #include "MetaUtils.hpp"
@@ -97,12 +97,12 @@ bool PerfTestSetup<SetupT>::isSkipped(const std::regex&) const
 class TimedTest : public PerfTest
 {
 private:
-	const std::variant<uint64_t, std::chrono::nanoseconds> limit;
+	const std::variant<size_t, std::chrono::nanoseconds> limit;
 
 	static std::chrono::nanoseconds WarmUpTime;
 
 	void runWarmUp();
-	TimingResult runCounted(const uint64_t repetitions);
+	TimingResult runCounted(const size_t repetitions);
 	TimingResult runTimed(std::chrono::nanoseconds minTime);
 
 	OS::ExecutionConfig static stabilizeExecution();
@@ -118,7 +118,7 @@ protected:
 public:
 	TimedTest(
 		std::string&& name,
-		const std::variant<uint64_t, std::chrono::nanoseconds> limit
+		const std::variant<size_t, std::chrono::nanoseconds> limit
 	) noexcept;
 	TimedTest(const TimedTest&) = default;
 	TimedTest(TimedTest&&) = default;

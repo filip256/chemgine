@@ -188,7 +188,9 @@ namespace def
 
 				if (ignoreEmpty == false || i - lastSep - 1 > 0)
 				{
-					auto r = def::parse<T>(utils::strip(listStr.substr(lastSep + 1, i - lastSep - 1)));
+					auto r = def::parse<T>(utils::strip(listStr.substr(
+						static_cast<size_t>(lastSep + 1),
+						static_cast<size_t>(i - lastSep - 1))));
 					if(not r)
 						return std::nullopt;
 
@@ -199,7 +201,7 @@ namespace def
 
 			if (ignoreEmpty == false || static_cast<size_t>(lastSep + 1) < listStr.size())
 			{
-				auto r = def::parse<T>(utils::strip(listStr.substr(lastSep + 1)));
+				auto r = def::parse<T>(utils::strip(listStr.substr(static_cast<size_t>(lastSep + 1))));
 				if (not r)
 					return std::nullopt;
 

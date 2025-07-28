@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Performance/PerfTest.hpp"
+#include "perf/PerfTest.hpp"
 #include "DataStore.hpp"
 #include "MolecularStructure.hpp"
 
@@ -13,7 +13,7 @@ private:
 public:
 	StructureSMILESPerfTest(
 		const std::string& name,
-		const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+		const std::variant<size_t, std::chrono::nanoseconds> limit,
 		std::string&& smiles
 	) noexcept;
 
@@ -30,7 +30,7 @@ protected:
 public:
 	StructurePerfTestBase(
 		const std::string& name,
-		const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+		const std::variant<size_t, std::chrono::nanoseconds> limit,
 		const std::string& targetSmiles
 	) noexcept;
 };
@@ -46,7 +46,7 @@ protected:
 public:
 	StructureComparePerfTestBase(
 		const std::string& name,
-		const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+		const std::variant<size_t, std::chrono::nanoseconds> limit,
 		const std::string& targetSmiles,
 		const std::string& patternSmiles
 	) noexcept;
@@ -97,7 +97,7 @@ private:
 public:
 	StructureSubstitutionPerfTest(
 		const std::string& name,
-		const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+		const std::variant<size_t, std::chrono::nanoseconds> limit,
 		const std::string& patternSmiles,
 		const std::string& intanceSmiles
 	) noexcept;
@@ -144,7 +144,7 @@ private:
 public:
 	ASCIIParseTest(
 		const std::string& name,
-		const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+		const std::variant<size_t, std::chrono::nanoseconds> limit,
 		const std::string& smiles
 	) noexcept;
 

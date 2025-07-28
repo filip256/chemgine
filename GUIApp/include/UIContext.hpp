@@ -9,8 +9,8 @@
 #include "PropertyPane.hpp"
 #include "Vapour.hpp"
 #include "Parsers.hpp"
-#include "Helpers/DragNDropHelper.hpp"
-#include "Helpers/CursorHelper.hpp"
+#include "helpers/DragNDropHelper.hpp"
+#include "helpers/CursorHelper.hpp"
 
 #include <SFML/Graphics.hpp>
 
@@ -51,7 +51,7 @@ public:
 
 	void run()
 	{
-        if (not font.loadFromFile("./Fonts/font.ttf"))
+        if (not font.loadFromFile("./fonts/font.ttf"))
             Log(this).fatal("Failed to load font.");
 
         sf::Text textFPS("FPS:", font, 18);

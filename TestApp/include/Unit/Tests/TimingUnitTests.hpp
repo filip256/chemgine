@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Unit/UnitTest.hpp"
+#include "unit/UnitTest.hpp"
 #include "Precision.hpp"
-#include "Performance/PerfTest.hpp"
+#include "perf/PerfTest.hpp"
 
 class TimingUnitTest : public UnitTest
 {
@@ -16,7 +16,7 @@ class TimingUnitTest : public UnitTest
 
 	public:
 		DummyPerfTest(
-			const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+			const std::variant<size_t, std::chrono::nanoseconds> limit,
 			const std::chrono::nanoseconds waitTime
 		) noexcept;
 
@@ -30,7 +30,7 @@ private:
 public:
 	TimingUnitTest(
 		const std::string& name,
-		const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+		const std::variant<size_t, std::chrono::nanoseconds> limit,
 		const std::chrono::nanoseconds waitTime,
 		const float_h threshold
 	) noexcept;

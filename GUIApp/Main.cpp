@@ -9,7 +9,7 @@ int main()
 
     DataStore store;
     Accessor<>::setDataStore(store);
-    store.load("./../Data/builtin.cdef");
+    store.load("./data/builtin.cdef");
 
     //MolecularStructure("C12CCC1C2").getMinimalCycles();
     const auto d = MolecularStructure("C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67").getMinimalCycleBasis();

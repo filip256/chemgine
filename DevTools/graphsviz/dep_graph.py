@@ -109,7 +109,6 @@ def create_graph(folder, create_cluster, label_cluster, strict):
 	return graph
 
 
-
 graph = create_graph(folder='../Chemgine', create_cluster=False, label_cluster=False, strict=True)
 graph.format = 'png' # 'bmp', 'gif', 'jpg', 'png', 'pdf', 'svg'
 graph.render('../dependency', cleanup=True, view=True)

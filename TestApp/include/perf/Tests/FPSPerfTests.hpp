@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Performance/PerfTest.hpp"
+#include "perf/PerfTest.hpp"
 #include "DataStore.hpp"
 #include "Reactor.hpp"
 #include "Lab.hpp"
@@ -30,7 +30,7 @@ private:
 public:
 	ReactorFPSPerfTest(
 		std::string&& name,
-		const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+		const std::variant<size_t, std::chrono::nanoseconds> limit,
 		const ContentInitializer& content,
 		std::unique_ptr<Atmosphere>&& atmosphere = Atmosphere::createDefaultAtmosphere(),
 		FlagField<TickMode> tickMode = TickMode::ENABLE_ALL
@@ -38,7 +38,7 @@ public:
 
 	ReactorFPSPerfTest(
 		std::string&& name,
-		const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+		const std::variant<size_t, std::chrono::nanoseconds> limit,
 		const ContentInitializer& content,
 		FlagField<TickMode> tickMode
 	) noexcept;
@@ -56,7 +56,7 @@ private:
 public:
 	LabFPSPerfTest(
 		std::string&& name,
-		const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+		const std::variant<size_t, std::chrono::nanoseconds> limit,
 		Lab&& lab
 	) noexcept;
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "StringTable.hpp"
-#include "Performance/TimingResult.hpp"
+#include "perf/TimingResult.hpp"
 
 #include <string>
 #include <chrono>

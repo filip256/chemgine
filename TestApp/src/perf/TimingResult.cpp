@@ -1,4 +1,4 @@
-#include "Performance/TimingResult.hpp"
+#include "perf/TimingResult.hpp"
 
 TimingResult::TimingResult(
 	std::chrono::nanoseconds averageTime,

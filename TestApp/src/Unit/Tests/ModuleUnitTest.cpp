@@ -1,5 +1,5 @@
-#include "Unit/Tests/ModuleUnitTest.hpp"
-#include "Unit/Tests/PropertyUnitTest.hpp"
+#include "unit/tests/ModuleUnitTest.hpp"
+#include "unit/tests/PropertyUnitTest.hpp"
 #include "PathUtils.hpp"
 
 WaterPropertiesUnitTest::WaterPropertiesUnitTest(

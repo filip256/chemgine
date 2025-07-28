@@ -1,4 +1,4 @@
-#include "Unit/Tests/DefUnitTests.hpp"
+#include "unit/tests/DefUnitTests.hpp"
 #include "DefinitionParser.hpp"
 
 DefUnitTest::DefUnitTest(
@@ -217,7 +217,7 @@ DefUnitTests::DefUnitTests(
 			"name : RBF,"
 			"volume : 500_mL,"
 			"ports : { INLET: { x: 31, y : 9, angle : 0.0_o }, CONTACT : {x: 31, y : 90, angle : 0.0_o} },"
-			"tx : ./TestFiles/builtin/tx/jrbf500.png"
+			"tx : ./data/builtin/tx/jrbf500.png"
 		"};");
 
 	registerTest<DefUnitTest>("lab_adaptor",
@@ -226,7 +226,7 @@ DefUnitTests::DefUnitTests(
 			"name : 3 - way Adaptor,"
 			"volume : 50_mL,"
 			"ports : { OUTLET: { x: 6, y : 58, angle : 0.0_o }, OUTLET : {x: 36, y : 34, angle : 290.0_o} },"
-			"tx : ./TestFiles/builtin/tx/3way.png,"
+			"tx : ./data/builtin/tx/3way.png,"
 		"};");
 
 	registerTest<DefUnitTest>("lab_heatsource",
@@ -235,7 +235,7 @@ DefUnitTests::DefUnitTests(
 			"name : Hotplate,"
 			"power : 1.0_kW,"
 			"ports : { CONTACT: { x: 41, y : 7, angle : 0.0_o } },"
-			"tx : ./TestFiles/builtin/tx/hotplate_sh2.png,"
+			"tx : ./data/builtin/tx/hotplate_sh2.png,"
 		"};");
 
 	registerTest<DefUnitTest>("lab_condenser",
@@ -246,16 +246,16 @@ DefUnitTests::DefUnitTests(
 			"length : 0.3_m,"
 			"effic : 0.5_/m,"
 			"ports : { INLET: { x: 22, y : 12, angle : 0.0_o }, OUTLET : {x: 22, y : 158, angle : 0.0_o} },"
-			"tx : ./TestFiles/builtin/tx/liebig300.png,"
-			"inner_mask : ./TestFiles/builtin/tx/liebig300_if.png,"
-			"coolant_mask : ./TestFiles/builtin/tx/liebig300_cf.png,"
+			"tx : ./data/builtin/tx/liebig300.png,"
+			"inner_mask : ./data/builtin/tx/liebig300_if.png,"
+			"coolant_mask : ./data/builtin/tx/liebig300_cf.png,"
 		"};");
 
 	registerTest<DefClearUnitTest>("clear_base", dataStore);
 
 	registerTest<UnitTestSetup<CreateDirTestSetup>>("setup", "./temp");
 
-	registerTest<DefLoadUnitTest>("load_builtin", dataStore, "./TestFiles/builtin.cdef", true);
+	registerTest<DefLoadUnitTest>("load_builtin", dataStore, "./data/builtin.cdef", true);
 	registerTest<DefCountUnitTest>("count", dataStore, 213);
 	registerTest<DefDumpUnitTest>("dump", dataStore, "./temp/builtin.cdef", false);
 	registerTest<DefClearUnitTest>("clear", dataStore);

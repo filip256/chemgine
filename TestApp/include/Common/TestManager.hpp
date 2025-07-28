@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Unit/UnitTest.hpp"
-#include "Performance/PerfTest.hpp"
-#include "Unit/Tests/TimingUnitTests.hpp"
+#include "unit/UnitTest.hpp"
+#include "perf/PerfTest.hpp"
+#include "unit/tests/TimingUnitTests.hpp"
 
 class UnitTests : public UnitTestGroup
 {

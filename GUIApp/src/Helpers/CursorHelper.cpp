@@ -1,4 +1,4 @@
-#include "Helpers/CursorHelper.hpp"
+#include "helpers/CursorHelper.hpp"
 
 std::unordered_map<sf::Cursor::Type, std::unique_ptr<sf::Cursor>> CursorHelper::cursors;
 

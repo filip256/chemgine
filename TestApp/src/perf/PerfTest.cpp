@@ -1,5 +1,5 @@
-#include "Performance/PerfTest.hpp"
-#include "Performance/PerformanceReport.hpp"
+#include "perf/PerfTest.hpp"
+#include "perf/PerformanceReport.hpp"
 #include "STLUtils.hpp"
 #include "Casts.hpp"
 #include "Log.hpp"
@@ -22,7 +22,7 @@ std::chrono::nanoseconds TimedTest::WarmUpTime = std::chrono::seconds(2);
 
 TimedTest::TimedTest(
 	std::string&& name,
-	const std::variant<uint64_t, std::chrono::nanoseconds> limit
+	const std::variant<size_t, std::chrono::nanoseconds> limit
 ) noexcept:
 	PerfTest(std::move(name)),
 	limit(limit)
@@ -47,8 +47,8 @@ size_t TimedTest::getTestCount() const
 
 std::chrono::nanoseconds TimedTest::getEstimatedRunTime() const
 {
-	const auto eta = std::holds_alternative<uint64_t>(limit) ?
-		std::chrono::nanoseconds(std::get<uint64_t>(limit) * 1000) :
+	const auto eta = std::holds_alternative<size_t>(limit) ?
+		std::chrono::nanoseconds(std::get<size_t>(limit) * 1000) :
 		std::get<std::chrono::nanoseconds>(limit);
 
 	return eta + WarmUpTime + std::chrono::milliseconds(100);
@@ -86,7 +86,7 @@ void TimedTest::restoreExecution(const OS::ExecutionConfig normalProperties)
 	OS::setCurrentThreadProcessorAffinity(normalProperties.processorAffinityMask);
 }
 
-TimingResult TimedTest::runCounted(const uint64_t repetitions)
+TimingResult TimedTest::runCounted(const size_t repetitions)
 {
 	auto totalTime = std::chrono::nanoseconds(0);
 	std::vector<uint32_t> timeHistory;
@@ -95,7 +95,7 @@ TimingResult TimedTest::runCounted(const uint64_t repetitions)
 	setup();
 	runWarmUp();
 
-	for (uint64_t i = 0; i < repetitions; ++i)
+	for (size_t i = 0; i < repetitions; ++i)
 	{
 		preTask();
 		const auto start = std::chrono::high_resolution_clock::now();
@@ -149,8 +149,8 @@ TimingResult TimedTest::run(PerformanceReport& report)
 	const auto normalConfig = stabilizeExecution();
 	LogBase::hide();
 
-	const auto time = std::holds_alternative<uint64_t>(limit) ?
-		runCounted(std::get<uint64_t>(limit)) :
+	const auto time = std::holds_alternative<size_t>(limit) ?
+		runCounted(std::get<size_t>(limit)) :
 		runTimed(std::get<std::chrono::nanoseconds>(limit));
 
 	LogBase::unhide();
@@ -163,8 +163,8 @@ TimingResult TimedTest::run(PerformanceReport& report)
 
 bool TimedTest::isSkipped(const std::regex& filter) const
 {
-	bool isInactive = std::holds_alternative<uint64_t>(limit) ?
-		std::get<uint64_t>(limit) == 0 :
+	bool isInactive = std::holds_alternative<size_t>(limit) ?
+		std::get<size_t>(limit) == 0 :
 		std::get<std::chrono::nanoseconds>(limit).count() <= 0;
 
 	return isInactive || PerfTest::isSkipped(filter);

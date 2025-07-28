@@ -366,7 +366,7 @@ std::unique_ptr<LabwareComponentBase> LabwareSystem::releaseComponent(const l_si
 	}
 
 	// move and decrement connection ports after idx
-	for (l_size i = componentIdx; i + 1 < connections.size(); ++i)
+	for (l_size i = componentIdx; i + 1 < static_cast<l_size>(connections.size()); ++i)
 	{
 		for (auto& c : connections[i + 1])
 		{

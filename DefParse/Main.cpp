@@ -8,7 +8,7 @@ int main(int argc, char* argv[])
 {
     try
     {
-        cxxopts::Options options(argv[0], "Application for running Chemgine tests");
+        cxxopts::Options options(argv[0], "Application for parsing and formatting .cdef files.");
         options.add_options()
             ("input", "Input file", cxxopts::value<std::string>())
             ("o,output", "Output file", cxxopts::value<std::string>())
@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
         options.parse_positional({ "input" });
 
         const auto args = options.parse(argc, argv);
-        if (args.count("help"))
+        if (argc == 1 || args.count("help"))
         {
             std::cout << options.help() << '\n';
             return 0;

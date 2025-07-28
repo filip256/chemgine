@@ -1,4 +1,4 @@
-#include "Performance/Tests/FPSPerfTests.hpp"
+#include "perf/tests/FPSPerfTests.hpp"
 #include "Flask.hpp"
 #include "Adaptor.hpp"
 #include "Condenser.hpp"
@@ -25,7 +25,7 @@ void FPSPerfTestBase::postTask()
 
 ReactorFPSPerfTest::ReactorFPSPerfTest(
 	std::string&& name,
-	const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+	const std::variant<size_t, std::chrono::nanoseconds> limit,
 	const ContentInitializer& content,
 	std::unique_ptr<Atmosphere>&& atmosphere,
 	FlagField<TickMode> tickMode
@@ -43,7 +43,7 @@ ReactorFPSPerfTest::ReactorFPSPerfTest(
 
 ReactorFPSPerfTest::ReactorFPSPerfTest(
 	std::string&& name,
-	const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+	const std::variant<size_t, std::chrono::nanoseconds> limit,
 	const ContentInitializer& content,
 	FlagField<TickMode> tickMode
 ) noexcept :
@@ -64,7 +64,7 @@ void ReactorFPSPerfTest::postTask()
 
 LabFPSPerfTest::LabFPSPerfTest(
 	std::string&& name,
-	const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+	const std::variant<size_t, std::chrono::nanoseconds> limit,
 	Lab&& lab
 ) noexcept :
 	FPSPerfTestBase(std::move(name), limit),

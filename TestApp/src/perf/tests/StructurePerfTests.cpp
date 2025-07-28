@@ -1,4 +1,4 @@
-#include "Performance/Tests/StructurePerfTests.hpp"
+#include "perf/tests/StructurePerfTests.hpp"
 
 //
 // StructureSMILESPerfTest
@@ -6,7 +6,7 @@
 
 StructureSMILESPerfTest::StructureSMILESPerfTest(
 	const std::string& name,
-	const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+	const std::variant<size_t, std::chrono::nanoseconds> limit,
 	std::string&& smiles
 ) noexcept:
 	TimedTest(name + '_' + smiles, limit),
@@ -24,7 +24,7 @@ void StructureSMILESPerfTest::task()
 
 StructurePerfTestBase::StructurePerfTestBase(
 	const std::string& name,
-	const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+	const std::variant<size_t, std::chrono::nanoseconds> limit,
 	const std::string& targetSmiles
 ) noexcept :
 	TimedTest(name + '_' + targetSmiles, limit),
@@ -37,7 +37,7 @@ StructurePerfTestBase::StructurePerfTestBase(
 
 StructureComparePerfTestBase::StructureComparePerfTestBase(
 	const std::string& name,
-	const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+	const std::variant<size_t, std::chrono::nanoseconds> limit,
 	const std::string& targetSmiles,
 	const std::string& patternSmiles
 ) noexcept :
@@ -88,7 +88,7 @@ void StructureMaximalAtomMapPerfTest::task()
 
 StructureSubstitutionPerfTest::StructureSubstitutionPerfTest(
 	const std::string& name,
-	const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+	const std::variant<size_t, std::chrono::nanoseconds> limit,
 	const std::string& patternSmiles,
 	const std::string& intanceSmiles
 ) noexcept :
@@ -134,7 +134,7 @@ void ASCIIPrintTest::task()
 
 ASCIIParseTest::ASCIIParseTest(
 	const std::string& name,
-	const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+	const std::variant<size_t, std::chrono::nanoseconds> limit,
 	const std::string& smiles
 ) noexcept :
 	TimedTest(name + '_' + smiles, limit),

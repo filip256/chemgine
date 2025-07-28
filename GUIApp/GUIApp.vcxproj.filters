@@ -24,18 +24,18 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Helpers\CursorHelper.cpp">
+    <ClCompile Include="src\helpers\CursorHelper.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="src\Helpers\DragNDropHelper.cpp">
+    <ClCompile Include="src\helpers\DragNDropHelper.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Helpers\CursorHelper.hpp">
+    <ClInclude Include="include\helpers\CursorHelper.hpp">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="include\Helpers\DragNDropHelper.hpp">
+    <ClInclude Include="include\helpers\DragNDropHelper.hpp">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="include\UIContext.hpp">

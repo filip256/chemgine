@@ -1,4 +1,4 @@
-#include "Performance/PerformanceReport.hpp"
+#include "perf/PerformanceReport.hpp"
 #include "PathUtils.hpp"
 #include "Precision.hpp"
 #include "Printers.hpp"

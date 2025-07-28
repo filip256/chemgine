@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Performance/PerfTest.hpp"
+#include "perf/PerfTest.hpp"
 #include "DataStore.hpp"
 
 class DefPerfSetup : public TestSetup
@@ -29,7 +29,7 @@ private:
 public:
 	DefLoadPerfTest(
 		std::string&& name,
-		const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+		const std::variant<size_t, std::chrono::nanoseconds> limit,
 		std::string&& path
 	) noexcept;
 
@@ -51,7 +51,7 @@ private:
 public:
 	DefDumpPerfTest(
 		std::string&& name,
-		const std::variant<uint64_t, std::chrono::nanoseconds> limit,
+		const std::variant<size_t, std::chrono::nanoseconds> limit,
 		std::string&& inputPath,
 		std::string&& outputPath,
 		const bool prettify

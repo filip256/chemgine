@@ -1,4 +1,4 @@
-#include "Helpers/DragNDropHelper.hpp"
+#include "helpers/DragNDropHelper.hpp"
 
 void DragNDropHelper::start(const sf::Vector2f& point)
 {

@@ -3,10 +3,9 @@ Debug/
 Release/
 
 TestApp/temp/
-DevTools/keys/
+DevTools/vt/keys/
 
 *.vs
 *.pyc
 temp*
 
-LineCounter.exe

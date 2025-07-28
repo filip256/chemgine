@@ -1,14 +1,14 @@
-#include "Common/TestManager.hpp"
-#include "Unit/Tests/EstimatorUnitTests.hpp"
-#include "Unit/Tests/StructureUnitTests.hpp"
-#include "Unit/Tests/DefUnitTests.hpp"
-#include "Unit/Tests/ModuleUnitTest.hpp"
-#include "Unit/Tests/MixtureUnitTests.hpp"
-#include "Performance/Tests/DefPerfTests.hpp"
-#include "Performance/Tests/FPSPerfTests.hpp"
-#include "Performance/Tests/StructurePerfTests.hpp"
-#include "Performance/Tests/EstimatorPerfTests.hpp"
-#include "Performance/PerformanceReport.hpp"
+#include "common/TestManager.hpp"
+#include "unit/tests/EstimatorUnitTests.hpp"
+#include "unit/tests/StructureUnitTests.hpp"
+#include "unit/tests/DefUnitTests.hpp"
+#include "unit/tests/ModuleUnitTest.hpp"
+#include "unit/tests/MixtureUnitTests.hpp"
+#include "perf/tests/DefPerfTests.hpp"
+#include "perf/tests/FPSPerfTests.hpp"
+#include "perf/tests/StructurePerfTests.hpp"
+#include "perf/tests/EstimatorPerfTests.hpp"
+#include "perf/PerformanceReport.hpp"
 #include "PathUtils.hpp"
 #include "BuildUtils.hpp"
 
@@ -16,10 +16,10 @@ UnitTests::UnitTests(const std::regex& filter) noexcept :
 	UnitTestGroup("Unit", filter)
 {
 	registerTest<EstimatorUnitTests>("Estimator");
-	registerTest<StructureUnitTests>("Structure", "./TestFiles/builtin/radicals.cdef");
-	registerTest<DefUnitTests>("def", "./TestFiles/builtin/radicals.cdef");
-	registerTest<ModuleUnitTest>("Module", "./TestFiles/builtin.cdef");
-	registerTest<MixtureUnitTests>("Mixture", "./TestFiles/builtin.cdef");
+	registerTest<StructureUnitTests>("Structure", "./data/builtin/radicals.cdef");
+	registerTest<DefUnitTests>("def", "./data/builtin/radicals.cdef");
+	registerTest<ModuleUnitTest>("Module", "./data/builtin.cdef");
+	registerTest<MixtureUnitTests>("Mixture", "./data/builtin.cdef");
 }
 
 
@@ -28,9 +28,9 @@ PerfTests::PerfTests(const std::regex& filter) noexcept :
 	timingUnitTests("Timing", filter)
 {
 	registerTest<EstimatorPerfTests>("Estimator");
-	registerTest<StructurePerfTests>("Structure", "./TestFiles/builtin/radicals.cdef");
-	registerTest<DefPerfTests>("def", "./TestFiles/builtin/radicals.cdef");
-	registerTest<FPSPerfTests>("FPS", "./TestFiles/builtin.cdef");
+	registerTest<StructurePerfTests>("Structure", "./data/builtin/radicals.cdef");
+	registerTest<DefPerfTests>("def", "./data/builtin/radicals.cdef");
+	registerTest<FPSPerfTests>("FPS", "./data/builtin.cdef");
 }
 
 TimingResult PerfTests::run(PerformanceReport& report)
@@ -73,13 +73,13 @@ void TestManager::runPerf()
 	PerformanceReport prev;
 	const auto& buildName = utils::getBuildTypeName();
 
-	if (prev.load("./Reports/perf_" + buildName + "_LTS.txt"))
+	if (prev.load("./reports/perf_" + buildName + "_LTS.txt"))
 		Log(this).info("Performance report:\n{0}", CHG_DELAYED_EVAL(current.compare(prev).toString()));
 	else
 	{
-		utils::createDir("./Reports");
+		utils::createDir("./reports");
 		Log(this).warn("Missing previous performance report.");
 	}
 
-	current.dump("./Reports/perf_" + buildName + "_LTS.txt");
+	current.dump("./reports/perf_" + buildName + "_LTS.txt");
 }

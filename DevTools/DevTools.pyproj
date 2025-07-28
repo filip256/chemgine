@@ -21,22 +21,25 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="checks\all.py" />
+    <Compile Include="linecount\linecount.py" />
     <Compile Include="rdkit\molar_mass.py" />
     <Compile Include="rdkit\sssr.py" />
-    <Compile Include="tools\dep_graph.py" />
-    <Compile Include="utils\av_check.py" />
-    <Compile Include="utils\build.py" />
+    <Compile Include="graphsviz\dep_graph.py" />
+    <Compile Include="vt\utils\av_check.py" />
+    <Compile Include="vt\utils\build.py" />
+    <Compile Include="vt\vt.py" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="checks\" />
-    <Folder Include="keys\" />
-    <Folder Include="rdkit\" />
-    <Folder Include="tools\" />
+    <Folder Include="linecount\" />
+    <Folder Include="vt\keys\" />
     <Folder Include="utils\" />
+    <Folder Include="vt\" />
+    <Folder Include="rdkit\" />
+    <Folder Include="graphsviz\" />
+    <Folder Include="vt\utils\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="keys\vt_api_key" />
+    <Content Include="vt\keys\vt_api_key" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

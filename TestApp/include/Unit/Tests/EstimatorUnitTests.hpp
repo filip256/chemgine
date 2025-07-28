@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Unit/UnitTest.hpp"
+#include "unit/UnitTest.hpp"
 #include "Precision.hpp"
 #include "DataPoint.hpp"
 #include "EstimatorFactory.hpp"

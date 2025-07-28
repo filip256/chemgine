@@ -92,7 +92,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SFML_STATIC;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\SFML\x86\include;$(SolutionDir)\Thirdparty\cxxopts\include;$(MSBuildProjectDirectory)\include;$(SolutionDir)Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\include;$(SolutionDir)core\include;$(SolutionDir)thirdparty\cxxopts\include;$(SolutionDir)thirdparty\SFML\x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
@@ -117,7 +117,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SFML_STATIC;WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\SFML\x86\include;$(SolutionDir)\Thirdparty\cxxopts\include;$(MSBuildProjectDirectory)\include;$(SolutionDir)Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\include;$(SolutionDir)core\include;$(SolutionDir)\thirdparty\cxxopts\include;$(SolutionDir)thirdparty\SFML\x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -145,7 +145,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SFML_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\SFML\x64\include;$(SolutionDir)\Thirdparty\cxxopts\include;$(MSBuildProjectDirectory)\include;$(SolutionDir)Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\include;$(SolutionDir)core\include;$(SolutionDir)thirdparty\cxxopts\include;$(SolutionDir)thirdparty\SFML\x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
@@ -170,7 +170,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>SFML_STATIC;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)Thirdparty\SFML\x64\include;$(SolutionDir)\Thirdparty\cxxopts\include;$(MSBuildProjectDirectory)\include;$(SolutionDir)Core;E:\CodeProjects\Chemgine\TestApp\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\include;$(SolutionDir)core\include;$(SolutionDir)\thirdparty\cxxopts\include;$(SolutionDir)thirdparty\SFML\x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -194,22 +194,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="src\Common\TestManager.cpp" />
-    <ClCompile Include="src\Common\TestSetup.cpp" />
-    <ClCompile Include="src\Performance\Tests\DefPerfTests.cpp" />
-    <ClCompile Include="src\Performance\Tests\EstimatorPerfTests.cpp" />
-    <ClCompile Include="src\Performance\Tests\FPSPerfTests.cpp" />
-    <ClCompile Include="src\Performance\PerformanceReport.cpp" />
-    <ClCompile Include="src\Performance\PerfTest.cpp" />
-    <ClCompile Include="src\Performance\Tests\StructurePerfTests.cpp" />
-    <ClCompile Include="src\Performance\TimingResult.cpp" />
-    <ClCompile Include="src\Unit\Tests\DefUnitTests.cpp" />
-    <ClCompile Include="src\Unit\Tests\EstimatorUnitTests.cpp" />
-    <ClCompile Include="src\Unit\Tests\MixtureUnitTests.cpp" />
-    <ClCompile Include="src\Unit\Tests\ModuleUnitTest.cpp" />
-    <ClCompile Include="src\Unit\Tests\StructureUnitTests.cpp" />
-    <ClCompile Include="src\Unit\Tests\TimingUnitTests.cpp" />
-    <ClCompile Include="src\Unit\UnitTest.cpp" />
+    <ClCompile Include="src\common\TestManager.cpp" />
+    <ClCompile Include="src\common\TestSetup.cpp" />
+    <ClCompile Include="src\perf\tests\DefPerfTests.cpp" />
+    <ClCompile Include="src\perf\tests\EstimatorPerfTests.cpp" />
+    <ClCompile Include="src\perf\tests\FPSPerfTests.cpp" />
+    <ClCompile Include="src\perf\PerformanceReport.cpp" />
+    <ClCompile Include="src\perf\PerfTest.cpp" />
+    <ClCompile Include="src\perf\tests\StructurePerfTests.cpp" />
+    <ClCompile Include="src\perf\TimingResult.cpp" />
+    <ClCompile Include="src\unit\tests\DefUnitTests.cpp" />
+    <ClCompile Include="src\unit\tests\EstimatorUnitTests.cpp" />
+    <ClCompile Include="src\unit\tests\MixtureUnitTests.cpp" />
+    <ClCompile Include="src\unit\tests\ModuleUnitTest.cpp" />
+    <ClCompile Include="src\unit\tests\StructureUnitTests.cpp" />
+    <ClCompile Include="src\unit\tests\TimingUnitTests.cpp" />
+    <ClCompile Include="src\unit\UnitTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.vcxproj">
@@ -217,23 +217,23 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Performance\Tests\FPSPerfTests.hpp" />
-    <ClInclude Include="include\Common\TestSetup.hpp" />
-    <ClInclude Include="include\Performance\Tests\DefPerfTests.hpp" />
-    <ClInclude Include="include\Performance\Tests\EstimatorPerfTests.hpp" />
-    <ClInclude Include="include\Performance\PerformanceReport.hpp" />
-    <ClInclude Include="include\Performance\PerfTest.hpp" />
-    <ClInclude Include="include\Performance\Tests\StructurePerfTests.hpp" />
-    <ClInclude Include="include\Common\TestManager.hpp" />
-    <ClInclude Include="include\Performance\TimingResult.hpp" />
-    <ClInclude Include="include\Unit\Tests\DefUnitTests.hpp" />
-    <ClInclude Include="include\Unit\Tests\EstimatorUnitTests.hpp" />
-    <ClInclude Include="include\Unit\Tests\MixtureUnitTests.hpp" />
-    <ClInclude Include="include\Unit\Tests\ModuleUnitTest.hpp" />
-    <ClInclude Include="include\Unit\Tests\PropertyUnitTest.hpp" />
-    <ClInclude Include="include\Unit\Tests\StructureUnitTests.hpp" />
-    <ClInclude Include="include\Unit\Tests\TimingUnitTests.hpp" />
-    <ClInclude Include="include\Unit\UnitTest.hpp" />
+    <ClInclude Include="include\perf\Tests\FPSPerfTests.hpp" />
+    <ClInclude Include="include\common\TestSetup.hpp" />
+    <ClInclude Include="include\perf\Tests\DefPerfTests.hpp" />
+    <ClInclude Include="include\perf\Tests\EstimatorPerfTests.hpp" />
+    <ClInclude Include="include\perf\PerformanceReport.hpp" />
+    <ClInclude Include="include\perf\PerfTest.hpp" />
+    <ClInclude Include="include\perf\Tests\StructurePerfTests.hpp" />
+    <ClInclude Include="include\common\TestManager.hpp" />
+    <ClInclude Include="include\perf\TimingResult.hpp" />
+    <ClInclude Include="include\unit\Tests\DefUnitTests.hpp" />
+    <ClInclude Include="include\unit\Tests\EstimatorUnitTests.hpp" />
+    <ClInclude Include="include\unit\Tests\MixtureUnitTests.hpp" />
+    <ClInclude Include="include\unit\Tests\ModuleUnitTest.hpp" />
+    <ClInclude Include="include\unit\Tests\PropertyUnitTest.hpp" />
+    <ClInclude Include="include\unit\Tests\StructureUnitTests.hpp" />
+    <ClInclude Include="include\unit\Tests\TimingUnitTests.hpp" />
+    <ClInclude Include="include\unit\UnitTest.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
@@ -242,5 +242,9 @@
     <Content Include=".\TestFiles\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="reports\perf_DEBUG_LTS.txt" />
+    <Text Include="reports\perf_RELEASE_LTS.txt" />
   </ItemGroup>
 </Project>

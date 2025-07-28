@@ -1,6 +1,6 @@
 #include "Log.hpp"
 #include "BuildUtils.hpp"
-#include "Common/TestManager.hpp"
+#include "common/TestManager.hpp"
 
 #include <cxxopts.hpp>
 
@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
             ("h,help", "Print usage information");
 
         const auto args = options.parse(argc, argv);
-        if (args.count("help"))
+        if (argc == 1 || args.count("help"))
         {
             std::cout << options.help() << '\n';
             return 0;

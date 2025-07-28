@@ -1,4 +1,4 @@
-#include "Unit/Tests/StructureUnitTests.hpp"
+#include "unit/tests/StructureUnitTests.hpp"
 
 #include "MolecularStructure.hpp"
 #include "StringTable.hpp"
