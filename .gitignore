@@ -1,12 +1,12 @@
 bin/
+build/
 Debug/
 Release/
 
-TestApp/temp/
-DevTools/keys/
+test_app/temp/
+dev_tools/vt/keys/
 
 *.vs
 *.pyc
 temp*
 
-LineCounter.exe
