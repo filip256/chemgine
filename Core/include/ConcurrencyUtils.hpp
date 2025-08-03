@@ -36,8 +36,6 @@ public:
 
 } // namespace details
 
-// #define CHG_DISABLE_CONCURRENCY_CHECKS
-
 #ifdef CHG_DISABLE_CONCURRENCY_CHECKS
     #define CHG_NEVER_CONCURRENT()
 #else

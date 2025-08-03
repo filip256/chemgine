@@ -1,9 +1,10 @@
 bin/
+build/
 Debug/
 Release/
 
-TestApp/temp/
-DevTools/vt/keys/
+test_app/temp/
+dev_tools/vt/keys/
 
 *.vs
 *.pyc

@@ -53,8 +53,6 @@ const DstT* final_cast(const SrcT& src)
 		nullptr;
 }
 
-// #define CHG_DISABLE_CHECKED_CASTS
-
 /// <summary>
 /// Similar to static_cast but assures no data is lost during the conversion.
 /// </summary>
