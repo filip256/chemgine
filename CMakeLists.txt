@@ -40,9 +40,10 @@ set(CXXOPTS_INCLUDE_DIR ${CXXOPTS_ROOT}/include CACHE PATH "cxxopts include path
 # Compiler Options
 if(MSVC)
     add_compile_options(
-        /WX # Treat warnings as errors
-        /W3 # Warning Level TODO: Move to W4
-        /MP # Multi-processor Compilation
+        /WX          # Treat warnings as errors
+        /W3          # Warning Level TODO: Move to W4
+        /MP          # Multi-processor Compilation
+        /permissive- # Strict standard conformance
     )
 
     add_compile_options("$<$<CONFIG:Release>:/O2>")
