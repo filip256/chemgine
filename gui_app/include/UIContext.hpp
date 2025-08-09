@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Lab.hpp"
-#include "Flask.hpp"
-#include "Input.hpp"
-#include "Adaptor.hpp"
-#include "Heatsource.hpp"
-#include "Condenser.hpp"
-#include "PropertyPane.hpp"
-#include "Vapour.hpp"
-#include "Parsers.hpp"
+#include "labware/Lab.hpp"
+#include "labware/kinds/Flask.hpp"
+#include "io/Input.hpp"
+#include "labware/kinds/Adaptor.hpp"
+#include "labware/kinds/Heatsource.hpp"
+#include "labware/kinds/Condenser.hpp"
+#include "graphics/PropertyPane.hpp"
+#include "graphics/particles/Vapour.hpp"
+#include "data/def/Parsers.hpp"
 #include "helpers/DragNDropHelper.hpp"
 #include "helpers/CursorHelper.hpp"
 

@@ -1,8 +1,8 @@
 #include "perf/tests/FPSPerfTests.hpp"
-#include "Flask.hpp"
-#include "Adaptor.hpp"
-#include "Condenser.hpp"
-#include "Heatsource.hpp"
+#include "labware/kinds/Flask.hpp"
+#include "labware/kinds/Adaptor.hpp"
+#include "labware/kinds/Condenser.hpp"
+#include "labware/kinds/Heatsource.hpp"
 
 void FPSPerfTestBase::setup()
 {

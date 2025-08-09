@@ -1,9 +1,9 @@
 #include "perf/PerformanceReport.hpp"
-#include "PathUtils.hpp"
-#include "Precision.hpp"
-#include "Printers.hpp"
-#include "Parsers.hpp"
-#include "Log.hpp"
+#include "utils/Path.hpp"
+#include "global/Precision.hpp"
+#include "data/def/Printers.hpp"
+#include "data/def/Parsers.hpp"
+#include "io/Log.hpp"
 
 #include <fstream>
 #include <array>

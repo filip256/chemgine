@@ -9,8 +9,8 @@
 #include "perf/tests/StructurePerfTests.hpp"
 #include "perf/tests/EstimatorPerfTests.hpp"
 #include "perf/PerformanceReport.hpp"
-#include "PathUtils.hpp"
-#include "BuildUtils.hpp"
+#include "utils/Path.hpp"
+#include "utils/Build.hpp"
 
 UnitTests::UnitTests(const std::regex& filter) noexcept :
 	UnitTestGroup("Unit", filter)

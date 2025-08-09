@@ -1,0 +1,73 @@
+#include "structs/Repository.hpp"
+
+#include "atomics/data/AtomData.hpp"
+#include "molecules/data/GenericMoleculeData.hpp"
+#include "molecules/data/MoleculeData.hpp"
+#include "reactions/data/ReactionData.hpp"
+
+
+template<class KeyT1, class KeyT2, class ObjT>
+const MultiIndexMap<KeyT1, KeyT2, ObjT>& Repository<KeyT1, KeyT2, ObjT>::getData() const
+{
+	return table; 
+}
+
+template<class KeyT1, class KeyT2, class ObjT>
+bool Repository<KeyT1, KeyT2, ObjT>::contains(const KeyT1 key) const
+{ 
+	return table.containsKey1(key);
+}
+
+template<class KeyT1, class KeyT2, class ObjT>
+bool Repository<KeyT1, KeyT2, ObjT>::contains(const KeyT2 key) const
+{
+	return table.containsKey2(key);
+}
+
+template<class KeyT1, class KeyT2, class ObjT>
+const ObjT& Repository<KeyT1, KeyT2, ObjT>::at(const KeyT1 key) const
+{
+	return table.atKey1(key);
+}
+
+template<class KeyT1, class KeyT2, class ObjT>
+const ObjT& Repository<KeyT1, KeyT2, ObjT>::at(const KeyT2 key) const
+{
+	return table.atKey2(key);
+}
+
+template<class KeyT1, class KeyT2, class ObjT>
+const std::vector<ObjT>& Repository<KeyT1, KeyT2, ObjT>::data() const
+{
+	return table.getData();
+}
+
+template<class KeyT1, class KeyT2, class ObjT>
+const size_t Repository<KeyT1, KeyT2, ObjT>::size() const
+{
+	return table.size();
+}
+
+template<class KeyT1, class KeyT2, class ObjT>
+const ObjT& Repository<KeyT1, KeyT2, ObjT>::operator[](const size_t idx) const
+{
+	return table[idx];
+}
+
+template<class KeyT1, class KeyT2, class ObjT>
+ObjT& Repository<KeyT1, KeyT2, ObjT>::operator[](const size_t idx)
+{
+	return table[idx];
+}
+
+template<class KeyT1, class KeyT2, class ObjT>
+const ObjT* Repository<KeyT1, KeyT2, ObjT>::findFirst(bool (*predicate) (const ObjT&)) const
+{
+	return table.findFirst(predicate);
+}
+
+template<class KeyT1, class KeyT2, class ObjT>
+void Repository<KeyT1, KeyT2, ObjT>::clear()
+{
+	table.clear();
+}

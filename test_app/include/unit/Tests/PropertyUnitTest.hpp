@@ -1,8 +1,8 @@
 #pragma once
 
 #include "unit/UnitTest.hpp"
-#include "DataPoint.hpp"
-#include "ImmutableSet.hpp"
+#include "data/values/DataPoint.hpp"
+#include "structs/ImmutableSet.hpp"
 
 template<typename ObjT, Unit OutU, Unit... InUs>
 class PropertyUnitTest : public UnitTest

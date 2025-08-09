@@ -1,8 +1,8 @@
 #pragma once
 
 #include "unit/UnitTest.hpp"
-#include "DataStore.hpp"
-#include "MolecularStructure.hpp"
+#include "data/DataStore.hpp"
+#include "molecules/MolecularStructure.hpp"
 
 class StructureSMILESUnitTest : public UnitTest
 {

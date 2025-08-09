@@ -1,7 +1,7 @@
 #pragma once
 
 #include "unit/UnitTest.hpp"
-#include "DataStore.hpp"
+#include "data/DataStore.hpp"
 
 class DefUnitTest : public UnitTest
 {

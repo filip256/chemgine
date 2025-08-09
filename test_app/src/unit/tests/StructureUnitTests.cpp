@@ -1,8 +1,8 @@
 #include "unit/tests/StructureUnitTests.hpp"
 
-#include "MolecularStructure.hpp"
-#include "StringTable.hpp"
-#include "BinUtils.hpp"
+#include "molecules/MolecularStructure.hpp"
+#include "io/StringTable.hpp"
+#include "utils/Bin.hpp"
 
 #include <numeric>
 

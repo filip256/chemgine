@@ -1,6 +1,6 @@
-#include "DataStore.hpp"
-#include "PathUtils.hpp"
-#include "Log.hpp"
+#include "data/DataStore.hpp"
+#include "utils/Path.hpp"
+#include "io/Log.hpp"
 
 #include <cxxopts.hpp>
 

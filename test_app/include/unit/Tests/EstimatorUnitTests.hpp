@@ -1,9 +1,9 @@
 #pragma once
 
 #include "unit/UnitTest.hpp"
-#include "Precision.hpp"
-#include "DataPoint.hpp"
-#include "EstimatorFactory.hpp"
+#include "global/Precision.hpp"
+#include "data/values/DataPoint.hpp"
+#include "estimators/EstimatorFactory.hpp"
 
 class Estimator2DUnitTestBase : public UnitTest
 {

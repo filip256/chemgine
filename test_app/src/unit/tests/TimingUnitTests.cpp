@@ -1,6 +1,6 @@
 #include "unit/tests/TimingUnitTests.hpp"
 #include "perf/PerformanceReport.hpp"
-#include "Log.hpp"
+#include "io/Log.hpp"
 
 #include <thread>
 

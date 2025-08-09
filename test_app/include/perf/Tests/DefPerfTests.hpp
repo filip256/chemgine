@@ -1,7 +1,7 @@
 #pragma once
 
 #include "perf/PerfTest.hpp"
-#include "DataStore.hpp"
+#include "data/DataStore.hpp"
 
 class DefPerfSetup : public TestSetup
 {

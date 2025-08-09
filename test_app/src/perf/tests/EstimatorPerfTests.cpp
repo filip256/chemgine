@@ -1,5 +1,5 @@
 #include "perf/tests/EstimatorPerfTests.hpp"
-#include "Spline.hpp"
+#include "structs/Spline.hpp"
 
 LinearSplinePerfTest::LinearSplinePerfTest(
 	std::string&& name,

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "perf/PerfTest.hpp"
-#include "DataStore.hpp"
-#include "Reactor.hpp"
-#include "Lab.hpp"
+#include "data/DataStore.hpp"
+#include "mixtures/kinds/Reactor.hpp"
+#include "labware/Lab.hpp"
 
 class FPSPerfTestBase : public TimedTest
 {
