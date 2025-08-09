@@ -1,8 +1,8 @@
 #pragma once
 
 #include "perf/PerfTest.hpp"
-#include "DataStore.hpp"
-#include "MolecularStructure.hpp"
+#include "data/DataStore.hpp"
+#include "molecules/MolecularStructure.hpp"
 
 class StructureSMILESPerfTest : public TimedTest
 {

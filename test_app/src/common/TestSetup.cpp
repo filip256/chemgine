@@ -1,7 +1,7 @@
 #include "common/TestSetup.hpp"
-#include "DataStore.hpp"
-#include "PathUtils.hpp"
-#include "Accessor.hpp"
+#include "data/DataStore.hpp"
+#include "utils/Path.hpp"
+#include "data/Accessor.hpp"
 
 AccessorTestSetup::AccessorTestSetup(
 	const DataStore& dataStore

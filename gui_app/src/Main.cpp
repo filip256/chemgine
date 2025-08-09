@@ -1,7 +1,7 @@
-#include "DataStore.hpp"
+#include "data/DataStore.hpp"
 #include "UIContext.hpp"
 
-#include "BinUtils.hpp"
+#include "utils/Bin.hpp"
 
 int main()
 {

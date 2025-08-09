@@ -1,5 +1,5 @@
 #include "unit/tests/DefUnitTests.hpp"
-#include "DefinitionParser.hpp"
+#include "data/def/DefinitionParser.hpp"
 
 DefUnitTest::DefUnitTest(
 	std::string&& name,

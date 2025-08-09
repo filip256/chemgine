@@ -1,8 +1,8 @@
 #include "perf/PerfTest.hpp"
 #include "perf/PerformanceReport.hpp"
-#include "STLUtils.hpp"
-#include "Casts.hpp"
-#include "Log.hpp"
+#include "utils/STL.hpp"
+#include "utils/Casts.hpp"
+#include "io/Log.hpp"
 
 PerfTest::PerfTest(std::string&& name) noexcept :
 	name(std::move(name))

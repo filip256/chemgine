@@ -5,6 +5,9 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
 
 add_executable(gui_app ${SOURCES})
 
+# Generate VS filters based on dir structure.
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
+
 target_include_directories(gui_app PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_link_libraries(gui_app PRIVATE core)
 

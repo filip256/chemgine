@@ -6,6 +6,8 @@ Release/
 test_app/temp/
 dev_tools/vt/keys/
 
+.vscode/
+
 *.vs
 *.pyc
 temp*

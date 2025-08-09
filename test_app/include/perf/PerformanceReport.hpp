@@ -1,6 +1,6 @@
 #pragma once
 
-#include "StringTable.hpp"
+#include "io/StringTable.hpp"
 #include "perf/TimingResult.hpp"
 
 #include <string>

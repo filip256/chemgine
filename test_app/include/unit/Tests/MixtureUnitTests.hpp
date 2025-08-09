@@ -1,9 +1,9 @@
 #pragma once
 
 #include "unit/UnitTest.hpp"
-#include "Reactor.hpp"
-#include "DataStore.hpp"
-#include "ForwardingContainer.hpp"
+#include "mixtures/kinds/Reactor.hpp"
+#include "data/DataStore.hpp"
+#include "mixtures/kinds/ForwardingContainer.hpp"
 
 class ReactorUnitTest : public UnitTest
 {

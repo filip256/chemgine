@@ -1,7 +1,7 @@
 #pragma once
 
 #include "unit/UnitTest.hpp"
-#include "Precision.hpp"
+#include "global/Precision.hpp"
 #include "perf/PerfTest.hpp"
 
 class TimingUnitTest : public UnitTest

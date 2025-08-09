@@ -1,6 +1,6 @@
 #include "unit/tests/ModuleUnitTest.hpp"
 #include "unit/tests/PropertyUnitTest.hpp"
-#include "PathUtils.hpp"
+#include "utils/Path.hpp"
 
 WaterPropertiesUnitTest::WaterPropertiesUnitTest(
 	std::string&& name,

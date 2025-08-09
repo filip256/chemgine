@@ -1,5 +1,5 @@
 #include "unit/tests/MixtureUnitTests.hpp"
-#include "StringTable.hpp"
+#include "io/StringTable.hpp"
 
 ReactorUnitTest::ReactorUnitTest(
 	std::string&& name,

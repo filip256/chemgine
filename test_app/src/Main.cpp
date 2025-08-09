@@ -1,5 +1,5 @@
-#include "Log.hpp"
-#include "BuildUtils.hpp"
+#include "io/Log.hpp"
+#include "utils/Build.hpp"
 #include "common/TestManager.hpp"
 
 #include <cxxopts.hpp>

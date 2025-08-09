@@ -472,15 +472,15 @@ Tasks:
     DONE. Remove unnecesarry clone() methods (only atoms remain)
     3. Replace dynamic casts with faster variants
     DONE. Remove all the operator new instance counting
-    4. Split project into Core, UI, TestApp
-    5. Move to directory based project
-    6. Set output and intermediates dir to the solution dir /bin
+    DONE. Split project into Core, UI, TestApp
+    DONE. Move to directory based project
+    DONE. Set output and intermediates dir to the solution dir /bin
     7. noexcept default ctors
     8. Use std::path instead of strings
     9. Implement std::formatter for objects to avoid unnecesarry serialization in logs
 
 ---
-   - BUG FiX -
+   - BUG FIX -
 
     DONE. Bad molecule print for "O=C(C)OC=C".
     DONE. Exception while parsing reaction: 209,dehydration,RCO,RCOCR;O,1.0@20C,,0.0,
@@ -728,5 +728,33 @@ Categorizations:
 
 
     -----------------------------------------------------------------------------------------------------------------
+
+    Cross-Radical Matching:
+     - A radical 'R1' := '[C, Cl, Br]' should also match 'R2' : '[Cl, Br]' -> 'R1' := '[C, Cl, Br, R2]'.
+     - This allows better reaction specialization hierarchies.
+     - Relations should be formed at load-time.
+
+    Composite radicals:
+     - A radical should also be able to represent a substructure, for example 'Bz' := '%-C1=CC=CC=C1', where '%' acts as an entry-point.
+     - The substructure can (and likely should) be generic 'Bz4' := '%-C1=CC=C(OR)C=C1'.
+       For example '[Bz4]CCN' matches 4-O-substituted phenethylamines.
+    
+    2 options:
+     - Expand composite radicals during definition loading:
+        * simple logic, easy to implement
+        * each radical would only be able to match a single substructure
+        * more memory used to store reactions
+        * reactions can pack/unpack composite radicals 'Bz4C' + H2 -> 'C-C1=CC-C(OR)C=C1'
+        * cross-radical matching works out-of-the-box
+        * radicals are lost inside structures
+        * useful for simplifying definitions (controversial)
+     - Keep composite radicals as single components:
+        * each radical can match multiple substructures
+        * reactions cannot pack/unpack composite radicals => changes cannot be made to the inner structure, they are RP-mapped as single atoms 
+        * additional logic is needed for inner structure matching
+        * cross-radical mapping implies all the substructures of one radical match at least one substruture in another radical
+        * useful for complex pattern matching
+
+      The first is a good starting point but overall the second is what we need.
 
     -----------------------------------------------------------------------------------------------------------------

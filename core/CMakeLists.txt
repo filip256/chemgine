@@ -5,6 +5,9 @@ file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS
 
 add_library(core STATIC ${SOURCES})
 
+# Generate VS filters based on dir structure.
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
+
 target_include_directories(core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # boost

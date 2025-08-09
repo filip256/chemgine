@@ -2,8 +2,8 @@
 
 #include "common/TestSetup.hpp"
 #include "TimingResult.hpp"
-#include "ProcessUtils.hpp"
-#include "MetaUtils.hpp"
+#include "utils/Process.hpp"
+#include "utils/Meta.hpp"
 
 #include <string>
 #include <vector>
