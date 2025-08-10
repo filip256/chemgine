@@ -1,0 +1,90 @@
+name: CI Min
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    name: Build / ${{matrix.kind.name}}
+    runs-on: ${{matrix.kind.os}}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        kind:
+        - { name: Windows-VS2022-x64-Release, os: windows-2022,  config: Release, flags: -A x64 }
+        - { name: Windows-VS2022-x64-Debug,   os: windows-2022,  config: Debug,   flags: -A x64 }
+        - { name: Windows-VS2022-x86-Release, os: windows-2022,  config: Release, flags: -A Win32 }
+        - { name: Windows-VS2022-x86-Debug,   os: windows-2022,  config: Debug,   flags: -A Win32 }
+
+        # - { name: Ubuntu-GCC-x64-Release,     os: ubuntu-latest, config: Release, flags: -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ }
+        # - { name: Ubuntu-GCC-x64-Debug,       os: ubuntu-latest, config: Debug,   flags: -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ }
+        # - { name: Ubuntu-Clang-x64-Release,   os: ubuntu-latest, config: Release, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
+        # - { name: Ubuntu-Clang-x64-Debug,     os: ubuntu-latest, config: Debug,   flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -B build ${{matrix.kind.flags}}
+
+      - name: Build
+        run: cmake --build build --config ${{matrix.kind.config}}
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{matrix.kind.name}}
+          path: |
+            build/**/*.exe
+            build/**/*.dll
+            build/**/*.lib
+            build/**/*.pdb
+            build/**/*.so
+            build/**/*.a
+            build/**/data
+          compression-level: 9
+
+  unit:
+    name: Unit / ${{matrix.kind.name}}
+    needs: build
+    runs-on: ${{matrix.kind.os}}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        kind:
+        - { name: Windows-VS2022-x64-Release, os: windows-2022,  config: Release, flags: -A x64 }
+        - { name: Windows-VS2022-x64-Debug,   os: windows-2022,  config: Debug,   flags: -A x64 }
+        - { name: Windows-VS2022-x86-Release, os: windows-2022,  config: Release, flags: -A Win32 }
+        - { name: Windows-VS2022-x86-Debug,   os: windows-2022,  config: Debug,   flags: -A Win32 }
+
+        # - { name: Ubuntu-GCC-x64-Release,     os: ubuntu-latest, config: Release, flags: -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ }
+        # - { name: Ubuntu-GCC-x64-Debug,       os: ubuntu-latest, config: Debug,   flags: -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ }
+        # - { name: Ubuntu-Clang-x64-Release,   os: ubuntu-latest, config: Release, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
+        # - { name: Ubuntu-Clang-x64-Debug,     os: ubuntu-latest, config: Debug,   flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{matrix.kind.name}}
+
+      - name: Show files recursively
+        run: tree -a || (echo "tree not found, listing recursively"; ls -laR)
+
+      - name: Run unit tests
+        working-directory: ./test_app/${{matrix.kind.config}}/
+        run: |
+          if [[ "${{matrix.kind.os}}" == "windows-2022" ]]; then
+            ./test_app.exe -u
+          else
+            ./test_app -u
+          fi
