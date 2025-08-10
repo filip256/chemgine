@@ -19,7 +19,7 @@ class RetrosynthReaction;
 class ReactionData
 {
 private:
-	Ref<const ReactionData> baseReaction = nullRef;
+	Ref<const ReactionData> baseReaction = NullRef;
 	std::vector<StructureRef> reactants;
 	std::vector<StructureRef> products;
 	ImmutableSet<Catalyst> catalysts;

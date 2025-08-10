@@ -11,7 +11,7 @@ class MixturePropertyPane : public sf::Drawable
 	class LayerPropertyPane : public sf::Drawable
 	{
 	private:
-		Ref<const Layer> subject = nullRef;
+		Ref<const Layer> subject = NullRef;
 		sf::Vector2f position = { 0.0f, 0.0f };
 		sf::Text title;
 		mutable sf::Text propertyName, propertyValue;
@@ -30,7 +30,7 @@ class MixturePropertyPane : public sf::Drawable
 	class ContentPropertyPane : public sf::Drawable
 	{
 	private:
-		Ref<const Layer> subject = nullRef;
+		Ref<const Layer> subject = NullRef;
 		sf::Vector2f position = { 0.0f, 0.0f };
 		mutable sf::Text propertyName, propertyValue;
 
@@ -46,7 +46,7 @@ class MixturePropertyPane : public sf::Drawable
 	};
 
 private:
-	Ref<const LabwareComponentBase> subject = nullRef;
+	Ref<const LabwareComponentBase> subject = NullRef;
 	sf::Vector2f position = { 0.0f, 0.0f };
 	sf::RectangleShape background = sf::RectangleShape({ 0.0f, 0.0f });
 	sf::Text title;

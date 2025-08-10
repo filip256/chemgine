@@ -116,7 +116,7 @@ void UnitTestGroup::registerTest(std::string&& name, Args&&... args)
 
 	std::unique_ptr<UnitTest> test;
 	if constexpr (utils::is_specialization_of_v<T, UnitTestSetup>)
-		test = std::make_unique<T>(std::move(name), T::SetupType(std::forward<Args>(args)...));
+		test = std::make_unique<T>(std::move(name), typename T::SetupType(std::forward<Args>(args)...));
 	else if constexpr (std::is_constructible_v<T, std::string&&, const std::regex&, Args...>)
 		test = std::make_unique<T>(std::move(name), filter, std::forward<Args>(args)...);
 	else 

@@ -3,6 +3,7 @@
 #include <SFML/Window.hpp>
 
 #include <unordered_map>
+#include <memory>
 
 class CursorHelper
 {

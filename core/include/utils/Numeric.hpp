@@ -2,6 +2,7 @@
 
 #include <limits>
 #include <cmath>
+#include <cstdint>
 #include <algorithm>
 
 namespace utils

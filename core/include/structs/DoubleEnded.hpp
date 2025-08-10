@@ -42,8 +42,12 @@ public:
 	IndexT endIndex() const;
 
 	void reserve(const IndexT size);
+
+	void resize(const IndexT size);
 	void resize(const IndexT size, const ConstElemRefT elem);
+	void expandTo(const IndexT idx);
 	void expandTo(const IndexT idx, const ConstElemRefT elem);
+	void expandBy(const IndexT size);
 	void expandBy(const IndexT size, const ConstElemRefT elem);
 	void shrinkToFit();
 
@@ -283,12 +287,37 @@ void DoubleEnded<T>::clear()
 }
 
 template<typename T>
+void DoubleEnded<T>::resize(const IndexT size)
+{
+	if (size >= 0)
+		forward.resize(size);
+	else
+		backward.resize(-size);
+}
+
+template<typename T>
 void DoubleEnded<T>::resize(const IndexT size, const ConstElemRefT elem)
 {
 	if (size >= 0)
 		forward.resize(size, elem);
 	else
 		backward.resize(-size, elem);
+}
+
+template<typename T>
+void DoubleEnded<T>::expandTo(const IndexT idx)
+{
+	if (idx >= 0)
+	{
+		const auto forwardSize = static_cast<size_t>(idx + 1);
+		if (forwardSize > forward.size())
+			forward.resize(forwardSize);
+		return;
+	}
+
+	const auto backwardSize = static_cast<size_t>(-idx);
+	if(backwardSize > backward.size())
+		backward.resize(backwardSize);
 }
 
 template<typename T>
@@ -305,6 +334,15 @@ void DoubleEnded<T>::expandTo(const IndexT idx, const ConstElemRefT elem)
 	const auto backwardSize = static_cast<size_t>(-idx);
 	if(backwardSize > backward.size())
 		backward.resize(backwardSize, elem);
+}
+
+template<typename T>
+void DoubleEnded<T>::expandBy(const IndexT size)
+{
+	if (size >= 0)
+		forward.resize(forward.size() + size);
+	else
+		backward.resize(backward.size() - size);
 }
 
 template<typename T>

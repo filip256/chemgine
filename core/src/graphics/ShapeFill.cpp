@@ -1,4 +1,5 @@
 #include "graphics/ShapeFill.hpp"
+
 #include <cmath>
 
 ShapeFill::ShapeFill(
@@ -57,8 +58,8 @@ void ShapeFill::setDrawSection(float_s start, float_s end, const sf::Color& colo
 
 	const Amount<Unit::RADIAN> rotation = Amount<Unit::DEGREE>(sprite.getRotation());
 	sprite.setPosition(sf::Vector2f(
-		originPosition.x - std::sinf(rotation.asStd()) * topCut * sprite.getScale().y,
-		originPosition.y + std::cosf(rotation.asStd()) * topCut * sprite.getScale().y
+		originPosition.x - std::sin(rotation.asStd()) * topCut * sprite.getScale().y,
+		originPosition.y + std::cos(rotation.asStd()) * topCut * sprite.getScale().y
 	));
 
 	sprite.setColor(color);

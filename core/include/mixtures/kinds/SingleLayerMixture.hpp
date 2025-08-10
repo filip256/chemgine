@@ -265,7 +265,7 @@ template<LayerType L>
 Ref<ContainerBase> SingleLayerMixture<L>::getIncompatibilityTarget(const LayerType layerType) const
 {
 	if (layerType == L)
-		return Ref<ContainerBase>::nullRef;
+		return NullRef;
 
 	return incompatibilityTargets.at(layerType);
 }

@@ -3,6 +3,7 @@
 #include "data/values/DynamicAmount.hpp"
 #include "utils/STL.hpp"
 #include "data/def/Keywords.hpp"
+#include "utils/Build.hpp"
 #include "io/Log.hpp"
 
 #include <fstream>
@@ -101,7 +102,7 @@ const AtomData& AtomRepository::at(const Symbol& symbol) const
 		return *rIt->second;
 
 	Log(this).fatal("Tried to access an atom suing an undefined symbol: '{0}'", symbol);
-	__assume(false);
+	CHG_UNREACHABLE();
 }
 
 size_t AtomRepository::totalDefinitionCount() const

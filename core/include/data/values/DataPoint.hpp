@@ -17,7 +17,7 @@ public:
 		const std::tuple<Amount<InUs>...>& inputs
 	) noexcept;
 
-	template<typename = std::enable_if_t<(sizeof...(InUs) > 1)>>
+	template<typename DummyT = void, typename = std::enable_if_t<(sizeof...(InUs) > 1), DummyT>>
 	DataPoint(
 		const Amount<OutU> output,
 		const Amount<InUs>... inputs
@@ -40,7 +40,7 @@ DataPoint<OutU, InUs...>::DataPoint(
 {}
 
 template<Unit OutU, Unit... InUs>
-template<typename>
+template<typename DummyT, typename>
 DataPoint<OutU, InUs...>::DataPoint(
 	const Amount<OutU> output,
 	const Amount<InUs>... inputs
@@ -71,7 +71,7 @@ template<Unit OutU, Unit... InUs>
 class def::Parser<DataPoint<OutU, InUs...>>
 {
 private:
-	template<std::size_t... Is>
+	template<size_t... Is>
 	static std::optional<std::tuple<Amount<InUs>...>> convertInputs(
 		const std::vector<DynamicAmount>& baseInputs,
 		const def::Location& location,

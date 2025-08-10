@@ -48,7 +48,7 @@ private:
 
 public:
 	Layer(
-		const Ref<Mixture> container = nullRef,
+		const Ref<Mixture> container = NullRef,
 		const LayerType layerType = LayerType::NONE,
 		const Amount<Unit::CELSIUS> temperature = 0.0
 	) noexcept;

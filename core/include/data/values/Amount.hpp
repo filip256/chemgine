@@ -49,8 +49,8 @@ public:
 	constexpr inline Amount<OUnitT> to(const Amount<FactT1>) const noexcept = delete;
 
 	constexpr inline Unit unit() const noexcept;
-	static inline std::string unitSymbol() noexcept = delete;
-	static inline std::string unitName() noexcept = delete;
+	static inline std::string unitSymbol() noexcept;
+	static inline std::string unitName() noexcept;
 	
 	inline std::string toString(const uint8_t maxDigits = 255) const noexcept;
 	inline std::string format() noexcept = delete;
@@ -180,16 +180,6 @@ constexpr Amount<>::StorageType Amount<Unit::CUBIC_METER>::asMicro() const noexc
 template<Unit UnitT>
 constexpr Unit Amount<UnitT>::unit() const noexcept { return UnitT; }
 
-template<Unit UnitT>
-std::string Amount<UnitT>::toString(const uint8_t maxDigits) const noexcept 
-{
-	const auto str = utils::formatFloatingPoint(value, maxDigits);
-	if constexpr (UnitT != Unit::NONE)
-		return str + ' ' + Amount<UnitT>::unitSymbol();
-	else
-		return str + ' '; // don't print NONE's unit
-}
-
 template<>
 inline std::string Amount<Unit::NONE>::unitSymbol() noexcept { return "1"; }
 template<>
@@ -311,6 +301,16 @@ template<>
 inline std::string Amount<Unit::JOULE_PER_MOLE_CELSIUS>::unitName() noexcept { return Amount<Unit::JOULE>::unitName() + " / (" + Amount<Unit::MOLE>::unitName() + " + " + Amount<Unit::CELSIUS>::unitName() + ")"; }
 template<>
 inline std::string Amount<Unit::TORR_MOLE_RATIO>::unitName() noexcept { return Amount<Unit::TORR>::unitName() + " * (" + Amount<Unit::MOLE>::unitName() + " / " + Amount<Unit::MOLE>::unitName() + ")"; }
+
+template<Unit UnitT>
+std::string Amount<UnitT>::toString(const uint8_t maxDigits) const noexcept 
+{
+	const auto str = utils::formatFloatingPoint(value, maxDigits);
+	if constexpr (UnitT != Unit::NONE)
+		return str + ' ' + Amount<UnitT>::unitSymbol();
+	else
+		return str + ' '; // don't print NONE's unit
+}
 
 template<>
 inline std::string Amount<Unit::SECOND>::format() noexcept

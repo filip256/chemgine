@@ -8,6 +8,7 @@
 #include "structs/Ref.hpp"
 
 #include <type_traits>
+#include <cstdint>
 #include <array>
 
 template<uint8_t C>
@@ -21,11 +22,11 @@ private:
 	/// Statically builds a ShapeFill array for every container.
 	/// ...went a little overboard with this...
 	/// </summary>
-	template<uint8_t... I>
+	template<size_t... I>
 	constexpr std::array<ShapeFill, C> generateShapeFills(std::index_sequence<I...>) const;
 
 protected:
-	template<typename = std::enable_if_t<C >= 1>>
+	template <typename DummyT = void, std::enable_if_t<(C >= 1), DummyT>* = nullptr>
 	ContainerLabwareData(
 		const LabwareId id,
 		const std::string& name,
@@ -37,7 +38,7 @@ protected:
 		const LabwareType type
 	) noexcept;
 
-	template<typename = std::enable_if_t<C == 1>>
+	template <typename DummyT = void, std::enable_if_t<(C == 1), DummyT>* = nullptr>
 	ContainerLabwareData(
 		const LabwareId id,
 		const std::string& name,
@@ -66,7 +67,7 @@ public:
 
 
 template<uint8_t C>
-template<typename>
+template <typename DummyT, std::enable_if_t<(C >= 1), DummyT>*>
 ContainerLabwareData<C>::ContainerLabwareData(
 	const LabwareId id,
 	const std::string& name,
@@ -85,7 +86,7 @@ ContainerLabwareData<C>::ContainerLabwareData(
 }
 
 template<uint8_t C>
-template<typename>
+template <typename DummyT, std::enable_if_t<(C == 1), DummyT>*>
 ContainerLabwareData<C>::ContainerLabwareData(
 	const LabwareId id,
 	const std::string& name,
@@ -140,7 +141,7 @@ constexpr const std::array<ShapeFillTexture, C>& ContainerLabwareData<C>::getFil
 }
 
 template<uint8_t C>
-template<uint8_t... I>
+template<size_t... I>
 constexpr std::array<ShapeFill, C> ContainerLabwareData<C>::generateShapeFills(std::index_sequence<I...>) const
 {
 	return { { ShapeFill(std::get<I>(fillTextures), textureScale)...} };

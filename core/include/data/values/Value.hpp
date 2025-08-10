@@ -1,6 +1,6 @@
 #pragma once
 
-template<class T>
+template<typename T>
 class Value
 {
 protected:
@@ -35,3 +35,8 @@ public:
 	constexpr bool oveflowsOnAdd(const Value<T>& other) const noexcept;
 	constexpr bool oveflowsOnMultiply(const Value<T>& other) const noexcept;
 };
+
+template<typename T>
+constexpr Value<T>::Value(const T value) noexcept :
+	value(value)
+{}

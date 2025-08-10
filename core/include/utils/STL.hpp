@@ -1,5 +1,8 @@
 #pragma once
 
+#include "utils/Casts.hpp"
+
+#include <cmath>
 #include <vector>
 #include <optional>
 #include <algorithm>

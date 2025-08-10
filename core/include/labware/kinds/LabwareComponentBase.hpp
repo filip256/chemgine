@@ -63,11 +63,11 @@ public:
 template<typename L, typename>
 L& LabwareComponentBase::as()
 {
-	return Ref(*this).as<L>();
+	return Ref(*this).template as<L>();
 }
 
 template<typename L, typename>
 Ref<L> LabwareComponentBase::cast()
 {
-	return Ref(*this).cast<L>();
+	return Ref(*this).template cast<L>();
 }

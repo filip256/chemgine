@@ -4,25 +4,38 @@
 #include "io/Log.hpp"
 
 #include <array>
-#include <Windows.h>
+
+#ifdef CHG_BUILD_WINDOWS
+	#include <Windows.h>
+#endif
 
 OS::ProcessPriority OS::getCurrentProcessPriority()
 {
+#ifdef CHG_BUILD_WINDOWS
 	const auto priority = GetPriorityClass(GetCurrentProcess());
 	if(not priority)
 		Log().fatal("Failed to get process priority (error code: {0}).", GetLastError());
 
 	return static_cast<ProcessPriority>(priority);
+#else
+	return ProcessPriority::NORMAL_PRIORITY_CLASS;
+#endif
 }
 
 void OS::setCurrentProcessPriority(const OS::ProcessPriority priority)
 {
+#ifdef CHG_BUILD_WINDOWS
 	if (not SetPriorityClass(GetCurrentProcess(), static_cast<DWORD>(priority)))
 		Log().fatal("Failed to set process priority: {0} (error code: {1}).", underlying_cast(priority), GetLastError());
 
 	Log().debug("Set process priority: {0}.", underlying_cast(priority));
+#endif
 }
 
+#ifdef CHG_BUILD_WINDOWS
+
+namespace
+{
 
 class ProcessorInfo
 {
@@ -65,17 +78,26 @@ SYSTEM_LOGICAL_PROCESSOR_INFORMATION ProcessorInfo::getInfo(const OS::ProcessorI
 	return processorInfo.info[idx];
 }
 
+} // namespace
+
+#endif
+
 OS::ProcessorAffinityMask OS::getAvailableProcessorMask()
 {
+#ifdef CHG_BUILD_WINDOWS
 	DWORD_PTR processAffinityMask, systemAffinityMask;
 	if (not GetProcessAffinityMask(GetCurrentProcess(), &processAffinityMask, &systemAffinityMask))
 		Log().fatal("Failed to get process affinity mask (error code: {0}).", GetLastError());
 
 	return static_cast<ProcessorAffinityMask>(processAffinityMask);
+#else
+	return static_cast<ProcessorAffinityMask>(0);
+#endif
 }
 
 OS::ProcessorAffinityMask OS::getAvailablePhysicalProcessorMask()
 {
+#ifdef CHG_BUILD_WINDOWS
 	static const auto availableProcessors = getAvailableProcessorMask();
 	ProcessorAffinityMask physicalProcessors = { 0 };
 
@@ -87,10 +109,14 @@ OS::ProcessorAffinityMask OS::getAvailablePhysicalProcessorMask()
 	}
 
 	return static_cast<ProcessorAffinityMask>(physicalProcessors);
+#else
+	return static_cast<ProcessorAffinityMask>(0);
+#endif
 }
 
 OS::ProcessorAffinityMask OS::getLastAvailablePhysicalProcessorMask()
 {
+#ifdef CHG_BUILD_WINDOWS
 	static const auto availableProcessors = getAvailableProcessorMask();
 	ProcessorAffinityMask selectedProcessor = { 0 };
 
@@ -106,18 +132,25 @@ OS::ProcessorAffinityMask OS::getLastAvailablePhysicalProcessorMask()
 
 	Log().fatal("Found no physical processor.");
 	CHG_UNREACHABLE();
+#else
+	return static_cast<ProcessorAffinityMask>(0);
+#endif
 }
 
 OS::ProcessorAffinityMask OS::setCurrentThreadProcessorAffinity(const ProcessorAffinityMask mask)
 {
+#ifdef CHG_BUILD_WINDOWS
 	const auto prevMask = SetThreadAffinityMask(GetCurrentThread(), static_cast<DWORD_PTR>(mask.to_ullong()));
 	if (not prevMask)
 		Log().fatal("Failed to set thread affinity to mask: '{0}' (error code: {1}).",
-			mask.to_string(char('°'), char('Û')), GetLastError());
+			mask.to_string(char('ï¿½'), char('ï¿½')), GetLastError());
 
 	Log().debug("Set thread affinity to mask: '{0} [{1}]'.",
-		mask.to_string(char('°'), char('Û')), mask.to_ullong());
+		mask.to_string(char('ï¿½'), char('ï¿½')), mask.to_ullong());
 	return static_cast<ProcessorAffinityMask>(prevMask);
+#else
+	return static_cast<ProcessorAffinityMask>(0);
+#endif
 }
 
 

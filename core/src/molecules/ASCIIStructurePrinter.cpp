@@ -401,7 +401,7 @@ Position StructurePrinter::getNextEdgePosition(const PositionLine position, cons
     // Computes the next edge position, taking into account the symbol length:
     // \|  /
     // -Uut-
-    // /|  \ 
+    // /|  \ .
     const auto vector = direction.get();
     auto nextEdgePosition = static_cast<Position>(position.origin + vector);
     if (vector.x > 0)
@@ -440,7 +440,7 @@ std::vector<std::pair<ASCII::Direction, Position>> StructurePrinter::getPossible
     // Populate the next possible directions:
     // \|/|  ||/
     // -Xxx..xx-
-    // /|\|  ||\ 
+    // /|\|  ||\ .
     std::vector<std::pair<ASCII::Direction, Position>> directions;
     directions.reserve(8 + 2 * (origin.length > 1 ? origin.length - 1 : 0));
     
@@ -1213,7 +1213,7 @@ void StructurePrinter::printError(
     std::source_location&& location)
 {
     ++errorCount;
-    const auto errorSymbolStr = "’" + std::to_string(errorCount);
+    const auto errorSymbolStr = "ï¿½" + std::to_string(errorCount);
     const auto errorSymbol = ColoredString(errorSymbolStr, OS::Color::RedBG);
 
     Log(this).error(LogFormat("[{0}] {1}", std::move(location)), errorSymbolStr, message);

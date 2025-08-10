@@ -104,17 +104,16 @@ namespace ASCII
     inline constexpr Direction Direction::DownLeft = Direction(6);
     inline constexpr Direction Direction::Left = Direction(7);
 
-    inline constexpr std::array<Point<int8_t>, 8> Direction::_allDirections
-    {
-        Point<int8_t>(-1, -1), // 0 1 2 
-        Point<int8_t>(0, -1),  //  \|/
-        Point<int8_t>(1, -1),  // 7- -3
-        Point<int8_t>(1, 0),   //  /|\ 
-        Point<int8_t>(1, 1),   // 6 5 4
-        Point<int8_t>(0, 1),
-        Point<int8_t>(-1, 1),
-        Point<int8_t>(-1, 0),
-    };
+    inline constexpr std::array<Point<int8_t>, 8> Direction::_allDirections {{
+        { int8_t(-1), int8_t(-1) },
+        { int8_t(0), int8_t(-1) },
+        { int8_t(1), int8_t(-1) },
+        { int8_t(1),  int8_t(0) },
+        { int8_t(1),  int8_t(1) },
+        { int8_t(0),  int8_t(1) },
+        { int8_t(-1), int8_t(1) },
+        { int8_t(-1), int8_t(0) },
+    }};
 
     inline constexpr std::array<Direction, 8> Direction::AllDirections
     {
@@ -183,7 +182,7 @@ class utils::NPos<ASCII::Direction>
 public:
     using ObjT = ASCII::Direction;
 
-    static constexpr ObjT value;
+    static constexpr ObjT value = ObjT(utils::npos<uint8_t>);
     static bool isNPos(const ObjT& direction)
     {
         return utils::isNPos(direction.idx);

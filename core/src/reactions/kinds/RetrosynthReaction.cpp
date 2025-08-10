@@ -30,34 +30,29 @@ void RetrosynthReaction::print(std::ostream& out) const
 {
 	// reactants and products
 	ColoredTextBlock buffer;
-	const auto lastR = --reactants.end();
-	for(auto r = reactants.begin(); r != lastR; ++r)
+
+	const auto printStructures = [&buffer](const auto& structures)
 	{
-		if(r->second > 1)
-			buffer.appendRight(std::to_string(r->second) + "x ");
-		buffer.appendRight(r->first.getStructure().toASCII());
-		buffer.appendRight(" + ");
-	}
-	if (lastR->second > 1)
-		buffer.appendRight(std::to_string(lastR->second) + "x ");
-	buffer.appendRight(lastR->first.getStructure().toASCII());
+		size_t i = 0;
+		size_t last = structures.size() - 1; // Can't determine the last iterator, so we have to count.
+		for(auto s = structures.begin(); s != structures.end(); ++s, ++i)
+		{
+			if(s->second > 1)
+				buffer.appendRight(std::to_string(s->second) + "x ");
+			buffer.appendRight(s->first.getStructure().toASCII());
+			if(i != last)
+				buffer.appendRight(" + ");
+		}
+	};
+
+	printStructures(reactants);
 
 	if(baseReaction.isCutReaction())
-		buffer.appendRight(" ÄXÄ> ");
+		buffer.appendRight(" ï¿½Xï¿½> ");
 	else
-		buffer.appendRight(" ÄÄÄ> ");
+		buffer.appendRight(" ï¿½ï¿½ï¿½> ");
 
-	const auto lastP = --products.end();
-	for (auto p = products.begin(); p != lastP; ++p)
-	{
-		if (p->second > 1)
-			buffer.appendRight(std::to_string(p->second) + "x ");
-		buffer.appendRight(p->first.getStructure().toASCII());
-		buffer.appendRight(" + ");
-	}
-	if (lastP->second > 1)
-		buffer.appendRight(std::to_string(lastP->second) + "x ");
-	buffer.appendRight(lastP->first.getStructure().toASCII());
+	printStructures(products);
 
 	out << buffer << '\n';
 	baseReaction.print(out);

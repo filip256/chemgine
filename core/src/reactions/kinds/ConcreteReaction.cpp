@@ -2,8 +2,8 @@
 
 ConcreteReaction::ConcreteReaction(const ConcreteReaction& other) noexcept :
 	baseReaction(other.baseReaction),
-	reactants(reactants.makeCopy(nullRef)),
-	products(reactants.makeCopy(nullRef))
+	reactants(reactants.makeCopy(NullRef)),
+	products(reactants.makeCopy(NullRef))
 {}
 
 ConcreteReaction::ConcreteReaction(

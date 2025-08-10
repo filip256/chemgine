@@ -17,8 +17,8 @@ void DrawablePort::rotate(const Amount<Unit::DEGREE> angle)
 	const auto tempX = position.x;
 	const  Amount<Unit::RADIAN> deltaRad = angle - rotationAngle;
 
-	position.x = position.x * std::cosf(deltaRad.asStd()) - position.y * std::sinf(deltaRad.asStd());
-	position.y = tempX * std::sinf(deltaRad.asStd()) + position.y * std::cosf(deltaRad.asStd());
+	position.x = position.x * std::cos(deltaRad.asStd()) - position.y * std::sin(deltaRad.asStd());
+	position.y = tempX * std::sin(deltaRad.asStd()) + position.y * std::cos(deltaRad.asStd());
 
 	rotationAngle = angle;
 }

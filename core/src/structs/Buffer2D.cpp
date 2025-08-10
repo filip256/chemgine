@@ -307,7 +307,7 @@ size_t Buffer2D<ContainerT>::getMaxNegativeWidth() const
 template<typename ContainerT>
 void Buffer2D<ContainerT>::expandTo(const IndexT idx)
 {
-	block.expandTo(idx, Line());
+	block.expandTo(idx);
 }
 
 template<typename ContainerT>

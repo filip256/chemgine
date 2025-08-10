@@ -270,7 +270,7 @@ Tasks:
   DONE. Add overflow check to dumps
   21. Add object for Molecule-Amount pairs
   22. Spread system ticks across multiple frames
-  DONE. Add nullRef type instead of Ref<T>::nullRef
+  DONE. Add NullRef type instead of Ref<T>::NullRef
   DONE. Rename normalization to canonicalization
   24. Remove MolecularStructure.mapTo(setB[i], false), only mapTo(setB[i], true) is needed
   DONE. Add catalysts to specialization tree

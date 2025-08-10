@@ -481,9 +481,9 @@ std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
 				components[c.otherComponent]->getRotation() - 90.0_o;
 
 			push.x += (components[componentIdx]->getPosition().x < components[c.otherComponent]->getPosition().x ?
-				1.0f : -1.0f) * std::cosf(angle.asStd());
+				1.0f : -1.0f) * std::cos(angle.asStd());
 			push.y += (components[componentIdx]->getPosition().y < components[c.otherComponent]->getPosition().y ?
-				1.0f : -1.0f) * std::sinf(angle.asStd());
+				1.0f : -1.0f) * std::sin(angle.asStd());
 
 			// one of the sub-sections can remain in this 
 			if (skippedFirst == false)
@@ -520,9 +520,9 @@ std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
 				components[c.otherComponent]->getRotation() - 90.0_o;
 
 			push.x += (components[componentIdx]->getPosition().x < components[c.otherComponent]->getPosition().x ?
-				1.0f : -1.0f) * std::cosf(angle.asStd());
+				1.0f : -1.0f) * std::cos(angle.asStd());
 			push.y += (components[componentIdx]->getPosition().y < components[c.otherComponent]->getPosition().y ?
-				1.0f : -1.0f) * std::sinf(angle.asStd());
+				1.0f : -1.0f) * std::sin(angle.asStd());
 			break;
 		}
 	}
