@@ -83,6 +83,7 @@ std::string LogBase::getSourceIdentifier(const std::source_location& location, c
 
 void LogBase::logFormatted(const std::string& msg, const std::source_location& location, const LogType type) const
 {
+	std::cerr << "HERE 4\n";
 	CHG_MUTEX_LOCK();
 
 	auto& out = settings().outputStream;
@@ -102,6 +103,7 @@ void LogBase::logFormatted(const std::string& msg, const std::source_location& l
 
 	if (foldCount == static_cast<size_t>(-1))
 	{
+		std::cerr << "HERE 5\n";
 		addContextIndent();
 
 		static const std::unordered_map<LogType, ColoredString> tags

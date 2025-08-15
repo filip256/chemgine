@@ -48,11 +48,14 @@ TestManager::TestManager(std::regex&& filter) noexcept :
 
 void TestManager::runUnit()
 {
-	if (unitTests.getTestCount() == 0)
+	std::cerr << "HERE 3\n";
+	const auto testCount = unitTests.getTestCount();
+	if (testCount == 0)
 	{
-		Log(this).info("No unit tests match the given filter.");
+		Log(this).warn("No unit tests match the given filter.");
 		return;
 	}
+	Log(this).info("{} unit tests match the given filter.", testCount);
 
 	if (not unitTests.run())
 		Log(this).error("Some unit tests failed.");

@@ -1,6 +1,5 @@
 #include "utils/Terminal.hpp"
 
-#include "io/Log.hpp"
 #include "utils/Casts.hpp"
 #include "utils/Concurrency.hpp"
 #include "utils/Build.hpp"
@@ -17,7 +16,7 @@ namespace
 	{
 		const auto handle = GetStdHandle(STD_OUTPUT_HANDLE);
 		if(handle == INVALID_HANDLE_VALUE)
-			Log().fatal("Failed to to retrieve STD_OUTPUT_HANDLE (error code: {0}).", GetLastError());
+			chg::fatal("Failed to to retrieve STD_OUTPUT_HANDLE (error code: {0}).", GetLastError());
 		return handle;
 	}
 
@@ -42,7 +41,7 @@ OS::ColorType OS::getTextColor()
 
 	CONSOLE_SCREEN_BUFFER_INFO info;
 	if (not GetConsoleScreenBufferInfo(handle, &info))
-		Log().fatal("Failed to to get console screen buffer info (error code: {0}).", GetLastError());
+		chg::fatal("Failed to to get console screen buffer info (error code: {0}).", GetLastError());
 
 	return checked_cast<ColorType>(info.wAttributes);
 #else
@@ -53,6 +52,7 @@ OS::ColorType OS::getTextColor()
 void OS::setTextColor(const ColorType color)
 {
 #ifdef CHG_BUILD_WINDOWS
+	std::cerr << "HERE 7\n";
 	// Changing the text color is expected to always be followed by a text output procedure.
 	// A locking mechanism is needed at the call site to ensure the text has the desired color, not here.
 	CHG_NEVER_CONCURRENT();
@@ -63,12 +63,14 @@ void OS::setTextColor(const ColorType color)
 	static const auto handle = getStdOutputHandle();
 	static auto currentColor = getTextColor();
 
+	std::cerr << "HERE 8\n";
 	if (color == currentColor)
 		return;
 
 	currentColor = color;
 	if(not SetConsoleTextAttribute(handle, color))
-		Log().fatal("Failed to to set console text attribute (error code: {0}).", GetLastError());
+		chg::fatal("Failed to to set console text attribute (error code: {0}).", GetLastError());
+	std::cerr << "HERE 9\n";
 #endif
 }
 

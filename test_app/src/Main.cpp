@@ -23,6 +23,8 @@ int main(int argc, char* argv[])
             return 0;
         }
 
+        std::cerr << "HERE 0\n";
+
         const auto logLevelStr = args.count("log") ? args["log"].as<std::string>() : "INFO";
         const auto logLevel = LogBase::parseLogType(logLevelStr);
         if(not logLevel)
@@ -40,8 +42,10 @@ int main(int argc, char* argv[])
         const auto filterStr = args.count("filter") ? args["filter"].as<std::string>() : ".*";
         std::regex filter(filterStr, std::regex::ECMAScript | std::regex::optimize);
 
+        std::cerr << "HERE 1\n";
         TestManager tests(std::move(filter));
 
+        std::cerr << "HERE 2\n";
         const auto runUnit = args["unit"].as<bool>();
         const auto runPerf = args["perf"].as<bool>();
         if (runUnit)

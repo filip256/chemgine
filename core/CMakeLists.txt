@@ -25,7 +25,7 @@ target_include_directories(core PUBLIC ${BOOST_INCLUDE_DIR})
 target_include_directories(core PUBLIC ${CXXOPTS_INCLUDE_DIR})
 
 # SFML
-message(STATUS "Fetching SFML ${SFML_VERSION} from ${SFML_REPOSITORY}")
+message(STATUS "Fetching SFML v${SFML_VERSION} from ${SFML_REPOSITORY}")
 FetchContent_Declare(SFML
     GIT_REPOSITORY ${SFML_REPOSITORY}
     GIT_TAG ${SFML_VERSION}
