@@ -10,26 +10,31 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
 
 target_include_directories(core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+# Compiler Options
+if(MSVC)
+    target_compile_options(core PUBLIC
+        /W3  # Warning Level  # TODO: Upgrade to W4
+        /WX  # Treat warnings as errors
+    )
+endif()
+
 # boost
 message(STATUS "BOOST_INCLUDE_DIR = ${BOOST_INCLUDE_DIR}")
 target_include_directories(core PUBLIC ${BOOST_INCLUDE_DIR})
 
-# SFML
-message(STATUS "SFML_INCLUDE_DIR = ${SFML_INCLUDE_DIR}")
-message(STATUS "SFML_LIB_DIR = ${SFML_LIB_DIR}")
-
-target_compile_definitions(core PUBLIC SFML_STATIC)
-target_include_directories(core PUBLIC ${SFML_INCLUDE_DIR})
-target_link_directories(core PUBLIC ${SFML_LIB_DIR})
-target_link_libraries(core PUBLIC
-    debug sfml-graphics-s-d optimized sfml-graphics-s
-    debug sfml-window-s-d   optimized sfml-window-s
-    debug sfml-system-s-d   optimized sfml-system-s
-    freetype
-    opengl32
-    winmm
-)
-
 # cxxopts
 message(STATUS "CXXOPTS_INCLUDE_DIR = ${CXXOPTS_INCLUDE_DIR}")
 target_include_directories(core PUBLIC ${CXXOPTS_INCLUDE_DIR})
+
+# SFML
+message(STATUS "Fetching SFML ${SFML_VERSION} from ${SFML_REPOSITORY}")
+FetchContent_Declare(SFML
+    GIT_REPOSITORY ${SFML_REPOSITORY}
+    GIT_TAG ${SFML_VERSION}
+    GIT_SHALLOW ON
+    EXCLUDE_FROM_ALL
+    SYSTEM
+)
+FetchContent_MakeAvailable(SFML)
+
+target_link_libraries(core PUBLIC SFML::Graphics)

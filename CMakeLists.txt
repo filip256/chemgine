@@ -1,5 +1,6 @@
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(utils)
+include(FetchContent)
 
 cmake_minimum_required(VERSION 3.20)
 project(Chemgine CXX)
@@ -17,31 +18,18 @@ set(THIRDPARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty)
 set(BOOST_ROOT ${THIRDPARTY_DIR}/boost)
 set(BOOST_INCLUDE_DIR ${BOOST_ROOT}/include CACHE PATH "boost include path")
 
-# SFML
-set(SFML_ROOT ${THIRDPARTY_DIR}/SFML)
-
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(SFML_INCLUDE_DIR ${SFML_ROOT}/x64/include)
-    set(SFML_LIB_DIR ${SFML_ROOT}/x64/lib)
-elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
-    set(SFML_INCLUDE_DIR ${SFML_ROOT}/x86/include)
-    set(SFML_LIB_DIR ${SFML_ROOT}/x86/lib)
-else()
-    message(FATAL_ERROR "Unknown architecture")
-endif()
-
-set(SFML_INCLUDE_DIR ${SFML_INCLUDE_DIR} CACHE PATH "SFML include path")
-set(SFML_LIB_DIR ${SFML_LIB_DIR} CACHE PATH "SFML lib path")
-
 # cxxopts
 set(CXXOPTS_ROOT ${THIRDPARTY_DIR}/cxxopts)
 set(CXXOPTS_INCLUDE_DIR ${CXXOPTS_ROOT}/include CACHE PATH "cxxopts include path")
 
+# SFML
+set(SFML_REPOSITORY "https://github.com/SFML/SFML.git" CACHE STRING "SFML repository URL")
+set(SFML_VERSION "3.0.1" CACHE STRING "SFML version/tag to fetch")
+set(BUILD_SHARED_LIBS FALSE CACHE BOOL "Build SFML as static library" FORCE)
+
 # Compiler Options
 if(MSVC)
     add_compile_options(
-        /WX          # Treat warnings as errors
-        /W3          # Warning Level TODO: Move to W4
         /MP          # Multi-processor Compilation
         /permissive- # Strict standard conformance
     )

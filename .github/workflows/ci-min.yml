@@ -33,6 +33,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup
+        if: matrix.kind.os == 'ubuntu-latest'
+        run: |
+          chmod +x ./scripts/ubuntu-setup.sh
+          ./scripts/ubuntu-setup.sh
+
       - name: Configure
         run: cmake -B build ${{matrix.kind.flags}}
 
@@ -43,6 +49,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{matrix.kind.name}}
+          compression-level: 9
           path: |
             build/**/*.exe
             build/**/*.dll
@@ -51,7 +58,6 @@ jobs:
             build/**/*.so
             build/**/*.a
             build/**/data
-          compression-level: 9
 
   unit:
     name: Unit / ${{matrix.kind.name}}

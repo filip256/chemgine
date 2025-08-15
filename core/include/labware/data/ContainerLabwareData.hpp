@@ -159,7 +159,8 @@ void ContainerLabwareData<C>::dumpTextures(const std::string& path) const
 	DrawableLabwareData::dumpTextures(path);
 	for (uint8_t i = 0; i < C; ++i)
 	{
-		fillTextures[i].getTexture().copyToImage().saveToFile(
-			utils::combinePaths(path, "fill" + std::to_string(i) + '_' + textureFile));
+		const auto txPath = utils::combinePaths(path, "fill" + std::to_string(i) + '_' + textureFile);
+		if (not fillTextures[i].getTexture().copyToImage().saveToFile(txPath))
+			Log(this).fatal("Failed to dump texture to file: {}.", txPath);
 	}
 }

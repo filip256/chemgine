@@ -1,5 +1,7 @@
 #include "graphics/ShapeFillTexture.hpp"
+
 #include "graphics/Collision.hpp"
+#include "io/Log.hpp"
 
 ShapeFillTexture::ShapeFillTexture(
 	const Collision::SizedTextureMask& textureMask,
@@ -11,8 +13,7 @@ ShapeFillTexture::ShapeFillTexture(
 	const auto& mask = textureMask.first;
 	const auto maskSize = textureMask.second;
 
-	sf::Image img;
-	img.create(maskSize.x, maskSize.y, sf::Color::Transparent);
+	sf::Image img(maskSize, sf::Color::Transparent);
 
 	// build pixel-wise volume for every texture line
 	uint32_t totalSetPixels = 0;
@@ -28,7 +29,7 @@ ShapeFillTexture::ShapeFillTexture(
 
 		for (uint32_t j = l; j < r; ++j)
 		{
-			img.setPixel(j, i, sf::Color::White);
+			img.setPixel(sf::Vector2u(j, i), sf::Color::White);
 			++pixels[maskSize.y - i].first;
 			++totalSetPixels;
 		}
@@ -39,20 +40,22 @@ ShapeFillTexture::ShapeFillTexture(
 		uint32_t t = 0;
 		while (++t < maskSize.y && mask[t * maskSize.x + j] <= alphaThreshold)
 		{
-			if (img.getPixel(j, t) == sf::Color::Transparent)
+			const sf::Vector2u point(j, t);
+			if (img.getPixel(point) == sf::Color::Transparent)
 				continue;
 
-			img.setPixel(j, t, sf::Color::Transparent);
+			img.setPixel(point, sf::Color::Transparent);
 			--pixels[maskSize.y - t].first;
 		}
 
 		uint32_t b = maskSize.y;
 		while (--b > t && mask[b * maskSize.x + j] <= alphaThreshold)
 		{
-			if (img.getPixel(j, b) == sf::Color::Transparent)
+			const sf::Vector2u point(j, b);
+			if (img.getPixel(point) == sf::Color::Transparent)
 				continue;
 
-			img.setPixel(j, b, sf::Color::Transparent);
+			img.setPixel(point, sf::Color::Transparent);
 			--pixels[maskSize.y - b].first;
 		}
 	}
@@ -70,7 +73,8 @@ ShapeFillTexture::ShapeFillTexture(
 		volume = Spline<float>(std::move(pixels), 0.002f);
 	}
 
-	texture->loadFromImage(img);
+	if (not texture->loadFromImage(img))
+		Log(this).fatal("Failed to create fill texture.");
 }
 
 ShapeFillTexture::ShapeFillTexture(

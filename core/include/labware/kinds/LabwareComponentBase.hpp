@@ -33,13 +33,13 @@ public:
 	virtual const BaseLabwareData& getData() const = 0;
 	virtual const sf::Sprite& getSprite() const = 0;
 	virtual sf::Sprite& getSprite() = 0;
-	virtual const sf::Vector2f& getPosition() const = 0;
-	virtual const sf::Vector2f getAdjustedPosition() const = 0;
+	virtual sf::Vector2f getPosition() const = 0;
+	virtual sf::Vector2f getAdjustedPosition() const = 0;
 	virtual void setPosition(const sf::Vector2f& position) = 0;
 	virtual void move(const sf::Vector2f& offset) = 0;
 	virtual Amount<Unit::DEGREE> getRotation() const = 0;
 	virtual void setRotation(const Amount<Unit::DEGREE> angle) = 0;
-	virtual const sf::Vector2f& getOrigin() const = 0;
+	virtual sf::Vector2f getOrigin() const = 0;
 	virtual sf::FloatRect getBounds() const = 0;
 
 	virtual const DrawablePort& getPort(const uint8_t idx) const = 0;

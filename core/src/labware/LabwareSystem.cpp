@@ -149,8 +149,8 @@ void LabwareSystem::add(PortIdentifier& srcPort, PortIdentifier& destPort)
 void LabwareSystem::clearBoundry()
 {
 	boundingBox = sf::FloatRect(
-		std::numeric_limits<float_s>::max(), std::numeric_limits<float_s>::max(),
-		-std::numeric_limits<float_s>::max(), -std::numeric_limits<float_s>::max());
+		sf::Vector2f(std::numeric_limits<float_s>::max(), std::numeric_limits<float_s>::max()),
+		sf::Vector2f(-std::numeric_limits<float_s>::max(), -std::numeric_limits<float_s>::max()));
 }
 
 void LabwareSystem::recomputeBoundry()
@@ -163,14 +163,14 @@ void LabwareSystem::recomputeBoundry()
 void LabwareSystem::addToBoundry(const sf::FloatRect& box)
 {
 	sf::Vector2f end(
-		std::max(boundingBox.left + boundingBox.width, box.left + box.width),
-		std::max(boundingBox.top + boundingBox.height, box.top + box.height)
+		std::max(boundingBox.position.x + boundingBox.size.x, box.position.x + box.size.x),
+		std::max(boundingBox.position.y + boundingBox.size.y, box.position.y + box.size.y)
 	);
 
-	boundingBox.left = std::min(boundingBox.left, box.left);
-	boundingBox.top = std::min(boundingBox.top, box.top);
-	boundingBox.width = end.x - boundingBox.left;
-	boundingBox.height = end.y - boundingBox.top;
+	boundingBox.position.x = std::min(boundingBox.position.x, box.position.x);
+	boundingBox.position.y = std::min(boundingBox.position.y, box.position.y);
+	boundingBox.size.x = end.x - boundingBox.position.x;
+	boundingBox.size.y = end.y - boundingBox.position.y;
 }
 
 void LabwareSystem::removeFromBoundry(const sf::FloatRect& box)
@@ -185,9 +185,9 @@ void LabwareSystem::removeFromBoundry(const sf::FloatRect& box)
 
 bool LabwareSystem::isOnBoundry(const sf::FloatRect& box) const
 {
-	return box.left <= boundingBox.left || box.top <= boundingBox.top ||
-		box.left + box.width >= boundingBox.left + boundingBox.width ||
-		box.top + box.height >= boundingBox.top + boundingBox.height;
+	return box.position.x <= boundingBox.position.x || box.position.y <= boundingBox.position.y ||
+		box.position.x + box.size.x >= boundingBox.position.x + boundingBox.size.x ||
+		box.position.y + box.size.y >= boundingBox.position.y + boundingBox.size.y;
 }
 
 void LabwareSystem::tick(const Amount<Unit::SECOND> timespan)
@@ -211,8 +211,8 @@ void LabwareSystem::draw(sf::RenderTarget& target, sf::RenderStates states) cons
 
 void LabwareSystem::move(const sf::Vector2f& offset)
 {
-	boundingBox.left += offset.x;
-	boundingBox.top += offset.y;
+	boundingBox.position.x += offset.x;
+	boundingBox.position.y += offset.y;
 
 	for (l_size i = 0; i < components.size(); ++i)
 		components[i]->move(offset);
@@ -262,7 +262,7 @@ l_size LabwareSystem::contains(const sf::Vector2f& point) const
 
 bool LabwareSystem::intersects(const LabwareSystem& other) const
 {
-	if (this->boundingBox.intersects(other.boundingBox) == false)
+	if (not this->boundingBox.findIntersection(other.boundingBox))
 		return false;
 
 	for (l_size i = 0; i < this->components.size(); ++i)
@@ -289,7 +289,7 @@ std::pair<PortIdentifier, float_s> LabwareSystem::findClosestPort(const sf::Vect
 
 	if (utils::squaredDistance(
 		point.x, point.y,
-		boundingBox.left, boundingBox.top, boundingBox.left + boundingBox.width, boundingBox.top + boundingBox.height) > maxSqDistance)
+		boundingBox.position.x, boundingBox.position.y, boundingBox.position.x + boundingBox.size.x, boundingBox.position.y + boundingBox.size.y) > maxSqDistance)
 		return result;
 
 	result.second = maxSqDistance;
