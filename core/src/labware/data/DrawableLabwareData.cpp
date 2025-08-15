@@ -21,5 +21,7 @@ DrawableLabwareData::DrawableLabwareData(
 
 void DrawableLabwareData::dumpTextures(const std::string& path) const
 {
-	texture.copyToImage().saveToFile(utils::combinePaths(path, textureFile));
+	const auto txPath = utils::combinePaths(path, textureFile);
+	if (not texture.copyToImage().saveToFile(txPath))
+		Log(this).fatal("Failed to dump texture to file: {}.", txPath);
 }

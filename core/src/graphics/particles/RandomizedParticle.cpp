@@ -59,7 +59,7 @@ void RandomizedParticle::tick(Amount<Unit::SECOND> timespan)
 	
 	const auto& col = shape.getFillColor();
 	const auto fadeMultiplier = ((lifespan - elapsed) / lifespan).asStd();
-	shape.setFillColor(sf::Color(col.r, col.g, col.b, static_cast<sf::Uint8>(system.color.a * fadeMultiplier)));
+	shape.setFillColor(sf::Color(col.r, col.g, col.b, static_cast<uint8_t>(system.color.a * fadeMultiplier)));
 
 	const auto distance = speed.to<Unit::NONE>(timespan).asStd();
 	const Amount<Unit::RADIAN> radians = direction;
@@ -70,7 +70,7 @@ void RandomizedParticle::tick(Amount<Unit::SECOND> timespan)
 		directionIncrement -= 360.0_o;
 	direction += directionIncrement * system.directionChangeRate;
 
-	shape.rotate(rotationIncrement);
+	shape.rotate(sf::degrees(rotationIncrement));
 }
 
 void RandomizedParticle::draw(sf::RenderTarget& target, sf::RenderStates states) const

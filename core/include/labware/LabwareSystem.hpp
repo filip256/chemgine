@@ -49,8 +49,8 @@ private:
 	std::vector<std::vector<LabwareConnection>> connections;
 
 	sf::FloatRect boundingBox = sf::FloatRect(
-		std::numeric_limits<float_s>::max(), std::numeric_limits<float_s>::max(),
-		-std::numeric_limits<float_s>::max(), -std::numeric_limits<float_s>::max());
+		sf::Vector2f(std::numeric_limits<float_s>::max(), std::numeric_limits<float_s>::max()),
+		sf::Vector2f(-std::numeric_limits<float_s>::max(), -std::numeric_limits<float_s>::max()));
 
 	std::unique_ptr<LabwareComponentBase> releaseComponent(const l_size componentIdx);
 	LabwareSystem releaseSection(

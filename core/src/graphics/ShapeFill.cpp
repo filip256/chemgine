@@ -10,7 +10,7 @@ ShapeFill::ShapeFill(
 	sprite(texture.getTexture())
 {
 	sprite.setScale(sf::Vector2f(scale, scale));
-	sprite.setOrigin(sprite.getGlobalBounds().getSize() / 2.0f);
+	sprite.setOrigin(sprite.getGlobalBounds().size / 2.0f);
 }
 
 void ShapeFill::setPosition(const sf::Vector2f& position)
@@ -32,7 +32,7 @@ void ShapeFill::setScale(const sf::Vector2f& scale)
 
 void ShapeFill::setRotation(const Amount<Unit::DEGREE> angle)
 {
-	sprite.setRotation(angle.asStd());
+	sprite.setRotation(sf::degrees(angle.asStd()));
 }
 
 void ShapeFill::setColor(const sf::Color& color) const
@@ -51,15 +51,15 @@ void ShapeFill::setDrawSection(float_s start, float_s end, const sf::Color& colo
 		end = texture.getRelativeHeightAt(end);
 	}
 
-	const auto size = sprite.getTexture()->getSize();
+	const auto size = sprite.getTexture().getSize();
 	const auto topCut = size.y * (1.0f - end);
 	const auto heightCut = std::ceil(size.y * (end - start));
-	sprite.setTextureRect(sf::IntRect(0, static_cast<int32_t>(topCut), size.x, static_cast<int32_t>(heightCut)));
+	sprite.setTextureRect(sf::IntRect(sf::Vector2i(0, static_cast<int32_t>(topCut)), sf::Vector2i(size.x, static_cast<int32_t>(heightCut))));
 
-	const Amount<Unit::RADIAN> rotation = Amount<Unit::DEGREE>(sprite.getRotation());
+	const auto rotation = sprite.getRotation().asRadians();
 	sprite.setPosition(sf::Vector2f(
-		originPosition.x - std::sin(rotation.asStd()) * topCut * sprite.getScale().y,
-		originPosition.y + std::cos(rotation.asStd()) * topCut * sprite.getScale().y
+		originPosition.x - std::sin(rotation) * topCut * sprite.getScale().y,
+		originPosition.y + std::cos(rotation) * topCut * sprite.getScale().y
 	));
 
 	sprite.setColor(color);
