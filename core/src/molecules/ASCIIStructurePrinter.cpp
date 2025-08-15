@@ -254,11 +254,11 @@ float getPrintAwayScalingFactor(const Point<float> printAwayPoint, const Positio
     // Integral distance is used when printing away from a point. This gives nicer prints than float distance,
     // but, if the point (O) is too close to the current atom (C), the distance difference between two directions
     // may be lost during rounding. This effect is countered by applying a scaling factor to the direction vector.
-    //   P-P
-    //  /   \ 
-    // P  O~~C-N
-    //  \   /
-    //   P-P
+    //   P-P       .
+    //  /   \      .
+    // P  O~~C-N   .
+    //  \   /      .
+    //   P-P       .
     static constexpr utils::LinearQuantization quant(0.5f, 4.0f, 1.6f, 1.3f);
 
     const auto distance = printAwayPoint.squaredDistance(otherPosition);
@@ -287,11 +287,11 @@ const std::vector<Direction>& getDirectionsByEnteringDirection(const Direction e
         return it->second;
 
     // Obtuse angles are preferred:
-    //     C
-    //    /
-    // P-C
-    //    \ 
-    //     C
+    //     C   .
+    //    /    .
+    // P-C     .
+    //    \    .
+    //     C   .
     auto directionsCopy = Direction::AllDirectionsVector;
     std::ranges::sort(directionsCopy, [enteringDirection](const auto lhs, const auto rhs)
         {
@@ -399,9 +399,9 @@ StructurePrinter::StructurePrinter(
 Position StructurePrinter::getNextEdgePosition(const PositionLine position, const Direction direction)
 {
     // Computes the next edge position, taking into account the symbol length:
-    // \|  /
-    // -Uut-
-    // /|  \ .
+    // \|  /   .
+    // -Uut-   .
+    // /|  \   .
     const auto vector = direction.get();
     auto nextEdgePosition = static_cast<Position>(position.origin + vector);
     if (vector.x > 0)
@@ -414,11 +414,11 @@ std::pair<Position, PositionLine> StructurePrinter::getNextPosition(
     const PositionLine position, const Direction direction, const Symbol::SizeT nextSymbolSize)
 {
     // Computes the next edge and node position, taking into account the symbol lengths:
-    // Si Si  Si
-    //   \|  /
-    // Si-Uut-Si
-    //   /|  \ 
-    // Si Si  Si
+    // Si Si  Si   .
+    //   \|  /     .
+    // Si-Uut-Si   .
+    //   /|  \     .
+    // Si Si  Si   .
     const auto vector = direction.get();
     auto nextEdgePosition = static_cast<Position>(position.origin + vector);
     auto nextNodePosition = static_cast<Position>(nextEdgePosition + vector);
@@ -438,9 +438,9 @@ std::vector<std::pair<ASCII::Direction, Position>> StructurePrinter::getPossible
     const PositionLine origin)
 {
     // Populate the next possible directions:
-    // \|/|  ||/
-    // -Xxx..xx-
-    // /|\|  ||\ .
+    // \|/|  ||/   .
+    // -Xxx..xx-   .
+    // /|\|  ||\   .
     std::vector<std::pair<ASCII::Direction, Position>> directions;
     directions.reserve(8 + 2 * (origin.length > 1 ? origin.length - 1 : 0));
     
@@ -541,9 +541,9 @@ std::optional<std::pair<Position, Direction>> StructurePrinter::inferEdgePositio
     const auto [minDiff, maxDiff] = absDiff.x <= absDiff.y ? absDiff : absDiff.transpose();
 
     // Chebyshev distance must be 2, but also prevent against situations like:
-    // C
-    //  \ 
-    //  C
+    // C    .
+    //  \   .
+    //  C   .
     if (maxDiff != 2 || minDiff == 1)
         return std::nullopt;
 
@@ -571,9 +571,9 @@ bool StructurePrinter::isSymbol(const Point<int32_t> position) const
 bool StructurePrinter::isAmbiguousBondPlacement(const Position position, const Direction direction, const BondType bondType) const
 {   
     // Bond types with incomplete 8-direction ASCII representation can produce ambiguity in some cases:
-    // A B
-    //  =
-    // C D
+    // A B   .
+    //  =    .
+    // C D   .
     // If the bond goes from A to D, ambiguity occurs when both B and C are symbols.
     return not Bond::hasCompleteASCIIRepresentation(bondType) && direction.isDiagonal() &&
         (isSymbol(position + direction.turn<Rotation::CLOCKWISE>(Angle::PERPENDICULAR).get()) &&
@@ -595,9 +595,9 @@ bool StructurePrinter::isAmbiguousBondPlacement(const Position position, const D
 bool StructurePrinter::isClutteredAtomPlacement(const PositionLine position) const
 {
     // Avoid over-cluttered atoms:
-    //  **
-    // *Si*
-    //  **
+    //  **    .
+    // *Si*   .
+    //  **    .
     if (isSymbol(position.origin + Direction::Left.get()) || isSymbol(position.endPoint() + Direction::Right.get()))
         return true;
 
@@ -614,11 +614,11 @@ bool StructurePrinter::isClutteredAtomPlacement(const PositionLine position) con
 bool StructurePrinter::isAmbiguousAtomPlacement(const PositionLine position) const
 {
     // Same as ambiguous bond placements, N cannot be placed in this configuration:
-    // C C C
-    //  = =
-    // C N C
-    //  = =
-    // C C C
+    // C C C   .
+    //  = =    .
+    // C N C   .
+    //  = =    .
+    // C C C   .
     constexpr static std::array<Direction, 4> diagonals { Direction::UpLeft, Direction::UpRight, Direction::DownRight, Direction::DownLeft };
     for (const auto dir : diagonals)
     {
@@ -715,19 +715,19 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
     if (totalAtomsToPrint == 2 && not noConstraints)
     {
         // Treat the case when only one atom (N) is missing from the cycle layout. This can only occur in polycycles:
-        //   C-C
-        //  /#/ \ 
-        // C#C   N
-        //  \#\ /
-        //   C-C
+        //   C-C     .
+        //  /#/ \    .
+        // C#C   N   .
+        //  \#\ /    .
+        //   C-C     .
         const auto& lastToFirstBond = *secondAtom.getBondTo(lastAtom);
 
         // There are at most 4 directions which can reach E from P through another atom:
-        //   E     E     E-2   1-E-3
-        //  /|\    |\    | |    X|X
-        // 1 2 3   1 2   1-P   2-P-4
-        //  \|/     \|
-        //   P       P
+        //   E     E     E-2   1-E-3   .
+        //  /|\    |\    | |    X|X    .
+        // 1 2 3   1 2   1-P   2-P-4   .
+        //  \|/     \|                 .
+        //   P       P                 .
         uint8_t foundDirs = 0;
         for (uint8_t dirIdx = 0; dirIdx < directions.size(); ++dirIdx)
         {
@@ -742,9 +742,9 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
                 continue; // Position already taken.
 
             // Even if a layout can't reach the last position, it might reach the end of the symbol:
-            // C-Si
-            // | | \ 
-            // C-Si-N
+            // C-Si     .
+            // | | \    .
+            // C-Si-N   .
             if (lastPosition.origin.chebyshevDistance(newNodePos.origin) > 2 &&
                 (lastSymbolSize == 1 || newNodePos.origin.x <= lastPosition.origin.x ||
                  newNodePos.origin.x - lastPosition.origin.x - lastSymbolSize > 1))
@@ -937,13 +937,13 @@ std::vector<PositionLine> StructurePrinter::generateOneShotCycleLayout(
     switch (cycle.size() % 4)
     {
     case 0:
-        //   C<S
-        //  /   \ 
-        // C     C
-        // |     |
-        // C     C
-        //  \   /
-        //   C-C
+        //   C<S     .
+        //  /   \    .
+        // C     C   .
+        // |     |   .
+        // C     C   .
+        //  \   /    .
+        //   C-C     .
         commands.emplace_back(sideLength - 1, Angle::OBTUSE);
         commands.emplace_back(1, Angle::OBTUSE);
         commands.emplace_back(sideLength - 1, Angle::OBTUSE);
@@ -953,13 +953,13 @@ std::vector<PositionLine> StructurePrinter::generateOneShotCycleLayout(
         commands.emplace_back(sideLength - 1, Angle::NONE);
         break;
     case 1:
-        //   C<S
-        //  /   \ 
-        // C     C
-        // |      \ 
-        // C       C
-        //  \     /
-        //   C-C-C
+        //   C<S       .
+        //  /   \      .
+        // C     C     .
+        // |      \    .
+        // C       C   .
+        //  \     /    .
+        //   C-C-C     .
         commands.emplace_back(sideLength - 1, Angle::OBTUSE);
         commands.emplace_back(1, Angle::OBTUSE);
         commands.emplace_back(sideLength - 1, Angle::OBTUSE);
@@ -970,13 +970,13 @@ std::vector<PositionLine> StructurePrinter::generateOneShotCycleLayout(
         commands.emplace_back(1, Angle::NONE);
         break;
     case 2:
-        //   C-C<S
-        //  /     \ 
-        // C       C
-        // |       |
-        // C       C
-        //  \     /
-        //   C-C-C
+        //   C-C<S     .
+        //  /     \    .
+        // C       C   .
+        // |       |   .
+        // C       C   .
+        //  \     /    .
+        //   C-C-C     .
         commands.emplace_back(sideLength, Angle::OBTUSE);
         commands.emplace_back(1, Angle::OBTUSE);
         commands.emplace_back(sideLength - 1, Angle::OBTUSE);
@@ -986,15 +986,15 @@ std::vector<PositionLine> StructurePrinter::generateOneShotCycleLayout(
         commands.emplace_back(sideLength - 1, Angle::NONE);
         break;
     default:
-        //   C<S
-        //  /   \ 
-        // C     C
-        // |      \ 
-        // C       C
-        // |       |
-        // C       C
-        //  \     /
-        //   C-C-C
+        //   C<S       .
+        //  /   \      .
+        // C     C     .
+        // |      \    .
+        // C       C   .
+        // |       |   .
+        // C       C   .
+        //  \     /    .
+        //   C-C-C     .
         commands.emplace_back(sideLength - 1, Angle::OBTUSE);
         commands.emplace_back(1, Angle::OBTUSE);
         commands.emplace_back(sideLength, Angle::OBTUSE);
@@ -1006,15 +1006,15 @@ std::vector<PositionLine> StructurePrinter::generateOneShotCycleLayout(
     }
 
     // If this is the first cycle to be printed (no entering direction), the first direction is Left from the starting atom (S).
-    //       P
-    //      /
-    //   C<S 
-    //  /   \ 
-    // C     C
-    // |     |
-    // C     C
-    //  \   /
-    //   C-S
+    //       P   .
+    //      /    .
+    //   C<S     .
+    //  /   \    .
+    // C     C   .
+    // |     |   .
+    // C     C   .
+    //  \   /    .
+    //   C-S     .
     const auto directions = utils::isNPos(enteringDirection) ?
         std::vector<Direction>{Direction::Left} :
         getDirectionsByEnteringDirection(enteringDirection);
@@ -1093,10 +1093,10 @@ void StructurePrinter::expandCycleLinearly(
     // in the constraint sequence (C). Ideally we would try to print the whole cycle on one side (A)
     // checking that there is always enough space to also print the cycle head (%x). If any nodes
     // remain they can be printed starting from the other side (B).
-    //  B-%1
-    //  |
-    //  C-C-C-A-A-%1
-    // /     \ 
+    //  B-%1           .
+    //  |              .
+    //  C-C-C-A-A-%1   .
+    // /     \         .
     
     auto totalAtomsToPrint = secondCycleIdx < lastCycleIdx ?
         lastCycleIdx - secondCycleIdx + 1 :               // current->end
@@ -1143,13 +1143,13 @@ void StructurePrinter::expandCycleLinearly(
                 for (const auto dir : directionsCopy)
                 {
                     // Check that after inserting the current node (C) enough space remains for the closure symbol:
-                    //   p
-                    //  / \ 
-                    // P-C P
-                    // | | |
-                    // P %xP
-                    //  \ /
-                    //   P
+                    //   p     .
+                    //  / \    .
+                    // P-C P   .
+                    // | | |   .
+                    // P %xP   .
+                    //  \ /    .
+                    //   P     .
                     const auto [edgePos, nodePos] = getNextPosition(prevPosition, dir, static_cast<Symbol::SizeT>(currentSymbol->size()));
                     if (not buffer.isWhiteSpace(edgePos) || not buffer.isWhiteSpace(nodePos) ||
                         isAmbiguousAtomPlacement(nodePos))
@@ -1282,11 +1282,11 @@ void StructurePrinter::printUnmaterializedEdges()
 {
     // There are cases where all the atoms of one cycle are already printed by adjacent cycles,
     // but the cycle-enclosing bond (N-C) remains unprinted:
-    //   P   P
-    //  / \ / \ 
-    // P 1 P 2 P
-    //  \ /3\ /
-    //   N~~~C
+    //   P   P     .
+    //  / \ / \    .
+    // P 1 P 2 P   .
+    //  \ /3\ /    .
+    //   N~~~C     .
     for (const auto& [indexes, edge] : edges)
     {
         if (edge.visited)
@@ -1415,20 +1415,20 @@ void StructurePrinter::printNeighbors(
 
         // We might not maintain the previous direction due to an unprintable bond. In this case the previous direction
         // is propagated instead of the current direction, non-parallel direction. 
-        //   \ 
-        //    P=C
-        //       \
-        //        N
-        //         \
+        //   \         .
+        //    P=C      .
+        //       \     .
+        //        N    .
+        //         \   .
         // The same can occur in the cyclic case:
-        //          /
-        //         N
-        //        /
-        //   P-P=C
-        //  /  |
-        // P O P
-        // |  /
-        // P-P
+        //          /   .
+        //         N    .
+        //        /     .
+        //   P-P=C      .
+        //  /  |        .
+        // P O P        .
+        // |  /         .
+        // P-P          .
         ASCII::Direction propagatedDir = utils::npos<ASCII::Direction>;
 
         auto directionsCopy = getLinearPreferredDirections();
@@ -1437,11 +1437,11 @@ void StructurePrinter::printNeighbors(
             // Non-cyclic prev atom:
             // Maintaining the same direction as the previous one increases the spread of the nodes
             // which leads to less space conflicts.
-            //    4 3 2
-            //     \|/
-            // ..-P-C-1
-            //     /|\ 
-            //    4 3 2
+            //    4 3 2   .
+            //     \|/    .
+            // ..-P-C-1   .
+            //     /|\    .
+            //    4 3 2   .
             // (1-best, 4-worst)
             std::ranges::sort(directionsCopy, [prevDirection, &bond](const auto lhs, const auto rhs)
                 {
@@ -1457,11 +1457,11 @@ void StructurePrinter::printNeighbors(
             // Reverse-sorting directions by Euclidian distance to cycle center (O) ensures inner pointing branching occurs only
             // as a last resort. Using the integral distance ensures straight edges (1) are preferred over diagonals (2), while
             // also maintaining "good" diagonals (3).
-            // 3   1 2
-            //  \  |/
-            //   C-C-C
-            //  /     \ 
-            // C   O   C
+            // 3   1 2     .
+            //  \  |/      .
+            //   C-C-C     .
+            //  /     \    .
+            // C   O   C   .
             const auto printAwayPoint = node.getPrintAwayPoint();
             const auto scalingFactor = getPrintAwayScalingFactor(printAwayPoint, node.position);
             std::ranges::sort(directionsCopy, [&](const auto lhs, const auto rhs)
@@ -1752,13 +1752,13 @@ void StructurePrinter::printCycle(
     }
 
     // Cycles with the highest number of constraints should be printed first.
-    //     C-C
-    //    /   \
-    //   C  2  X
-    //  / \   / \ 
-    // C 1 C-C 3 C
-    //  \ /   \ /
-    //   C     C
+    //     C-C       .
+    //    /   \      .
+    //   C  2  X     .
+    //  / \   / \    .
+    // C 1 C-C 3 C   .
+    //  \ /   \ /    .
+    //   C     C     .
     // If cycle 1 is printed first followed by cycle 3, atom X might be printed downwards due to the extra degree of freedom,
     // resulting in an impossible layout for cycle 2.
     std::ranges::sort(printedAtoms, [&](const auto& lhs, const auto& rhs)
@@ -1775,13 +1775,13 @@ void StructurePrinter::printCycle(
     {
         // For nodes which are part of 2 or more cycles, the preferred directions should point away from both centers in order
         // to avoid printing inside the second cycle:
-        //     C 1 C
-        //    / \|/ \ 
-        //   C 2-N-2 C
-        //   |  /|\  |
-        //   C 2 C 2 C
-        //    \ / \ /
-        //     C   C
+        //     C 1 C     .
+        //    / \|/ \    .
+        //   C 2-N-2 C   .
+        //   |  /|\  |   .
+        //   C 2 C 2 C   .
+        //    \ / \ /    .
+        //     C   C     .
         // (1-best, 2-worst)
         printNeighbors(nodes[atom.getAtom().index], utils::npos<Direction>, &cycle);
     }

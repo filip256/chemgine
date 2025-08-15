@@ -566,11 +566,11 @@ bool MolecularStructure::loadFromASCII(const std::string& ascii)
         stack.pop();
 
         // In some rare cases a cycle closure might only be apparent from one direction:
-        //   Si-C
-        //  /    \ 
-        // C      C
-        //  \     /
-        //   Si-Si
+        //   Si-C     .
+        //  /    \    .
+        // C      C   .
+        //  \     /   .
+        //   Si-Si    .
         // When closing a cycle this way, we must check the closure bond doesn't already exist.
         if (const auto atomIt = positionMap.find(state.position); atomIt != positionMap.end())
         {
@@ -652,10 +652,10 @@ bool MolecularStructure::loadFromASCII(const std::string& ascii)
             if (buffer.isWhiteSpace(nodePos))
             {
                 // Multi-character symbols may shift the position by 1:
-                //  \
-                //   C
-                //   /
-                // Si
+                //  \    .
+                //   C   .
+                //   /   .
+                // Si    .
                 const auto retryPos = static_cast<ASCII::Position>(nodePos + ASCII::Direction::Left.get());
 
                 if (buffer.isWhiteSpace(retryPos))

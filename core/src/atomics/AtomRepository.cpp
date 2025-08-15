@@ -101,7 +101,7 @@ const AtomData& AtomRepository::at(const Symbol& symbol) const
 	if (const auto rIt = radicals.find(symbol); rIt != radicals.end())
 		return *rIt->second;
 
-	Log(this).fatal("Tried to access an atom suing an undefined symbol: '{0}'", symbol);
+	Log(this).fatal("Tried to access an atom using an undefined symbol: '{0}'", symbol);
 	CHG_UNREACHABLE();
 }
 
