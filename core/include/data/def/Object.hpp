@@ -50,8 +50,6 @@ namespace def
 		Object(const Object&) = delete;
 		Object(Object&&) = default;
 
-		Object& operator=(Object&&) = default;
-
 		DefinitionType getType() const;
 		const std::string& getIdentifier() const;
 		const std::string& getSpecifier() const;

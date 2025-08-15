@@ -467,7 +467,7 @@ void DoubleEnded<T>::dump(std::ostream& os, const IndexT beginIdx, const IndexT 
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const DoubleEnded<T>& obj)
 {
-	if constexpr (utils::is_streamable_v<DoubleEnded<T>::ElemT>)
+	if constexpr (utils::is_streamable_v<typename DoubleEnded<T>::ElemT>)
 	{
 		for (size_t i = obj.backward.size(); i-- > 0;)
 			os << obj.backward[i];

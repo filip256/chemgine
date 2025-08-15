@@ -9,7 +9,7 @@ public:
 	const MoleculeId id;
 
 protected:
-	const MolecularStructure structure;
+	MolecularStructure structure;
 
 public:
 	GenericMoleculeData(

@@ -23,11 +23,10 @@ jobs:
         - { name: Windows-VS2022-x64-Debug,   os: windows-2022,  config: Debug,   flags: -A x64 }
         - { name: Windows-VS2022-x86-Release, os: windows-2022,  config: Release, flags: -A Win32 }
         - { name: Windows-VS2022-x86-Debug,   os: windows-2022,  config: Debug,   flags: -A Win32 }
-
-        # - { name: Ubuntu-GCC-x64-Release,     os: ubuntu-latest, config: Release, flags: -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ }
-        # - { name: Ubuntu-GCC-x64-Debug,       os: ubuntu-latest, config: Debug,   flags: -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ }
-        # - { name: Ubuntu-Clang-x64-Release,   os: ubuntu-latest, config: Release, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
-        # - { name: Ubuntu-Clang-x64-Debug,     os: ubuntu-latest, config: Debug,   flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
+        - { name: Ubuntu-GCC-x64-Release,     os: ubuntu-latest, config: Release, flags: -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ }
+        - { name: Ubuntu-GCC-x64-Debug,       os: ubuntu-latest, config: Debug,   flags: -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ }
+        - { name: Ubuntu-Clang-x64-Release,   os: ubuntu-latest, config: Release, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
+        - { name: Ubuntu-Clang-x64-Debug,     os: ubuntu-latest, config: Debug,   flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
 
     steps:
       - name: Checkout repository
@@ -36,8 +35,8 @@ jobs:
       - name: Setup
         if: matrix.kind.os == 'ubuntu-latest'
         run: |
-          chmod +x ./scripts/ubuntu-setup.sh
-          ./scripts/ubuntu-setup.sh
+          chmod +x setup_ubuntu.sh
+          ./setup_ubuntu.sh
 
       - name: Configure
         run: cmake -B build ${{matrix.kind.flags}}
