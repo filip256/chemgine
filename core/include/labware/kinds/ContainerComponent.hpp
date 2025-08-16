@@ -4,6 +4,7 @@
 #include "labware/data/ContainerLabwareData.hpp"
 
 #include <type_traits>
+#include <cstdint>
 #include <tuple>
 
 template<typename... Args>
@@ -11,7 +12,7 @@ class ContainerComponent : public BaseContainerComponent
 {
 protected:
 	static constexpr uint8_t ContainerCount = sizeof...(Args);
-	using DataObjectT = typename ContainerLabwareData<ContainerCount>;
+	using DataObjectT = ContainerLabwareData<ContainerCount>;
 
 private:
 	std::array<ShapeFill, ContainerCount> fills;

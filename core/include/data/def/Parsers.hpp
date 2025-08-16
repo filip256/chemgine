@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <string>
+#include <cstdint>
 #include <unordered_map>
 #include <optional>
 #include <stdexcept>
@@ -133,7 +134,7 @@ namespace def
 	class Parser<bool>
 	{
 	public:
-		static std::optional<int64_t> parse(const std::string& str)
+		static std::optional<bool> parse(const std::string& str)
 		{
 			if (str.empty())
 				return std::nullopt;

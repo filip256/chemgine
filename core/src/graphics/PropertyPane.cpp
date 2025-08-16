@@ -6,9 +6,9 @@
 #include "utils/Format.hpp"
 
 MixturePropertyPane::LayerPropertyPane::LayerPropertyPane(const sf::Font& font) noexcept :
-	title("", font, 16),
-	propertyName("", font, 16),
-	propertyValue("", font, 16)
+	title(font, "", 16),
+	propertyName(font, "", 16),
+	propertyValue(font, "", 16)
 {
 	title.setStyle(sf::Text::Bold);
 	propertyValue.setStyle(sf::Text::Bold);
@@ -77,8 +77,8 @@ void MixturePropertyPane::LayerPropertyPane::draw(sf::RenderTarget& target, sf::
 
 
 MixturePropertyPane::ContentPropertyPane::ContentPropertyPane(const sf::Font& font) noexcept :
-	propertyName("", font, 16),
-	propertyValue("", font, 16)
+	propertyName(font, "", 16),
+	propertyValue(font, "", 16)
 {
 	propertyValue.setStyle(sf::Text::Bold);
 }
@@ -119,9 +119,9 @@ void MixturePropertyPane::ContentPropertyPane::draw(sf::RenderTarget& target, sf
 
 
 MixturePropertyPane::MixturePropertyPane(const sf::Font& font) noexcept :
-	title("", font, 20),
-	propertyName("", font, 16),
-	propertyValue("", font, 16),
+	title(font, "", 20),
+	propertyName(font, "", 16),
+	propertyValue(font, "", 16),
 	layerPane(font),
 	contentPane(font)
 {

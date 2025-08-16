@@ -242,7 +242,7 @@ inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::MOLE_
 }
 
 template<Unit UnitT>
-static std::optional<Amount<UnitT>> DynamicAmount::get(const StorageType value, const std::string& symbol)
+std::optional<Amount<UnitT>> DynamicAmount::get(const StorageType value, const std::string& symbol)
 {
 	const auto temp = DynamicAmount::get(value, symbol);
 	return temp ?

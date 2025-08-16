@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <filesystem>
+#include <cstring>
 
 void utils::normalizePath(std::string& path)
 {

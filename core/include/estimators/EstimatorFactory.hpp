@@ -10,6 +10,7 @@
 #include "structs/Regressors2D.hpp"
 #include "structs/Regressors3D.hpp"
 #include "structs/ImmutableSet.hpp"
+#include "utils/Build.hpp"
 
 class EstimatorFactory
 {
@@ -113,7 +114,7 @@ EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
 	}
 
 	Log(this).fatal("Unsupported estimator data type.");
-	__assume(false);
+	CHG_UNREACHABLE();
 }
 
 
@@ -129,13 +130,13 @@ EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 		return EstimatorRef<OutU, InU>(base);
 
 	// constant folding
-	if (const auto constBase = base.cast<ConstantEstimator<OutU, InU>>())
+	if (const auto constBase = base.template cast<ConstantEstimator<OutU, InU>>())
 	{
 		return createConstant<OutU, InU>(constBase->get(0.0f) * scale + vShift);
 	}
 
 	// linear folding
-	if (const auto linearBase = base.cast<RegressionEstimator<LinearRegressor2D, OutU, InU>>())
+	if (const auto linearBase = base.template cast<RegressionEstimator<LinearRegressor2D, OutU, InU>>())
 	{
 		const auto& regressor = linearBase->getRegressor();
 		return repository.add<RegressionEstimator<LinearRegressor2D, OutU, InU>>(
@@ -145,7 +146,7 @@ EstimatorRef<OutU, InU> EstimatorFactory::createAffine(
 	}
 
 	// affine folding
-	if (const auto affineBase = base.cast<AffineEstimator<OutU, InU>>())
+	if (const auto affineBase = base.template cast<AffineEstimator<OutU, InU>>())
 	{
 		return repository.add<AffineEstimator<OutU, InU>>(
 			affineBase->getBase(),

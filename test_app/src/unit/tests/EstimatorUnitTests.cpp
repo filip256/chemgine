@@ -257,6 +257,6 @@ EstimatorUnitTests::EstimatorUnitTests(
 		[](const float_s x1, const float_s x2) -> float_s { return x1 / (x2 != 0.0f ? x2 : std::numeric_limits<float_s>::min()); }, EstimationMode::LINEAR,
 		0.0f, 100, -30.0f, 30.0f, -30.0f, 30.0f, 1e+03);
 	registerTest<DataEstimator3DUnitTest>("fuzz_3D",
-		[](const float_s x1, const float_s x2) -> float_s { return std::powf(std::sin(x1 * x2 / std::tan(x2 * x2)), 2); }, EstimationMode::LINEAR,
+		[](const float_s x1, const float_s x2) -> float_s { return static_cast<float_s>(std::pow(std::sin(x1 * x2 / std::tan(x2 * x2)), 2)); }, EstimationMode::LINEAR,
 		0.0f, 20, -20.0f, 20.0f, -20.0f, 20.0f, 1e+00);
 }

@@ -51,7 +51,7 @@ void LogBase::addContextIndent()
 {
 	OS::setTextColor(OS::Color::DarkGrey);
 	for (uint8_t i = 0; i < contexts; ++i)
-		settings().outputStream << "ù   ";
+		settings().outputStream << "ï¿½   ";
 	OS::setTextColor(OS::Color::White);
 }
 

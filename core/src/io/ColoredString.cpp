@@ -8,14 +8,6 @@
 // ColoredChar
 //
 
-constexpr ColoredChar::ColoredChar(
-	const char chr,
-	const OS::ColorType color
-) noexcept :
-	chr(chr),
-	color(color)
-{}
-
 bool ColoredChar::operator==(const ColoredChar other) const
 {
 	return this->chr == other.chr && this->color == other.color;

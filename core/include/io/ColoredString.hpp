@@ -25,6 +25,14 @@ public:
 	bool operator!=(const ColoredChar other) const;
 };
 
+constexpr ColoredChar::ColoredChar(
+	const char chr,
+	const OS::ColorType color
+) noexcept :
+	chr(chr),
+	color(color)
+{}
+
 //
 // ColoredString
 //

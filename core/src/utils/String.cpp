@@ -4,8 +4,8 @@
 
 bool utils::isWhiteSpace(const char c)
 {
-	// the extra checks assure special chars don't break a std::isspace assert
-	return c >= -1 && c <= 255 ? std::isspace(c) : false;
+	// The extra check assure special chars don't break a std::isspace assert.
+	return c >= -1 ? std::isspace(c) : false;
 }
 
 static std::pair<size_t, size_t> getStripInterval(const std::string& str, bool (*pred)(char))

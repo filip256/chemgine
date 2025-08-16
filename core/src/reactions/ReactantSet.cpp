@@ -17,14 +17,14 @@ ReactantSet::ReactantSet(const Ref<Mixture> container) noexcept :
 {}
 
 ReactantSet::ReactantSet(const std::vector<Molecule>& reactants) noexcept :
-	container(nullRef)
+	container(NullRef)
 {
 	for (size_t i = 0; i < reactants.size(); ++i)
 		add(Reactant(reactants[i], LayerType::NONE, 1.0));
 }
 
 ReactantSet::ReactantSet(const std::vector<Reactant>& reactants) noexcept :
-	container(reactants.empty() ? nullRef : reactants.front().getContainer())
+	container(reactants.empty() ? NullRef : reactants.front().getContainer())
 {
 	for (size_t i = 0; i < reactants.size(); ++i)
 		add(reactants[i].mutate(1.0_mol));

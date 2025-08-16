@@ -12,7 +12,7 @@ DrawableComponent::DrawableComponent(
 {
 	const auto txScale = getData().textureScale;
 	sprite.setScale(sf::Vector2f(txScale, txScale));
-	sprite.setOrigin(sprite.getGlobalBounds().getSize() / 2.0f);
+	sprite.setOrigin(sprite.getGlobalBounds().size / 2.0f);
 
 	adjustedPorts.reserve(data.ports.size());
 	for (uint8_t i = 0; i < data.ports.size(); ++i)
@@ -34,12 +34,12 @@ sf::Sprite& DrawableComponent::getSprite()
 	return sprite;
 }
 
-const sf::Vector2f& DrawableComponent::getPosition() const
+sf::Vector2f DrawableComponent::getPosition() const
 {
 	return sprite.getPosition();
 }
 
-const sf::Vector2f DrawableComponent::getAdjustedPosition() const
+sf::Vector2f DrawableComponent::getAdjustedPosition() const
 {
 	return sprite.getPosition() - sprite.getOrigin();
 }
@@ -56,17 +56,17 @@ void DrawableComponent::move(const sf::Vector2f& offset)
 
 Amount<Unit::DEGREE> DrawableComponent::getRotation() const
 {
-	return sprite.getRotation();
+	return sprite.getRotation().asDegrees();
 }
 
 void DrawableComponent::setRotation(const Amount<Unit::DEGREE> angle)
 {
 	for (uint8_t i = 0; i < adjustedPorts.size(); ++i)
 		adjustedPorts[i].rotate(angle);
-	sprite.setRotation(angle.asStd());
+	sprite.setRotation(sf::degrees(angle.asStd()));
 }
 
-const sf::Vector2f& DrawableComponent::getOrigin() const
+sf::Vector2f DrawableComponent::getOrigin() const
 {
 	return sprite.getOrigin();
 }
@@ -122,7 +122,7 @@ bool DrawableComponent::contains(const sf::Vector2f& point) const
 
 bool DrawableComponent::intersects(const LabwareComponentBase& other) const
 {
-	if (this->sprite.getGlobalBounds().intersects(other.getSprite().getGlobalBounds()) == false)
+	if (not this->sprite.getGlobalBounds().findIntersection(other.getSprite().getGlobalBounds()))
 		return false;
 
 	return Collision::pixelPerfectTest(this->sprite, other.getSprite());

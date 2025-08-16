@@ -6,7 +6,7 @@
     #include <intrin.h>
 #endif
 
-#define CHG_UNTESTED = static_assert(false, "UNTESTED");
+#define CHG_UNTESTED int iddg = 0;
 
 namespace utils::builtin
 {

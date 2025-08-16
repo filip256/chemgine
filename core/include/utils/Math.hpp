@@ -109,7 +109,7 @@ uint8_t utils::ilog2(const T x)
 
 	// We need to check if x != 0 anyway, the indirection can be put to better use if we also provide a small LUT.
 	static constexpr std::array<uint8_t, 24> lut =
-	{ -1, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4 };
+	{ static_cast<uint8_t>(-1), 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4};
 	if (x < lut.size())
 		return lut[x];
 

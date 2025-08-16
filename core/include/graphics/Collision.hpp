@@ -42,7 +42,7 @@ it freely, subject to the following restrictions:
 
 namespace Collision 
 {
-	using TextureMask = std::vector<sf::Uint8>;
+	using TextureMask = std::vector<uint8_t>;
 	using SizedTextureMask = std::pair<TextureMask, sf::Vector2u>;
 
 	//////
@@ -55,7 +55,7 @@ namespace Collision
 	/// downloading the textures from the graphics card to memory -> SLOW!
 	/// You can avoid this by using the "createTextureAndBitmask" function
 	//////
-	bool pixelPerfectTest(const sf::Sprite& sprite1, const sf::Sprite& sprite2, sf::Uint8 alphaLimit = 0);
+	bool pixelPerfectTest(const sf::Sprite& sprite1, const sf::Sprite& sprite2, const uint8_t alphaLimit = 0);
 
 	///////
 	/// Test if a single pixel collides By testing the alpha value at the given location.
@@ -67,7 +67,7 @@ namespace Collision
 	/// downloading the textures from the graphics card to memory -> SLOW!
 	/// You can avoid this by using the "createTextureAndBitmask" function
 	//////
-	bool singlePixelTest(const sf::Sprite& sprite, const sf::Vector2f& mousePosition, sf::Uint8 alphaLimit = 0);
+	bool singlePixelTest(const sf::Sprite& sprite, const sf::Vector2f& mousePosition, const uint8_t alphaLimit = 0);
 
 	//////
 	/// Replaces Texture::loadFromFile

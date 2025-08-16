@@ -192,7 +192,7 @@ void LogBase::fatal(const LogFormat& format, Args&&... args) const
 	OS::setTextColor(OS::Color::White);
 
 #ifndef NDEBUG
-	CHG_THROW("Chemgine encountered a fatal error.");
+	chg::fatal("Chemgine encountered a fatal error.");
 #endif
 
 	[[maybe_unused]] const auto ignored = getchar();

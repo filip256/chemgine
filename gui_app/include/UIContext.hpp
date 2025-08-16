@@ -17,7 +17,7 @@
 class UIContext
 {
 private:
-	sf::RenderWindow window = sf::RenderWindow(sf::VideoMode(1800, 1000), "Chemgine");
+	sf::RenderWindow window = sf::RenderWindow(sf::VideoMode(sf::Vector2u(1800, 1000)), "Chemgine");
     Lab lab;
 
     sf::Font font;
@@ -51,18 +51,18 @@ public:
 
 	void run()
 	{
-        if (not font.loadFromFile("./fonts/font.ttf"))
+        if (not font.openFromFile("./fonts/font.ttf"))
             Log(this).fatal("Failed to load font.");
 
-        sf::Text textFPS("FPS:", font, 18);
+        sf::Text textFPS(font, "FPS:", 18);
         textFPS.setPosition(sf::Vector2f(5.0f, window.getSize().y - 22.0f));
 
-        sf::Text textTime("T=", font, 18);
+        sf::Text textTime(font, "T=", 18);
         textTime.setPosition(sf::Vector2f(window.getSize().x - 200.0f, window.getSize().y - 22.0f));
 
         bool isInTimeSetMode = false;
         float_s timeMultiplier = 1.0;
-        sf::Text textTimeMult("x" + std::to_string(timeMultiplier).substr(0, 4), font, 18);
+        sf::Text textTimeMult(font, "x" + std::to_string(timeMultiplier).substr(0, 4), 18);
         textTimeMult.setPosition(sf::Vector2f(window.getSize().x - 50.0f, window.getSize().y - 22.0f));
 
         bool callRemoveEmptySystems = false;
@@ -101,11 +101,11 @@ public:
         sf::Time gameTime, lastLabTick, lastEnvTick, lastFrame;
         while (window.isOpen())
         {
-            sf::Event event;
-            while (window.pollEvent(event))
+            // TODO: Use a visitor pattern for events, now supported by SFML.
+            while (const auto event = window.pollEvent())
             {
                 const auto mousePos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));
-                if (event.type == sf::Event::MouseMoved)
+                if (event->is<sf::Event::MouseMoved>())
                 {
                     if (inHand.isSet())
                     {
@@ -120,9 +120,9 @@ public:
                         dndHelper.resetOrigin(mousePos);
                     }
                 }
-                else if (event.type == sf::Event::MouseButtonPressed)
+                else if (const auto mouseEvent = event->getIf<sf::Event::MouseButtonPressed>())
                 {
-                    if (event.mouseButton.button == sf::Mouse::Left)
+                    if (mouseEvent->button == sf::Mouse::Button::Left)
                     {
                         if (const auto sys = lab.getSystemAt(mousePos); sys != Lab::npos)
                         {
@@ -130,7 +130,7 @@ public:
                             dndHelper.start(mousePos);
                         }
                     }
-                    else if (event.mouseButton.button == sf::Mouse::Right)
+                    else if (mouseEvent->button == sf::Mouse::Button::Right)
                     {
                         if (inputMolecule)
                         {
@@ -147,9 +147,9 @@ public:
                         }
                     }
                 }
-                else if (event.type == sf::Event::MouseButtonReleased)
+                else if (const auto mouseEvent = event->getIf<sf::Event::MouseButtonReleased>())
                 {
-                    if (event.mouseButton.button == sf::Mouse::Left)
+                    if (mouseEvent->button == sf::Mouse::Button::Left)
                     {
                         if (inHand.isSet())
                         {
@@ -159,29 +159,27 @@ public:
                             dndHelper.end();
                         }
                     }
-                    else if (event.mouseButton.button == sf::Mouse::Right)
+                    else if (mouseEvent->button == sf::Mouse::Button::Right)
                     {
                         lab.tryDissconnect(mousePos);
                     }
                 }
-                else if (event.type == sf::Event::MouseWheelMoved)
+                else if (const auto mouseEvent = event->getIf<sf::Event::MouseWheelScrolled>())
                 {
                     if (isInTimeSetMode)
                     {
-                        timeMultiplier += event.mouseWheel.delta * 0.05f * std::max(timeMultiplier, 1.0f);
+                        timeMultiplier += mouseEvent->delta * 0.05f * std::max(timeMultiplier, 1.0f);
                         timeMultiplier = std::max(timeMultiplier, 0.05f);
                         timeMultiplier = std::min(timeMultiplier, 50.0f);
 
                         textTimeMult.setString("x" + std::to_string(timeMultiplier).substr(0, 4));
                     }
                     else if (inHand.isSet())
-                    {
-                        lab.getSystem(inHand.idx).rotate(event.mouseWheel.delta * 2.0f);
-                    }
+                        lab.getSystem(inHand.idx).rotate(mouseEvent->delta * 2.0f);
                 }
-                else if (event.type == sf::Event::KeyPressed)
+                else if (const auto keyEvent = event->getIf<sf::Event::KeyPressed>())
                 {
-                    if (event.key.code == sf::Keyboard::Key::LControl)
+                    if (keyEvent->code == sf::Keyboard::Key::LControl)
                     {
                         if (const auto sys = lab.getSystemComponentAt(mousePos); sys.first != Lab::npos)
                         {
@@ -190,14 +188,14 @@ public:
                             drawPropertyPane = true;
                         }
                     }
-                    else if (event.key.code == sf::Keyboard::Key::T)
+                    else if (keyEvent->code == sf::Keyboard::Key::T)
                     {
                         isInTimeSetMode = true;
                     }
                 }
-                else if (event.type == sf::Event::KeyReleased)
+                else if (const auto keyEvent = event->getIf<sf::Event::KeyReleased>())
                 {
-                    if (event.key.code == sf::Keyboard::Key::I)
+                    if (keyEvent->code == sf::Keyboard::Key::I)
                     {
                         const auto input = Input::get("Input Molecule   [SMILES]_[moles]");
                         const auto temp = def::parse<std::pair<Molecule, Amount<Unit::MOLE>>>(input, '_');
@@ -213,22 +211,22 @@ public:
                         inputMolecule.emplace(*temp);
                         cursorHelper.setType(sf::Cursor::Type::Hand);
                     }
-                    else if (event.key.code == sf::Keyboard::Key::P)
+                    else if (keyEvent->code == sf::Keyboard::Key::P)
                     {
                         inputMolecule.reset();
                         cursorHelper.setType(sf::Cursor::Type::Cross);
                     }
-                    else if (event.key.code == sf::Keyboard::Key::LControl)
+                    else if (keyEvent->code == sf::Keyboard::Key::LControl)
                     {
                         drawPropertyPane = false;
                     }
-                    else if (event.key.code == sf::Keyboard::Key::T)
+                    else if (keyEvent->code == sf::Keyboard::Key::T)
                     {
                         isInTimeSetMode = false;
                     }
                 }
 
-                else if (event.type == sf::Event::Closed)
+                else if (event->is<sf::Event::Closed>())
                     window.close();
             }
 
@@ -256,7 +254,7 @@ public:
             }
 
             cTime = tickClock.getElapsedTime();
-            gameTime += sf::microseconds(round_cast<sf::Int64>((cTime - lastFrame).asMicroseconds() * timeMultiplier));
+            gameTime += sf::microseconds(round_cast<int64_t>((cTime - lastFrame).asMicroseconds() * timeMultiplier));
             lastFrame = cTime;
 
             window.clear();

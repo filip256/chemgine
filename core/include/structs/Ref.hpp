@@ -6,7 +6,7 @@ public:
 	explicit constexpr NullRefType (int) {}
 };
 
-constexpr NullRefType nullRef(0);
+constexpr NullRefType NullRef(0);
 
 
 template<typename T>

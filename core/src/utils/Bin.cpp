@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <iomanip>
+#include <cstdint>
 
 std::string utils::toBin(const std::string& str, const char byteDelim, const char octetDelim)
 {

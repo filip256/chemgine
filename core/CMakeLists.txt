@@ -10,26 +10,57 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
 
 target_include_directories(core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+# Compiler options
+if(MSVC)
+    target_compile_options(core PUBLIC
+        /W3  # Warning Level  # TODO: Upgrade to W4
+        /WX  # Treat warnings as errors
+        # /utf-8  # TODO: Uncomment when adding fmt
+    )
+endif()
+
+# User options
+if(DISABLE_CHECKED_CASTS)
+    target_compile_definitions(core CHG_DISABLE_CHECKED_CASTS)
+endif()
+
+if(DISABLE_CONCURRENCY_CHECKS)
+    target_compile_definitions(core PUBLIC CHG_DISABLE_CONCURRENCY_CHECKS)
+endif()
+
+if(DISABLE_COLORED_PRINTING)
+    target_compile_definitions(core PUBLIC CHG_DISABLE_COLORED_PRINTING)
+endif()
+
 # boost
-message(STATUS "BOOST_INCLUDE_DIR = ${BOOST_INCLUDE_DIR}")
 target_include_directories(core PUBLIC ${BOOST_INCLUDE_DIR})
 
-# SFML
-message(STATUS "SFML_INCLUDE_DIR = ${SFML_INCLUDE_DIR}")
-message(STATUS "SFML_LIB_DIR = ${SFML_LIB_DIR}")
-
-target_compile_definitions(core PUBLIC SFML_STATIC)
-target_include_directories(core PUBLIC ${SFML_INCLUDE_DIR})
-target_link_directories(core PUBLIC ${SFML_LIB_DIR})
-target_link_libraries(core PUBLIC
-    debug sfml-graphics-s-d optimized sfml-graphics-s
-    debug sfml-window-s-d   optimized sfml-window-s
-    debug sfml-system-s-d   optimized sfml-system-s
-    freetype
-    opengl32
-    winmm
-)
-
 # cxxopts
-message(STATUS "CXXOPTS_INCLUDE_DIR = ${CXXOPTS_INCLUDE_DIR}")
 target_include_directories(core PUBLIC ${CXXOPTS_INCLUDE_DIR})
+
+# fmt
+# TODO: Switch to using fmt for colors and special chars.
+# message(STATUS "Fetching fmt v${FMT_VERSION} from ${FMT_REPOSITORY}")
+# FetchContent_Declare(fmt 
+#     GIT_REPOSITORY ${FMT_REPOSITORY}
+#     GIT_TAG ${FMT_VERSION}
+#     GIT_SHALLOW ON
+#     EXCLUDE_FROM_ALL
+#     SYSTEM
+# )
+# FetchContent_MakeAvailable(fmt)
+
+# target_link_libraries(core PUBLIC fmt::fmt)
+
+# SFML
+message(STATUS "Fetching SFML v${SFML_VERSION} from ${SFML_REPOSITORY}")
+FetchContent_Declare(SFML
+    GIT_REPOSITORY ${SFML_REPOSITORY}
+    GIT_TAG ${SFML_VERSION}
+    GIT_SHALLOW ON
+    EXCLUDE_FROM_ALL
+    SYSTEM
+)
+FetchContent_MakeAvailable(SFML)
+
+target_link_libraries(core PUBLIC SFML::Graphics)

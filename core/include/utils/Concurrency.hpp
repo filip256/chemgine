@@ -4,6 +4,7 @@
 #include <atomic>
 #include <source_location>
 #include <format>
+#include <thread>
 #include <sstream>
 
 //
