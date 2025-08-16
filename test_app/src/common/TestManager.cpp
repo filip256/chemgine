@@ -48,7 +48,6 @@ TestManager::TestManager(std::regex&& filter) noexcept :
 
 void TestManager::runUnit()
 {
-	std::cerr << "HERE 3\n";
 	const auto testCount = unitTests.getTestCount();
 	if (testCount == 0)
 	{

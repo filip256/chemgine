@@ -36,7 +36,7 @@ namespace
 
 OS::ColorType OS::getTextColor()
 {
-#ifdef CHG_BUILD_WINDOWS
+#if defined(CHG_BUILD_WINDOWS) && not defined(CHG_DISABLE_COLORED_PRINTING)
 	static const auto handle = getStdOutputHandle();
 
 	CONSOLE_SCREEN_BUFFER_INFO info;
@@ -51,8 +51,7 @@ OS::ColorType OS::getTextColor()
 
 void OS::setTextColor(const ColorType color)
 {
-#ifdef CHG_BUILD_WINDOWS
-	std::cerr << "HERE 7\n";
+#if defined(CHG_BUILD_WINDOWS) && not defined(CHG_DISABLE_COLORED_PRINTING)
 	// Changing the text color is expected to always be followed by a text output procedure.
 	// A locking mechanism is needed at the call site to ensure the text has the desired color, not here.
 	CHG_NEVER_CONCURRENT();
@@ -63,20 +62,18 @@ void OS::setTextColor(const ColorType color)
 	static const auto handle = getStdOutputHandle();
 	static auto currentColor = getTextColor();
 
-	std::cerr << "HERE 8\n";
 	if (color == currentColor)
 		return;
 
 	currentColor = color;
 	if(not SetConsoleTextAttribute(handle, color))
 		chg::fatal("Failed to to set console text attribute (error code: {0}).", GetLastError());
-	std::cerr << "HERE 9\n";
 #endif
 }
 
 bool OS::isRunningFromConsole()
 {
-#ifdef CHG_BUILD_WINDOWS
+#if defined(CHG_BUILD_WINDOWS) && not defined(CHG_DISABLE_COLORED_PRINTING)
 	static const auto fromConsole = _isRunningFromConsole();
 	return fromConsole;
 #else

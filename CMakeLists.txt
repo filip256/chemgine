@@ -25,12 +25,16 @@ set(BOOST_INCLUDE_DIR ${BOOST_ROOT}/include CACHE PATH "boost include path")
 set(CXXOPTS_ROOT ${THIRDPARTY_DIR}/cxxopts)
 set(CXXOPTS_INCLUDE_DIR ${CXXOPTS_ROOT}/include CACHE PATH "cxxopts include path")
 
+# fmt
+set(FMT_REPOSITORY "https://github.com/fmtlib/fmt.git" CACHE STRING "fmt repository URL")
+set(FMT_VERSION "11.2.0" CACHE STRING "fmt version to fetch")
+
 # SFML
 set(SFML_REPOSITORY "https://github.com/SFML/SFML.git" CACHE STRING "SFML repository URL")
-set(SFML_VERSION "3.0.1" CACHE STRING "SFML version/tag to fetch")
+set(SFML_VERSION "3.0.1" CACHE STRING "SFML version to fetch")
 set(BUILD_SHARED_LIBS FALSE CACHE BOOL "Build SFML as static library" FORCE)
 
-# Compiler Options
+# Compiler options
 if(MSVC)
     add_compile_options(
         /MP          # Multi-processor Compilation
@@ -48,17 +52,10 @@ if(MSVC)
     add_link_options("$<$<CONFIG:Release>:/LTCG>")
 endif()
 
-# User Options
+# User options
 option(DISABLE_CHECKED_CASTS "Disables cast runtime safety checks." OFF)
 option(DISABLE_CONCURRENCY_CHECKS "Disables concurrency runtime safety checks." OFF)
-
-if(DISABLE_CHECKED_CASTS)
-    target_compile_definitions(core CHG_DISABLE_CHECKED_CASTS)
-endif()
-
-if(DISABLE_CONCURRENCY_CHECKS)
-    target_compile_definitions(core PUBLIC CHG_DISABLE_CONCURRENCY_CHECKS)
-endif()
+option(DISABLE_COLORED_PRINTING "Disables colored stdout/stderr printing." OFF)
 
 # Info
 message(STATUS "Settings:")
@@ -71,11 +68,15 @@ message(STATUS "   > CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
 message(STATUS "  Chemgine:")
 message(STATUS "   > DISABLE_CHECKED_CASTS = ${DISABLE_CHECKED_CASTS}")
 message(STATUS "   > DISABLE_CONCURRENCY_CHECKS = ${DISABLE_CONCURRENCY_CHECKS}")
+message(STATUS "   > DISABLE_COLORED_PRINTING = ${DISABLE_COLORED_PRINTING}")
 message(STATUS "  Thirdparty:")
 message(STATUS "    boost:")
 message(STATUS "     > BOOST_INCLUDE_DIR = ${BOOST_INCLUDE_DIR}")
 message(STATUS "    cxxopts:")
 message(STATUS "     > CXXOPTS_INCLUDE_DIR = ${CXXOPTS_INCLUDE_DIR}")
+message(STATUS "    fmt:")
+message(STATUS "     > FMT_REPOSITORY = ${FMT_REPOSITORY}")
+message(STATUS "     > FMT_VERSION = ${FMT_VERSION}")
 message(STATUS "    SFML:")
 message(STATUS "     > SFML_REPOSITORY = ${SFML_REPOSITORY}")
 message(STATUS "     > SFML_VERSION = ${SFML_VERSION}")

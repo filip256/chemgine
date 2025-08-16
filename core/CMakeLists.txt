@@ -10,12 +10,26 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
 
 target_include_directories(core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# Compiler Options
+# Compiler options
 if(MSVC)
     target_compile_options(core PUBLIC
         /W3  # Warning Level  # TODO: Upgrade to W4
         /WX  # Treat warnings as errors
+        # /utf-8  # TODO: Uncomment when adding fmt
     )
+endif()
+
+# User options
+if(DISABLE_CHECKED_CASTS)
+    target_compile_definitions(core CHG_DISABLE_CHECKED_CASTS)
+endif()
+
+if(DISABLE_CONCURRENCY_CHECKS)
+    target_compile_definitions(core PUBLIC CHG_DISABLE_CONCURRENCY_CHECKS)
+endif()
+
+if(DISABLE_COLORED_PRINTING)
+    target_compile_definitions(core PUBLIC CHG_DISABLE_COLORED_PRINTING)
 endif()
 
 # boost
@@ -23,6 +37,20 @@ target_include_directories(core PUBLIC ${BOOST_INCLUDE_DIR})
 
 # cxxopts
 target_include_directories(core PUBLIC ${CXXOPTS_INCLUDE_DIR})
+
+# fmt
+# TODO: Switch to using fmt for colors and special chars.
+# message(STATUS "Fetching fmt v${FMT_VERSION} from ${FMT_REPOSITORY}")
+# FetchContent_Declare(fmt 
+#     GIT_REPOSITORY ${FMT_REPOSITORY}
+#     GIT_TAG ${FMT_VERSION}
+#     GIT_SHALLOW ON
+#     EXCLUDE_FROM_ALL
+#     SYSTEM
+# )
+# FetchContent_MakeAvailable(fmt)
+
+# target_link_libraries(core PUBLIC fmt::fmt)
 
 # SFML
 message(STATUS "Fetching SFML v${SFML_VERSION} from ${SFML_REPOSITORY}")
