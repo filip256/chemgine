@@ -58,21 +58,30 @@ endif()
 target_include_directories(core PUBLIC ${BOOST_INCLUDE_DIR})
 
 # cxxopts
-target_include_directories(core PUBLIC ${CXXOPTS_INCLUDE_DIR})
+message(STATUS "Fetching cxxopts ${CXXOPTS_VERSION} from ${CXXOPTS_REPOSITORY}")
+FetchContent_Declare(cxxopts
+    GIT_REPOSITORY ${CXXOPTS_REPOSITORY}
+    GIT_TAG ${CXXOPTS_VERSION}
+    GIT_SHALLOW ON
+    EXCLUDE_FROM_ALL
+    SYSTEM
+)
+FetchContent_MakeAvailable(cxxopts)
+
+target_link_libraries(core PUBLIC cxxopts)
 
 # fmt
-# TODO: Switch to using fmt for colors and special chars.
-# message(STATUS "Fetching fmt v${FMT_VERSION} from ${FMT_REPOSITORY}")
-# FetchContent_Declare(fmt 
-#     GIT_REPOSITORY ${FMT_REPOSITORY}
-#     GIT_TAG ${FMT_VERSION}
-#     GIT_SHALLOW ON
-#     EXCLUDE_FROM_ALL
-#     SYSTEM
-# )
-# FetchContent_MakeAvailable(fmt)
+message(STATUS "Fetching fmt v${FMT_VERSION} from ${FMT_REPOSITORY}")
+FetchContent_Declare(fmt 
+    GIT_REPOSITORY ${FMT_REPOSITORY}
+    GIT_TAG ${FMT_VERSION}
+    GIT_SHALLOW ON
+    EXCLUDE_FROM_ALL
+    SYSTEM
+)
+FetchContent_MakeAvailable(fmt)
 
-# target_link_libraries(core PUBLIC fmt::fmt)
+target_link_libraries(core PUBLIC fmt::fmt)
 
 # SFML
 message(STATUS "Fetching SFML v${SFML_VERSION} from ${SFML_REPOSITORY}")

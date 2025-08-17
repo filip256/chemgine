@@ -46,20 +46,24 @@ TestManager::TestManager(std::regex&& filter) noexcept :
 	perfTests(this->filter)
 {}
 
-void TestManager::runUnit()
+bool TestManager::runUnit()
 {
 	const auto testCount = unitTests.getTestCount();
 	if (testCount == 0)
 	{
 		Log(this).warn("No unit tests match the given filter.");
-		return;
+		return true;
 	}
 	Log(this).info("{} unit tests match the given filter.", testCount);
 
 	if (not unitTests.run())
+	{
 		Log(this).error("Some unit tests failed.");
-	else
-		Log(this).success("All unit tests passed.");
+		return false;
+	}
+
+	Log(this).success("All unit tests passed.");
+	return true;
 }
 
 void TestManager::runPerf()

@@ -6,11 +6,31 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  CLICOLOR: 1
+
 defaults:
   run:
     shell: bash
 
 jobs:
+  spelling:
+    name: Spelling Check
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Actions Repository
+      uses: actions/checkout@v4
+    - name: Spell Check Repo
+      uses: crate-ci/typos@v1.35.4
+      with:
+        files: |
+          cmake/**
+          core/**
+          defparse/**
+          dev_tools/**
+          gui_app/**
+          test_app/**
+
   build:
     name: Build / ${{matrix.kind.name}}
     runs-on: ${{matrix.kind.os}}
@@ -70,26 +90,18 @@ jobs:
       matrix:
         kind:
         - { name: Windows-VS2022-x64-Release, os: windows-2022,  config: Release }
-        # - { name: Windows-VS2022-x64-Debug,   os: windows-2022,  config: Debug }
+        - { name: Windows-VS2022-x64-Debug,   os: windows-2022,  config: Debug }
         - { name: Windows-VS2022-x86-Release, os: windows-2022,  config: Release }
         # - { name: Windows-VS2022-x86-Debug,   os: windows-2022,  config: Debug }
-
         - { name: Ubuntu-GCC-x64-Release,     os: ubuntu-latest, config: Release }
         # - { name: Ubuntu-GCC-x64-Debug,       os: ubuntu-latest, config: Debug }
-        - { name: Ubuntu-Clang-x64-Release,   os: ubuntu-latest, config: Release }
+        # - { name: Ubuntu-Clang-x64-Release,   os: ubuntu-latest, config: Release }
         # - { name: Ubuntu-Clang-x64-Debug,     os: ubuntu-latest, config: Debug }
 
     steps:
       - uses: actions/download-artifact@v4
         with:
           name: Chemgine-${{matrix.kind.name}}
-
-      - name: Headless OpenGL setup (Windows)
-        if: matrix.kind.os == 'windows-2022'
-        run: |
-          curl -L -o mesa-x64.7z https://downloads.fdossena.com/Projects/Mesa3D/Builds/MesaForWindows-x64-20.1.8.7z
-          7z x mesa-x64.7z -omesa-x64
-          cp mesa-x64/opengl32.dll ./test_app/${{matrix.kind.config}}/
 
       - name: Show files recursively
         run: tree -a || (echo "tree not found, listing recursively"; ls -laR)

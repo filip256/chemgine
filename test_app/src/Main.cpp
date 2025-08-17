@@ -44,10 +44,14 @@ int main(int argc, char* argv[])
 
         const auto runUnit = args["unit"].as<bool>();
         const auto runPerf = args["perf"].as<bool>();
+
+        int returnCode = 0;
         if (runUnit)
-            tests.runUnit();
+            returnCode = tests.runUnit() ? 0 : 2;
         if (runPerf)
             tests.runPerf();
+
+        return returnCode;
     }
     catch (const cxxopts::exceptions::exception& e)
     {

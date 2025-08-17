@@ -33,6 +33,6 @@ private:
 public:
 	TestManager(std::regex&& filter) noexcept;
 
-	void runUnit();
+	bool runUnit();
 	void runPerf();
 };
