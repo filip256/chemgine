@@ -130,7 +130,7 @@ void SplineEstimator<OutU, InU>::dumpDefinition(
 	}
 	else
 		dump.property(def::Data::Values, spline.getContent());
-	
+
 	dump.endProperties();
 
 	if (not printInline)

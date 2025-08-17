@@ -127,7 +127,7 @@ std::vector<std::string> utils::split(
 {
 	std::vector<std::string> result;
 	size_t lastSep = static_cast<size_t>(-1);
-	
+
 	std::vector<size_t> ignoreSections;
 
 	for (size_t i = 0; i < line.size(); ++i)

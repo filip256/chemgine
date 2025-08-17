@@ -13,12 +13,12 @@ LayerContentIterator::LayerContentIterator(
         ++(this->it);
 }
 
-const Reactant& LayerContentIterator::operator*() const 
+const Reactant& LayerContentIterator::operator*() const
 {
     return it->second;
 }
 
-const Reactant* LayerContentIterator::operator->() const 
+const Reactant* LayerContentIterator::operator->() const
 {
     return &(it->second);
 }
@@ -31,12 +31,12 @@ LayerContentIterator& LayerContentIterator::operator++()
     return *this;
 }
 
-bool LayerContentIterator::operator==(const LayerContentIterator& other) const 
+bool LayerContentIterator::operator==(const LayerContentIterator& other) const
 {
     return this->it == other.it;
 }
 
-bool LayerContentIterator::operator!=(const LayerContentIterator& other) const 
+bool LayerContentIterator::operator!=(const LayerContentIterator& other) const
 {
     return this->it != other.it;
 }

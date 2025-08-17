@@ -230,7 +230,7 @@ std::string DynamicAmount::getUnitName(const Unit unit)
 
 std::optional<Unit> DynamicAmount::getUnitFromSymbol(const std::string& symbol)
 {
-    static const std::unordered_map<std::string, Unit> symbolToUnitMap = 
+    static const std::unordered_map<std::string, Unit> symbolToUnitMap =
     {
         {DynamicAmount::getUnitSymbol(Unit::NONE), Unit::NONE},
         {DynamicAmount::getUnitSymbol(Unit::ANY), Unit::ANY},
@@ -275,15 +275,15 @@ std::optional<DynamicAmount> DynamicAmount::get(const StorageType value, const s
     auto unit = DynamicAmount::getUnitFromSymbol(symbol);
     if (unit)
         return DynamicAmount(value, *unit);
-    
+
     unit = DynamicAmount::getUnitFromSymbol(symbol.substr(1));
     if (not unit)
         return std::nullopt;
-    
+
     const auto multiplier = *unit == Unit::CUBIC_METER ?
         1000000.0f :
         1000.0f;
-    
+
     switch (symbol.front())
     {
     case 'k':

@@ -4,7 +4,7 @@
 #include "utils/Numeric.hpp"
 
 #include <iostream>
-#include <algorithm> 
+#include <algorithm>
 
 template<class T>
 SystemMatrix<T>::SystemMatrix(std::initializer_list<std::initializer_list<T>> initializer) noexcept :
@@ -17,11 +17,11 @@ bool SystemMatrix<T>::toREF()
     size_t cols = matrix[0].size();
     size_t rows = matrix.size();
 
-    for (size_t i = 0; i < rows - 1; ++i) 
+    for (size_t i = 0; i < rows - 1; ++i)
     {
         size_t pivotRow = i;
         for (size_t k = i + 1; k < rows; ++k)
-            if (std::abs(matrix[k][i]) > std::abs(matrix[pivotRow][i])) 
+            if (std::abs(matrix[k][i]) > std::abs(matrix[pivotRow][i]))
                 pivotRow = k;
 
         if (pivotRow != i)
@@ -42,10 +42,10 @@ bool SystemMatrix<T>::toREF()
             matrix[i][j] /= pivot;
 
         // Eliminate non-zero elements below the pivot
-        for (size_t k = i + 1; k < rows; ++k) 
+        for (size_t k = i + 1; k < rows; ++k)
         {
             const auto factor = matrix[k][i];
-            for (size_t j = i; j < cols; ++j) 
+            for (size_t j = i; j < cols; ++j)
                 matrix[k][j] -= factor * matrix[i][j];
         }
     }
@@ -123,7 +123,7 @@ std::vector<T> SystemMatrix<T>::solve()
     size_t n = matrix[0].size() - 1;
     std::vector<T> result(n, 0);
 
-    for (size_t i = n; i-- > 0;) 
+    for (size_t i = n; i-- > 0;)
     {
         result[i] = matrix[i][n];
         for (size_t j = i + 1; j < n; ++j)

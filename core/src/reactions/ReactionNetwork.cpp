@@ -22,7 +22,7 @@ bool ReactionNetwork::insert(const size_t current, ReactionData& reaction, size_
 				Log(this).warn("Discarded duplicate reaction with id {0}.", reaction.id);
 				return false;
 			}
-			
+
 			matchFound = insert(i.getIndex(), reaction, firstInsert);
 		}
 		else if (i->data.isSpecializationOf(reaction))
@@ -93,7 +93,7 @@ bool ReactionNetwork::insert(ReactionData& reaction)
 	return true;
 }
 
-bool ReactionNetwork::getOccuringReactions(
+bool ReactionNetwork::getOccurringReactions(
 	const std::vector<Reactant>& reactants,
 	const size_t current,
 	std::unordered_set<ConcreteReaction>& result) const
@@ -105,7 +105,7 @@ bool ReactionNetwork::getOccuringReactions(
 		if (matches.empty())
 			continue;
 
-		if (getOccuringReactions(reactants, i.getIndex(), result))
+		if (getOccurringReactions(reactants, i.getIndex(), result))
 		{
 			matchFound = true;
 			continue;
@@ -121,7 +121,7 @@ bool ReactionNetwork::getOccuringReactions(
 	return matchFound;
 }
 
-std::unordered_set<ConcreteReaction> ReactionNetwork::getOccuringReactions(
+std::unordered_set<ConcreteReaction> ReactionNetwork::getOccurringReactions(
 	const std::vector<Reactant>& reactants) const
 {
 	std::unordered_set<ConcreteReaction> result;
@@ -133,9 +133,9 @@ std::unordered_set<ConcreteReaction> ReactionNetwork::getOccuringReactions(
 		if (matches.empty())
 			continue;
 
-		if (getOccuringReactions(reactants, topLayer[i], result))
+		if (getOccurringReactions(reactants, topLayer[i], result))
 			continue;
-		
+
 		const auto products = rData.generateConcreteProducts(reactants, matches);
 		if (products.size())
 		{

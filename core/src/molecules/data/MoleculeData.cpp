@@ -51,7 +51,7 @@ const MolecularStructure& MoleculeData::getStructure() const
 
 void MoleculeData::dumpDefinition(
 	std::ostream& out,
-	const bool prettify, 
+	const bool prettify,
 	std::unordered_set<EstimatorId>& alreadyPrinted
 ) const
 {

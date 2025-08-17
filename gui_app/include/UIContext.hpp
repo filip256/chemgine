@@ -161,7 +161,7 @@ public:
                     }
                     else if (mouseEvent->button == sf::Mouse::Button::Right)
                     {
-                        lab.tryDissconnect(mousePos);
+                        lab.tryDisconnect(mousePos);
                     }
                 }
                 else if (const auto mouseEvent = event->getIf<sf::Event::MouseWheelScrolled>())

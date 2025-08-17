@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-namespace utils 
+namespace utils
 {
 	template<typename KeyT1, typename KeyT2, typename ObjT>
 	std::unordered_map<KeyT1, ObjT> compose(

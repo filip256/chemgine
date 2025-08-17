@@ -56,7 +56,7 @@ private:
 
 public:
 	MixturePropertyPane(const sf::Font& font) noexcept;
-	
+
 	void setSubject(const LabwareComponentBase& subject);
 	void setPosition(const sf::Vector2f& position);
 

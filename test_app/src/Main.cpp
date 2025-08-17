@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
             CHG_UNREACHABLE();
         }
         LogBase::settings().logLevel = *logLevel;
-        
+
         const auto filterStr = args.count("filter") ? args["filter"].as<std::string>() : ".*";
         std::regex filter(filterStr, std::regex::ECMAScript | std::regex::optimize);
 

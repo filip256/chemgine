@@ -23,7 +23,7 @@ public:
 	Ref(NullRefType) noexcept;
 	Ref(const Ref&) = default;
 
-	template<typename D, typename = 
+	template<typename D, typename =
 		std::enable_if_t<std::is_convertible_v<D&, T&>>>
 	Ref(const Ref<D>& other) noexcept;
 
@@ -85,19 +85,19 @@ Ref<T>::Ref(const Ref<D>& other) noexcept :
 {}
 
 template<typename T>
-bool Ref<T>::isSet() const 
+bool Ref<T>::isSet() const
 {
 	return object != nullptr;
 }
 
 template<typename T>
-void Ref<T>::set(T& object) 
+void Ref<T>::set(T& object)
 {
 	this->object = &object;
 }
 
 template<typename T>
-void Ref<T>::unset() 
+void Ref<T>::unset()
 {
 	object = nullptr;
 }
@@ -148,20 +148,20 @@ const T& Ref<T>::operator*() const
 }
 
 template<typename T>
-T* Ref<T>::operator->() 
+T* Ref<T>::operator->()
 {
 	return object;
 }
 
 template<typename T>
-const T* Ref<T>::operator->() const 
+const T* Ref<T>::operator->() const
 {
 	return object;
 }
 
 template<typename T>
 template<typename R, typename... Args>
-R Ref<T>::operator->*(R(T::* memberFunction)(Args...)) 
+R Ref<T>::operator->*(R(T::* memberFunction)(Args...))
 {
 	return (object->*memberFunction)();
 }

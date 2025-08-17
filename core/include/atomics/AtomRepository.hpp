@@ -30,7 +30,7 @@ public:
 	using RadicalIterator = std::unordered_map<Symbol, std::unique_ptr<const RadicalData>>::const_iterator;
 	RadicalIterator radicalsBegin() const;
 	RadicalIterator radicalsEnd() const;
-	
+
 	void clear();
 
 	static constexpr size_t npos = static_cast<size_t>(-1);

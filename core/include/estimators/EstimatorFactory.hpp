@@ -73,7 +73,7 @@ EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
 {
 	const auto uniquePoints = ImmutableSet<DataPoint<OutU, InUs...>>::toSortedSetVector(std::move(dataPoints));
 
-	// Constant ND
+	// Constant AND
 	if (uniquePoints.size() == 1)
 		return createConstant<OutU, InUs...>(uniquePoints.front().output);
 
@@ -86,7 +86,7 @@ EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
 			[](const DataPoint<OutU, InUs...>& p)
 			{
 				return std::pair(std::get<0>(p.inputs).asStd(), p.output.asStd());
-			}); 
+			});
 
 		// Linear 2D
 		if (uniquePoints.size() == 2)

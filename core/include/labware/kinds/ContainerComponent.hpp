@@ -220,7 +220,7 @@ template<typename... Args>
 void ContainerComponent<Args...>::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	uint8_t idx = 0;
-	std::apply([this, &target, &states, &idx](const auto&... c) 
+	std::apply([this, &target, &states, &idx](const auto&... c)
 	{
 		((BaseContainerComponent::draw(c, fills[idx++], target, states)), ...);
 	}, containers);

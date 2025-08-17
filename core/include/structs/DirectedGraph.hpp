@@ -114,7 +114,7 @@ size_t DirectedGraph<NodeT>::NeighbourIterator::operator++()
 {
 	--i;
 	while (i != npos && owner.areAdjacent(node, i) == false)
-		--i;   // looping back allows i to become npos (u-casted -1) naturally 
+		--i;   // looping back allows i to become npos (u-casted -1) naturally
 	return i;
 }
 
@@ -167,7 +167,7 @@ template<class NodeT>
 size_t DirectedGraph<NodeT>::addNode(const NodeT& reaction)
 {
 	nodes.emplace_back(reaction);
-	
+
 	for (size_t i = 0; i < edges.size(); ++i)
 		edges[i].emplace_back(false);
 	edges.emplace_back(std::vector<uint8_t>(nodes.size(), false));

@@ -119,7 +119,7 @@ void UnitTestGroup::registerTest(std::string&& name, Args&&... args)
 		test = std::make_unique<T>(std::move(name), typename T::SetupType(std::forward<Args>(args)...));
 	else if constexpr (std::is_constructible_v<T, std::string&&, const std::regex&, Args...>)
 		test = std::make_unique<T>(std::move(name), filter, std::forward<Args>(args)...);
-	else 
+	else
 		test = std::make_unique<T>(std::move(name), std::forward<Args>(args)...);
 
 	if (test->isSkipped(filter))

@@ -213,7 +213,7 @@ TimingResult PerfTestGroup::run(PerformanceReport& report)
 		LogBase::unnest();
 
 		totalTime += time;
-		
+
 		const auto avgTimeInMs = time.averageTime.count() / 1'000'000.0;
 		const auto medianTimeInMs = time.medianTime.count() / 1'000'000.0;
 

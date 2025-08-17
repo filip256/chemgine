@@ -159,7 +159,7 @@ void SingleLayerMixture<L>::removeNegligibles()
 	bool removedAny = false;
 	for (auto r = content.begin(); r != content.end();)
 	{
-		if (r->second.amount < Constants::MOLAR_EXISTANCE_THRESHOLD)
+		if (r->second.amount < Constants::MOLAR_EXISTENCE_THRESHOLD)
 		{
 			const auto temp = r->second.mutate(-r->second.amount);
 			r = content.erase(r);

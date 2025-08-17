@@ -101,7 +101,7 @@ size_t UndirectedGraph<NodeT>::NeighbourIterator::operator++()
 {
 	--i;
 	while(i != npos && owner.areAdjacent(node, i) == false)
-		--i;   // looping back allows i to become npos (u-casted -1) naturally 
+		--i;   // looping back allows i to become npos (u-casted -1) naturally
 	return i;
 }
 

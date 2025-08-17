@@ -41,7 +41,7 @@ namespace Collision
 			return (bitmasks[&tex] = std::move(mask));
 		}
 
-		auto& get(const sf::Texture& tex) 
+		auto& get(const sf::Texture& tex)
 		{
 			auto pair = bitmasks.find(&tex);
 			if (pair == bitmasks.end())
@@ -58,7 +58,7 @@ namespace Collision
 
 	// Gets global instance of BitmaskRegistry.
 	// "static" to make sure this function doesn't leak to other source file
-	static BitmaskRegistry& bitmasks() 
+	static BitmaskRegistry& bitmasks()
 	{
 		static BitmaskRegistry instance;
 		return instance;
@@ -80,7 +80,7 @@ namespace Collision
 		return false;
 	}
 
-	bool pixelPerfectTest(const sf::Sprite& sprite1, const sf::Sprite& sprite2, const uint8_t alphaLimit) 
+	bool pixelPerfectTest(const sf::Sprite& sprite1, const sf::Sprite& sprite2, const uint8_t alphaLimit)
 	{
 		const auto intersection = sprite1.getGlobalBounds().findIntersection(sprite2.getGlobalBounds());
 		if (not intersection)
@@ -197,7 +197,7 @@ namespace Collision
 		}
 	};
 
-	bool boundingBoxTest(const sf::Sprite& sprite1, const sf::Sprite& sprite2) 
+	bool boundingBoxTest(const sf::Sprite& sprite1, const sf::Sprite& sprite2)
 	{
 		auto OBB1 = OrientedBoundingBox(sprite1);
 		auto OBB2 = OrientedBoundingBox(sprite2);
@@ -226,7 +226,7 @@ namespace Collision
 		return true;
 	}
 
-	const TextureMask& getTextureMask(const sf::Texture& tex) 
+	const TextureMask& getTextureMask(const sf::Texture& tex)
 	{
 		return bitmasks().get(tex);
 	}

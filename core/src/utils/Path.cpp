@@ -60,7 +60,7 @@ std::string utils::combinePaths(const std::string& path1, const std::string& pat
 			path1.substr(0, path1.size() - 1) + path2 :
 			path1 + path2;
 	}
-	
+
 	return path2.starts_with('/') ?
 		path1 + path2 :
 		path1 + '/' + path2;

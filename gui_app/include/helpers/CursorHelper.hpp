@@ -9,7 +9,7 @@ class CursorHelper
 {
 private:
     sf::Window& window;
-    
+
     static std::unordered_map<sf::Cursor::Type, std::unique_ptr<sf::Cursor>> cursors;
 
 public:

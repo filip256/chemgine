@@ -89,7 +89,7 @@ bool ReactionRepository::add(const def::Object& definition)
 			if (catalysts[j].matchesWith(c->getStructure()) || c->matchesWith(catalysts[j].getStructure()))
 			{
 				isUnique = false;
-				Log(this).warn("Ingored duplicate catalyst '{0}' in reaction with id {1}, at: {2}.", catStr[i], *id, definition.getLocationName());
+				Log(this).warn("Ignored duplicate catalyst '{0}' in reaction with id {1}, at: {2}.", catStr[i], *id, definition.getLocationName());
 				break;
 			}
 		if (isUnique == false)
@@ -193,9 +193,9 @@ const ReactionNetwork& ReactionRepository::getNetwork() const
 	return network;
 }
 
-std::unordered_set<ConcreteReaction> ReactionRepository::findOccuringReactions(const std::vector<Reactant>& reactants) const
+std::unordered_set<ConcreteReaction> ReactionRepository::findOccurringReactions(const std::vector<Reactant>& reactants) const
 {
-	return network.getOccuringReactions(reactants);
+	return network.getOccurringReactions(reactants);
 }
 
 std::unordered_set<RetrosynthReaction> ReactionRepository::getRetrosynthReactions(const StructureRef& targetProduct) const
@@ -215,7 +215,7 @@ size_t ReactionRepository::generateCurrentSpan() const
 	const auto arrangements = utils::getArrangementsWithRepetitions(reactants, maxReactantCount);
 	for(size_t i = 0; i < arrangements.size(); ++i)
 	{
-		findOccuringReactions(arrangements[i]);
+		findOccurringReactions(arrangements[i]);
 	}
 
 	return molecules.size() - reactants.size();

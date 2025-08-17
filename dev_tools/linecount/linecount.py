@@ -1,17 +1,20 @@
 import os
 
+
 def normalize_path(path):
     """Normalize path to use forward slashes, regardless of OS."""
     return os.path.abspath(path).replace(os.path.sep, "/")
 
+
 def count_lines(file_path):
     """Count number of lines in a file, ignoring errors."""
     try:
-        with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+        with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
             return sum(1 for _ in f)
     except Exception as e:
         print(f"Warning: Could not read {file_path}: {e}")
         return 0
+
 
 def scan_directory(base_dir, exclude_patterns):
     base_dir = normalize_path(base_dir)
@@ -30,14 +33,15 @@ def scan_directory(base_dir, exclude_patterns):
                 continue
 
             ext = os.path.splitext(file)[1]
-            if ext in ['.cpp', '.hpp']:
+            if ext in [".cpp", ".hpp"]:
                 cpp_files += 1
                 cpp_lines += count_lines(full_path)
-            elif ext == '.py':
+            elif ext == ".py":
                 py_files += 1
                 py_lines += count_lines(full_path)
 
     return cpp_files, cpp_lines, py_files, py_lines
+
 
 def main():
     directory = "../"
@@ -55,6 +59,7 @@ def main():
     print(f"Python files (.py):    {py_files} files, {py_lines} lines")
     print(f"----------------------------------------")
     print(f"Grand total:           {total_files} files, {total_lines} lines")
+
 
 if __name__ == "__main__":
     main()

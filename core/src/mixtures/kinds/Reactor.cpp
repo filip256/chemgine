@@ -98,7 +98,7 @@ void Reactor::findNewReactions()
 		if (anyNew == false)
 			continue;
 
-		auto newReactions = dataAccessor.get().reactions.findOccuringReactions(arrangements[i]);
+		auto newReactions = dataAccessor.get().reactions.findOccurringReactions(arrangements[i]);
 		cachedReactions.merge(std::move(newReactions));
 	}
 
@@ -116,7 +116,7 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 			totalVolume.asStd() *
 			getInterLayerReactivityCoefficient(r.getReactants()) *
 			getCatalyticReactivityCoefficient(r.getCatalysts());
-		
+
 		if (speedCoef == 0)
 			continue;
 
@@ -162,7 +162,7 @@ void Reactor::runLayerEnergyConduction(const Amount<Unit::SECOND> timespan)
 
 
 			const auto diffE = diff > 0 ?
-				// molecules closer to the top ussually have more
+				// molecules closer to the top usually have more
 				// energy than the layer avg. => favour up conversion
 				l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(l.second.moles).to<Unit::JOULE>(diff) * favourableC.to<Unit::JOULE>(timespan) :
 				l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(aboveLayer.moles).to<Unit::JOULE>(diff) * unfavourableC.to<Unit::JOULE>(timespan);
@@ -179,7 +179,7 @@ void Reactor::runLayerEnergyConduction(const Amount<Unit::SECOND> timespan)
 				continue;
 
 			const auto diffE = diff > 0 ?
-				// molecules closer to the bottom ussually have less
+				// molecules closer to the bottom usually have less
 				// energy than the layer avg. => favour down conversion
 				l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(l.second.moles).to<Unit::JOULE>(diff) * unfavourableC.to<Unit::JOULE>(timespan) :
 				l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(belowLayer.moles).to<Unit::JOULE>(diff) * favourableC.to<Unit::JOULE>(timespan);
@@ -303,7 +303,7 @@ bool Reactor::hasSameLayers(const Reactor& other, const Amount<>::StorageType ep
 
 bool Reactor::isSame(const Reactor& other, const Amount<>::StorageType epsilon) const
 {
-	return 
+	return
 		this->hasSameState(other) &&
 		this->hasSameContent(other) &&
 		this->hasSameLayers(other);

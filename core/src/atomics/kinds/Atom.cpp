@@ -30,7 +30,7 @@ uint8_t Atom::getPrecedence() const
 {
     if (isRadical())
         return 0;
-    
+
     return data.getRarity();
 }
 

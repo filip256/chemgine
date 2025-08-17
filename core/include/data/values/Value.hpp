@@ -34,8 +34,8 @@ public:
 	bool operator>(const Value<T>& other) const;
 	bool operator>=(const Value<T>& other) const;
 
-	constexpr bool oveflowsOnAdd(const Value<T>& other) const noexcept;
-	constexpr bool oveflowsOnMultiply(const Value<T>& other) const noexcept;
+	constexpr bool overflowsOnAdd(const Value<T>& other) const noexcept;
+	constexpr bool overflowsOnMultiply(const Value<T>& other) const noexcept;
 };
 
 template<typename T>
@@ -44,7 +44,7 @@ constexpr Value<T>::Value(const T value) noexcept :
 {}
 
 template <typename T>
-constexpr bool Value<T>::oveflowsOnAdd(const Value<T>& other) const noexcept
+constexpr bool Value<T>::overflowsOnAdd(const Value<T>& other) const noexcept
 {
 	return
 		this->value > 0.0 && other.value > 0.0 ?
@@ -55,7 +55,7 @@ constexpr bool Value<T>::oveflowsOnAdd(const Value<T>& other) const noexcept
 }
 
 template <typename T>
-constexpr bool Value<T>::oveflowsOnMultiply(const Value<T>& other) const noexcept
+constexpr bool Value<T>::overflowsOnMultiply(const Value<T>& other) const noexcept
 {
 	return
 		this->value > 0.0 ? (

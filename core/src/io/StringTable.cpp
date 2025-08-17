@@ -60,7 +60,7 @@ void StringTable::clear()
 void StringTable::dump(std::ostream& out) const
 {
 	const auto widths = getMaxWidths();
-	
+
 	// top line
 	out << ASCII::CornerTopLeft;
 	for (size_t i = 0; i < widths.size() - 1; ++i)

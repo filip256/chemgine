@@ -35,7 +35,7 @@ void Layer::findNewLowNucleator()
 {
     lowNucleator.unset();
     for (const auto& [_, r] : container->content)
-        if (r.layer == layerType && r.amount >= Constants::MOLAR_EXISTANCE_THRESHOLD)
+        if (r.layer == layerType && r.amount >= Constants::MOLAR_EXISTENCE_THRESHOLD)
             lowNucleator.setIfLower(r);
 }
 
@@ -43,7 +43,7 @@ void Layer::findNewHighNucleator()
 {
     highNucleator.unset();
     for (const auto& [_, r] : container->content)
-        if (r.layer == layerType && r.amount >= Constants::MOLAR_EXISTANCE_THRESHOLD)
+        if (r.layer == layerType && r.amount >= Constants::MOLAR_EXISTENCE_THRESHOLD)
             highNucleator.setIfLower(r);
 }
 
@@ -165,11 +165,11 @@ Amount<Unit::JOULE> Layer::getLeastEnergyDiff(const Amount<Unit::CELSIUS> target
             const auto nMoles = container->content.getAmountOf(highNucleator.getReactant());
             return highNucleator.getTransitionHeat().to<Unit::JOULE>(nMoles);
         }
-        
+
         return getTotalHeatCapacity()
             .to<Unit::JOULE>(std::min(target, transitionPoint) - temperature);
     }
-    
+
     const auto transitionPoint = getMinAllowedTemperature();
     if (temperature == transitionPoint && transitionPoint != Amount<Unit::CELSIUS>::Minimum)
     {
@@ -272,17 +272,17 @@ LayerType Layer::getType() const
     return layerType;
 }
 
-Amount<Unit::MOLE> Layer::getMoles() const 
+Amount<Unit::MOLE> Layer::getMoles() const
 {
     return moles;
 }
 
-Amount<Unit::GRAM> Layer::getMass() const 
+Amount<Unit::GRAM> Layer::getMass() const
 {
     return mass;
 }
 
-Amount<Unit::LITER> Layer::getVolume() const 
+Amount<Unit::LITER> Layer::getVolume() const
 {
     return volume;
 }
@@ -307,7 +307,7 @@ const Reactant& Layer::getHighNucleator() const
     return highNucleator.getReactant();
 }
 
-Amount<Unit::CELSIUS> Layer::getTemperature() const 
+Amount<Unit::CELSIUS> Layer::getTemperature() const
 {
     return temperature;
 }

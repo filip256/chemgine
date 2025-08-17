@@ -18,7 +18,7 @@ DataStore::DataStore() :
 
 size_t DataStore::totalDefinitionCount() const
 {
-	return 
+	return
 		oolDefinitions.totalDefinitionCount() +
 		atoms.totalDefinitionCount() +
 		estimators.totalDefinitionCount() +
@@ -66,7 +66,7 @@ bool DataStore::load(const std::string& path)
 		Log(this).info("Pre-parse analysis on file: '{0}':\n - Top-level Definitions: {1} ({2} already parsed)\n - Files:                 {3} ({4} already parsed)",
 			normPath, analysis.totalDefinitionCount, analysis.preparsedDefinitionCount, analysis.totalFileCount, analysis.preparsedFileCount);
 	}
-	
+
 	bool success = true;
 	auto definitionCount = analysis.preparsedDefinitionCount;
 	def::FileParser parser(normPath, fileStore, oolDefinitions);

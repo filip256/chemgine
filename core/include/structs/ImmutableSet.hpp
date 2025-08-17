@@ -16,7 +16,7 @@ class ImmutableSet
 {
 private:
 	const std::vector<T> content;
-	
+
 public:
 	ImmutableSet() = default;
 	ImmutableSet(std::vector<T>&& content) noexcept;

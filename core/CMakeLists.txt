@@ -72,7 +72,7 @@ target_link_libraries(core PUBLIC cxxopts)
 
 # fmt
 message(STATUS "Fetching fmt v${FMT_VERSION} from ${FMT_REPOSITORY}")
-FetchContent_Declare(fmt 
+FetchContent_Declare(fmt
     GIT_REPOSITORY ${FMT_REPOSITORY}
     GIT_TAG ${FMT_VERSION}
     GIT_SHALLOW ON

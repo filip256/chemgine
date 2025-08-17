@@ -14,25 +14,27 @@ defaults:
     shell: bash
 
 jobs:
-  spelling:
-    name: Spell Check
+  pre-commit:
+    name: Pre-Commit
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Actions Repository
+    - name: Checkout repository
       uses: actions/checkout@v4
-    - name: Spell Check Repo
-      uses: crate-ci/typos@v1.35.4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
-        files: |
-          cmake/**
-          core/**
-          defparse/**
-          dev_tools/**
-          gui_app/**
-          test_app/**
+        python-version: "3.12"
+
+    - name: Install pre-commit
+      run: pip install --upgrade pip pre-commit
+
+    - name: Run pre-commit checks
+      run: pre-commit run --all-files --show-diff-on-failure
 
   build:
     name: Build / ${{matrix.kind.name}}
+    needs: pre-commit
     runs-on: ${{matrix.kind.os}}
 
     strategy:

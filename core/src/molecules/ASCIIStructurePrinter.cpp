@@ -209,13 +209,13 @@ bool isAngleAllowed(const size_t size, const Angle currentAngle, const Angle pre
 {
     if (size < 4)
         return true;
-    // Prune acute-acute and acute-perpendicular adjacent angles, starts loosing cyclic layouts from C8.
+    // Prune acute-acute and acute-perpendicular adjacent angles, starts losing cyclic layouts from C8.
     if (prevAngle == Angle::ACUTE && (currentAngle == Angle::ACUTE || currentAngle == Angle::PERPENDICULAR))
         return false;
 
     if (size < 5)
         return true;
-    // Prune perpendicular-acute adjacent angles, starts loosing cyclic layouts from C6.
+    // Prune perpendicular-acute adjacent angles, starts losing cyclic layouts from C6.
     if (prevAngle == Angle::PERPENDICULAR && currentAngle == Angle::ACUTE)
         return false;
 
@@ -282,7 +282,7 @@ const std::vector<Direction>& getDirectionsByEnteringDirection(const Direction e
 {
     static std::unordered_map<uint8_t, std::vector<Direction>> storage;
     storage.reserve(8);
-    
+
     const auto it = storage.find(enteringDirection.getIdx());
     if (it != storage.end())
         return it->second;
@@ -444,7 +444,7 @@ std::vector<std::pair<ASCII::Direction, Position>> StructurePrinter::getPossible
     // /|\|  ||\   .
     std::vector<std::pair<ASCII::Direction, Position>> directions;
     directions.reserve(8 + 2 * (origin.length > 1 ? origin.length - 1 : 0));
-    
+
     if (origin.length == 1)
     {
         for (const auto dir : ASCII::Direction::AllDirections)
@@ -462,7 +462,7 @@ std::vector<std::pair<ASCII::Direction, Position>> StructurePrinter::getPossible
         for (auto dir = ASCII::Direction::UpRight; dir != ASCII::Direction::Down; ++dir)
             directions.emplace_back(dir, origin.origin + Point<Symbol::SizeT>(origin.length - 1, 0));
     }
-    
+
     return directions;
 }
 
@@ -524,7 +524,7 @@ Edge& StructurePrinter::getEdge(const BondedAtomBase& from, const BondedAtomBase
     const auto it = edges.find(UndirectedEdge(from.index, to.index));
     if (it == edges.end())
         Log(this).fatal("Unregistered bond between nodes {0} and {1}.", from.index, to.index);
-       
+
     return it->second;
 }
 
@@ -570,7 +570,7 @@ bool StructurePrinter::isSymbol(const Point<int32_t> position) const
 }
 
 bool StructurePrinter::isAmbiguousBondPlacement(const Position position, const Direction direction, const BondType bondType) const
-{   
+{
     // Bond types with incomplete 8-direction ASCII representation can produce ambiguity in some cases:
     // A B   .
     //  =    .
@@ -628,7 +628,7 @@ bool StructurePrinter::isAmbiguousAtomPlacement(const PositionLine position) con
         if (bondType == BondType::NONE || Bond::hasCompleteASCIIRepresentation(bondType))
             continue;
 
-        if(isSymbol(edgePos + dir.get()) && 
+        if(isSymbol(edgePos + dir.get()) &&
             isSymbol(edgePos + dir.turn<Rotation::CLOCKWISE>(Angle::PERPENDICULAR).get()) &&
             isSymbol(edgePos + dir.turn<Rotation::COUNTER_CLOCKWISE>(Angle::PERPENDICULAR).get()))
             return true;
@@ -848,7 +848,7 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
                 auto newPositions = current.positions;
                 newPositions.emplace_back(newNodePos);
 
-                // Since we add the score of 2 new edges but only add 1 node, a scaling of N/(N+1) 
+                // Since we add the score of 2 new edges but only add 1 node, a scaling of N/(N+1)
                 // is applied to obtain (sum*N/(N+1))/N = sum/(N+1) during averaging.
                 auto newScoreSum = noConstraints ?
                     (current.scoreSum
@@ -1089,7 +1089,7 @@ void StructurePrinter::expandCycleLinearly(
     //  |              .
     //  C-C-C-A-A-%1   .
     // /     \         .
-    
+
     auto totalAtomsToPrint = secondCycleIdx < lastCycleIdx ?
         lastCycleIdx - secondCycleIdx + 1 :               // current->end
         cycle.size() - secondCycleIdx + lastCycleIdx + 1; // current->last_in_cycle + first_in_cycle->end
@@ -1286,7 +1286,7 @@ void StructurePrinter::printUnmaterializedEdges()
 
         const auto& nodeA = nodes[indexes.getIdxA()];
         const auto& nodeB = nodes[indexes.getIdxB()];
-        
+
         // Adjacent positions: bond can be drawn.
         if (const auto edgePos = inferEdgePosition(nodeA.getPosition(), nodeB.getPosition()))
         {
@@ -1408,7 +1408,7 @@ void StructurePrinter::printNeighbors(
             continue;
 
         // We might not maintain the previous direction due to an unprintable bond. In this case the previous direction
-        // is propagated instead of the current direction, non-parallel direction. 
+        // is propagated instead of the current direction, non-parallel direction.
         //   \         .
         //    P=C      .
         //       \     .

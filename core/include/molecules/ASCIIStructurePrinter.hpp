@@ -16,7 +16,7 @@ namespace ASCII
 
     //
     // Node
-    // 
+    //
 
     class Cycle;
 
@@ -191,7 +191,7 @@ namespace ASCII
         void expandCycleLinearly(
             const Cycle& cycle,
             const BondedAtomBase& firstAtom, const c_size secondCycleIdx, const c_size lastCycleIdx);
-        
+
         void printError(const Position point, const std::string& message, std::source_location&& location = std::source_location::current());
         void printImpliedHydrogens(const Node& node);
         void printEdge(const Position position, const Direction direction, const BondedAtomBase& from, const BondedAtomBase& to);

@@ -159,7 +159,7 @@ bool FlagField<EnumT>::has(const FlagField<EnumT> flags) const
 }
 
 template<typename EnumT>
-FlagField<EnumT> FlagField<EnumT>::operator|(const FlagField<EnumT> other) const 
+FlagField<EnumT> FlagField<EnumT>::operator|(const FlagField<EnumT> other) const
 {
 	return this->field | other.field;
 }

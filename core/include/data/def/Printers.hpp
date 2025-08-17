@@ -42,7 +42,7 @@ namespace def
 	public:
 		static std::string print(const T object)
 		{
-			return 
+			return
 				utils::floatEqual(object, std::numeric_limits<T>::lowest()) ? def::Amounts::Min :
 				utils::floatEqual(object, std::numeric_limits<T>::max()) ? def::Amounts::Max :
 				utils::formatFloatingPoint(std::format("{:.{}f}", object, 5));
@@ -275,7 +275,7 @@ namespace
 template <typename T, typename... Args>
 inline std::string def::prettyPrint(const T& object, Args&&... args)
 {
-	if constexpr (has_pretty_print<T>::value) 
+	if constexpr (has_pretty_print<T>::value)
 		return def::Printer<T>::prettyPrint(object, std::forward<Args>(args)...);
 	else
 		return def::Printer<T>::print(object, std::forward<Args>(args)...);

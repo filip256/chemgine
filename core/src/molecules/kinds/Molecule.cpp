@@ -170,7 +170,7 @@ Amount<Unit::MOLE_RATIO> Molecule::getSolubilityAt(
 		(solventPolarity.hydrophilicity + solventPolarity.lipophilicity);
 
 	// Logarithmic approach
-	// 
+	//
 	//const auto logP = solventPolarity.getPartitionCoefficient().asStd();
 	//const auto phi = 2.5;
 	//const auto baseSolubility =

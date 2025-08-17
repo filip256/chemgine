@@ -71,7 +71,7 @@ bool DataEstimator2DUnitTest::run()
 	const auto act = estimator->get(testMaxX).asStd();
 	error += std::abs(ref - act);
 	++n;
-	
+
 	error /= n;
 	if (error <= testThreshold)
 	{

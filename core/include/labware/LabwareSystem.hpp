@@ -60,14 +60,14 @@ private:
 	void add(std::unique_ptr<LabwareComponentBase>&& component);
 	static void add(PortIdentifier& otherPort, PortIdentifier& thisPort);
 
-	void clearBoundry();
-	void recomputeBoundry();
-	void addToBoundry(const sf::FloatRect& box);
-	void removeFromBoundry(const sf::FloatRect& box);
+	void clearBoundary();
+	void recomputeBoundary();
+	void addToBoundary(const sf::FloatRect& box);
+	void removeFromBoundary(const sf::FloatRect& box);
 	/// <summary>
 	/// Checks if the specified component is on the bounding box of the system.
 	/// </summary>
-	bool isOnBoundry(const sf::FloatRect& box) const;
+	bool isOnBoundary(const sf::FloatRect& box) const;
 
 	void recomputePositions(const l_size current, const uint8_t currentPort);
 
@@ -121,10 +121,10 @@ public:
 	/// </summary>
 	static void connect(PortIdentifier& destination, PortIdentifier& source);
 	static bool canConnect(const PortIdentifier& destination, const PortIdentifier& source);
-	
+
 	/// <summary>
 	/// Disconnects the specified component from this system and returns the new systems resulted
-	/// from the split. The *this system is never fully emptied and it's not retuned.
+	/// from the split. The *this system is never fully emptied and it's not returned.
 	/// </summary>
 	std::vector<LabwareSystem> disconnect(const l_size componentIdx);
 

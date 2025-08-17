@@ -34,7 +34,7 @@ namespace utils::builtin
             _BitScanReverse(&index, high);
             return static_cast<uint8_t>(index + 32);
         }
-        
+
         _BitScanReverse(&index, static_cast<uint32_t>(x));
         return static_cast<uint8_t>(index);
 #endif

@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 
         const auto prettify = args["pretty"].as<bool>();
         dataStore.dump(outputFile, prettify);
-            
+
         Log().info("Dumped output to file: '{0}'.", outputFile);
     }
     catch (const cxxopts::exceptions::exception& e)

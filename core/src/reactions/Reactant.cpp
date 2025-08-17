@@ -36,7 +36,7 @@ Reactant::Reactant(
 ) noexcept :
 	layer(layer),
 	amount(amount),
-	molecule(molecule), 
+	molecule(molecule),
 	container(container)
 {}
 

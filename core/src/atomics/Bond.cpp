@@ -1,4 +1,4 @@
-#include "atomics/Bond.hpp"
+﻿#include "atomics/Bond.hpp"
 
 #include "atomics/BondedAtom.hpp"
 #include "global/Charset.hpp"
@@ -129,7 +129,7 @@ BondType Bond::fromASCII(const char symbol)
 {
 #if defined(CHG_EXTENDED_CHAR_SET_ASCII)
 	// Extended symbols might have the same value as ASCII symbols (if CHG_EXTENDED_CHAR_SET_ASCII is defined).
-	// A separate switch is neede to prevent case collision errors.
+	// A separate switch is needed to prevent case collision errors.
 	const auto normalizedSymbol = [](char s)
 		{
 			s = s == ASCII::DoubleLineV ? ASCII::DoubleLineH : s;
@@ -219,7 +219,7 @@ BondType Bond::fromASCII(const char symbol)
 	default:
 		return BondType::NONE;
 	}
-	
+
 #endif
 }
 

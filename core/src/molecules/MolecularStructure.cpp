@@ -177,7 +177,7 @@ bool MolecularStructure::isFullyConnected() const
 
         ++visitedCount;
         visited[index] = true;
-        
+
         const auto& atom = *atoms[index];
         for (const auto& b : atom.bonds)
         {
@@ -279,7 +279,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
             branches.pop();
             continue;
         }
-        
+
         // Bond type
         if (const auto bondT = Bond::fromSMILES(smiles[i]); bondT != BondType::NONE)
         {
@@ -305,7 +305,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
                 clear();
                 return false;
             }
-            
+
             prev = addAtom(symbol, prev, bondType);
             bondType = BondType::SINGLE;
 
@@ -382,7 +382,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
                 rings.emplace(label, static_cast<c_size>(atoms.size() - 1));
                 continue;
             }
-            
+
             if (not addBondChecked(*prev, *atoms[rings[label]], bondType))
             {
                 Log(this).error("Cycle closure with label '{}' redefines an existing bond between two atoms in SMILES:\n{}\n{}^", label, smiles, std::string(i, ' '));
@@ -631,7 +631,7 @@ bool MolecularStructure::loadFromASCII(const std::string& ascii)
         {
             const auto edgePos = ASCII::Position(origin + dir.get());
             auto nodePos = ASCII::Position(edgePos + dir.get());
-            
+
             const auto nextBondType = Bond::fromASCII(buffer[edgePos]);
             if (nextBondType == BondType::NONE)
                 continue; // Not a bond.
@@ -791,7 +791,7 @@ std::unordered_map<Symbol, c_size> MolecularStructure::getComponentCountMap() co
         else
             result.emplace(symbol, 1);
     }
-    
+
     if (impliedHydrogenCount == 0)
         return result;
 
@@ -2022,7 +2022,7 @@ std::vector<MolecularStructure::Cycle> MolecularStructure::getMinimalCycleBasis(
             // unless equal, should be more independent towards previous cycles in the basis.
             if (xorCycle.count() > encodedCycle.count() || xorCycle == encodedCycle)
                 continue;
-            
+
             encodedCycle = std::move(xorCycle);
 
             // Loopback to ensure complete reduction. This is needed in very niche cases like:
@@ -2097,7 +2097,7 @@ ColoredTextBlock MolecularStructure::toASCII(const ASCII::PrintOptions options) 
             maybeColor ? *maybeColor :
             a->getAtom().isRadical() ? radicalAtomColor :
             rareAtomColor;
-        
+
         // Index symbols are padded to match the size of the corresponding atom symbol:
         // Symbol: Uup
         // Index:  1__
@@ -2144,7 +2144,7 @@ std::string MolecularStructure::printInfo() const
 {
     std::ostringstream info;
     const auto atomCount = atoms.size();
-    
+
     info << "SMILES: " << toSMILES() << '\n';
     info << "Structure:\n" << toASCII(ASCII::PrintOptions::Default | ASCII::PrintFlags::PRINT_IMPLIED_NON_CARBON_HYDROGENS) << '\n';
     StringTable adjacencyTable({ "Id", "Atom", "Bonds" }, false);
@@ -2189,6 +2189,6 @@ std::string MolecularStructure::printInfo() const
 
     info << "Adjacency table:\n";
     adjacencyTable.dump(info);
-    
+
     return info.str();
 }

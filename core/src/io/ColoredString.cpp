@@ -52,7 +52,7 @@ std::vector<ColoredChar> ColoredString::bind(const char* str, const OS::ColorTyp
 	std::vector<ColoredChar> temp;
 	for (size_t i = 0; str[i] != '\0'; ++i)
 		temp.emplace_back(str[i], color);
-	
+
 	return temp;
 }
 

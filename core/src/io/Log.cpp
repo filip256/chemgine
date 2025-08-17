@@ -113,7 +113,7 @@ void LogBase::logFormatted(const std::string& msg, const std::source_location& l
 			{LogType::SUCCESS, ColoredString("SUCCESS:", OS::Color::Green)},
 			{LogType::INFO, ColoredString("INFO:", OS::Color::Cyan)},
 			{LogType::DEBUG, ColoredString("DEBUG:", OS::Color::Magenta)},
-			{LogType::TRACE, ColoredString("TARCE:", OS::Color::DarkBlue)},
+			{LogType::TRACE, ColoredString("TRACE:", OS::Color::DarkBlue)},
 		};
 
 		if (const auto tagIt = tags.find(type); tagIt != tags.end())

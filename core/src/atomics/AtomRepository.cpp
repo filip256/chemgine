@@ -27,7 +27,7 @@ bool AtomRepository::add<AtomData>(const def::Object& definition)
 		Log(this).error("Incomplete atom definition at: {0}.", definition.getLocationName());
 		return false;
 	}
-	
+
 	if (not atoms.emplace(*symbol,
 		std::make_unique<AtomData>(*symbol, *name, *weight, std::move(*valences))).second)
 	{
@@ -77,7 +77,7 @@ bool AtomRepository::add<RadicalData>(const def::Object& definition)
 	}
 
 	std::unordered_set matchSet(matches->begin(), matches->end());
-	if (not radicals.emplace(*symbol, 
+	if (not radicals.emplace(*symbol,
 		std::make_unique<RadicalData>(*symbol, name, std::move(matchSet))).second)
 	{
 		Log(this).warn("Atom with duplicate symbol: '{0}' skipped.", *symbol);

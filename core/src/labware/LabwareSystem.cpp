@@ -86,7 +86,7 @@ LabwareComponentBase& LabwareSystem::getComponent(const size_t idx)
 
 void LabwareSystem::add(std::unique_ptr<LabwareComponentBase>&& component)
 {
-	addToBoundry(component->getBounds());
+	addToBoundary(component->getBounds());
 
 	connections.emplace_back(std::vector<LabwareConnection>(component->getPorts().size(), LabwareConnection(npos, 0, 0)));
 	components.emplace_back(std::move(component));
@@ -121,7 +121,7 @@ void LabwareSystem::add(PortIdentifier& srcPort, PortIdentifier& destPort)
 		destSys.components.emplace_back(std::move(srcSys.components.back()));
 		srcSys.components.pop_back();
 
-		destSys.addToBoundry(destSys.components.back()->getBounds());
+		destSys.addToBoundary(destSys.components.back()->getBounds());
 
 		destSys.connections.emplace_back(std::move(srcSys.connections.back()));
 		srcSys.connections.pop_back();
@@ -146,21 +146,21 @@ void LabwareSystem::add(PortIdentifier& srcPort, PortIdentifier& destPort)
 		LabwareConnection::getStrength(destSys.components[translatedComponent]->getPort(srcPort.portIdx).type, destPort->type));
 }
 
-void LabwareSystem::clearBoundry()
+void LabwareSystem::clearBoundary()
 {
 	boundingBox = sf::FloatRect(
 		sf::Vector2f(std::numeric_limits<float_s>::max(), std::numeric_limits<float_s>::max()),
 		sf::Vector2f(-std::numeric_limits<float_s>::max(), -std::numeric_limits<float_s>::max()));
 }
 
-void LabwareSystem::recomputeBoundry()
+void LabwareSystem::recomputeBoundary()
 {
-	clearBoundry();
+	clearBoundary();
 	for (l_size i = 0; i < components.size(); ++i)
-		addToBoundry(components[i]->getBounds());
+		addToBoundary(components[i]->getBounds());
 }
 
-void LabwareSystem::addToBoundry(const sf::FloatRect& box)
+void LabwareSystem::addToBoundary(const sf::FloatRect& box)
 {
 	sf::Vector2f end(
 		std::max(boundingBox.position.x + boundingBox.size.x, box.position.x + box.size.x),
@@ -173,17 +173,17 @@ void LabwareSystem::addToBoundry(const sf::FloatRect& box)
 	boundingBox.size.y = end.y - boundingBox.position.y;
 }
 
-void LabwareSystem::removeFromBoundry(const sf::FloatRect& box)
+void LabwareSystem::removeFromBoundary(const sf::FloatRect& box)
 {
-	if (isOnBoundry(box) == false)
+	if (isOnBoundary(box) == false)
 		return;
 
-	clearBoundry();
+	clearBoundary();
 	for (l_size i = 0; i < components.size(); ++i)
-		addToBoundry(components[i]->getBounds());
+		addToBoundary(components[i]->getBounds());
 }
 
-bool LabwareSystem::isOnBoundry(const sf::FloatRect& box) const
+bool LabwareSystem::isOnBoundary(const sf::FloatRect& box) const
 {
 	return box.position.x <= boundingBox.position.x || box.position.y <= boundingBox.position.y ||
 		box.position.x + box.size.x >= boundingBox.position.x + boundingBox.size.x ||
@@ -245,7 +245,7 @@ void LabwareSystem::rotate(const Amount<Unit::DEGREE> angle, const l_size center
 	for (uint8_t i = 0; i < connections[center].size(); ++i)
 		if (connections[center][i].isFree() == false)
 			recomputePositions(center, i);
-	recomputeBoundry();
+	recomputeBoundary();
 }
 
 l_size LabwareSystem::contains(const sf::Vector2f& point) const
@@ -345,7 +345,7 @@ std::unique_ptr<LabwareComponentBase> LabwareSystem::releaseComponent(const l_si
 {
 	if(components.size() == 1)
 	{
-		clearBoundry();
+		clearBoundary();
 		auto temp = std::move(components[componentIdx]);
 		components.erase(components.begin() + componentIdx);
 		return temp;
@@ -387,7 +387,7 @@ std::unique_ptr<LabwareComponentBase> LabwareSystem::releaseComponent(const l_si
 	components.erase(components.begin() + componentIdx);
 
 	// maintain bounding box
-	removeFromBoundry(freeComponent->getBounds());
+	removeFromBoundary(freeComponent->getBounds());
 
 	return freeComponent;
 }
@@ -401,7 +401,7 @@ LabwareSystem LabwareSystem::releaseSection(const l_size componentIdx, const uin
 	std::queue<std::pair<l_size, l_size>> queue;
 
 	// first component
-	removeFromBoundry(components[first]->getBounds());
+	removeFromBoundary(components[first]->getBounds());
 	newSystem.add(std::move(components[first]));
 	newSystem.connections.emplace_back(std::move(connections[first]));
 	componentsToRemove.emplace_back(first);
@@ -485,7 +485,7 @@ std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
 			push.y += (components[componentIdx]->getPosition().y < components[c.otherComponent]->getPosition().y ?
 				1.0f : -1.0f) * std::sin(angle.asStd());
 
-			// one of the sub-sections can remain in this 
+			// one of the sub-sections can remain in this
 			if (skippedFirst == false)
 			{
 				skippedFirst = true;

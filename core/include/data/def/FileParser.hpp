@@ -47,12 +47,12 @@ namespace def
 
 		/// <summary>
 		/// Returns the location of the last returned line in the current
-		/// definiton file.
+		/// definition file.
 		/// </summary>
 		def::Location getCurrentLocalLocation() const;
 
 		/// <summary>
-		/// Returns the location of the last returned line of the currently 
+		/// Returns the location of the last returned line of the currently
 		/// parsed definition file, taking into account included files.
 		/// </summary>
 		def::Location getCurrentGlobalLocation() const;
@@ -64,7 +64,7 @@ namespace def
 		std::string nextLocalLine();
 
 		/// <summary>
-		/// Returns the next non-empty line of the curretnly parsed definition
+		/// Returns the next non-empty line of the currently parsed definition
 		/// file, taking into account included files, or "" if EOF was reached.
 		/// </summary>
 		std::string nextGlobalLine();

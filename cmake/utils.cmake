@@ -1,5 +1,5 @@
 # Copies the contents of a given directory to a given destination inside the target directory.
-# The destination directory will be created if it doesn;t aready exist.
+# The destination directory will be created if it doesn;t already exist.
 function(copy_dir_to_target target_name src dst_name)
     set(dst "$<TARGET_FILE_DIR:${target_name}>/${dst_name}")
 

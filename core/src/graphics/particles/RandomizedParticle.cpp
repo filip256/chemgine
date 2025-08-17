@@ -56,7 +56,7 @@ void RandomizedParticle::tick(Amount<Unit::SECOND> timespan)
 	}
 
 	elapsed += timespan;
-	
+
 	const auto& col = shape.getFillColor();
 	const auto fadeMultiplier = ((lifespan - elapsed) / lifespan).asStd();
 	shape.setFillColor(sf::Color(col.r, col.g, col.b, static_cast<uint8_t>(system.color.a * fadeMultiplier)));

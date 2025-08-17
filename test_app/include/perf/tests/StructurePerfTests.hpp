@@ -99,7 +99,7 @@ public:
 		const std::string& name,
 		const std::variant<size_t, std::chrono::nanoseconds> limit,
 		const std::string& patternSmiles,
-		const std::string& intanceSmiles
+		const std::string& instanceSmiles
 	) noexcept;
 
 	void task() override final;

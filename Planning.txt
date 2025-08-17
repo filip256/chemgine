@@ -1,7 +1,7 @@
 We need a SMILES interpreter for defining structures, and using third party software
 We need to store backbones, functional groups and atoms as singletons for RAM and form molecules from them
 
-=> Thus we need a way to convert SMILES <--> molecule <--> optimized molecule (ideally whithout the molecule middle step)
+=> Thus we need a way to convert SMILES <--> molecule <--> optimized molecule (ideally without the molecule middle step)
 
 Optimized molecules = Molecules derived from a backbone using functional groups and atoms.
 Backbone = Common molecule like benzene, indole, tryptamine etc.
@@ -15,15 +15,15 @@ Info about an object can be retrieved by a key or id (incremental numeric / stri
 
 -- MolecularStructure --
 A graph like representation for molecules holding Atoms, FunctionalGroups and Backbones as nodes and Bonds
-Hydrogens are implied where needed 
+Hydrogens are implied where needed
 
 
 -- Atoms --
-Atoms are modeld as a class containg their properties, stored as singletons
-Some special atoms need to be defined like: 
+Atoms are modeld as a class containing their properties, stored as singletons
+Some special atoms need to be defined like:
  > R (organic radical)
  > A (aromatic radical)
- > Me (metal) 
+ > Me (metal)
  (see Functional Groups and Reactions)
 
 
@@ -34,7 +34,7 @@ specifying the position where a radical should be inserted
 
 -- Backbones --
 Complete MolecularStructures on which substitutions can be made.
-New backbones cannot be creaded by the algorithm.
+New backbones cannot be created by the algorithm.
 
 Could a backbone be formed from another backbone?
  - YES:   better memory for storing backbones
@@ -44,7 +44,7 @@ Could a backbone be formed from another backbone?
  - both: establish a hard limit (ie 3) for how deep the reccursion can get
 
 
--- Molecules -- 
+-- Molecules --
 Complete MolecularStructures. They differ from backbones by being more specific.
 Molecules cannot be considered backbones for other molecules.
 Some molecules can be defined in files for their properties and new ones can be created and stored by the algorithm.
@@ -52,7 +52,7 @@ Some molecules can be defined in files for their properties and new ones can be 
 
 
 In an optimized molecular structure there must be a way to specify which atoms are bounded:
-  AtomIdentifier can hold a reference to a MolecularStructure and the index of one atoms withing that structure
+  AtomIdentifier can hold a reference to a MolecularStructure and the index of one atoms within that structure
 
 
 
@@ -77,7 +77,7 @@ In an optimized molecular structure there must be a way to specify which atoms a
     1. Name each reactant (Ri) and product (Pi), and their coefficinets (Xi, Yi);
     2. Find the liniar eq of every atom A by:
         SUM[i:0->n] { Xi*(cnt A in Ri) - Yi*(cnt A in Pi) }
-    3. Since the system will usually have 1 degree of freedom, the coefficient of 
+    3. Since the system will usually have 1 degree of freedom, the coefficient of
        the first product is locked in at 1 and thus the number of unknowns is reduced
     4. Solve the system formed by each eq(A) using Gaussian elimination
     5. If needed, multiply coefficients to obtain integers
@@ -88,7 +88,7 @@ In an optimized molecular structure there must be a way to specify which atoms a
     a specialization of the second reaction. A reaction may become the specialization of
     multiple other reactions.
 
-    A network forms between reactions and their specializations, where the most generic 
+    A network forms between reactions and their specializations, where the most generic
     reactions form the first layer, user-defined concrete reactions form the final layer
     and specialized reactions form the layers inbetween.
 
@@ -105,47 +105,47 @@ In an optimized molecular structure there must be a way to specify which atoms a
         * specialized reactions may inherit or override properties from their parents
         * allows for "cut" reactions to be defined
     Disadvantages:
-        * creating the network is a complex operation, altough performed in preprocessing,
+        * creating the network is a complex operation, although performed in preprocessing,
         serialization of the networks in hot reloads should be considered
 
     Algorithm:
      1. read all reactions, store them as usual
      2. create a list for storing the first layer
      3. for every reaction X:
-            if X mathes a reaction R from the first layer:
+            if X matches a reaction R from the first layer:
                 for every specialization R' of R:
                     if X matches R':
                         continue checking the specializations R'' of R' (just like we did for R)
-                    if R' mathces X:
-                        insert X between R and R'   (X does not multiply, rather it becomes the parent of all mathing R'i)
-                    if X is equivalent with R':     (X matches R' and R' mathces X)
+                    if R' matches X:
+                        insert X between R and R'   (X does not multiply, rather it becomes the parent of all matching R'i)
+                    if X is equivalent with R':     (X matches R' and R' matches X)
                         ignore X
                 if X did not match any R':
                     insert X as a new specialization of R
-            if a reaction R from the first layer mathes X:
+            if a reaction R from the first layer matches X:
                 insert X in the first layer in place of R, make R a child of X
-                (X does not multiply, rather it becomes the parent of all mathing Ri)
+                (X does not multiply, rather it becomes the parent of all matching Ri)
             if X is equivalent to R:
                 ignore X
-            
-            always remeber the place of the first inserion of X and link the next insertions of X to that one
+
+            always remember the place of the first inserion of X and link the next insertions of X to that one
 
             (a "visited" set could be used to ensure X is not matched with and R twice, in case of potential cycles,
             this is not required since the equivalency will be caught but it may still be a singnificant optimization,
             especially if cycles occur early in the network)
      4. loop through all reactions and inherit any undefined properties
-             
+
 
 -- StructureRefs --
 F. groups, backbones, atoms, organics, anorganics can all be reactants and products.
 StructureRefs provide access to the MolecularStructure of each of these types.
 They are similar to Components but with a different purpose.
-    
+
 
 -- ConcreteReactions --
 Represent the actual reaction that takes place and it is formed by instancing an existing
 Reaction with real molecules from a Reactor. In essence they must describe efficiently
-exactly what gets consumed and created and must be appliable on a reactor.
+exactly what gets consumed and created and must be applicable on a reactor.
 
 
 -- MergeSubstitute --
@@ -159,7 +159,7 @@ similar to P but containing all of the substituents from X.
    - catalysts must be present
    - every there must be o molecule that matches every reactant:
       ! molecules, f. groups, bacbones have different matching rules => reactables !
-      ! the same molecule can match mutiple reactants !
+      ! the same molecule can match multiple reactants !
       ! one reactant must be matched by exactly one molecule !
       ! not all molecules in the reactor need to match (obvious) !
 
@@ -186,20 +186,20 @@ similar to P but containing all of the substituents from X.
 Tasks:
   DONE. Create atoms CSV with Id, symbol, valence, weight
   DONE. Create AtomData class for storing properties, initialization from csv line
-  DONE. Create DataManager for storing Datas as singletons
+  DONE. Create DataManager for storing Data as singletons
 ---
   DONE. Create BaseComponent, AtomIdentifier, Bond and MolecularStructure classes
   DONE. Create FunctionalGroup derived from BaseComponent
   DONE. Create FunctionalGroups CSV with Id, smiles
-  DONE. Create FunctionalGroupData with a MolecularStrcuture and write initilizer from SMILES
+  DONE. Create FunctionalGroupData with a MolecularStructure and write initializer from SMILES
 ---
   DONE. Create Backbone derived from BaseComponent
   DONE. Create Backbones CSV with Id, smiles
-  DONE. Create BackboneData with a MolecularStructure and write initilizer from SMILES
+  DONE. Create BackboneData with a MolecularStructure and write initializer from SMILES
 ---
   DONE. Create OrganicMolecule class
   DONE. Create OrganicMolecules CSV with Id, smiles
-  DONE. Create MoleculeData with a MolecularStructure and write initilizer from SMILES
+  DONE. Create MoleculeData with a MolecularStructure and write initializer from SMILES
 ---
   Make sure hydrogen isnt added from smiles into molecules
   ?. Implement BaseReactionCondition
@@ -217,7 +217,7 @@ Tasks:
   ?. Accept user mapping hints for reactions
   ?. Implement toSMILES
 ---
-  1. Implement reactor 
+  1. Implement reactor
   DONE. Implement algorithm for checking if a reaction is possible
 ---
   DONE. Implement graph matching algorithm
@@ -227,30 +227,30 @@ Tasks:
 ---
   DONE. Molecular structure improvements: isNormalized field (checks for req methods), implied hydrogen clarifications
 ---
-  1. Fix single key Repositorys
+  1. Fix single key Repositories
   2. Fix StructureRef id clash (Molecule/GenericMolecule)
   DONE. Estimator optimizer
   DONE. Use operator* instead of value() for std::optional
   DONE. Rename approximator to estimator
   DONE. Add class for atom symbol (perhaps char[2/4] is enough)
-  5. Add templated binary arithemtic operators to Amount, and remove .asStd() uses.
+  5. Add templated binary arithmetic operators to Amount, and remove .asStd() uses.
   DONE. Provide literals to Amount
   DONE. Add .toString() to stream for Amounts
   8. Add fp precision typedefs for systems, amounts, input etc
   9. Add base class for dynamic allocation instance counting
   DONE. Specialize std::hash instead of creating Hash classes
-  DONE. Rename LayerPorperties to Layer
+  DONE. Rename LayerProperties to Layer
   DONE. Add layer iterator
   ?. Fix const Ref<> (const Ref<> should allow non const methods on object, unlike Ref<const>)
   13. Add reactant.moveTo(conainer/layer)
   ?. Cache heat capacity on a tick basis
   DONE. Remove Amount to(x, y) with two params
-  10. Use layer as aggregation, rather than checking each time (volume cacheing bugs arrise)
+  10. Use layer as aggregation, rather than checking each time (volume caching bugs arise)
   11. Add combined tests
   DONE. Differentiate between true aggregation and layer aggregation
   DONE. Fix the slight determinism losses when running energy
   DONE. Refactor reactants and reactant set, to use some identifiers
-  DONE. Make undefinded targets equal to global dump and remove null target checks
+  DONE. Make undefined targets equal to global dump and remove null target checks
   ?. Treat layers and container refs equally.
   DONE. Add get LayerType and AggregationType name strings
   15. Add more simulation-time logs
@@ -282,7 +282,7 @@ Tasks:
   DONE. Add flag iterator
   DONE. Make layer types powers of two (try remove operator++, link to task #20)
   30. Add specialized target methods to Adaptors
-  31. Implment custom collision and bitmasks
+  31. Implement custom collision and bitmasks
   32. Add class names to logs (using typeid or smthing)
   DONE. Add unit prefix parsing
   DONE. Add DEGREE and RADIAN units, remove toRandians()
@@ -311,7 +311,7 @@ Tasks:
 ---
   DONE. Add heat capacity to molecules as a SplineEstimator
   DONE. Add latent heat(fusion and vaporization) to molecules
-  DONE. Add table.add<estimator>() method 
+  DONE. Add table.add<estimator>() method
   DONE. Add energy to reactors
   DONE. Add tests for estimators
   DONE. Add tests for reactor heat
@@ -359,7 +359,7 @@ Tasks:
   4. Add logic for reaction property inheritance
 ---
   DONE. Split reactants into Id <Molecule + Layer> and properties
-  DONE. Make reactant set acctually use a map Id -> properties
+  DONE. Make reactant set actually use a map Id -> properties
 ---
   DONE. Add reactors to labware components
   DONE. Add color field to molecules and layers
@@ -369,7 +369,7 @@ Tasks:
   DONE. Add tick to labs, systems, and components
   DONE. Add heatsources
   DONE. Add scale to labware components
-  DONE. Add display reactor properies
+  DONE. Add display reactor properties
   DONE. Create mixture network behind labware systems
   DONE. Add condenser
   DONE. Add particle system
@@ -379,7 +379,7 @@ Tasks:
 ---
   1. Add user define-able radical atoms
 ---
-  1. Add user defineable specific bond properties
+  1. Add user definable specific bond properties
 ---
      - IMPORTANT -
 
@@ -443,8 +443,8 @@ Tasks:
     7. Add reality check tests with real life references (func tests?)
     DONE. Add unit test for perf tests
     DONE. Hide test setup non-error logs
-    DONE. Regex for matching subgroups (care must be taked to include setups)
-    DONE. Log hidding support
+    DONE. Regex for matching subgroups (care must be taken to include setups)
+    DONE. Log hiding support
     DONE. Use std::fixed time printing format
     DONE. Refactor terminal color functions
     DONE. Make separate TestApp
@@ -469,7 +469,7 @@ Tasks:
     - CODE QUALITY -
 
     1. Raise warning level and fix compilation warnings
-    DONE. Remove unnecesarry clone() methods (only atoms remain)
+    DONE. Remove unnecessary clone() methods (only atoms remain)
     3. Replace dynamic casts with faster variants
     DONE. Remove all the operator new instance counting
     DONE. Split project into Core, UI, TestApp
@@ -477,7 +477,7 @@ Tasks:
     DONE. Set output and intermediates dir to the solution dir /bin
     7. noexcept default ctors
     8. Use std::path instead of strings
-    9. Implement std::formatter for objects to avoid unnecesarry serialization in logs
+    9. Implement std::formatter for objects to avoid unnecessary serialization in logs
 
 ---
    - BUG FIX -
@@ -496,12 +496,12 @@ Categorizations:
    backbones, molecules and f. groups
     => comparison matching does not need to check deep links
 
- - When a categorization is done with the smallest f. group or backbone first. Once a f. group or 
+ - When a categorization is done with the smallest f. group or backbone first. Once a f. group or
    backbone is used as a pattern it cannot be modified.
-    => already formed bond idexes remain valid
+    => already formed bond indices remain valid
 
  - Radical atoms where binding occurs will remain in the pattern f. group but when accessed
-   from target they will be ignored. Same with hydrogen atoms in backbones 
+   from target they will be ignored. Same with hydrogen atoms in backbones
     => patterns remain unchanged singletons
 
  - Radical atoms remain in the target even if they are mapped by the pattern
@@ -511,9 +511,9 @@ Categorizations:
    the end
     => simplifies algorithm
 
- - Bonds to composite components need vector of ohter for deep ceonnections
+ - Bonds to composite components need vector of other for deep ceonnections
 
- - System needed for canonicalizing radicals on symetric cycles, p-xylene must be p-xylene no mater the
+ - System needed for canonicalizing radicals on symmetric cycles, p-xylene must be p-xylene no mater the
    position of the methyls. Radicals could always be brought down to the smallest index.
 
 
@@ -570,12 +570,12 @@ Categorizations:
           For fusion, vaporization and sublimation.
           liquefiation = -fusion, condensation = -vaporization, deposition = -sublimation
 
-          It is expected that latent heats for copression are proportional to pressure. 
+          It is expected that latent heats for copression are proportional to pressure.
           It is expected that latent heats for expansion are inversly proportional to pressure.
           A functional estimator can be used.
           (?) If a substance is introduced in a reactor with a temp higher than its bp/mp, less energy is required
           to produce state change, than when heating gradually. <=> Latent heats are inversly proportional with temperature.
-          
+
           Sublimation occurs when it's latent heat < fusion latent heat.
           Deposition occurs when deposition latent heat < condensation.
 
@@ -585,8 +585,8 @@ Categorizations:
 
        - kinetic energy:
            = tempInKelvin * heatCapacity
-           
-           Since temperature is distributed whithin a uniforn mixtures, the average mixture heatCapacity should be used.
+
+           Since temperature is distributed within a uniform mixtures, the average mixture heatCapacity should be used.
 
        - heat of reaction:
            The energy released or absorbed by a reaction.
@@ -595,15 +595,15 @@ Categorizations:
        - solubility:
            Solubility only makes sense inside the liquid layers, which are:
            NONPOLAR, POLAR, DENSE_NONPOLAR, INORG_LIQUEFIED_GAS and INORG_MOLTEN_SOLID
-           Each molecule should have a polar and nonpolar solubility coeficients:
+           Each molecule should have a polar and nonpolar solubility coefficients:
            polarity & nonpolarity.
            (logP is not enough, perhaps dissolved_grams/liter at 20C)
            Additionally they also need a trait: ORGANIC / INORGANIC.
 
            When a solvent already has a solute A, to compute the solubility of another solute B:
-             find the min amount of solvent that can hold the whole A and use the rest of the solvent to dissovle B
+             find the min amount of solvent that can hold the whole A and use the rest of the solvent to dissolve B
              if there is not enough solvent, push the least soluble solute out to make room for the more soluble solute
-           
+
            - all gasses can mix
            - no solids can mix (but may still share the same layer)
            - liquids mix based on polarity
@@ -616,7 +616,7 @@ Categorizations:
            - gasses dissolve in liquids to some extent, using Henry's Law
 
            Henry's Law states that c = p/k, where c = the conc. (mol/L) of the gas in the solvent, p = pressure (atm) and
-           k is Henry's Constant (L * atm / mol), which is different for all gasses and ussually increases with temperature => spline estimator
+           k is Henry's Constant (L * atm / mol), which is different for all gasses and usually increases with temperature => spline estimator
            For efficiency, it should be stored as torr * mol_ratio
 
            To compute the actual solubility of a solute in a solvent we can average the polarity and nonpolarity of the solute,
@@ -636,7 +636,7 @@ Categorizations:
 
 
 
-    Aggregration changes:
+    Aggregation changes:
         - when energy is added into a reactor, it becomes potential energy
         - potential energy is turned into temperature via avg heat capacity
         - when temperature is equal to the lowest bp (or mp/sp) in the mixture
@@ -646,13 +646,13 @@ Categorizations:
           -> compute on add
 
         - if a layer contains reactants with transition points, for their current
-          state, which are incompatible with the temperature of the layer, these 
+          state, which are incompatible with the temperature of the layer, these
           reactants must be returned to their original state and the energy resulted
           form their backward conversion be added to the potential energy of the layer
            * if we include the incompatible reactant in the heat capacity we will add to much energy
              if we exclude it then we might add too little (resulting in more ticks to reach)
                 !!! perhaps incompatible reactants should never count towards heat capacity, since they are already 'heated'?
-             another way is to add the energy and consume in the same time, potentially resuling in deep recursive calls
+             another way is to add the energy and consume in the same time, potentially resulting in deep recursive calls
 
 
    -----------------------------------------------------------------------------------------------------------------
@@ -666,12 +666,12 @@ Categorizations:
                    - vertically and horizontally: f(X) = base(X - Xr + Xh) - base(Xh) + Yr,
                       where Xh is a given zero-point on base
                    - vertically with scaling: f(X) = base(X - Xr) * Yr
-                - by a given v_shif, h_shift and scale: f(X) = base(X - h_shift) * scale + v_shift
+                - by a given v_shift, h_shift and scale: f(X) = base(X - h_shift) * scale + v_shift
             - scaling: f(X) = base(X) * scale
           - algebraic:
              - mult: f(X) = e1(X) * e2(X)
              - add: f(X) = e1(X) + e2(X)
-             - compose: f(X) = e2(e1(X)) 
+             - compose: f(X) = e2(e1(X))
 
           Example: reaction speed(x_C) = mult(affine(doubles_func, h_shift: base_temp), base_speed)
 
@@ -697,8 +697,8 @@ Categorizations:
                                       \_/   \_____________________/
                                    x*new_s + new_v            new_s = S*s, new_v = - (H + h)*S*s + v*(s + 1)
 
-                 
-             
+
+
         Estimator Ref Count:
             Estimator E gets:
                1 when the E is created
@@ -710,7 +710,7 @@ Categorizations:
             CountedRef<T> could increment and decrement T's ref count safely when T is of type Countable<CountT>
 
 
-          CONSIDER REMOVING THE EXISTANCE THRESHOLD
+          CONSIDER REMOVING THE EXISTENCE THRESHOLD
 
    -----------------------------------------------------------------------------------------------------------------
 
@@ -738,7 +738,7 @@ Categorizations:
      - A radical should also be able to represent a substructure, for example 'Bz' := '%-C1=CC=CC=C1', where '%' acts as an entry-point.
      - The substructure can (and likely should) be generic 'Bz4' := '%-C1=CC=C(OR)C=C1'.
        For example '[Bz4]CCN' matches 4-O-substituted phenethylamines.
-    
+
     2 options:
      - Expand composite radicals during definition loading:
         * simple logic, easy to implement
@@ -750,7 +750,7 @@ Categorizations:
         * useful for simplifying definitions (controversial)
      - Keep composite radicals as single components:
         * each radical can match multiple substructures
-        * reactions cannot pack/unpack composite radicals => changes cannot be made to the inner structure, they are RP-mapped as single atoms 
+        * reactions cannot pack/unpack composite radicals => changes cannot be made to the inner structure, they are RP-mapped as single atoms
         * additional logic is needed for inner structure matching
         * cross-radical mapping implies all the substructures of one radical match at least one substruture in another radical
         * useful for complex pattern matching

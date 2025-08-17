@@ -1,4 +1,4 @@
-exclude: ^(thirdparty/|build/|.vscode|.git)
+exclude: '^(thirdparty/|build/|\.vscode/|\.git/|.*\.cdef$|CMakeLists\.txt$)'
 
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks

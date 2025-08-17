@@ -51,7 +51,7 @@ public:
 	constexpr inline Unit unit() const noexcept;
 	static inline std::string unitSymbol() noexcept;
 	static inline std::string unitName() noexcept;
-	
+
 	inline std::string toString(const uint8_t maxDigits = 255) const noexcept;
 	inline std::string format() noexcept = delete;
 
@@ -64,8 +64,8 @@ public:
 	constexpr inline bool isUnknown() const noexcept;
 	constexpr inline bool isInfinity() const noexcept;
 
-	constexpr bool oveflowsOnAdd(const Amount<UnitT> other) const noexcept;
-	constexpr bool oveflowsOnMultiply(const Amount<UnitT> other) const noexcept;
+	constexpr bool overflowsOnAdd(const Amount<UnitT> other) const noexcept;
+	constexpr bool overflowsOnMultiply(const Amount<UnitT> other) const noexcept;
 };
 
 
@@ -93,15 +93,15 @@ constexpr bool Amount<UnitT>::isInfinity() const noexcept
 }
 
 template<Unit UnitT>
-constexpr bool Amount<UnitT>::oveflowsOnAdd(const Amount<UnitT> other) const noexcept
+constexpr bool Amount<UnitT>::overflowsOnAdd(const Amount<UnitT> other) const noexcept
 {
-	return Value<StorageType>::oveflowsOnAdd(other);
+	return Value<StorageType>::overflowsOnAdd(other);
 }
 
 template<Unit UnitT>
-constexpr bool Amount<UnitT>::oveflowsOnMultiply(const Amount<UnitT> other) const noexcept
+constexpr bool Amount<UnitT>::overflowsOnMultiply(const Amount<UnitT> other) const noexcept
 {
-	return Value<StorageType>::oveflowsOnMultiply(other);
+	return Value<StorageType>::overflowsOnMultiply(other);
 }
 
 template<Unit UnitT>
@@ -116,7 +116,7 @@ constexpr Amount<UnitT> Amount<UnitT>::operator+(const Amount<UnitT> other) cons
 }
 
 template<Unit UnitT>
-constexpr Amount<UnitT> Amount<UnitT>::operator-(const Amount<UnitT> other) const noexcept 
+constexpr Amount<UnitT> Amount<UnitT>::operator-(const Amount<UnitT> other) const noexcept
 {
 	return Amount<UnitT>(this->value - other.value);
 }
@@ -303,7 +303,7 @@ template<>
 inline std::string Amount<Unit::TORR_MOLE_RATIO>::unitName() noexcept { return Amount<Unit::TORR>::unitName() + " * (" + Amount<Unit::MOLE>::unitName() + " / " + Amount<Unit::MOLE>::unitName() + ")"; }
 
 template<Unit UnitT>
-std::string Amount<UnitT>::toString(const uint8_t maxDigits) const noexcept 
+std::string Amount<UnitT>::toString(const uint8_t maxDigits) const noexcept
 {
 	const auto str = utils::formatFloatingPoint(value, maxDigits);
 	if constexpr (UnitT != Unit::NONE)

@@ -2,7 +2,7 @@
 
 ContentInitializer::ContentInitializer(
     std::initializer_list<std::pair<Molecule, Amount<Unit::MOLE>>> content
-) noexcept 
+) noexcept
 {
     this->content.reserve(content.size());
     for (const auto& i : content)
@@ -16,7 +16,7 @@ ContentInitializer::ContentInitializer(const ReactantSet& content) noexcept
         this->content.emplace(i.molecule, i.amount);
 }
 
-size_t ContentInitializer::size() const 
+size_t ContentInitializer::size() const
 {
     return content.size();
 }
@@ -31,7 +31,7 @@ ContentInitializer::const_iterator ContentInitializer::begin() const
     return content.begin();
 }
 
-ContentInitializer::const_iterator ContentInitializer::end() const 
+ContentInitializer::const_iterator ContentInitializer::end() const
 {
     return content.end();
 }

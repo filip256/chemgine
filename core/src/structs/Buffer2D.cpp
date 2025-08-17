@@ -221,7 +221,7 @@ Buffer2D<ContainerT>::Buffer2D(const ContainerT& str) noexcept
 			{
 				if(foundFirstNonEmpty)
 					block.emplaceBack(); // Maintain distances on Y-axis.
-					
+
 				lastSep = i;
 				continue; // Skip initial empty lines.
 			}
@@ -244,7 +244,7 @@ Buffer2D<ContainerT>::Buffer2D(const ContainerT& str) noexcept
 		block.emplaceBack(str.substr(lastSep + 1));
 		return;
 	}
-	
+
 	if (utils::isNPos(lastNonEmpty))
 	{
 		// Empty block.
@@ -357,7 +357,7 @@ Buffer2D<ContainerT>& Buffer2D<ContainerT>::appendRight(const Buffer2D& other, c
 	}
 
 	// If the two blocks have the same size, each i-th index from this is mapped to
-	// the i-th index from other. If the other block is smaller the first (diff / 2) 
+	// the i-th index from other. If the other block is smaller the first (diff / 2)
 	// lines from this block are skipped, centering the other. This block cannot be
 	// smaller because of the check above.
 	const auto thisBegin = this->block.beginIndex();

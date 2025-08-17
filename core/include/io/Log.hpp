@@ -167,7 +167,7 @@ void LogBase::log(const LogFormat& format, const LogType type, Args&&... args) c
 		not std::regex_match(utils::demangleTypeName(sourceType.name()), settings().logSourceFilter))
 		return;
 
-	// Values retuned from delayed-call args are temporary and need storage, normal args are stored as references.
+	// Values returned from delayed-call args are temporary and need storage, normal args are stored as references.
 	const auto argStorage = std::make_tuple(utils::invokeOrForward(std::forward<Args>(args))...);
 	const auto formatStr = format.getFormat();
 

@@ -22,7 +22,7 @@ public:
 	void setFree();
 
 	/// <summary>
-	/// Returns the strength of the connection between two port types. 
+	/// Returns the strength of the connection between two port types.
 	/// The strength is a 0-255 value where 0 means the ports cannot connect,
 	/// 1 means the connection is very weak and 255 means the connection is perfect.
 	/// </summary>

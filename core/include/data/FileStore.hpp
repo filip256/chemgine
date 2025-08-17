@@ -13,7 +13,7 @@ enum class ParseStatus : uint8_t
 
 /// <summary>
 /// Tracks the parsing status of files, helping to detect cyclic dependencies
-/// and already parsed files. 
+/// and already parsed files.
 /// </summary>
 class FileStore
 {

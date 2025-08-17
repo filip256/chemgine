@@ -12,7 +12,7 @@ StructureSMILESPerfTest::StructureSMILESPerfTest(
 	TimedTest(name + '_' + smiles, limit),
 	smiles(std::move(smiles))
 {}
-	
+
 void StructureSMILESPerfTest::task()
 {
 	dontOptimize = (MolecularStructure::fromSMILES(smiles)->toSMILES().empty());
@@ -90,9 +90,9 @@ StructureSubstitutionPerfTest::StructureSubstitutionPerfTest(
 	const std::string& name,
 	const std::variant<size_t, std::chrono::nanoseconds> limit,
 	const std::string& patternSmiles,
-	const std::string& intanceSmiles
+	const std::string& instanceSmiles
 ) noexcept :
-	StructureComparePerfTestBase(name, limit, patternSmiles, intanceSmiles),
+	StructureComparePerfTestBase(name, limit, patternSmiles, instanceSmiles),
 	atomMap(pattern.maximalMapTo(target).first)
 {}
 

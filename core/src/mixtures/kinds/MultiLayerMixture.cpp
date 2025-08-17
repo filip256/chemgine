@@ -80,7 +80,7 @@ void MultiLayerMixture::removeNegligibles()
 	bool removedAny = false;
 	for (auto r = content.begin(); r != content.end();)
 	{
-		if (r->second.amount < Constants::MOLAR_EXISTANCE_THRESHOLD)
+		if (r->second.amount < Constants::MOLAR_EXISTENCE_THRESHOLD)
 		{
 			const auto temp = r->second.mutate(-r->second.amount);
 			r = content.erase(r);
@@ -121,7 +121,7 @@ void MultiLayerMixture::checkOverflow()
 		topLayerType = getTopLayer();
 		topLayer = &layers.at(topLayerType);
 	}
-	
+
 	moveContentTo(overflowTarget, overflow, topLayerType);
 }
 
@@ -170,7 +170,7 @@ LayerType MultiLayerMixture::getClosestLayer(LayerType layer) const
 	if (layers.empty())
 		return LayerType::NONE;
 
-	auto l = layers.lower_bound(layer);	
+	auto l = layers.lower_bound(layer);
 	auto below = (l != layers.cend() && l->first == layer) ? std::next(l) : l;
 	auto above = std::map<LayerType, Layer>::const_reverse_iterator(l);
 

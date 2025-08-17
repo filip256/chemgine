@@ -267,7 +267,7 @@ bool BoilUnitTest::run()
 			}
 			pastSourceTemp = sTemp;
 		}
-		else if (testPhase == 2) // transfering all the nucleator
+		else if (testPhase == 2) // transferring all the nucleator
 		{
 			const auto nMoles = reactor.getAmountOf(nucleator);
 			if (nMoles >= pastNucleatorAmount)
@@ -416,7 +416,7 @@ MixtureUnitTests::MixtureUnitTests(
 
 	registerTest<MassConservationUnitTest>("mass_conservation_0", 1.0_L, ContentInitializer({
 		{Molecule("HH"), 2.0_mol}, {Molecule("CC=C"), 2.0_mol}, {Molecule("CC(=O)OCC"), 2.0_mol}, {Molecule("O"), 3.0_mol} }));
-	
+
 	registerTest<OverflowUnitTest>("overflow");
 
 	registerTest<DeterminismUnitTest>("determinism_0", 1.0_L, ContentInitializer({

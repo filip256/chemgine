@@ -12,7 +12,7 @@ Polarity::Polarity(
 
 Amount<Unit::NONE> Polarity::getPartitionCoefficient() const
 {
-	const auto hydro = 
+	const auto hydro =
 		hydrophilicity == 0.0 ? Amount<Unit::MOLE_RATIO>::Epsilon :
 		hydrophilicity.isInfinity() ? Amount<Unit::MOLE_RATIO>::Maximum :
 		hydrophilicity;

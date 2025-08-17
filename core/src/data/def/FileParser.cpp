@@ -68,7 +68,7 @@ void FileParser::closeSubparser()
 	for (const auto& a : subParser->includeAliases)
 		if(includeAliases[a.first] != a.second)
 			Log(this).warn("Overwritten already defined include alias: '{0}: {1}' from included file, at: {2}:{3}.", a.first, a.second, currentFile, currentLine);
-	
+
 	subParser->stream.close();
 	subParser.reset(nullptr);
 }
@@ -305,7 +305,7 @@ std::optional<def::Object> FileParser::nextDefinition()
 	if (location.isEOF())
 		return std::nullopt;
 
-	// TODO: remove dirty trick to pass subparser's inlcude aliases to this's parser (needed for the first def in a file)
+	// TODO: remove dirty trick to pass subparser's include aliases to this's parser (needed for the first def in a file)
 	return def::parse<def::Object>(
 		line, std::move(location), subParser ? subParser->includeAliases : includeAliases, oolDefinitions);
 }

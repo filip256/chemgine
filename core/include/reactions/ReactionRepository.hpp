@@ -44,10 +44,10 @@ public:
 	const ReactionNetwork& getNetwork() const;
 
 	/// <summary>
-	/// Finds all the occuring reactions for the given molecules. The order of molecules must match the order of the
+	/// Finds all the occurring reactions for the given molecules. The order of molecules must match the order of the
 	/// reactants in the matching reaction.
 	/// </summary>
-	std::unordered_set<ConcreteReaction> findOccuringReactions(const std::vector<Reactant>& reactants) const;
+	std::unordered_set<ConcreteReaction> findOccurringReactions(const std::vector<Reactant>& reactants) const;
 
 	/// <summary>
 	/// Finds all the reactions which can produce the given target and specializes them accordingly.

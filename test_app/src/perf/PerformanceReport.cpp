@@ -118,7 +118,7 @@ StringTable PerformanceReport::compare(const PerformanceReport& other) const
 		std::array<float_h, 4> changes;
 		std::transform(pairs.begin(), pairs.end(), changes.begin(),
 			[](const auto& p) { return (p.first - p.second) / std::max(p.second, std::numeric_limits<float_h>::min()) * 100.0; });
-		
+
 		// Pick the smallest absolute change out of the 4 combinations
 		const auto minChangeIt = std::min_element(changes.begin(), changes.end(),
 			[](const auto lhs, const auto rhs) { return std::abs(lhs) < std::abs(rhs); });

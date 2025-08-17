@@ -88,7 +88,7 @@ bool Lab::tryConnect(const size_t targetIdx, const float_s maxSqDistance)
 	return false;
 }
 
-bool Lab::tryDissconnect(const sf::Vector2f& point)
+bool Lab::tryDisconnect(const sf::Vector2f& point)
 {
 	for (size_t i = 0; i < systems.size(); ++i)
 	{

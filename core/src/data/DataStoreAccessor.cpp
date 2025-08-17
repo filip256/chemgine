@@ -12,7 +12,7 @@ const DataStore& DataStoreAccessor::get() const
 void DataStoreAccessor::set(const DataStore& dataStore)
 {
 	if (this->dataStore != nullptr)
-		Log(this).warn("Already initilized data store accessor has been modified.");
+		Log(this).warn("Already initialized data store accessor has been modified.");
 	this->dataStore = &dataStore;
 }
 

@@ -13,7 +13,7 @@ class LabwareComponentBase : public Accessor<>, public sf::Drawable
 {
 public:
 	const LabwareId id;
-	
+
 protected:
 	const BaseLabwareData& data;
 

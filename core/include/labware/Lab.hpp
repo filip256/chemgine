@@ -36,7 +36,7 @@ public:
 	size_t anyIntersects(const size_t targetIdx) const;
 
 	bool tryConnect(const size_t targetIdx, const float_s maxSqDistance);
-	bool tryDissconnect(const sf::Vector2f& point);
+	bool tryDisconnect(const sf::Vector2f& point);
 
 	using LabSystemsConstIterator = std::vector<LabwareSystem>::const_iterator;
 	LabSystemsConstIterator getSystemsBegin() const;

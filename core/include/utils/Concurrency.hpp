@@ -42,7 +42,7 @@ public:
 #else
     #define CHG_NEVER_CONCURRENT()                         \
         static std::atomic_flag __flag = ATOMIC_FLAG_INIT; \
-        details::NoConcurrencyGuard __guard(__flag) 
+        details::NoConcurrencyGuard __guard(__flag)
 #endif
 
 //

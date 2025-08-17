@@ -20,7 +20,7 @@ private:
 
     static void addBond(BondedAtomBase& from, BondedAtomBase& to, const BondType bondType);
     static bool addBondChecked(BondedAtomBase& from, BondedAtomBase& to, const BondType bondType);
-    
+
     BondedAtomBase* addAtom(const Symbol& symbol, BondedAtomBase* prev, const BondType bondType);
     void removeAtom(const c_size idx);
     void mutateAtom(const c_size idx, const Atom& newAtom);
@@ -105,19 +105,19 @@ public:
     uint8_t getDegreesOfFreedom() const;
 
     /// <summary>
-    /// Checks if the molecule contains no radical atoms. 
+    /// Checks if the molecule contains no radical atoms.
     /// Complexity: O(1)
     /// </summary>
     bool isConcrete() const;
 
     /// <summary>
-    /// Checks if the molecule contains at least one radical atom. 
+    /// Checks if the molecule contains at least one radical atom.
     /// Complexity: O(1)
     /// </summary>
     bool isGeneric() const;
 
     /// <summary>
-    /// Checks if the molecule contains a C-H bond. 
+    /// Checks if the molecule contains a C-H bond.
     /// Complexity: O(n)
     /// </summary>
     bool isOrganic() const;
@@ -177,7 +177,7 @@ public:
 
     /// <summary>
     /// Returns the first found mapping between the atoms of the pattern and the atoms of *this.
-    /// The whole pattern structure must be matched. 
+    /// The whole pattern structure must be matched.
     /// Complexity: rather large
     /// </summary>
     std::unordered_map<c_size, c_size> mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const;
@@ -264,4 +264,3 @@ public:
         return object.toSMILES();
     }
 };
-

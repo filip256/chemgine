@@ -9,7 +9,7 @@ const T Value<T>::epsilon = std::numeric_limits<T>::epsilon();
 template<class T>
 Value<T>& Value<T>::operator=(const Value<T>& other)
 {
-	if (this != &other) 
+	if (this != &other)
 		value = other.value;
 
 	return *this;

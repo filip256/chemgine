@@ -39,22 +39,22 @@ namespace OS
 		constexpr ColorType DarkGreyBG = 0x0080;
 		constexpr ColorType GreyBG = 0x0040 | 0x0020 | 0x0010;
 		constexpr ColorType WhiteBG = GreyBG | 0x0080;
-							
+
 		constexpr ColorType DarkRedBG = 0x0040;
 		constexpr ColorType RedBG = DarkRedBG | 0x0080;
-							
+
 		constexpr ColorType DarkGreenBG = 0x0020;
 		constexpr ColorType GreenBG = DarkGreenBG | 0x0080;
-							
+
 		constexpr ColorType DarkBlueBG = 0x0010;
 		constexpr ColorType BlueBG = DarkBlueBG | 0x0080;
-							
+
 		constexpr ColorType DarkYellowBG = 0x0040 | 0x0020;
 		constexpr ColorType YellowBG = DarkYellowBG | 0x0080;
-							
+
 		constexpr ColorType DarkMagentaBG = 0x0040 | 0x0010;
 		constexpr ColorType MagentaBG = DarkMagentaBG | 0x0080;
-							
+
 		constexpr ColorType DarkCyanBG = 0x0020 | 0x0010;
 		constexpr ColorType CyanBG = DarkCyanBG | 0x0080;
 

@@ -73,20 +73,20 @@ public:
 
 	bool hasAsReactant(const MolecularStructure& structure) const;
 	bool hasAsReactant(const Molecule& molecule) const;
-	
+
 	/// <summary>
 	/// Tries to map the i-th molecule in the given vector with i-th reactant of the reaction.
 	/// If successful, a non-empty vector of atom maps is returned.
 	/// </summary>
 	std::vector<std::unordered_map<c_size, c_size>> generateConcreteReactantMatches(const std::vector<Reactant>& molecules) const;
-	
+
 	/// <summary>
 	/// Tries to map one of the products of the reaction to the given target molecule.
 	/// If successful, the index of the product and an atom map are returned,
-	/// otherwise npos is retuned.
+	/// otherwise npos is returned.
 	/// </summary>
 	std::pair<size_t, std::unordered_map<c_size, c_size>> generateRetrosynthProductMatches(const StructureRef& targetProduct) const;
-	
+
 	/// <summary>
 	/// Generates the concrete products of the reaction for the given molecules, using the matches
 	/// resulted from generateConcreteReactantMatches(...).

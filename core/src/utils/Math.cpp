@@ -57,7 +57,7 @@ uint32_t utils::integerCoefficient(float_s v)
 	{
 		v = 1 / (v - static_cast<int>(v));
 		p *= v;
-	} 
+	}
 	while (isInteger(v, 0.05f) == false);
 	return static_cast<uint32_t>(p);
 }
@@ -77,17 +77,17 @@ uint32_t utils::integerCoefficient(const std::vector<float_s>& list)
 
 uint64_t utils::combinations(const uint64_t n, uint64_t k)
 {
-	if (k > n) 
+	if (k > n)
 		return 0;
 
-	if (k * 2 > n) 
+	if (k * 2 > n)
 		k = n - k;
 
-	if (k == 0) 
+	if (k == 0)
 		return 1;
 
 	uint64_t result = n;
-	for (uint64_t i = 2; i <= k; ++i) 
+	for (uint64_t i = 2; i <= k; ++i)
 	{
 		result *= (n - i + 1);
 		result /= i;
