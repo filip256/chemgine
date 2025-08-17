@@ -440,15 +440,15 @@ Point<size_t> Buffer2D<ContainerT>::getTrimmedDimensions() const
 
 	const auto topFirst = idx;
 	auto bottomLast = idx;
-	auto leftFirst = std::numeric_limits<Buffer2D<ContainerT>::IndexT>::max();
-	auto rightLast = std::numeric_limits<Buffer2D<ContainerT>::IndexT>::lowest();
+	auto leftFirst = std::numeric_limits<IndexT>::max();
+	auto rightLast = std::numeric_limits<IndexT>::lowest();
 
 	while (idx < endIdx)
 	{
 		const auto& line = block[idx];
 
 		const auto first = line.findFirstNonWhiteSpace();
-		if (first == Buffer2D<ContainerT>::Line::Npos)
+		if (first == Line::Npos)
 		{
 			++idx;
 			continue; // White space line.
@@ -471,7 +471,7 @@ template<typename ContainerT>
 Buffer2D<ContainerT>::PointT Buffer2D<ContainerT>::findFirstNonWhiteSpace() const
 {
 	for (auto y = block.beginIndex(); y < block.endIndex(); ++y)
-		if (const auto x = block[y].findFirstNonWhiteSpace(); x != ContainerT::npos)
+		if (const auto x = block[y].findFirstNonWhiteSpace(); x != Line::Npos)
 			return PointT(x, y);
 
 	return utils::npos<PointT>;
@@ -538,14 +538,14 @@ void Buffer2D<ContainerT>::dump(StreamT& os) const
 
 	const auto topFirst = idx;
 	auto bottomLast = idx;
-	auto leftFirst = std::numeric_limits<typename Buffer2D<ContainerT>::IndexT>::max();
+	auto leftFirst = std::numeric_limits<IndexT>::max();
 
 	while (idx < endIdx)
 	{
 		const auto& line = block[idx];
 
 		const auto first = line.findFirstNonWhiteSpace();
-		if (first == Buffer2D<ContainerT>::Line::Npos)
+		if (first == Line::Npos)
 		{
 			++idx;
 			continue; // White space line.

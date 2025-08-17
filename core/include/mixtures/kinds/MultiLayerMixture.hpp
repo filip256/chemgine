@@ -47,7 +47,7 @@ public:
 
 	void add(const Reactant& reactant) override final;
 	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount) override;
-	void add(const Amount<Unit::JOULE> heat) override;
+	void addEnergy(const Amount<Unit::JOULE> energy) override;
 
 	bool hasLayer(const LayerType layer) const;
 

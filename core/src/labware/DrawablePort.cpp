@@ -8,8 +8,8 @@ DrawablePort::DrawablePort(
 	const float_s scale
 ) noexcept :
 	type(port.type),
-	position((port.x - origin.x) * scale, (port.y - origin.y) * scale),
-	angle(port.angle)
+	angle(port.angle),
+	position((port.x - origin.x) * scale, (port.y - origin.y) * scale)
 {}
 
 void DrawablePort::rotate(const Amount<Unit::DEGREE> angle)

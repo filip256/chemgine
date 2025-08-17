@@ -109,7 +109,7 @@ void MolecularStructure::canonicalize()
     // Sort bonds by the precedence of the other atom and valence
     for (auto& a : atoms)
     {
-        std::sort(a->bonds.begin(), a->bonds.end(), [this](const auto& lhs, const auto& rhs)
+        std::sort(a->bonds.begin(), a->bonds.end(), [](const auto& lhs, const auto& rhs)
             {
                 const auto lhsPrecedence = lhs.getOther().getAtom().getPrecedence();
                 const auto rhsPrecedence = rhs.getOther().getAtom().getPrecedence();
@@ -495,7 +495,7 @@ void insertError(TextBlock& buffer, const ASCII::Position position)
         std::make_pair(ASCII::Direction::Left, '>')
     };
 
-    for (const auto [dir, chr] : directions)
+    for (const auto& [dir, chr] : directions)
     {
         const auto pos = position + dir.get();
         if (buffer.isWhiteSpace(pos))
@@ -627,7 +627,7 @@ bool MolecularStructure::loadFromASCII(const std::string& ascii)
             positionMap.emplace(state.position + ASCII::Direction::Right.get() * i, newAtom);
 
         const auto nextDirections = ASCII::StructurePrinter::getPossibleNextDirections(ASCII::PositionLine(state.position, symbol.size()));
-        for (const auto [dir, origin] : nextDirections)
+        for (const auto& [dir, origin] : nextDirections)
         {
             const auto edgePos = ASCII::Position(origin + dir.get());
             auto nodePos = ASCII::Position(edgePos + dir.get());
@@ -1360,11 +1360,6 @@ namespace
         return static_cast<c_size>(closures.size());
     }
 
-    bool CycleClosureSet::contains(const c_size idxA, const c_size idxB) const
-    {
-        return closures.contains(CycleClosure(idxA, idxB, 0));
-    }
-
     CycleClosureSet::Iterator CycleClosureSet::begin() const
     {
         return closures.begin();
@@ -1696,7 +1691,7 @@ bool MolecularStructure::loadFromMolBin(std::istream& is)
 
     for (c_size i = 0; i < futureBonds.size(); ++i)
     {
-        for (const auto [type, other] : futureBonds[i])
+        for (const auto& [type, other] : futureBonds[i])
         {
             if (other >= atoms.size())
             {

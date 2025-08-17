@@ -67,7 +67,7 @@ bool ReactionData::balance(
 		{
 			if (sysmap.contains(c.first) == false)
 			{
-				sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
+				sysmap.emplace(c.first, sysmap.size());
 				system.addNullRow(syslen);
 				system.back()[i] = static_cast<float_s>(c.second);
 			}
@@ -82,7 +82,7 @@ bool ReactionData::balance(
 	{
 		if (sysmap.contains(c.first) == false)
 		{
-			sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
+			sysmap.emplace(c.first, sysmap.size());
 			system.addNullRow(syslen);
 			system.back().back() = static_cast<float_s>(c.second);
 		}
@@ -97,7 +97,7 @@ bool ReactionData::balance(
 		{
 			if (sysmap.contains(c.first) == false)
 			{
-				sysmap.emplace(std::move(std::make_pair(c.first, sysmap.size())));
+				sysmap.emplace(c.first, sysmap.size());
 				system.addNullRow(syslen);
 				system.back()[reactants.size() + i - 1] = -1 * static_cast<float_s>(c.second);
 			}
@@ -251,7 +251,7 @@ std::vector<Molecule> ReactionData::generateConcreteProducts(const std::vector<R
 	std::vector<MolecularStructure> concreteProducts;
 	concreteProducts.reserve(products.size());
 	for (size_t i = 0; i < products.size(); ++i)
-		concreteProducts.emplace_back(std::move(products[i].getStructure().createCopy()));
+		concreteProducts.emplace_back(products[i].getStructure().createCopy());
 
 	for (const auto& p : componentMapping)
 	{
@@ -291,7 +291,7 @@ RetrosynthReaction ReactionData::generateRetrosynthReaction(
 	std::vector<MolecularStructure> substReactants;
 	substReactants.reserve(reactants.size());
 	for (size_t i = 0; i < reactants.size(); ++i)
-		substReactants.emplace_back(std::move(reactants[i].getStructure().createCopy()));
+		substReactants.emplace_back(reactants[i].getStructure().createCopy());
 
 	const auto targetMatchedComponents = utils::extractUniqueValues(match.second);
 	const auto reversedMapping = utils::reverseMap(componentMapping);

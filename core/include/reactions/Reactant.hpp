@@ -42,15 +42,16 @@ class Layer;
 
 class Reactant
 {
+public:
+	bool isNew = true;
+	const LayerType layer;
+	Amount<Unit::MOLE> amount;
+	const Molecule molecule;
+
 private:
 	Ref<Mixture> container;
 
 public:
-	bool isNew = true;
-	const LayerType layer;
-	const Molecule molecule;
-	Amount<Unit::MOLE> amount;
-
 	Reactant(
 		const Molecule& molecule,
 		const LayerType layer,

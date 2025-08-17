@@ -18,7 +18,7 @@ void DumpContainer::add(const Reactant& reactant)
 	totalMass += rMass;
 }
 
-void DumpContainer::add(const Amount<Unit::JOULE> energy)
+void DumpContainer::addEnergy(const Amount<Unit::JOULE> energy)
 {
 	if (totalEnergy.oveflowsOnAdd(energy))
 	{

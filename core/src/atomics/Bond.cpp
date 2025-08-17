@@ -1,11 +1,12 @@
 #include "atomics/Bond.hpp"
 
 #include "atomics/BondedAtom.hpp"
+#include "global/Charset.hpp"
 #include "io/Log.hpp"
 
 Bond::Bond(BondedAtomBase& other, const BondType type) :
-	other(&other),
-	type(type)
+	type(type),
+	other(&other)
 {}
 
 const BondedAtomBase& Bond::getOther() const
@@ -96,7 +97,7 @@ char Bond::getASCII(const BondType type, const ASCII::Direction direction)
 	switch (type)
 	{
 	case BondType::NON_BOND:
-		return 'ù';
+		return ASCII::MiddleDot1;
 
 	case BondType::IONIC:
 	case BondType::SINGLE:
@@ -106,14 +107,14 @@ char Bond::getASCII(const BondType type, const ASCII::Direction direction)
 
 	case BondType::DOUBLE:
 		if (direction.get().x != 0)
-			return 'Í';
-		return 'º';
+			return ASCII::DoubleLineH;
+		return ASCII::DoubleLineV;
 
 	case BondType::TRIPLE:
-		return 'ð';
+		return ASCII::TripleLineH;
 
 	case BondType::QUADRUPLE:
-		return 'î';
+		return ASCII::Epsilon;
 
 	case BondType::AROMATIC:
 		return ':';
@@ -126,29 +127,55 @@ char Bond::getASCII(const BondType type, const ASCII::Direction direction)
 
 BondType Bond::fromASCII(const char symbol)
 {
-	switch (symbol)
+#if defined(CHG_EXTENDED_CHAR_SET_ASCII)
+	// Extended symbols might have the same value as ASCII symbols (if CHG_EXTENDED_CHAR_SET_ASCII is defined).
+	// A separate switch is neede to prevent case collision errors.
+	const auto normalizedSymbol = [](char s)
+		{
+			s = s == ASCII::DoubleLineV ? ASCII::DoubleLineH : s;
+			switch(s)
+			{
+				case ASCII::MiddleDot1:
+					return '.';
+
+				case ASCII::LineH:
+					return '-';
+
+				case ASCII::LineV:
+					return '|';
+
+				case ASCII::DoubleLineH:
+					return '=';
+
+				case ASCII::TripleLineH:
+					return '#';
+
+				case ASCII::Epsilon:
+					return '$';
+
+				default:
+					return s;
+			}
+		}(symbol);
+
+	switch (normalizedSymbol)
 	{
-	case 'ù':
 	case '.':
 		return BondType::NON_BOND;
 
-	case '³':
-	case 'Ä':
 	case '/':
 	case '\\':
 	case '-':
 	case '|':
 		return BondType::SINGLE;
 
-	case 'Í':
-	case 'º':
 	case '=':
 		return BondType::DOUBLE;
 
-	case 'ð':
+	case '#':
 		return BondType::TRIPLE;
 
-	case 'î':
+	case '$':
 		return BondType::QUADRUPLE;
 
 	case ':':
@@ -157,6 +184,43 @@ BondType Bond::fromASCII(const char symbol)
 	default:
 		return BondType::NONE;
 	}
+
+#else
+	switch (symbol)
+	{
+	case ASCII::MiddleDot1:
+	case '.':
+		return BondType::NON_BOND;
+
+	case ASCII::LineH:
+	case ASCII::LineV:
+	case '/':
+	case '\\':
+	case '-':
+	case '|':
+		return BondType::SINGLE;
+
+	case ASCII::DoubleLineH:
+	case ASCII::DoubleLineV:
+	case '=':
+		return BondType::DOUBLE;
+
+	case ASCII::TripleLineH:
+	case '#':
+		return BondType::TRIPLE;
+
+	case ASCII::Epsilon:
+	case '$':
+		return BondType::QUADRUPLE;
+
+	case ':':
+		return BondType::AROMATIC;
+
+	default:
+		return BondType::NONE;
+	}
+	
+#endif
 }
 
 bool Bond::isInDirection(const char symbol, const ASCII::Direction direction)
@@ -172,7 +236,7 @@ bool Bond::isInDirection(const char symbol, const ASCII::Direction direction)
 
 	case ASCII::Direction::Up.getIdx():
 	case ASCII::Direction::Down.getIdx():
-		return symbol == '³' || symbol == '|';
+		return symbol == ASCII::LineV || symbol == '|';
 
 	case ASCII::Direction::UpRight.getIdx():
 	case ASCII::Direction::DownLeft.getIdx():
@@ -180,10 +244,10 @@ bool Bond::isInDirection(const char symbol, const ASCII::Direction direction)
 
 	case ASCII::Direction::Right.getIdx():
 	case ASCII::Direction::Left.getIdx():
-		return symbol == 'Ä' || symbol == '-';
+		return symbol == ASCII::LineH || symbol == '-';
 
 	default:
-		Log<Bond>().fatal("Unsupported direction: {0}.", direction.get());
+		Log<Bond>().fatal("Unsupported direction index: {}.", direction.getIdx());
 		return false;
 	}
 }
@@ -206,7 +270,7 @@ bool Bond::hasCompleteASCIIRepresentation(const BondType type)
 		return false;
 
 	default:
-		Log<Bond>().fatal("Unsupported bond type: {0}.", underlying_cast(type));
+		Log<Bond>().fatal("Unsupported bond type: {}.", underlying_cast(type));
 		return false;
 	}
 }

@@ -15,10 +15,10 @@ Object::Object(
 	type(type),
 	identifier(std::move(identifier)),
 	specifier(std::move(specifier)),
+	location(std::move(location)),
 	properties(std::move(properties)),
 	ilSubDefs(std::move(ilSubDefs)),
-	oolSubDefs(std::move(oolSubDefs)),
-	location(std::move(location))
+	oolSubDefs(std::move(oolSubDefs))
 {}
 
 DefinitionType Object::getType() const

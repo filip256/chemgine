@@ -17,7 +17,7 @@ public:
 	BaseComponentData();
 	BaseComponentData(
 		const Amount<Unit::GRAM> weight,
-		const uint8_t rarity = 255);
+		const uint8_t rarity = 255) noexcept;
 	BaseComponentData(BaseComponentData&&) = default;
 	virtual ~BaseComponentData() = default;
 

@@ -13,10 +13,24 @@ target_include_directories(core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 # Compiler options
 if(MSVC)
     target_compile_options(core PUBLIC
-        /W3  # Warning Level  # TODO: Upgrade to W4
+        /W3  # Warning Level  TODO: Upgrade to /W4
         /WX  # Treat warnings as errors
         # /utf-8  # TODO: Uncomment when adding fmt
     )
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(core PUBLIC
+        -Wall      # Warning Level  TODO: Upgrade to -Wall -Wextra
+        -Wno-overloaded-virtual  # TODO: Remove
+        -Werror    # Treat warnings as errors
+    )
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(core PUBLIC
+        -Wall                    # Warning Level  TODO: Upgrade to -Wall -Wextra
+        -Wno-overloaded-virtual  # TODO: Remove
+        -Werror                  # Treat warnings as errors
+    )
+else()
+    message(WARNING "Unsupported CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
 endif()
 
 # User options
@@ -30,6 +44,14 @@ endif()
 
 if(DISABLE_COLORED_PRINTING)
     target_compile_definitions(core PUBLIC CHG_DISABLE_COLORED_PRINTING)
+endif()
+
+if(EXTENDED_CHAR_SET STREQUAL "CP437")
+    target_compile_definitions(core PUBLIC CHG_EXTENDED_CHAR_SET_CP437)
+elseif(EXTENDED_CHAR_SET STREQUAL "ASCII")
+    target_compile_definitions(core PUBLIC CHG_EXTENDED_CHAR_SET_ASCII)
+else()
+    message(FATAL_ERROR "Unsupported EXTENDED_CHAR_SET: ${EXTENDED_CHAR_SET} (supported options: CP437 | ASCII)")
 endif()
 
 # boost

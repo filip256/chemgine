@@ -19,12 +19,6 @@ class RetrosynthReaction;
 class ReactionData
 {
 private:
-	Ref<const ReactionData> baseReaction = NullRef;
-	std::vector<StructureRef> reactants;
-	std::vector<StructureRef> products;
-	ImmutableSet<Catalyst> catalysts;
-	std::unordered_map<std::pair<size_t, c_size>, std::pair<size_t, c_size>> componentMapping;
-
 	static bool balance(
 		std::vector<std::pair<StructureRef, uint8_t>>& reactants,
 		std::vector<std::pair<StructureRef, uint8_t>>& products);
@@ -44,6 +38,14 @@ public:
 	const EstimatorRef<Unit::MOLE_PER_SECOND, Unit::CELSIUS> tempSpeedEstimator;
 	const EstimatorRef<Unit::NONE, Unit::MOLE_RATIO> concSpeedEstimator;
 
+private:
+	Ref<const ReactionData> baseReaction = NullRef;
+	std::vector<StructureRef> reactants;
+	std::vector<StructureRef> products;
+	ImmutableSet<Catalyst> catalysts;
+	std::unordered_map<std::pair<size_t, c_size>, std::pair<size_t, c_size>> componentMapping;
+
+public:
 	ReactionData(
 		const ReactionId id,
 		const std::string& name,

@@ -1,6 +1,7 @@
 #include "utils/ASCII.hpp"
 
 #include "io/Log.hpp"
+#include "global/Charset.hpp"
 
 namespace ASCII
 {
@@ -30,8 +31,8 @@ char Direction::getSymbol() const
 {
     const auto dir = get();
     return
-        dir.x == 0 ? '³' :
-        dir.y == 0 ? 'Ä' :
+        dir.x == 0 ? ASCII::LineV :
+        dir.y == 0 ? ASCII::LineH :
         ((dir.x < 0) == (dir.y < 0)) ? '\\' :
         '/';
 }
@@ -86,11 +87,11 @@ namespace
     constexpr uint8_t getAngleIndex(const Direction d1, const Direction d2)
     {
         // Relative angle index (example when d1 is (1, 0)):
-        //  7 6 5
-        //   \|/
-        //  0- -4
-        //   /|\
-        //  1 2 3
+        //  7 6 5   .
+        //   \|/    .
+        //  0- -4   .
+        //   /|\    .
+        //  1 2 3   .
         // The following always hold:
         //  0   = same direction
         //  4   = reverse direction

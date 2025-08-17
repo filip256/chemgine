@@ -10,7 +10,7 @@ Reactor::Reactor(const Reactor& other) noexcept :
 {
 	this->cachedReactions.reserve(other.cachedReactions.size());
 	for (const auto& r : other.cachedReactions)
-		this->cachedReactions.emplace(std::move(r.makeCopy()));
+		this->cachedReactions.emplace(r.makeCopy());
 }
 
 Reactor::Reactor(
@@ -110,8 +110,6 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 {
 	for (const auto& r : cachedReactions)
 	{
-		const auto x = r.getReactantTemperature();
-
 		auto speedCoef =
 			r.getData().getSpeedAt(r.getReactantTemperature(), getAmountOf(r.getReactants()).to<Unit::MOLE_RATIO>(totalMoles))
 			.to<Unit::MOLE>(timespan) *
@@ -201,9 +199,9 @@ void Reactor::consumePotentialEnergy()
 	}
 }
 
-void Reactor::add(const Amount<Unit::JOULE> heat)
+void Reactor::addEnergy(const Amount<Unit::JOULE> energy)
 {
-	MultiLayerMixture::add(heat);
+	MultiLayerMixture::addEnergy(energy);
 }
 
 void Reactor::add(const Molecule& molecule, const Amount<Unit::MOLE> amount)

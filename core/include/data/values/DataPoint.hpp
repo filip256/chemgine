@@ -81,7 +81,7 @@ private:
 		auto failed = static_cast<uint8_t>(-1);
 
 		(
-			[&baseInputs, &expectedInputs, &failed, &location]() {
+			[&baseInputs, &expectedInputs, &failed]() {
 				const auto expected = baseInputs[Is].to<InUs>();
 				if (not expected)
 				{
@@ -103,8 +103,7 @@ public:
 		const std::string& str,
 		const Unit outputBaseUnit,
 		const std::vector<Unit>& inputBaseUnits,
-		const def::Location& location
-	)
+		const def::Location& location)
 	{
 		const Log<DataPoint<OutU, InUs...>> log;
 		const auto inputCount = sizeof...(InUs);

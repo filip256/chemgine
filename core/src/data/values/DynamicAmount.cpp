@@ -9,8 +9,8 @@ DynamicAmount::DynamicAmount(const Unit unit) noexcept :
 {}
 
 DynamicAmount::DynamicAmount(const StorageType value, const Unit unit) noexcept :
-	value(value),
-	unit(unit)
+    unit(unit),
+	value(value)
 {}
 
 DynamicAmount::StorageType DynamicAmount::asKilo() const

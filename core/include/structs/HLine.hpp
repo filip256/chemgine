@@ -42,8 +42,8 @@ public:
 
 template<typename T, typename LenT>
 constexpr HLine<T, LenT>::HLine(const Point<T>& origin, const LenT length) noexcept :
-    origin(origin),
-    length(length)
+    length(length),
+    origin(origin)
 {
     if constexpr (not std::is_unsigned_v<LenT>)
     {

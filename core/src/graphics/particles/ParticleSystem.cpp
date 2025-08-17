@@ -11,14 +11,14 @@ ParticleSystem::ParticleSystem(
 	const Amount<Unit::PER_SECOND> speed,
 	const Amount<Unit::SECOND> lifespan
 ) noexcept :
-	origin(origin),
-	color(color),
-	particleSize(particleSize),
 	direction(direction),
 	targetDirection(targetDirection),
 	directionChangeRate(directionChangeRate),
+	particleSize(particleSize),
+	color(color),
 	speed(speed),
-	lifespan(lifespan)
+	lifespan(lifespan),
+	origin(origin)
 {
 	particles.reserve(particleCount);
 	for (uint16_t i = 0; i < particleCount; ++i)

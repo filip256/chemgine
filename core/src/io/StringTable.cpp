@@ -1,6 +1,7 @@
 #include "io/StringTable.hpp"
 
 #include "io/Log.hpp"
+#include "global/Charset.hpp"
 
 #include <numeric>
 #include <sstream>
@@ -9,8 +10,8 @@ StringTable::StringTable(
 	std::vector<std::string>&& header,
 	const bool alignEntriesLeft
 ) noexcept :
-	header(std::move(header)),
-	alignEntriesLeft(alignEntriesLeft)
+	alignEntriesLeft(alignEntriesLeft),
+	header(std::move(header))
 {}
 
 void StringTable::getMaxWidths(const std::vector<std::string>& strings, std::vector<size_t>& widths)
@@ -59,29 +60,28 @@ void StringTable::clear()
 void StringTable::dump(std::ostream& out) const
 {
 	const auto widths = getMaxWidths();
-	const auto totalWidth = std::accumulate(widths.begin(), widths.end(), size_t(0));
-
+	
 	// top line
-	out << 'Ú';
+	out << ASCII::CornerTopLeft;
 	for (size_t i = 0; i < widths.size() - 1; ++i)
-		out << std::string(widths[i], 'Ä') << 'Â';
-	out << std::string(widths.back(), 'Ä') << '¿';
+		out << std::string(widths[i], ASCII::LineH) << ASCII::JunctionDown;
+	out << std::string(widths.back(), ASCII::LineH) << ASCII::CornerTopRight;
 	out << '\n';
 
 	// header
-	out << '³';
+	out << ASCII::LineV;
 	for (size_t i = 0; i < header.size(); ++i)
 	{
 		const auto pad = (widths[i] - header[i].size()) / 2.0f;
-		out << std::string(static_cast<size_t>(std::ceil(pad)), ' ') << header[i] << std::string(static_cast<size_t>(pad), ' ') << '³';
+		out << std::string(static_cast<size_t>(std::ceil(pad)), ' ') << header[i] << std::string(static_cast<size_t>(pad), ' ') << ASCII::LineV;
 	}
 	out << '\n';
 
 	// breakline
-	out << 'Ã';
+	out << ASCII::JunctionRight;
 	for (size_t i = 0; i < widths.size() - 1; ++i)
-		out << std::string(widths[i], 'Ä') << 'Å';
-	out << std::string(widths.back(), 'Ä') << '´';
+		out << std::string(widths[i], ASCII::LineH) << ASCII::Cross;
+	out << std::string(widths.back(), ASCII::LineH) << ASCII::JunctionLeft;
 	out << '\n';
 
 	for (size_t i = 0; i < entries.size(); ++i)
@@ -89,36 +89,36 @@ void StringTable::dump(std::ostream& out) const
 		if (entries[i].empty())
 		{
 			// breakline
-			out << 'Ã';
+			out << ASCII::JunctionRight;
 			for (size_t i = 0; i < widths.size() - 1; ++i)
-				out << std::string(widths[i], 'Ä') << 'Å';
-			out << std::string(widths.back(), 'Ä') << '´';
+				out << std::string(widths[i], ASCII::LineH) << ASCII::Cross;
+			out << std::string(widths.back(), ASCII::LineH) << ASCII::JunctionLeft;
 			out << '\n';
 
 			continue;
 		}
 
 		// entry
-		out << '³';
+		out << ASCII::LineV;
 		if (alignEntriesLeft)
 		{
 			for (size_t j = 0; j < entries[i].size(); ++j)
-				out << ' ' << entries[i][j] << std::string(widths[j] - entries[i][j].size() - 1, ' ') << '³';
+				out << ' ' << entries[i][j] << std::string(widths[j] - entries[i][j].size() - 1, ' ') << ASCII::LineV;
 		}
 		else
 		{
 			for (size_t j = 0; j < entries[i].size(); ++j)
-				out << std::string(widths[j] - entries[i][j].size() - 1, ' ') << entries[i][j] << " ³";
+				out << std::string(widths[j] - entries[i][j].size() - 1, ' ') << entries[i][j] << ' ' << ASCII::LineV;
 		}
 
 		out << '\n';
 	}
 
 	// bottom line
-	out << 'À';
+	out << ASCII::CornerBottomLeft;
 	for (size_t i = 0; i < widths.size() - 1; ++i)
-		out << std::string(widths[i], 'Ä') << 'Á';
-	out << std::string(widths.back(), 'Ä') << 'Ù';
+		out << std::string(widths[i], ASCII::LineH) << ASCII::JunctionUp;
+	out << std::string(widths.back(), ASCII::LineH) << ASCII::CornerBottomRight;
 }
 
 std::string StringTable::toString() const

@@ -77,7 +77,6 @@ public:
 class BoilUnitTest : public ReactorUnitTest
 {
 private:
-	const float_h threshold = 1e-3;
 	const uint32_t ticks = 256;
 	const Amount<Unit::SECOND> tickTimespan = 1.0_s;
 	const Amount<Unit::JOULE> energyStep = 4000.0_J;

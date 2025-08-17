@@ -120,8 +120,8 @@ DoubleEnded<T>::DoubleEnded(
 	const IndexT end,
 	const ConstElemRefT elem
 ) noexcept :
-	backward(begin < 0 ? -begin : 0, elem),
-	forward(end > 0 ? end : 0, elem)
+	forward(end > 0 ? end : 0, elem),
+	backward(begin < 0 ? -begin : 0, elem)
 {}
 
 template<typename T>

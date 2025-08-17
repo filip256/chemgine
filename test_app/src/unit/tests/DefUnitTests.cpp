@@ -104,9 +104,9 @@ DefDumpUnitTest::DefDumpUnitTest(
 	const bool prettify
 ) noexcept :
 	UnitTest(std::move(name)),
+	prettify(prettify),
 	dataStore(dataStore),
-	path(std::move(path)),
-	prettify(prettify)
+	path(std::move(path))
 {}
 
 bool DefDumpUnitTest::run()

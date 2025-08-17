@@ -6,8 +6,6 @@
     #include <intrin.h>
 #endif
 
-#define CHG_UNTESTED int iddg = 0;
-
 namespace utils::builtin
 {
     inline uint8_t bitScanReverse32(const uint32_t x)
@@ -17,7 +15,6 @@ namespace utils::builtin
         _BitScanReverse(&index, x);
         return static_cast<uint8_t>(index);
 #else
-        CHG_UNTESTED
         return static_cast<uint8_t>(31 - __builtin_clz(x));
 #endif
     }
@@ -42,7 +39,6 @@ namespace utils::builtin
         return static_cast<uint8_t>(index);
 #endif
 #else
-        CHG_UNTESTED
         return static_cast<uint8_t>(63 - __builtin_clzll(x));
 #endif
     }

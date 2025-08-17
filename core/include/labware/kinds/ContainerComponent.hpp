@@ -58,7 +58,7 @@ public:
 	constexpr Mixture& getContent() override final;
 
 	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount) override final;
-	void add(const Amount<Unit::JOULE> energy) override final;
+	void addEnergy(const Amount<Unit::JOULE> energy) override final;
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
@@ -74,8 +74,8 @@ ContainerComponent<Args...>::ContainerComponent(
 	CArgs&&... containers
 ) noexcept :
 	BaseContainerComponent(id, type),
-	containers(std::forward<CArgs>(containers)...),
-	fills(getData().generateShapeFills())
+	fills(getData().generateShapeFills()),
+	containers(std::forward<CArgs>(containers)...)
 {}
 
 template<>
@@ -85,8 +85,8 @@ inline ContainerComponent<Atmosphere>::ContainerComponent(
 	Atmosphere& atmosphere
 ) noexcept :
 	BaseContainerComponent(id, type),
-	containers(atmosphere.createSubatmosphere(getData().getVolume())),
-	fills(getData().generateShapeFills())
+	fills(getData().generateShapeFills()),
+	containers(atmosphere.createSubatmosphere(getData().getVolume()))
 {}
 
 template<>
@@ -96,8 +96,8 @@ inline ContainerComponent<Reactor>::ContainerComponent(
 	Atmosphere& atmosphere
 ) noexcept :
 	BaseContainerComponent(id, type),
-	containers(Reactor(atmosphere, getData().getVolume(), atmosphere)),
-	fills(getData().generateShapeFills())
+	fills(getData().generateShapeFills()),
+	containers(Reactor(atmosphere, getData().getVolume(), atmosphere))
 {}
 
 template<>
@@ -107,10 +107,10 @@ inline ContainerComponent<Atmosphere, Reactor>::ContainerComponent(
 	Atmosphere& atmosphere
 ) noexcept :
 	BaseContainerComponent(id, type),
+	fills(getData().generateShapeFills()),
 	containers(std::tuple(
 		Atmosphere(atmosphere.createSubatmosphere(getData().getVolume())),
-		Reactor(atmosphere, getData().getVolume(), atmosphere))),
-	fills(getData().generateShapeFills())
+		Reactor(atmosphere, getData().getVolume(), atmosphere)))
 {}
 
 template<typename... Args>
@@ -193,9 +193,9 @@ void ContainerComponent<Args...>::add(const Molecule& molecule, const Amount<Uni
 }
 
 template<typename... Args>
-void ContainerComponent<Args...>::add(const Amount<Unit::JOULE> energy)
+void ContainerComponent<Args...>::addEnergy(const Amount<Unit::JOULE> energy)
 {
-	getContent<0>().add(energy);
+	getContent<0>().addEnergy(energy);
 }
 
 template<typename... Args>

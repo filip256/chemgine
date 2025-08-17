@@ -14,9 +14,9 @@ AtomData::AtomData(
 	ImmutableSet<uint8_t>&& valences
 ) noexcept :
 	BaseComponentData(weight, getRarityOf(symbol)),
+	valences(std::move(valences)),
 	symbol(symbol),
-	name(name),
-	valences(std::move(valences))
+	name(name)
 {}
 
 bool AtomData::isRadical() const

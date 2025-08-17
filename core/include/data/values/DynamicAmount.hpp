@@ -51,8 +51,8 @@ public:
 
 template<Unit OUnitT>
 DynamicAmount::DynamicAmount(const Amount<OUnitT> amount) noexcept :
-	value(amount.asStd()),
-	unit(OUnitT)
+	unit(OUnitT),
+	value(amount.asStd())
 {}
 
 template<Unit UnitT>

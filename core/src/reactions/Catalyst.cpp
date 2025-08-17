@@ -1,8 +1,8 @@
 #include "reactions/Catalyst.hpp"
 
 Catalyst::Catalyst(const StructureRef& reactable, const Amount<Unit::MOLE_RATIO> idealAmount) noexcept :
-	reactable(reactable),
-	idealAmount(idealAmount)
+	idealAmount(idealAmount),
+	reactable(reactable)
 {}
 
 const MoleculeId Catalyst::getId() const

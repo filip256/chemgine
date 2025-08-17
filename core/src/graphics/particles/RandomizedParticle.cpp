@@ -9,7 +9,7 @@ RandomizedParticle::RandomizedParticle(const ParticleSystem& system) noexcept :
 	system(system)
 {
 	reset();
-	idlespan = system.lifespan * abs(getRandom());
+	idlespan = system.lifespan * std::abs(getRandom());
 }
 
 float_s RandomizedParticle::getRandom()

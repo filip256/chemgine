@@ -14,7 +14,7 @@ private:
 
 public:
 	void add(const Reactant& reactant) override final;
-	void add(const Amount<Unit::JOULE> energy) override final;
+	void addEnergy(const Amount<Unit::JOULE> energy) override final;
 
 	Amount<Unit::GRAM> getTotalMass() const;
 	Amount<Unit::JOULE> getTotalEnergy() const;

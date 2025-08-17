@@ -2,6 +2,7 @@
 
 #include "molecules/MolecularStructure.hpp"
 #include "io/StringTable.hpp"
+#include "global/Charset.hpp"
 #include "utils/Bin.hpp"
 
 #include <numeric>
@@ -133,7 +134,7 @@ bool StructureEqualityUnitTest::run()
 			{
 				Log(this).error("Unexpected equality check result ({}) between target: '{}' and pattern: '{}'\n{}", result,
 					t.toSMILES(), p.toSMILES(),
-					t.toASCII().appendRight(p.toASCII(), " ³ ").toString().toString());
+					t.toASCII().appendRight(p.toASCII(), std::string{' ', ASCII::LineV, ' '}).toString().toString());
 				return false;
 			}
 
@@ -235,9 +236,9 @@ FundamentalCycleUnitTest::FundamentalCycleUnitTest(
 	const c_size expectedTotalCyclicAtomCount
 ) noexcept :
 	UnitTest(name + '_' + moleculeSmiles),
-	molecule(moleculeSmiles),
 	expectedCycleCount(expectedCycleCount),
-	expectedTotalCyclicAtomCount(expectedTotalCyclicAtomCount)
+	expectedTotalCyclicAtomCount(expectedTotalCyclicAtomCount),
+	molecule(moleculeSmiles)
 {}
 
 bool FundamentalCycleUnitTest::run()
@@ -280,9 +281,9 @@ MinimalCycleUnitTest::MinimalCycleUnitTest(
 	std::unordered_map<c_size, c_size>&& expectedCycleSizes
 ) noexcept :
 	UnitTest(name + '_' + moleculeSmiles),
-	molecule(moleculeSmiles),
 	expectedTotalCyclicAtomCount(expectedTotalCyclicAtomCount),
-	expectedCycleSizes(std::move(expectedCycleSizes))
+	expectedCycleSizes(std::move(expectedCycleSizes)),
+	molecule(moleculeSmiles)
 {}
 
 bool MinimalCycleUnitTest::run()

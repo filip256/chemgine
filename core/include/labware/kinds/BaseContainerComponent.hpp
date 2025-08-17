@@ -31,7 +31,7 @@ public:
 	virtual Mixture& getContent() = 0;
 
 	virtual void add(const Molecule& molecule, const Amount<Unit::MOLE> amount) = 0;
-	virtual void add(const Amount<Unit::JOULE> energy) = 0;
+	virtual void addEnergy(const Amount<Unit::JOULE> energy) = 0;
 };
 
 

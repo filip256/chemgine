@@ -63,7 +63,7 @@ public:
 
 	void add(const Reactant& reactant) override final;
 	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount) override final;
-	void add(const Amount<Unit::JOULE> heat) override final;
+	void addEnergy(const Amount<Unit::JOULE> energy) override final;
 
 	Amount<Unit::LITER> getMaxVolume() const;
 
@@ -117,7 +117,7 @@ SingleLayerMixture<L>::SingleLayerMixture(
 		if (i != L)
 			incompatibilityTargets.emplace(std::make_pair(i, Ref(DumpContainer::GlobalDumpContainer)));
 
-	for (const auto [m, a] : contentInitializer)
+	for (const auto& [m, a] : contentInitializer)
 		add(Reactant(m, L, a, *this));
 	scaleToVolume(maxVolume);
 }
@@ -290,9 +290,9 @@ void SingleLayerMixture<L>::add(const Molecule& molecule, const Amount<Unit::MOL
 }
 
 template<LayerType L>
-void SingleLayerMixture<L>::add(const Amount<Unit::JOULE> heat)
+void SingleLayerMixture<L>::addEnergy(const Amount<Unit::JOULE> energy)
 {
-	add(heat, L);
+	add(energy, L);
 }
 
 template<LayerType L>

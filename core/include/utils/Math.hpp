@@ -29,7 +29,7 @@ namespace utils
 	/// <summary>
 	/// Returns the result of C(n, k) aka "n choose k".
 	/// </summary>
-	uint64_t combinations(uint64_t n, uint64_t k);
+	uint64_t combinations(const uint64_t n, uint64_t k);
 
 	/// <summary>
 	/// Returns the absolute of the given value as an unsigned or float.

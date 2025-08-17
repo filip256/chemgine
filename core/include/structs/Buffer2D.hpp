@@ -73,7 +73,8 @@ public:
 		const ValueT operator[](const IndexT idx) const;
 		ValueT& operator[](const IndexT idx);
 
-		friend std::ostream& operator<<(std::ostream& os, const Line& textLine);
+		template <typename U>
+		friend std::ostream& operator<<(std::ostream& os, const Buffer2D<U>::Line& textLine);
 	};
 
 public:

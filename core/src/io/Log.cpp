@@ -7,6 +7,7 @@
 #include "utils/String.hpp"
 #include "utils/Concurrency.hpp"
 #include "io/ColoredString.hpp"
+#include "global/Charset.hpp"
 
 #include <unordered_map>
 
@@ -51,7 +52,7 @@ void LogBase::addContextIndent()
 {
 	OS::setTextColor(OS::Color::DarkGrey);
 	for (uint8_t i = 0; i < contexts; ++i)
-		settings().outputStream << "�   ";
+		settings().outputStream << ASCII::MiddleDot1 <<"   ";
 	OS::setTextColor(OS::Color::White);
 }
 

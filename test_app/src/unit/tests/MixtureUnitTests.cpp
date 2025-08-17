@@ -110,8 +110,8 @@ bool DeterminismUnitTest::run()
 	auto initial = reactor.makeCopy();
 	auto copy = reactor.makeCopy();
 
-	reactor.add(10.0_J);
-	copy.add(10.0_J);
+	reactor.addEnergy(10.0_J);
+	copy.addEnergy(10.0_J);
 	reactor.tick(tickTimespan);
 	copy.tick(tickTimespan);
 
@@ -171,8 +171,8 @@ bool DeterminismUnitTest::run()
 		if (not success)
 			return false;
 
-		reactor.add(10.0_J);
-		copy.add(10.0_J);
+		reactor.addEnergy(10.0_J);
+		copy.addEnergy(10.0_J);
 		reactor.tick(tickTimespan);
 		copy.tick(tickTimespan);
 	}
@@ -206,7 +206,7 @@ bool BoilUnitTest::run()
 
 	for (size_t i = 0; i < ticks; ++i)
 	{
-		reactor.add(energyStep);
+		reactor.addEnergy(energyStep);
 		reactor.tick(tickTimespan);
 
 		logTable.addEntry({

@@ -250,19 +250,19 @@ void MultiLayerMixture::add(const Molecule& molecule, const Amount<Unit::MOLE> a
 	add(r.mutate(findLayerFor(r)));
 }
 
-void MultiLayerMixture::add(const Amount<Unit::JOULE> heat)
+void MultiLayerMixture::addEnergy(const Amount<Unit::JOULE> energy)
 {
 	const auto lA = getLayerAbove(LayerType::SOLID);
 	const auto& lS = layers.find(LayerType::SOLID);
 
 	if (lS == layers.end())
 	{
-		layers.at(lA).potentialEnergy += heat;
+		layers.at(lA).potentialEnergy += energy;
 		return;
 	}
 
-	lS->second.potentialEnergy += heat * 0.5;
-	layers.at(lA).potentialEnergy += heat * 0.5;
+	lS->second.potentialEnergy += energy * 0.5;
+	layers.at(lA).potentialEnergy += energy * 0.5;
 }
 
 bool MultiLayerMixture::hasLayer(const LayerType layer) const

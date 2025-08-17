@@ -7,9 +7,9 @@ BaseLabwareData::BaseLabwareData(
 	const LabwareType type
 ) noexcept :
 	id(id),
+	type(type),
 	name(name),
-	ports(std::move(ports)),
-	type(type)
+	ports(std::move(ports))
 {}
 
 void BaseLabwareData::dumpDefinition(std::ostream& out, const bool prettify) const

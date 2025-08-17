@@ -12,11 +12,14 @@ struct is_safe_conversion
 	// uintX_t  -> uintY_t   iff X <= Y
 	// uintX_t  -> intY_t    iff X < Y
 	// floatX_t -> floatY_t  iff X <= Y
-	static constexpr bool value = (
-		(std::is_integral_v<SrcT> && std::is_integral_v<DstT>) ||
-		(std::is_floating_point_v<SrcT> && std::is_floating_point_v<DstT>)) &&
-		(std::is_signed_v<SrcT> == std::is_signed_v<DstT> && sizeof(SrcT) <= sizeof(DstT)) ||
-		(std::is_unsigned_v<SrcT> && sizeof(SrcT) < sizeof(DstT));
+private:
+	static constexpr bool bothIntegral= std::is_integral_v<SrcT> && std::is_integral_v<DstT>;
+	static constexpr bool bothFloating = std::is_integral_v<SrcT> && std::is_integral_v<DstT>;
+	static constexpr bool sameSignedness = std::is_signed_v<SrcT> == std::is_signed_v<DstT>;
+
+public:
+	static constexpr bool value = (bothIntegral || bothFloating) &&
+		((sameSignedness && sizeof(SrcT) <= sizeof(DstT)) || (std::is_unsigned_v<SrcT> && sizeof(SrcT) < sizeof(DstT)));
 };
 
 template<typename SrcT, typename DstT>

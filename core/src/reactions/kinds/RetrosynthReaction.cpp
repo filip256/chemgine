@@ -1,4 +1,6 @@
 #include "reactions/kinds/RetrosynthReaction.hpp"
+
+#include "global/Charset.hpp"
 #include "structs/Buffer2D.hpp"
 
 RetrosynthReaction::RetrosynthReaction(
@@ -48,9 +50,9 @@ void RetrosynthReaction::print(std::ostream& out) const
 	printStructures(reactants);
 
 	if(baseReaction.isCutReaction())
-		buffer.appendRight(" �X�> ");
+		buffer.appendRight(std::string{' ', ASCII::LineH, 'X', ASCII::LineH, '>', ' '});
 	else
-		buffer.appendRight(" ���> ");
+		buffer.appendRight(std::string{' ', ASCII::LineH, ASCII::LineH, ASCII::LineH, '>', ' '});
 
 	printStructures(products);
 

@@ -8,9 +8,9 @@ Layer::Layer(
     const LayerType layerType,
     const Amount<Unit::CELSIUS> temperature
 ) noexcept :
-    container(container),
     layerType(layerType),
-	temperature(temperature)
+	temperature(temperature),
+    container(container)
 {
     if (isLiquidLayer(layerType))
     {

@@ -12,9 +12,9 @@ PortIdentifier::PortIdentifier(
 	const l_size componentIdx,
 	const uint8_t portIdx
 ) noexcept :
-	system(system),
 	componentIdx(componentIdx),
-	portIdx(portIdx)
+	portIdx(portIdx),
+	system(system)
 {}
 
 bool PortIdentifier::isValid() const
@@ -491,7 +491,7 @@ std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
 				skippedFirst = true;
 				continue;
 			}
-			result.emplace_back(std::move(releaseSection(componentIdx, i, toRemove)));
+			result.emplace_back(releaseSection(componentIdx, i, toRemove));
 			if (result.back().size() == 1)
 				result.back().rotate(0.0f);
 		}

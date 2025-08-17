@@ -4,16 +4,16 @@ ForwardingContainer::ForwardingContainer(
 	std::initializer_list<ForwardingRule> forwardingRules,
 	Ref<ContainerBase> defaultTarget
 ) noexcept :
-	forwardingRules(forwardingRules),
-	defaultTarget(defaultTarget)
+	defaultTarget(defaultTarget),
+	forwardingRules(forwardingRules)
 {}
 
 ForwardingContainer::ForwardingContainer(
 	const std::vector<ForwardingRule>& forwardingRules,
 	Ref<ContainerBase> defaultTarget
 ) noexcept :
-	forwardingRules(forwardingRules),
-	defaultTarget(defaultTarget)
+	defaultTarget(defaultTarget),
+	forwardingRules(forwardingRules)
 {}
 
 void ForwardingContainer::add(const Reactant& reactant)
@@ -23,11 +23,11 @@ void ForwardingContainer::add(const Reactant& reactant)
 			forwardingRules[i].target->add(reactant);
 }
 
-void ForwardingContainer::add(Amount<Unit::JOULE> energy)
+void ForwardingContainer::addEnergy(const Amount<Unit::JOULE> energy)
 {
-	energy /= static_cast<Amount<>::StorageType>(forwardingRules.size());
+	const auto splitEnergy = energy / static_cast<Amount<>::StorageType>(forwardingRules.size());
 	for (size_t i = 0; i < forwardingRules.size(); ++i)
-		forwardingRules[i].target->add(energy);
+		forwardingRules[i].target->addEnergy(splitEnergy);
 }
 
 void ForwardingContainer::addRule(ForwardingRule rule)

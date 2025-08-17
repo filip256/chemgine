@@ -2,6 +2,7 @@
 
 #include "molecules/MolecularStructure.hpp"
 #include "structs/AverageStream.hpp"
+#include "global/Charset.hpp"
 #include "io/Log.hpp"
 
 #include <queue>
@@ -602,11 +603,8 @@ bool StructurePrinter::isClutteredAtomPlacement(const PositionLine position) con
         return true;
 
     for (Symbol::SizeT i = 0; i < position.length; ++i)
-    {
-        const auto pos = position.origin + Point<Symbol::SizeT>(i, 0);
         if (isSymbol(position.origin + Direction::Up.get()) || isSymbol(position.endPoint() + Direction::Down.get()))
             return true;
-    }
 
     return false;
 }
@@ -732,7 +730,6 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
         for (uint8_t dirIdx = 0; dirIdx < directions.size(); ++dirIdx)
         {
             const auto dir = directions[dirIdx];
-            const auto dirToLastVector = dir.get();
             const auto [newEdgePos, newNodePos] = getNextPosition(firstPosition, dir.get(), secondSymbolSize);
 
             if (not buffer.isWhiteSpace(newEdgePos) || not buffer.isWhiteSpace(newNodePos) ||
@@ -820,7 +817,6 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
         const auto nextIdx = (currentIdx + 1) % cycle.size();
         const auto& currentAtom = *cycle[currentIdx];
         const auto& nextAtom = *cycle[nextIdx];
-        const auto currentSymbolSize = nodes[currentAtom.index].getSymbolSize();
         const auto nextSymbolSize = nodes[nextAtom.index].getSymbolSize();
 
         if (currentIdx == penultimateCycleIdx) // Penultimate node.
@@ -831,7 +827,6 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
             uint8_t foundDirs = 0;
             for (const auto& dirToLast : Direction::AllDirections)
             {
-                const auto dirToLastVector = dirToLast.get();
                 const auto [newEdgePos, newNodePos] = getNextPosition(current.positions.back(), dirToLast.get(), nextSymbolSize);
 
                 if (not buffer.isWhiteSpace(newEdgePos) || not buffer.isWhiteSpace(newNodePos) ||
@@ -927,9 +922,6 @@ std::vector<PositionLine> StructurePrinter::generateOneShotCycleLayout(
     const Direction enteringDirection) const
 {
     const auto& firstAtom = *cycle[firstCycleIdx];
-    const auto& secondAtom = *cycle[secondCycleIdx];
-
-    const auto fistSymbolSize = nodes[firstAtom.index].getSymbolSize();
 
     std::vector<std::pair<c_size, Angle>> commands;
     commands.reserve(8);
@@ -1031,7 +1023,7 @@ std::vector<PositionLine> StructurePrinter::generateOneShotCycleLayout(
         positions.reserve(cycle.size() - 1);
 
         // Apply commands.
-        for (const auto command : commands)
+        for (const auto& command : commands)
         {
             for (c_size i = 0; i < command.first; ++i)
             {
@@ -1213,7 +1205,7 @@ void StructurePrinter::printError(
     std::source_location&& location)
 {
     ++errorCount;
-    const auto errorSymbolStr = "�" + std::to_string(errorCount);
+    const auto errorSymbolStr = ASCII::AshUppercase + std::to_string(errorCount);
     const auto errorSymbol = ColoredString(errorSymbolStr, OS::Color::RedBG);
 
     Log(this).error(LogFormat("[{0}] {1}", std::move(location)), errorSymbolStr, message);
@@ -1399,10 +1391,12 @@ void StructurePrinter::printNeighbors(
     // Neighbors with multiple constraints and larger cycles should be printed first.
     std::ranges::sort(neighbors, [](const auto& lhs, const auto& rhs)
         {
-            return
-                lhs.constraintCount > rhs.constraintCount ? true :
-                lhs.constraintCount < rhs.constraintCount ? false :
-                (lhs.cycle ? lhs.cycle->size() : 0) >(rhs.cycle ? rhs.cycle->size() : 0);
+            if (lhs.constraintCount != rhs.constraintCount)
+                return lhs.constraintCount > rhs.constraintCount;
+
+            const auto lhsSize = lhs.cycle ? lhs.cycle->size() : 0;
+            const auto rhsSize = rhs.cycle ? rhs.cycle->size() : 0;
+            return lhsSize > rhsSize;
         });
 
     for (const auto& n : neighbors)

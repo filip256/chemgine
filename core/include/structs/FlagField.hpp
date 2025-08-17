@@ -71,8 +71,8 @@ public:
 
 template<typename EnumT>
 FlagIterator<EnumT>::FlagIterator(const StorageT field, const uint8_t idx) noexcept :
-	field(field),
-	idx(idx)
+	idx(idx),
+	field(field)
 {
 	findNext();
 }

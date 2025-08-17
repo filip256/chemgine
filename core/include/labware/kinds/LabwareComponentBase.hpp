@@ -11,16 +11,17 @@
 
 class LabwareComponentBase : public Accessor<>, public sf::Drawable
 {
+public:
+	const LabwareId id;
+	
 protected:
 	const BaseLabwareData& data;
 
+public:
 	LabwareComponentBase(
 		const LabwareId id,
 		const LabwareType type
 	) noexcept;
-
-public:
-	const LabwareId id;
 
 	virtual ~LabwareComponentBase() = default;
 

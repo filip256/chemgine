@@ -3,8 +3,6 @@
 #include "global/Precision.hpp"
 #include "utils/Numeric.hpp"
 
-#include <limits>
-
 template<class T>
 const T Value<T>::epsilon = std::numeric_limits<T>::epsilon();
 
@@ -77,32 +75,5 @@ Value<T>& Value<T>::operator/=(const T divisor)
 	value /= divisor;
 	return *this;
 }
-
-template <typename T>
-constexpr bool Value<T>::oveflowsOnAdd(const Value<T>& other) const noexcept
-{
-	return
-		this->value > 0.0 && other.value > 0.0 ?
-		this->value > std::numeric_limits<T>::max() - other.value :
-	this->value < 0.0 && other.value < 0.0 ?
-		this->value < std::numeric_limits<T>::min() - other.value :
-		false;
-}
-
-template <typename T>
-constexpr bool Value<T>::oveflowsOnMultiply(const Value<T>& other) const noexcept
-{
-	return
-		this->value > 0.0 ? (
-			other.value > 0.0 ?
-			this->value > std::numeric_limits<T>::max() / other.value :
-			this->value > std::numeric_limits<T>::min() / other.value
-		) : (
-		other.value > 0.0 ?
-			this->value < std::numeric_limits<T>::min() / other.value :
-			this->value < std::numeric_limits<T>::max() / other.value
-		);
-}
-
 
 template class Value<float_s>;

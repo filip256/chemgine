@@ -8,13 +8,13 @@ ReactantId::ReactantId(
 	const MoleculeId moleculeId,
 	const LayerType layer
 ) noexcept :
-	moleculeId(moleculeId),
-	layer(layer)
+	layer(layer),
+	moleculeId(moleculeId)
 {}
 
 ReactantId::ReactantId(const Reactant& reactant) noexcept :
-	moleculeId(reactant.molecule.getId()),
-	layer(reactant.layer)
+	layer(reactant.layer),
+	moleculeId(reactant.molecule.getId())
 {}
 
 bool ReactantId::operator== (const ReactantId& other) const
@@ -28,16 +28,15 @@ bool ReactantId::operator!= (const ReactantId& other) const
 }
 
 
-
 Reactant::Reactant(
 	const Molecule& molecule,
 	const LayerType layer,
 	const Amount<Unit::MOLE> amount,
 	const Ref<Mixture> container
 ) noexcept :
-	molecule(molecule), 
 	layer(layer),
 	amount(amount),
+	molecule(molecule), 
 	container(container)
 {}
 

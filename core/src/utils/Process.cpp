@@ -143,10 +143,10 @@ OS::ProcessorAffinityMask OS::setCurrentThreadProcessorAffinity(const ProcessorA
 	const auto prevMask = SetThreadAffinityMask(GetCurrentThread(), static_cast<DWORD_PTR>(mask.to_ullong()));
 	if (not prevMask)
 		Log().fatal("Failed to set thread affinity to mask: '{0}' (error code: {1}).",
-			mask.to_string(char('�'), char('�')), GetLastError());
+			mask.to_string('-', '#'), GetLastError());
 
 	Log().debug("Set thread affinity to mask: '{0} [{1}]'.",
-		mask.to_string(char('�'), char('�')), mask.to_ullong());
+		mask.to_string('-', '#'), mask.to_ullong());
 	return static_cast<ProcessorAffinityMask>(prevMask);
 #else
 	return static_cast<ProcessorAffinityMask>(0);

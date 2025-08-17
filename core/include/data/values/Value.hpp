@@ -1,5 +1,7 @@
 #pragma once
 
+#include <limits>
+
 template<typename T>
 class Value
 {
@@ -40,3 +42,29 @@ template<typename T>
 constexpr Value<T>::Value(const T value) noexcept :
 	value(value)
 {}
+
+template <typename T>
+constexpr bool Value<T>::oveflowsOnAdd(const Value<T>& other) const noexcept
+{
+	return
+		this->value > 0.0 && other.value > 0.0 ?
+		this->value > std::numeric_limits<T>::max() - other.value :
+	this->value < 0.0 && other.value < 0.0 ?
+		this->value < std::numeric_limits<T>::min() - other.value :
+		false;
+}
+
+template <typename T>
+constexpr bool Value<T>::oveflowsOnMultiply(const Value<T>& other) const noexcept
+{
+	return
+		this->value > 0.0 ? (
+			other.value > 0.0 ?
+			this->value > std::numeric_limits<T>::max() / other.value :
+			this->value > std::numeric_limits<T>::min() / other.value
+		) : (
+		other.value > 0.0 ?
+			this->value < std::numeric_limits<T>::min() / other.value :
+			this->value < std::numeric_limits<T>::max() / other.value
+		);
+}

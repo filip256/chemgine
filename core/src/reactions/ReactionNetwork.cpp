@@ -1,5 +1,6 @@
 #include "reactions/ReactionNetwork.hpp"
 
+#include "global/Charset.hpp"
 #include "io/Log.hpp"
 
 ReactionNetwork::ReactionNode::ReactionNode(ReactionData& data) noexcept :
@@ -200,14 +201,14 @@ void ReactionNetwork::print(const size_t current, TextBlock& block, size_t& y, s
 
 		for (size_t i = 0; i < pipes.size() - 1; ++i)
 			if (pipes[i])
-				block[y][i * 3] = '³';
+				block[y][i * 3] = ASCII::LineV;
 
 		auto peek = i;
 		if (++peek != npos)
-			block[y].insert((pipes.size() - 1) * 3, "ÃÄÄ");
+			block[y].insert((pipes.size() - 1) * 3, { ASCII::JunctionRight, ASCII::LineH, ASCII::LineH });
 		else
 		{
-			block[y].insert((pipes.size() - 1) * 3, "ÀÄÄ");
+			block[y].insert((pipes.size() - 1) * 3, { ASCII::CornerBottomLeft, ASCII::LineH, ASCII::LineH });
 			pipes.back() = false;
 		}
 
