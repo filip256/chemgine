@@ -1,9 +1,12 @@
+exclude: ^(thirdparty/|build/|.vscode|.git)
+
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
+    rev: v6.0.0
     hooks:
     -   id: check-case-conflict
     -   id: check-docstring-first
+    -   id: check-yaml
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
 
