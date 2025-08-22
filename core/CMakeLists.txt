@@ -13,22 +13,19 @@ target_include_directories(core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 # Compiler options
 if(MSVC)
     target_compile_options(core PUBLIC
-        /W3  # Warning Level  TODO: Upgrade to /W4
-        /WX  # Treat warnings as errors
-        # /utf-8  # TODO: Uncomment when adding fmt
+        /W3     # Warning Level  TODO: Upgrade to /W4
+        /WX     # Treat warnings as errors
+        /utf-8
     )
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    target_compile_options(core PUBLIC
-        -Wall      # Warning Level  TODO: Upgrade to -Wall -Wextra
-        -Wno-overloaded-virtual  # TODO: Remove
-        -Werror    # Treat warnings as errors
-    )
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
+       CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     target_compile_options(core PUBLIC
         -Wall                    # Warning Level  TODO: Upgrade to -Wall -Wextra
         -Wno-overloaded-virtual  # TODO: Remove
         -Werror                  # Treat warnings as errors
     )
+
 else()
     message(WARNING "Unsupported CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
 endif()

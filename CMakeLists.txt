@@ -37,19 +37,36 @@ set(BUILD_SHARED_LIBS FALSE CACHE BOOL "Build SFML as static library" FORCE)
 # Compiler options
 if(MSVC)
     add_compile_options(
-        /MP          # Multi-processor Compilation
-        /permissive- # Strict standard conformance
+        /MP           # Multi-processor Compilation
+        /permissive-  # Strict standard conformance
     )
 
-    add_compile_options("$<$<CONFIG:Release>:/O2>")
-    add_compile_options("$<$<CONFIG:Release>:/Ob2>")
-    add_compile_options("$<$<CONFIG:Release>:/Oi>")
-    add_compile_options("$<$<CONFIG:Release>:/Ot>")
-    add_compile_options("$<$<CONFIG:Release>:/Oy>")
-    add_compile_options("$<$<CONFIG:Release>:/GT>")
-    add_compile_options("$<$<CONFIG:Release>:/GL>")
-    
-    add_link_options("$<$<CONFIG:Release>:/LTCG>")
+    add_compile_options(
+        "$<$<CONFIG:Release>:/Ox>"     # Max. optimization
+        "$<$<CONFIG:Release>:/Ob2>"    # Aggressive inlining
+        "$<$<CONFIG:Release>:/Oi>"     # Intrinsic functions
+        "$<$<CONFIG:Release>:/Ot>"     # Favor speed over size
+        "$<$<CONFIG:Release>:/Oy>"     # Omit Frame Pointers
+        "$<$<CONFIG:Release>:/GL>"     # Whole program optimization
+    )
+    add_link_options(
+        "$<$<CONFIG:Release>:/LTCG>"  # Link-time code generation
+    )
+
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR 
+       CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    add_compile_options(
+        "$<$<CONFIG:Release>:-O3>"
+        "$<$<CONFIG:Release>:-funroll-loops>"
+        "$<$<CONFIG:Release>:-fomit-frame-pointer>"
+        "$<$<CONFIG:Release>:-flto>"                 # Link-time optimization
+    )
+    add_link_options(
+        "$<$<CONFIG:Release>:-flto>"  # Link-time optimization
+    )
+
+else()
+    message(WARNING "Unsupported CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
 endif()
 
 # User options

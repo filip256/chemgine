@@ -29,7 +29,14 @@ def scan_directory(base_dir, exclude_patterns):
 
         for file in files:
             full_path = f"{root_norm}/{file}"
-            if exclude_patterns in full_path:
+
+            exclude = False
+            for excl in exclude_patterns:
+                if excl in full_path:
+                    exclude = True
+                    break
+
+            if exclude:
                 continue
 
             ext = os.path.splitext(file)[1]
@@ -45,7 +52,7 @@ def scan_directory(base_dir, exclude_patterns):
 
 def main():
     directory = "../"
-    exclude = "thirdparty"
+    exclude = ["thirdparty", "build"]
 
     abs_dir = normalize_path(directory)
     print(f"Scanning directory: {abs_dir}")
@@ -58,7 +65,7 @@ def main():
     print(f"\nC++ files (.cpp/.hpp): {cpp_files} files, {cpp_lines} lines")
     print(f"Python files (.py):    {py_files} files, {py_lines} lines")
     print(f"----------------------------------------")
-    print(f"Grand total:           {total_files} files, {total_lines} lines")
+    print(f"Total:                 {total_files} files, {total_lines} lines")
 
 
 if __name__ == "__main__":
