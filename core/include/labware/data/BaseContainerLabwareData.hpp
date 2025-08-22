@@ -1,15 +1,15 @@
 #pragma once
 
-#include "labware/data/DrawableLabwareData.hpp"
-#include "graphics/ShapeFillTexture.hpp"
 #include "data/values/Amount.hpp"
+#include "graphics/ShapeFillTexture.hpp"
+#include "labware/data/DrawableLabwareData.hpp"
 
 class BaseContainerLabwareData : public DrawableLabwareData
 {
 protected:
-	using DrawableLabwareData::DrawableLabwareData;
+    using DrawableLabwareData::DrawableLabwareData;
 
 public:
-	virtual Amount<Unit::LITER> getVolume() const = 0;
-	virtual const ShapeFillTexture& getFillTexture() const = 0;
+    virtual Amount<Unit::LITER>     getVolume() const      = 0;
+    virtual const ShapeFillTexture& getFillTexture() const = 0;
 };

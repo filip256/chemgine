@@ -1,9 +1,8 @@
 #pragma once
 
 #include <SFML/Window.hpp>
-
-#include <unordered_map>
 #include <memory>
+#include <unordered_map>
 
 class CursorHelper
 {

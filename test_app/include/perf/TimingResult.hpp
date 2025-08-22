@@ -5,13 +5,11 @@
 class TimingResult
 {
 public:
-	std::chrono::nanoseconds averageTime;
-	std::chrono::nanoseconds medianTime;
+    std::chrono::nanoseconds averageTime;
+    std::chrono::nanoseconds medianTime;
 
-	TimingResult(
-		std::chrono::nanoseconds averageTime,
-		std::chrono::nanoseconds medianTime
-	) noexcept;
+    TimingResult(
+        std::chrono::nanoseconds averageTime, std::chrono::nanoseconds medianTime) noexcept;
 
-	TimingResult& operator+=(const TimingResult& other);
+    TimingResult& operator+=(const TimingResult& other);
 };

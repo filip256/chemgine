@@ -9,15 +9,15 @@
 class DumpContainer final : public ContainerBase
 {
 private:
-	Amount<Unit::GRAM> totalMass = 0.0;
-	Amount<Unit::JOULE> totalEnergy = 0.0;
+    Amount<Unit::GRAM>  totalMass   = 0.0;
+    Amount<Unit::JOULE> totalEnergy = 0.0;
 
 public:
-	void add(const Reactant& reactant) override final;
-	void addEnergy(const Amount<Unit::JOULE> energy) override final;
+    void add(const Reactant& reactant) override final;
+    void addEnergy(const Amount<Unit::JOULE> energy) override final;
 
-	Amount<Unit::GRAM> getTotalMass() const;
-	Amount<Unit::JOULE> getTotalEnergy() const;
+    Amount<Unit::GRAM>  getTotalMass() const;
+    Amount<Unit::JOULE> getTotalEnergy() const;
 
-	static DumpContainer GlobalDumpContainer;
+    static DumpContainer GlobalDumpContainer;
 };

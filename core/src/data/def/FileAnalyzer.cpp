@@ -5,45 +5,40 @@
 
 using namespace def;
 
-FileAnalyzer::FileAnalyzer(
-	const std::string& filePath,
-	FileStore& mainFileStore
-) noexcept:
-	mainFileStore(mainFileStore),
-	parser(def::FileParser(filePath, fileStore, {}))
+FileAnalyzer::FileAnalyzer(const std::string& filePath, FileStore& mainFileStore) noexcept :
+    mainFileStore(mainFileStore),
+    parser(def::FileParser(filePath, fileStore, {}))
 {}
 
 AnalysisResult FileAnalyzer::analyze()
 {
-	LogBase::hide();
+    LogBase::hide();
 
-	AnalysisResult result;
-	if (parser.isOpen() == false)
-		return result;
+    AnalysisResult result;
+    if (parser.isOpen() == false)
+        return result;
 
-	while (true)
-	{
-		const auto line = parser.nextGlobalLine();
-		const auto location = parser.getCurrentGlobalLocation();
-		if (parser.isOpen() == false)
-			break;
+    while (true) {
+        const auto line     = parser.nextGlobalLine();
+        const auto location = parser.getCurrentGlobalLocation();
+        if (parser.isOpen() == false)
+            break;
 
-		if (line.starts_with('_'))
-		{
-			++result.totalDefinitionCount;
-			if (mainFileStore.getFileStatus(location.getFile()) == ParseStatus::COMPLETED)
-				++result.preparsedDefinitionCount;
-		}
-	}
+        if (line.starts_with('_')) {
+            ++result.totalDefinitionCount;
+            if (mainFileStore.getFileStatus(location.getFile()) == ParseStatus::COMPLETED)
+                ++result.preparsedDefinitionCount;
+        }
+    }
 
-	const auto& fileHistory = fileStore.getHistory();
-	result.totalFileCount = fileHistory.size();
-	for (const auto& f : fileHistory)
-		if (mainFileStore.getFileStatus(f.first) == ParseStatus::COMPLETED)
-			++result.preparsedFileCount;
+    const auto& fileHistory = fileStore.getHistory();
+    result.totalFileCount   = fileHistory.size();
+    for (const auto& f : fileHistory)
+        if (mainFileStore.getFileStatus(f.first) == ParseStatus::COMPLETED)
+            ++result.preparsedFileCount;
 
-	result.failed = false;
+    result.failed = false;
 
-	LogBase::unhide();
-	return result;
+    LogBase::unhide();
+    return result;
 }

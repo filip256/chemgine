@@ -1,314 +1,306 @@
 #pragma once
 
-#include "data/values/Amount.hpp"
-#include "data/def/Parsers.hpp"
 #include "data/def/Keywords.hpp"
+#include "data/def/Parsers.hpp"
+#include "data/values/Amount.hpp"
 
 #include <optional>
 
 class DynamicAmount
 {
 public:
-	using StorageType = Amount<>::StorageType;
+    using StorageType = Amount<>::StorageType;
 
 private:
-	Unit unit;
-	StorageType value = 0.0;
+    Unit        unit;
+    StorageType value = 0.0;
 
 public:
-	DynamicAmount(const Unit unit) noexcept;
-	DynamicAmount(const StorageType value, const Unit unit) noexcept;
-	DynamicAmount(const DynamicAmount&) = default;
+    DynamicAmount(const Unit unit) noexcept;
+    DynamicAmount(const StorageType value, const Unit unit) noexcept;
+    DynamicAmount(const DynamicAmount&) = default;
 
-	template<Unit OUnitT>
-	DynamicAmount(const Amount<OUnitT> amount) noexcept;
+    template <Unit OUnitT>
+    DynamicAmount(const Amount<OUnitT> amount) noexcept;
 
-	StorageType asKilo() const;
-	StorageType asStd() const;
-	StorageType asMilli() const;
-	StorageType asMicro() const;
+    StorageType asKilo() const;
+    StorageType asStd() const;
+    StorageType asMilli() const;
+    StorageType asMicro() const;
 
-	std::optional<DynamicAmount> to(const Unit target) const;
-	template<Unit UnitT>
-	std::optional<Amount<UnitT>> to() const;
+    std::optional<DynamicAmount> to(const Unit target) const;
+    template <Unit UnitT>
+    std::optional<Amount<UnitT>> to() const;
 
-	Unit getUnit() const;
-	std::string getUnitSymbol() const;
-	std::string getUnitName() const;
+    Unit        getUnit() const;
+    std::string getUnitSymbol() const;
+    std::string getUnitName() const;
 
-	static std::string getUnitSymbol(const Unit unit);
-	static std::string getUnitName(const Unit unit);
-	static std::optional<Unit> getUnitFromSymbol(const std::string& symbol);
+    static std::string         getUnitSymbol(const Unit unit);
+    static std::string         getUnitName(const Unit unit);
+    static std::optional<Unit> getUnitFromSymbol(const std::string& symbol);
 
-	template<Unit UnitT>
-	static inline std::optional<DynamicAmount> cast(const Amount<UnitT> amount, const Unit target) = delete;
+    template <Unit UnitT>
+    static inline std::optional<DynamicAmount>
+    cast(const Amount<UnitT> amount, const Unit target) = delete;
 
-	static std::optional<DynamicAmount> get(const StorageType value, const std::string& symbol);
-	template<Unit UnitT>
-	static std::optional<Amount<UnitT>> get(const StorageType value, const std::string& symbol);
+    static std::optional<DynamicAmount> get(const StorageType value, const std::string& symbol);
+    template <Unit UnitT>
+    static std::optional<Amount<UnitT>> get(const StorageType value, const std::string& symbol);
 };
 
-
-template<Unit OUnitT>
+template <Unit OUnitT>
 DynamicAmount::DynamicAmount(const Amount<OUnitT> amount) noexcept :
-	unit(OUnitT),
-	value(amount.asStd())
+    unit(OUnitT),
+    value(amount.asStd())
 {}
 
-template<Unit UnitT>
+template <Unit UnitT>
 std::optional<Amount<UnitT>> DynamicAmount::to() const
 {
-	const auto converted = to(UnitT);
-	return converted ?
-		std::optional(Amount<UnitT>(converted->value)) :
-		std::nullopt;
+    const auto converted = to(UnitT);
+    return converted ? std::optional(Amount<UnitT>(converted->value)) : std::nullopt;
 }
 
+// --- Direct Conversions ---    //
 
-//    --- Direct Conversions ---    //
-
-template<>
-inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::LITER> amount, const Unit target)
+template <>
+inline std::optional<DynamicAmount>
+DynamicAmount::cast(const Amount<Unit::LITER> amount, const Unit target)
 {
-	switch (target)
-	{
-	case Unit::CUBIC_METER:
-		return Amount<Unit::CUBIC_METER>(amount);
-	case Unit::DROP:
-		return Amount<Unit::DROP>(amount);
-	default:
-		return std::nullopt;
-	}
+    switch (target) {
+    case Unit::CUBIC_METER:
+        return Amount<Unit::CUBIC_METER>(amount);
+    case Unit::DROP:
+        return Amount<Unit::DROP>(amount);
+    default:
+        return std::nullopt;
+    }
 }
 
-template<>
-inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::CUBIC_METER> amount, const Unit target)
+template <>
+inline std::optional<DynamicAmount>
+DynamicAmount::cast(const Amount<Unit::CUBIC_METER> amount, const Unit target)
 {
-	switch (target)
-	{
-	case Unit::LITER:
-		return Amount<Unit::LITER>(amount);
-	case Unit::DROP:
-		return Amount<Unit::DROP>(amount);
-	default:
-		return std::nullopt;
-	}
+    switch (target) {
+    case Unit::LITER:
+        return Amount<Unit::LITER>(amount);
+    case Unit::DROP:
+        return Amount<Unit::DROP>(amount);
+    default:
+        return std::nullopt;
+    }
 }
 
-template<>
-inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::DROP> amount, const Unit target)
+template <>
+inline std::optional<DynamicAmount>
+DynamicAmount::cast(const Amount<Unit::DROP> amount, const Unit target)
 {
-	switch (target)
-	{
-	case Unit::LITER:
-		return Amount<Unit::LITER>(amount);
-	case Unit::CUBIC_METER:
-		return Amount<Unit::CUBIC_METER>(amount);
-	default:
-		return std::nullopt;
-	}
+    switch (target) {
+    case Unit::LITER:
+        return Amount<Unit::LITER>(amount);
+    case Unit::CUBIC_METER:
+        return Amount<Unit::CUBIC_METER>(amount);
+    default:
+        return std::nullopt;
+    }
 }
 
-template<>
-inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::CELSIUS> amount, const Unit target)
+template <>
+inline std::optional<DynamicAmount>
+DynamicAmount::cast(const Amount<Unit::CELSIUS> amount, const Unit target)
 {
-	switch (target)
-	{
-	case Unit::KELVIN:
-		return Amount<Unit::KELVIN>(amount);
-	case Unit::FAHRENHEIT:
-		return Amount<Unit::FAHRENHEIT>(amount);
-	default:
-		return std::nullopt;
-	}
+    switch (target) {
+    case Unit::KELVIN:
+        return Amount<Unit::KELVIN>(amount);
+    case Unit::FAHRENHEIT:
+        return Amount<Unit::FAHRENHEIT>(amount);
+    default:
+        return std::nullopt;
+    }
 }
 
-template<>
-inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::KELVIN> amount, const Unit target)
+template <>
+inline std::optional<DynamicAmount>
+DynamicAmount::cast(const Amount<Unit::KELVIN> amount, const Unit target)
 {
-	switch (target)
-	{
-	case Unit::CELSIUS:
-		return Amount<Unit::CELSIUS>(amount);
-	case Unit::FAHRENHEIT:
-		return Amount<Unit::FAHRENHEIT>(amount);
-	default:
-		return std::nullopt;
-	}
+    switch (target) {
+    case Unit::CELSIUS:
+        return Amount<Unit::CELSIUS>(amount);
+    case Unit::FAHRENHEIT:
+        return Amount<Unit::FAHRENHEIT>(amount);
+    default:
+        return std::nullopt;
+    }
 }
 
-template<>
-inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::FAHRENHEIT> amount, const Unit target)
+template <>
+inline std::optional<DynamicAmount>
+DynamicAmount::cast(const Amount<Unit::FAHRENHEIT> amount, const Unit target)
 {
-	switch (target)
-	{
-	case Unit::CELSIUS:
-		return Amount<Unit::CELSIUS>(amount);
-	case Unit::KELVIN:
-		return Amount<Unit::KELVIN>(amount);
-	default:
-		return std::nullopt;
-	}
+    switch (target) {
+    case Unit::CELSIUS:
+        return Amount<Unit::CELSIUS>(amount);
+    case Unit::KELVIN:
+        return Amount<Unit::KELVIN>(amount);
+    default:
+        return std::nullopt;
+    }
 }
 
-template<>
-inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::TORR> amount, const Unit target)
+template <>
+inline std::optional<DynamicAmount>
+DynamicAmount::cast(const Amount<Unit::TORR> amount, const Unit target)
 {
-	switch (target)
-	{
-	case Unit::PASCAL:
-		return Amount<Unit::PASCAL>(amount);
-	case Unit::ATMOSPHERE:
-		return Amount<Unit::ATMOSPHERE>(amount);
-	default:
-		return std::nullopt;
-	}
+    switch (target) {
+    case Unit::PASCAL:
+        return Amount<Unit::PASCAL>(amount);
+    case Unit::ATMOSPHERE:
+        return Amount<Unit::ATMOSPHERE>(amount);
+    default:
+        return std::nullopt;
+    }
 }
 
-template<>
-inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::PASCAL> amount, const Unit target)
+template <>
+inline std::optional<DynamicAmount>
+DynamicAmount::cast(const Amount<Unit::PASCAL> amount, const Unit target)
 {
-	switch (target)
-	{
-	case Unit::TORR:
-		return Amount<Unit::TORR>(amount);
-	case Unit::ATMOSPHERE:
-		return Amount<Unit::ATMOSPHERE>(amount);
-	default:
-		return std::nullopt;
-	}
+    switch (target) {
+    case Unit::TORR:
+        return Amount<Unit::TORR>(amount);
+    case Unit::ATMOSPHERE:
+        return Amount<Unit::ATMOSPHERE>(amount);
+    default:
+        return std::nullopt;
+    }
 }
 
-template<>
-inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::ATMOSPHERE> amount, const Unit target)
+template <>
+inline std::optional<DynamicAmount>
+DynamicAmount::cast(const Amount<Unit::ATMOSPHERE> amount, const Unit target)
 {
-	switch (target)
-	{
-	case Unit::TORR:
-		return Amount<Unit::TORR>(amount);
-	case Unit::PASCAL:
-		return Amount<Unit::PASCAL>(amount);
-	default:
-		return std::nullopt;
-	}
+    switch (target) {
+    case Unit::TORR:
+        return Amount<Unit::TORR>(amount);
+    case Unit::PASCAL:
+        return Amount<Unit::PASCAL>(amount);
+    default:
+        return std::nullopt;
+    }
 }
 
-template<>
-inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::DEGREE> amount, const Unit target)
+template <>
+inline std::optional<DynamicAmount>
+DynamicAmount::cast(const Amount<Unit::DEGREE> amount, const Unit target)
 {
-	switch (target)
-	{
-	case Unit::RADIAN:
-		return Amount<Unit::RADIAN>(amount);
-	default:
-		return std::nullopt;
-	}
+    switch (target) {
+    case Unit::RADIAN:
+        return Amount<Unit::RADIAN>(amount);
+    default:
+        return std::nullopt;
+    }
 }
 
-template<>
-inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::RADIAN> amount, const Unit target)
+template <>
+inline std::optional<DynamicAmount>
+DynamicAmount::cast(const Amount<Unit::RADIAN> amount, const Unit target)
 {
-	switch (target)
-	{
-	case Unit::DEGREE:
-		return Amount<Unit::DEGREE>(amount);
-	default:
-		return std::nullopt;
-	}
+    switch (target) {
+    case Unit::DEGREE:
+        return Amount<Unit::DEGREE>(amount);
+    default:
+        return std::nullopt;
+    }
 }
 
-template<>
-inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::MOLE_RATIO> amount, const Unit target)
+template <>
+inline std::optional<DynamicAmount>
+DynamicAmount::cast(const Amount<Unit::MOLE_RATIO> amount, const Unit target)
 {
-	switch (target)
-	{
-	case Unit::MOLE_PERCENT:
-		return Amount<Unit::MOLE_PERCENT>(amount);
-	default:
-		return std::nullopt;
-	}
+    switch (target) {
+    case Unit::MOLE_PERCENT:
+        return Amount<Unit::MOLE_PERCENT>(amount);
+    default:
+        return std::nullopt;
+    }
 }
 
-template<>
-inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::MOLE_PERCENT> amount, const Unit target)
+template <>
+inline std::optional<DynamicAmount>
+DynamicAmount::cast(const Amount<Unit::MOLE_PERCENT> amount, const Unit target)
 {
-	switch (target)
-	{
-	case Unit::MOLE_RATIO:
-		return Amount<Unit::MOLE_RATIO>(amount);
-	default:
-		return std::nullopt;
-	}
+    switch (target) {
+    case Unit::MOLE_RATIO:
+        return Amount<Unit::MOLE_RATIO>(amount);
+    default:
+        return std::nullopt;
+    }
 }
 
-template<Unit UnitT>
+template <Unit UnitT>
 std::optional<Amount<UnitT>> DynamicAmount::get(const StorageType value, const std::string& symbol)
 {
-	const auto temp = DynamicAmount::get(value, symbol);
-	return temp ?
-		std::optional(temp->to<UnitT>()) :
-		std::nullopt;
+    const auto temp = DynamicAmount::get(value, symbol);
+    return temp ? std::optional(temp->to<UnitT>()) : std::nullopt;
 }
 
-
-//    --- def ---    //
+// --- def ---    //
 
 template <>
 class def::Parser<Unit>
 {
 public:
-	static std::optional<Unit> parse(const std::string& str)
-	{
-		return DynamicAmount::getUnitFromSymbol(utils::strip(str));
-	}
+    static std::optional<Unit> parse(const std::string& str)
+    {
+        return DynamicAmount::getUnitFromSymbol(utils::strip(str));
+    }
 };
-
 
 template <Unit U>
 class def::Parser<Amount<U>>
 {
 public:
-	static std::optional<Amount<U>> parse(const std::string& str)
-	{
-		const auto pair = utils::split(utils::strip(str), '_', true);
-		if (pair.empty())
-			return std::nullopt;
+    static std::optional<Amount<U>> parse(const std::string& str)
+    {
+        const auto pair = utils::split(utils::strip(str), '_', true);
+        if (pair.empty())
+            return std::nullopt;
 
-		const auto val = def::parse<Amount<>::StorageType>(utils::strip(pair.front()));
-		if (not val)
-			return std::nullopt;
+        const auto val = def::parse<Amount<>::StorageType>(utils::strip(pair.front()));
+        if (not val)
+            return std::nullopt;
 
-		if (pair.size() == 1)
-			return Amount<U>(*val);
+        if (pair.size() == 1)
+            return Amount<U>(*val);
 
-		if (pair.size() == 2)
-			return DynamicAmount::get<U>(*val, pair.back());
+        if (pair.size() == 2)
+            return DynamicAmount::get<U>(*val, pair.back());
 
-		return std::nullopt;
-	}
+        return std::nullopt;
+    }
 };
-
 
 template <>
 class def::Parser<DynamicAmount>
 {
 public:
-	static std::optional<DynamicAmount> parse(const std::string& str)
-	{
-		const auto pair = utils::split(utils::strip(str), '_', true);
-		if (pair.empty())
-			return std::nullopt;
+    static std::optional<DynamicAmount> parse(const std::string& str)
+    {
+        const auto pair = utils::split(utils::strip(str), '_', true);
+        if (pair.empty())
+            return std::nullopt;
 
-		const auto val = def::parse<Amount<>::StorageType>(pair.front());
-		if (not val)
-			return std::nullopt;
+        const auto val = def::parse<Amount<>::StorageType>(pair.front());
+        if (not val)
+            return std::nullopt;
 
-		if (pair.size() == 1)
-			return DynamicAmount(*val, Unit::ANY);
+        if (pair.size() == 1)
+            return DynamicAmount(*val, Unit::ANY);
 
-		if (pair.size() == 2)
-			return DynamicAmount::get(*val, pair.back());
+        if (pair.size() == 2)
+            return DynamicAmount::get(*val, pair.back());
 
-		return std::nullopt;
-	}
+        return std::nullopt;
+    }
 };

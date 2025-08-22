@@ -1,30 +1,25 @@
 #pragma once
 
-#include "unit/UnitTest.hpp"
 #include "data/DataStore.hpp"
+#include "unit/UnitTest.hpp"
 
 class WaterPropertiesUnitTest : public UnitTestGroup
 {
 private:
-	const Molecule molecule;
+    const Molecule molecule;
 
 public:
-	WaterPropertiesUnitTest(
-		std::string&& name,
-		const std::regex& filter
-	) noexcept;
+    WaterPropertiesUnitTest(std::string&& name, const std::regex& filter) noexcept;
 };
-
 
 class ModuleUnitTest : public UnitTestGroup
 {
 private:
-	DataStore dataStore;
+    DataStore dataStore;
 
 public:
-	ModuleUnitTest(
-		const std::string& name,
-		const std::regex& filter,
-		const std::string& defModulePath
-	) noexcept;
+    ModuleUnitTest(
+        const std::string& name,
+        const std::regex&  filter,
+        const std::string& defModulePath) noexcept;
 };

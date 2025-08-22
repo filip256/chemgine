@@ -3,101 +3,76 @@
 #include "reactions/Reactant.hpp"
 
 StateNucleator::StateNucleator(
-	Amount<Unit::CELSIUS>(Reactant::* getTransitionPointCB)() const,
-	Amount<Unit::JOULE_PER_MOLE>(Reactant::* getTransitionHeatCB)() const
-) noexcept :
-	getTransitionPointCB(getTransitionPointCB),
-	getTransitionHeatCB(getTransitionHeatCB)
+    Amount<Unit::CELSIUS>        (Reactant::*getTransitionPointCB)() const,
+    Amount<Unit::JOULE_PER_MOLE> (Reactant::*getTransitionHeatCB)() const) noexcept :
+    getTransitionPointCB(getTransitionPointCB),
+    getTransitionHeatCB(getTransitionHeatCB)
 {}
 
-void StateNucleator::setReactant(const Reactant& other)
+void StateNucleator::setReactant(const Reactant& other) { reactant.emplace(other); }
+
+void StateNucleator::setTransitionPointCB(Amount<Unit::CELSIUS> (Reactant::*callback)() const)
 {
-	reactant.emplace(other);
+    getTransitionPointCB = callback;
 }
 
-void StateNucleator::setTransitionPointCB(Amount<Unit::CELSIUS>(Reactant::* callback)() const)
+void StateNucleator::setTransitionHeatCB(Amount<Unit::JOULE_PER_MOLE> (Reactant::*callback)() const)
 {
-	getTransitionPointCB = callback;
+    getTransitionHeatCB = callback;
 }
 
-void StateNucleator::setTransitionHeatCB(Amount<Unit::JOULE_PER_MOLE>(Reactant::* callback)() const)
-{
-	getTransitionHeatCB = callback;
-}
+void StateNucleator::unset() { reactant = std::nullopt; }
 
-void StateNucleator::unset()
-{
-	reactant = std::nullopt;
-}
+bool StateNucleator::isNull() const { return getTransitionPointCB == nullptr; }
 
-bool StateNucleator::isNull() const
-{
-	return getTransitionPointCB == nullptr;
-}
+bool StateNucleator::isSet() const { return reactant.has_value(); }
 
-bool StateNucleator::isSet() const
-{
-	return reactant.has_value();
-}
+bool StateNucleator::isValid() const { return isNull() == false && isSet(); }
 
-bool StateNucleator::isValid() const
-{
-	return isNull() == false && isSet();
-}
-
-const Reactant& StateNucleator::getReactant() const
-{
-	return *reactant;
-}
+const Reactant& StateNucleator::getReactant() const { return *reactant; }
 
 Amount<Unit::CELSIUS> StateNucleator::getTransitionPoint() const
 {
-	return (*reactant.*getTransitionPointCB)();
+    return (*reactant.*getTransitionPointCB)();
 }
 
 Amount<Unit::JOULE_PER_MOLE> StateNucleator::getTransitionHeat() const
 {
-	return (*reactant.*getTransitionHeatCB)();
+    return (*reactant.*getTransitionHeatCB)();
 }
 
 bool StateNucleator::isLower(const Reactant& other) const
 {
-	return reactant ?
-		(other.*getTransitionPointCB)() < (*reactant.*getTransitionPointCB)() :
-		true;
+    return reactant ? (other.*getTransitionPointCB)() < (*reactant.*getTransitionPointCB)() : true;
 }
 
 bool StateNucleator::isHigher(const Reactant& other) const
 {
-	return reactant ?
-		(other.*getTransitionPointCB)() > (*reactant.*getTransitionPointCB)() :
-		true;
+    return reactant ? (other.*getTransitionPointCB)() > (*reactant.*getTransitionPointCB)() : true;
 }
 
 bool StateNucleator::setIfLower(const Reactant& other)
 {
-	if (getTransitionPointCB == nullptr)
-		return false;
+    if (getTransitionPointCB == nullptr)
+        return false;
 
-	if (not reactant || (other.*getTransitionPointCB)() < (*reactant.*getTransitionPointCB)())
-	{
-		setReactant(other);
-		return true;
-	}
+    if (not reactant || (other.*getTransitionPointCB)() < (*reactant.*getTransitionPointCB)()) {
+        setReactant(other);
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
 bool StateNucleator::setIfHigher(const Reactant& other)
 {
-	if (getTransitionPointCB == nullptr)
-		return false;
+    if (getTransitionPointCB == nullptr)
+        return false;
 
-	if (not reactant || (other.*getTransitionPointCB)() > (*reactant.*getTransitionPointCB)())
-	{
-		setReactant(other);
-		return true;
-	}
+    if (not reactant || (other.*getTransitionPointCB)() > (*reactant.*getTransitionPointCB)()) {
+        setReactant(other);
+        return true;
+    }
 
-	return false;
+    return false;
 }

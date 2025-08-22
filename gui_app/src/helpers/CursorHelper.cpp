@@ -2,11 +2,11 @@
 
 std::unordered_map<sf::Cursor::Type, std::unique_ptr<sf::Cursor>> CursorHelper::cursors;
 
-CursorHelper::CursorHelper(sf::Window& window) noexcept:
+CursorHelper::CursorHelper(sf::Window& window) noexcept :
     window(window)
 {}
 
-CursorHelper::CursorHelper(sf::Window& window, const sf::Cursor::Type initialType) noexcept:
+CursorHelper::CursorHelper(sf::Window& window, const sf::Cursor::Type initialType) noexcept :
     window(window)
 {
     setType(initialType);
@@ -15,8 +15,7 @@ CursorHelper::CursorHelper(sf::Window& window, const sf::Cursor::Type initialTyp
 bool CursorHelper::setType(const sf::Cursor::Type type)
 {
     auto c = cursors.find(type);
-    if (c == cursors.end())
-    {
+    if (c == cursors.end()) {
         auto newC = sf::Cursor::createFromSystem(type);
         if (not newC)
             return false;
@@ -28,7 +27,4 @@ bool CursorHelper::setType(const sf::Cursor::Type type)
     return true;
 }
 
-void CursorHelper::setVisibility(const bool visible)
-{
-    window.setMouseCursorVisible(visible);
-}
+void CursorHelper::setVisibility(const bool visible) { window.setMouseCursorVisible(visible); }

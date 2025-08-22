@@ -1,38 +1,39 @@
 #pragma once
 
-#include "labware/data/BaseLabwareData.hpp"
 #include "data/def/Object.hpp"
+#include "labware/data/BaseLabwareData.hpp"
 
-#include <string>
 #include <memory>
+#include <string>
 #include <unordered_map>
 
 class LabwareRepository
 {
 private:
-	std::unordered_map<LabwareId, std::unique_ptr<const BaseLabwareData>> labware;
+    std::unordered_map<LabwareId, std::unique_ptr<const BaseLabwareData>> labware;
 
-	bool checkTextureFile(std::string path, const def::Location& location);
+    bool checkTextureFile(std::string path, const def::Location& location);
 
-	template <LabwareType T>
-	bool add(const LabwareId id, const def::Object& definition) = delete;
+    template <LabwareType T>
+    bool add(const LabwareId id, const def::Object& definition) = delete;
 
 public:
-	LabwareRepository() = default;
-	LabwareRepository(const LabwareRepository&) = delete;
-	LabwareRepository(LabwareRepository&&) = default;
+    LabwareRepository()                         = default;
+    LabwareRepository(const LabwareRepository&) = delete;
+    LabwareRepository(LabwareRepository&&)      = default;
 
-	bool add(const def::Object& definition);
+    bool add(const def::Object& definition);
 
-	bool contains(const LabwareId id) const;
-	const BaseLabwareData& at(const LabwareId id) const;
+    bool                   contains(const LabwareId id) const;
+    const BaseLabwareData& at(const LabwareId id) const;
 
-	size_t totalDefinitionCount() const;
+    size_t totalDefinitionCount() const;
 
-	using Iterator = std::unordered_map<LabwareId, std::unique_ptr<const BaseLabwareData>>::const_iterator;
-	Iterator begin() const;
-	Iterator end() const;
+    using Iterator =
+        std::unordered_map<LabwareId, std::unique_ptr<const BaseLabwareData>>::const_iterator;
+    Iterator begin() const;
+    Iterator end() const;
 
-	size_t size() const;
-	void clear();
+    size_t size() const;
+    void   clear();
 };

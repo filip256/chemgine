@@ -5,45 +5,44 @@
 
 namespace OS
 {
-	enum class ProcessPriority : uint32_t
-	{
-		// https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-setpriorityclass?redirectedfrom=MSDN#parameters
 
-		ABOVE_NORMAL_PRIORITY_CLASS = 0x00008000,
-		BELOW_NORMAL_PRIORITY_CLASS = 0x00004000,
+enum class ProcessPriority : uint32_t
+{
+    // https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-setpriorityclass?redirectedfrom=MSDN#parameters
 
-		HIGH_PRIORITY_CLASS = 0x00000080,
-		IDLE_PRIORITY_CLASS = 0x00000040,
-		NORMAL_PRIORITY_CLASS = 0x00000020,
-		REALTIME_PRIORITY_CLASS = 0x00000100,
+    ABOVE_NORMAL_PRIORITY_CLASS = 0x00008000,
+    BELOW_NORMAL_PRIORITY_CLASS = 0x00004000,
 
-		PROCESS_MODE_BACKGROUND_BEGIN = 0x00100000,
-		PROCESS_MODE_BACKGROUND_END = 0x00200000,
-	};
+    HIGH_PRIORITY_CLASS     = 0x00000080,
+    IDLE_PRIORITY_CLASS     = 0x00000040,
+    NORMAL_PRIORITY_CLASS   = 0x00000020,
+    REALTIME_PRIORITY_CLASS = 0x00000100,
 
-	ProcessPriority getCurrentProcessPriority();
-	void setCurrentProcessPriority(const ProcessPriority priority);
+    PROCESS_MODE_BACKGROUND_BEGIN = 0x00100000,
+    PROCESS_MODE_BACKGROUND_END   = 0x00200000,
+};
 
+ProcessPriority getCurrentProcessPriority();
+void            setCurrentProcessPriority(const ProcessPriority priority);
 
-	using ProcessorIndex = uint8_t;
-	using ProcessorAffinityMask = std::bitset<sizeof(void*) * 8>;
+using ProcessorIndex        = uint8_t;
+using ProcessorAffinityMask = std::bitset<sizeof(void*) * 8>;
 
-	ProcessorAffinityMask getAvailableProcessorMask();
-	ProcessorAffinityMask getAvailablePhysicalProcessorMask();
-	ProcessorAffinityMask getLastAvailablePhysicalProcessorMask();
-	ProcessorAffinityMask setCurrentThreadProcessorAffinity(const ProcessorAffinityMask mask);
+ProcessorAffinityMask getAvailableProcessorMask();
+ProcessorAffinityMask getAvailablePhysicalProcessorMask();
+ProcessorAffinityMask getLastAvailablePhysicalProcessorMask();
+ProcessorAffinityMask setCurrentThreadProcessorAffinity(const ProcessorAffinityMask mask);
 
+class ExecutionConfig
+{
+public:
+    ProcessorAffinityMask processorAffinityMask;
+    ProcessPriority       processPriority;
 
-	class ExecutionConfig
-	{
-	public:
-		ProcessorAffinityMask processorAffinityMask;
-		ProcessPriority processPriority;
+    ExecutionConfig(
+        ProcessorAffinityMask processorAffinityMask,
+        const ProcessPriority processPriority) noexcept;
+    ExecutionConfig(const ExecutionConfig&) = default;
+};
 
-		ExecutionConfig(
-			ProcessorAffinityMask processorAffinityMask,
-			const ProcessPriority processPriority
-		) noexcept;
-		ExecutionConfig(const ExecutionConfig&) = default;
-	};
-}
+}  // namespace OS

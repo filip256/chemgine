@@ -5,7 +5,7 @@
 class DragNDropHelper
 {
 private:
-    bool inUse = false;
+    bool         inUse      = false;
     sf::Vector2f initialPos = sf::Vector2f(0.0f, 0.0f);
 
 public:
@@ -13,6 +13,6 @@ public:
     void end();
     void resetOrigin(const sf::Vector2f& point);
 
-    bool isInUse() const;
+    bool         isInUse() const;
     sf::Vector2f getDelta(const sf::Vector2f& point) const;
 };

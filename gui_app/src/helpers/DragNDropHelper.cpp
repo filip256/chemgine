@@ -2,24 +2,15 @@
 
 void DragNDropHelper::start(const sf::Vector2f& point)
 {
-    inUse = true;
+    inUse      = true;
     initialPos = point;
 }
 
-void DragNDropHelper::end()
-{
-    inUse = false;
-}
+void DragNDropHelper::end() { inUse = false; }
 
-void DragNDropHelper::resetOrigin(const sf::Vector2f& point)
-{
-    initialPos = point;
-}
+void DragNDropHelper::resetOrigin(const sf::Vector2f& point) { initialPos = point; }
 
-bool DragNDropHelper::isInUse() const
-{
-    return inUse;
-}
+bool DragNDropHelper::isInUse() const { return inUse; }
 
 sf::Vector2f DragNDropHelper::getDelta(const sf::Vector2f& point) const
 {

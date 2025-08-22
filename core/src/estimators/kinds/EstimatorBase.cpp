@@ -1,35 +1,27 @@
 #include "estimators/kinds/EstimatorBase.hpp"
+
 #include "io/Log.hpp"
 #include "utils/Format.hpp"
 
 #include <typeinfo>
 
 EstimatorBase::EstimatorBase(const EstimatorId id) noexcept :
-	id(id)
+    id(id)
 {}
 
-EstimatorId EstimatorBase::getId() const
-{
-	return id;
-}
+EstimatorId EstimatorBase::getId() const { return id; }
 
-std::string EstimatorBase::getDefIdentifier() const
-{
-	return 'd' + std::to_string(id);
-}
+std::string EstimatorBase::getDefIdentifier() const { return 'd' + std::to_string(id); }
 
 bool EstimatorBase::isEquivalent(const EstimatorBase& other, const float_s epsilon) const
 {
-	return typeid(*this) == typeid(other);
+    return typeid(*this) == typeid(other);
 }
 
-uint16_t EstimatorBase::getNestingDepth() const
-{
-	return 0;
-}
+uint16_t EstimatorBase::getNestingDepth() const { return 0; }
 
 void EstimatorBase::print(std::ostream& out) const
 {
-	std::unordered_set<EstimatorId> history;
-	dumpDefinition(out, true, history, false, 0);
+    std::unordered_set<EstimatorId> history;
+    dumpDefinition(out, true, history, false, 0);
 }

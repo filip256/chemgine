@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ContainerBase.hpp"
-#include "reactions/ReactantSet.hpp"
 #include "mixtures/ContentInitializer.hpp"
+#include "reactions/ReactantSet.hpp"
 #include "structs/Ref.hpp"
 
 class Layer;
@@ -14,46 +14,48 @@ class Catalyst;
 class Mixture : public ContainerBase
 {
 protected:
-	ReactantSet content = ReactantSet(*this);
+    ReactantSet content = ReactantSet(*this);
 
-	Mixture(const Mixture&) noexcept;
+    Mixture(const Mixture&) noexcept;
 
-	virtual void add(const Amount<Unit::JOULE> heat, const LayerType layer) = 0;
+    virtual void add(const Amount<Unit::JOULE> heat, const LayerType layer) = 0;
 
-	virtual LayerType findLayerFor(const Reactant& reactant) const = 0;
+    virtual LayerType findLayerFor(const Reactant& reactant) const = 0;
 
 public:
-	Mixture() = default;
-	Mixture(Mixture&&) = default;
+    Mixture()          = default;
+    Mixture(Mixture&&) = default;
 
-	void add(const Reactant& reactant) override;
-	void add(const Mixture& other);
-	virtual void add(const Molecule& molecule, const Amount<Unit::MOLE> amount);
+    void         add(const Reactant& reactant) override;
+    void         add(const Mixture& other);
+    virtual void add(const Molecule& molecule, const Amount<Unit::MOLE> amount);
 
-	const ReactantSet& getContent() const;
-	ContentInitializer getContentInitializer() const;
+    const ReactantSet& getContent() const;
+    ContentInitializer getContentInitializer() const;
 
-	Amount<Unit::MOLE> getAmountOf(const Reactant& reactant) const;
-	Amount<Unit::MOLE> getAmountOf(const ReactantSet& reactantSet) const;
-	Amount<Unit::MOLE> getAmountOf(const Catalyst& catalyst) const;
+    Amount<Unit::MOLE> getAmountOf(const Reactant& reactant) const;
+    Amount<Unit::MOLE> getAmountOf(const ReactantSet& reactantSet) const;
+    Amount<Unit::MOLE> getAmountOf(const Catalyst& catalyst) const;
 
-	virtual Amount<Unit::TORR> getPressure() const = 0;
-	virtual Amount<Unit::MOLE> getTotalMoles() const = 0;
-	virtual Amount<Unit::GRAM> getTotalMass() const = 0;
-	virtual Amount<Unit::LITER> getTotalVolume() const = 0;
+    virtual Amount<Unit::TORR>  getPressure() const    = 0;
+    virtual Amount<Unit::MOLE>  getTotalMoles() const  = 0;
+    virtual Amount<Unit::GRAM>  getTotalMass() const   = 0;
+    virtual Amount<Unit::LITER> getTotalVolume() const = 0;
 
-	virtual const Layer& getLayer(const LayerType layer) const = 0;
-	virtual Amount<Unit::CELSIUS> getLayerTemperature(const LayerType l) const = 0;
-	virtual Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity(const LayerType layer) const = 0;
-	virtual Amount<Unit::JOULE_PER_CELSIUS> getLayerTotalHeatCapacity(const LayerType layer) const = 0;
-	virtual Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType layer) const = 0;
-	virtual Polarity getLayerPolarity(const LayerType layer) const = 0;
-	virtual Color getLayerColor(const LayerType layer) const = 0;
+    virtual const Layer&          getLayer(const LayerType layer) const        = 0;
+    virtual Amount<Unit::CELSIUS> getLayerTemperature(const LayerType l) const = 0;
+    virtual Amount<Unit::JOULE_PER_MOLE_CELSIUS>
+    getLayerHeatCapacity(const LayerType layer) const = 0;
+    virtual Amount<Unit::JOULE_PER_CELSIUS>
+                                         getLayerTotalHeatCapacity(const LayerType layer) const = 0;
+    virtual Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType layer) const     = 0;
+    virtual Polarity                     getLayerPolarity(const LayerType layer) const          = 0;
+    virtual Color                        getLayerColor(const LayerType layer) const             = 0;
 
-	virtual bool isEmpty() const = 0;
+    virtual bool isEmpty() const = 0;
 
-	virtual Ref<ContainerBase> getOverflowTarget() const = 0;
-	virtual void setOverflowTarget(const Ref<ContainerBase> target) = 0;
+    virtual Ref<ContainerBase> getOverflowTarget() const                          = 0;
+    virtual void               setOverflowTarget(const Ref<ContainerBase> target) = 0;
 
-	friend class Layer;
+    friend class Layer;
 };

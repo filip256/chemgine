@@ -1,53 +1,56 @@
 #pragma once
 
 #include "reactions/data/ReactionData.hpp"
-#include "structs/DirectedGraph.hpp"
-#include "structs/Buffer2D.hpp"
 #include "reactions/kinds/ConcreteReaction.hpp"
 #include "reactions/kinds/RetrosynthReaction.hpp"
+#include "structs/Buffer2D.hpp"
+#include "structs/DirectedGraph.hpp"
 
 class ReactionNetwork
 {
-	class ReactionNode
-	{
-	public:
-		ReactionData& data;
+    class ReactionNode
+    {
+    public:
+        ReactionData& data;
 
-		ReactionNode(ReactionData& data) noexcept;
-		ReactionNode(const ReactionNode&) = default;
-	};
+        ReactionNode(ReactionData& data) noexcept;
+        ReactionNode(const ReactionNode&) = default;
+    };
 
 private:
-	DirectedGraph<ReactionNode> graph;
-	std::vector<size_t> topLayer;
+    DirectedGraph<ReactionNode> graph;
+    std::vector<size_t>         topLayer;
 
-	bool insert(const size_t current, ReactionData& reaction, size_t& firstInsert);
+    bool insert(const size_t current, ReactionData& reaction, size_t& firstInsert);
 
-	bool getOccurringReactions(
-		const std::vector<Reactant>& reactants,
-		const size_t current,
-		std::unordered_set<ConcreteReaction>& result) const;
+    bool getOccurringReactions(
+        const std::vector<Reactant>&          reactants,
+        const size_t                          current,
+        std::unordered_set<ConcreteReaction>& result) const;
 
-	bool getRetrosynthReactions(
-		const StructureRef& targetProduct,
-		const size_t current,
-		std::unordered_set<RetrosynthReaction>& result) const;
+    bool getRetrosynthReactions(
+        const StructureRef&                     targetProduct,
+        const size_t                            current,
+        std::unordered_set<RetrosynthReaction>& result) const;
 
-	void print(const size_t current, TextBlock& block, size_t& y, std::vector<uint8_t>& pipes) const;
+    void
+    print(const size_t current, TextBlock& block, size_t& y, std::vector<uint8_t>& pipes) const;
 
 public:
-	ReactionNetwork() = default;
-	ReactionNetwork(const ReactionNetwork&) = delete;
-	ReactionNetwork(ReactionNetwork&&) = default;
+    ReactionNetwork()                       = default;
+    ReactionNetwork(const ReactionNetwork&) = delete;
+    ReactionNetwork(ReactionNetwork&&)      = default;
 
-	bool insert(ReactionData& reaction);
+    bool insert(ReactionData& reaction);
 
-	std::unordered_set<ConcreteReaction> getOccurringReactions(const std::vector<Reactant>& reactants) const;
-	std::unordered_set<RetrosynthReaction> getRetrosynthReactions(const StructureRef& targetProduct) const;
+    std::unordered_set<ConcreteReaction>
+    getOccurringReactions(const std::vector<Reactant>& reactants) const;
+    std::unordered_set<RetrosynthReaction>
+    getRetrosynthReactions(const StructureRef& targetProduct) const;
 
-	std::string print() const;
+    std::string print() const;
 
-	void clear();
+    void clear();
 
-	static constexpr size_t npos = decltype(graph)::npos;
+    static constexpr size_t npos = decltype(graph)::npos;
 };

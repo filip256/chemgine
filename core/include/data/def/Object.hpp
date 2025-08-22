@@ -1,244 +1,254 @@
 #pragma once
 
 #include "data/def/Location.hpp"
-#include "structs/CountedRef.hpp"
 #include "io/Log.hpp"
+#include "structs/CountedRef.hpp"
 
-#include <unordered_set>
-#include <unordered_map>
 #include <optional>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace def
 {
-	enum class DefinitionType
-	{
-		AUTO,
-		DATA,
-		ATOM,
-		RADICAL,
-		MOLECULE,
-		REACTION,
-		LABWARE,
-	};
 
-	class Object
-	{
-	private:
-		const DefinitionType type;
-		const std::string identifier;
-		const std::string specifier;
-		const def::Location location;
+enum class DefinitionType
+{
+    AUTO,
+    DATA,
+    ATOM,
+    RADICAL,
+    MOLECULE,
+    REACTION,
+    LABWARE,
+};
 
-		mutable std::unordered_set<std::string> accessedProperties;
-		mutable std::unordered_set<std::string> accessedSubDefs;
+class Object
+{
+private:
+    const DefinitionType type;
+    const std::string    identifier;
+    const std::string    specifier;
+    const def::Location  location;
 
-		std::unordered_map<std::string, std::string> properties;
-		std::unordered_map<std::string, Object> ilSubDefs;
-		std::unordered_map<std::string, const Object*> oolSubDefs;
+    mutable std::unordered_set<std::string> accessedProperties;
+    mutable std::unordered_set<std::string> accessedSubDefs;
 
-	public:
-		Object(
-			const DefinitionType type,
-			std::string&& identifier,
-			std::string&& specifier,
-			std::unordered_map<std::string, std::string>&& properties,
-			std::unordered_map<std::string, Object>&& ilSubDefs,
-			std::unordered_map<std::string, const Object*>&& oolSubDefs,
-			def::Location&& location
-		) noexcept;
+    std::unordered_map<std::string, std::string>   properties;
+    std::unordered_map<std::string, Object>        ilSubDefs;
+    std::unordered_map<std::string, const Object*> oolSubDefs;
 
-		Object(const Object&) = delete;
-		Object(Object&&) = default;
+public:
+    Object(
+        const DefinitionType                             type,
+        std::string&&                                    identifier,
+        std::string&&                                    specifier,
+        std::unordered_map<std::string, std::string>&&   properties,
+        std::unordered_map<std::string, Object>&&        ilSubDefs,
+        std::unordered_map<std::string, const Object*>&& oolSubDefs,
+        def::Location&&                                  location) noexcept;
 
-		DefinitionType getType() const;
-		const std::string& getIdentifier() const;
-		const std::string& getSpecifier() const;
+    Object(const Object&) = delete;
+    Object(Object&&)      = default;
 
-		const def::Location& getLocation() const;
-		std::string getLocationName() const;
+    DefinitionType     getType() const;
+    const std::string& getIdentifier() const;
+    const std::string& getSpecifier() const;
 
-		void logUnusedWarnings() const;
+    const def::Location& getLocation() const;
+    std::string          getLocationName() const;
 
-		/// <summary>
-		/// Extracts and returns the property with the given key.
-		/// If the property isn't found, an error message is logged.
-		/// </summary>
-		std::optional<std::string> getProperty(const std::string& key) const;
+    void logUnusedWarnings() const;
 
-		/// <summary>
-		/// Extracts and returns the property with the given key (if found).
-		/// </summary>
-		std::optional<std::string> getOptionalProperty(const std::string& key) const;
+    /// <summary>
+    /// Extracts and returns the property with the given key.
+    /// If the property isn't found, an error message is logged.
+    /// </summary>
+    std::optional<std::string> getProperty(const std::string& key) const;
 
-		/// <summary>
-		/// Extracts and returns the property with the given key (if found).
-		/// If the property isn't found the given default string is returned.
-		/// </summary>
-		std::string getDefaultProperty(const std::string& key, std::string&& defaultValue) const;
+    /// <summary>
+    /// Extracts and returns the property with the given key (if found).
+    /// </summary>
+    std::optional<std::string> getOptionalProperty(const std::string& key) const;
 
-		/// <summary>
-		/// Extracts the property with the given key and returns its parsed value.
-		/// If the property isn't found or parsing fails, an error message is logged.
-		/// </summary>
-		template<typename T, typename... Args>
-		std::optional<T> getProperty(
-			const std::string& key,
-			std::optional<T>(*parser)(const std::string&, Args...),
-			Args&&... parserArgs) const;
+    /// <summary>
+    /// Extracts and returns the property with the given key (if found).
+    /// If the property isn't found the given default string is returned.
+    /// </summary>
+    std::string getDefaultProperty(const std::string& key, std::string&& defaultValue) const;
 
-		/// <summary>
-		/// Extracts the property with the given key (if found) and returns its parsed value.
-		/// If the parsing fails, a warning message is logged.
-		/// </summary>
-		template<typename T, typename... Args>
-		std::optional<T> getOptionalProperty(
-			const std::string& key,
-			std::optional<T>(*parser)(const std::string&, Args...),
-			Args&&... parserArgs) const;
+    /// <summary>
+    /// Extracts the property with the given key and returns its parsed value.
+    /// If the property isn't found or parsing fails, an error message is logged.
+    /// </summary>
+    template <typename T, typename... Args>
+    std::optional<T> getProperty(
+        const std::string& key,
+        std::optional<T>   (*parser)(const std::string&, Args...),
+        Args&&... parserArgs) const;
 
-		/// <summary>
-		/// Extracts the property with the given key (if found) and returns its parsed value.
-		/// If the parsing fails, a warning message is logged.
-		/// If the property isn't found or parsing fails, the given default value is returned.
-		/// </summary>
-		template<typename T, typename D, typename... Args>
-		T getDefaultProperty(
-			const std::string& key,
-			D&& defaultValue,
-			std::optional<T>(*parser)(const std::string&, Args...),
-			Args&&... parserArgs) const;
+    /// <summary>
+    /// Extracts the property with the given key (if found) and returns its parsed value.
+    /// If the parsing fails, a warning message is logged.
+    /// </summary>
+    template <typename T, typename... Args>
+    std::optional<T> getOptionalProperty(
+        const std::string& key,
+        std::optional<T>   (*parser)(const std::string&, Args...),
+        Args&&... parserArgs) const;
 
-		/// <summary>
-		/// Extracts and returns the definition with the given key.
-		/// If the definition isn't found, an error message is logged.
-		/// </summary>
-		const Object* getDefinition(const std::string& key) const;
+    /// <summary>
+    /// Extracts the property with the given key (if found) and returns its parsed value.
+    /// If the parsing fails, a warning message is logged.
+    /// If the property isn't found or parsing fails, the given default value is returned.
+    /// </summary>
+    template <typename T, typename D, typename... Args>
+    T getDefaultProperty(
+        const std::string& key,
+        D&&                defaultValue,
+        std::optional<T>   (*parser)(const std::string&, Args...),
+        Args&&... parserArgs) const;
 
-		/// <summary>
-		/// Extracts and returns the definition with the given key (if found).
-		/// </summary>
-		const Object* getOptionalDefinition(const std::string& key) const;
+    /// <summary>
+    /// Extracts and returns the definition with the given key.
+    /// If the definition isn't found, an error message is logged.
+    /// </summary>
+    const Object* getDefinition(const std::string& key) const;
 
-		/// <summary>
-		/// Extracts the definition with the given key and returns its parsed value.
-		/// If the definition isn't found or parsing fails, an error message is logged.
-		/// </summary>
-		template<typename T, typename... Args>
-		std::optional<CountedRef<const T>> getDefinition(
-			const std::string& key,
-			std::optional<CountedRef<const T>>(*parser)(const Object&, Args...),
-			Args&&... parserArgs) const;
+    /// <summary>
+    /// Extracts and returns the definition with the given key (if found).
+    /// </summary>
+    const Object* getOptionalDefinition(const std::string& key) const;
 
-		/// <summary>
-		/// Extracts the definition with the given key (if found) and returns its parsed value.
-		/// If the parsing fails, a warning message is logged.
-		/// </summary>
-		template<typename T, typename... Args>
-		std::optional<CountedRef<const T>> getOptionalDefinition(
-			const std::string& key,
-			std::optional<CountedRef<const T>>(*parser)(const Object&, Args...),
-			Args&&... parserArgs) const;
+    /// <summary>
+    /// Extracts the definition with the given key and returns its parsed value.
+    /// If the definition isn't found or parsing fails, an error message is logged.
+    /// </summary>
+    template <typename T, typename... Args>
+    std::optional<CountedRef<const T>> getDefinition(
+        const std::string&                 key,
+        std::optional<CountedRef<const T>> (*parser)(const Object&, Args...),
+        Args&&... parserArgs) const;
 
-		/// <summary>
-		/// Extracts the definition with the given key (if found) and returns its parsed value.
-		/// If the parsing fails, a warning message is logged.
-		/// If the property isn't found or parsing fails, the given default value is returned.
-		/// </summary>
-		template<typename T, typename D, typename... Args>
-		CountedRef<const T> getDefaultDefinition(
-			const std::string& key,
-			D&& defaultValue,
-			std::optional<CountedRef<const T>>(*parser)(const Object&, Args...),
-			Args&&... parserArgs) const;
-	};
+    /// <summary>
+    /// Extracts the definition with the given key (if found) and returns its parsed value.
+    /// If the parsing fails, a warning message is logged.
+    /// </summary>
+    template <typename T, typename... Args>
+    std::optional<CountedRef<const T>> getOptionalDefinition(
+        const std::string&                 key,
+        std::optional<CountedRef<const T>> (*parser)(const Object&, Args...),
+        Args&&... parserArgs) const;
 
-	template<typename T, typename... Args>
-	std::optional<T> Object::getProperty(
-		const std::string& key,
-		std::optional<T>(*parser)(const std::string&, Args...),
-		Args&&... parserArgs) const
-	{
-		const auto strProp = getProperty(key);
-		if (not strProp)
-			return std::nullopt;
+    /// <summary>
+    /// Extracts the definition with the given key (if found) and returns its parsed value.
+    /// If the parsing fails, a warning message is logged.
+    /// If the property isn't found or parsing fails, the given default value is returned.
+    /// </summary>
+    template <typename T, typename D, typename... Args>
+    CountedRef<const T> getDefaultDefinition(
+        const std::string&                 key,
+        D&&                                defaultValue,
+        std::optional<CountedRef<const T>> (*parser)(const Object&, Args...),
+        Args&&... parserArgs) const;
+};
 
-		const auto parsed = parser(*strProp, std::forward<Args>(parserArgs)...);
-		if (not parsed)
-			Log(this).error("Failed to parse property: '{0} : {1}', at: {2}.", key, *strProp, location.toString());
+template <typename T, typename... Args>
+std::optional<T> Object::getProperty(
+    const std::string& key,
+    std::optional<T>   (*parser)(const std::string&, Args...),
+    Args&&... parserArgs) const
+{
+    const auto strProp = getProperty(key);
+    if (not strProp)
+        return std::nullopt;
 
-		return parsed;
-	}
+    const auto parsed = parser(*strProp, std::forward<Args>(parserArgs)...);
+    if (not parsed)
+        Log(this).error(
+            "Failed to parse property: '{0} : {1}', at: {2}.", key, *strProp, location.toString());
 
-	template<typename T, typename... Args>
-	std::optional<T> Object::getOptionalProperty(
-		const std::string& key,
-		std::optional<T>(*parser)(const std::string&, Args...),
-		Args&&... parserArgs) const
-	{
-		const auto strProp = getOptionalProperty(key);
-		if (not strProp)
-			return std::nullopt;
-
-		const auto parsed = parser(*strProp, std::forward<Args>(parserArgs)...);
-		if (not parsed)
-			Log(this).warn("Failed to parse optional property: '{0} : {1}', at: {2}.", key, *strProp, location.toString());
-
-		return parsed;
-	}
-
-	template<typename T, typename D, typename... Args>
-	T Object::getDefaultProperty(
-		const std::string& key,
-		D&& defaultValue,
-		std::optional<T>(*parser)(const std::string&, Args...),
-		Args&&... parserArgs) const
-	{
-		const auto prop = getOptionalProperty<T>(key, parser, std::forward<Args>(parserArgs)...);
-		return prop ? *prop : std::move(defaultValue);
-	}
-
-	template<typename T, typename... Args>
-	std::optional<CountedRef<const T>> Object::getOptionalDefinition(
-		const std::string& key,
-		std::optional<CountedRef<const T>>(*parser)(const Object&, Args...),
-		Args&&... parserArgs) const
-	{
-		const auto* def = getOptionalDefinition(key);
-		if (def == nullptr)
-			return std::nullopt;
-
-		auto parsed = parser(*def, std::forward<Args>(parserArgs)...);
-		if (not parsed)
-			Log(this).warn("Failed to parse optional sub-definition for: '{0}', at: {1}.", key, location.toString());
-
-		return parsed;
-	}
-
-	template<typename T, typename... Args>
-	std::optional<CountedRef<const T>> Object::getDefinition(
-		const std::string& key,
-		std::optional<CountedRef<const T>>(*parser)(const Object&, Args...),
-		Args&&... parserArgs) const
-	{
-		const auto* def = getDefinition(key);
-		if (def == nullptr)
-			return std::nullopt;
-
-		auto parsed = parser(*def, std::forward<Args>(parserArgs)...);
-		if (not parsed)
-			Log(this).error("Failed to parse sub-definition for: '{0}', at: {1}.", key, location.toString());
-
-		return parsed;
-	}
-
-	template<typename T, typename D, typename... Args>
-	CountedRef<const T> Object::getDefaultDefinition(
-		const std::string& key,
-		D&& defaultValue,
-		std::optional<CountedRef<const T>>(*parser)(const Object&, Args...),
-		Args&&... parserArgs) const
-	{
-		const auto def = getOptionalDefinition<T>(key, parser, std::forward<Args>(parserArgs)...);
-		return def ? *def : std::move(defaultValue);
-	}
+    return parsed;
 }
+
+template <typename T, typename... Args>
+std::optional<T> Object::getOptionalProperty(
+    const std::string& key,
+    std::optional<T>   (*parser)(const std::string&, Args...),
+    Args&&... parserArgs) const
+{
+    const auto strProp = getOptionalProperty(key);
+    if (not strProp)
+        return std::nullopt;
+
+    const auto parsed = parser(*strProp, std::forward<Args>(parserArgs)...);
+    if (not parsed)
+        Log(this).warn(
+            "Failed to parse optional property: '{0} : {1}', at: {2}.",
+            key,
+            *strProp,
+            location.toString());
+
+    return parsed;
+}
+
+template <typename T, typename D, typename... Args>
+T Object::getDefaultProperty(
+    const std::string& key,
+    D&&                defaultValue,
+    std::optional<T>   (*parser)(const std::string&, Args...),
+    Args&&... parserArgs) const
+{
+    const auto prop = getOptionalProperty<T>(key, parser, std::forward<Args>(parserArgs)...);
+    return prop ? *prop : std::move(defaultValue);
+}
+
+template <typename T, typename... Args>
+std::optional<CountedRef<const T>> Object::getOptionalDefinition(
+    const std::string&                 key,
+    std::optional<CountedRef<const T>> (*parser)(const Object&, Args...),
+    Args&&... parserArgs) const
+{
+    const auto* def = getOptionalDefinition(key);
+    if (def == nullptr)
+        return std::nullopt;
+
+    auto parsed = parser(*def, std::forward<Args>(parserArgs)...);
+    if (not parsed)
+        Log(this).warn(
+            "Failed to parse optional sub-definition for: '{0}', at: {1}.",
+            key,
+            location.toString());
+
+    return parsed;
+}
+
+template <typename T, typename... Args>
+std::optional<CountedRef<const T>> Object::getDefinition(
+    const std::string&                 key,
+    std::optional<CountedRef<const T>> (*parser)(const Object&, Args...),
+    Args&&... parserArgs) const
+{
+    const auto* def = getDefinition(key);
+    if (def == nullptr)
+        return std::nullopt;
+
+    auto parsed = parser(*def, std::forward<Args>(parserArgs)...);
+    if (not parsed)
+        Log(this).error(
+            "Failed to parse sub-definition for: '{0}', at: {1}.", key, location.toString());
+
+    return parsed;
+}
+
+template <typename T, typename D, typename... Args>
+CountedRef<const T> Object::getDefaultDefinition(
+    const std::string&                 key,
+    D&&                                defaultValue,
+    std::optional<CountedRef<const T>> (*parser)(const Object&, Args...),
+    Args&&... parserArgs) const
+{
+    const auto def = getOptionalDefinition<T>(key, parser, std::forward<Args>(parserArgs)...);
+    return def ? *def : std::move(defaultValue);
+}
+
+}  // namespace def

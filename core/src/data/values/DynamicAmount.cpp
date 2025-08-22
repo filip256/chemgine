@@ -1,16 +1,17 @@
 #include "data/values/DynamicAmount.hpp"
+
 #include "io/Log.hpp"
 
 #include <type_traits>
 #include <unordered_map>
 
 DynamicAmount::DynamicAmount(const Unit unit) noexcept :
-	unit(unit)
+    unit(unit)
 {}
 
 DynamicAmount::DynamicAmount(const StorageType value, const Unit unit) noexcept :
     unit(unit),
-	value(value)
+    value(value)
 {}
 
 DynamicAmount::StorageType DynamicAmount::asKilo() const
@@ -18,10 +19,7 @@ DynamicAmount::StorageType DynamicAmount::asKilo() const
     return static_cast<StorageType>(value / 1000.0);
 }
 
-DynamicAmount::StorageType DynamicAmount::asStd() const
-{
-    return value;
-}
+DynamicAmount::StorageType DynamicAmount::asStd() const { return value; }
 
 DynamicAmount::StorageType DynamicAmount::asMilli() const
 {
@@ -38,8 +36,7 @@ std::optional<DynamicAmount> DynamicAmount::to(const Unit target) const
     if (unit == target)
         return *this;
 
-    switch (unit)
-    {
+    switch (unit) {
     case Unit::ANY:
         return DynamicAmount(value, target);
     case Unit::LITER:
@@ -73,25 +70,15 @@ std::optional<DynamicAmount> DynamicAmount::to(const Unit target) const
     }
 }
 
-Unit DynamicAmount::getUnit() const
-{
-    return unit;
-}
+Unit DynamicAmount::getUnit() const { return unit; }
 
-std::string DynamicAmount::getUnitSymbol() const
-{
-    return DynamicAmount::getUnitSymbol(unit);
-}
+std::string DynamicAmount::getUnitSymbol() const { return DynamicAmount::getUnitSymbol(unit); }
 
-std::string DynamicAmount::getUnitName() const
-{
-    return DynamicAmount::getUnitName(unit);
-}
+std::string DynamicAmount::getUnitName() const { return DynamicAmount::getUnitName(unit); }
 
 std::string DynamicAmount::getUnitSymbol(const Unit unit)
 {
-    switch (unit)
-    {
+    switch (unit) {
     case Unit::NONE:
         return Amount<Unit::NONE>::unitSymbol();
     case Unit::ANY:
@@ -153,15 +140,16 @@ std::string DynamicAmount::getUnitSymbol(const Unit unit)
     case Unit::TORR_MOLE_RATIO:
         return Amount<Unit::TORR_MOLE_RATIO>::unitSymbol();
     default:
-        Log<DynamicAmount>().fatal("Unable to find symbol for Unit[{0}].", static_cast<std::underlying_type_t<Unit>>(unit));
+        Log<DynamicAmount>().fatal(
+            "Unable to find symbol for Unit[{0}].",
+            static_cast<std::underlying_type_t<Unit>>(unit));
         return "";
     }
 }
 
 std::string DynamicAmount::getUnitName(const Unit unit)
 {
-    switch (unit)
-    {
+    switch (unit) {
     case Unit::NONE:
         return Amount<Unit::NONE>::unitName();
     case Unit::ANY:
@@ -223,51 +211,49 @@ std::string DynamicAmount::getUnitName(const Unit unit)
     case Unit::TORR_MOLE_RATIO:
         return Amount<Unit::TORR_MOLE_RATIO>::unitName();
     default:
-        Log<DynamicAmount>().fatal("Unable to find name for Unit[{0}].", static_cast<std::underlying_type_t<Unit>>(unit));
+        Log<DynamicAmount>().fatal(
+            "Unable to find name for Unit[{0}].", static_cast<std::underlying_type_t<Unit>>(unit));
         return "";
     }
 }
 
 std::optional<Unit> DynamicAmount::getUnitFromSymbol(const std::string& symbol)
 {
-    static const std::unordered_map<std::string, Unit> symbolToUnitMap =
-    {
-        {DynamicAmount::getUnitSymbol(Unit::NONE), Unit::NONE},
-        {DynamicAmount::getUnitSymbol(Unit::ANY), Unit::ANY},
-        {DynamicAmount::getUnitSymbol(Unit::LITER), Unit::LITER},
-        {DynamicAmount::getUnitSymbol(Unit::CUBIC_METER), Unit::CUBIC_METER},
-        {DynamicAmount::getUnitSymbol(Unit::DROP), Unit::DROP},
-        {DynamicAmount::getUnitSymbol(Unit::GRAM), Unit::GRAM},
-        {DynamicAmount::getUnitSymbol(Unit::MOLE), Unit::MOLE},
-        {DynamicAmount::getUnitSymbol(Unit::SECOND), Unit::SECOND},
-        {DynamicAmount::getUnitSymbol(Unit::CELSIUS), Unit::CELSIUS},
-        {DynamicAmount::getUnitSymbol(Unit::KELVIN), Unit::KELVIN},
-        {DynamicAmount::getUnitSymbol(Unit::FAHRENHEIT), Unit::FAHRENHEIT},
-        {DynamicAmount::getUnitSymbol(Unit::TORR), Unit::TORR},
-        {DynamicAmount::getUnitSymbol(Unit::PASCAL), Unit::PASCAL},
-        {DynamicAmount::getUnitSymbol(Unit::ATMOSPHERE), Unit::ATMOSPHERE},
-        {DynamicAmount::getUnitSymbol(Unit::JOULE), Unit::JOULE},
-        {DynamicAmount::getUnitSymbol(Unit::WATT), Unit::WATT},
-        {DynamicAmount::getUnitSymbol(Unit::METER), Unit::METER},
-        {DynamicAmount::getUnitSymbol(Unit::DEGREE), Unit::DEGREE},
-        {DynamicAmount::getUnitSymbol(Unit::RADIAN), Unit::RADIAN},
-        {DynamicAmount::getUnitSymbol(Unit::PER_SECOND), Unit::PER_SECOND},
-        {DynamicAmount::getUnitSymbol(Unit::PER_METER), Unit::PER_METER},
-        {DynamicAmount::getUnitSymbol(Unit::MOLE_RATIO), Unit::MOLE_RATIO},
-        {DynamicAmount::getUnitSymbol(Unit::MOLE_PERCENT), Unit::MOLE_PERCENT},
-        {DynamicAmount::getUnitSymbol(Unit::MOLE_PER_SECOND), Unit::MOLE_PER_SECOND},
-        {DynamicAmount::getUnitSymbol(Unit::GRAM_PER_MOLE), Unit::GRAM_PER_MOLE},
-        {DynamicAmount::getUnitSymbol(Unit::GRAM_PER_MILLILITER), Unit::GRAM_PER_MILLILITER},
-        {DynamicAmount::getUnitSymbol(Unit::JOULE_PER_MOLE), Unit::JOULE_PER_MOLE},
-        {DynamicAmount::getUnitSymbol(Unit::JOULE_PER_CELSIUS), Unit::JOULE_PER_CELSIUS},
+    static const std::unordered_map<std::string, Unit> symbolToUnitMap = {
+        {                  DynamicAmount::getUnitSymbol(Unit::NONE),                   Unit::NONE},
+        {                   DynamicAmount::getUnitSymbol(Unit::ANY),                    Unit::ANY},
+        {                 DynamicAmount::getUnitSymbol(Unit::LITER),                  Unit::LITER},
+        {           DynamicAmount::getUnitSymbol(Unit::CUBIC_METER),            Unit::CUBIC_METER},
+        {                  DynamicAmount::getUnitSymbol(Unit::DROP),                   Unit::DROP},
+        {                  DynamicAmount::getUnitSymbol(Unit::GRAM),                   Unit::GRAM},
+        {                  DynamicAmount::getUnitSymbol(Unit::MOLE),                   Unit::MOLE},
+        {                DynamicAmount::getUnitSymbol(Unit::SECOND),                 Unit::SECOND},
+        {               DynamicAmount::getUnitSymbol(Unit::CELSIUS),                Unit::CELSIUS},
+        {                DynamicAmount::getUnitSymbol(Unit::KELVIN),                 Unit::KELVIN},
+        {            DynamicAmount::getUnitSymbol(Unit::FAHRENHEIT),             Unit::FAHRENHEIT},
+        {                  DynamicAmount::getUnitSymbol(Unit::TORR),                   Unit::TORR},
+        {                DynamicAmount::getUnitSymbol(Unit::PASCAL),                 Unit::PASCAL},
+        {            DynamicAmount::getUnitSymbol(Unit::ATMOSPHERE),             Unit::ATMOSPHERE},
+        {                 DynamicAmount::getUnitSymbol(Unit::JOULE),                  Unit::JOULE},
+        {                  DynamicAmount::getUnitSymbol(Unit::WATT),                   Unit::WATT},
+        {                 DynamicAmount::getUnitSymbol(Unit::METER),                  Unit::METER},
+        {                DynamicAmount::getUnitSymbol(Unit::DEGREE),                 Unit::DEGREE},
+        {                DynamicAmount::getUnitSymbol(Unit::RADIAN),                 Unit::RADIAN},
+        {            DynamicAmount::getUnitSymbol(Unit::PER_SECOND),             Unit::PER_SECOND},
+        {             DynamicAmount::getUnitSymbol(Unit::PER_METER),              Unit::PER_METER},
+        {            DynamicAmount::getUnitSymbol(Unit::MOLE_RATIO),             Unit::MOLE_RATIO},
+        {          DynamicAmount::getUnitSymbol(Unit::MOLE_PERCENT),           Unit::MOLE_PERCENT},
+        {       DynamicAmount::getUnitSymbol(Unit::MOLE_PER_SECOND),        Unit::MOLE_PER_SECOND},
+        {         DynamicAmount::getUnitSymbol(Unit::GRAM_PER_MOLE),          Unit::GRAM_PER_MOLE},
+        {   DynamicAmount::getUnitSymbol(Unit::GRAM_PER_MILLILITER),    Unit::GRAM_PER_MILLILITER},
+        {        DynamicAmount::getUnitSymbol(Unit::JOULE_PER_MOLE),         Unit::JOULE_PER_MOLE},
+        {     DynamicAmount::getUnitSymbol(Unit::JOULE_PER_CELSIUS),      Unit::JOULE_PER_CELSIUS},
         {DynamicAmount::getUnitSymbol(Unit::JOULE_PER_MOLE_CELSIUS), Unit::JOULE_PER_MOLE_CELSIUS},
-        {DynamicAmount::getUnitSymbol(Unit::TORR_MOLE_RATIO), Unit::TORR_MOLE_RATIO}
+        {       DynamicAmount::getUnitSymbol(Unit::TORR_MOLE_RATIO),        Unit::TORR_MOLE_RATIO}
     };
 
     const auto it = symbolToUnitMap.find(symbol);
-    return it != symbolToUnitMap.cend() ?
-        std::optional(it->second) :
-        std::nullopt;
+    return it != symbolToUnitMap.cend() ? std::optional(it->second) : std::nullopt;
 }
 
 std::optional<DynamicAmount> DynamicAmount::get(const StorageType value, const std::string& symbol)
@@ -280,12 +266,9 @@ std::optional<DynamicAmount> DynamicAmount::get(const StorageType value, const s
     if (not unit)
         return std::nullopt;
 
-    const auto multiplier = *unit == Unit::CUBIC_METER ?
-        1000000.0f :
-        1000.0f;
+    const auto multiplier = *unit == Unit::CUBIC_METER ? 1000000.0f : 1000.0f;
 
-    switch (symbol.front())
-    {
+    switch (symbol.front()) {
     case 'k':
         return DynamicAmount(value * multiplier, *unit);
     case 'm':
