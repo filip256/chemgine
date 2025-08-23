@@ -41,14 +41,14 @@ jobs:
       fail-fast: false
       matrix:
         kind:
-        - { name: Windows-VS2022-x64-Release, os: windows-2022,  config: Release, flags: -A x64 -DDISABLE_COLORED_PRINTING=ON }
-        - { name: Windows-VS2022-x64-Debug,   os: windows-2022,  config: Debug,   flags: -A x64 -DDISABLE_COLORED_PRINTING=ON }
-        - { name: Windows-VS2022-x86-Release, os: windows-2022,  config: Release, flags: -A Win32 -DDISABLE_COLORED_PRINTING=ON }
-        # - { name: Windows-VS2022-x86-Debug,   os: windows-2022,  config: Debug,   flags: -A Win32 -DDISABLE_COLORED_PRINTING=ON }
-        - { name: Ubuntu-GCC-x64-Release,     os: ubuntu-latest, config: Release, flags: -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DDISABLE_COLORED_PRINTING=ON }
-        # - { name: Ubuntu-GCC-x64-Debug,       os: ubuntu-latest, config: Debug,   flags: -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DDISABLE_COLORED_PRINTING=ON }
-        - { name: Ubuntu-Clang-x64-Release,   os: ubuntu-latest, config: Release, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DDISABLE_COLORED_PRINTING=ON }
-        # - { name: Ubuntu-Clang-x64-Debug,     os: ubuntu-latest, config: Debug,   flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DDISABLE_COLORED_PRINTING=ON }
+        - { name: Windows-VS2022-x64-Release, os: windows-2022,  config: Release, flags: -A x64 -DEXTENDED_CHAR_SET=ASCII }
+        - { name: Windows-VS2022-x64-Debug,   os: windows-2022,  config: Debug,   flags: -A x64 -DEXTENDED_CHAR_SET=ASCII }
+        - { name: Windows-VS2022-x86-Release, os: windows-2022,  config: Release, flags: -A Win32 -DEXTENDED_CHAR_SET=ASCII }
+        # - { name: Windows-VS2022-x86-Debug,   os: windows-2022,  config: Debug,   flags: -A Win32 -DEXTENDED_CHAR_SET=ASCII }
+        - { name: Ubuntu-GCC-x64-Release,     os: ubuntu-latest, config: Release, flags: -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DEXTENDED_CHAR_SET=ASCII }
+        # - { name: Ubuntu-GCC-x64-Debug,       os: ubuntu-latest, config: Debug,   flags: -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DEXTENDED_CHAR_SET=ASCII }
+        - { name: Ubuntu-Clang-x64-Release,   os: ubuntu-latest, config: Release, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DEXTENDED_CHAR_SET=ASCII }
+        # - { name: Ubuntu-Clang-x64-Debug,     os: ubuntu-latest, config: Debug,   flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DEXTENDED_CHAR_SET=ASCII }
 
     steps:
       - name: Checkout repository
@@ -81,6 +81,7 @@ jobs:
             build/test_app/**/test_app*
             build/test_app/**/data/**
             build/defparse/**/defparse*
+            !**/CMakeFiles/**
 
   unit:
     name: Unit / ${{matrix.kind.name}}

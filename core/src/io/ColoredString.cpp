@@ -26,11 +26,11 @@ ColoredString::ColoredString(ContainerType&& str) noexcept :
     str(std::move(str))
 {}
 
-ColoredString::ColoredString(const char* str, const OS::ColorType color) noexcept :
+ColoredString::ColoredString(const char* str, const OS::BasicColor color) noexcept :
     ColoredString(bind(str, color))
 {}
 
-ColoredString::ColoredString(const std::string& str, const OS::ColorType color) noexcept :
+ColoredString::ColoredString(const std::string& str, const OS::BasicColor color) noexcept :
     ColoredString(bind(str, color))
 {}
 
@@ -38,7 +38,7 @@ ColoredString::ColoredString(const size_t size, const ColoredChar chr) noexcept 
     str(size, chr)
 {}
 
-std::vector<ColoredChar> ColoredString::bind(const char* str, const OS::ColorType color)
+std::vector<ColoredChar> ColoredString::bind(const char* str, const OS::BasicColor color)
 {
     std::vector<ColoredChar> temp;
     for (size_t i = 0; str[i] != '\0'; ++i) temp.emplace_back(str[i], color);
@@ -46,7 +46,7 @@ std::vector<ColoredChar> ColoredString::bind(const char* str, const OS::ColorTyp
     return temp;
 }
 
-std::vector<ColoredChar> ColoredString::bind(const std::string& str, const OS::ColorType color)
+std::vector<ColoredChar> ColoredString::bind(const std::string& str, const OS::BasicColor color)
 {
     std::vector<ColoredChar> temp;
     temp.reserve(str.size());
@@ -119,7 +119,7 @@ void ColoredString::append(const ColoredString& other)
     this->str.insert(this->str.end(), other.str.begin(), other.str.end());
 }
 
-void ColoredString::append(const std::string& str, const OS::ColorType color)
+void ColoredString::append(const std::string& str, const OS::BasicColor color)
 {
     for (const auto c : str) push_back(ColoredChar(c, color));
 }
@@ -216,10 +216,10 @@ std::ostream& operator<<(std::ostream& os, const ColoredString& coloredString)
 
     const auto initialColor = OS::getTextColor();
     for (const auto c : coloredString.str) {
-        OS::setTextColor(c.color != OS::Color::None ? c.color : initialColor);
+        OS::setTextColor(c.color != OS::BasicColor::NONE ? c.color : initialColor, os);
         os << c.chr;
     }
 
-    OS::setTextColor(initialColor);
+    OS::setTextColor(initialColor, os);
     return os;
 }

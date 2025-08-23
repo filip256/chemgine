@@ -182,11 +182,11 @@ void LogBase::fatal(const LogFormat& format, Args&&... args) const
 {
     log(std::move(format), LogType::FATAL, std::forward<Args>(args)...);
 
-    OS::setTextColor(OS::Color::DarkRed);
+    OS::setTextColor(OS::BasicColor::DARK_RED, settings().outputStream);
     settings().outputStream
         << "\n   Execution aborted due to a fatal error.\n   Press ENTER to exit.\n";
     settings().outputStream.flush();
-    OS::setTextColor(OS::Color::White);
+    OS::setTextColor(OS::BasicColor::WHITE, settings().outputStream);
 
 #ifndef NDEBUG
     chg::fatal("Chemgine encountered a fatal error.");

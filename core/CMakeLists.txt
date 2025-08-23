@@ -10,7 +10,7 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCES})
 
 target_include_directories(core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-# Compiler options
+# ~ Compiler options ~
 if(MSVC)
     target_compile_options(core PUBLIC
         /W3     # Warning Level  TODO: Upgrade to /W4
@@ -30,19 +30,18 @@ else()
     message(WARNING "Unsupported CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
 endif()
 
-# User options
+# ~ User options ~
+## DISABLE_CHECKED_CASTS
 if(DISABLE_CHECKED_CASTS)
     target_compile_definitions(core CHG_DISABLE_CHECKED_CASTS)
 endif()
 
+## DISABLE_CHECKED_CASTS
 if(DISABLE_CONCURRENCY_CHECKS)
     target_compile_definitions(core PUBLIC CHG_DISABLE_CONCURRENCY_CHECKS)
 endif()
 
-if(DISABLE_COLORED_PRINTING)
-    target_compile_definitions(core PUBLIC CHG_DISABLE_COLORED_PRINTING)
-endif()
-
+## EXTENDED_CHAR_SET
 if(EXTENDED_CHAR_SET STREQUAL "CP437")
     target_compile_definitions(core PUBLIC CHG_EXTENDED_CHAR_SET_CP437)
 elseif(EXTENDED_CHAR_SET STREQUAL "ASCII")
@@ -51,10 +50,22 @@ else()
     message(FATAL_ERROR "Unsupported EXTENDED_CHAR_SET: ${EXTENDED_CHAR_SET} (supported options: CP437 | ASCII)")
 endif()
 
-# boost
+## COLOR_PRINT_MODE
+if(COLOR_PRINT_MODE STREQUAL "ESCSEQ")
+    target_compile_definitions(core PUBLIC CHG_COLOR_PRINT_MODE_ESCSEQ)
+elseif(COLOR_PRINT_MODE STREQUAL "WINAPI")
+    target_compile_definitions(core PUBLIC CHG_COLOR_PRINT_MODE_WINAPI)
+elseif(COLOR_PRINT_MODE STREQUAL "DISABLED")
+    target_compile_definitions(core PUBLIC CHG_COLOR_PRINT_MODE_DISABLED)
+else()
+    message(FATAL_ERROR "Unsupported COLOR_PRINT_MODE: ${COLOR_PRINT_MODE} (supported options: ESCSEQ | WINAPI | DISABLED)")
+endif()
+
+# ~ Thirdparty ~
+## boost
 target_include_directories(core PUBLIC ${BOOST_INCLUDE_DIR})
 
-# cxxopts
+## cxxopts
 message(STATUS "Fetching cxxopts ${CXXOPTS_VERSION} from ${CXXOPTS_REPOSITORY}")
 FetchContent_Declare(cxxopts
     GIT_REPOSITORY ${CXXOPTS_REPOSITORY}
@@ -67,7 +78,7 @@ FetchContent_MakeAvailable(cxxopts)
 
 target_link_libraries(core PUBLIC cxxopts)
 
-# fmt
+## fmt
 message(STATUS "Fetching fmt v${FMT_VERSION} from ${FMT_REPOSITORY}")
 FetchContent_Declare(fmt
     GIT_REPOSITORY ${FMT_REPOSITORY}
@@ -80,7 +91,7 @@ FetchContent_MakeAvailable(fmt)
 
 target_link_libraries(core PUBLIC fmt::fmt)
 
-# SFML
+## SFML
 message(STATUS "Fetching SFML v${SFML_VERSION} from ${SFML_REPOSITORY}")
 FetchContent_Declare(SFML
     GIT_REPOSITORY ${SFML_REPOSITORY}

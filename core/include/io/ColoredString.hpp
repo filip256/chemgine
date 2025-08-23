@@ -12,17 +12,18 @@
 class ColoredChar
 {
 public:
-    char          chr;
-    OS::ColorType color;
+    char           chr;
+    OS::BasicColor color;
 
-    constexpr ColoredChar(const char chr, const OS::ColorType color = OS::Color::None) noexcept;
+    constexpr ColoredChar(
+        const char chr, const OS::BasicColor color = OS::BasicColor::NONE) noexcept;
     ColoredChar(const ColoredChar&) = default;
 
     bool operator==(const ColoredChar other) const;
     bool operator!=(const ColoredChar other) const;
 };
 
-constexpr ColoredChar::ColoredChar(const char chr, const OS::ColorType color) noexcept :
+constexpr ColoredChar::ColoredChar(const char chr, const OS::BasicColor color) noexcept :
     chr(chr),
     color(color)
 {}
@@ -42,8 +43,8 @@ private:
 
     ColoredString(ContainerType&& str) noexcept;
 
-    static std::vector<ColoredChar> bind(const char* str, const OS::ColorType color);
-    static std::vector<ColoredChar> bind(const std::string& str, const OS::ColorType color);
+    static std::vector<ColoredChar> bind(const char* str, const OS::BasicColor color);
+    static std::vector<ColoredChar> bind(const std::string& str, const OS::BasicColor color);
 
 public:
     using value_type = ColoredChar;
@@ -51,8 +52,9 @@ public:
     static constexpr size_t npos = std::string::npos;
 
     ColoredString() = default;
-    ColoredString(const char* str, const OS::ColorType color = OS::Color::None) noexcept;
-    ColoredString(const std::string& str, const OS::ColorType color = OS::Color::None) noexcept;
+    ColoredString(const char* str, const OS::BasicColor color = OS::BasicColor::NONE) noexcept;
+    ColoredString(
+        const std::string& str, const OS::BasicColor color = OS::BasicColor::NONE) noexcept;
     ColoredString(const size_t size, const ColoredChar chr) noexcept;
     template <typename It>
     ColoredString(const It first, const It last) noexcept;
@@ -95,7 +97,7 @@ public:
 
     void push_back(const ColoredChar coloredChr);
     void append(const ColoredString& other);
-    void append(const std::string& str, const OS::ColorType color = OS::Color::None);
+    void append(const std::string& str, const OS::BasicColor color = OS::BasicColor::NONE);
     void insert(const size_t idx, const ColoredChar coloredChr);
     void insert(const size_t idx, const ColoredString& other);
     template <typename It>

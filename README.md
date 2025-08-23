@@ -2,25 +2,47 @@
 
 Real-time laboratory scale chemical simulation engine.
 
-## How to Build
+# How to Build
 
-### Windows (MSVC)
+## Windows (MSVC):
 ```sh
+# Clone
 git clone https://github.com/filip256/chemgine.git
 cd chemgine
 
-cmake -B build -G "Visual Studio 17 2022 -A x64"
+# Configure & Build
+cmake -B build -G "Visual Studio 17 2022" -A x64
 cmake --build build --config=Release
 ```
 
-### Ubuntu (GCC/Clang)
+## Ubuntu (GCC/Clang):
 ```sh
+# Clone
 git clone https://github.com/filip256/chemgine.git
 cd chemgine
 
+# Install dependencies
 chmod +x setup_ubuntu.sh
 ./setup_ubuntu.sh
 
+# Configure & Build
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel 16
 ```
+
+# How to Contribute
+## Install pre-commit:
+```sh
+pip install pre-commit
+pre-commit --version  # v4.3.0+
+
+cd <chemgine-project-root>
+pre-commit install
+```
+
+## Visual Studio:
+### Automatic formatting:
+[Microsoft Visual Studio](https://visualstudio.microsoft.com/) ships together with a clang-format version which is usually older than the latest version. This may cause issues with some of the rules defined in [.clang-format](.clang-format). To fix them:
+ 1. Download the latest [LLVM release](https://github.com/llvm/llvm-project/releases) (look for `clang+llvm-20.1.8-x86_64-pc-windows-msvc.tar.xz`)
+ 2. Extract `bin/clang-format.exe`
+ 3. In Visual Studio go to `Tools -> Options -> Text Editor -> C/C++ -> Code Style -> Formatting -> General`, tick `Use custom path to clang-format.exe` and browse for the updated `clang-format.exe`.

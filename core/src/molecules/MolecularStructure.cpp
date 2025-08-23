@@ -1983,24 +1983,24 @@ std::vector<MolecularStructure::Cycle> MolecularStructure::getMinimalCycleBasis(
 ColoredTextBlock MolecularStructure::toASCII(const ASCII::PrintOptions options) const
 {
     if (isVirtualHydrogen())
-        return ColoredTextBlock(ColoredString("H2", OS::Color::Grey));
+        return ColoredTextBlock(ColoredString("H2", OS::BasicColor::GREY));
 
     if (atoms.empty())
         return ColoredTextBlock("");
 
-    static constexpr OS::ColorType                         rareAtomColor    = OS::Color::White;
-    static constexpr OS::ColorType                         radicalAtomColor = OS::Color::Cyan;
-    static const std::unordered_map<Symbol, OS::ColorType> defaultColorMap{
-        { Symbol("C"),        OS::Color::Grey},
-        {Symbol("Si"),        OS::Color::Grey},
-        { Symbol("O"),         OS::Color::Red},
-        { Symbol("N"),        OS::Color::Blue},
-        { Symbol("S"),      OS::Color::Yellow},
-        { Symbol("P"),     OS::Color::Magenta},
-        { Symbol("F"),  OS::Color::DarkYellow},
-        {Symbol("Cl"),       OS::Color::Green},
-        {Symbol("Br"),     OS::Color::DarkRed},
-        { Symbol("I"), OS::Color::DarkMagenta},
+    static constexpr OS::BasicColor                         rareAtomColor = OS::BasicColor::WHITE;
+    static constexpr OS::BasicColor                         radicalAtomColor = OS::BasicColor::CYAN;
+    static const std::unordered_map<Symbol, OS::BasicColor> defaultColorMap{
+        { Symbol("C"),         OS::BasicColor::GREY},
+        {Symbol("Si"),         OS::BasicColor::GREY},
+        { Symbol("O"),          OS::BasicColor::RED},
+        { Symbol("N"),         OS::BasicColor::BLUE},
+        { Symbol("S"),       OS::BasicColor::YELLOW},
+        { Symbol("P"),      OS::BasicColor::MAGENTA},
+        { Symbol("F"),  OS::BasicColor::DARK_YELLOW},
+        {Symbol("Cl"),        OS::BasicColor::GREEN},
+        {Symbol("Br"),     OS::BasicColor::DARK_RED},
+        { Symbol("I"), OS::BasicColor::DARK_MAGENTA},
     };
 
     auto cycles = utils::transform<ASCII::Cycle>(getMinimalCycleBasis());
@@ -2040,14 +2040,14 @@ ColoredTextBlock MolecularStructure::toASCII(const ASCII::PrintOptions options) 
 
             if (not options.has(ASCII::PrintFlags::HIGHLIGHT_ATOM_ORIGIN)) {
                 edges.emplace(
-                    Edge(a->index, b.getOther().index), ASCII::Edge(b, OS::Color::DarkGrey));
+                    Edge(a->index, b.getOther().index), ASCII::Edge(b, OS::BasicColor::DARK_GREY));
                 continue;
             }
 
             // The edge shares the color of its nodes.
             const auto otherColor = nodes[otherIdx].getSymbolColor();
             const auto color =
-                thisColor == otherColor ? OS::darken(thisColor) : OS::Color::DarkGrey;
+                thisColor == otherColor ? OS::darken(thisColor) : OS::BasicColor::DARK_GREY;
 
             edges.emplace(Edge(a->index, b.getOther().index), ASCII::Edge(b, color));
         }

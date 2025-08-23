@@ -39,7 +39,7 @@ public:
     const BondedAtomBase& getAtom() const;
     const ColoredString&  getSymbol() const;
     Symbol::SizeT         getSymbolSize() const;
-    OS::ColorType         getSymbolColor() const;
+    OS::BasicColor        getSymbolColor() const;
     PositionLine          getPosition() const;
 
     bool visited() const;
@@ -68,14 +68,14 @@ public:
     bool visited = false;
 
 private:
-    OS::ColorType color;
-    const Bond*   bond;
+    OS::BasicColor color;
+    const Bond*    bond;
 
 public:
-    Edge(const Bond& bond, const OS::ColorType color) noexcept;
+    Edge(const Bond& bond, const OS::BasicColor color) noexcept;
 
-    OS::ColorType getColor() const;
-    const Bond&   getBond() const;
+    OS::BasicColor getColor() const;
+    const Bond&    getBond() const;
 };
 
 //

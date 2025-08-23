@@ -35,9 +35,9 @@ LogBase::LogBase(const void* address, const std::type_index sourceType) noexcept
 
 void LogBase::addContextIndent()
 {
-    OS::setTextColor(OS::Color::DarkGrey);
+    OS::setTextColor(OS::BasicColor::DARK_GREY, settings().outputStream);
     for (uint8_t i = 0; i < contexts; ++i) settings().outputStream << ASCII::MiddleDot1 << "   ";
-    OS::setTextColor(OS::Color::White);
+    OS::setTextColor(OS::BasicColor::WHITE, settings().outputStream);
 }
 
 std::string
@@ -88,13 +88,13 @@ void LogBase::logFormatted(
         addContextIndent();
 
         static const std::unordered_map<LogType, ColoredString> tags{
-            {  LogType::FATAL,   ColoredString("FATAL:",    OS::Color::DarkRed)},
-            {  LogType::ERROR,   ColoredString("ERROR:",        OS::Color::Red)},
-            {   LogType::WARN,    ColoredString("WARN:", OS::Color::DarkYellow)},
-            {LogType::SUCCESS, ColoredString("SUCCESS:",      OS::Color::Green)},
-            {   LogType::INFO,    ColoredString("INFO:",       OS::Color::Cyan)},
-            {  LogType::DEBUG,   ColoredString("DEBUG:",    OS::Color::Magenta)},
-            {  LogType::TRACE,   ColoredString("TRACE:",   OS::Color::DarkBlue)},
+            {  LogType::FATAL,   ColoredString("FATAL:",    OS::BasicColor::DARK_RED)},
+            {  LogType::ERROR,   ColoredString("ERROR:",         OS::BasicColor::RED)},
+            {   LogType::WARN,    ColoredString("WARN:", OS::BasicColor::DARK_YELLOW)},
+            {LogType::SUCCESS, ColoredString("SUCCESS:",       OS::BasicColor::GREEN)},
+            {   LogType::INFO,    ColoredString("INFO:",        OS::BasicColor::CYAN)},
+            {  LogType::DEBUG,   ColoredString("DEBUG:",     OS::BasicColor::MAGENTA)},
+            {  LogType::TRACE,   ColoredString("TRACE:",   OS::BasicColor::DARK_BLUE)},
         };
 
         if (const auto tagIt = tags.find(type); tagIt != tags.end()) {
@@ -106,12 +106,12 @@ void LogBase::logFormatted(
 
         if (const auto sourceIdentifier = getSourceIdentifier(location, type);
             sourceIdentifier.size()) {
-            OS::setTextColor(OS::Color::DarkGrey);
+            OS::setTextColor(OS::BasicColor::DARK_GREY, out);
             out << '[' << sourceIdentifier << "] ";
             suffixSize += static_cast<uint16_t>(sourceIdentifier.size() + 3);
         }
 
-        OS::setTextColor(OS::Color::White);
+        OS::setTextColor(OS::BasicColor::WHITE, out);
     }
 
     if (msg.starts_with('\r')) {

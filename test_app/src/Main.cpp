@@ -49,6 +49,7 @@ int main(int argc, char* argv[])
             tests.runPerf();
 
         return returnCode;
+
     } catch (const cxxopts::exceptions::exception& e) {
         Log().fatal("Option parsing failed with error:\n{0}", e.what());
         CHG_UNREACHABLE();

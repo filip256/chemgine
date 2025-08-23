@@ -25,7 +25,7 @@ const ColoredString& Node::getSymbol() const { return symbol; }
 
 Symbol::SizeT Node::getSymbolSize() const { return static_cast<Symbol::SizeT>(symbol.size()); }
 
-OS::ColorType Node::getSymbolColor() const
+OS::BasicColor Node::getSymbolColor() const
 {
     // The whole symbol has a single color.
     return symbol.front().color;
@@ -80,12 +80,12 @@ void Node::addContainingCycle(Cycle& cycle) { containingCycles.emplace_back(&cyc
 // Edge
 //
 
-Edge::Edge(const Bond& bond, const OS::ColorType color) noexcept :
+Edge::Edge(const Bond& bond, const OS::BasicColor color) noexcept :
     color(color),
     bond(&bond)
 {}
 
-OS::ColorType Edge::getColor() const { return color; }
+OS::BasicColor Edge::getColor() const { return color; }
 
 const Bond& Edge::getBond() const { return *bond; }
 
@@ -480,7 +480,7 @@ Edge& StructurePrinter::getEdge(const BondedAtomBase& from, const BondedAtomBase
 ColoredString StructurePrinter::getNewClosureSymbol()
 {
     ++expandedCycleCount;
-    return ColoredString('%' + std::to_string(expandedCycleCount), OS::Color::DarkYellowBG);
+    return ColoredString('%' + std::to_string(expandedCycleCount), OS::BasicColor::DARK_YELLOW_BG);
 }
 
 std::optional<std::pair<Position, Direction>>
@@ -1248,7 +1248,7 @@ void StructurePrinter::printError(
 {
     ++errorCount;
     const auto errorSymbolStr = ASCII::AshUppercase + std::to_string(errorCount);
-    const auto errorSymbol    = ColoredString(errorSymbolStr, OS::Color::RedBG);
+    const auto errorSymbol    = ColoredString(errorSymbolStr, OS::BasicColor::RED_BG);
 
     Log(this).error(LogFormat("[{0}] {1}", std::move(location)), errorSymbolStr, message);
 
@@ -1754,7 +1754,7 @@ void StructurePrinter::printCycle(
         const ColoredString label(
             std::to_string(
                 std::ranges::count_if(cycles, [](const auto& c) { return c.visited(); })),
-            OS::Color::DarkGrey);
+            OS::BasicColor::DARK_GREY);
         if (buffer.isWhiteSpace(centerPos, label.size()))
             buffer.insert(centerPos, label);
     }
