@@ -18,12 +18,11 @@ set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 set(THIRDPARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty)
 
 ## boost
-set(BOOST_ROOT ${THIRDPARTY_DIR}/boost)
-set(BOOST_INCLUDE_DIR ${BOOST_ROOT}/include CACHE PATH "boost include path")
+set(BOOST_DOWNLOAD_URL "https://github.com/boostorg/boost/releases/download/boost-1.89.0/boost-1.89.0-b2-nodocs.7z" CACHE STRING "boost release download URL")
 
 ## cxxopts
 set(CXXOPTS_REPOSITORY "https://github.com/jarro2783/cxxopts.git" CACHE STRING "cxxopts repository URL")
-set(CXXOPTS_VERSION "v3.3.1" CACHE STRING "cxxopts version to fetch")
+set(CXXOPTS_VERSION "3.3.1" CACHE STRING "cxxopts version to fetch")
 
 ## fmt
 set(FMT_REPOSITORY "https://github.com/fmtlib/fmt.git" CACHE STRING "fmt repository URL")
@@ -112,7 +111,7 @@ message(STATUS " > DISABLE_CONCURRENCY_CHECKS = ${DISABLE_CONCURRENCY_CHECKS}")
 message(STATUS " > EXTENDED_CHAR_SET = ${EXTENDED_CHAR_SET}")
 message(STATUS " > COLOR_PRINT_MODE = ${COLOR_PRINT_MODE}")
 message(STATUS "Thirdparty:")
-message(STATUS " > BOOST_INCLUDE_DIR = ${BOOST_INCLUDE_DIR}")
+message(STATUS " > BOOST_DOWNLOAD_URL = ${BOOST_DOWNLOAD_URL}")
 message(STATUS " > CXXOPTS_REPOSITORY = ${CXXOPTS_REPOSITORY}")
 message(STATUS " > CXXOPTS_VERSION = ${CXXOPTS_VERSION}")
 message(STATUS " > FMT_REPOSITORY = ${FMT_REPOSITORY}")

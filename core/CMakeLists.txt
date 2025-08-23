@@ -63,14 +63,26 @@ endif()
 
 # ~ Thirdparty ~
 ## boost
-target_include_directories(core PUBLIC ${BOOST_INCLUDE_DIR})
+FetchContent_Declare(boost
+    URL ${BOOST_DOWNLOAD_URL}
+    USES_TERMINAL_DOWNLOAD TRUE
+    GIT_PROGRESS TRUE
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+    DOWNLOAD_NO_EXTRACT FALSE
+    EXCLUDE_FROM_ALL
+    SYSTEM
+)
+FetchContent_MakeAvailable(boost)
+
+target_include_directories(core PUBLIC ${boost_SOURCE_DIR})
 
 ## cxxopts
-message(STATUS "Fetching cxxopts ${CXXOPTS_VERSION} from ${CXXOPTS_REPOSITORY}")
+message(STATUS "Fetching cxxopts v${CXXOPTS_VERSION} from ${CXXOPTS_REPOSITORY}")
 FetchContent_Declare(cxxopts
     GIT_REPOSITORY ${CXXOPTS_REPOSITORY}
-    GIT_TAG ${CXXOPTS_VERSION}
+    GIT_TAG "v${CXXOPTS_VERSION}"
     GIT_SHALLOW ON
+    GIT_PROGRESS TRUE
     EXCLUDE_FROM_ALL
     SYSTEM
 )
@@ -84,6 +96,7 @@ FetchContent_Declare(fmt
     GIT_REPOSITORY ${FMT_REPOSITORY}
     GIT_TAG ${FMT_VERSION}
     GIT_SHALLOW ON
+    GIT_PROGRESS TRUE
     EXCLUDE_FROM_ALL
     SYSTEM
 )
@@ -97,6 +110,7 @@ FetchContent_Declare(SFML
     GIT_REPOSITORY ${SFML_REPOSITORY}
     GIT_TAG ${SFML_VERSION}
     GIT_SHALLOW ON
+    GIT_PROGRESS TRUE
     EXCLUDE_FROM_ALL
     SYSTEM
 )
