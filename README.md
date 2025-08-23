@@ -4,7 +4,11 @@ Real-time laboratory scale chemical simulation engine.
 
 # How to Build
 
-## Windows (MSVC):
+Chemgine is built using [CMake](https://cmake.org/download/) (v3.20+). Bellow are a few common build configurations:
+
+<details>
+  <summary><strong><span style="font-size:1.2em;">Windows (MSVC)</span></strong></summary>
+
 ```sh
 # Clone
 git clone https://github.com/filip256/chemgine.git
@@ -14,8 +18,11 @@ cd chemgine
 cmake -B build -G "Visual Studio 17 2022" -A x64
 cmake --build build --config=Release
 ```
+</details>
 
-## Ubuntu (GCC/Clang):
+<details>
+  <summary><strong><span style="font-size:1.2em;">Ubuntu (GCC/Clang)</span></strong></summary>
+
 ```sh
 # Clone
 git clone https://github.com/filip256/chemgine.git
@@ -29,6 +36,9 @@ chmod +x setup_ubuntu.sh
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --parallel 16
 ```
+</details>
+
+<br>
 
 # How to Contribute
 ## Install pre-commit:
