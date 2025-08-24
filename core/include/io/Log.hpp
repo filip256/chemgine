@@ -17,15 +17,48 @@
 #include <typeindex>
 #include <vector>
 
-#define CHG_LOG_ERROR
-#define CHG_LOG_WARN
-#define CHG_LOG_SUCCESS
-#define CHG_LOG_INFO
+//
+// Log Level
+//
 
-#ifndef NDEBUG
+#if defined(CHG_LOG_DEFAULT)
+    #define CHG_LOG_ERROR
+    #define CHG_LOG_WARN
+    #define CHG_LOG_SUCCESS
+    #define CHG_LOG_INFO
+
+    #if not defined(NDEBUG)
+        #define CHG_LOG_DEBUG
+        #define CHG_LOG_TRACE
+    #endif
+#elif defined(CHG_LOG_ERROR)
+#elif defined(CHG_LOG_WARN)
+    #define CHG_LOG_ERROR
+#elif defined(CHG_LOG_SUCCESS)
+    #define CHG_LOG_ERROR
+    #define CHG_LOG_WARN
+#elif defined(CHG_LOG_INFO)
+    #define CHG_LOG_ERROR
+    #define CHG_LOG_WARN
+    #define CHG_LOG_SUCCESS
+#elif defined(CHG_LOG_DEBUG)
+    #define CHG_LOG_ERROR
+    #define CHG_LOG_WARN
+    #define CHG_LOG_SUCCESS
+    #define CHG_LOG_INFO
+#elif defined(CHG_LOG_TRACE)
+    #define CHG_LOG_ERROR
+    #define CHG_LOG_WARN
+    #define CHG_LOG_SUCCESS
+    #define CHG_LOG_INFO
     #define CHG_LOG_DEBUG
-    #define CHG_LOG_TRACE
+#else
+    #error No CHG_LOG defined.
 #endif
+
+//
+// CHG_DELAYED_EVAL
+//
 
 #define CHG_DELAYED_EVAL(func) [&]() { return func; }
 
