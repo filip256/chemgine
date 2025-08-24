@@ -15,7 +15,7 @@ std::string extractExtension(const std::string& path);
 
 std::string combinePaths(const std::string& path1, const std::string& path2);
 
-std::string getRelativePathToProjectRoot(const char* fullPath);
+std::string getRelativePathToProjectRoot(const std::string_view fullPath);
 
 bool fileExists(const std::string& path);
 void createDir(const std::string& path);

@@ -51,6 +51,7 @@ BinPackParameters: OnePerLine
 BreakAdjacentStringLiterals: true
 BreakAfterAttributes: Never
 BreakAfterReturnType: Automatic
+PenaltyReturnTypeOnItsOwnLine: 100
 BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Custom
 BreakBeforeConceptDeclarations: Allowed

@@ -4,6 +4,7 @@
 #include "utils/String.hpp"
 
 #include <algorithm>
+#include <array>
 #include <cstring>
 #include <filesystem>
 
@@ -54,11 +55,16 @@ std::string utils::combinePaths(const std::string& path1, const std::string& pat
     return path2.starts_with('/') ? path1 + path2 : path1 + '/' + path2;
 }
 
-std::string utils::getRelativePathToProjectRoot(const char* fullPath)
+std::string utils::getRelativePathToProjectRoot(const std::string_view fullPath)
 {
-    constexpr std::string_view basePath  = "Chemgine";
-    const char*                pathBegin = std::strstr(fullPath, basePath.data());
-    return std::string(pathBegin != nullptr ? pathBegin : fullPath);
+    constexpr std::array<std::string_view, 2> basePaths = {"chemgine", "Chemgine"};
+
+    for (const auto basePath : basePaths) {
+        if (const auto pathBegin = fullPath.rfind(basePath); pathBegin != std::string_view::npos)
+            return std::string(fullPath.substr(pathBegin));
+    }
+
+    return std::string(fullPath);
 }
 
 bool utils::fileExists(const std::string& path) { return std::filesystem::exists(path); }
