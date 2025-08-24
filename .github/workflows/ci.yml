@@ -103,6 +103,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Chemgine-${{ matrix.kind.name }}
+          retention-days: 1
           compression-level: 9
           path: |
             build/gui_app/**/gui_app*
