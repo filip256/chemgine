@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/core/demangle.hpp>
 #include <string>
 #include <typeinfo>
 
@@ -20,7 +21,7 @@ std::string utils::getTypeName()
     if constexpr (std::is_same<T, void>())
         return "";
     else {
-        auto name = std::string(typeid(T).name());
+        auto name = boost::core::demangle(typeid(T).name());
         demangleTypeName(name);
         return name;
     }

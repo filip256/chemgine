@@ -2,6 +2,8 @@
 
 #include "utils/String.hpp"
 
+#include <boost/core/demangle.hpp>
+
 void utils::demangleTypeName(std::string& name)
 {
     if (const auto idx = name.rfind("::"); idx != std::string::npos)
