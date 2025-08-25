@@ -52,6 +52,7 @@ BreakAdjacentStringLiterals: true
 BreakAfterAttributes: Never
 BreakAfterReturnType: Automatic
 PenaltyReturnTypeOnItsOwnLine: 100
+PenaltyBreakOpenParenthesis: 0
 BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Custom
 BreakBeforeConceptDeclarations: Allowed

@@ -33,6 +33,14 @@ jobs:
     - name: Install pre-commit
       run: pip install --upgrade pip pre-commit
 
+    - name: Cache pre-commit environment
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pre-commit
+        key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+        restore-keys: |
+          pre-commit-
+
     - name: Run pre-commit checks
       run: pre-commit run --all-files --show-diff-on-failure
 
@@ -45,10 +53,10 @@ jobs:
       fail-fast: false
       matrix:
         kind:
-        - { name: Windows-VS2022-x64-Release, os: windows-2022,  arch: x64, config: Release, flags: -DCMAKE_C_COMPILER="cl.exe" -DCMAKE_CXX_COMPILER="cl.exe" -DEXTENDED_CHAR_SET=ASCII }
-        - { name: Windows-VS2022-x86-Release, os: windows-2022,  arch: x86, config: Release, flags: -DCMAKE_C_COMPILER="cl.exe" -DCMAKE_CXX_COMPILER="cl.exe" -DEXTENDED_CHAR_SET=ASCII }
-        - { name: Ubuntu-GCC-x64-Release,     os: ubuntu-latest, arch: x64, config: Release, flags: -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DEXTENDED_CHAR_SET=ASCII }
-        - { name: Ubuntu-Clang-x64-Release,   os: ubuntu-latest, arch: x64, config: Release, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DEXTENDED_CHAR_SET=ASCII }
+        - { name: Windows-VS2022-x64-Release, os: windows-2022,  arch: x64, config: Release, c_compiler: cl.exe, cpp_compiler: cl.exe,  generator: Ninja,          flags: -DEXTENDED_CHAR_SET=ASCII }
+        - { name: Windows-VS2022-x86-Release, os: windows-2022,  arch: x86, config: Release, c_compiler: cl.exe, cpp_compiler: cl.exe,  generator: Ninja,          flags: -DEXTENDED_CHAR_SET=ASCII }
+        - { name: Ubuntu-GCC-x64-Release,     os: ubuntu-latest, arch: x64, config: Release, c_compiler: gcc,    cpp_compiler: g++,     generator: Unix Makefiles, flags: -DEXTENDED_CHAR_SET=ASCII }
+        - { name: Ubuntu-Clang-x64-Release,   os: ubuntu-latest, arch: x64, config: Release, c_compiler: clang,  cpp_compiler: clang++, generator: Unix Makefiles, flags: -DEXTENDED_CHAR_SET=ASCII }
 
     steps:
       - name: Checkout repository
@@ -58,6 +66,12 @@ jobs:
         if: matrix.kind.os == 'windows-2022'
         run: |
           choco install ninja -y
+          choco install sccache -y
+          ninja --version
+          sccache --version
+
+          echo "SCCACHE_DIR=${{ runner.temp }}\\sccache" >> $GITHUB_ENV
+          echo "SCCACHE_CACHE_SIZE=500M" >> $GITHUB_ENV
 
       - name: Setup (Ubuntu)
         if: matrix.kind.os == 'ubuntu-latest'
@@ -65,7 +79,15 @@ jobs:
           chmod +x setup_ubuntu.sh
           ./setup_ubuntu.sh
 
-      - name: Cache dependencies
+          curl -L https://github.com/mozilla/sccache/releases/download/v0.10.0/sccache-dist-v0.10.0-x86_64-unknown-linux-musl.tar.gz | tar xz
+          sudo mv sccache-dist-v0.10.0-x86_64-unknown-linux-musl/sccache-dist /usr/local/bin/sccache
+          sudo chmod +x /usr/local/bin/sccache
+          sccache --version
+
+          echo "SCCACHE_DIR=~/.cache/sccache" >> $GITHUB_ENV
+          echo "SCCACHE_CACHE_SIZE=500M" >> $GITHUB_ENV
+
+      - name: Restore dependencies
         uses: actions/cache@v4
         with:
           path: |
@@ -74,15 +96,14 @@ jobs:
           restore-keys: |
             deps-${{ matrix.kind.name }}-
 
-      - name: Cache build
-        uses: hendrikmuhs/ccache-action@v1.2
+      - name: Restore build
+        uses: actions/cache/restore@v4
         with:
-          variant: sccache
+          path: |
+            ${{ env.SCCACHE_DIR }}
           key: ${{ matrix.kind.name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
           restore-keys: |
             ${{ matrix.kind.name }}-${{ github.event.pull_request.base.ref || github.ref_name }}
-          max-size: 500M
-          append-timestamp: false
 
       - name: Configure environment (Windows)
         if: matrix.kind.os == 'windows-2022'
@@ -91,10 +112,13 @@ jobs:
           arch: ${{ matrix.kind.arch }}
 
       - name: Configure build
-        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.kind.config }} -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ${{ matrix.kind.flags }}
+        env:
+          CC: ${{ matrix.kind.c_compiler }}
+          CXX: ${{ matrix.kind.cpp_compiler }}
+        run: cmake -B build -G "${{ matrix.kind.generator }}" -DCMAKE_BUILD_TYPE=${{ matrix.kind.config }} -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache ${{ matrix.kind.flags }}
 
       - name: Build
-        run: cmake --build build --config ${{ matrix.kind.config }} --parallel ${{ runner.cores }}
+        run: cmake --build build --config ${{ matrix.kind.config }} --parallel 4
 
       # - name: Show files recursively
       #   run: tree -a || (echo "tree not found, listing recursively"; ls -laR)
@@ -113,6 +137,21 @@ jobs:
             build/test_app/**/data/**
             build/defparse/**/defparse*
             !**/CMakeFiles/**
+
+      - name: Delete old build cache
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh extension install actions/gh-actions-cache
+          gh actions-cache delete "${{ matrix.kind.name }}-${{ github.event.pull_request.head.ref || github.ref_name }}" --confirm
+        continue-on-error: true
+
+      - name: Save build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.SCCACHE_DIR }}
+          key: ${{ matrix.kind.name }}-${{ github.event.pull_request.head.ref || github.ref_name }}
 
   unit:
     name: Unit / ${{ matrix.kind.name }}
