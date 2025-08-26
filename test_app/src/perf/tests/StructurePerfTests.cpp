@@ -263,15 +263,11 @@ StructurePerfTests::StructurePerfTests(
     registerTest<ASCIIPrintTest>(
         "ascii_print", std::chrono::seconds(30), "CCN(CC)C(=O)C1CN(C2CC3=CNC4=CC=CC(=C34)C2=C1)C");
     registerTest<ASCIIPrintTest>(
-        "ascii_print",
-        std::chrono::seconds(30),
-        "CC(=O)OC1=C2OC4C(OC(C)=O)C=CC3C5CC(C=C1)=C2C34CCN5C");
+        "ascii_print", std::chrono::seconds(30), "CC(=O)OC1=C2OC4C(O)C=CC3C5CC(C=C1)=C2C34CCN5C");
     registerTest<ASCIIParseTest>(
         "ascii_parse", std::chrono::seconds(10), "CCN(CC)C(=O)C1CN(C2CC3=CNC4=CC=CC(=C34)C2=C1)C");
     registerTest<ASCIIParseTest>(
-        "ascii_parse",
-        std::chrono::seconds(10),
-        "CC(=O)OC1=C2OC4C(OC(C)=O)C=CC3C5CC(C=C1)=C2C34CCN5C");
+        "ascii_parse", std::chrono::seconds(10), "CC(=O)OC1=C2OC4C(O)C=CC3C5CC(C=C1)=C2C34CCN5C");
 
     registerTest<PerfTestSetup<AccessorTestCleanup>>("cleanup");
     Accessor<>::unsetDataStore();

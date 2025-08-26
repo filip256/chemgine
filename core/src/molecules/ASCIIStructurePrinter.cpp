@@ -1351,8 +1351,12 @@ void StructurePrinter::printUnmaterializedEdges()
             buffer.insert(closurePos.origin, closureSymbol);
         };
 
-        printClosure(nodeA, nodeB);
-        printClosure(nodeB, nodeA);
+        // Only add closures to nodes that were printed (some may not be printed due to insufficient
+        // space).
+        if (nodeA.visited())
+            printClosure(nodeA, nodeB);
+        if (nodeB.visited())
+            printClosure(nodeB, nodeA);
     }
 }
 

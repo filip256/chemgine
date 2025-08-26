@@ -10,6 +10,12 @@ int main()
     Accessor<>::setDataStore(store);
     store.load("./data/builtin.cdef");
 
+    const auto asc =
+        MolecularStructure("CC(=O)OC1=C2OC4C(C=O)C=CC3C5CC(C=C1)=C2C34CCN5C").toASCII();
+    std::cout << asc;
+    std::cout
+        << MolecularStructure("CC(=O)OC1=C2OC4C(OC(C)=O)C=CC3C5CC(C=C1)=C2C34CCN5C").toASCII();
+
     // MolecularStructure("C12CCC1C2").getMinimalCycles();
     const auto d = MolecularStructure("C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67").getMinimalCycleBasis();
     Log().info(MolecularStructure("COC1C=C2C(=CC=1)NCC2CCN(C)C").printInfo());

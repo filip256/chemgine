@@ -261,43 +261,43 @@ class BasicColor
 public:
     static inline constexpr std::string_view NONE = "";
 
-    static inline constexpr std::string_view BLACK = "\033[30m";
-    static inline constexpr std::string_view WHITE = "\033[97m";
+    static inline constexpr std::string_view BLACK = "\033[30;40m";
+    static inline constexpr std::string_view WHITE = "\033[97;40m";
 
-    static inline constexpr std::string_view RED     = "\033[91m";
-    static inline constexpr std::string_view GREEN   = "\033[92m";
-    static inline constexpr std::string_view BLUE    = "\033[94m";
-    static inline constexpr std::string_view YELLOW  = "\033[93m";
-    static inline constexpr std::string_view MAGENTA = "\033[95m";
-    static inline constexpr std::string_view CYAN    = "\033[96m";
-    static inline constexpr std::string_view GREY    = "\033[37m";
+    static inline constexpr std::string_view RED     = "\033[91;40m";
+    static inline constexpr std::string_view GREEN   = "\033[92;40m";
+    static inline constexpr std::string_view BLUE    = "\033[94;40m";
+    static inline constexpr std::string_view YELLOW  = "\033[93;40m";
+    static inline constexpr std::string_view MAGENTA = "\033[95;40m";
+    static inline constexpr std::string_view CYAN    = "\033[96;40m";
+    static inline constexpr std::string_view GREY    = "\033[37;40m";
 
-    static inline constexpr std::string_view DARK_RED     = "\033[31m";
-    static inline constexpr std::string_view DARK_GREEN   = "\033[32m";
-    static inline constexpr std::string_view DARK_BLUE    = "\033[34m";
-    static inline constexpr std::string_view DARK_YELLOW  = "\033[33m";
-    static inline constexpr std::string_view DARK_MAGENTA = "\033[35m";
-    static inline constexpr std::string_view DARK_CYAN    = "\033[36m";
-    static inline constexpr std::string_view DARK_GREY    = "\033[90m";
+    static inline constexpr std::string_view DARK_RED     = "\033[31;40m";
+    static inline constexpr std::string_view DARK_GREEN   = "\033[32;40m";
+    static inline constexpr std::string_view DARK_BLUE    = "\033[34;40m";
+    static inline constexpr std::string_view DARK_YELLOW  = "\033[33;40m";
+    static inline constexpr std::string_view DARK_MAGENTA = "\033[35;40m";
+    static inline constexpr std::string_view DARK_CYAN    = "\033[36;40m";
+    static inline constexpr std::string_view DARK_GREY    = "\033[90;40m";
 
-    static inline constexpr std::string_view BLACK_BG = "\033[40m";
-    static inline constexpr std::string_view WHITE_BG = "\033[107m";
+    static inline constexpr std::string_view BLACK_BG = "\033[40;30m";
+    static inline constexpr std::string_view WHITE_BG = "\033[107;30m";
 
-    static inline constexpr std::string_view RED_BG     = "\033[101m";
-    static inline constexpr std::string_view GREEN_BG   = "\033[102m";
-    static inline constexpr std::string_view BLUE_BG    = "\033[104m";
-    static inline constexpr std::string_view YELLOW_BG  = "\033[103m";
-    static inline constexpr std::string_view MAGENTA_BG = "\033[105m";
-    static inline constexpr std::string_view CYAN_BG    = "\033[106m";
-    static inline constexpr std::string_view GREY_BG    = "\033[47m";
+    static inline constexpr std::string_view RED_BG     = "\033[101;30m";
+    static inline constexpr std::string_view GREEN_BG   = "\033[102;30m";
+    static inline constexpr std::string_view BLUE_BG    = "\033[104;30m";
+    static inline constexpr std::string_view YELLOW_BG  = "\033[103;30m";
+    static inline constexpr std::string_view MAGENTA_BG = "\033[105;30m";
+    static inline constexpr std::string_view CYAN_BG    = "\033[106;30m";
+    static inline constexpr std::string_view GREY_BG    = "\033[47;30m";
 
-    static inline constexpr std::string_view DARK_RED_BG     = "\033[41m";
-    static inline constexpr std::string_view DARK_GREEN_BG   = "\033[42m";
-    static inline constexpr std::string_view DARK_BLUE_BG    = "\033[44m";
-    static inline constexpr std::string_view DARK_YELLOW_BG  = "\033[43m";
-    static inline constexpr std::string_view DARK_MAGENTA_BG = "\033[45m";
-    static inline constexpr std::string_view DARK_CYAN_BG    = "\033[46m";
-    static inline constexpr std::string_view DARK_GREY_BG    = "\033[100m";
+    static inline constexpr std::string_view DARK_RED_BG     = "\033[41;30m";
+    static inline constexpr std::string_view DARK_GREEN_BG   = "\033[42;30m";
+    static inline constexpr std::string_view DARK_BLUE_BG    = "\033[44;30m";
+    static inline constexpr std::string_view DARK_YELLOW_BG  = "\033[43;30m";
+    static inline constexpr std::string_view DARK_MAGENTA_BG = "\033[45;30m";
+    static inline constexpr std::string_view DARK_CYAN_BG    = "\033[46;30m";
+    static inline constexpr std::string_view DARK_GREY_BG    = "\033[100;30m";
 };
 
 std::string_view colorCast(const OS::BasicColor color)

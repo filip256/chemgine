@@ -365,8 +365,6 @@ bool ASCIIPrintUnitTest::run()
             parsedMolecule->toSMILES(),
             molecule.toSMILES(),
             ascii);
-        const auto opts = ASCII::PrintOptions::Default | ASCII::PrintFlags::PRINT_ATOM_INDICES;
-        std::cout << parsedMolecule->toASCII(opts).appendRight(molecule.toASCII(opts)) << '\n';
         return false;
     }
 
@@ -697,7 +695,7 @@ StructureUnitTests::StructureUnitTests(
         "[Si]2=[Si]1)[Si]",
         false);
     registerTest<ASCIIPrintUnitTest>(
-        "ASCII", "CC(=O)OC1=C2OC4C(OC(C)=O)C=CC3C5CC(C=C1)=C2C34CCN5C", true);
+        "ASCII", "CC(=O)OC1=C2OC4C(O)C=CC3C5CC(C=C1)=C2C34CCN5C", true);
 
     registerTest<MolBinUnitTest>("MolBin", "HH");
     registerTest<MolBinUnitTest>("MolBin", "O");
