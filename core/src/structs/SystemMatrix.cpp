@@ -7,8 +7,7 @@
 #include <iostream>
 
 template <class T>
-SystemMatrix<T>::SystemMatrix(std::initializer_list<std::initializer_list<T>> initializer) noexcept
-    :
+SystemMatrix<T>::SystemMatrix(std::initializer_list<std::initializer_list<T>> initializer) noexcept :
     matrix(initializer.begin(), initializer.end())
 {}
 

@@ -1,7 +1,6 @@
 #include "labware/LabwareConnection.hpp"
 
-LabwareConnection::LabwareConnection(
-    const l_size otherComponent, const uint8_t otherPort, const uint8_t strength) noexcept :
+LabwareConnection::LabwareConnection(const l_size otherComponent, const uint8_t otherPort, const uint8_t strength) noexcept :
     otherComponent(otherComponent),
     otherPort(otherPort),
     strength(strength)

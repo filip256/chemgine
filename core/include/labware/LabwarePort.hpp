@@ -11,11 +11,7 @@ public:
     const float_s              x, y;
     const Amount<Unit::DEGREE> angle;
 
-    LabwarePort(
-        const PortType             type,
-        const float_s              x,
-        const float_s              y,
-        const Amount<Unit::DEGREE> angle) noexcept;
+    LabwarePort(const PortType type, const float_s x, const float_s y, const Amount<Unit::DEGREE> angle) noexcept;
 };
 
 template <>

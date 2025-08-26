@@ -57,15 +57,13 @@ public:
     Amount<Unit::GRAM>  getTotalMass() const override final;
     Amount<Unit::LITER> getTotalVolume() const override final;
 
-    const Layer&          getLayer(const LayerType layer) const override final;
-    Amount<Unit::CELSIUS> getLayerTemperature(const LayerType layer) const override final;
-    Amount<Unit::JOULE_PER_MOLE_CELSIUS>
-    getLayerHeatCapacity(const LayerType layer) const override final;
-    Amount<Unit::JOULE_PER_CELSIUS>
-    getLayerTotalHeatCapacity(const LayerType layer) const override final;
-    Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType layer) const override final;
-    Polarity                     getLayerPolarity(const LayerType layer) const override final;
-    Color                        getLayerColor(const LayerType layer) const override final;
+    const Layer&                         getLayer(const LayerType layer) const override final;
+    Amount<Unit::CELSIUS>                getLayerTemperature(const LayerType layer) const override final;
+    Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity(const LayerType layer) const override final;
+    Amount<Unit::JOULE_PER_CELSIUS>      getLayerTotalHeatCapacity(const LayerType layer) const override final;
+    Amount<Unit::JOULE_PER_MOLE>         getLayerKineticEnergy(const LayerType layer) const override final;
+    Polarity                             getLayerPolarity(const LayerType layer) const override final;
+    Color                                getLayerColor(const LayerType layer) const override final;
 
     bool isEmpty() const override final;
 
@@ -80,14 +78,8 @@ public:
     LayerUpIterator getLayersUpBegin() const;
     LayerUpIterator getLayersUpEnd() const;
 
-    void copyContentTo(
-        Ref<ContainerBase>        destination,
-        const Amount<Unit::LITER> volume,
-        const LayerType           sourceLayer) const;
-    void moveContentTo(
-        Ref<ContainerBase>        destination,
-        const Amount<Unit::LITER> volume,
-        const LayerType           sourceLayer);
+    void copyContentTo(Ref<ContainerBase> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer) const;
+    void moveContentTo(Ref<ContainerBase> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer);
 
     MultiLayerMixture makeCopy() const;
 };

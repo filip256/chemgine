@@ -21,9 +21,8 @@ bool fuzzLoop(const TupleT& inputs, CallableT&& test, std::tuple<Idxs...> indice
         if constexpr (I + 1 == std::tuple_size_v<TupleT>) {
             const auto success = [&]() {
                 return std::apply([&](auto... idxs) {
-                    return std::apply([&](const auto&... ss) {
-                        return test(MolecularStructure(ss.toSMILES(idxs))...);
-                    }, inputs);
+                    return std::apply(
+                        [&](const auto&... ss) { return test(MolecularStructure(ss.toSMILES(idxs))...); }, inputs);
                 }, newIndices);
             }();
             if (not success)
@@ -63,9 +62,7 @@ bool fuzzTest(CallableT&& test, const InTs&... inputs)
 //
 
 StructureSMILESUnitTest::StructureSMILESUnitTest(
-    const std::string&                name,
-    std::string&&                     smiles,
-    const Amount<Unit::GRAM_PER_MOLE> expectedMass) noexcept :
+    const std::string& name, std::string&& smiles, const Amount<Unit::GRAM_PER_MOLE> expectedMass) noexcept :
     UnitTest(name + '_' + smiles),
     expectedMass(expectedMass),
     smiles(std::move(smiles))
@@ -97,8 +94,7 @@ bool StructureSMILESUnitTest::run()
     }
 
     if (*parsedMolecule != *printedMolecule) {
-        Log(this).error(
-            "Equality check between printed molecule: '{0}' and input failed.", printedSmiles);
+        Log(this).error("Equality check between printed molecule: '{0}' and input failed.", printedSmiles);
         return false;
     }
 
@@ -110,10 +106,8 @@ bool StructureSMILESUnitTest::run()
 //
 
 StructureEqualityUnitTest::StructureEqualityUnitTest(
-    const std::string& name,
-    const std::string& targetSmiles,
-    const std::string& patternSmiles,
-    const bool         expected) noexcept :
+    const std::string& name, const std::string& targetSmiles, const std::string& patternSmiles, const bool expected) noexcept
+    :
     UnitTest(name + '_' + targetSmiles + '_' + patternSmiles),
     expected(expected),
     target(targetSmiles),
@@ -130,10 +124,7 @@ bool StructureEqualityUnitTest::run()
                 result,
                 t.toSMILES(),
                 p.toSMILES(),
-                t.toASCII()
-                    .appendRight(p.toASCII(), std::string{' ', ASCII::LineV, ' '})
-                    .toString()
-                    .toString());
+                t.toASCII().appendRight(p.toASCII(), std::string{' ', ASCII::LineV, ' '}).toString().toString());
             return false;
         }
 
@@ -146,20 +137,15 @@ bool StructureEqualityUnitTest::run()
 //
 
 StructureAtomMapUnitTest::StructureAtomMapUnitTest(
-    const std::string& name,
-    const std::string& targetSmiles,
-    const std::string& patternSmiles,
-    const bool         expected) noexcept :
+    const std::string& name, const std::string& targetSmiles, const std::string& patternSmiles, const bool expected) noexcept
+    :
     UnitTest(name + '_' + targetSmiles + '_' + patternSmiles),
     expected(expected),
     target(targetSmiles),
     pattern(patternSmiles)
 {}
 
-bool StructureAtomMapUnitTest::run()
-{
-    return (target.mapTo(pattern, true).size() > 0) == expected;
-}
+bool StructureAtomMapUnitTest::run() { return (target.mapTo(pattern, true).size() > 0) == expected; }
 
 //
 // StructureMaximalAtomMapUnitTest
@@ -180,8 +166,7 @@ bool StructureMaximalAtomMapUnitTest::run()
 {
     const auto size = target.maximalMapTo(pattern).first.size();
     if (size != expectedSize) {
-        Log(this).error(
-            "Actual map size: {0} is different from the expected size: {1}.", size, expectedSize);
+        Log(this).error("Actual map size: {0} is different from the expected size: {1}.", size, expectedSize);
         return false;
     }
     return true;
@@ -245,9 +230,7 @@ bool FundamentalCycleUnitTest::run()
     const auto cycles = molecule.getFundamentalCycleBasis();
     if (cycles.size() != expectedCycleCount) {
         Log(this).error(
-            "Actual cycle count: {0} is different from the expected count: {1}.",
-            cycles.size(),
-            expectedCycleCount);
+            "Actual cycle count: {0} is different from the expected count: {1}.", cycles.size(), expectedCycleCount);
         return false;
     }
 
@@ -297,8 +280,7 @@ bool MinimalCycleUnitTest::run()
     for (const auto& cycle : cycles) {
         for (const auto atom : cycle) atomSet.emplace(atom->index);
 
-        if (auto it = actualCycleSizes.find(static_cast<c_size>(cycle.size()));
-            it != actualCycleSizes.end())
+        if (auto it = actualCycleSizes.find(static_cast<c_size>(cycle.size())); it != actualCycleSizes.end())
             ++(it->second);
         else
             actualCycleSizes.emplace(static_cast<c_size>(cycle.size()), 1);
@@ -316,10 +298,7 @@ bool MinimalCycleUnitTest::run()
         StringTable diffTable({"Size", "Expected", "Actual"}, false);
         for (const auto& [refSize, refCount] : expectedCycleSizes) {
             if (const auto it = actualCycleSizes.find(refSize); it != actualCycleSizes.end()) {
-                diffTable.addEntry(
-                    {std::to_string(refSize),
-                     std::to_string(refCount),
-                     std::to_string(it->second)});
+                diffTable.addEntry({std::to_string(refSize), std::to_string(refCount), std::to_string(it->second)});
                 actualCycleSizes.erase(it);
             }
             else
@@ -329,8 +308,7 @@ bool MinimalCycleUnitTest::run()
         for (const auto& [actSize, actCount] : actualCycleSizes)
             diffTable.addEntry({std::to_string(actSize), "0", std::to_string(actCount)});
 
-        Log(this).error(
-            "Actual cycle sizes differ from the expected sizes:\n{0}", diffTable.toString());
+        Log(this).error("Actual cycle sizes differ from the expected sizes:\n{0}", diffTable.toString());
         return false;
     }
 
@@ -342,9 +320,7 @@ bool MinimalCycleUnitTest::run()
 //
 
 ASCIIPrintUnitTest::ASCIIPrintUnitTest(
-    const std::string& name,
-    const std::string& moleculeSmiles,
-    const bool         allowLinearCycleExpansion) noexcept :
+    const std::string& name, const std::string& moleculeSmiles, const bool allowLinearCycleExpansion) noexcept :
     UnitTest(name + '_' + moleculeSmiles),
     allowLinearCycleExpansion(allowLinearCycleExpansion),
     molecule(moleculeSmiles)
@@ -369,9 +345,7 @@ bool ASCIIPrintUnitTest::run()
     }
 
     if (not allowLinearCycleExpansion && ascii.find('%') != std::string::npos) {
-        Log(this).error(
-            "ASCII print is valid but contains unexpected linear cycle expansion closure:\n{0}",
-            ascii);
+        Log(this).error("ASCII print is valid but contains unexpected linear cycle expansion closure:\n{0}", ascii);
         return false;
     }
 
@@ -382,8 +356,7 @@ bool ASCIIPrintUnitTest::run()
 // MolBinUnitTest
 //
 
-MolBinUnitTest::MolBinUnitTest(const std::string& name, const std::string& moleculeSmiles) noexcept
-    :
+MolBinUnitTest::MolBinUnitTest(const std::string& name, const std::string& moleculeSmiles) noexcept :
     UnitTest(name + '_' + moleculeSmiles),
     molecule(moleculeSmiles)
 {}
@@ -440,34 +413,24 @@ StructureUnitTests::StructureUnitTests(
     registerTest<StructureSMILESUnitTest>("SMILES", "CC1C2C1N2", 69.11f);
     registerTest<StructureSMILESUnitTest>("SMILES", "OC1C2CC12", 70.09f);
     registerTest<StructureSMILESUnitTest>("SMILES", "CNC1CC=C1C=C=CC3=C=CN3", 172.23f);
-    registerTest<StructureSMILESUnitTest>(
-        "SMILES", "CN4CCC15C=CC(O)C3OC2=C(O)C=CC(=CC1)C2C345", 285.34f);
-    registerTest<StructureSMILESUnitTest>(
-        "SMILES", "CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C", 352.46f);
-    registerTest<StructureSMILESUnitTest>(
-        "SMILES", "CN1CC(C=C2C1CC3=CNC4=CC=CC2=C34)C(=O)O", 268.32f);
+    registerTest<StructureSMILESUnitTest>("SMILES", "CN4CCC15C=CC(O)C3OC2=C(O)C=CC(=CC1)C2C345", 285.34f);
+    registerTest<StructureSMILESUnitTest>("SMILES", "CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C", 352.46f);
+    registerTest<StructureSMILESUnitTest>("SMILES", "CN1CC(C=C2C1CC3=CNC4=CC=CC2=C34)C(=O)O", 268.32f);
     registerTest<StructureSMILESUnitTest>("SMILES", "[Mg](O)O", 58.32f);
-    registerTest<StructureSMILESUnitTest>(
-        "SMILES", "S(-O)(-O)(-O)(OCC)(OCCC(N(C)C)=O)C#N", 270.31f);
+    registerTest<StructureSMILESUnitTest>("SMILES", "S(-O)(-O)(-O)(OCC)(OCCC(N(C)C)=O)C#N", 270.31f);
     registerTest<StructureSMILESUnitTest>("SMILES", "CC2CCCC(C1CCCCC1)C2", 180.33f);
     registerTest<StructureSMILESUnitTest>("SMILES", "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67", 254.42f);
+    registerTest<StructureSMILESUnitTest>("SMILES", "C1C2C13C24C38C4%10C79C56CC5C67C89%10", 150.18f);
     registerTest<StructureSMILESUnitTest>(
-        "SMILES", "C1C2C13C24C38C4%10C79C56CC5C67C89%10", 150.18f);
-    registerTest<StructureSMILESUnitTest>(
-        "SMILES",
-        "C3=CC27CC18C=CC16C=C%10CCC%12C%11C=C5C=C4C(C=C2C3)C49C5=C(C6C789)C%10%11%12",
-        356.47f);
-    registerTest<StructureSMILESUnitTest>(
-        "SMILES", "C(C)C(CC(C(C)C(C(C)C)(C(C)C))(C(C)C)C)CC", 282.56f);
+        "SMILES", "C3=CC27CC18C=CC16C=C%10CCC%12C%11C=C5C=C4C(C=C2C3)C49C5=C(C6C789)C%10%11%12", 356.47f);
+    registerTest<StructureSMILESUnitTest>("SMILES", "C(C)C(CC(C(C)C(C(C)C)(C(C)C))(C(C)C)C)CC", 282.56f);
     registerTest<StructureSMILESUnitTest>("SMILES", "HC(H)(H)C(H)(H)C(H)(H)H", 44.1f);
     registerTest<StructureSMILESUnitTest>("SMILES", "C%12C3CCC%123C", 82.15f);
     registerTest<StructureSMILESUnitTest>("SMILES", "CNC1(CCCCC1=O)C2=CC=CC=C2Cl", 237.72f);
     registerTest<StructureSMILESUnitTest>("SMILES", "CN(C)CCC1=CNC2=C1C=C(C=C2)OC", 218.3f);
-    registerTest<StructureSMILESUnitTest>(
-        "SMILES", "C1C2C3C4C1C15C6CC7C8C6C6CC8C8(C3CC4C618)C275", 260.38f);
+    registerTest<StructureSMILESUnitTest>("SMILES", "C1C2C3C4C1C15C6CC7C8C6C6CC8C8(C3CC4C618)C275", 260.38f);
 
-    registerTest<StructureEqualityUnitTest>(
-        "equality", "CN(C)C(=O)C1=CC=CC=C1", "C1=CC=CC=C1R", false);
+    registerTest<StructureEqualityUnitTest>("equality", "CN(C)C(=O)C1=CC=CC=C1", "C1=CC=CC=C1R", false);
     registerTest<StructureEqualityUnitTest>("equality", "N1(C2(C1C(C)2))", "N1(C2(C1C2(C)))", true);
     registerTest<StructureEqualityUnitTest>("equality", "CC(=O)OC", "RC(=O)OR", false);
     registerTest<StructureEqualityUnitTest>("equality", "CC(=O)OC", "RC(=O)O", false);
@@ -477,8 +440,7 @@ StructureUnitTests::StructureUnitTests(
     registerTest<StructureEqualityUnitTest>("equality", "C1C(OC)CC1", "C1CC(OR)C1", false);
     registerTest<StructureEqualityUnitTest>("equality", "CC(O)C", "OR", false);
     registerTest<StructureEqualityUnitTest>("equality", "CC1CCCC2CCCCC12", "CC1CCCC2CCCCC12", true);
-    registerTest<StructureEqualityUnitTest>(
-        "equality", "CC1=CC2=C(NC=C2)C=C1", "RC1=CC2=C(NC=C2)C=C1", false);
+    registerTest<StructureEqualityUnitTest>("equality", "CC1=CC2=C(NC=C2)C=C1", "RC1=CC2=C(NC=C2)C=C1", false);
     registerTest<StructureEqualityUnitTest>("equality", "C1CC2=C1C=C2", "RC1=C(R)CC1", false);
     registerTest<StructureEqualityUnitTest>("equality", "C(C)(C)OC", "O(R)R", false);
     registerTest<StructureEqualityUnitTest>("equality", "O(CCC)CC", "O(CC)(CCC)", true);
@@ -493,10 +455,7 @@ StructureUnitTests::StructureUnitTests(
         "N(R)C14CC(CC=C1C2=C(OR)C=CC3=C2C(=C[N]3)C4)C(=O)N(R)R",
         false);
     registerTest<StructureEqualityUnitTest>(
-        "equality",
-        "C1C2C3C4C1C15C6CC7C8C6C6CC8C8(C3CC4C618)C275",
-        "C1C2C3C4CC5C3C1C67C28C49C56C1CC9C2C8CC7C12",
-        true);
+        "equality", "C1C2C3C4C1C15C6CC7C8C6C6CC8C8(C3CC4C618)C275", "C1C2C3C4CC5C3C1C67C28C49C56C1CC9C2C8CC7C12", true);
     registerTest<StructureEqualityUnitTest>("equality", "[Cl]", "X", false);
     registerTest<StructureEqualityUnitTest>(
         "equality", "N2C1=CC=C(OC)C=C1C(CCN(C)C)C2", "N2C1=CC=C(OC)C=C1C(C2)CCN(C)C", true);
@@ -513,8 +472,7 @@ StructureUnitTests::StructureUnitTests(
     registerTest<StructureAtomMapUnitTest>("map", "C1C(OC)CC1", "C1CC(OR)C1", true);
     registerTest<StructureAtomMapUnitTest>("map", "CC(O)C", "OR", true);
     registerTest<StructureAtomMapUnitTest>("map", "CC1CCCC2CCCCC12", "CC1CCCC2CCCCC12", true);
-    registerTest<StructureAtomMapUnitTest>(
-        "map", "CC1=CC2=C(NC=C2)C=C1", "RC1=CC2=C(NC=C2)C=C1", true);
+    registerTest<StructureAtomMapUnitTest>("map", "CC1=CC2=C(NC=C2)C=C1", "RC1=CC2=C(NC=C2)C=C1", true);
     registerTest<StructureAtomMapUnitTest>("map", "C1CC2=C1C=C2", "RC1=C(R)CC1", true);
     registerTest<StructureAtomMapUnitTest>("map", "C(C)(C)OC", "O(R)R", true);
     registerTest<StructureAtomMapUnitTest>("map", "O(CCC)CC", "O(CC)(CCC)", true);
@@ -535,19 +493,15 @@ StructureUnitTests::StructureUnitTests(
     registerTest<StructureMaximalAtomMapUnitTest>("maximal_map", "CC(=O)OR", "OCR", 2);
     registerTest<StructureMaximalAtomMapUnitTest>("maximal_map", "C(=O)N(C)C", "C1CCC1", 1);
     registerTest<StructureMaximalAtomMapUnitTest>("maximal_map", "O(C)CC", "O(CC)C", 4);
-    registerTest<StructureMaximalAtomMapUnitTest>(
-        "maximal_map", "CC2CCCC(C1CCCCC1)C2", "CC1CCCCC1", 7);
+    registerTest<StructureMaximalAtomMapUnitTest>("maximal_map", "CC2CCCC(C1CCCCC1)C2", "CC1CCCCC1", 7);
 
     registerTest<StructureSubstitutionUnitTest>("substitute", "CC(=O)OC", "OCCC", "O=C(OC)CC");
     registerTest<StructureSubstitutionUnitTest>("substitute", "CC(=O)OR", "OCCC", "O=C(OR)CC");
-    registerTest<StructureSubstitutionUnitTest>(
-        "substitute", "CCC(=O)O", "CC(=O)OCC", "O=C(OCC)CC");
-    registerTest<StructureSubstitutionUnitTest>(
-        "substitute", "C(=O)O", "CC(=O)OC(C)C", "CC(=O)OC(C)C");
+    registerTest<StructureSubstitutionUnitTest>("substitute", "CCC(=O)O", "CC(=O)OCC", "O=C(OCC)CC");
+    registerTest<StructureSubstitutionUnitTest>("substitute", "C(=O)O", "CC(=O)OC(C)C", "CC(=O)OC(C)C");
     registerTest<StructureSubstitutionUnitTest>("substitute", "C1CCCC1", "C1CC(O)C1", "OC1CCCC1");
     registerTest<StructureSubstitutionUnitTest>("substitute", "CC(C)C", "C1CCC1O", "OC1(CCC1)(C)");
-    registerTest<StructureSubstitutionUnitTest>(
-        "substitute", "C(=O)O", "CC(=O)OCCCCCCCCCCC", "O=C(OCCCCCCCCCCC)C");
+    registerTest<StructureSubstitutionUnitTest>("substitute", "C(=O)O", "CC(=O)OCCCCCCCCCCC", "O=C(OCCCCCCCCCCC)C");
     registerTest<StructureSubstitutionUnitTest>(
         "substitute",
         "C1C2C(CC(C=O)CC2CCCC)CCC1CC(=O)OC",
@@ -566,16 +520,11 @@ StructureUnitTests::StructureUnitTests(
     registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "C1C2CC3CC23C1", 3, 7);
     registerTest<FundamentalCycleUnitTest>(
         "fundamental_cycle", "CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C", 4, 16);
+    registerTest<FundamentalCycleUnitTest>("fundamental_cycle", "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67", 7, 19);
     registerTest<FundamentalCycleUnitTest>(
-        "fundamental_cycle", "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67", 7, 19);
-    registerTest<FundamentalCycleUnitTest>(
-        "fundamental_cycle",
-        "C3=CC27CC18C=CC16C=C%10CCC%12C%11C=C5C=C4C(C=C2C3)C49C5=C(C6C789)C%10%11%12",
-        12,
-        28);
+        "fundamental_cycle", "C3=CC27CC18C=CC16C=C%10CCC%12C%11C=C5C=C4C(C=C2C3)C49C5=C(C6C789)C%10%11%12", 12, 28);
 
-    registerTest<MinimalCycleUnitTest>(
-        "minimal_cycle", "CC(=O)OC(C)C", 0, std::unordered_map<c_size, c_size>());
+    registerTest<MinimalCycleUnitTest>("minimal_cycle", "CC(=O)OC(C)C", 0, std::unordered_map<c_size, c_size>());
     registerTest<MinimalCycleUnitTest>(
         "minimal_cycle",
         "C1CCC(C)CC1",
@@ -680,22 +629,18 @@ StructureUnitTests::StructureUnitTests(
     registerTest<ASCIIPrintUnitTest>("ASCII", "ICCS123CCC1C2CC3", true);
     registerTest<ASCIIPrintUnitTest>("ASCII", "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67", false);
     registerTest<ASCIIPrintUnitTest>("ASCII", "C5CCC(C3CCS124(CCCC1)CCCC2CC34)CC5", true);
-    registerTest<ASCIIPrintUnitTest>(
-        "ASCII", "C1(C)C(O)C(C)S(=CCCF)C(N)C(S)N(C=C(O)C)C(C)C(P)C1", false);
-    registerTest<ASCIIPrintUnitTest>(
-        "ASCII", "C1CCCCCCCCCCCCCCCCS2S(CCCCCC1)PPPPPPPPPPPPPPPPPP2", false);
+    registerTest<ASCIIPrintUnitTest>("ASCII", "C1(C)C(O)C(C)S(=CCCF)C(N)C(S)N(C=C(O)C)C(C)C(P)C1", false);
+    registerTest<ASCIIPrintUnitTest>("ASCII", "C1CCCCCCCCCCCCCCCCS2S(CCCCCC1)PPPPPPPPPPPPPPPPPP2", false);
     registerTest<ASCIIPrintUnitTest>("ASCII", "COC1C=C2C(=CC=1)NCC2CCN(C)C", false);
     registerTest<ASCIIPrintUnitTest>("ASCII", "CN1C=NC2=C1C(=O)N(C(=O)N2C)C", false);
     registerTest<ASCIIPrintUnitTest>("ASCII", "CNC1(CCCCC1=O)C2=CC=CC=C2Cl", false);
-    registerTest<ASCIIPrintUnitTest>(
-        "ASCII", "CCN(CC)C(=O)C1CN(C2CC3=CNC4=CC=CC(=C34)C2=C1)C", false);
+    registerTest<ASCIIPrintUnitTest>("ASCII", "CCN(CC)C(=O)C1CN(C2CC3=CNC4=CC=CC(=C34)C2=C1)C", false);
     registerTest<ASCIIPrintUnitTest>(
         "ASCII",
         "[Si][Si]N([Si][Si])[Si](=O)[Si]1[Si]N([Si]2[Si][Si]3=[Si]N[Si]4=[Si][Si]=[Si][Si](=[Si]34)"
         "[Si]2=[Si]1)[Si]",
         false);
-    registerTest<ASCIIPrintUnitTest>(
-        "ASCII", "CC(=O)OC1=C2OC4C(O)C=CC3C5CC(C=C1)=C2C34CCN5C", true);
+    registerTest<ASCIIPrintUnitTest>("ASCII", "CC(=O)OC1=C2OC4C(O)C=CC3C5CC(C=C1)=C2C34CCN5C", true);
 
     registerTest<MolBinUnitTest>("MolBin", "HH");
     registerTest<MolBinUnitTest>("MolBin", "O");

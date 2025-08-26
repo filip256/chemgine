@@ -12,10 +12,7 @@ const std::string& UnitTest::getName() const { return name; }
 
 size_t UnitTest::getTestCount() const { return 1; }
 
-bool UnitTest::isSkipped(const std::regex& filter) const
-{
-    return not std::regex_match(name, filter);
-}
+bool UnitTest::isSkipped(const std::regex& filter) const { return not std::regex_match(name, filter); }
 
 UnitTestGroup::UnitTestGroup(std::string&& name, const std::regex& filter) noexcept :
     UnitTest(std::move(name)),
@@ -49,12 +46,10 @@ bool UnitTestGroup::run()
         const auto timeInMs = (end - start).count() / 1000000.0;
 
         if (success)
-            Log(this).info(
-                "\rTest {0} passed ({1}ms).", tests[i]->getName(), std::format("{:.4f}", timeInMs));
+            Log(this).info("\rTest {0} passed ({1}ms).", tests[i]->getName(), std::format("{:.4f}", timeInMs));
         else {
             failed.emplace_back(i);
-            Log(this).info(
-                "\rTest {0} failed ({1}ms).", tests[i]->getName(), std::format("{:.4f}", timeInMs));
+            Log(this).info("\rTest {0} failed ({1}ms).", tests[i]->getName(), std::format("{:.4f}", timeInMs));
         }
 
         Log(this).info("\0");

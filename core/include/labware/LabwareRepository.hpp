@@ -29,8 +29,7 @@ public:
 
     size_t totalDefinitionCount() const;
 
-    using Iterator =
-        std::unordered_map<LabwareId, std::unique_ptr<const BaseLabwareData>>::const_iterator;
+    using Iterator = std::unordered_map<LabwareId, std::unique_ptr<const BaseLabwareData>>::const_iterator;
     Iterator begin() const;
     Iterator end() const;
 

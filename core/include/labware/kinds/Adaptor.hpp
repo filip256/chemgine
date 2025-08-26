@@ -12,6 +12,5 @@ public:
     const AdaptorData& getData() const override final;
 
     bool tryConnect(LabwareComponentBase& other) override final;
-    void
-    disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase& other) override final;
+    void disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase& other) override final;
 };

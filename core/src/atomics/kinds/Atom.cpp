@@ -38,7 +38,4 @@ bool Atom::operator!=(const Atom& other) const { return this->data.symbol != oth
 
 std::unique_ptr<Atom> Atom::clone() const { return std::make_unique<Atom>(*this); }
 
-bool Atom::isDefined(const Symbol& symbol)
-{
-    return Accessor<>::getDataStore().atoms.contains(symbol);
-}
+bool Atom::isDefined(const Symbol& symbol) { return Accessor<>::getDataStore().atoms.contains(symbol); }

@@ -7,9 +7,8 @@ ConcreteReaction::ConcreteReaction(const ConcreteReaction& other) noexcept :
 {}
 
 ConcreteReaction::ConcreteReaction(
-    const ReactionData&          baseReaction,
-    const std::vector<Reactant>& reactants,
-    const std::vector<Molecule>& products) noexcept :
+    const ReactionData& baseReaction, const std::vector<Reactant>& reactants, const std::vector<Molecule>& products) noexcept
+    :
     baseReaction(baseReaction),
     reactants(reactants),
     products(products)
@@ -19,10 +18,7 @@ const ReactantSet& ConcreteReaction::getReactants() const { return reactants; }
 
 const ReactantSet& ConcreteReaction::getProducts() const { return products; }
 
-const ImmutableSet<Catalyst>& ConcreteReaction::getCatalysts() const
-{
-    return baseReaction.getCatalysts();
-}
+const ImmutableSet<Catalyst>& ConcreteReaction::getCatalysts() const { return baseReaction.getCatalysts(); }
 
 const Amount<Unit::CELSIUS> ConcreteReaction::getReactantTemperature() const
 {

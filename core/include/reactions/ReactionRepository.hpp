@@ -18,8 +18,7 @@ private:
     ReactionId getFreeId() const;
 
 public:
-    ReactionRepository(
-        EstimatorRepository& estimators, const MoleculeRepository& molecules) noexcept;
+    ReactionRepository(EstimatorRepository& estimators, const MoleculeRepository& molecules) noexcept;
     ReactionRepository(const ReactionRepository&) = delete;
     ReactionRepository(ReactionRepository&&)      = default;
 
@@ -44,14 +43,12 @@ public:
     /// Finds all the occurring reactions for the given molecules. The order of molecules must match
     /// the order of the reactants in the matching reaction.
     /// </summary>
-    std::unordered_set<ConcreteReaction>
-    findOccurringReactions(const std::vector<Reactant>& reactants) const;
+    std::unordered_set<ConcreteReaction> findOccurringReactions(const std::vector<Reactant>& reactants) const;
 
     /// <summary>
     /// Finds all the reactions which can produce the given target and specializes them accordingly.
     /// </summary>
-    std::unordered_set<RetrosynthReaction>
-    getRetrosynthReactions(const StructureRef& targetProduct) const;
+    std::unordered_set<RetrosynthReaction> getRetrosynthReactions(const StructureRef& targetProduct) const;
 
     /// <summary>
     /// Generates all the molecules which can be reached using the existing molecules and reactions.

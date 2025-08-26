@@ -23,10 +23,7 @@ public:
     const std::vector<LabwarePort> ports;
 
     BaseLabwareData(
-        const LabwareId            id,
-        const std::string&         name,
-        std::vector<LabwarePort>&& ports,
-        const LabwareType          type) noexcept;
+        const LabwareId id, const std::string& name, std::vector<LabwarePort>&& ports, const LabwareType type) noexcept;
     BaseLabwareData(const BaseLabwareData&) = delete;
     BaseLabwareData(BaseLabwareData&&)      = default;
     virtual ~BaseLabwareData()              = default;

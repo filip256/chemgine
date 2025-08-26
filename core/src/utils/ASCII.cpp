@@ -10,8 +10,7 @@ namespace ASCII
 // Direction
 //
 
-const std::vector<Direction>
-    Direction::AllDirectionsVector(AllDirections.begin(), AllDirections.end());
+const std::vector<Direction> Direction::AllDirectionsVector(AllDirections.begin(), AllDirections.end());
 
 Direction::Direction(const int8_t x, const int8_t y) noexcept :
     idx(findIdx(normalize(x), normalize(y)))
@@ -21,18 +20,14 @@ uint8_t Direction::findIdx(const int8_t x, const int8_t y)
 {
     const auto norm = Point(x, y);
     const auto it   = std::ranges::find(_allDirections, norm);
-    return it != _allDirections.end()
-               ? static_cast<uint8_t>(std::distance(_allDirections.begin(), it))
-               : utils::npos<uint8_t>;
+    return it != _allDirections.end() ? static_cast<uint8_t>(std::distance(_allDirections.begin(), it))
+                                      : utils::npos<uint8_t>;
 }
 
 char Direction::getSymbol() const
 {
     const auto dir = get();
-    return dir.x == 0                     ? ASCII::LineV
-           : dir.y == 0                   ? ASCII::LineH
-           : ((dir.x < 0) == (dir.y < 0)) ? '\\'
-                                          : '/';
+    return dir.x == 0 ? ASCII::LineV : dir.y == 0 ? ASCII::LineH : ((dir.x < 0) == (dir.y < 0)) ? '\\' : '/';
 }
 
 Angle Direction::getAngle(const Direction other) const
@@ -70,14 +65,11 @@ Direction Direction::turn(const Angle angle, const bool parallelIsBackward) cons
         return Direction(static_cast<uint8_t>((idx + step) % Direction::AllDirections.size()));
     else
         return Direction(
-            static_cast<uint8_t>(
-                (idx - step + Direction::AllDirections.size()) % Direction::AllDirections.size()));
+            static_cast<uint8_t>((idx - step + Direction::AllDirections.size()) % Direction::AllDirections.size()));
 }
 
-template Direction
-Direction::turn<Rotation::CLOCKWISE>(const Angle angle, const bool parallelIsBackward) const;
-template Direction Direction::turn<Rotation::COUNTER_CLOCKWISE>(
-    const Angle angle, const bool parallelIsBackward) const;
+template Direction Direction::turn<Rotation::CLOCKWISE>(const Angle angle, const bool parallelIsBackward) const;
+template Direction Direction::turn<Rotation::COUNTER_CLOCKWISE>(const Angle angle, const bool parallelIsBackward) const;
 
 namespace
 {
@@ -96,8 +88,7 @@ constexpr uint8_t getAngleIndex(const Direction d1, const Direction d2)
     //  1-3 = CCW
     //  5-7 = CW
     return static_cast<uint8_t>(
-        (d1.getIdx() - d2.getIdx() + Direction::AllDirections.size()) %
-        Direction::AllDirections.size());
+        (d1.getIdx() - d2.getIdx() + Direction::AllDirections.size()) % Direction::AllDirections.size());
 }
 
 }  // namespace

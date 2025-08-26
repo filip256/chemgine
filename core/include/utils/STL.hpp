@@ -62,12 +62,10 @@ template <typename OutT, typename ObjT1, typename ObjT2>
 std::vector<OutT> zip(std::vector<ObjT1>&& vector, const ObjT2& object);
 
 template <typename T>
-std::vector<std::vector<T>>
-getArrangementsWithRepetitions(const std::vector<T>& vector, const size_t maxLength);
+std::vector<std::vector<T>> getArrangementsWithRepetitions(const std::vector<T>& vector, const size_t maxLength);
 
 template <typename T>
-std::vector<size_t>
-getSortingPermutation(const std::vector<T>& vector, bool (*lessThan)(const T&, const T&));
+std::vector<size_t> getSortingPermutation(const std::vector<T>& vector, bool (*lessThan)(const T&, const T&));
 template <typename T>
 void permute(std::vector<T>& vector, std::vector<size_t>& permutation);
 
@@ -186,8 +184,8 @@ std::pair<T2, T1> utils::reversePair(const std::pair<T1, T2>& pair)
 }
 
 template <typename KeyT1, typename KeyT2, typename ObjT>
-std::unordered_map<KeyT1, ObjT> utils::compose(
-    const std::unordered_map<KeyT1, KeyT2>& map1, const std::unordered_map<KeyT2, ObjT>& map2)
+std::unordered_map<KeyT1, ObjT>
+utils::compose(const std::unordered_map<KeyT1, KeyT2>& map1, const std::unordered_map<KeyT2, ObjT>& map2)
 {
     std::unordered_map<KeyT1, ObjT> result;
     result.reserve(map1.bucket_count());
@@ -323,9 +321,7 @@ std::vector<OutT> utils::transform(const std::vector<InT>& vector)
     std::vector<OutT> result;
     result.reserve(vector.size());
 
-    std::transform(vector.begin(), vector.end(), std::back_inserter(result), [](const InT& item) {
-        return OutT(item);
-    });
+    std::transform(vector.begin(), vector.end(), std::back_inserter(result), [](const InT& item) { return OutT(item); });
 
     return result;
 }
@@ -389,10 +385,7 @@ std::vector<OutT> utils::zip(std::vector<InT1>&& vector, const InT2& object)
 
 template <typename T>
 static void getArrangementsWithRepetitions(
-    const std::vector<T>&        vector,
-    const size_t                 maxLength,
-    std::vector<T>&              current,
-    std::vector<std::vector<T>>& result)
+    const std::vector<T>& vector, const size_t maxLength, std::vector<T>& current, std::vector<std::vector<T>>& result)
 {
     if (current.size() <= maxLength)
         result.emplace_back(current);
@@ -408,8 +401,7 @@ static void getArrangementsWithRepetitions(
 }
 
 template <typename T>
-std::vector<std::vector<T>>
-utils::getArrangementsWithRepetitions(const std::vector<T>& vector, const size_t maxLength)
+std::vector<std::vector<T>> utils::getArrangementsWithRepetitions(const std::vector<T>& vector, const size_t maxLength)
 {
     // TODO: implement iteratively
     std::vector<std::vector<T>> result;
@@ -422,8 +414,7 @@ utils::getArrangementsWithRepetitions(const std::vector<T>& vector, const size_t
 }
 
 template <typename T>
-std::vector<size_t>
-utils::getSortingPermutation(const std::vector<T>& vector, bool (*lessThan)(const T&, const T&))
+std::vector<size_t> utils::getSortingPermutation(const std::vector<T>& vector, bool (*lessThan)(const T&, const T&))
 {
     // Initialize indexMap[i] = i
     std::vector<size_t> indexMap;
@@ -432,8 +423,7 @@ utils::getSortingPermutation(const std::vector<T>& vector, bool (*lessThan)(cons
 
     // Generate a mapping between each index in the sorted vector and the index of the same element
     // in the original vector.
-    std::sort(
-        indexMap.begin(), indexMap.end(), [&vector, lessThan](const auto& lhs, const auto& rhs) {
+    std::sort(indexMap.begin(), indexMap.end(), [&vector, lessThan](const auto& lhs, const auto& rhs) {
         return lessThan(vector[lhs], vector[rhs]);
     });
 

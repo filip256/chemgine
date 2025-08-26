@@ -11,10 +11,7 @@
 
 using namespace def;
 
-FileParser::FileParser(
-    const std::string&      filePath,
-    FileStore&              fileStore,
-    const OOLDefRepository& oolDefinitions) noexcept :
+FileParser::FileParser(const std::string& filePath, FileStore& fileStore, const OOLDefRepository& oolDefinitions) noexcept :
     currentFile(utils::normalizePath(filePath)),
     stream(currentFile),
     oolDefinitions(oolDefinitions),
@@ -49,11 +46,7 @@ void FileParser::include(const std::string& filePath)
         return;
 
     if (status == ParseStatus::STARTED) {
-        Log(this).error(
-            "Encountered cyclic dependency on file: '{0}', at: {1}:{2}.",
-            filePath,
-            currentFile,
-            currentLine);
+        Log(this).error("Encountered cyclic dependency on file: '{0}', at: {1}:{2}.", filePath, currentFile, currentLine);
         return;
     }
 
@@ -82,8 +75,7 @@ bool FileParser::isOpen() const { return stream.is_open(); }
 
 def::Location FileParser::getCurrentLocalLocation() const
 {
-    return isOpen() ? def::Location(currentFile, currentLine)
-                    : def::Location::createEOF(currentFile);
+    return isOpen() ? def::Location(currentFile, currentLine) : def::Location::createEOF(currentFile);
 }
 
 def::Location FileParser::getCurrentGlobalLocation() const
@@ -136,8 +128,8 @@ std::string FileParser::nextGlobalLine()
         // include
         if (line.starts_with(def::Syntax::Include)) {
             const auto pathEnd = line.find(def::Syntax::IncludeAs, def::Syntax::Include.size());
-            auto       path    = utils::normalizePath(
-                line.substr(def::Syntax::Include.size(), pathEnd - def::Syntax::Include.size()));
+            auto       path =
+                utils::normalizePath(line.substr(def::Syntax::Include.size(), pathEnd - def::Syntax::Include.size()));
 
             // append dir
             if (path.starts_with("~/"))
@@ -192,10 +184,7 @@ std::pair<std::string, def::Location> FileParser::nextDefinitionLine()
             if (commentClosed)
                 continue;
 
-            Log(this).error(
-                "Missing multi-line definition terminator: '.:', at: {0}:{1}.",
-                currentFile,
-                currentLine);
+            Log(this).error("Missing multi-line definition terminator: '.:', at: {0}:{1}.", currentFile, currentLine);
         }
 
         // debug message
@@ -209,8 +198,8 @@ std::pair<std::string, def::Location> FileParser::nextDefinitionLine()
         // include
         if (line.starts_with(def::Syntax::Include)) {
             const auto pathEnd = line.find(def::Syntax::IncludeAs, def::Syntax::Include.size());
-            auto       path    = utils::normalizePath(
-                line.substr(def::Syntax::Include.size(), pathEnd - def::Syntax::Include.size()));
+            auto       path =
+                utils::normalizePath(line.substr(def::Syntax::Include.size(), pathEnd - def::Syntax::Include.size()));
 
             // append dir
             if (path.starts_with("~/"))
@@ -236,8 +225,7 @@ std::pair<std::string, def::Location> FileParser::nextDefinitionLine()
                     continue;
                 }
 
-                if (auto status = includeAliases.emplace(std::move(alias), path);
-                    not status.second) {
+                if (auto status = includeAliases.emplace(std::move(alias), path); not status.second) {
                     Log(this).warn(
                         "Redefinition of an existing include alias: '{0}: {1}', at: {2}:{3}.",
                         alias,
@@ -306,8 +294,5 @@ std::optional<def::Object> FileParser::nextDefinition()
     // TODO: remove dirty trick to pass subparser's include aliases to this's parser (needed for the
     // first def in a file)
     return def::parse<def::Object>(
-        line,
-        std::move(location),
-        subParser ? subParser->includeAliases : includeAliases,
-        oolDefinitions);
+        line, std::move(location), subParser ? subParser->includeAliases : includeAliases, oolDefinitions);
 }

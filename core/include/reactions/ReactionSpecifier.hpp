@@ -15,8 +15,7 @@ public:
     const std::vector<std::string> reactants;
     const std::vector<std::string> products;
 
-    ReactionSpecifier(
-        std::vector<std::string>&& reactants, std::vector<std::string>&& products) noexcept;
+    ReactionSpecifier(std::vector<std::string>&& reactants, std::vector<std::string>&& products) noexcept;
     ReactionSpecifier(const ReactionSpecifier&) = delete;
     ReactionSpecifier(ReactionSpecifier&&)      = default;
 };
@@ -52,8 +51,7 @@ public:
                 return std::nullopt;
         }
 
-        return std::optional<ReactionSpecifier>(
-            std::in_place, std::move(reactants), std::move(products));
+        return std::optional<ReactionSpecifier>(std::in_place, std::move(reactants), std::move(products));
     }
 };
 
@@ -64,8 +62,7 @@ public:
     static std::string print(const ReactionSpecifier& object)
     {
         std::string result;
-        for (size_t i = 0; i < object.reactants.size() - 1; ++i)
-            result += object.reactants[i] + "+";
+        for (size_t i = 0; i < object.reactants.size() - 1; ++i) result += object.reactants[i] + "+";
         result += object.reactants.back();
 
         result += "->";
@@ -78,14 +75,12 @@ public:
     static std::string prettyPrint(const ReactionSpecifier& object)
     {
         std::string result;
-        for (size_t i = 0; i < object.reactants.size() - 1; ++i)
-            result += object.reactants[i] + " + ";
+        for (size_t i = 0; i < object.reactants.size() - 1; ++i) result += object.reactants[i] + " + ";
         result += object.reactants.back();
 
         result += " -> ";
 
-        for (size_t i = 0; i < object.products.size() - 1; ++i)
-            result += object.products[i] + " + ";
+        for (size_t i = 0; i < object.products.size() - 1; ++i) result += object.products[i] + " + ";
         result += object.products.back();
         return result;
     }

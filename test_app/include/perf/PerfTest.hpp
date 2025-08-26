@@ -36,9 +36,7 @@ public:
 template <typename SetupT>
 class PerfTestSetup final : public PerfTest
 {
-    static_assert(
-        std::is_base_of_v<TestSetup, SetupT>,
-        "PerfTestSetup: SetupT must be a TestSetup derived type.");
+    static_assert(std::is_base_of_v<TestSetup, SetupT>, "PerfTestSetup: SetupT must be a TestSetup derived type.");
 
 private:
     SetupT setup;
@@ -109,8 +107,7 @@ protected:
     virtual void cleanup();
 
 public:
-    TimedTest(
-        std::string&& name, const std::variant<size_t, std::chrono::nanoseconds> limit) noexcept;
+    TimedTest(std::string&& name, const std::variant<size_t, std::chrono::nanoseconds> limit) noexcept;
     TimedTest(const TimedTest&) = default;
     TimedTest(TimedTest&&)      = default;
     virtual ~TimedTest()        = default;
@@ -150,15 +147,13 @@ public:
 template <typename T, typename... Args>
 void PerfTestGroup::registerTest(std::string&& name, Args&&... args)
 {
-    static_assert(
-        std::is_base_of_v<PerfTest, T>, "PerfTestGroup: T must be a PerfTest derived type.");
+    static_assert(std::is_base_of_v<PerfTest, T>, "PerfTestGroup: T must be a PerfTest derived type.");
 
     name = getName() + '.' + name;  // Append owning group name
 
     std::unique_ptr<PerfTest> test;
     if constexpr (utils::is_specialization_of_v<T, PerfTestSetup>)
-        test = std::make_unique<T>(
-            std::move(name), typename T::SetupType(std::forward<Args>(args)...));
+        test = std::make_unique<T>(std::move(name), typename T::SetupType(std::forward<Args>(args)...));
     else if constexpr (std::is_constructible_v<T, std::string&&, const std::regex&, Args...>)
         test = std::make_unique<T>(std::move(name), filter, std::forward<Args>(args)...);
     else

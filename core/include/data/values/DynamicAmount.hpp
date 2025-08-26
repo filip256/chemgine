@@ -41,8 +41,7 @@ public:
     static std::optional<Unit> getUnitFromSymbol(const std::string& symbol);
 
     template <Unit UnitT>
-    static inline std::optional<DynamicAmount>
-    cast(const Amount<UnitT> amount, const Unit target) = delete;
+    static inline std::optional<DynamicAmount> cast(const Amount<UnitT> amount, const Unit target) = delete;
 
     static std::optional<DynamicAmount> get(const StorageType value, const std::string& symbol);
     template <Unit UnitT>
@@ -65,8 +64,7 @@ std::optional<Amount<UnitT>> DynamicAmount::to() const
 // --- Direct Conversions ---    //
 
 template <>
-inline std::optional<DynamicAmount>
-DynamicAmount::cast(const Amount<Unit::LITER> amount, const Unit target)
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::LITER> amount, const Unit target)
 {
     switch (target) {
     case Unit::CUBIC_METER:
@@ -79,8 +77,7 @@ DynamicAmount::cast(const Amount<Unit::LITER> amount, const Unit target)
 }
 
 template <>
-inline std::optional<DynamicAmount>
-DynamicAmount::cast(const Amount<Unit::CUBIC_METER> amount, const Unit target)
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::CUBIC_METER> amount, const Unit target)
 {
     switch (target) {
     case Unit::LITER:
@@ -93,8 +90,7 @@ DynamicAmount::cast(const Amount<Unit::CUBIC_METER> amount, const Unit target)
 }
 
 template <>
-inline std::optional<DynamicAmount>
-DynamicAmount::cast(const Amount<Unit::DROP> amount, const Unit target)
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::DROP> amount, const Unit target)
 {
     switch (target) {
     case Unit::LITER:
@@ -107,8 +103,7 @@ DynamicAmount::cast(const Amount<Unit::DROP> amount, const Unit target)
 }
 
 template <>
-inline std::optional<DynamicAmount>
-DynamicAmount::cast(const Amount<Unit::CELSIUS> amount, const Unit target)
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::CELSIUS> amount, const Unit target)
 {
     switch (target) {
     case Unit::KELVIN:
@@ -121,8 +116,7 @@ DynamicAmount::cast(const Amount<Unit::CELSIUS> amount, const Unit target)
 }
 
 template <>
-inline std::optional<DynamicAmount>
-DynamicAmount::cast(const Amount<Unit::KELVIN> amount, const Unit target)
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::KELVIN> amount, const Unit target)
 {
     switch (target) {
     case Unit::CELSIUS:
@@ -135,8 +129,7 @@ DynamicAmount::cast(const Amount<Unit::KELVIN> amount, const Unit target)
 }
 
 template <>
-inline std::optional<DynamicAmount>
-DynamicAmount::cast(const Amount<Unit::FAHRENHEIT> amount, const Unit target)
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::FAHRENHEIT> amount, const Unit target)
 {
     switch (target) {
     case Unit::CELSIUS:
@@ -149,8 +142,7 @@ DynamicAmount::cast(const Amount<Unit::FAHRENHEIT> amount, const Unit target)
 }
 
 template <>
-inline std::optional<DynamicAmount>
-DynamicAmount::cast(const Amount<Unit::TORR> amount, const Unit target)
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::TORR> amount, const Unit target)
 {
     switch (target) {
     case Unit::PASCAL:
@@ -163,8 +155,7 @@ DynamicAmount::cast(const Amount<Unit::TORR> amount, const Unit target)
 }
 
 template <>
-inline std::optional<DynamicAmount>
-DynamicAmount::cast(const Amount<Unit::PASCAL> amount, const Unit target)
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::PASCAL> amount, const Unit target)
 {
     switch (target) {
     case Unit::TORR:
@@ -177,8 +168,7 @@ DynamicAmount::cast(const Amount<Unit::PASCAL> amount, const Unit target)
 }
 
 template <>
-inline std::optional<DynamicAmount>
-DynamicAmount::cast(const Amount<Unit::ATMOSPHERE> amount, const Unit target)
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::ATMOSPHERE> amount, const Unit target)
 {
     switch (target) {
     case Unit::TORR:
@@ -191,8 +181,7 @@ DynamicAmount::cast(const Amount<Unit::ATMOSPHERE> amount, const Unit target)
 }
 
 template <>
-inline std::optional<DynamicAmount>
-DynamicAmount::cast(const Amount<Unit::DEGREE> amount, const Unit target)
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::DEGREE> amount, const Unit target)
 {
     switch (target) {
     case Unit::RADIAN:
@@ -203,8 +192,7 @@ DynamicAmount::cast(const Amount<Unit::DEGREE> amount, const Unit target)
 }
 
 template <>
-inline std::optional<DynamicAmount>
-DynamicAmount::cast(const Amount<Unit::RADIAN> amount, const Unit target)
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::RADIAN> amount, const Unit target)
 {
     switch (target) {
     case Unit::DEGREE:
@@ -215,8 +203,7 @@ DynamicAmount::cast(const Amount<Unit::RADIAN> amount, const Unit target)
 }
 
 template <>
-inline std::optional<DynamicAmount>
-DynamicAmount::cast(const Amount<Unit::MOLE_RATIO> amount, const Unit target)
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::MOLE_RATIO> amount, const Unit target)
 {
     switch (target) {
     case Unit::MOLE_PERCENT:
@@ -227,8 +214,7 @@ DynamicAmount::cast(const Amount<Unit::MOLE_RATIO> amount, const Unit target)
 }
 
 template <>
-inline std::optional<DynamicAmount>
-DynamicAmount::cast(const Amount<Unit::MOLE_PERCENT> amount, const Unit target)
+inline std::optional<DynamicAmount> DynamicAmount::cast(const Amount<Unit::MOLE_PERCENT> amount, const Unit target)
 {
     switch (target) {
     case Unit::MOLE_RATIO:
@@ -251,10 +237,7 @@ template <>
 class def::Parser<Unit>
 {
 public:
-    static std::optional<Unit> parse(const std::string& str)
-    {
-        return DynamicAmount::getUnitFromSymbol(utils::strip(str));
-    }
+    static std::optional<Unit> parse(const std::string& str) { return DynamicAmount::getUnitFromSymbol(utils::strip(str)); }
 };
 
 template <Unit U>

@@ -8,8 +8,7 @@
 
 #include <fstream>
 
-ReactionRepository::ReactionRepository(
-    EstimatorRepository& estimators, const MoleculeRepository& molecules) noexcept :
+ReactionRepository::ReactionRepository(EstimatorRepository& estimators, const MoleculeRepository& molecules) noexcept :
     estimators(estimators),
     molecules(molecules)
 {}
@@ -20,8 +19,7 @@ bool ReactionRepository::add(const def::Object& definition)
     if (not id)
         id = getFreeId();
     else if (reactions.contains(*id)) {
-        Log(this).error(
-            "Reaction with duplicate id: '{0}', at: {1}.", *id, definition.getLocationName());
+        Log(this).error("Reaction with duplicate id: '{0}', at: {1}.", *id, definition.getLocationName());
         return false;
     }
 
@@ -30,9 +28,7 @@ bool ReactionRepository::add(const def::Object& definition)
     const auto spec = def::parse<def::ReactionSpecifier>(definition.getSpecifier());
     if (not spec) {
         Log(this).error(
-            "Invalid reaction specifier: '{0}', at: {1}.",
-            definition.getSpecifier(),
-            definition.getLocationName());
+            "Invalid reaction specifier: '{0}', at: {1}.", definition.getSpecifier(), definition.getLocationName());
         return false;
     }
 
@@ -75,9 +71,7 @@ bool ReactionRepository::add(const def::Object& definition)
 
     // catalysts
     const auto catStr = definition.getDefaultProperty(
-        def::Reactions::Catalysts,
-        std::vector<std::string>(),
-        def::parse<std::vector<std::string>>);
+        def::Reactions::Catalysts, std::vector<std::string>(), def::parse<std::vector<std::string>>);
 
     std::vector<Catalyst> catalysts;
     catalysts.reserve(catStr.size());
@@ -94,8 +88,7 @@ bool ReactionRepository::add(const def::Object& definition)
 
         bool isUnique = true;
         for (size_t j = 0; j < catalysts.size(); ++j)
-            if (catalysts[j].matchesWith(c->getStructure()) ||
-                c->matchesWith(catalysts[j].getStructure())) {
+            if (catalysts[j].matchesWith(c->getStructure()) || c->matchesWith(catalysts[j].getStructure())) {
                 isUnique = false;
                 Log(this).warn(
                     "Ignored duplicate catalyst '{0}' in reaction with id {1}, at: {2}.",
@@ -110,8 +103,7 @@ bool ReactionRepository::add(const def::Object& definition)
         catalysts.emplace_back(*c);
     }
 
-    const auto isCut =
-        definition.getDefaultProperty(def::Reactions::IsCut, false, def::parse<bool>);
+    const auto isCut = definition.getDefaultProperty(def::Reactions::IsCut, false, def::parse<bool>);
 
     std::unique_ptr<ReactionData> data;
     if (isCut) {
@@ -127,13 +119,9 @@ bool ReactionRepository::add(const def::Object& definition)
     }
     else {
         const auto energy = definition.getDefaultProperty(
-            def::Reactions::Energy,
-            Amount<Unit::JOULE_PER_MOLE>(0.0),
-            def::parse<Amount<Unit::JOULE_PER_MOLE>>);
+            def::Reactions::Energy, Amount<Unit::JOULE_PER_MOLE>(0.0), def::parse<Amount<Unit::JOULE_PER_MOLE>>);
         const auto activation = definition.getDefaultProperty(
-            def::Reactions::Activation,
-            Amount<Unit::JOULE_PER_MOLE>(0.0),
-            def::parse<Amount<Unit::JOULE_PER_MOLE>>);
+            def::Reactions::Activation, Amount<Unit::JOULE_PER_MOLE>(0.0), def::parse<Amount<Unit::JOULE_PER_MOLE>>);
         auto tempSpeed = definition.getDefinition(
             def::Reactions::TemperatureSpeed,
             def::Parser<UnitizedEstimator<Unit::MOLE_PER_SECOND, Unit::CELSIUS>>::parse,
@@ -157,8 +145,7 @@ bool ReactionRepository::add(const def::Object& definition)
 
     // create
     if (data->mapReactantsToProducts() == false) {
-        Log(this).error(
-            "Malformed reaction with id: {0}, at: {1}.", *id, definition.getLocationName());
+        Log(this).error("Malformed reaction with id: {0}, at: {1}.", *id, definition.getLocationName());
         return false;
     }
 
@@ -193,14 +180,12 @@ uint8_t ReactionRepository::getMaxReactantCount() const { return maxReactantCoun
 
 const ReactionNetwork& ReactionRepository::getNetwork() const { return network; }
 
-std::unordered_set<ConcreteReaction>
-ReactionRepository::findOccurringReactions(const std::vector<Reactant>& reactants) const
+std::unordered_set<ConcreteReaction> ReactionRepository::findOccurringReactions(const std::vector<Reactant>& reactants) const
 {
     return network.getOccurringReactions(reactants);
 }
 
-std::unordered_set<RetrosynthReaction>
-ReactionRepository::getRetrosynthReactions(const StructureRef& targetProduct) const
+std::unordered_set<RetrosynthReaction> ReactionRepository::getRetrosynthReactions(const StructureRef& targetProduct) const
 {
     return network.getRetrosynthReactions(targetProduct);
 }
@@ -210,8 +195,7 @@ size_t ReactionRepository::generateCurrentSpan() const
     std::vector<Reactant> reactants;
     reactants.reserve(molecules.size());
 
-    std::transform(
-        molecules.begin(), molecules.end(), std::back_inserter(reactants), [](const auto& mIt) {
+    std::transform(molecules.begin(), molecules.end(), std::back_inserter(reactants), [](const auto& mIt) {
         return Reactant(Molecule(*mIt.second), LayerType::NONE, 1.0_mol);
     });
 

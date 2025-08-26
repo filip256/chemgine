@@ -14,9 +14,7 @@ private:
     const ReactantSet::const_iterator end;
 
     LayerContentIterator(
-        const LayerType                   layer,
-        const ReactantSet::const_iterator it,
-        const ReactantSet::const_iterator end) noexcept;
+        const LayerType layer, const ReactantSet::const_iterator it, const ReactantSet::const_iterator end) noexcept;
 
 public:
     LayerContentIterator(const LayerContentIterator&) = default;

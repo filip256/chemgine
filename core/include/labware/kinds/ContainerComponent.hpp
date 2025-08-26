@@ -19,13 +19,10 @@ private:
     std::tuple<Args...>                   containers;
 
 protected:
-    template <
-        typename... CArgs,
-        typename = std::enable_if_t<std::conjunction_v<std::is_base_of<Mixture, Args>...>>>
+    template <typename... CArgs, typename = std::enable_if_t<std::conjunction_v<std::is_base_of<Mixture, Args>...>>>
     ContainerComponent(const LabwareId id, const LabwareType type, CArgs&&... containers) noexcept;
 
-    inline ContainerComponent(
-        const LabwareId id, const LabwareType type, Atmosphere& atmosphere) noexcept = delete;
+    inline ContainerComponent(const LabwareId id, const LabwareType type, Atmosphere& atmosphere) noexcept = delete;
 
     Ref<ContainerBase> getOverflowTarget() const override final;
     void               setOverflowTarget(const Ref<ContainerBase> target) override final;
@@ -61,8 +58,7 @@ public:
 
 template <typename... Args>
 template <typename... CArgs, typename>
-ContainerComponent<Args...>::ContainerComponent(
-    const LabwareId id, const LabwareType type, CArgs&&... containers) noexcept :
+ContainerComponent<Args...>::ContainerComponent(const LabwareId id, const LabwareType type, CArgs&&... containers) noexcept :
     BaseContainerComponent(id, type),
     fills(getData().generateShapeFills()),
     containers(std::forward<CArgs>(containers)...)
@@ -96,8 +92,7 @@ inline ContainerComponent<Atmosphere, Reactor>::ContainerComponent(
 {}
 
 template <typename... Args>
-const typename ContainerComponent<Args...>::DataObjectT&
-ContainerComponent<Args...>::getData() const
+const typename ContainerComponent<Args...>::DataObjectT& ContainerComponent<Args...>::getData() const
 {
     return static_cast<const DataObjectT&>(data);
 }

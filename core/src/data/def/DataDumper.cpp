@@ -2,11 +2,8 @@
 
 using namespace def;
 
-DataDumper::DataDumper(
-    std::ostream&  out,
-    const uint8_t  valueOffset,
-    const uint16_t baseIndent,
-    const bool     prettify) noexcept :
+DataDumper::DataDumper(std::ostream& out, const uint8_t valueOffset, const uint16_t baseIndent, const bool prettify) noexcept
+    :
     out(out),
     settings(prettify ? def::PrintSettings::Pretty : def::PrintSettings::Minimal),
     valueOffset(valueOffset + 2),

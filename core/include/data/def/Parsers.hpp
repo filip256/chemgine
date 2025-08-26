@@ -49,9 +49,7 @@ public:
             try {
                 size_t     pos = 0;
                 const auto val = std::stold(stripped, &pos);
-                return pos == str.size() &&
-                               val >= std::numeric_limits<T>::lowest() &&
-                               val <= std::numeric_limits<T>::max()
+                return pos == str.size() && val >= std::numeric_limits<T>::lowest() && val <= std::numeric_limits<T>::max()
                            ? std::optional(static_cast<T>(val))
                            : std::nullopt;
             } catch (const std::invalid_argument&) {
@@ -140,8 +138,7 @@ private:
     }
 
 public:
-    static std::optional<std::vector<T>>
-    parse(const std::string& str, const bool ignoreEmpty = true)
+    static std::optional<std::vector<T>> parse(const std::string& str, const bool ignoreEmpty = true)
     {
         const auto listStr = removeBrackets(str);
 
@@ -166,8 +163,8 @@ public:
                 continue;
 
             if (ignoreEmpty == false || i - lastSep - 1 > 0) {
-                auto r = def::parse<T>(utils::strip(listStr.substr(
-                    static_cast<size_t>(lastSep + 1), static_cast<size_t>(i - lastSep - 1))));
+                auto r = def::parse<T>(
+                    utils::strip(listStr.substr(static_cast<size_t>(lastSep + 1), static_cast<size_t>(i - lastSep - 1))));
                 if (not r)
                     return std::nullopt;
 

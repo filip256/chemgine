@@ -5,10 +5,7 @@ Heatsource::Heatsource(const LabwareId id, Atmosphere& atmosphere) noexcept :
     target(atmosphere)
 {}
 
-const HeatsourceData& Heatsource::getData() const
-{
-    return static_cast<const HeatsourceData&>(data);
-}
+const HeatsourceData& Heatsource::getData() const { return static_cast<const HeatsourceData&>(data); }
 
 void Heatsource::setTarget(const Ref<ContainerBase> target) { this->target = target; }
 
@@ -24,10 +21,7 @@ bool Heatsource::tryConnect(LabwareComponentBase& other)
     return false;
 }
 
-void Heatsource::disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase&)
-{
-    this->setTarget(dump);
-}
+void Heatsource::disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase&) { this->setTarget(dump); }
 
 void Heatsource::tick(const Amount<Unit::SECOND> timespan)
 {

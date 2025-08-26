@@ -16,8 +16,7 @@ private:
     uint8_t        portIdx;
     LabwareSystem& system;
 
-    PortIdentifier(
-        LabwareSystem& system, const l_size componentIdx, const uint8_t portIdx) noexcept;
+    PortIdentifier(LabwareSystem& system, const l_size componentIdx, const uint8_t portIdx) noexcept;
 
 public:
     bool                        isValid() const;
@@ -47,8 +46,7 @@ private:
         sf::Vector2f(-std::numeric_limits<float_s>::max(), -std::numeric_limits<float_s>::max()));
 
     std::unique_ptr<LabwareComponentBase> releaseComponent(const l_size componentIdx);
-    LabwareSystem
-    releaseSection(const l_size componentIdx, const uint8_t portIdx, std::vector<l_size>& toRemove);
+    LabwareSystem releaseSection(const l_size componentIdx, const uint8_t portIdx, std::vector<l_size>& toRemove);
 
     void        add(std::unique_ptr<LabwareComponentBase>&& component);
     static void add(PortIdentifier& otherPort, PortIdentifier& thisPort);
@@ -91,16 +89,15 @@ public:
     /// Finds the closest port to a given point and returns a pair of the port and the squared
     /// distance between itself and the point. Complexity: O(n)
     /// </summary>
-    std::pair<PortIdentifier, float_s> findClosestPort(
-        const sf::Vector2f& point,
-        const float_s       maxSqDistance = std::numeric_limits<float_s>::max());
+    std::pair<PortIdentifier, float_s>
+    findClosestPort(const sf::Vector2f& point, const float_s maxSqDistance = std::numeric_limits<float_s>::max());
 
     /// <summary>
     /// Finds the closest ports from this and other and returns a pair of the two ports if the
     /// squared distance between them is less or equal to maxSqDistance. Complexity: O(n*m)
     /// </summary>
-    std::pair<PortIdentifier, PortIdentifier> findClosestPort(
-        LabwareSystem& other, const float_s maxSqDistance = std::numeric_limits<float_s>::max());
+    std::pair<PortIdentifier, PortIdentifier>
+    findClosestPort(LabwareSystem& other, const float_s maxSqDistance = std::numeric_limits<float_s>::max());
 
     static bool isFree(const PortIdentifier& port);
 

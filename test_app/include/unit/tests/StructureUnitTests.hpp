@@ -12,9 +12,7 @@ private:
 
 public:
     StructureSMILESUnitTest(
-        const std::string&                name,
-        std::string&&                     smiles,
-        const Amount<Unit::GRAM_PER_MOLE> expectedMass) noexcept;
+        const std::string& name, std::string&& smiles, const Amount<Unit::GRAM_PER_MOLE> expectedMass) noexcept;
 
     bool run() override final;
 };
@@ -129,9 +127,7 @@ private:
 
 public:
     ASCIIPrintUnitTest(
-        const std::string& name,
-        const std::string& moleculeSmiles,
-        const bool         allowLinearCycleExpansion) noexcept;
+        const std::string& name, const std::string& moleculeSmiles, const bool allowLinearCycleExpansion) noexcept;
 
     bool run() override final;
 };
@@ -153,6 +149,5 @@ private:
     DataStore dataStore;
 
 public:
-    StructureUnitTests(
-        std::string&& name, const std::regex& filter, const std::string& atomsFilePath) noexcept;
+    StructureUnitTests(std::string&& name, const std::regex& filter, const std::string& atomsFilePath) noexcept;
 };

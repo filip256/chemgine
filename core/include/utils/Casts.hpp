@@ -18,9 +18,9 @@ private:
     static constexpr bool sameSignedness = std::is_signed_v<SrcT> == std::is_signed_v<DstT>;
 
 public:
-    static constexpr bool value = (bothIntegral || bothFloating) &&
-                                  ((sameSignedness && sizeof(SrcT) <= sizeof(DstT)) ||
-                                   (std::is_unsigned_v<SrcT> && sizeof(SrcT) < sizeof(DstT)));
+    static constexpr bool value =
+        (bothIntegral || bothFloating) &&
+        ((sameSignedness && sizeof(SrcT) <= sizeof(DstT)) || (std::is_unsigned_v<SrcT> && sizeof(SrcT) < sizeof(DstT)));
 };
 
 template <typename SrcT, typename DstT>
@@ -88,8 +88,7 @@ inline constexpr auto underlying_cast(const EnumT enumValue) noexcept
 template <typename DstT, typename SrcT>
 DstT round_cast(const SrcT src)
 {
-    static_assert(
-        std::is_floating_point_v<SrcT>, "round_cast(): SrcT must be a floating-point type.");
+    static_assert(std::is_floating_point_v<SrcT>, "round_cast(): SrcT must be a floating-point type.");
     static_assert(std::is_integral_v<DstT>, "round_cast(): DstT must be an integral type.");
 
     if constexpr (sizeof(DstT) > sizeof(long))

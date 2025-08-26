@@ -31,15 +31,9 @@ bool StateNucleator::isValid() const { return isNull() == false && isSet(); }
 
 const Reactant& StateNucleator::getReactant() const { return *reactant; }
 
-Amount<Unit::CELSIUS> StateNucleator::getTransitionPoint() const
-{
-    return (*reactant.*getTransitionPointCB)();
-}
+Amount<Unit::CELSIUS> StateNucleator::getTransitionPoint() const { return (*reactant.*getTransitionPointCB)(); }
 
-Amount<Unit::JOULE_PER_MOLE> StateNucleator::getTransitionHeat() const
-{
-    return (*reactant.*getTransitionHeatCB)();
-}
+Amount<Unit::JOULE_PER_MOLE> StateNucleator::getTransitionHeat() const { return (*reactant.*getTransitionHeatCB)(); }
 
 bool StateNucleator::isLower(const Reactant& other) const
 {

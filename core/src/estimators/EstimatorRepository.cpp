@@ -10,10 +10,8 @@ EstimatorRepository::~EstimatorRepository() noexcept { clear(); }
 
 const EstimatorBase& EstimatorRepository::add(std::unique_ptr<const EstimatorBase>&& estimator)
 {
-    const auto it =
-        std::find_if(estimators.cbegin(), estimators.cend(), [&estimator](const auto& e) {
-        return e.second->isEquivalent(*estimator);
-    });
+    const auto it = std::find_if(
+        estimators.cbegin(), estimators.cend(), [&estimator](const auto& e) { return e.second->isEquivalent(*estimator); });
 
     if (it != estimators.end())
         return *it->second;
@@ -31,10 +29,7 @@ void EstimatorRepository::dropUnusedEstimators()
 
 bool EstimatorRepository::contains(const EstimatorId id) const { return estimators.contains(id); }
 
-const EstimatorBase& EstimatorRepository::at(const EstimatorId id) const
-{
-    return *estimators.at(id);
-}
+const EstimatorBase& EstimatorRepository::at(const EstimatorId id) const { return *estimators.at(id); }
 
 size_t EstimatorRepository::totalDefinitionCount() const { return estimators.size(); }
 

@@ -1,7 +1,6 @@
 #include "perf/TimingResult.hpp"
 
-TimingResult::TimingResult(
-    std::chrono::nanoseconds averageTime, std::chrono::nanoseconds medianTime) noexcept :
+TimingResult::TimingResult(std::chrono::nanoseconds averageTime, std::chrono::nanoseconds medianTime) noexcept :
     averageTime(averageTime),
     medianTime(medianTime)
 {}

@@ -157,14 +157,11 @@ private:
 
     ColoredString getNewClosureSymbol();
 
-    static std::optional<std::pair<Position, Direction>>
-    inferEdgePosition(const Position from, const Position to);
-    static std::optional<std::pair<Position, Direction>>
-    inferEdgePosition(const PositionLine from, const PositionLine to);
+    static std::optional<std::pair<Position, Direction>> inferEdgePosition(const Position from, const Position to);
+    static std::optional<std::pair<Position, Direction>> inferEdgePosition(const PositionLine from, const PositionLine to);
 
     bool isSymbol(const Point<int32_t> position) const;
-    bool isAmbiguousBondPlacement(
-        const Position position, const Direction direction, const BondType bondType) const;
+    bool isAmbiguousBondPlacement(const Position position, const Direction direction, const BondType bondType) const;
     bool isAmbiguousBondPlacement(
         const Position                   position,
         const Direction                  direction,
@@ -200,21 +197,12 @@ private:
         const c_size                              secondCycleIdx,
         const Direction                           enteringDirection) const;
     void expandCycleLinearly(
-        const Cycle&          cycle,
-        const BondedAtomBase& firstAtom,
-        const c_size          secondCycleIdx,
-        const c_size          lastCycleIdx);
+        const Cycle& cycle, const BondedAtomBase& firstAtom, const c_size secondCycleIdx, const c_size lastCycleIdx);
 
     void printError(
-        const Position         point,
-        const std::string&     message,
-        std::source_location&& location = std::source_location::current());
+        const Position point, const std::string& message, std::source_location&& location = std::source_location::current());
     void printImpliedHydrogens(const Node& node);
-    void printEdge(
-        const Position        position,
-        const Direction       direction,
-        const BondedAtomBase& from,
-        const BondedAtomBase& to);
+    void printEdge(const Position position, const Direction direction, const BondedAtomBase& from, const BondedAtomBase& to);
     void printUnmaterializedEdges();
     void printNeighbors(const Node& node, const Direction prevDirection, const Cycle* cycle);
     void printCycle(const c_size startCycleIdx, Cycle& cycle, const Direction enteringDirection);
@@ -233,12 +221,11 @@ public:
     ColoredString     toString() const;
 
     static Position getNextEdgePosition(const PositionLine position, const Direction direction);
-    static std::pair<Position, PositionLine> getNextPosition(
-        const PositionLine position, const Direction direction, const Symbol::SizeT nextSymbolSize);
+    static std::pair<Position, PositionLine>
+    getNextPosition(const PositionLine position, const Direction direction, const Symbol::SizeT nextSymbolSize);
 
 public:
-    static std::vector<std::pair<ASCII::Direction, Position>>
-    getPossibleNextDirections(const PositionLine origin);
+    static std::vector<std::pair<ASCII::Direction, Position>> getPossibleNextDirections(const PositionLine origin);
 };
 
 }  // namespace ASCII

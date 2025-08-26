@@ -61,8 +61,8 @@ public:
 };
 
 template <class NodeT>
-UndirectedGraph<NodeT>::NeighbourIterator::NeighbourIterator(
-    const UndirectedGraph<NodeT>& owner, const size_t node) noexcept :
+UndirectedGraph<NodeT>::NeighbourIterator::NeighbourIterator(const UndirectedGraph<NodeT>& owner, const size_t node) noexcept
+    :
     owner(owner),
     node(node),
     i(owner.size() - 1)
@@ -187,8 +187,7 @@ NodeT& UndirectedGraph<NodeT>::operator[](const size_t idx)
 }
 
 template <class NodeT>
-UndirectedGraph<NodeT>::NeighbourIterator
-UndirectedGraph<NodeT>::getNeighbourIterator(const size_t idx) const
+UndirectedGraph<NodeT>::NeighbourIterator UndirectedGraph<NodeT>::getNeighbourIterator(const size_t idx) const
 {
     return NeighbourIterator(*this, idx);
 }

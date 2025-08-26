@@ -25,8 +25,7 @@ public:
     bool operator==(const Catalyst& other) const;
     bool operator!=(const Catalyst& other) const;
 
-    static std::optional<Catalyst>
-    get(const std::string& smiles, const Amount<Unit::MOLE_RATIO> idealAmount);
+    static std::optional<Catalyst> get(const std::string& smiles, const Amount<Unit::MOLE_RATIO> idealAmount);
 
     std::string getHRTag() const;
 
@@ -36,10 +35,7 @@ public:
 template <>
 struct std::hash<Catalyst>
 {
-    size_t operator()(const Catalyst& catalyst) const
-    {
-        return std::hash<StructureRef>()(catalyst.reactable);
-    }
+    size_t operator()(const Catalyst& catalyst) const { return std::hash<StructureRef>()(catalyst.reactable); }
 };
 
 template <>
@@ -76,7 +72,6 @@ public:
 
     static std::string prettyPrint(const Catalyst& object)
     {
-        return def::prettyPrint(
-            std::pair(object.getStructure().toSMILES(), object.getIdealAmount()));
+        return def::prettyPrint(std::pair(object.getStructure().toSMILES(), object.getIdealAmount()));
     }
 };

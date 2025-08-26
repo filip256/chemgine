@@ -20,8 +20,7 @@ class ReactionData
 {
 private:
     static bool balance(
-        std::vector<std::pair<StructureRef, uint8_t>>& reactants,
-        std::vector<std::pair<StructureRef, uint8_t>>& products);
+        std::vector<std::pair<StructureRef, uint8_t>>& reactants, std::vector<std::pair<StructureRef, uint8_t>>& products);
 
     /// <summary>
     /// Maps every component from reactants to every component from products.
@@ -92,8 +91,7 @@ public:
     /// resulted from generateConcreteReactantMatches(...).
     /// </summary>
     std::vector<Molecule> generateConcreteProducts(
-        const std::vector<Reactant>&                           molecules,
-        const std::vector<std::unordered_map<c_size, c_size>>& matches) const;
+        const std::vector<Reactant>& molecules, const std::vector<std::unordered_map<c_size, c_size>>& matches) const;
 
     /// <summary>
     /// Generates the concrete reactants of the reaction leading to the given target, using the
@@ -101,16 +99,14 @@ public:
     /// the target remain unsubstituted in the resulted reactants.
     /// </summary>
     RetrosynthReaction generateRetrosynthReaction(
-        const StructureRef&                                          targetProduct,
-        const std::pair<size_t, std::unordered_map<c_size, c_size>>& match) const;
+        const StructureRef& targetProduct, const std::pair<size_t, std::unordered_map<c_size, c_size>>& match) const;
 
     const std::vector<StructureRef>& getReactants() const;
     const std::vector<StructureRef>& getProducts() const;
     const ImmutableSet<Catalyst>&    getCatalysts() const;
 
-    Amount<Unit::MOLE_PER_SECOND> getSpeedAt(
-        const Amount<Unit::CELSIUS>    temperature,
-        const Amount<Unit::MOLE_RATIO> concentration) const;
+    Amount<Unit::MOLE_PER_SECOND>
+    getSpeedAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::MOLE_RATIO> concentration) const;
 
     bool isCutReaction() const;
     bool isSpecializationOf(const ReactionData& other) const;
@@ -121,10 +117,7 @@ public:
 
     std::string getHRTag() const;
 
-    void dumpDefinition(
-        std::ostream&                    out,
-        const bool                       prettify,
-        std::unordered_set<EstimatorId>& alreadyPrinted) const;
+    void dumpDefinition(std::ostream& out, const bool prettify, std::unordered_set<EstimatorId>& alreadyPrinted) const;
     void print(std::ostream& out = std::cout) const;
 
     static constexpr size_t npos = static_cast<size_t>(-1);

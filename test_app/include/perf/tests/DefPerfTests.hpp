@@ -24,9 +24,7 @@ private:
 
 public:
     DefLoadPerfTest(
-        std::string&&                                        name,
-        const std::variant<size_t, std::chrono::nanoseconds> limit,
-        std::string&&                                        path) noexcept;
+        std::string&& name, const std::variant<size_t, std::chrono::nanoseconds> limit, std::string&& path) noexcept;
 
     void preTask() override final;
     void task() override final;
@@ -58,6 +56,5 @@ public:
 class DefPerfTests : public PerfTestGroup
 {
 public:
-    DefPerfTests(
-        std::string&& name, const std::regex& filter, const std::string& inputPath) noexcept;
+    DefPerfTests(std::string&& name, const std::regex& filter, const std::string& inputPath) noexcept;
 };

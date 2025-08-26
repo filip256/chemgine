@@ -22,17 +22,8 @@ const ReactantSet& Mixture::getContent() const { return content; }
 
 ContentInitializer Mixture::getContentInitializer() const { return ContentInitializer(content); }
 
-Amount<Unit::MOLE> Mixture::getAmountOf(const Reactant& reactant) const
-{
-    return content.getAmountOf(reactant);
-}
+Amount<Unit::MOLE> Mixture::getAmountOf(const Reactant& reactant) const { return content.getAmountOf(reactant); }
 
-Amount<Unit::MOLE> Mixture::getAmountOf(const ReactantSet& reactantSet) const
-{
-    return content.getAmountOf(reactantSet);
-}
+Amount<Unit::MOLE> Mixture::getAmountOf(const ReactantSet& reactantSet) const { return content.getAmountOf(reactantSet); }
 
-Amount<Unit::MOLE> Mixture::getAmountOf(const Catalyst& catalyst) const
-{
-    return content.getAmountOf(catalyst);
-}
+Amount<Unit::MOLE> Mixture::getAmountOf(const Catalyst& catalyst) const { return content.getAmountOf(catalyst); }

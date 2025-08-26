@@ -31,8 +31,7 @@ bool DataStore::addDefinition(def::Object&& definition)
 {
     switch (definition.getType()) {
     case def::DefinitionType::AUTO:
-        Log(this).error(
-            "Cannot infer type for out-of-line definition, at: {0}.", definition.getLocationName());
+        Log(this).error("Cannot infer type for out-of-line definition, at: {0}.", definition.getLocationName());
         return false;
 
     case def::DefinitionType::DATA:
@@ -81,15 +80,9 @@ bool DataStore::load(const std::string& path)
     def::FileParser parser(normPath, fileStore, oolDefinitions);
     while (true) {
         if (not analysis.failed) {
-            const auto definitionsToParse =
-                analysis.totalDefinitionCount - analysis.preparsedDefinitionCount;
-            const auto percent = static_cast<uint8_t>(
-                (static_cast<float_s>(definitionCount) / definitionsToParse) * 100.f);
-            Log(this).info(
-                "\r[{0}/{1} | {2}%] Parsing definitions...",
-                definitionCount,
-                definitionsToParse,
-                percent);
+            const auto definitionsToParse = analysis.totalDefinitionCount - analysis.preparsedDefinitionCount;
+            const auto percent = static_cast<uint8_t>((static_cast<float_s>(definitionCount) / definitionsToParse) * 100.f);
+            Log(this).info("\r[{0}/{1} | {2}%] Parsing definitions...", definitionCount, definitionsToParse, percent);
         }
 
         auto entry = parser.nextDefinition();
@@ -127,10 +120,8 @@ void DataStore::dump(const std::string& path, const bool prettify) const
     for (const auto& f : fileStore.getHistory()) out << "    > " << f.first << '\n';
     out << ".:\n\n";
 
-    for (auto a = atoms.atomsBegin(); a != atoms.atomsEnd(); ++a)
-        a->second->dumpDefinition(out, prettify);
-    for (auto r = atoms.radicalsBegin(); r != atoms.radicalsEnd(); ++r)
-        r->second->dumpDefinition(out, prettify);
+    for (auto a = atoms.atomsBegin(); a != atoms.atomsEnd(); ++a) a->second->dumpDefinition(out, prettify);
+    for (auto r = atoms.radicalsBegin(); r != atoms.radicalsEnd(); ++r) r->second->dumpDefinition(out, prettify);
 
     std::unordered_set<EstimatorId> printedEstimators;
     for (const auto& m : molecules) m.second->dumpDefinition(out, prettify, printedEstimators);

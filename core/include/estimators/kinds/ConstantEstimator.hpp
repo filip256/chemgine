@@ -17,8 +17,7 @@ public:
     Amount<OutU> get(const Amount<InUs>...) const override final;
 
     bool isEquivalent(
-        const EstimatorBase& other,
-        const float_s epsilon = std::numeric_limits<float_s>::epsilon()) const override final;
+        const EstimatorBase& other, const float_s epsilon = std::numeric_limits<float_s>::epsilon()) const override final;
 
     void dumpDefinition(
         std::ostream&                    out,
@@ -29,8 +28,7 @@ public:
 };
 
 template <Unit OutU, Unit... InUs>
-ConstantEstimator<OutU, InUs...>::ConstantEstimator(
-    const EstimatorId id, const Amount<OutU> constant) noexcept :
+ConstantEstimator<OutU, InUs...>::ConstantEstimator(const EstimatorId id, const Amount<OutU> constant) noexcept :
     Base(id),
     constant(constant)
 {}
@@ -42,8 +40,7 @@ Amount<OutU> ConstantEstimator<OutU, InUs...>::get(const Amount<InUs>...) const
 }
 
 template <Unit OutU, Unit... InUs>
-bool ConstantEstimator<OutU, InUs...>::isEquivalent(
-    const EstimatorBase& other, const float_s epsilon) const
+bool ConstantEstimator<OutU, InUs...>::isEquivalent(const EstimatorBase& other, const float_s epsilon) const
 {
     if (not EstimatorBase::isEquivalent(other, epsilon))
         return false;
@@ -70,8 +67,7 @@ void ConstantEstimator<OutU, InUs...>::dumpDefinition(
     }
     alreadyPrinted.emplace(Base::id);
 
-    def::DataDumper dump(
-        out, checked_cast<uint8_t>(def::Data::Constant.size()), baseIndent, prettify);
+    def::DataDumper dump(out, checked_cast<uint8_t>(def::Data::Constant.size()), baseIndent, prettify);
     if (printInline)
         dump.header("", Base::getUnitSpecifier(), "");
     else

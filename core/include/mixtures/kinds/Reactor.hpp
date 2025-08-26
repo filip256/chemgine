@@ -63,18 +63,10 @@ public:
     void                setTickMode(const FlagField<TickMode> mode);
     void                tick(const Amount<Unit::SECOND> timespan);
 
-    bool hasSameState(
-        const Reactor&              other,
-        const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
-    bool hasSameContent(
-        const Reactor&              other,
-        const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
-    bool hasSameLayers(
-        const Reactor&              other,
-        const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
-    bool isSame(
-        const Reactor&              other,
-        const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
+    bool hasSameState(const Reactor& other, const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
+    bool hasSameContent(const Reactor& other, const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
+    bool hasSameLayers(const Reactor& other, const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
+    bool isSame(const Reactor& other, const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
 
     Reactor makeCopy() const;
 };

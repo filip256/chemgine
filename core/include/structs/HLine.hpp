@@ -39,8 +39,7 @@ public:
     template <typename OtherT = T>
     constexpr Point<T> closestTo(const Point<OtherT>& point) const;
     template <typename OtherT = T, typename OtherLenT = utils::float_or_unsigned_t<OtherT>>
-    constexpr std::pair<Point<T>, Point<OtherT>>
-    closestTo(const HLine<OtherT, OtherLenT>& other) const;
+    constexpr std::pair<Point<T>, Point<OtherT>> closestTo(const HLine<OtherT, OtherLenT>& other) const;
 };
 
 template <typename T, typename LenT>
@@ -118,8 +117,7 @@ constexpr Point<T> HLine<T, LenT>::closestTo(const Point<OtherT>& point) const
 
 template <typename T, typename LenT>
 template <typename OtherT, typename OtherLenT>
-constexpr std::pair<Point<T>, Point<OtherT>>
-HLine<T, LenT>::closestTo(const HLine<OtherT, OtherLenT>& other) const
+constexpr std::pair<Point<T>, Point<OtherT>> HLine<T, LenT>::closestTo(const HLine<OtherT, OtherLenT>& other) const
 {
     const auto thisEndX  = this->endX();
     const auto otherEndX = other.endX();
@@ -127,16 +125,11 @@ HLine<T, LenT>::closestTo(const HLine<OtherT, OtherLenT>& other) const
     // v       v     v
     // Tttt       Tttt Tttt
     // Oooo Oooo     Oooo
-    return thisEndX <= other.origin.x
-               ? std::make_pair(Point<T>(thisEndX, this->origin.y), other.origin)
-           : otherEndX <= this->origin.x
-               ? std::make_pair(this->origin, Point<OtherT>(otherEndX, other.origin.y))
+    return thisEndX <= other.origin.x    ? std::make_pair(Point<T>(thisEndX, this->origin.y), other.origin)
+           : otherEndX <= this->origin.x ? std::make_pair(this->origin, Point<OtherT>(otherEndX, other.origin.y))
            : this->origin.x >= other.origin.x
-               ? std::make_pair(
-                     this->origin,
-                     Point<OtherT>(static_cast<OtherT>(this->origin.x), other.origin.y))
-               : std::make_pair(
-                     Point<T>(static_cast<T>(other.origin.x), this->origin.y), other.origin);
+               ? std::make_pair(this->origin, Point<OtherT>(static_cast<OtherT>(this->origin.x), other.origin.y))
+               : std::make_pair(Point<T>(static_cast<T>(other.origin.x), this->origin.y), other.origin);
 }
 
 //

@@ -12,14 +12,10 @@ DrawableComponent::DrawableComponent(const LabwareId id, const LabwareType type)
     sprite.setOrigin(sprite.getGlobalBounds().size / 2.0f);
 
     adjustedPorts.reserve(data.ports.size());
-    for (uint8_t i = 0; i < data.ports.size(); ++i)
-        adjustedPorts.emplace_back(data.ports[i], sprite.getOrigin(), txScale);
+    for (uint8_t i = 0; i < data.ports.size(); ++i) adjustedPorts.emplace_back(data.ports[i], sprite.getOrigin(), txScale);
 }
 
-const DrawableLabwareData& DrawableComponent::getData() const
-{
-    return static_cast<const DrawableLabwareData&>(data);
-}
+const DrawableLabwareData& DrawableComponent::getData() const { return static_cast<const DrawableLabwareData&>(data); }
 
 const sf::Sprite& DrawableComponent::getSprite() const { return sprite; }
 
@@ -27,19 +23,13 @@ sf::Sprite& DrawableComponent::getSprite() { return sprite; }
 
 sf::Vector2f DrawableComponent::getPosition() const { return sprite.getPosition(); }
 
-sf::Vector2f DrawableComponent::getAdjustedPosition() const
-{
-    return sprite.getPosition() - sprite.getOrigin();
-}
+sf::Vector2f DrawableComponent::getAdjustedPosition() const { return sprite.getPosition() - sprite.getOrigin(); }
 
 void DrawableComponent::setPosition(const sf::Vector2f& position) { sprite.setPosition(position); }
 
 void DrawableComponent::move(const sf::Vector2f& offset) { sprite.move(offset); }
 
-Amount<Unit::DEGREE> DrawableComponent::getRotation() const
-{
-    return sprite.getRotation().asDegrees();
-}
+Amount<Unit::DEGREE> DrawableComponent::getRotation() const { return sprite.getRotation().asDegrees(); }
 
 void DrawableComponent::setRotation(const Amount<Unit::DEGREE> angle)
 {
@@ -51,10 +41,7 @@ sf::Vector2f DrawableComponent::getOrigin() const { return sprite.getOrigin(); }
 
 sf::FloatRect DrawableComponent::getBounds() const { return sprite.getGlobalBounds(); }
 
-const DrawablePort& DrawableComponent::getPort(const uint8_t idx) const
-{
-    return adjustedPorts[idx];
-}
+const DrawablePort& DrawableComponent::getPort(const uint8_t idx) const { return adjustedPorts[idx]; }
 
 const std::vector<DrawablePort>& DrawableComponent::getPorts() const { return adjustedPorts; }
 

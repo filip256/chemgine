@@ -9,10 +9,8 @@ int main(int argc, char* argv[])
     try {
         cxxopts::Options options(argv[0], "Application for parsing and formatting .cdef files.");
         options.add_options()("input", "Input file", cxxopts::value<std::string>())(
-            "o,output", "Output file", cxxopts::value<std::string>())(
-            "p,pretty",
-            "Prettifies the output")("log", "Sets logging level", cxxopts::value<std::string>())(
-            "h,help", "Print usage information");
+            "o,output", "Output file", cxxopts::value<std::string>())("p,pretty", "Prettifies the output")(
+            "log", "Sets logging level", cxxopts::value<std::string>())("h,help", "Print usage information");
         options.parse_positional({"input"});
 
         const auto args = options.parse(argc, argv);

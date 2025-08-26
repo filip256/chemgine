@@ -25,10 +25,8 @@ bool ReactantId::operator!=(const ReactantId& other) const
 }
 
 Reactant::Reactant(
-    const Molecule&          molecule,
-    const LayerType          layer,
-    const Amount<Unit::MOLE> amount,
-    const Ref<Mixture>       container) noexcept :
+    const Molecule& molecule, const LayerType layer, const Amount<Unit::MOLE> amount, const Ref<Mixture> container) noexcept
+    :
     layer(layer),
     amount(amount),
     molecule(molecule),
@@ -37,10 +35,7 @@ Reactant::Reactant(
 
 ReactantId Reactant::getId() const { return *this; }
 
-Amount<Unit::GRAM> Reactant::getMass() const
-{
-    return amount.to<Unit::GRAM>(molecule.getMolarMass());
-}
+Amount<Unit::GRAM> Reactant::getMass() const { return amount.to<Unit::GRAM>(molecule.getMolarMass()); }
 
 Amount<Unit::LITER> Reactant::getVolume() const
 {
@@ -52,31 +47,21 @@ Amount<Unit::GRAM_PER_MILLILITER> Reactant::getDensity() const
     return molecule.getDensityAt(getLayer().getTemperature(), container->getPressure());
 }
 
-Amount<Unit::CELSIUS> Reactant::getMeltingPoint() const
-{
-    return molecule.getMeltingPointAt(container->getPressure());
-}
+Amount<Unit::CELSIUS> Reactant::getMeltingPoint() const { return molecule.getMeltingPointAt(container->getPressure()); }
 
-Amount<Unit::CELSIUS> Reactant::getBoilingPoint() const
-{
-    return molecule.getBoilingPointAt(container->getPressure());
-}
+Amount<Unit::CELSIUS> Reactant::getBoilingPoint() const { return molecule.getBoilingPointAt(container->getPressure()); }
 
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> Reactant::getHeatCapacity() const
 {
     return molecule.getHeatCapacityAt(getLayer().getTemperature(), container->getPressure());
 }
 
-Amount<Unit::JOULE_PER_MOLE> Reactant::getKineticEnergy() const
-{
-    return container->getLayerKineticEnergy(layer);
-}
+Amount<Unit::JOULE_PER_MOLE> Reactant::getKineticEnergy() const { return container->getLayerKineticEnergy(layer); }
 
 Amount<Unit::JOULE_PER_MOLE> Reactant::getStandaloneKineticEnergy() const
 {
     const auto temp = getLayer().getTemperature();
-    return molecule.getHeatCapacityAt(temp, container->getPressure())
-        .to<Unit::JOULE_PER_MOLE>(temp);
+    return molecule.getHeatCapacityAt(temp, container->getPressure()).to<Unit::JOULE_PER_MOLE>(temp);
 }
 
 Amount<Unit::JOULE_PER_MOLE> Reactant::getLiquefactionHeat() const
@@ -111,8 +96,7 @@ Amount<Unit::JOULE_PER_MOLE> Reactant::getDepositionHeat() const
 
 Amount<Unit::MOLE_RATIO> Reactant::getSolubilityIn(const Polarity& solventPolarity) const
 {
-    return molecule.getSolubilityAt(
-        getLayer().getTemperature(), container->getPressure(), solventPolarity);
+    return molecule.getSolubilityAt(getLayer().getTemperature(), container->getPressure(), solventPolarity);
 }
 
 Ref<Mixture> Reactant::getContainer() const { return container; }
@@ -133,15 +117,9 @@ Reactant Reactant::mutate(const Amount<Unit::MOLE> newAmount) const
     return Reactant(molecule, layer, newAmount, container);
 }
 
-Reactant Reactant::mutate(const Ref<Mixture> newContainer) const
-{
-    return Reactant(molecule, layer, amount, newContainer);
-}
+Reactant Reactant::mutate(const Ref<Mixture> newContainer) const { return Reactant(molecule, layer, amount, newContainer); }
 
-Reactant Reactant::mutate(const LayerType newLayer) const
-{
-    return Reactant(molecule, newLayer, amount, container);
-}
+Reactant Reactant::mutate(const LayerType newLayer) const { return Reactant(molecule, newLayer, amount, container); }
 
 Reactant Reactant::mutate(const Amount<Unit::MOLE> newAmount, const Ref<Mixture> newContainer) const
 {
@@ -153,10 +131,8 @@ Reactant Reactant::mutate(const Amount<Unit::MOLE> newAmount, const LayerType ne
     return Reactant(molecule, newLayer, newAmount);
 }
 
-Reactant Reactant::mutate(
-    const Amount<Unit::MOLE> newAmount,
-    const Ref<Mixture>       newContainer,
-    const LayerType          newLayer) const
+Reactant
+Reactant::mutate(const Amount<Unit::MOLE> newAmount, const Ref<Mixture> newContainer, const LayerType newLayer) const
 {
     return Reactant(molecule, newLayer, newAmount, newContainer);
 }

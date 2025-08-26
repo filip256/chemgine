@@ -11,20 +11,17 @@ MultiLayerMixture::MultiLayerMixture(const MultiLayerMixture& other) noexcept :
     maxVolume(other.maxVolume),
     overflowTarget(other.overflowTarget)
 {
-    for (const auto& l : other.layers)
-        this->layers.emplace(std::make_pair(l.first, l.second.makeCopy(*this)));
+    for (const auto& l : other.layers) this->layers.emplace(std::make_pair(l.first, l.second.makeCopy(*this)));
 }
 
 MultiLayerMixture::MultiLayerMixture(
-    const Ref<Atmosphere>     atmosphere,
-    const Amount<Unit::LITER> maxVolume,
-    const Ref<ContainerBase>  overflowTarget) noexcept :
+    const Ref<Atmosphere> atmosphere, const Amount<Unit::LITER> maxVolume, const Ref<ContainerBase> overflowTarget) noexcept
+    :
     pressure(atmosphere->getPressure()),
     maxVolume(maxVolume),
     overflowTarget(overflowTarget)
 {
-    layers.emplace(
-        LayerType::GASEOUS, Layer(*this, LayerType::GASEOUS, atmosphere->getLayer().temperature));
+    layers.emplace(LayerType::GASEOUS, Layer(*this, LayerType::GASEOUS, atmosphere->getLayer().temperature));
     atmosphere->copyContentTo(*this, maxVolume);
 }
 
@@ -34,8 +31,7 @@ bool MultiLayerMixture::tryCreateLayer(const LayerType layer)
         return false;
 
     const auto adjacentLayer = getClosestLayer(layer);
-    layers.emplace(
-        std::make_pair(layer, Layer(*this, layer, layers.at(adjacentLayer).temperature)));
+    layers.emplace(std::make_pair(layer, Layer(*this, layer, layers.at(adjacentLayer).temperature)));
     return true;
 }
 
@@ -46,13 +42,11 @@ void MultiLayerMixture::addToLayer(const Reactant& reactant)
     auto& layer = layers[reactant.layer];
 
     // add polarity to layer average polarity
-    const auto polarity = reactant.molecule.getPolarity();
-    layer.polarity.hydrophilicity =
-        ((layer.polarity.hydrophilicity * layer.moles.asStd()) + polarity.hydrophilicity) /
-        (layer.moles + reactant.amount).asStd();
-    layer.polarity.lipophilicity =
-        ((layer.polarity.lipophilicity * layer.moles.asStd()) + polarity.lipophilicity) /
-        (layer.moles + reactant.amount).asStd();
+    const auto polarity           = reactant.molecule.getPolarity();
+    layer.polarity.hydrophilicity = ((layer.polarity.hydrophilicity * layer.moles.asStd()) + polarity.hydrophilicity) /
+                                    (layer.moles + reactant.amount).asStd();
+    layer.polarity.lipophilicity = ((layer.polarity.lipophilicity * layer.moles.asStd()) + polarity.lipophilicity) /
+                                   (layer.moles + reactant.amount).asStd();
 
     totalMoles  += reactant.amount;
     layer.moles += reactant.amount;
@@ -221,8 +215,7 @@ LayerType MultiLayerMixture::findLayerFor(const Reactant& reactant) const
 
         const auto polarity = reactant.molecule.getPolarity();
         const auto density  = reactant.molecule.getDensityAt(l.second.temperature, pressure);
-        return getLayerType(
-            getAggregationType(l.first), polarity.getPartitionCoefficient() > 1.0, density > 1.0);
+        return getLayerType(getAggregationType(l.first), polarity.getPartitionCoefficient() > 1.0, density > 1.0);
     }
 
     const auto defaultT = layers.at(LayerType::GASEOUS).temperature;
@@ -273,14 +266,12 @@ Amount<Unit::CELSIUS> MultiLayerMixture::getLayerTemperature(const LayerType lay
     return layers.at(layer).temperature;
 }
 
-Amount<Unit::JOULE_PER_MOLE_CELSIUS>
-MultiLayerMixture::getLayerHeatCapacity(const LayerType layer) const
+Amount<Unit::JOULE_PER_MOLE_CELSIUS> MultiLayerMixture::getLayerHeatCapacity(const LayerType layer) const
 {
     return layers.at(layer).getHeatCapacity();
 }
 
-Amount<Unit::JOULE_PER_CELSIUS>
-MultiLayerMixture::getLayerTotalHeatCapacity(const LayerType layer) const
+Amount<Unit::JOULE_PER_CELSIUS> MultiLayerMixture::getLayerTotalHeatCapacity(const LayerType layer) const
 {
     return layers.at(layer).getTotalHeatCapacity();
 }
@@ -290,15 +281,9 @@ Amount<Unit::JOULE_PER_MOLE> MultiLayerMixture::getLayerKineticEnergy(const Laye
     return layers.at(layer).getKineticEnergy();
 }
 
-Polarity MultiLayerMixture::getLayerPolarity(const LayerType layer) const
-{
-    return layers.at(layer).getPolarity();
-}
+Polarity MultiLayerMixture::getLayerPolarity(const LayerType layer) const { return layers.at(layer).getPolarity(); }
 
-Color MultiLayerMixture::getLayerColor(const LayerType layer) const
-{
-    return layers.at(layer).getColor();
-}
+Color MultiLayerMixture::getLayerColor(const LayerType layer) const { return layers.at(layer).getColor(); }
 
 bool MultiLayerMixture::isEmpty() const { return totalMoles == 0.0_mol; }
 
@@ -320,30 +305,16 @@ Amount<Unit::GRAM> MultiLayerMixture::getTotalMass() const { return totalMass; }
 
 Amount<Unit::LITER> MultiLayerMixture::getTotalVolume() const { return totalVolume; }
 
-MultiLayerMixture::LayerDownIterator MultiLayerMixture::getLayersDownBegin() const
-{
-    return layers.cbegin();
-}
+MultiLayerMixture::LayerDownIterator MultiLayerMixture::getLayersDownBegin() const { return layers.cbegin(); }
 
-MultiLayerMixture::LayerDownIterator MultiLayerMixture::getLayersDownEnd() const
-{
-    return layers.cend();
-}
+MultiLayerMixture::LayerDownIterator MultiLayerMixture::getLayersDownEnd() const { return layers.cend(); }
 
-MultiLayerMixture::LayerUpIterator MultiLayerMixture::getLayersUpBegin() const
-{
-    return layers.crbegin();
-}
+MultiLayerMixture::LayerUpIterator MultiLayerMixture::getLayersUpBegin() const { return layers.crbegin(); }
 
-MultiLayerMixture::LayerUpIterator MultiLayerMixture::getLayersUpEnd() const
-{
-    return layers.crend();
-}
+MultiLayerMixture::LayerUpIterator MultiLayerMixture::getLayersUpEnd() const { return layers.crend(); }
 
 void MultiLayerMixture::copyContentTo(
-    Ref<ContainerBase>        destination,
-    const Amount<Unit::LITER> volume,
-    const LayerType           sourceLayer) const
+    Ref<ContainerBase> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer) const
 {
     if (hasLayer(sourceLayer) == false)
         return;
@@ -360,8 +331,8 @@ void MultiLayerMixture::copyContentTo(
     }
 }
 
-void MultiLayerMixture::moveContentTo(
-    Ref<ContainerBase> destination, Amount<Unit::LITER> volume, const LayerType sourceLayer)
+void
+MultiLayerMixture::moveContentTo(Ref<ContainerBase> destination, Amount<Unit::LITER> volume, const LayerType sourceLayer)
 {
     if (hasLayer(sourceLayer) == false)
         return;

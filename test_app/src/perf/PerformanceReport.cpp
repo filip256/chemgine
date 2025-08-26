@@ -27,9 +27,8 @@ void PerformanceReport::merge(PerformanceReport&& other)
 
 void PerformanceReport::setTimestamp()
 {
-    const auto now =
-        std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
-    timestamp = std::format("{:%Y-%m-%d-%H-%M-%S}", now);
+    const auto now = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now());
+    timestamp      = std::format("{:%Y-%m-%d-%H-%M-%S}", now);
 }
 
 void PerformanceReport::clear()
@@ -60,9 +59,7 @@ bool PerformanceReport::load(const std::string& path)
         }
 
         add(pair->first,
-            TimingResult(
-                std::chrono::nanoseconds(pair->second.first),
-                std::chrono::nanoseconds(pair->second.second)));
+            TimingResult(std::chrono::nanoseconds(pair->second.first), std::chrono::nanoseconds(pair->second.second)));
     }
 
     file.close();
@@ -73,8 +70,7 @@ void PerformanceReport::dump(std::ostream& out) const
 {
     out << timestamp << '\n';
     for (const auto& [k, t] : timeTable)
-        out << def::print(std::pair(k, std::pair(t.averageTime.count(), t.medianTime.count())))
-            << '\n';
+        out << def::print(std::pair(k, std::pair(t.averageTime.count(), t.medianTime.count()))) << '\n';
 }
 
 void PerformanceReport::dump(const std::string& path) const
@@ -91,15 +87,12 @@ void PerformanceReport::dump(const std::string& path) const
 
 StringTable PerformanceReport::compare(const PerformanceReport& other) const
 {
-    StringTable table(
-        {"Test Name", this->timestamp, other.timestamp, "Difference", "Change"}, true);
+    StringTable table({"Test Name", this->timestamp, other.timestamp, "Difference", "Change"}, true);
 
     for (const auto& [k, t] : this->timeTable) {
         const auto oth = other.timeTable.find(k);
         if (oth == other.timeTable.end()) {
-            const auto thisTimeStr =
-                std::format("{:.2f}", std::min(t.averageTime, t.medianTime).count() / 1000.0) +
-                "us";
+            const auto thisTimeStr = std::format("{:.2f}", std::min(t.averageTime, t.medianTime).count() / 1000.0) + "us";
             table.addEntry({k, thisTimeStr, "?", "?", "?"});
             continue;
         }
@@ -114,22 +107,17 @@ StringTable PerformanceReport::compare(const PerformanceReport& other) const
         // Compute the % changes
         std::array<float_h, 4> changes;
         std::transform(pairs.begin(), pairs.end(), changes.begin(), [](const auto& p) {
-            return (p.first - p.second) /
-                   std::max(p.second, std::numeric_limits<float_h>::min()) *
-                   100.0;
+            return (p.first - p.second) / std::max(p.second, std::numeric_limits<float_h>::min()) * 100.0;
         });
 
         // Pick the smallest absolute change out of the 4 combinations
-        const auto minChangeIt =
-            std::min_element(changes.begin(), changes.end(), [](const auto lhs, const auto rhs) {
-            return std::abs(lhs) < std::abs(rhs);
-        });
+        const auto minChangeIt = std::min_element(
+            changes.begin(), changes.end(), [](const auto lhs, const auto rhs) { return std::abs(lhs) < std::abs(rhs); });
 
         const auto minIdx       = std::distance(changes.begin(), minChangeIt);
         const auto thisTimeStr  = std::format("{:.2f}", pairs[minIdx].first) + "us";
         const auto otherTimeStr = std::format("{:.2f}", pairs[minIdx].second) + "us";
-        const auto minDiffStr =
-            std::format("{:.2f}", pairs[minIdx].first - pairs[minIdx].second) + "us";
+        const auto minDiffStr   = std::format("{:.2f}", pairs[minIdx].first - pairs[minIdx].second) + "us";
         const auto minChangeStr = std::format("{:+.2f}", *minChangeIt) + '%';
 
         table.addEntry({k, thisTimeStr, otherTimeStr, minDiffStr, minChangeStr});
@@ -137,9 +125,7 @@ StringTable PerformanceReport::compare(const PerformanceReport& other) const
 
     for (const auto& [k, t] : other.timeTable) {
         if (not this->timeTable.contains(k)) {
-            const auto otherTimeStr =
-                std::format("{:.2f}", std::min(t.averageTime, t.medianTime).count() / 1000.0) +
-                "us";
+            const auto otherTimeStr = std::format("{:.2f}", std::min(t.averageTime, t.medianTime).count() / 1000.0) + "us";
             table.addEntry({k, "?", otherTimeStr, "?", "?"});
         }
     }

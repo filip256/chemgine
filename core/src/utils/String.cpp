@@ -29,8 +29,7 @@ std::string utils::strip(const std::string& str, bool (*pred)(char))
     return str.substr(interval.first, interval.second - interval.first);
 }
 
-std::vector<std::string>
-utils::split(const std::string& line, const char separator, const bool ignoreEmpty)
+std::vector<std::string> utils::split(const std::string& line, const char separator, const bool ignoreEmpty)
 {
     std::vector<std::string> result;
     size_t                   lastSep = static_cast<size_t>(-1);
@@ -127,8 +126,7 @@ std::vector<std::string> utils::split(
             continue;
         }
 
-        if (const auto e = ignoreSectionEnds.find(line[i]);
-            ignoreSections.size() && e == ignoreSections.back()) {
+        if (const auto e = ignoreSectionEnds.find(line[i]); ignoreSections.size() && e == ignoreSections.back()) {
             ignoreSections.pop_back();
             continue;
         }
@@ -161,11 +159,8 @@ std::vector<std::string> utils::split(
     return result;
 }
 
-std::vector<std::vector<std::string>> utils::splitLists(
-    const std::string& line,
-    const char         outerSeparator,
-    const char         innerSeparator,
-    const bool         ignoreEmpty)
+std::vector<std::vector<std::string>>
+utils::splitLists(const std::string& line, const char outerSeparator, const char innerSeparator, const bool ignoreEmpty)
 {
     const auto                            outer = utils::split(line, outerSeparator, ignoreEmpty);
     std::vector<std::vector<std::string>> result;

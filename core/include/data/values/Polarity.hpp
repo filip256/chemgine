@@ -8,8 +8,7 @@ public:
     Amount<Unit::MOLE_RATIO> hydrophilicity;
     Amount<Unit::MOLE_RATIO> lipophilicity;
 
-    Polarity(
-        Amount<Unit::MOLE_RATIO> hydrophilicity, Amount<Unit::MOLE_RATIO> lipophilicity) noexcept;
+    Polarity(Amount<Unit::MOLE_RATIO> hydrophilicity, Amount<Unit::MOLE_RATIO> lipophilicity) noexcept;
 
     Polarity(const Polarity&) = default;
 

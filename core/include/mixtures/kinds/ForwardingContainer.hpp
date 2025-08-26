@@ -20,13 +20,9 @@ private:
     std::vector<ForwardingRule> forwardingRules;
 
 public:
-    ForwardingContainer(
-        std::initializer_list<ForwardingRule> forwardingRules,
-        Ref<ContainerBase>                    defaultTarget) noexcept;
+    ForwardingContainer(std::initializer_list<ForwardingRule> forwardingRules, Ref<ContainerBase> defaultTarget) noexcept;
 
-    ForwardingContainer(
-        const std::vector<ForwardingRule>& forwardingRules,
-        Ref<ContainerBase>                 defaultTarget) noexcept;
+    ForwardingContainer(const std::vector<ForwardingRule>& forwardingRules, Ref<ContainerBase> defaultTarget) noexcept;
 
     ForwardingContainer(const ForwardingContainer&) = delete;
     ForwardingContainer(ForwardingContainer&&)      = default;

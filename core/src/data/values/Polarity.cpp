@@ -2,8 +2,7 @@
 
 #include <cmath>
 
-Polarity::Polarity(
-    Amount<Unit::MOLE_RATIO> hydrophilicity, Amount<Unit::MOLE_RATIO> lipophilicity) noexcept :
+Polarity::Polarity(Amount<Unit::MOLE_RATIO> hydrophilicity, Amount<Unit::MOLE_RATIO> lipophilicity) noexcept :
     hydrophilicity(hydrophilicity),
     lipophilicity(lipophilicity)
 {}

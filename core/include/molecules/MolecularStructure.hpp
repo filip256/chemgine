@@ -50,11 +50,10 @@ public:
     static std::optional<MolecularStructure> fromMolBin(std::istream& is);
     static std::optional<MolecularStructure> loadMolBinFile(const std::string& path);
 
-    std::string toSMILES(const c_size startAtomIdx = 0) const;
-    ColoredTextBlock
-         toASCII(const ASCII::PrintOptions options = ASCII::PrintOptions::Default) const;
-    void toMolBin(std::ostream& os) const;
-    void toMolBinFile(const std::string& path) const;
+    std::string      toSMILES(const c_size startAtomIdx = 0) const;
+    ColoredTextBlock toASCII(const ASCII::PrintOptions options = ASCII::PrintOptions::Default) const;
+    void             toMolBin(std::ostream& os) const;
+    void             toMolBinFile(const std::string& path) const;
 
 private:
     bool loadFromSMILES(const std::string& smiles);
@@ -181,8 +180,7 @@ public:
     /// The whole pattern structure must be matched.
     /// Complexity: rather large
     /// </summary>
-    std::unordered_map<c_size, c_size>
-    mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const;
+    std::unordered_map<c_size, c_size> mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const;
 
     /// <summary>
     /// Returns the largest mapping between the atoms of the pattern and the atoms of *this.
@@ -252,10 +250,7 @@ template <>
 class def::Parser<MolecularStructure>
 {
 public:
-    static std::optional<MolecularStructure> parse(const std::string& str)
-    {
-        return MolecularStructure::fromSMILES(str);
-    }
+    static std::optional<MolecularStructure> parse(const std::string& str) { return MolecularStructure::fromSMILES(str); }
 };
 
 template <>

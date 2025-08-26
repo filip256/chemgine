@@ -15,11 +15,8 @@ protected:
     virtual void               setOverflowTarget(BaseContainerComponent& target);
 
     template <typename C, typename = std::enable_if_t<std::is_base_of_v<Mixture, C>>>
-    static inline void draw(
-        const C& container,
-        const ShapeFill& fill,
-        sf::RenderTarget& target,
-        const sf::RenderStates& states) = delete;
+    static inline void
+    draw(const C& container, const ShapeFill& fill, sf::RenderTarget& target, const sf::RenderStates& states) = delete;
 
 public:
     const BaseContainerLabwareData& getData() const override;
@@ -35,10 +32,7 @@ public:
 
 template <>
 inline void BaseContainerComponent::draw<Atmosphere>(
-    const Atmosphere&       container,
-    const ShapeFill&        fill,
-    sf::RenderTarget&       target,
-    const sf::RenderStates& states)
+    const Atmosphere& container, const ShapeFill& fill, sf::RenderTarget& target, const sf::RenderStates& states)
 {
     fill.setColor(utils::colorCast(container.getLayerColor()));
     target.draw(fill, states);
@@ -46,16 +40,12 @@ inline void BaseContainerComponent::draw<Atmosphere>(
 
 template <>
 inline void BaseContainerComponent::draw<Reactor>(
-    const Reactor&          container,
-    const ShapeFill&        fill,
-    sf::RenderTarget&       target,
-    const sf::RenderStates& states)
+    const Reactor& container, const ShapeFill& fill, sf::RenderTarget& target, const sf::RenderStates& states)
 {
     float_s lastSection = 0.0f;
     for (auto l = container.getLayersUpBegin(); l != container.getLayersUpEnd(); ++l) {
         const auto layerSection = (l->second.getVolume() / container.getMaxVolume()).asStd();
-        fill.setDrawSection(
-            lastSection, lastSection + layerSection, utils::colorCast(l->second.getColor()));
+        fill.setDrawSection(lastSection, lastSection + layerSection, utils::colorCast(l->second.getColor()));
         lastSection += layerSection;
 
         target.draw(fill, states);

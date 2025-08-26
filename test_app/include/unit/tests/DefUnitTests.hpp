@@ -23,11 +23,7 @@ private:
     const bool        expectedSuccess;
 
 public:
-    DefLoadUnitTest(
-        std::string&& name,
-        DataStore&    dataStore,
-        std::string&& path,
-        const bool    expectedSuccess) noexcept;
+    DefLoadUnitTest(std::string&& name, DataStore& dataStore, std::string&& path, const bool expectedSuccess) noexcept;
 
     bool run() override final;
 };
@@ -39,8 +35,7 @@ private:
     const size_t     expectedDefCount;
 
 public:
-    DefCountUnitTest(
-        std::string&& name, const DataStore& dataStore, const size_t expectedDefCount) noexcept;
+    DefCountUnitTest(std::string&& name, const DataStore& dataStore, const size_t expectedDefCount) noexcept;
 
     bool run() override final;
 };
@@ -53,8 +48,7 @@ private:
     const std::string path;
 
 public:
-    DefDumpUnitTest(
-        std::string&& name, DataStore& dataStore, std::string&& path, const bool prettify) noexcept;
+    DefDumpUnitTest(std::string&& name, DataStore& dataStore, std::string&& path, const bool prettify) noexcept;
 
     bool run() override final;
 };
@@ -76,6 +70,5 @@ private:
     DataStore dataStore;
 
 public:
-    DefUnitTests(
-        std::string&& name, const std::regex& filter, const std::string& baseDefFilePath) noexcept;
+    DefUnitTests(std::string&& name, const std::regex& filter, const std::string& baseDefFilePath) noexcept;
 };

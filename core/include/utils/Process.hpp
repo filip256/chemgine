@@ -39,9 +39,7 @@ public:
     ProcessorAffinityMask processorAffinityMask;
     ProcessPriority       processPriority;
 
-    ExecutionConfig(
-        ProcessorAffinityMask processorAffinityMask,
-        const ProcessPriority processPriority) noexcept;
+    ExecutionConfig(ProcessorAffinityMask processorAffinityMask, const ProcessPriority processPriority) noexcept;
     ExecutionConfig(const ExecutionConfig&) = default;
 };
 

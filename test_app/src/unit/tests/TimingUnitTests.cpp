@@ -6,8 +6,7 @@
 #include <thread>
 
 TimingUnitTest::DummyPerfTest::DummyPerfTest(
-    const std::variant<size_t, std::chrono::nanoseconds> limit,
-    const std::chrono::nanoseconds                       waitTime) noexcept :
+    const std::variant<size_t, std::chrono::nanoseconds> limit, const std::chrono::nanoseconds waitTime) noexcept :
     TimedTest("dummy", limit),
     waitTime(waitTime)
 {}
@@ -28,9 +27,8 @@ TimingUnitTest::TimingUnitTest(
     UnitTest(
         name +
         '_' +
-        (std::holds_alternative<size_t>(limit)
-             ? std::to_string(std::get<size_t>(limit))
-             : std::to_string(std::get<std::chrono::nanoseconds>(limit).count()) + "ns") +
+        (std::holds_alternative<size_t>(limit) ? std::to_string(std::get<size_t>(limit))
+                                               : std::to_string(std::get<std::chrono::nanoseconds>(limit).count()) + "ns") +
         '_' +
         std::to_string(waitTime.count()) +
         "ns"),
@@ -44,15 +42,12 @@ bool TimingUnitTest::run()
     const auto        act = perfTest.run(report);
     const auto        ref = perfTest.getWaitTime().count();
 
-    const auto minAbsDiff =
-        std::min(std::abs(act.averageTime.count() - ref), std::abs(act.medianTime.count() - ref));
+    const auto minAbsDiff = std::min(std::abs(act.averageTime.count() - ref), std::abs(act.medianTime.count() - ref));
 
     const auto error = (static_cast<float_h>(minAbsDiff) / ref) * 100.0;
     if (error > threshold) {
         Log(this).error(
-            "Error: {0}% exceeded the test threshold: {1}%.",
-            std::format("{:f}", error),
-            std::format("{:f}", threshold));
+            "Error: {0}% exceeded the test threshold: {1}%.", std::format("{:f}", error), std::format("{:f}", threshold));
         return false;
     }
 
@@ -70,8 +65,6 @@ TimingUnitTests::TimingUnitTests(std::string&& name, const std::regex& filter) n
     registerTest<TimingUnitTest>("counted", size_t(20), std::chrono::milliseconds(10), 0.1);
     registerTest<TimingUnitTest>("counted", size_t(10), std::chrono::milliseconds(100), 0.06);
 
-    registerTest<TimingUnitTest>(
-        "timed", std::chrono::milliseconds(200), std::chrono::milliseconds(10), 0.3);
-    registerTest<TimingUnitTest>(
-        "timed", std::chrono::seconds(1), std::chrono::milliseconds(10), 0.2);
+    registerTest<TimingUnitTest>("timed", std::chrono::milliseconds(200), std::chrono::milliseconds(10), 0.3);
+    registerTest<TimingUnitTest>("timed", std::chrono::seconds(1), std::chrono::milliseconds(10), 0.2);
 }

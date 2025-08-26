@@ -6,8 +6,7 @@
 namespace details
 {
 
-NoConcurrencyGuard::NoConcurrencyGuard(
-    std::atomic_flag& flag, const std::source_location& location) :
+NoConcurrencyGuard::NoConcurrencyGuard(std::atomic_flag& flag, const std::source_location& location) :
     flag(flag)
 {
     if (flag.test_and_set(std::memory_order_acquire)) {

@@ -42,15 +42,13 @@ public:
     virtual Amount<Unit::GRAM>  getTotalMass() const   = 0;
     virtual Amount<Unit::LITER> getTotalVolume() const = 0;
 
-    virtual const Layer&          getLayer(const LayerType layer) const        = 0;
-    virtual Amount<Unit::CELSIUS> getLayerTemperature(const LayerType l) const = 0;
-    virtual Amount<Unit::JOULE_PER_MOLE_CELSIUS>
-    getLayerHeatCapacity(const LayerType layer) const = 0;
-    virtual Amount<Unit::JOULE_PER_CELSIUS>
-                                         getLayerTotalHeatCapacity(const LayerType layer) const = 0;
-    virtual Amount<Unit::JOULE_PER_MOLE> getLayerKineticEnergy(const LayerType layer) const     = 0;
-    virtual Polarity                     getLayerPolarity(const LayerType layer) const          = 0;
-    virtual Color                        getLayerColor(const LayerType layer) const             = 0;
+    virtual const Layer&                         getLayer(const LayerType layer) const                  = 0;
+    virtual Amount<Unit::CELSIUS>                getLayerTemperature(const LayerType l) const           = 0;
+    virtual Amount<Unit::JOULE_PER_MOLE_CELSIUS> getLayerHeatCapacity(const LayerType layer) const      = 0;
+    virtual Amount<Unit::JOULE_PER_CELSIUS>      getLayerTotalHeatCapacity(const LayerType layer) const = 0;
+    virtual Amount<Unit::JOULE_PER_MOLE>         getLayerKineticEnergy(const LayerType layer) const     = 0;
+    virtual Polarity                             getLayerPolarity(const LayerType layer) const          = 0;
+    virtual Color                                getLayerColor(const LayerType layer) const             = 0;
 
     virtual bool isEmpty() const = 0;
 

@@ -15,9 +15,7 @@ void Lab::add(LabwareSystem&& system) { systems.emplace_back(std::move(system));
 void Lab::removeEmptySystems()
 {
     systems.erase(
-        std::remove_if(
-            systems.begin(), systems.end(), [](const LabwareSystem& s) { return s.size() == 0; }),
-        systems.end());
+        std::remove_if(systems.begin(), systems.end(), [](const LabwareSystem& s) { return s.size() == 0; }), systems.end());
 }
 
 size_t Lab::getSystemCount() const { return systems.size(); }

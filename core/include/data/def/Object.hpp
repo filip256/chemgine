@@ -81,10 +81,8 @@ public:
     /// If the property isn't found or parsing fails, an error message is logged.
     /// </summary>
     template <typename T, typename... Args>
-    std::optional<T> getProperty(
-        const std::string& key,
-        std::optional<T>   (*parser)(const std::string&, Args...),
-        Args&&... parserArgs) const;
+    std::optional<T>
+    getProperty(const std::string& key, std::optional<T> (*parser)(const std::string&, Args...), Args&&... parserArgs) const;
 
     /// <summary>
     /// Extracts the property with the given key (if found) and returns its parsed value.
@@ -92,9 +90,7 @@ public:
     /// </summary>
     template <typename T, typename... Args>
     std::optional<T> getOptionalProperty(
-        const std::string& key,
-        std::optional<T>   (*parser)(const std::string&, Args...),
-        Args&&... parserArgs) const;
+        const std::string& key, std::optional<T> (*parser)(const std::string&, Args...), Args&&... parserArgs) const;
 
     /// <summary>
     /// Extracts the property with the given key (if found) and returns its parsed value.
@@ -154,9 +150,7 @@ public:
 
 template <typename T, typename... Args>
 std::optional<T> Object::getProperty(
-    const std::string& key,
-    std::optional<T>   (*parser)(const std::string&, Args...),
-    Args&&... parserArgs) const
+    const std::string& key, std::optional<T> (*parser)(const std::string&, Args...), Args&&... parserArgs) const
 {
     const auto strProp = getProperty(key);
     if (not strProp)
@@ -164,17 +158,14 @@ std::optional<T> Object::getProperty(
 
     const auto parsed = parser(*strProp, std::forward<Args>(parserArgs)...);
     if (not parsed)
-        Log(this).error(
-            "Failed to parse property: '{0} : {1}', at: {2}.", key, *strProp, location.toString());
+        Log(this).error("Failed to parse property: '{0} : {1}', at: {2}.", key, *strProp, location.toString());
 
     return parsed;
 }
 
 template <typename T, typename... Args>
 std::optional<T> Object::getOptionalProperty(
-    const std::string& key,
-    std::optional<T>   (*parser)(const std::string&, Args...),
-    Args&&... parserArgs) const
+    const std::string& key, std::optional<T> (*parser)(const std::string&, Args...), Args&&... parserArgs) const
 {
     const auto strProp = getOptionalProperty(key);
     if (not strProp)
@@ -182,11 +173,7 @@ std::optional<T> Object::getOptionalProperty(
 
     const auto parsed = parser(*strProp, std::forward<Args>(parserArgs)...);
     if (not parsed)
-        Log(this).warn(
-            "Failed to parse optional property: '{0} : {1}', at: {2}.",
-            key,
-            *strProp,
-            location.toString());
+        Log(this).warn("Failed to parse optional property: '{0} : {1}', at: {2}.", key, *strProp, location.toString());
 
     return parsed;
 }
@@ -204,9 +191,7 @@ T Object::getDefaultProperty(
 
 template <typename T, typename... Args>
 std::optional<CountedRef<const T>> Object::getOptionalDefinition(
-    const std::string&                 key,
-    std::optional<CountedRef<const T>> (*parser)(const Object&, Args...),
-    Args&&... parserArgs) const
+    const std::string& key, std::optional<CountedRef<const T>> (*parser)(const Object&, Args...), Args&&... parserArgs) const
 {
     const auto* def = getOptionalDefinition(key);
     if (def == nullptr)
@@ -214,19 +199,14 @@ std::optional<CountedRef<const T>> Object::getOptionalDefinition(
 
     auto parsed = parser(*def, std::forward<Args>(parserArgs)...);
     if (not parsed)
-        Log(this).warn(
-            "Failed to parse optional sub-definition for: '{0}', at: {1}.",
-            key,
-            location.toString());
+        Log(this).warn("Failed to parse optional sub-definition for: '{0}', at: {1}.", key, location.toString());
 
     return parsed;
 }
 
 template <typename T, typename... Args>
 std::optional<CountedRef<const T>> Object::getDefinition(
-    const std::string&                 key,
-    std::optional<CountedRef<const T>> (*parser)(const Object&, Args...),
-    Args&&... parserArgs) const
+    const std::string& key, std::optional<CountedRef<const T>> (*parser)(const Object&, Args...), Args&&... parserArgs) const
 {
     const auto* def = getDefinition(key);
     if (def == nullptr)
@@ -234,8 +214,7 @@ std::optional<CountedRef<const T>> Object::getDefinition(
 
     auto parsed = parser(*def, std::forward<Args>(parserArgs)...);
     if (not parsed)
-        Log(this).error(
-            "Failed to parse sub-definition for: '{0}', at: {1}.", key, location.toString());
+        Log(this).error("Failed to parse sub-definition for: '{0}', at: {1}.", key, location.toString());
 
     return parsed;
 }

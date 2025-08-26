@@ -39,28 +39,20 @@ public:
 
     Point& operator=(const Point& other) = default;
 
-    template <
-        typename OtherT = T,
-        typename OutT   = decltype(std::declval<T>() + std::declval<OtherT>())>
+    template <typename OtherT = T, typename OutT = decltype(std::declval<T>() + std::declval<OtherT>())>
     Point<OutT> operator+(const Point<OtherT>& other) const;
     template <typename OtherT = T>
     Point& operator+=(const Point<OtherT>& other);
-    template <
-        typename OtherT = T,
-        typename OutT   = decltype(std::declval<T>() - std::declval<OtherT>())>
+    template <typename OtherT = T, typename OutT = decltype(std::declval<T>() - std::declval<OtherT>())>
     Point<OutT> operator-(const Point<OtherT>& other) const;
     template <typename OtherT = T>
     Point& operator-=(const Point<OtherT>& other);
 
-    template <
-        typename ScalarT = T,
-        typename OutT    = decltype(std::declval<T>() * std::declval<ScalarT>())>
+    template <typename ScalarT = T, typename OutT = decltype(std::declval<T>() * std::declval<ScalarT>())>
     Point<OutT> operator*(const ScalarT scalar) const;
     template <typename ScalarT = T>
     Point& operator*=(const ScalarT scalar);
-    template <
-        typename ScalarT = T,
-        typename OutT    = decltype(std::declval<T>() / std::declval<ScalarT>())>
+    template <typename ScalarT = T, typename OutT = decltype(std::declval<T>() / std::declval<ScalarT>())>
     Point<OutT> operator/(const ScalarT scalar) const;
     template <typename ScalarT = T>
     Point& operator/=(const ScalarT scalar);

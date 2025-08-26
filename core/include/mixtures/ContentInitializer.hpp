@@ -13,8 +13,7 @@ private:
     std::unordered_map<Molecule, Amount<Unit::MOLE>> content;
 
 public:
-    ContentInitializer(
-        std::initializer_list<std::pair<Molecule, Amount<Unit::MOLE>>> content) noexcept;
+    ContentInitializer(std::initializer_list<std::pair<Molecule, Amount<Unit::MOLE>>> content) noexcept;
     ContentInitializer(const ReactantSet& content) noexcept;
     ContentInitializer()                     = default;
     ContentInitializer(ContentInitializer&&) = default;

@@ -18,9 +18,8 @@ public:
 
     virtual std::vector<float_s> getParams() const = 0;
 
-    virtual bool isEquivalent(
-        const Regressor3DBase& other,
-        const float_s          epsilon = std::numeric_limits<float_s>::epsilon()) const;
+    virtual bool
+    isEquivalent(const Regressor3DBase& other, const float_s epsilon = std::numeric_limits<float_s>::epsilon()) const;
 };
 
 class LinearRegressor3D : public Regressor3DBase
@@ -38,8 +37,7 @@ public:
     std::vector<float_s> getParams() const override final;
 
     bool isEquivalent(
-        const Regressor3DBase& other,
-        const float_s epsilon = std::numeric_limits<float_s>::epsilon()) const override final;
+        const Regressor3DBase& other, const float_s epsilon = std::numeric_limits<float_s>::epsilon()) const override final;
 
     static LinearRegressor3D fit(const std::vector<std::tuple<float_s, float_s, float_s>>& points);
 

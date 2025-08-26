@@ -18,15 +18,10 @@ public:
         const uint8_t                      alphaThreshold,
         const bool                         enableVolumetricScaling) noexcept;
 
-    ShapeFillTexture(
-        const sf::Texture& source,
-        const uint8_t      alphaThreshold,
-        const bool         enableVolumetricScaling) noexcept;
+    ShapeFillTexture(const sf::Texture& source, const uint8_t alphaThreshold, const bool enableVolumetricScaling) noexcept;
 
     ShapeFillTexture(
-        const std::string& sourceFile,
-        const uint8_t      alphaThreshold,
-        const bool         enableVolumetricScaling) noexcept;
+        const std::string& sourceFile, const uint8_t alphaThreshold, const bool enableVolumetricScaling) noexcept;
 
     ShapeFillTexture()                         = default;
     ShapeFillTexture(const ShapeFillTexture&)  = delete;

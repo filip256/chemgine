@@ -30,10 +30,7 @@ size_t ReactantSet::size() const { return reactants.size(); }
 
 void ReactantSet::reserve(const size_t size) { reactants.reserve(size); }
 
-bool ReactantSet::contains(const ReactantId& reactantId) const
-{
-    return reactants.contains(reactantId);
-}
+bool ReactantSet::contains(const ReactantId& reactantId) const { return reactants.contains(reactantId); }
 
 void ReactantSet::add(const Reactant& reactant)
 {
@@ -55,8 +52,7 @@ void ReactantSet::add(const Reactant& reactant)
     }
 
     if (reactant.amount < 0.0) {
-        Log(this).error(
-            "Tried to add a negative amount of {0}.", reactant.molecule.getStructure().toSMILES());
+        Log(this).error("Tried to add a negative amount of {0}.", reactant.molecule.getStructure().toSMILES());
         return;
     }
     reactants.emplace(std::make_pair(reactant.getId(), reactant.mutate(container)));
@@ -91,20 +87,11 @@ Amount<Unit::MOLE> ReactantSet::getAmountOf(const Catalyst& catalyst) const
     return s;
 }
 
-const std::unordered_map<ReactantId, Reactant>& ReactantSet::getReactants() const
-{
-    return reactants;
-}
+const std::unordered_map<ReactantId, Reactant>& ReactantSet::getReactants() const { return reactants; }
 
-ReactantSet::iterator ReactantSet::erase(const ReactantSet::iterator it)
-{
-    return reactants.erase(it);
-}
+ReactantSet::iterator ReactantSet::erase(const ReactantSet::iterator it) { return reactants.erase(it); }
 
-void ReactantSet::erase(bool (*predicate)(const ReactantSet::pairT&))
-{
-    std::erase_if(reactants, predicate);
-}
+void ReactantSet::erase(bool (*predicate)(const ReactantSet::pairT&)) { std::erase_if(reactants, predicate); }
 
 ReactantSet::const_iterator ReactantSet::begin() const { return reactants.cbegin(); }
 
@@ -138,7 +125,4 @@ bool ReactantSet::operator!=(const ReactantSet& other) const
     return false;
 }
 
-ReactantSet ReactantSet::makeCopy(const Ref<Mixture> newContainer) const
-{
-    return ReactantSet(*this, newContainer);
-}
+ReactantSet ReactantSet::makeCopy(const Ref<Mixture> newContainer) const { return ReactantSet(*this, newContainer); }

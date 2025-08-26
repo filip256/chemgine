@@ -12,8 +12,7 @@ public:
     uint8_t otherPort;
     uint8_t strength;
 
-    LabwareConnection(
-        const l_size otherComponent, const uint8_t otherPort, const uint8_t strength) noexcept;
+    LabwareConnection(const l_size otherComponent, const uint8_t otherPort, const uint8_t strength) noexcept;
 
     bool isFree() const;
     void setFree();

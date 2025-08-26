@@ -11,8 +11,7 @@ bool Regressor3DBase::isEquivalent(const Regressor3DBase& other, const float_s) 
     return typeid(*this) == typeid(other);
 }
 
-LinearRegressor3D::LinearRegressor3D(
-    const float_s paramX, const float_s paramY, const float_s shift) noexcept :
+LinearRegressor3D::LinearRegressor3D(const float_s paramX, const float_s paramY, const float_s shift) noexcept :
     paramX(paramX),
     paramY(paramY),
     shift(shift)
@@ -36,8 +35,7 @@ bool LinearRegressor3D::isEquivalent(const Regressor3DBase& other, const float_s
            utils::floatEqual(this->shift, oth.shift, epsilon);
 }
 
-LinearRegressor3D
-LinearRegressor3D::fit(const std::vector<std::tuple<float_s, float_s, float_s>>& points)
+LinearRegressor3D LinearRegressor3D::fit(const std::vector<std::tuple<float_s, float_s, float_s>>& points)
 {
     const size_t n = points.size();
     if (n == 0) {

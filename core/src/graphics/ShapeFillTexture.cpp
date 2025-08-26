@@ -56,8 +56,7 @@ ShapeFillTexture::ShapeFillTexture(
 
     if (enableVolumetricScaling) {
         for (size_t i = 1; i < maskSize.y; ++i) {
-            pixels[i].first =
-                pixels[i].first / static_cast<float>(totalSetPixels) + pixels[i - 1].first;
+            pixels[i].first  = pixels[i].first / static_cast<float>(totalSetPixels) + pixels[i - 1].first;
             pixels[i].second = i / static_cast<float>(maskSize.y);
         }
         pixels.back().first  = 1.0f;
@@ -71,19 +70,13 @@ ShapeFillTexture::ShapeFillTexture(
 }
 
 ShapeFillTexture::ShapeFillTexture(
-    const sf::Texture& source,
-    const uint8_t      alphaThreshold,
-    const bool         enableVolumetricScaling) noexcept :
+    const sf::Texture& source, const uint8_t alphaThreshold, const bool enableVolumetricScaling) noexcept :
     ShapeFillTexture(
-        std::make_pair(Collision::getTextureMask(source), source.getSize()),
-        alphaThreshold,
-        enableVolumetricScaling)
+        std::make_pair(Collision::getTextureMask(source), source.getSize()), alphaThreshold, enableVolumetricScaling)
 {}
 
 ShapeFillTexture::ShapeFillTexture(
-    const std::string& sourceFile,
-    const uint8_t      alphaThreshold,
-    const bool         enableVolumetricScaling) noexcept :
+    const std::string& sourceFile, const uint8_t alphaThreshold, const bool enableVolumetricScaling) noexcept :
     ShapeFillTexture(Collision::createBitmask(sourceFile), alphaThreshold, enableVolumetricScaling)
 {}
 
@@ -102,7 +95,4 @@ const sf::Texture& ShapeFillTexture::getTexture() const { return *texture; }
 
 bool ShapeFillTexture::hasVolumetricScaling() const { return volume.size(); }
 
-float ShapeFillTexture::getRelativeHeightAt(const float fillRatio) const
-{
-    return volume.getLinearValueAt(fillRatio);
-}
+float ShapeFillTexture::getRelativeHeightAt(const float fillRatio) const { return volume.getLinearValueAt(fillRatio); }

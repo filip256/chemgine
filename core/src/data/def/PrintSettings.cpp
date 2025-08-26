@@ -2,10 +2,8 @@
 
 using namespace def;
 
-const PrintSettings PrintSettings::Minimal =
-    PrintSettings(false, "", ":", ",", "", "{", "}", ";\n");
-const PrintSettings PrintSettings::Pretty =
-    PrintSettings(true, "\n", ": ", ",", "    ", " {", "}", ";\n");
+const PrintSettings PrintSettings::Minimal = PrintSettings(false, "", ":", ",", "", "{", "}", ";\n");
+const PrintSettings PrintSettings::Pretty  = PrintSettings(true, "\n", ": ", ",", "    ", " {", "}", ";\n");
 
 PrintSettings::PrintSettings(
     const bool    prettify,

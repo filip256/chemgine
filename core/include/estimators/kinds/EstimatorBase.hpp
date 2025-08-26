@@ -23,9 +23,8 @@ public:
     EstimatorId getId() const;
     std::string getDefIdentifier() const;
 
-    virtual bool isEquivalent(
-        const EstimatorBase& other,
-        const float_s        epsilon = std::numeric_limits<float_s>::epsilon()) const;
+    virtual bool
+    isEquivalent(const EstimatorBase& other, const float_s epsilon = std::numeric_limits<float_s>::epsilon()) const;
 
     virtual uint16_t getNestingDepth() const;
 

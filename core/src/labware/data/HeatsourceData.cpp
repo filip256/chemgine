@@ -7,8 +7,7 @@ HeatsourceData::HeatsourceData(
     const Amount<Unit::WATT>   maxPowerOutput,
     const std::string&         textureFile,
     const float_s              textureScale) noexcept :
-    DrawableLabwareData(
-        id, name, std::move(ports), textureFile, textureScale, LabwareType::HEATSOURCE),
+    DrawableLabwareData(id, name, std::move(ports), textureFile, textureScale, LabwareType::HEATSOURCE),
     maxPowerOutput(maxPowerOutput)
 {}
 

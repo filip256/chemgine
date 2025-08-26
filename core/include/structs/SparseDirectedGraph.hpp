@@ -196,8 +196,7 @@ NodeT& SparseDirectedGraph<NodeT>::operator[](const size_t idx)
 }
 
 template <class NodeT>
-SparseDirectedGraph<NodeT>::NeighbourIterator
-SparseDirectedGraph<NodeT>::getNeighbourIterator(const size_t idx) const
+SparseDirectedGraph<NodeT>::NeighbourIterator SparseDirectedGraph<NodeT>::getNeighbourIterator(const size_t idx) const
 {
     return NeighbourIterator(*this, idx);
 }

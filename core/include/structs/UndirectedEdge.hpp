@@ -55,8 +55,5 @@ bool UndirectedEdge<T>::operator==(const UndirectedEdge& other) const
 template <typename T>
 struct std::hash<UndirectedEdge<T>>
 {
-    size_t operator()(const UndirectedEdge<T>& edge) const
-    {
-        return std::hash<std::pair<T, T>>()(edge.pair());
-    }
+    size_t operator()(const UndirectedEdge<T>& edge) const { return std::hash<std::pair<T, T>>()(edge.pair()); }
 };

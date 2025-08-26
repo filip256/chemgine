@@ -15,8 +15,7 @@ bool LabwareRepository::checkTextureFile(std::string path, const def::Location& 
         return false;
     }
     if (const auto ext = utils::extractExtension(path); ext != "png") {
-        Log(this).error(
-            "Invalid texture file extension: '{0}', at: {1}.", ext, location.toString());
+        Log(this).error("Invalid texture file extension: '{0}', at: {1}.", ext, location.toString());
         return false;
     }
 
@@ -26,13 +25,11 @@ bool LabwareRepository::checkTextureFile(std::string path, const def::Location& 
 template <>
 bool LabwareRepository::add<LabwareType::FLASK>(const LabwareId id, const def::Object& definition)
 {
-    const auto name = definition.getDefaultProperty(def::Labware::Name, "?");
-    auto ports = definition.getProperty(def::Labware::Ports, def::parse<std::vector<LabwarePort>>);
-    const auto volume =
-        definition.getProperty(def::Labware::Volume, def::parse<Amount<Unit::LITER>>);
+    const auto name    = definition.getDefaultProperty(def::Labware::Name, "?");
+    auto       ports   = definition.getProperty(def::Labware::Ports, def::parse<std::vector<LabwarePort>>);
+    const auto volume  = definition.getProperty(def::Labware::Volume, def::parse<Amount<Unit::LITER>>);
     const auto tx      = definition.getProperty(def::Labware::Texture);
-    const auto txScale = definition.getDefaultProperty(
-        def::Labware::TextureScale, 1.0f, def::parseUnsigned<float_s>);
+    const auto txScale = definition.getDefaultProperty(def::Labware::TextureScale, 1.0f, def::parseUnsigned<float_s>);
 
     if (not(volume && ports && tx)) {
         Log(this).error("Incomplete flask definition at: {0}.", definition.getLocationName());
@@ -42,21 +39,18 @@ bool LabwareRepository::add<LabwareType::FLASK>(const LabwareId id, const def::O
     if (not checkTextureFile(*tx, definition.getLocation()))
         return false;
 
-    labware.emplace(
-        id, std::make_unique<FlaskData>(id, name, std::move(*ports), *volume, *tx, txScale));
+    labware.emplace(id, std::make_unique<FlaskData>(id, name, std::move(*ports), *volume, *tx, txScale));
     return true;
 }
 
 template <>
 bool LabwareRepository::add<LabwareType::ADAPTOR>(const LabwareId id, const def::Object& definition)
 {
-    const auto name = definition.getDefaultProperty(def::Labware::Name, "?");
-    auto ports = definition.getProperty(def::Labware::Ports, def::parse<std::vector<LabwarePort>>);
-    const auto volume =
-        definition.getProperty(def::Labware::Volume, def::parse<Amount<Unit::LITER>>);
+    const auto name    = definition.getDefaultProperty(def::Labware::Name, "?");
+    auto       ports   = definition.getProperty(def::Labware::Ports, def::parse<std::vector<LabwarePort>>);
+    const auto volume  = definition.getProperty(def::Labware::Volume, def::parse<Amount<Unit::LITER>>);
     const auto tx      = definition.getProperty(def::Labware::Texture);
-    const auto txScale = definition.getDefaultProperty(
-        def::Labware::TextureScale, 1.0f, def::parseUnsigned<float_s>);
+    const auto txScale = definition.getDefaultProperty(def::Labware::TextureScale, 1.0f, def::parseUnsigned<float_s>);
 
     if (not(volume && ports && tx)) {
         Log(this).error("Incomplete adaptor definition at: {0}.", definition.getLocationName());
@@ -66,28 +60,22 @@ bool LabwareRepository::add<LabwareType::ADAPTOR>(const LabwareId id, const def:
     if (not checkTextureFile(*tx, definition.getLocation()))
         return false;
 
-    labware.emplace(
-        id, std::make_unique<AdaptorData>(id, name, std::move(*ports), *volume, *tx, txScale));
+    labware.emplace(id, std::make_unique<AdaptorData>(id, name, std::move(*ports), *volume, *tx, txScale));
     return true;
 }
 
 template <>
-bool
-LabwareRepository::add<LabwareType::CONDENSER>(const LabwareId id, const def::Object& definition)
+bool LabwareRepository::add<LabwareType::CONDENSER>(const LabwareId id, const def::Object& definition)
 {
-    const auto name = definition.getDefaultProperty(def::Labware::Name, "?");
-    auto ports = definition.getProperty(def::Labware::Ports, def::parse<std::vector<LabwarePort>>);
-    const auto volume =
-        definition.getProperty(def::Labware::Volume, def::parse<Amount<Unit::LITER>>);
-    const auto length =
-        definition.getProperty(def::Labware::Length, def::parse<Amount<Unit::METER>>);
-    const auto effic =
-        definition.getProperty(def::Labware::Efficiency, def::parse<Amount<Unit::PER_METER>>);
+    const auto name    = definition.getDefaultProperty(def::Labware::Name, "?");
+    auto       ports   = definition.getProperty(def::Labware::Ports, def::parse<std::vector<LabwarePort>>);
+    const auto volume  = definition.getProperty(def::Labware::Volume, def::parse<Amount<Unit::LITER>>);
+    const auto length  = definition.getProperty(def::Labware::Length, def::parse<Amount<Unit::METER>>);
+    const auto effic   = definition.getProperty(def::Labware::Efficiency, def::parse<Amount<Unit::PER_METER>>);
     const auto tx      = definition.getProperty(def::Labware::Texture);
     const auto inner   = definition.getProperty(def::Labware::InnerMask);
     const auto coolant = definition.getProperty(def::Labware::CoolantMask);
-    const auto txScale = definition.getDefaultProperty(
-        def::Labware::TextureScale, 1.0f, def::parseUnsigned<float_s>);
+    const auto txScale = definition.getDefaultProperty(def::Labware::TextureScale, 1.0f, def::parseUnsigned<float_s>);
 
     if (not(volume && length && effic && ports && tx && inner && coolant)) {
         Log(this).error("Incomplete condenser definition at: {0}.", definition.getLocationName());
@@ -107,15 +95,13 @@ LabwareRepository::add<LabwareType::CONDENSER>(const LabwareId id, const def::Ob
 }
 
 template <>
-bool
-LabwareRepository::add<LabwareType::HEATSOURCE>(const LabwareId id, const def::Object& definition)
+bool LabwareRepository::add<LabwareType::HEATSOURCE>(const LabwareId id, const def::Object& definition)
 {
-    const auto name = definition.getDefaultProperty(def::Labware::Name, "?");
-    auto ports = definition.getProperty(def::Labware::Ports, def::parse<std::vector<LabwarePort>>);
-    const auto power = definition.getProperty(def::Labware::Power, def::parse<Amount<Unit::WATT>>);
-    const auto tx    = definition.getProperty(def::Labware::Texture);
-    const auto txScale = definition.getDefaultProperty(
-        def::Labware::TextureScale, 1.0f, def::parseUnsigned<float_s>);
+    const auto name    = definition.getDefaultProperty(def::Labware::Name, "?");
+    auto       ports   = definition.getProperty(def::Labware::Ports, def::parse<std::vector<LabwarePort>>);
+    const auto power   = definition.getProperty(def::Labware::Power, def::parse<Amount<Unit::WATT>>);
+    const auto tx      = definition.getProperty(def::Labware::Texture);
+    const auto txScale = definition.getDefaultProperty(def::Labware::TextureScale, 1.0f, def::parseUnsigned<float_s>);
 
     if (not(power && ports && tx)) {
         Log(this).error("Incomplete heatsource definition at: {0}.", definition.getLocationName());
@@ -125,28 +111,23 @@ LabwareRepository::add<LabwareType::HEATSOURCE>(const LabwareId id, const def::O
     if (not checkTextureFile(*tx, definition.getLocation()))
         return false;
 
-    labware.emplace(
-        id, std::make_unique<HeatsourceData>(id, name, std::move(*ports), *power, *tx, txScale));
+    labware.emplace(id, std::make_unique<HeatsourceData>(id, name, std::move(*ports), *power, *tx, txScale));
     return true;
 }
 
 bool LabwareRepository::add(const def::Object& definition)
 {
-    static std::
-        unordered_map<std::string, bool (LabwareRepository::*)(LabwareId, const def::Object&)>
-            adders = {
-                {     def::Labware::Flask,      &LabwareRepository::add<LabwareType::FLASK>},
-                {   def::Labware::Adaptor,    &LabwareRepository::add<LabwareType::ADAPTOR>},
-                { def::Labware::Condenser,  &LabwareRepository::add<LabwareType::CONDENSER>},
-                {def::Labware::Heatsource, &LabwareRepository::add<LabwareType::HEATSOURCE>}
+    static std::unordered_map<std::string, bool (LabwareRepository::*)(LabwareId, const def::Object&)> adders = {
+        {     def::Labware::Flask,      &LabwareRepository::add<LabwareType::FLASK>},
+        {   def::Labware::Adaptor,    &LabwareRepository::add<LabwareType::ADAPTOR>},
+        { def::Labware::Condenser,  &LabwareRepository::add<LabwareType::CONDENSER>},
+        {def::Labware::Heatsource, &LabwareRepository::add<LabwareType::HEATSOURCE>}
     };
 
     const auto it = adders.find(definition.getSpecifier());
     if (it == adders.end()) {
         Log(this).error(
-            "Unknown labware specifier: '{0}', at: {1}.",
-            definition.getSpecifier(),
-            definition.getLocationName());
+            "Unknown labware specifier: '{0}', at: {1}.", definition.getSpecifier(), definition.getLocationName());
         return false;
     }
 
@@ -155,8 +136,7 @@ bool LabwareRepository::add(const def::Object& definition)
         return false;
 
     if (labware.contains(*id)) {
-        Log(this).error(
-            "Labware with duplicate id: '{0}', at: {1}.", *id, definition.getLocationName());
+        Log(this).error("Labware with duplicate id: '{0}', at: {1}.", *id, definition.getLocationName());
         return false;
     }
 

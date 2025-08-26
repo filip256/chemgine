@@ -109,6 +109,5 @@ private:
     DataStore dataStore;
 
 public:
-    MixtureUnitTests(
-        std::string&& name, const std::regex& filter, const std::string& defModulePath) noexcept;
+    MixtureUnitTests(std::string&& name, const std::regex& filter, const std::string& defModulePath) noexcept;
 };

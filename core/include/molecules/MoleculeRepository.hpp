@@ -33,8 +33,7 @@ public:
     const MoleculeData&        findOrAddConcrete(MolecularStructure&& structure);
     const GenericMoleculeData& findOrAdd(MolecularStructure&& structure);
 
-    using Iterator =
-        std::unordered_map<MoleculeId, std::unique_ptr<const MoleculeData>>::const_iterator;
+    using Iterator = std::unordered_map<MoleculeId, std::unique_ptr<const MoleculeData>>::const_iterator;
     Iterator begin() const;
     Iterator end() const;
 

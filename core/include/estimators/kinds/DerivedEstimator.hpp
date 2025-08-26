@@ -15,16 +15,13 @@ public:
 
     const BaseRefT& getBase() const;
 
-    bool isEquivalent(
-        const DerivedEstimator& other,
-        const float_s           epsilon = std::numeric_limits<float_s>::epsilon()) const;
+    bool isEquivalent(const DerivedEstimator& other, const float_s epsilon = std::numeric_limits<float_s>::epsilon()) const;
 
     uint16_t getNestingDepth() const override final;
 };
 
 template <typename BaseRefT, Unit OutU, Unit... InUs>
-DerivedEstimator<BaseRefT, OutU, InUs...>::DerivedEstimator(
-    const EstimatorId id, const BaseRefT& base) noexcept :
+DerivedEstimator<BaseRefT, OutU, InUs...>::DerivedEstimator(const EstimatorId id, const BaseRefT& base) noexcept :
     Base(id),
     base(base)
 {}
@@ -36,8 +33,7 @@ const BaseRefT& DerivedEstimator<BaseRefT, OutU, InUs...>::getBase() const
 }
 
 template <typename BaseRefT, Unit OutU, Unit... InUs>
-bool DerivedEstimator<BaseRefT, OutU, InUs...>::isEquivalent(
-    const DerivedEstimator& other, const float_s epsilon) const
+bool DerivedEstimator<BaseRefT, OutU, InUs...>::isEquivalent(const DerivedEstimator& other, const float_s epsilon) const
 {
     return this->base->isEquivalent(*other.base);
 }

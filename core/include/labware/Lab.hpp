@@ -56,9 +56,7 @@ public:
 template <typename CompT, typename... Args>
 CompT& Lab::add(Args&&... args)
 {
-    static_assert(
-        std::is_base_of_v<LabwareComponentBase, CompT>,
-        "Lab: CompT must be a LabwareComponentBase derived type.");
+    static_assert(std::is_base_of_v<LabwareComponentBase, CompT>, "Lab: CompT must be a LabwareComponentBase derived type.");
 
     std::unique_ptr<CompT> ptr;
     if constexpr (std::is_constructible_v<CompT, Args...>)

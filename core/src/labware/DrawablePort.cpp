@@ -2,8 +2,7 @@
 
 #include <cmath>
 
-DrawablePort::DrawablePort(
-    const LabwarePort& port, const sf::Vector2f& origin, const float_s scale) noexcept :
+DrawablePort::DrawablePort(const LabwarePort& port, const sf::Vector2f& origin, const float_s scale) noexcept :
     type(port.type),
     angle(port.angle),
     position((port.x - origin.x) * scale, (port.y - origin.y) * scale)

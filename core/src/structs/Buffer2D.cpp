@@ -169,15 +169,13 @@ void Buffer2D<ContainerT>::Line::clear()
 }
 
 template <typename ContainerT>
-const typename Buffer2D<ContainerT>::Line::ValueT
-Buffer2D<ContainerT>::Line::operator[](const IndexT idx) const
+const typename Buffer2D<ContainerT>::Line::ValueT Buffer2D<ContainerT>::Line::operator[](const IndexT idx) const
 {
     return line[idx];
 }
 
 template <typename ContainerT>
-typename Buffer2D<ContainerT>::Line::ValueT&
-Buffer2D<ContainerT>::Line::operator[](const IndexT idx)
+typename Buffer2D<ContainerT>::Line::ValueT& Buffer2D<ContainerT>::Line::operator[](const IndexT idx)
 {
     expandTo(idx);
     return line[idx];
@@ -245,8 +243,7 @@ Buffer2D<ContainerT>::Buffer2D(const ContainerT& str) noexcept
         return;
     }
 
-    for (auto i = lastNonEmpty + 1; i < block.forwardData().size(); ++i)
-        block.popBack();  // Remove trailing empty lines.
+    for (auto i = lastNonEmpty + 1; i < block.forwardData().size(); ++i) block.popBack();  // Remove trailing empty lines.
 }
 
 template <typename ContainerT>
@@ -277,10 +274,8 @@ template <typename ContainerT>
 size_t Buffer2D<ContainerT>::getMaxPositiveWidth() const
 {
     size_t maxWidth = 0;
-    for (const auto& line : block.backwardData())
-        maxWidth = std::max(maxWidth, line.data().forwardData().size());
-    for (const auto& line : block.forwardData())
-        maxWidth = std::max(maxWidth, line.data().forwardData().size());
+    for (const auto& line : block.backwardData()) maxWidth = std::max(maxWidth, line.data().forwardData().size());
+    for (const auto& line : block.forwardData()) maxWidth = std::max(maxWidth, line.data().forwardData().size());
 
     return maxWidth;
 }
@@ -289,10 +284,8 @@ template <typename ContainerT>
 size_t Buffer2D<ContainerT>::getMaxNegativeWidth() const
 {
     size_t maxWidth = 0;
-    for (const auto& line : block.backwardData())
-        maxWidth = std::max(maxWidth, line.data().backwardData().size());
-    for (const auto& line : block.forwardData())
-        maxWidth = std::max(maxWidth, line.data().backwardData().size());
+    for (const auto& line : block.backwardData()) maxWidth = std::max(maxWidth, line.data().backwardData().size());
+    for (const auto& line : block.forwardData()) maxWidth = std::max(maxWidth, line.data().backwardData().size());
 
     return maxWidth;
 }
@@ -304,8 +297,7 @@ void Buffer2D<ContainerT>::expandTo(const IndexT idx)
 }
 
 template <typename ContainerT>
-Buffer2D<ContainerT>&
-Buffer2D<ContainerT>::appendRight(const Buffer2D& other, const ContainerT& padding)
+Buffer2D<ContainerT>& Buffer2D<ContainerT>::appendRight(const Buffer2D& other, const ContainerT& padding)
 {
     if (other.empty())
         return *this;
@@ -355,8 +347,7 @@ Buffer2D<ContainerT>::appendRight(const Buffer2D& other, const ContainerT& paddi
     const auto otherNegativeWidth = other.getMaxNegativeWidth();
 
     for (Buffer2D<ContainerT>::IndexT i = otherBegin; i < otherEnd; ++i) {
-        if (const auto linePadSize =
-                otherNegativeWidth - other.block[i].data().backwardData().size())
+        if (const auto linePadSize = otherNegativeWidth - other.block[i].data().backwardData().size())
             this->block[i + idxShift].appendBack(ContainerT(linePadSize, WhiteSpace));
         this->block[i + idxShift].appendBack(other.block[i]);
     }

@@ -53,9 +53,7 @@ public:
     const_iterator end() const;
     iterator       end();
 
-    bool equals(
-        const ReactantSet&          other,
-        const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
+    bool equals(const ReactantSet& other, const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
 
     bool operator==(const ReactantSet& other) const;
     bool operator!=(const ReactantSet& other) const;

@@ -8,13 +8,9 @@ int main(int argc, char* argv[])
 {
     try {
         cxxopts::Options options(argv[0], "Application for running Chemgine tests");
-        options.add_options()("u,unit", "Enables unit tests")(
-            "p,perf", "Enables performance tests")(
-            "f,filter",
-            "Filters tests using the given ECMAScript regex",
-            cxxopts::value<std::string>())(
-            "log", "Sets logging level", cxxopts::value<std::string>())(
-            "h,help", "Print usage information");
+        options.add_options()("u,unit", "Enables unit tests")("p,perf", "Enables performance tests")(
+            "f,filter", "Filters tests using the given ECMAScript regex", cxxopts::value<std::string>())(
+            "log", "Sets logging level", cxxopts::value<std::string>())("h,help", "Print usage information");
 
         const auto args = options.parse(argc, argv);
         if (argc == 1 || args.count("help")) {

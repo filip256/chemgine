@@ -78,8 +78,7 @@ public:
 
     void consumePotentialEnergy();
 
-    bool equals(
-        const Layer& other, const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
+    bool equals(const Layer& other, const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
 
     LayerContentIterator begin() const;
     LayerContentIterator end() const;

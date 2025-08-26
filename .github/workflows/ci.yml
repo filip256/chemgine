@@ -33,7 +33,7 @@ jobs:
     - name: Install pre-commit
       run: pip install --upgrade pip pre-commit
 
-    - name: Cache pre-commit environment
+    - name: Restore pre-commit environment
       uses: actions/cache@v4
       with:
         path: ~/.cache/pre-commit

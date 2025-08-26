@@ -1,9 +1,7 @@
 #include "mixtures/LayerContentIterator.hpp"
 
 LayerContentIterator::LayerContentIterator(
-    const LayerType                   layer,
-    const ReactantSet::const_iterator it,
-    const ReactantSet::const_iterator end) noexcept :
+    const LayerType layer, const ReactantSet::const_iterator it, const ReactantSet::const_iterator end) noexcept :
     layer(layer),
     it(it),
     end(end)
@@ -22,12 +20,6 @@ LayerContentIterator& LayerContentIterator::operator++()
     return *this;
 }
 
-bool LayerContentIterator::operator==(const LayerContentIterator& other) const
-{
-    return this->it == other.it;
-}
+bool LayerContentIterator::operator==(const LayerContentIterator& other) const { return this->it == other.it; }
 
-bool LayerContentIterator::operator!=(const LayerContentIterator& other) const
-{
-    return this->it != other.it;
-}
+bool LayerContentIterator::operator!=(const LayerContentIterator& other) const { return this->it != other.it; }

@@ -18,8 +18,5 @@ private:
     DataStore dataStore;
 
 public:
-    ModuleUnitTest(
-        const std::string& name,
-        const std::regex&  filter,
-        const std::string& defModulePath) noexcept;
+    ModuleUnitTest(const std::string& name, const std::regex& filter, const std::string& defModulePath) noexcept;
 };

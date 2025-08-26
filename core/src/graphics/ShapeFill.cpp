@@ -24,10 +24,7 @@ void ShapeFill::move(const sf::Vector2f& offset)
 
 void ShapeFill::setScale(const sf::Vector2f& scale) { sprite.setScale(scale); }
 
-void ShapeFill::setRotation(const Amount<Unit::DEGREE> angle)
-{
-    sprite.setRotation(sf::degrees(angle.asStd()));
-}
+void ShapeFill::setRotation(const Amount<Unit::DEGREE> angle) { sprite.setRotation(sf::degrees(angle.asStd())); }
 
 void ShapeFill::setColor(const sf::Color& color) const { sprite.setColor(color); }
 
@@ -45,9 +42,7 @@ void ShapeFill::setDrawSection(float_s start, float_s end, const sf::Color& colo
     const auto topCut    = size.y * (1.0f - end);
     const auto heightCut = std::ceil(size.y * (end - start));
     sprite.setTextureRect(
-        sf::IntRect(
-            sf::Vector2i(0, static_cast<int32_t>(topCut)),
-            sf::Vector2i(size.x, static_cast<int32_t>(heightCut))));
+        sf::IntRect(sf::Vector2i(0, static_cast<int32_t>(topCut)), sf::Vector2i(size.x, static_cast<int32_t>(heightCut))));
 
     const auto rotation = sprite.getRotation().asRadians();
     sprite.setPosition(
@@ -58,7 +53,4 @@ void ShapeFill::setDrawSection(float_s start, float_s end, const sf::Color& colo
     sprite.setColor(color);
 }
 
-void ShapeFill::draw(sf::RenderTarget& target, sf::RenderStates states) const
-{
-    target.draw(sprite, states);
-}
+void ShapeFill::draw(sf::RenderTarget& target, sf::RenderStates states) const { target.draw(sprite, states); }

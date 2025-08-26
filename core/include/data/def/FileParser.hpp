@@ -27,10 +27,7 @@ private:
     void closeSubparser();
 
 public:
-    FileParser(
-        const std::string&      filePath,
-        FileStore&              fileStore,
-        const OOLDefRepository& oolDefinitions) noexcept;
+    FileParser(const std::string& filePath, FileStore& fileStore, const OOLDefRepository& oolDefinitions) noexcept;
     FileParser(const FileParser&) = delete;
     FileParser(FileParser&&)      = default;
     ~FileParser() noexcept;

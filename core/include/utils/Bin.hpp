@@ -28,10 +28,7 @@ class Formatter
     static_assert(std::is_arithmetic_v<T>, "Formatter: Unsupported type.");
 
 public:
-    static void print(std::ostream& os, const T& value)
-    {
-        os.write(reinterpret_cast<const char*>(&value), sizeof(T));
-    }
+    static void print(std::ostream& os, const T& value) { os.write(reinterpret_cast<const char*>(&value), sizeof(T)); }
 
     static std::optional<T> parse(std::istream& is)
     {

@@ -19,11 +19,7 @@ private:
     std::string               baseIndent;
 
 public:
-    DataDumper(
-        std::ostream&  out,
-        const uint8_t  valueOffset,
-        const uint16_t baseIndent,
-        const bool     prettify) noexcept;
+    DataDumper(std::ostream& out, const uint8_t valueOffset, const uint16_t baseIndent, const bool prettify) noexcept;
     DataDumper(const DataDumper&) = default;
     DataDumper(DataDumper&&)      = default;
 
@@ -42,8 +38,8 @@ public:
     DataDumper& defaultProperty(const std::string& name, const T& value, const T& defaultValue);
 
     template <typename T>
-    DataDumper& defaultPropertyWithSep(
-        const std::string& name, const T& value, const T& defaultValue, const bool preSep = false);
+    DataDumper&
+    defaultPropertyWithSep(const std::string& name, const T& value, const T& defaultValue, const bool preSep = false);
 
     template <typename T, typename HistoryT>
     DataDumper& tryOolSubDefinition(const T& value, HistoryT& alreadyPrinted);
@@ -52,26 +48,21 @@ public:
     DataDumper& subDefinition(const std::string& name, const T& value, HistoryT& alreadyPrinted);
 
     template <typename T, typename HistoryT>
-    DataDumper& subDefinitionWithSep(
-        const std::string& name,
-        const T&           value,
-        HistoryT&          alreadyPrinted,
-        const bool         preSep = false);
+    DataDumper&
+    subDefinitionWithSep(const std::string& name, const T& value, HistoryT& alreadyPrinted, const bool preSep = false);
 
     DataDumper& endProperties();
     DataDumper& endDefinition();
 };
 
 template <typename T>
-DataDumper&
-DataDumper::header(const std::string& type, const T& specifier, const std::string& idendtifier)
+DataDumper& DataDumper::header(const std::string& type, const T& specifier, const std::string& idendtifier)
 {
     out << '_' << type;
     if (idendtifier.size())
         out << '<' << idendtifier << '>';
 
-    out << settings.specifierSep
-        << (settings.prettify ? def::prettyPrint(specifier) : def::print(specifier));
+    out << settings.specifierSep << (settings.prettify ? def::prettyPrint(specifier) : def::print(specifier));
     return *this;
 }
 
@@ -105,8 +96,7 @@ DataDumper& DataDumper::propertyWithSep(const std::string& name, const T& value,
 }
 
 template <typename T>
-DataDumper&
-DataDumper::defaultProperty(const std::string& name, const T& value, const T& defaultValue)
+DataDumper& DataDumper::defaultProperty(const std::string& name, const T& value, const T& defaultValue)
 {
     if (not utils::equal(value, defaultValue))
         property(name, value);
@@ -114,8 +104,8 @@ DataDumper::defaultProperty(const std::string& name, const T& value, const T& de
 }
 
 template <typename T>
-DataDumper& DataDumper::defaultPropertyWithSep(
-    const std::string& name, const T& value, const T& defaultValue, const bool preSep)
+DataDumper&
+DataDumper::defaultPropertyWithSep(const std::string& name, const T& value, const T& defaultValue, const bool preSep)
 {
     if (not utils::equal(value, defaultValue))
         propertyWithSep(name, value, preSep);
@@ -130,8 +120,7 @@ DataDumper& DataDumper::tryOolSubDefinition(const T& value, HistoryT& alreadyPri
 }
 
 template <typename T, typename HistoryT>
-DataDumper&
-DataDumper::subDefinition(const std::string& name, const T& value, HistoryT& alreadyPrinted)
+DataDumper& DataDumper::subDefinition(const std::string& name, const T& value, HistoryT& alreadyPrinted)
 {
     if (settings.prettify)
         out << baseIndent;
@@ -151,8 +140,8 @@ DataDumper::subDefinition(const std::string& name, const T& value, HistoryT& alr
 }
 
 template <typename T, typename HistoryT>
-DataDumper& DataDumper::subDefinitionWithSep(
-    const std::string& name, const T& value, HistoryT& alreadyPrinted, const bool preSep)
+DataDumper&
+DataDumper::subDefinitionWithSep(const std::string& name, const T& value, HistoryT& alreadyPrinted, const bool preSep)
 {
     if (preSep)
         out << settings.propertySep << settings.newLine;

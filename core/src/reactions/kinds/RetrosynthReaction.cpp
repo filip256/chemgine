@@ -12,15 +12,9 @@ RetrosynthReaction::RetrosynthReaction(
     products(utils::aggregate<StructureRef, uint8_t>(products))
 {}
 
-const std::unordered_map<StructureRef, uint8_t>& RetrosynthReaction::getReactants() const
-{
-    return reactants;
-}
+const std::unordered_map<StructureRef, uint8_t>& RetrosynthReaction::getReactants() const { return reactants; }
 
-const std::unordered_map<StructureRef, uint8_t>& RetrosynthReaction::getProducts() const
-{
-    return products;
-}
+const std::unordered_map<StructureRef, uint8_t>& RetrosynthReaction::getProducts() const { return products; }
 
 const ReactionData& RetrosynthReaction::getBaseData() const { return baseReaction; }
 
@@ -30,9 +24,8 @@ void RetrosynthReaction::print(std::ostream& out) const
     ColoredTextBlock buffer;
 
     const auto printStructures = [&buffer](const auto& structures) {
-        size_t i = 0;
-        size_t last =
-            structures.size() - 1;  // Can't determine the last iterator, so we have to count.
+        size_t i    = 0;
+        size_t last = structures.size() - 1;  // Can't determine the last iterator, so we have to count.
         for (auto s = structures.begin(); s != structures.end(); ++s, ++i) {
             if (s->second > 1)
                 buffer.appendRight(std::to_string(s->second) + "x ");

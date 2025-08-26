@@ -8,15 +8,9 @@
 // ColoredChar
 //
 
-bool ColoredChar::operator==(const ColoredChar other) const
-{
-    return this->chr == other.chr && this->color == other.color;
-}
+bool ColoredChar::operator==(const ColoredChar other) const { return this->chr == other.chr && this->color == other.color; }
 
-bool ColoredChar::operator!=(const ColoredChar other) const
-{
-    return this->chr != other.chr || this->color != other.color;
-}
+bool ColoredChar::operator!=(const ColoredChar other) const { return this->chr != other.chr || this->color != other.color; }
 
 //
 // ColoredString
@@ -50,8 +44,7 @@ std::vector<ColoredChar> ColoredString::bind(const std::string& str, const OS::B
 {
     std::vector<ColoredChar> temp;
     temp.reserve(str.size());
-    std::ranges::transform(
-        str, std::back_inserter(temp), [color](const auto c) { return ColoredChar(c, color); });
+    std::ranges::transform(str, std::back_inserter(temp), [color](const auto c) { return ColoredChar(c, color); });
 
     return temp;
 }
@@ -73,10 +66,7 @@ void ColoredString::clear() { str.clear(); }
 
 void ColoredString::reserve(const size_t size) { str.reserve(size); }
 
-void ColoredString::resize(const size_t size, const ColoredChar coloredChr)
-{
-    str.resize(size, coloredChr);
-}
+void ColoredString::resize(const size_t size, const ColoredChar coloredChr) { str.resize(size, coloredChr); }
 
 void ColoredString::shrink_to_fit() { str.shrink_to_fit(); }
 
@@ -124,10 +114,7 @@ void ColoredString::append(const std::string& str, const OS::BasicColor color)
     for (const auto c : str) push_back(ColoredChar(c, color));
 }
 
-void ColoredString::insert(const size_t idx, const ColoredChar coloredChr)
-{
-    str.insert(str.begin() + idx, coloredChr);
-}
+void ColoredString::insert(const size_t idx, const ColoredChar coloredChr) { str.insert(str.begin() + idx, coloredChr); }
 
 void ColoredString::insert(const size_t idx, const ColoredString& other)
 {
@@ -183,8 +170,7 @@ ColoredString ColoredString::operator+(const std::string& str) const
 ColoredString ColoredString::substr(const size_t pos, const size_t count) const
 {
     if (pos >= str.size())
-        Log(this).fatal(
-            "substr(): Out-of-range starting position: {0} (size: {1})", pos, str.size());
+        Log(this).fatal("substr(): Out-of-range starting position: {0} (size: {1})", pos, str.size());
 
     const auto maxCount = std::min(count, str.size() - pos);
     return std::vector<ColoredChar>(str.begin() + pos, str.begin() + pos + maxCount);

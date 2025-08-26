@@ -13,8 +13,7 @@ bool DefUnitTest::run()
     bool success = true;
 
     const std::unordered_map<std::string, std::string> includeAliases;
-    auto                                               def = def::parse<def::Object>(
-        defLine, def::Location(getName(), 0), includeAliases, dataStore.oolDefinitions);
+    auto def = def::parse<def::Object>(defLine, def::Location(getName(), 0), includeAliases, dataStore.oolDefinitions);
     if (not def) {
         Log(this).error("Failed to parse definition: \n{0}", defLine);
         success = false;
@@ -30,10 +29,7 @@ bool DefUnitTest::run()
 }
 
 DefLoadUnitTest::DefLoadUnitTest(
-    std::string&& name,
-    DataStore&    dataStore,
-    std::string&& path,
-    const bool    expectedSuccess) noexcept :
+    std::string&& name, DataStore& dataStore, std::string&& path, const bool expectedSuccess) noexcept :
     UnitTest(std::move(name)),
     dataStore(dataStore),
     path(std::move(path)),
@@ -53,8 +49,7 @@ bool DefLoadUnitTest::run()
     const auto estimatorCountAfter = dataStore.estimators.totalDefinitionCount();
     if (estimatorCountBefore != estimatorCountAfter) {
         Log(this).error(
-            "Store contains {0} unused estimators after load completion.",
-            estimatorCountBefore - estimatorCountAfter);
+            "Store contains {0} unused estimators after load completion.", estimatorCountBefore - estimatorCountAfter);
         return false;
     }
 
@@ -70,8 +65,7 @@ bool DefLoadUnitTest::run()
     return true;
 }
 
-DefCountUnitTest::DefCountUnitTest(
-    std::string&& name, const DataStore& dataStore, const size_t expectedDefCount) noexcept :
+DefCountUnitTest::DefCountUnitTest(std::string&& name, const DataStore& dataStore, const size_t expectedDefCount) noexcept :
     UnitTest(std::move(name)),
     dataStore(dataStore),
     expectedDefCount(expectedDefCount)
@@ -81,18 +75,15 @@ bool DefCountUnitTest::run()
 {
     const auto defCount = dataStore.totalDefinitionCount();
     if (defCount != expectedDefCount) {
-        Log(this).error(
-            "Actual definition count: {0} does not match expected count: {1}.",
-            defCount,
-            expectedDefCount);
+        Log(this).error("Actual definition count: {0} does not match expected count: {1}.", defCount, expectedDefCount);
         return false;
     }
 
     return true;
 }
 
-DefDumpUnitTest::DefDumpUnitTest(
-    std::string&& name, DataStore& dataStore, std::string&& path, const bool prettify) noexcept :
+DefDumpUnitTest::DefDumpUnitTest(std::string&& name, DataStore& dataStore, std::string&& path, const bool prettify) noexcept
+    :
     UnitTest(std::move(name)),
     prettify(prettify),
     dataStore(dataStore),
@@ -116,8 +107,7 @@ bool DefClearUnitTest::run()
     return dataStore.totalDefinitionCount() == 0;
 }
 
-DefUnitTests::DefUnitTests(
-    std::string&& name, const std::regex& filter, const std::string& baseDefFilePath) noexcept :
+DefUnitTests::DefUnitTests(std::string&& name, const std::regex& filter, const std::string& baseDefFilePath) noexcept :
     UnitTestGroup(std::move(name), filter)
 {
     Accessor<>::setDataStore(dataStore);

@@ -1,8 +1,7 @@
 #include "mixtures/kinds/Atmosphere.hpp"
 
 Atmosphere::Atmosphere(const Atmosphere& other) noexcept :
-    SingleLayerMixture<LayerType::GASEOUS>(
-        static_cast<const SingleLayerMixture<LayerType::GASEOUS>&>(other).makeCopy())
+    SingleLayerMixture<LayerType::GASEOUS>(static_cast<const SingleLayerMixture<LayerType::GASEOUS>&>(other).makeCopy())
 {}
 
 Atmosphere::Atmosphere(
@@ -11,8 +10,7 @@ Atmosphere::Atmosphere(
     const ContentInitializer&   contentInitializer,
     const Amount<Unit::LITER>   maxVolume,
     const Ref<ContainerBase>    overflowTarget) noexcept :
-    SingleLayerMixture<LayerType::GASEOUS>(
-        temperature, pressure, contentInitializer, maxVolume, overflowTarget)
+    SingleLayerMixture<LayerType::GASEOUS>(temperature, pressure, contentInitializer, maxVolume, overflowTarget)
 {}
 
 Atmosphere Atmosphere::createSubatmosphere(const Amount<Unit::LITER> maxVolume)

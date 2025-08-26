@@ -24,17 +24,12 @@ private:
     bool insert(const size_t current, ReactionData& reaction, size_t& firstInsert);
 
     bool getOccurringReactions(
-        const std::vector<Reactant>&          reactants,
-        const size_t                          current,
-        std::unordered_set<ConcreteReaction>& result) const;
+        const std::vector<Reactant>& reactants, const size_t current, std::unordered_set<ConcreteReaction>& result) const;
 
     bool getRetrosynthReactions(
-        const StructureRef&                     targetProduct,
-        const size_t                            current,
-        std::unordered_set<RetrosynthReaction>& result) const;
+        const StructureRef& targetProduct, const size_t current, std::unordered_set<RetrosynthReaction>& result) const;
 
-    void
-    print(const size_t current, TextBlock& block, size_t& y, std::vector<uint8_t>& pipes) const;
+    void print(const size_t current, TextBlock& block, size_t& y, std::vector<uint8_t>& pipes) const;
 
 public:
     ReactionNetwork()                       = default;
@@ -43,10 +38,8 @@ public:
 
     bool insert(ReactionData& reaction);
 
-    std::unordered_set<ConcreteReaction>
-    getOccurringReactions(const std::vector<Reactant>& reactants) const;
-    std::unordered_set<RetrosynthReaction>
-    getRetrosynthReactions(const StructureRef& targetProduct) const;
+    std::unordered_set<ConcreteReaction>   getOccurringReactions(const std::vector<Reactant>& reactants) const;
+    std::unordered_set<RetrosynthReaction> getRetrosynthReactions(const StructureRef& targetProduct) const;
 
     std::string print() const;
 

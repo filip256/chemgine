@@ -26,8 +26,7 @@ public:
     Amount<OutU> get(const Amount<InU> input) const override final;
 
     bool isEquivalent(
-        const EstimatorBase& other,
-        const float_s epsilon = std::numeric_limits<float_s>::epsilon()) const override final;
+        const EstimatorBase& other, const float_s epsilon = std::numeric_limits<float_s>::epsilon()) const override final;
 
     void dumpDefinition(
         std::ostream&                    out,
@@ -57,8 +56,7 @@ Amount<OutU> AffineEstimator<OutU, InU>::get(const Amount<InU> input) const
 }
 
 template <Unit OutU, Unit InU>
-bool
-AffineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const float_s epsilon) const
+bool AffineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const float_s epsilon) const
 {
     if (EstimatorBase::isEquivalent(other, epsilon) == false)
         return false;

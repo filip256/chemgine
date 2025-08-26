@@ -9,16 +9,12 @@
 template <typename T>
 Spline<T>::Spline(std::vector<std::pair<T, T>>&& points, const T maxCompressionLoss) noexcept
 {
-    std::sort(points.begin(), points.end(), [](const auto& lhs, const auto& rhs) {
-        return lhs.first < rhs.first;
-    });
+    std::sort(points.begin(), points.end(), [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; });
     points.erase(
         std::unique(
             points.begin(),
             points.end(),
-            [](const auto& lhs, const auto& rhs) {
-        return utils::floatEqual(lhs.first, rhs.first);
-    }),
+            [](const auto& lhs, const auto& rhs) { return utils::floatEqual(lhs.first, rhs.first); }),
         points.end());
 
     this->points = std::move(points);
@@ -27,8 +23,7 @@ Spline<T>::Spline(std::vector<std::pair<T, T>>&& points, const T maxCompressionL
 }
 
 template <typename T>
-Spline<T>::Spline(
-    std::initializer_list<std::pair<T, T>> initializer, const T maxCompressionLoss) noexcept :
+Spline<T>::Spline(std::initializer_list<std::pair<T, T>> initializer, const T maxCompressionLoss) noexcept :
     Spline(std::vector<std::pair<T, T>>(initializer), maxCompressionLoss)
 {}
 
@@ -122,8 +117,7 @@ void Spline<T>::compress(const T maxLinearError)
         --i;
     }
 
-    if (points.size() == 2 &&
-        utils::floatEqual(points.front().second, points.back().second, maxLinearError))
+    if (points.size() == 2 && utils::floatEqual(points.front().second, points.back().second, maxLinearError))
         points.pop_back();
 
     points.shrink_to_fit();
@@ -133,8 +127,7 @@ template <typename T>
 bool Spline<T>::isEquivalent(const Spline<T>& other, const T epsilon) const
 {
     for (size_t i = 0; i < this->points.size(); ++i)
-        if (not utils::floatEqual(
-                this->points[i].second, other.getLinearValueAt(this->points[i].first), epsilon))
+        if (not utils::floatEqual(this->points[i].second, other.getLinearValueAt(this->points[i].first), epsilon))
             return false;
     return true;
 }

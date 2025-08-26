@@ -77,8 +77,7 @@ ContainerLabwareData<C>::ContainerLabwareData(
     BaseContainerLabwareData(id, name, std::move(ports), textureFile, textureScale, type),
     volumes(std::move(volumes))
 {
-    for (uint8_t i = 0; i < C; ++i)
-        fillTextures[i] = ShapeFillTexture(*fillTextureFiles[i], 0, hasMultiLayerStorage(type));
+    for (uint8_t i = 0; i < C; ++i) fillTextures[i] = ShapeFillTexture(*fillTextureFiles[i], 0, hasMultiLayerStorage(type));
 }
 
 template <uint8_t C>
@@ -137,8 +136,7 @@ constexpr const std::array<ShapeFillTexture, C>& ContainerLabwareData<C>::getFil
 
 template <uint8_t C>
 template <size_t... I>
-constexpr std::array<ShapeFill, C>
-ContainerLabwareData<C>::generateShapeFills(std::index_sequence<I...>) const
+constexpr std::array<ShapeFill, C> ContainerLabwareData<C>::generateShapeFills(std::index_sequence<I...>) const
 {
     return {{ShapeFill(std::get<I>(fillTextures), textureScale)...}};
 }
@@ -154,8 +152,7 @@ void ContainerLabwareData<C>::dumpTextures(const std::string& path) const
 {
     DrawableLabwareData::dumpTextures(path);
     for (uint8_t i = 0; i < C; ++i) {
-        const auto txPath =
-            utils::combinePaths(path, "fill" + std::to_string(i) + '_' + textureFile);
+        const auto txPath = utils::combinePaths(path, "fill" + std::to_string(i) + '_' + textureFile);
         if (not fillTextures[i].getTexture().copyToImage().saveToFile(txPath))
             Log(this).fatal("Failed to dump texture to file: {}.", txPath);
     }

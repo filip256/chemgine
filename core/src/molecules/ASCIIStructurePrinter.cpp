@@ -39,14 +39,12 @@ void Node::unvisit() { position = utils::npos<Position>; }
 
 std::ranges::subrange<Node::ConstCycleIterator> Node::getContainingCycles() const
 {
-    return std::ranges::subrange<Node::ConstCycleIterator>(
-        containingCycles.cbegin(), containingCycles.cend());
+    return std::ranges::subrange<Node::ConstCycleIterator>(containingCycles.cbegin(), containingCycles.cend());
 }
 
 std::ranges::subrange<Node::CycleIterator> Node::getContainingCycles()
 {
-    return std::ranges::subrange<Node::CycleIterator>(
-        containingCycles.begin(), containingCycles.end());
+    return std::ranges::subrange<Node::CycleIterator>(containingCycles.begin(), containingCycles.end());
 }
 
 Point<float> Node::getPrintAwayPoint() const
@@ -70,8 +68,7 @@ bool Node::isPartOfCycle(const Cycle& cycle) const
 bool Node::isPartOfSameCycle(const Node& other) const
 {
     // O(n * m), pretty bad but in practice an atom is part of at most 4 cycles.
-    return std::ranges::any_of(
-        this->containingCycles, [&other](const Cycle* c) { return other.isPartOfCycle(*c); });
+    return std::ranges::any_of(this->containingCycles, [&other](const Cycle* c) { return other.isPartOfCycle(*c); });
 }
 
 void Node::addContainingCycle(Cycle& cycle) { containingCycles.emplace_back(&cycle); }
@@ -110,14 +107,12 @@ void Cycle::unvisit() { centroid = utils::npos<Point<float>>; }
 std::optional<c_size> Cycle::getMemberIdx(const BondedAtomBase& atom) const
 {
     const auto it = std::ranges::find(cycle, &atom);
-    return it != cycle.end() ? std::optional(static_cast<c_size>(std::distance(cycle.begin(), it)))
-                             : std::nullopt;
+    return it != cycle.end() ? std::optional(static_cast<c_size>(std::distance(cycle.begin(), it))) : std::nullopt;
 }
 
 c_size Cycle::countVisitedAtoms(const std::vector<Node>& nodes) const
 {
-    return static_cast<c_size>(std::ranges::count_if(
-        cycle, [&](const auto* atom) { return nodes[atom->index].visited(); }));
+    return static_cast<c_size>(std::ranges::count_if(cycle, [&](const auto* atom) { return nodes[atom->index].visited(); }));
 }
 
 void Cycle::computeAndSetCentroid(const std::vector<Node>& nodes)
@@ -165,8 +160,7 @@ bool isAngleAllowed(const size_t size, const Angle currentAngle, const Angle pre
         return true;
     // Prune acute-acute and acute-perpendicular adjacent angles, starts losing cyclic layouts from
     // C8.
-    if (prevAngle == Angle::ACUTE &&
-        (currentAngle == Angle::ACUTE || currentAngle == Angle::PERPENDICULAR))
+    if (prevAngle == Angle::ACUTE && (currentAngle == Angle::ACUTE || currentAngle == Angle::PERPENDICULAR))
         return false;
 
     if (size < 5)
@@ -201,10 +195,7 @@ bool isAngleAllowed(const size_t size, const Angle currentAngle, const Angle pre
     return true;
 }
 
-float combineScores(const float angleScore, const float bondScore)
-{
-    return angleScore * 0.8f + bondScore * 0.2f;
-}
+float combineScores(const float angleScore, const float bondScore) { return angleScore * 0.8f + bondScore * 0.2f; }
 
 float getPrintAwayScalingFactor(const Point<float> printAwayPoint, const Position otherPosition)
 {
@@ -297,18 +288,14 @@ public:
     }
 
 private:
-    static bool
-    areOverlapping(const PositionLine& position, const std::vector<PositionLine>& newPositions)
+    static bool areOverlapping(const PositionLine& position, const std::vector<PositionLine>& newPositions)
     {
-        return std::any_of(newPositions.begin(), newPositions.end(), [position](const auto pos) {
-            return position.intersects(pos);
-        });
+        return std::any_of(
+            newPositions.begin(), newPositions.end(), [position](const auto pos) { return position.intersects(pos); });
     }
 
     static bool areOverlapping(
-        const PositionLine&              positionA,
-        const PositionLine&              positionB,
-        const std::vector<PositionLine>& newPositions)
+        const PositionLine& positionA, const PositionLine& positionB, const std::vector<PositionLine>& newPositions)
     {
         // Only positionB is checked since positionA was checked on the previous call (check uses).
         if (areOverlapping(positionB, newPositions))
@@ -316,15 +303,14 @@ private:
 
         // Edges aren't stored in the state so their position must be inferred from the node
         // positions.
-        const auto edgePos = StructurePrinter::getNextEdgePosition(
-            positionA, Direction(positionB.origin - positionA.origin));
+        const auto edgePos =
+            StructurePrinter::getNextEdgePosition(positionA, Direction(positionB.origin - positionA.origin));
         return areOverlapping(HLine(edgePos, 1), newPositions);
     }
 
 public:
     // Checks if the new positions overlap with existing positions or the edges between them.
-    bool arePositionsTaken(
-        const PositionLine& firstPosition, const std::vector<PositionLine>& newPositions) const
+    bool arePositionsTaken(const PositionLine& firstPosition, const std::vector<PositionLine>& newPositions) const
     {
         if (positions.empty() || newPositions.empty())
             return false;
@@ -359,8 +345,7 @@ StructurePrinter::StructurePrinter(
     edges(std::move(edges))
 {}
 
-Position
-StructurePrinter::getNextEdgePosition(const PositionLine position, const Direction direction)
+Position StructurePrinter::getNextEdgePosition(const PositionLine position, const Direction direction)
 {
     // Computes the next edge position, taking into account the symbol length:
     // \|  /   .
@@ -374,8 +359,8 @@ StructurePrinter::getNextEdgePosition(const PositionLine position, const Directi
     return nextEdgePosition;
 }
 
-std::pair<Position, PositionLine> StructurePrinter::getNextPosition(
-    const PositionLine position, const Direction direction, const Symbol::SizeT nextSymbolSize)
+std::pair<Position, PositionLine>
+StructurePrinter::getNextPosition(const PositionLine position, const Direction direction, const Symbol::SizeT nextSymbolSize)
 {
     // Computes the next edge and node position, taking into account the symbol lengths:
     // Si Si  Si   .
@@ -397,8 +382,7 @@ std::pair<Position, PositionLine> StructurePrinter::getNextPosition(
     return std::make_pair(nextEdgePosition, HLine(nextNodePosition, nextSymbolSize));
 };
 
-std::vector<std::pair<ASCII::Direction, Position>>
-StructurePrinter::getPossibleNextDirections(const PositionLine origin)
+std::vector<std::pair<ASCII::Direction, Position>> StructurePrinter::getPossibleNextDirections(const PositionLine origin)
 {
     // Populate the next possible directions:
     // \|/|  ||/   .
@@ -408,21 +392,17 @@ StructurePrinter::getPossibleNextDirections(const PositionLine origin)
     directions.reserve(8 + 2 * (origin.length > 1 ? origin.length - 1 : 0));
 
     if (origin.length == 1) {
-        for (const auto dir : ASCII::Direction::AllDirections)
-            directions.emplace_back(dir, origin.origin);
+        for (const auto dir : ASCII::Direction::AllDirections) directions.emplace_back(dir, origin.origin);
     }
     else {
         for (auto dir = ASCII::Direction::DownRight; dir != ASCII::Direction::Right; ++dir)
             directions.emplace_back(dir, origin.origin);
         for (Symbol::SizeT i = 2; i < origin.length; ++i) {
-            directions.emplace_back(
-                ASCII::Direction::Up, origin.origin + Point<Symbol::SizeT>(i, 0));
-            directions.emplace_back(
-                ASCII::Direction::Down, origin.origin + Point<Symbol::SizeT>(i, 0));
+            directions.emplace_back(ASCII::Direction::Up, origin.origin + Point<Symbol::SizeT>(i, 0));
+            directions.emplace_back(ASCII::Direction::Down, origin.origin + Point<Symbol::SizeT>(i, 0));
         }
         for (auto dir = ASCII::Direction::UpRight; dir != ASCII::Direction::Down; ++dir)
-            directions.emplace_back(
-                dir, origin.origin + Point<Symbol::SizeT>(origin.length - 1, 0));
+            directions.emplace_back(dir, origin.origin + Point<Symbol::SizeT>(origin.length - 1, 0));
     }
 
     return directions;
@@ -443,8 +423,8 @@ void StructurePrinter::print()
     for (auto& c : cycles)
         for (auto* a : c.getCycle()) nodes[a->index].addContainingCycle(c);
 
-    const auto largestCycleIt = std::ranges::max_element(
-        cycles, [](const auto& lhs, const auto& rhs) { return lhs.size() < rhs.size(); });
+    const auto largestCycleIt =
+        std::ranges::max_element(cycles, [](const auto& lhs, const auto& rhs) { return lhs.size() < rhs.size(); });
 
     nodes[largestCycleIt->getCycle().front()->index].position = Position(0, 0);
 
@@ -483,8 +463,7 @@ ColoredString StructurePrinter::getNewClosureSymbol()
     return ColoredString('%' + std::to_string(expandedCycleCount), OS::BasicColor::DARK_YELLOW_BG);
 }
 
-std::optional<std::pair<Position, Direction>>
-StructurePrinter::inferEdgePosition(const Position from, const Position to)
+std::optional<std::pair<Position, Direction>> StructurePrinter::inferEdgePosition(const Position from, const Position to)
 {
     const auto diff               = to - from;
     const auto absDiff            = diff.abs();
@@ -518,8 +497,8 @@ bool StructurePrinter::isSymbol(const Point<int32_t> position) const
     return chr != 'H' && Bond::fromASCII(chr) == BondType::NONE;
 }
 
-bool StructurePrinter::isAmbiguousBondPlacement(
-    const Position position, const Direction direction, const BondType bondType) const
+bool
+StructurePrinter::isAmbiguousBondPlacement(const Position position, const Direction direction, const BondType bondType) const
 {
     // Bond types with incomplete 8-direction ASCII representation can produce ambiguity in some
     // cases: A B   .
@@ -529,9 +508,7 @@ bool StructurePrinter::isAmbiguousBondPlacement(
     return not Bond::hasCompleteASCIIRepresentation(bondType) &&
            direction.isDiagonal() &&
            (isSymbol(position + direction.turn<Rotation::CLOCKWISE>(Angle::PERPENDICULAR).get()) &&
-            isSymbol(
-                position +
-                direction.turn<Rotation::COUNTER_CLOCKWISE>(Angle::PERPENDICULAR).get()));
+            isSymbol(position + direction.turn<Rotation::COUNTER_CLOCKWISE>(Angle::PERPENDICULAR).get()));
 }
 
 bool StructurePrinter::isAmbiguousBondPlacement(
@@ -541,17 +518,12 @@ bool StructurePrinter::isAmbiguousBondPlacement(
     const std::vector<PositionLine>& lookaheadSymbols) const
 {
     const auto isSymbolCheck = [&](const auto pos) {
-        return isSymbol(pos) || std::ranges::any_of(lookaheadSymbols, [pos](const auto s) {
-            return s.contains(pos);
-        });
+        return isSymbol(pos) || std::ranges::any_of(lookaheadSymbols, [pos](const auto s) { return s.contains(pos); });
     };
     return not Bond::hasCompleteASCIIRepresentation(bondType) &&
            direction.isDiagonal() &&
-           (isSymbolCheck(
-                position + direction.turn<Rotation::CLOCKWISE>(Angle::PERPENDICULAR).get()) &&
-            isSymbolCheck(
-                position +
-                direction.turn<Rotation::COUNTER_CLOCKWISE>(Angle::PERPENDICULAR).get()));
+           (isSymbolCheck(position + direction.turn<Rotation::CLOCKWISE>(Angle::PERPENDICULAR).get()) &&
+            isSymbolCheck(position + direction.turn<Rotation::COUNTER_CLOCKWISE>(Angle::PERPENDICULAR).get()));
 }
 
 bool StructurePrinter::isClutteredAtomPlacement(const PositionLine position) const
@@ -560,13 +532,11 @@ bool StructurePrinter::isClutteredAtomPlacement(const PositionLine position) con
     //  **    .
     // *Si*   .
     //  **    .
-    if (isSymbol(position.origin + Direction::Left.get()) ||
-        isSymbol(position.endPoint() + Direction::Right.get()))
+    if (isSymbol(position.origin + Direction::Left.get()) || isSymbol(position.endPoint() + Direction::Right.get()))
         return true;
 
     for (Symbol::SizeT i = 0; i < position.length; ++i)
-        if (isSymbol(position.origin + Direction::Up.get()) ||
-            isSymbol(position.endPoint() + Direction::Down.get()))
+        if (isSymbol(position.origin + Direction::Up.get()) || isSymbol(position.endPoint() + Direction::Down.get()))
             return true;
 
     return false;
@@ -618,8 +588,7 @@ std::tuple<Position, PositionLine, ASCII::Direction> StructurePrinter::getFreeCy
     return utils::npos<std::tuple<Position, PositionLine, ASCII::Direction>>;
 }
 
-std::tuple<Position, PositionLine, ASCII::Direction>
-StructurePrinter::getFreeCycleClosurePositionLookahead(
+std::tuple<Position, PositionLine, ASCII::Direction> StructurePrinter::getFreeCycleClosurePositionLookahead(
     const PositionLine              prevNodePos,
     const BondType                  bondType,
     const Symbol::SizeT             closureSymbolSize,
@@ -634,8 +603,7 @@ StructurePrinter::getFreeCycleClosurePositionLookahead(
             buffer.isWhiteSpace(closurePos) &&
             not isAmbiguousBondPlacement(edgePos, dir, bondType) &&
             not isAmbiguousAtomPlacement(closurePos) &&
-            not isAmbiguousBondPlacement(
-                prevBondPos, prevBondDirection, prevBondType, {prevNodePos, closurePos}))
+            not isAmbiguousBondPlacement(prevBondPos, prevBondDirection, prevBondType, {prevNodePos, closurePos}))
             return std::make_tuple(edgePos, closurePos, dir);
     }
 
@@ -650,9 +618,8 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
     const bool                                noConstraints,
     const Direction                           enteringDirection) const
 {
-    const auto directions = utils::isNPos(enteringDirection)
-                                ? Direction::AllDirectionsVector
-                                : getDirectionsByEnteringDirection(enteringDirection);
+    const auto directions = utils::isNPos(enteringDirection) ? Direction::AllDirectionsVector
+                                                             : getDirectionsByEnteringDirection(enteringDirection);
 
     const auto& firstAtom  = *cycle[firstCycleIdx];
     const auto& secondAtom = *cycle[secondCycleIdx];
@@ -671,24 +638,17 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
             : std::make_pair(
                   Direction(
                       firstPosition.origin -
-                      nodes[cycle[(firstCycleIdx + cycle.size() - 1) % cycle.size()]->index]
-                          .position),
-                  Direction(
-                      nodes[cycle[(lastCycleIdx + 1) % cycle.size()]->index].position -
-                      lastPosition.origin));
+                      nodes[cycle[(firstCycleIdx + cycle.size() - 1) % cycle.size()]->index].position),
+                  Direction(nodes[cycle[(lastCycleIdx + 1) % cycle.size()]->index].position - lastPosition.origin));
 
     const auto penultimateCycleIdx = (lastCycleIdx + cycle.size() - 2) % cycle.size();
-    const auto totalAtomsToPrint = secondCycleIdx < lastCycleIdx ? lastCycleIdx - secondCycleIdx + 1
-                                                                 :  // current->end
-                                       cycle.size() -
-                                           secondCycleIdx +
-                                           lastCycleIdx +
-                                           1;  // current->last_in_cycle + first_in_cycle->end
+    const auto totalAtomsToPrint =
+        secondCycleIdx < lastCycleIdx ? lastCycleIdx - secondCycleIdx + 1 :  // current->end
+            cycle.size() - secondCycleIdx + lastCycleIdx + 1;                // current->last_in_cycle + first_in_cycle->end
 
     const auto& firstToSecondBond = *firstAtom.getBondTo(secondAtom);
 
-    const utils::LinearQuantization dirOrderModifierQuant(
-        uint8_t(0), static_cast<uint8_t>(directions.size()), 1.0f, 0.9f);
+    const utils::LinearQuantization dirOrderModifierQuant(uint8_t(0), static_cast<uint8_t>(directions.size()), 1.0f, 0.9f);
 
     std::priority_queue<CyclePrintState> stack;
     if (totalAtomsToPrint == 2 && not noConstraints) {
@@ -709,9 +669,8 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
         //   P       P                 .
         uint8_t foundDirs = 0;
         for (uint8_t dirIdx = 0; dirIdx < directions.size(); ++dirIdx) {
-            const auto dir = directions[dirIdx];
-            const auto [newEdgePos, newNodePos] =
-                getNextPosition(firstPosition, dir.get(), secondSymbolSize);
+            const auto dir                      = directions[dirIdx];
+            const auto [newEdgePos, newNodePos] = getNextPosition(firstPosition, dir.get(), secondSymbolSize);
 
             if (not buffer.isWhiteSpace(newEdgePos) ||
                 not buffer.isWhiteSpace(newNodePos) ||
@@ -740,13 +699,9 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
             // The first directions have slightly higher score.
             const auto directionOrderModifier = dirOrderModifierQuant(dirIdx);
             const auto score =
-                (combineScores(
-                     firstPrevDirection.getCyclicAngleScore(dir),
-                     firstToSecondBond.getASCIIScore(dir)) *
+                (combineScores(firstPrevDirection.getCyclicAngleScore(dir), firstToSecondBond.getASCIIScore(dir)) *
                      directionOrderModifier +
-                 combineScores(
-                     dir.getCyclicAngleScore(dirToFirst),
-                     lastToFirstBond.getASCIIScore(dirToFirst)) +
+                 combineScores(dir.getCyclicAngleScore(dirToFirst), lastToFirstBond.getASCIIScore(dirToFirst)) +
                  combineScores(dirToFirst.getCyclicAngleScore(lastDirection), 1.0f)) /
                 3.0f;
 
@@ -761,9 +716,8 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
     else {
         // Regular case where 2 or more nodes need to be printed.
         for (uint8_t dirIdx = 0; dirIdx < directions.size(); ++dirIdx) {
-            const auto dir = directions[dirIdx];
-            const auto [newEdgePos, newNodePos] =
-                getNextPosition(firstPosition, dir.get(), secondSymbolSize);
+            const auto dir                      = directions[dirIdx];
+            const auto [newEdgePos, newNodePos] = getNextPosition(firstPosition, dir.get(), secondSymbolSize);
 
             if (not buffer.isWhiteSpace(newEdgePos) ||
                 not buffer.isWhiteSpace(newNodePos) ||
@@ -774,11 +728,10 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
 
             // The first directions have slightly higher score.
             const auto directionOrderModifier = dirOrderModifierQuant(dirIdx);
-            const auto initialScore =
-                combineScores(
-                    noConstraints ? 1.0f : firstPrevDirection.getCyclicAngleScore(dir),
-                    firstToSecondBond.getASCIIScore(dir)) *
-                directionOrderModifier;
+            const auto initialScore           = combineScores(
+                                          noConstraints ? 1.0f : firstPrevDirection.getCyclicAngleScore(dir),
+                                          firstToSecondBond.getASCIIScore(dir)) *
+                                      directionOrderModifier;
 
             stack.emplace(initialScore, std::vector<PositionLine>{newNodePos});
         }
@@ -801,20 +754,16 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
             return std::move(current.positions);
         }
 
-        const auto firstDirection =
-            Direction(current.positions.front().origin - firstPosition.origin);
+        const auto firstDirection = Direction(current.positions.front().origin - firstPosition.origin);
         const auto prevDirection =
-            positionCount >= 2
-                ? Direction(
-                      current.positions.back().origin - current.positions[positionCount - 2].origin)
-                : firstDirection;
-        const auto prevAngle = positionCount >= 3
-                                   ? Direction(
-                                         current.positions[positionCount - 2].origin -
-                                         current.positions[positionCount - 3].origin)
-                                         .getAngle(prevDirection)
-                               : positionCount == 2 ? firstDirection.getAngle(prevDirection)
-                                                    : Angle::NONE;
+            positionCount >= 2 ? Direction(current.positions.back().origin - current.positions[positionCount - 2].origin)
+                               : firstDirection;
+        const auto prevAngle =
+            positionCount >= 3
+                ? Direction(current.positions[positionCount - 2].origin - current.positions[positionCount - 3].origin)
+                      .getAngle(prevDirection)
+            : positionCount == 2 ? firstDirection.getAngle(prevDirection)
+                                 : Angle::NONE;
 
         const auto  currentIdx     = (positionCount + secondCycleIdx - 1) % cycle.size();
         const auto  nextIdx        = (currentIdx + 1) % cycle.size();
@@ -860,11 +809,9 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
                         ? (current.scoreSum -
                            combineScores(1.0f, firstToSecondBond.getASCIIScore(firstDirection)) +
                            combineScores(
-                               prevDirection.getCyclicAngleScore(dirToLast),
-                               currentToLastBond.getASCIIScore(dirToLast)) +
+                               prevDirection.getCyclicAngleScore(dirToLast), currentToLastBond.getASCIIScore(dirToLast)) +
                            combineScores(
-                               dirToLast.getCyclicAngleScore(dirToFirst),
-                               lastToFirstBond.getASCIIScore(dirToFirst)) +
+                               dirToLast.getCyclicAngleScore(dirToFirst), lastToFirstBond.getASCIIScore(dirToFirst)) +
                            combineScores(
                                dirToFirst.getCyclicAngleScore(firstDirection),
                                firstToSecondBond.getASCIIScore(firstDirection))) *
@@ -872,11 +819,9 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
                               (newPositions.size() + 1)
                         : (current.scoreSum +
                            combineScores(
-                               prevDirection.getCyclicAngleScore(dirToLast),
-                               currentToLastBond.getASCIIScore(dirToLast)) +
+                               prevDirection.getCyclicAngleScore(dirToLast), currentToLastBond.getASCIIScore(dirToLast)) +
                            combineScores(
-                               dirToLast.getCyclicAngleScore(dirToFirst),
-                               lastToFirstBond.getASCIIScore(dirToFirst)) +
+                               dirToLast.getCyclicAngleScore(dirToFirst), lastToFirstBond.getASCIIScore(dirToFirst)) +
                            combineScores(dirToFirst.getCyclicAngleScore(lastDirection), 1.0f)) *
                               newPositions.size() /
                               (newPositions.size() + 2);
@@ -895,8 +840,7 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
         const auto& bondToNext = *currentAtom.getBondTo(nextAtom);
 
         for (const auto& dir : Direction::AllDirections) {
-            const auto [newEdgePos, newNodePos] =
-                getNextPosition(current.positions.back(), dir.get(), nextSymbolSize);
+            const auto [newEdgePos, newNodePos] = getNextPosition(current.positions.back(), dir.get(), nextSymbolSize);
 
             if (not buffer.isWhiteSpace(newEdgePos) ||
                 not buffer.isWhiteSpace(newNodePos) ||
@@ -909,12 +853,9 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
             // If there aren't enough nodes to get back to the first node, the branch can be pruned.
             // This vastly improves hit-rate on larger cycle sizes.
             const auto distanceToFirst = newNodePos.origin.chebyshevDistance(lastPosition.origin);
-            const auto remainingAtoms  = currentIdx < lastCycleIdx ? lastCycleIdx - currentIdx - 2
-                                                                   :  // current->end
-                                            cycle.size() -
-                                                currentIdx +
-                                                lastCycleIdx -
-                                                1;  // current->last_in_cycle + first_in_cycle->end
+            const auto remainingAtoms =
+                currentIdx < lastCycleIdx ? lastCycleIdx - currentIdx - 2 :  // current->end
+                    cycle.size() - currentIdx + lastCycleIdx - 1;            // current->last_in_cycle + first_in_cycle->end
             // One bond from last to first (+1), then each atom comes with a bond (+nodes*2) and
             // we should reach an adjacent position to start, not start itself (+1).
             if (remainingAtoms * 2 + 2 < distanceToFirst)
@@ -927,9 +868,8 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
             auto newPositions = current.positions;
             newPositions.emplace_back(newNodePos);
 
-            const auto newEdgeScore = combineScores(
-                prevDirection.getCyclicAngleScore(dir), bondToNext.getASCIIScore(dir));
-            const auto newScoreSum = current.scoreSum + newEdgeScore;
+            const auto newEdgeScore = combineScores(prevDirection.getCyclicAngleScore(dir), bondToNext.getASCIIScore(dir));
+            const auto newScoreSum  = current.scoreSum + newEdgeScore;
 
             stack.emplace(newScoreSum, std::move(newPositions));
         }
@@ -1035,9 +975,8 @@ std::vector<PositionLine> StructurePrinter::generateOneShotCycleLayout(
     // C     C   .
     //  \   /    .
     //   C-S     .
-    const auto directions = utils::isNPos(enteringDirection)
-                                ? std::vector<Direction>{Direction::Left}
-                                : getDirectionsByEnteringDirection(enteringDirection);
+    const auto directions = utils::isNPos(enteringDirection) ? std::vector<Direction>{Direction::Left}
+                                                             : getDirectionsByEnteringDirection(enteringDirection);
 
     for (const auto dir : directions) {
         auto prevIdx       = firstCycleIdx;
@@ -1056,12 +995,10 @@ std::vector<PositionLine> StructurePrinter::generateOneShotCycleLayout(
                 const auto& currentAtom       = *cycle[currentIdx];
                 const auto  currentSymbolSize = nodes[currentAtom.index].getSymbolSize();
 
-                const auto [edgePos, nodePos] =
-                    getNextPosition(prevPosition, prevDirection, currentSymbolSize);
+                const auto [edgePos, nodePos] = getNextPosition(prevPosition, prevDirection, currentSymbolSize);
                 if (not buffer.isWhiteSpace(edgePos) ||
                     not buffer.isWhiteSpace(nodePos) ||
-                    isAmbiguousBondPlacement(
-                        edgePos, prevDirection, prevAtom.getBondTo(currentAtom)->getType()) ||
+                    isAmbiguousBondPlacement(edgePos, prevDirection, prevAtom.getBondTo(currentAtom)->getType()) ||
                     isAmbiguousAtomPlacement(nodePos) ||
                     isClutteredAtomPlacement(nodePos)) {
                     failed = true;
@@ -1090,8 +1027,7 @@ std::vector<PositionLine> StructurePrinter::generateOneShotCycleLayout(
         // Check last edge.
         const auto edgePos = getNextEdgePosition(prevPosition, prevDirection);
         if (not buffer.isWhiteSpace(edgePos) ||
-            isAmbiguousBondPlacement(
-                edgePos, dirToFirst, cycle[prevIdx]->getBondTo(firstAtom)->getType()))
+            isAmbiguousBondPlacement(edgePos, dirToFirst, cycle[prevIdx]->getBondTo(firstAtom)->getType()))
             return {};
 
         Log(this).trace("Generated one-shot layout of size {0}.", cycle.size());
@@ -1102,10 +1038,7 @@ std::vector<PositionLine> StructurePrinter::generateOneShotCycleLayout(
 }
 
 void StructurePrinter::expandCycleLinearly(
-    const Cycle&          cycle,
-    const BondedAtomBase& firstAtom,
-    const c_size          secondCycleIdx,
-    const c_size          lastCycleIdx)
+    const Cycle& cycle, const BondedAtomBase& firstAtom, const c_size secondCycleIdx, const c_size lastCycleIdx)
 {
     const auto closureSymbol = getNewClosureSymbol();
 
@@ -1118,12 +1051,9 @@ void StructurePrinter::expandCycleLinearly(
     //  C-C-C-A-A-%1   .
     // /     \         .
 
-    auto totalAtomsToPrint = secondCycleIdx < lastCycleIdx ? lastCycleIdx - secondCycleIdx + 1
-                                                           :  // current->end
-                                 cycle.size() -
-                                     secondCycleIdx +
-                                     lastCycleIdx +
-                                     1;  // current->last_in_cycle + first_in_cycle->end
+    auto totalAtomsToPrint =
+        secondCycleIdx < lastCycleIdx ? lastCycleIdx - secondCycleIdx + 1 :  // current->end
+            cycle.size() - secondCycleIdx + lastCycleIdx + 1;                // current->last_in_cycle + first_in_cycle->end
     std::vector<std::pair<const Node*, ASCII::Direction>> printedAtoms;
     printedAtoms.reserve(totalAtomsToPrint);
 
@@ -1142,32 +1072,24 @@ void StructurePrinter::expandCycleLinearly(
         const auto scalingFactor  = getPrintAwayScalingFactor(printAwayPoint, prevPosition.origin);
         std::ranges::sort(directionsCopy, [&](const auto lhs, const auto rhs) {
             const auto lhsScore = utils::isqrt(
-                round_cast<uint16_t>(printAwayPoint.squaredDistance(
-                    prevPosition.origin + lhs.get() * scalingFactor)));
+                round_cast<uint16_t>(printAwayPoint.squaredDistance(prevPosition.origin + lhs.get() * scalingFactor)));
             const auto rhsScore = utils::isqrt(
-                round_cast<uint16_t>(printAwayPoint.squaredDistance(
-                    prevPosition.origin + rhs.get() * scalingFactor)));
+                round_cast<uint16_t>(printAwayPoint.squaredDistance(prevPosition.origin + rhs.get() * scalingFactor)));
             return lhsScore > rhsScore;
         });
 
         auto tempClosurePos = getFreeCycleClosurePosition(
-            prevPosition,
-            bondToNext->getType(),
-            static_cast<Symbol::SizeT>(closureSymbol.size()),
-            directionsCopy);
+            prevPosition, bondToNext->getType(), static_cast<Symbol::SizeT>(closureSymbol.size()), directionsCopy);
         if (utils::isNPos(tempClosurePos)) {
-            printError(
-                prevPosition.origin,
-                "Insufficient space for cycle closure: '" + closureSymbol.toString() + "'.");
+            printError(prevPosition.origin, "Insufficient space for cycle closure: '" + closureSymbol.toString() + "'.");
             return;
         }
 
         auto [closureEdgePos, closureNodePos, closureDir] = tempClosurePos;
 
         while (idx != endIdx) {
-            const auto nextIdx =
-                backward ? (idx + cycle.size() - 1) % cycle.size() : (idx + 1) % cycle.size();
-            bondToNext = prevAtom->getBondTo(*currentAtom);
+            const auto nextIdx = backward ? (idx + cycle.size() - 1) % cycle.size() : (idx + 1) % cycle.size();
+            bondToNext         = prevAtom->getBondTo(*currentAtom);
 
             for (const auto dir : directionsCopy) {
                 // Check that after inserting the current node (C) enough space remains for the
@@ -1179,8 +1101,8 @@ void StructurePrinter::expandCycleLinearly(
                 // P %xP   .
                 //  \ /    .
                 //   P     .
-                const auto [edgePos, nodePos] = getNextPosition(
-                    prevPosition, dir, static_cast<Symbol::SizeT>(currentSymbol->size()));
+                const auto [edgePos, nodePos] =
+                    getNextPosition(prevPosition, dir, static_cast<Symbol::SizeT>(currentSymbol->size()));
                 if (not buffer.isWhiteSpace(edgePos) ||
                     not buffer.isWhiteSpace(nodePos) ||
                     isAmbiguousAtomPlacement(nodePos))
@@ -1243,8 +1165,7 @@ void StructurePrinter::expandCycleLinearly(
     for (const auto& [node, prevDir] : printedAtoms) printNeighbors(*node, prevDir, &cycle);
 }
 
-void StructurePrinter::printError(
-    const Position point, const std::string& message, std::source_location&& location)
+void StructurePrinter::printError(const Position point, const std::string& message, std::source_location&& location)
 {
     ++errorCount;
     const auto errorSymbolStr = ASCII::AshUppercase + std::to_string(errorCount);
@@ -1271,8 +1192,7 @@ void StructurePrinter::printError(
 
 void StructurePrinter::printImpliedHydrogens(const Node& node)
 {
-    static constexpr std::array<Direction, 4> directions{
-        Direction::Right, Direction::Left, Direction::Down, Direction::Up};
+    static constexpr std::array<Direction, 4> directions{Direction::Right, Direction::Left, Direction::Down, Direction::Up};
 
     const auto hCount = MolecularStructure::getImpliedHydrogenCount(node.getAtom());
     if (hCount <= 0)
@@ -1299,10 +1219,7 @@ void StructurePrinter::printImpliedHydrogens(const Node& node)
 }
 
 void StructurePrinter::printEdge(
-    const Position        position,
-    const Direction       direction,
-    const BondedAtomBase& from,
-    const BondedAtomBase& to)
+    const Position position, const Direction direction, const BondedAtomBase& from, const BondedAtomBase& to)
 {
     auto& edge       = getEdge(from, to);
     edge.visited     = true;
@@ -1341,9 +1258,7 @@ void StructurePrinter::printUnmaterializedEdges()
                 static_cast<Symbol::SizeT>(closureSymbol.size()),
                 getLinearPreferredDirections());
             if (utils::isNPos(edgePos)) {
-                printError(
-                    nodeA.position,
-                    "Insufficient space for cycle closure: '" + closureSymbol.toString() + "'.");
+                printError(nodeA.position, "Insufficient space for cycle closure: '" + closureSymbol.toString() + "'.");
                 return;
             }
 
@@ -1360,8 +1275,7 @@ void StructurePrinter::printUnmaterializedEdges()
     }
 }
 
-void StructurePrinter::printNeighbors(
-    const Node& node, const Direction prevDirection, const Cycle* cycle)
+void StructurePrinter::printNeighbors(const Node& node, const Direction prevDirection, const Cycle* cycle)
 {
     class Neighbor
     {
@@ -1397,8 +1311,7 @@ void StructurePrinter::printNeighbors(
             }
 
             // Find the constraint count of the largest cycle.
-            const auto constraintCount =
-                largestCycle ? largestCycle->countVisitedAtoms(nodes) : c_size(0);
+            const auto constraintCount = largestCycle ? largestCycle->countVisitedAtoms(nodes) : c_size(0);
 
             return Neighbor(bond, largestCycle, constraintCount);
         }
@@ -1463,12 +1376,9 @@ void StructurePrinter::printNeighbors(
             //     /|\    .
             //    4 3 2   .
             // (1-best, 4-worst)
-            std::ranges::sort(
-                directionsCopy, [prevDirection, &bond](const auto lhs, const auto rhs) {
-                const auto lhsScore =
-                    underlying_cast(prevDirection.getAngle(lhs)) * bond.getASCIIScore(lhs);
-                const auto rhsScore =
-                    underlying_cast(prevDirection.getAngle(rhs)) * bond.getASCIIScore(rhs);
+            std::ranges::sort(directionsCopy, [prevDirection, &bond](const auto lhs, const auto rhs) {
+                const auto lhsScore = underlying_cast(prevDirection.getAngle(lhs)) * bond.getASCIIScore(lhs);
+                const auto rhsScore = underlying_cast(prevDirection.getAngle(rhs)) * bond.getASCIIScore(rhs);
                 return lhsScore > rhsScore;
             });
             propagatedDir = prevDirection;
@@ -1486,25 +1396,22 @@ void StructurePrinter::printNeighbors(
             const auto printAwayPoint = node.getPrintAwayPoint();
             const auto scalingFactor  = getPrintAwayScalingFactor(printAwayPoint, node.position);
             std::ranges::sort(directionsCopy, [&](const auto lhs, const auto rhs) {
-                const auto lhsScore = utils::isqrt(
-                                          round_cast<uint16_t>(printAwayPoint.squaredDistance(
-                                              node.position + lhs.get() * scalingFactor))) *
-                                      bond.getASCIIScore(lhs);
-                const auto rhsScore = utils::isqrt(
-                                          round_cast<uint16_t>(printAwayPoint.squaredDistance(
-                                              node.position + rhs.get() * scalingFactor))) *
-                                      bond.getASCIIScore(rhs);
+                const auto lhsScore =
+                    utils::isqrt(
+                        round_cast<uint16_t>(printAwayPoint.squaredDistance(node.position + lhs.get() * scalingFactor))) *
+                    bond.getASCIIScore(lhs);
+                const auto rhsScore =
+                    utils::isqrt(
+                        round_cast<uint16_t>(printAwayPoint.squaredDistance(node.position + rhs.get() * scalingFactor))) *
+                    bond.getASCIIScore(rhs);
                 return lhsScore > rhsScore;
             });
 
-            propagatedDir = *std::ranges::max_element(
-                getLinearPreferredDirections(), [&](const auto lhs, const auto rhs) {
+            propagatedDir = *std::ranges::max_element(getLinearPreferredDirections(), [&](const auto lhs, const auto rhs) {
                 const auto lhsScore = utils::isqrt(
-                    round_cast<uint16_t>(
-                        printAwayPoint.squaredDistance(node.position + lhs.get() * scalingFactor)));
+                    round_cast<uint16_t>(printAwayPoint.squaredDistance(node.position + lhs.get() * scalingFactor)));
                 const auto rhsScore = utils::isqrt(
-                    round_cast<uint16_t>(
-                        printAwayPoint.squaredDistance(node.position + rhs.get() * scalingFactor)));
+                    round_cast<uint16_t>(printAwayPoint.squaredDistance(node.position + rhs.get() * scalingFactor)));
                 return lhsScore < rhsScore;
             });
         }
@@ -1513,8 +1420,7 @@ void StructurePrinter::printNeighbors(
         for (uint8_t dirIdx = 0; dirIdx < directionsCopy.size(); ++dirIdx) {
             const auto dir = directionsCopy[dirIdx];
 
-            const auto [edgePos, nodePos] =
-                getNextPosition(node.getPosition(), dir, otherNode.getSymbolSize());
+            const auto [edgePos, nodePos] = getNextPosition(node.getPosition(), dir, otherNode.getSymbolSize());
             if (not buffer.isWhiteSpace(edgePos) ||
                 not buffer.isWhiteSpace(nodePos) ||
                 isAmbiguousBondPlacement(edgePos, dir, n.getBond().getType()) ||
@@ -1555,9 +1461,7 @@ void StructurePrinter::printNeighbors(
         }
 
         if (not dirFound)
-            printError(
-                node.position,
-                "Insufficient space for atom: '" + other.getAtom().getSymbol().str() + "'.");
+            printError(node.position, "Insufficient space for atom: '" + other.getAtom().getSymbol().str() + "'.");
     }
 
     static const auto carbon = Atom("C");
@@ -1567,8 +1471,7 @@ void StructurePrinter::printNeighbors(
         printImpliedHydrogens(node);
 }
 
-void StructurePrinter::printCycle(
-    const c_size startCycleIdx, Cycle& cycle, const Direction enteringDirection)
+void StructurePrinter::printCycle(const c_size startCycleIdx, Cycle& cycle, const Direction enteringDirection)
 {
     // If another atom of the cycle has already been printed, it's position is considered a
     // constraint. This should only occur if this cycle is part of a poly-cycle and at least one of
@@ -1596,8 +1499,7 @@ void StructurePrinter::printCycle(
         // ..-L-C..C-F-S-..
         do {
             lastCycleIdx = (lastCycleIdx + cycle.size() - 1) % cycle.size();
-        } while (
-            nodes[cycle.getAtom((lastCycleIdx + cycle.size() - 1) % cycle.size()).index].visited());
+        } while (nodes[cycle.getAtom((lastCycleIdx + cycle.size() - 1) % cycle.size()).index].visited());
 
         secondCycleIdx = startCycleIdx;
         firstCycleIdx  = (secondCycleIdx + cycle.size() - 1) % cycle.size();
@@ -1629,27 +1531,19 @@ void StructurePrinter::printCycle(
 
     const auto& firstAtom = cycle.getAtom(firstCycleIdx);
 
-    const auto totalAtomsToPrint =
-        secondCycleIdx < lastCycleIdx
-            ? lastCycleIdx - secondCycleIdx + 1 - (not noConstraints)
-            : cycle.size() - secondCycleIdx + lastCycleIdx + 1 - (not noConstraints);
+    const auto totalAtomsToPrint = secondCycleIdx < lastCycleIdx
+                                       ? lastCycleIdx - secondCycleIdx + 1 - (not noConstraints)
+                                       : cycle.size() - secondCycleIdx + lastCycleIdx + 1 - (not noConstraints);
 
     std::vector<PositionLine> positions;
     if (noConstraints && cycle.size() > 12)
-        positions = generateOneShotCycleLayout(
-            cycle.getCycle(), firstCycleIdx, secondCycleIdx, enteringDirection);
+        positions = generateOneShotCycleLayout(cycle.getCycle(), firstCycleIdx, secondCycleIdx, enteringDirection);
     if (positions.empty() && totalAtomsToPrint <= 18)
         positions = generateOptimalCycleLayout(
-            cycle.getCycle(),
-            firstCycleIdx,
-            secondCycleIdx,
-            lastCycleIdx,
-            noConstraints,
-            enteringDirection);
+            cycle.getCycle(), firstCycleIdx, secondCycleIdx, lastCycleIdx, noConstraints, enteringDirection);
     if (positions.empty()) {
         Log(this).trace("Failed to print ASCII cycle, reverting to linear printing.");
-        expandCycleLinearly(
-            cycle, noConstraints ? startAtom : firstAtom, secondCycleIdx, lastCycleIdx);
+        expandCycleLinearly(cycle, noConstraints ? startAtom : firstAtom, secondCycleIdx, lastCycleIdx);
         return;
     }
 
@@ -1691,18 +1585,15 @@ void StructurePrinter::printCycle(
                 totalConstraintCount += cycle.countVisitedAtoms(nodes);
             }
 
-            const auto unprintedNeighbourCount =
-                static_cast<c_size>(std::ranges::count_if(atom.bonds, [&](const auto& bond) {
-                return not nodes[bond.getOther().index].visited();
-            }));
+            const auto unprintedNeighbourCount = static_cast<c_size>(std::ranges::count_if(
+                atom.bonds, [&](const auto& bond) { return not nodes[bond.getOther().index].visited(); }));
 
             return Member(atom, totalConstraintCount, totalCycleSize, unprintedNeighbourCount);
         }
     };
 
-    const auto& secondAtom = cycle.getAtom(secondCycleIdx);
-    const auto  startPosition =
-        noConstraints ? nodes[startAtom.index].position : nodes[firstAtom.index].position;
+    const auto& secondAtom    = cycle.getAtom(secondCycleIdx);
+    const auto  startPosition = noConstraints ? nodes[startAtom.index].position : nodes[firstAtom.index].position;
 
     // Print the first bond.
     if (noConstraints) {
@@ -1756,8 +1647,7 @@ void StructurePrinter::printCycle(
         const auto centerPos = round_cast<ColoredTextBlock::IndexT>(cycle.centroid);
 
         const ColoredString label(
-            std::to_string(
-                std::ranges::count_if(cycles, [](const auto& c) { return c.visited(); })),
+            std::to_string(std::ranges::count_if(cycles, [](const auto& c) { return c.visited(); })),
             OS::BasicColor::DARK_GREY);
         if (buffer.isWhiteSpace(centerPos, label.size()))
             buffer.insert(centerPos, label);
@@ -1792,9 +1682,8 @@ void StructurePrinter::printCycle(
         return lhs.totalConstraintCount > rhs.totalConstraintCount   ? true
                : lhs.totalConstraintCount < rhs.totalConstraintCount ? false
                : lhs.totalCycleSize > rhs.totalCycleSize             ? true
-               : lhs.totalCycleSize < rhs.totalCycleSize
-                   ? false
-                   : lhs.unprintedNeighbourCount > rhs.unprintedNeighbourCount;
+               : lhs.totalCycleSize < rhs.totalCycleSize             ? false
+                                                         : lhs.unprintedNeighbourCount > rhs.unprintedNeighbourCount;
     });
 
     for (const auto& atom : printedAtoms) {

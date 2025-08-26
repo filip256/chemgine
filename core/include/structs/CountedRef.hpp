@@ -94,8 +94,7 @@ CountedRef<T>::CountedRef(T& object) noexcept :
 
 template <CountableType T>
 CountedRef<T>::CountedRef(CountedRef&& other) noexcept :
-    CountedRef(
-        other)  // move also increments the ref count since (dtors are called on moved objects too)
+    CountedRef(other)  // move also increments the ref count since (dtors are called on moved objects too)
 {}
 
 template <CountableType T>

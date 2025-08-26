@@ -23,10 +23,7 @@ std::string Bond::getSMILES() const { return getSMILES(type); }
 
 char Bond::getASCII(const ASCII::Direction direction) const { return getASCII(type, direction); }
 
-float_s Bond::getASCIIScore(const ASCII::Direction direction) const
-{
-    return getASCIIScore(type, direction);
-}
+float_s Bond::getASCIIScore(const ASCII::Direction direction) const { return getASCIIScore(type, direction); }
 
 std::string Bond::getSMILES(const BondType type)
 {

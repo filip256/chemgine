@@ -13,27 +13,20 @@ bool AtomRepository::add<AtomData>(const def::Object& definition)
 {
     const auto symbol = def::parse<Symbol>(definition.getSpecifier());
     if (not symbol) {
-        Log(this).error(
-            "Invalid atom symbol: '{0}' at: {1}.",
-            definition.getSpecifier(),
-            definition.getLocationName());
+        Log(this).error("Invalid atom symbol: '{0}' at: {1}.", definition.getSpecifier(), definition.getLocationName());
         return false;
     }
 
-    const auto name   = definition.getProperty(def::Atoms::Name);
-    const auto weight = definition.getProperty(def::Atoms::Weight, def::parse<Amount<Unit::GRAM>>);
-    auto valences = definition.getProperty(def::Atoms::Valences, def::parse<std::vector<uint8_t>>);
+    const auto name     = definition.getProperty(def::Atoms::Name);
+    const auto weight   = definition.getProperty(def::Atoms::Weight, def::parse<Amount<Unit::GRAM>>);
+    auto       valences = definition.getProperty(def::Atoms::Valences, def::parse<std::vector<uint8_t>>);
 
     if (not(name && weight && valences)) {
         Log(this).error("Incomplete atom definition at: {0}.", definition.getLocationName());
         return false;
     }
 
-    if (not atoms
-                .emplace(
-                    *symbol,
-                    std::make_unique<AtomData>(*symbol, *name, *weight, std::move(*valences)))
-                .second) {
+    if (not atoms.emplace(*symbol, std::make_unique<AtomData>(*symbol, *name, *weight, std::move(*valences))).second) {
         Log(this).warn("Atom with duplicate symbol: '{0}' skipped.", *symbol);
         return false;
     }
@@ -47,16 +40,12 @@ bool AtomRepository::add<RadicalData>(const def::Object& definition)
 {
     const auto symbol = def::parse<Symbol>(definition.getSpecifier());
     if (not symbol) {
-        Log(this).error(
-            "Invalid radical symbol: '{0}' at: {1}.",
-            definition.getSpecifier(),
-            definition.getLocationName());
+        Log(this).error("Invalid radical symbol: '{0}' at: {1}.", definition.getSpecifier(), definition.getLocationName());
         return false;
     }
 
-    const auto name = definition.getDefaultProperty(def::Atoms::Name, utils::copy(symbol->str()));
-    const auto matches =
-        definition.getProperty(def::Atoms::RadicalMatches, def::parse<std::vector<Symbol>>);
+    const auto name    = definition.getDefaultProperty(def::Atoms::Name, utils::copy(symbol->str()));
+    const auto matches = definition.getProperty(def::Atoms::RadicalMatches, def::parse<std::vector<Symbol>>);
 
     if (not matches) {
         Log(this).error("Incomplete radical definition at: {0}.", definition.getLocationName());
@@ -77,16 +66,13 @@ bool AtomRepository::add<RadicalData>(const def::Object& definition)
         }
 
         if (contains(symbol) == false) {
-            Log(this).error(
-                "Unknown atom match symbol: '{0}', at: {1}.", symbol, definition.getLocationName());
+            Log(this).error("Unknown atom match symbol: '{0}', at: {1}.", symbol, definition.getLocationName());
             return false;
         }
     }
 
     std::unordered_set matchSet(matches->begin(), matches->end());
-    if (not radicals
-                .emplace(*symbol, std::make_unique<RadicalData>(*symbol, name, std::move(matchSet)))
-                .second) {
+    if (not radicals.emplace(*symbol, std::make_unique<RadicalData>(*symbol, name, std::move(matchSet))).second) {
         Log(this).warn("Atom with duplicate symbol: '{0}' skipped.", *symbol);
         return false;
     }
@@ -95,10 +81,7 @@ bool AtomRepository::add<RadicalData>(const def::Object& definition)
     return true;
 }
 
-bool AtomRepository::contains(const Symbol& symbol) const
-{
-    return atoms.contains(symbol) || radicals.contains(symbol);
-}
+bool AtomRepository::contains(const Symbol& symbol) const { return atoms.contains(symbol) || radicals.contains(symbol); }
 
 const AtomData& AtomRepository::at(const Symbol& symbol) const
 {

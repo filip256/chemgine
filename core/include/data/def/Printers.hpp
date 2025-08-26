@@ -79,11 +79,7 @@ public:
 
     static std::string prettyPrint(const std::pair<T1, T2>& object)
     {
-        return "{ " +
-               def::prettyPrint(object.first) +
-               ": " +
-               def::prettyPrint(object.second) +
-               " }";
+        return "{ " + def::prettyPrint(object.first) + ": " + def::prettyPrint(object.second) + " }";
     }
 };
 
@@ -195,15 +191,13 @@ class Printer<std::tuple<Args...>>
 {
 private:
     template <std::size_t... Is>
-    static void printTupleElements(
-        const std::tuple<Args...>& object, std::string& result, std::index_sequence<Is...>)
+    static void printTupleElements(const std::tuple<Args...>& object, std::string& result, std::index_sequence<Is...>)
     {
         ((result += def::print(std::get<Is>(object)) + ','), ...);
     }
 
     template <std::size_t... Is>
-    static void prettyPrintTupleElements(
-        const std::tuple<Args...>& object, std::string& result, std::index_sequence<Is...>)
+    static void prettyPrintTupleElements(const std::tuple<Args...>& object, std::string& result, std::index_sequence<Is...>)
     {
         ((result += def::prettyPrint(std::get<Is>(object)) + ", "), ...);
     }

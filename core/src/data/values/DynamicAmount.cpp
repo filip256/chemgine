@@ -14,22 +14,13 @@ DynamicAmount::DynamicAmount(const StorageType value, const Unit unit) noexcept 
     value(value)
 {}
 
-DynamicAmount::StorageType DynamicAmount::asKilo() const
-{
-    return static_cast<StorageType>(value / 1000.0);
-}
+DynamicAmount::StorageType DynamicAmount::asKilo() const { return static_cast<StorageType>(value / 1000.0); }
 
 DynamicAmount::StorageType DynamicAmount::asStd() const { return value; }
 
-DynamicAmount::StorageType DynamicAmount::asMilli() const
-{
-    return static_cast<StorageType>(value * 1000.0);
-}
+DynamicAmount::StorageType DynamicAmount::asMilli() const { return static_cast<StorageType>(value * 1000.0); }
 
-DynamicAmount::StorageType DynamicAmount::asMicro() const
-{
-    return static_cast<StorageType>(value / 1000000.0);
-}
+DynamicAmount::StorageType DynamicAmount::asMicro() const { return static_cast<StorageType>(value / 1000000.0); }
 
 std::optional<DynamicAmount> DynamicAmount::to(const Unit target) const
 {
@@ -140,9 +131,7 @@ std::string DynamicAmount::getUnitSymbol(const Unit unit)
     case Unit::TORR_MOLE_RATIO:
         return Amount<Unit::TORR_MOLE_RATIO>::unitSymbol();
     default:
-        Log<DynamicAmount>().fatal(
-            "Unable to find symbol for Unit[{0}].",
-            static_cast<std::underlying_type_t<Unit>>(unit));
+        Log<DynamicAmount>().fatal("Unable to find symbol for Unit[{0}].", static_cast<std::underlying_type_t<Unit>>(unit));
         return "";
     }
 }
@@ -211,8 +200,7 @@ std::string DynamicAmount::getUnitName(const Unit unit)
     case Unit::TORR_MOLE_RATIO:
         return Amount<Unit::TORR_MOLE_RATIO>::unitName();
     default:
-        Log<DynamicAmount>().fatal(
-            "Unable to find name for Unit[{0}].", static_cast<std::underlying_type_t<Unit>>(unit));
+        Log<DynamicAmount>().fatal("Unable to find name for Unit[{0}].", static_cast<std::underlying_type_t<Unit>>(unit));
         return "";
     }
 }

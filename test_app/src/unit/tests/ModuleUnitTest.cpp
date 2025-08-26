@@ -3,8 +3,7 @@
 #include "unit/tests/PropertyUnitTest.hpp"
 #include "utils/Path.hpp"
 
-WaterPropertiesUnitTest::WaterPropertiesUnitTest(
-    std::string&& name, const std::regex& filter) noexcept :
+WaterPropertiesUnitTest::WaterPropertiesUnitTest(std::string&& name, const std::regex& filter) noexcept :
     UnitTestGroup(std::move(name), filter),
     molecule("O")
 {
@@ -37,8 +36,8 @@ WaterPropertiesUnitTest::WaterPropertiesUnitTest(
     }),
         1.0e-5);
 
-    Amount<Unit::GRAM_PER_MILLILITER> (Molecule::*getDensityAt)(
-        Amount<Unit::CELSIUS>, Amount<Unit::TORR>) const = &Molecule::getDensityAt;
+    Amount<Unit::GRAM_PER_MILLILITER> (Molecule::*getDensityAt)(Amount<Unit::CELSIUS>, Amount<Unit::TORR>) const =
+        &Molecule::getDensityAt;
     registerTest<PropertyUnitTest<Molecule, Unit::GRAM_PER_MILLILITER, Unit::CELSIUS, Unit::TORR>>(
         "density",
         molecule,
@@ -57,8 +56,8 @@ WaterPropertiesUnitTest::WaterPropertiesUnitTest(
         1.0e-3);
 }
 
-ModuleUnitTest::ModuleUnitTest(
-    const std::string& name, const std::regex& filter, const std::string& defModulePath) noexcept :
+ModuleUnitTest::ModuleUnitTest(const std::string& name, const std::regex& filter, const std::string& defModulePath) noexcept
+    :
     UnitTestGroup(name + '_' + utils::extractFileName(defModulePath), filter)
 {
     Accessor<>::setDataStore(dataStore);

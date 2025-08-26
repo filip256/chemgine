@@ -31,8 +31,8 @@ public:
         std::string&&                                        name,
         const std::variant<size_t, std::chrono::nanoseconds> limit,
         const ContentInitializer&                            content,
-        std::unique_ptr<Atmosphere>&& atmosphere = Atmosphere::createDefaultAtmosphere(),
-        FlagField<TickMode> tickMode             = TickMode::ENABLE_ALL) noexcept;
+        std::unique_ptr<Atmosphere>&&                        atmosphere = Atmosphere::createDefaultAtmosphere(),
+        FlagField<TickMode> tickMode                                    = TickMode::ENABLE_ALL) noexcept;
 
     ReactorFPSPerfTest(
         std::string&&                                        name,
@@ -50,10 +50,7 @@ private:
     Lab lab;
 
 public:
-    LabFPSPerfTest(
-        std::string&&                                        name,
-        const std::variant<size_t, std::chrono::nanoseconds> limit,
-        Lab&&                                                lab) noexcept;
+    LabFPSPerfTest(std::string&& name, const std::variant<size_t, std::chrono::nanoseconds> limit, Lab&& lab) noexcept;
 
     void task() override final;
 };
@@ -64,6 +61,5 @@ private:
     DataStore dataStore;
 
 public:
-    FPSPerfTests(
-        std::string&& name, const std::regex& filter, const std::string& defModulePath) noexcept;
+    FPSPerfTests(std::string&& name, const std::regex& filter, const std::string& defModulePath) noexcept;
 };

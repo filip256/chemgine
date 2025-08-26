@@ -38,8 +38,7 @@ public:
         if (typeEnd != std::string::npos) {
             idEnd = str.find('>', typeEnd + 1);
             if (idEnd == std::string::npos) {
-                Log<Parser<def::Object>>().error(
-                    "Missing identifier terminator: '>', at: {0}.", location.toString());
+                Log<Parser<def::Object>>().error("Missing identifier terminator: '>', at: {0}.", location.toString());
                 return std::nullopt;
             }
 
@@ -73,45 +72,35 @@ public:
         const auto typeStr = utils::strip(str.substr(1, typeEnd - 1));
         const auto typeIt  = typeMap.find(typeStr);
         if (typeIt == typeMap.end()) {
-            log.error(
-                "Definition with unknown type: '{0}', at: {1}.", typeStr, location.toString());
+            log.error("Definition with unknown type: '{0}', at: {1}.", typeStr, location.toString());
             return std::nullopt;
         }
         const auto type = typeIt->second;
 
         // parse identifier (optional)
-        const auto idStr =
-            idEnd != typeEnd ? utils::strip(str.substr(typeEnd + 1, idEnd - typeEnd - 1)) : "";
+        const auto idStr = idEnd != typeEnd ? utils::strip(str.substr(typeEnd + 1, idEnd - typeEnd - 1)) : "";
         if (const auto illegalIdx = idStr.find_first_of(" .~;:'\"<>(){}~`!@#$%^&*()-+[]{}|?,/\\");
             illegalIdx != std::string::npos) {
             log.error(
-                "Identifier: '{0}' contains illegal symbol: '{1}', at: {2}.",
-                idStr,
-                idStr[illegalIdx],
-                location.toString());
+                "Identifier: '{0}' contains illegal symbol: '{1}', at: {2}.", idStr, idStr[illegalIdx], location.toString());
             return std::nullopt;
         }
 
         // parse specifier
-        auto specifierStr =
-            utils::strip(str.substr(specifierBegin + 1, specifierEnd - specifierBegin - 1));
+        auto specifierStr = utils::strip(str.substr(specifierBegin + 1, specifierEnd - specifierBegin - 1));
         if (specifierStr.empty()) {
-            log.error(
-                "Definition with missing specifier: '{0}', at: {1}.", str, location.toString());
+            log.error("Definition with missing specifier: '{0}', at: {1}.", str, location.toString());
             return std::nullopt;
         }
 
         // parse properties
         const auto propertiesStr = str.substr(specifierEnd + 1, propertiesEnd - specifierEnd - 1);
         if (propertiesStr.empty()) {
-            log.error(
-                "Definition with missing properties block: '{0}', at: {1}.",
-                str,
-                location.toString());
+            log.error("Definition with missing properties block: '{0}', at: {1}.", str, location.toString());
             return std::nullopt;
         }
 
-        const auto props = utils::split(propertiesStr, ',', "{[(", "}])", true);
+        const auto                                          props = utils::split(propertiesStr, ',', "{[(", "}])", true);
         std::unordered_map<std::string, std::string>        properties;
         std::unordered_map<std::string, def::Object>        ilSubDefs;
         std::unordered_map<std::string, const def::Object*> oolSubDefs;
@@ -119,23 +108,16 @@ public:
         for (size_t i = 0; i < props.size(); ++i) {
             const size_t nameEnd = props[i].find(':');
             if (nameEnd == std::string::npos) {
-                log.error(
-                    "Definition with malformed property: '{0}', at: {1}.",
-                    props[i],
-                    location.toString());
+                log.error("Definition with malformed property: '{0}', at: {1}.", props[i], location.toString());
                 return std::nullopt;
             }
 
             auto name = utils::strip(props[i].substr(0, nameEnd));
             if (name.empty()) {
-                log.error(
-                    "Definition property with missing name: '{0}', at: {1}.",
-                    props[i],
-                    location.toString());
+                log.error("Definition property with missing name: '{0}', at: {1}.", props[i], location.toString());
                 return std::nullopt;
             }
-            if (const auto illegalIdx =
-                    name.find_first_of(" .~;:'\"<>(){}~`!@#$%^&*()-+[]{}|?,/\\");
+            if (const auto illegalIdx = name.find_first_of(" .~;:'\"<>(){}~`!@#$%^&*()-+[]{}|?,/\\");
                 illegalIdx != std::string::npos) {
                 log.error(
                     "Property name: '{0}' contains illegal symbol: '{1}', at: {2}.",
@@ -147,22 +129,15 @@ public:
 
             auto value = utils::strip(props[i].substr(nameEnd + 1));
             if (value.empty()) {
-                log.error(
-                    "Definition property with missing value: '{0}', at: {1}.",
-                    props[i],
-                    location.toString());
+                log.error("Definition property with missing value: '{0}', at: {1}.", props[i], location.toString());
                 return std::nullopt;
             }
 
             // in-line sub-definition
             if (value.starts_with('_')) {
-                auto subDef = def::parse<def::Object>(
-                    value, utils::copy(location), includeAliases, oolDefinitions);
+                auto subDef = def::parse<def::Object>(value, utils::copy(location), includeAliases, oolDefinitions);
                 if (not subDef) {
-                    log.error(
-                        "Failed to parse in-line sub-definition: '{0}', at: {1}.",
-                        value,
-                        location.toString());
+                    log.error("Failed to parse in-line sub-definition: '{0}', at: {1}.", value, location.toString());
                     return std::nullopt;
                 }
 
@@ -176,17 +151,13 @@ public:
                 if (const auto aliasEnd = value.find('@', 1); aliasEnd != std::string::npos) {
                     const auto alias = value.substr(1, aliasEnd - 1);
                     if (alias.empty()) {
-                        log.error(
-                            "Empty include alias on value: '{0}', at: {1}.",
-                            value,
-                            location.toString());
+                        log.error("Empty include alias on value: '{0}', at: {1}.", value, location.toString());
                         return std::nullopt;
                     }
 
                     const auto aliasIt = includeAliases.find(alias);
                     if (aliasIt == includeAliases.end()) {
-                        log.error(
-                            "Undefined include alias: '{0}', at: {1}.", alias, location.toString());
+                        log.error("Undefined include alias: '{0}', at: {1}.", alias, location.toString());
                         return std::nullopt;
                     }
 
@@ -197,10 +168,7 @@ public:
 
                 const auto* definition = oolDefinitions.getDefinition(value.substr(1));
                 if (definition == nullptr) {
-                    log.error(
-                        "Unknown out-of-line definition identifier: '{0}', at: {1}.",
-                        value,
-                        location.toString());
+                    log.error("Unknown out-of-line definition identifier: '{0}', at: {1}.", value, location.toString());
                     return std::nullopt;
                 }
 
@@ -210,8 +178,7 @@ public:
 
             // relative path
             if (value.starts_with("~/"))
-                value =
-                    utils::combinePaths(utils::extractDirName(location.getFile()), value.substr(1));
+                value = utils::combinePaths(utils::extractDirName(location.getFile()), value.substr(1));
 
             // normal properties
             properties.emplace(std::move(name), std::move(value));

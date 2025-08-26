@@ -15,19 +15,16 @@ private:
     const Spline<float_s> spline;
 
 public:
-    SplineEstimator(
-        const EstimatorId id, Spline<float_s>&& spline, const EstimationMode mode) noexcept;
+    SplineEstimator(const EstimatorId id, Spline<float_s>&& spline, const EstimationMode mode) noexcept;
 
-    SplineEstimator(
-        const EstimatorId id, const Spline<float_s>& spline, const EstimationMode mode) noexcept;
+    SplineEstimator(const EstimatorId id, const Spline<float_s>& spline, const EstimationMode mode) noexcept;
 
     EstimationMode getMode() const;
 
     Amount<OutU> get(const Amount<InU> input) const override final;
 
     bool isEquivalent(
-        const EstimatorBase& other,
-        const float_s epsilon = std::numeric_limits<float_s>::epsilon()) const override final;
+        const EstimatorBase& other, const float_s epsilon = std::numeric_limits<float_s>::epsilon()) const override final;
 
     void dumpDefinition(
         std::ostream&                    out,
@@ -64,8 +61,7 @@ Amount<OutU> SplineEstimator<OutU, InU>::get(const Amount<InU> input) const
 }
 
 template <Unit OutU, Unit InU>
-bool
-SplineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const float_s epsilon) const
+bool SplineEstimator<OutU, InU>::isEquivalent(const EstimatorBase& other, const float_s epsilon) const
 {
     if (not EstimatorBase::isEquivalent(other, epsilon))
         return false;
@@ -92,8 +88,7 @@ void SplineEstimator<OutU, InU>::dumpDefinition(
     }
     alreadyPrinted.emplace(Base::id);
 
-    static const auto valueOffset =
-        checked_cast<uint8_t>(utils::max(def::Data::Mode.size(), def::Data::Values.size()));
+    static const auto valueOffset = checked_cast<uint8_t>(utils::max(def::Data::Mode.size(), def::Data::Values.size()));
 
     def::DataDumper dump(out, valueOffset, baseIndent, prettify);
     if (printInline)
@@ -107,8 +102,7 @@ void SplineEstimator<OutU, InU>::dumpDefinition(
         const auto&                       content = spline.getContent();
         std::vector<DataPoint<OutU, InU>> values;
         values.reserve(content.size());
-        std::transform(
-            content.begin(), content.end(), std::back_inserter(values), [](const auto& v) {
+        std::transform(content.begin(), content.end(), std::back_inserter(values), [](const auto& v) {
             return DataPoint<OutU, InU>(v.second, v.first);
         });
 

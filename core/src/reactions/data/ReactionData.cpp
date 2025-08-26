@@ -49,8 +49,7 @@ ReactionData::ReactionData(
 {}
 
 bool ReactionData::balance(
-    std::vector<std::pair<StructureRef, uint8_t>>& reactants,
-    std::vector<std::pair<StructureRef, uint8_t>>& products)
+    std::vector<std::pair<StructureRef, uint8_t>>& reactants, std::vector<std::pair<StructureRef, uint8_t>>& products)
 {
     if (reactants.size() == 0 || products.size() == 0)
         return false;
@@ -93,8 +92,7 @@ bool ReactionData::balance(
                 system.back()[reactants.size() + i - 1] = -1 * static_cast<float_s>(c.second);
             }
             else
-                system[sysmap[c.first]][reactants.size() + i - 1] =
-                    -1 * static_cast<float_s>(c.second);
+                system[sysmap[c.first]][reactants.size() + i - 1] = -1 * static_cast<float_s>(c.second);
         }
     }
 
@@ -105,8 +103,7 @@ bool ReactionData::balance(
 
     const auto intCoef = utils::integerCoefficient(result);
 
-    for (size_t i = 0; i < reactants.size(); ++i)
-        reactants[i].second = round_cast<uint8_t>(result[i] * intCoef);
+    for (size_t i = 0; i < reactants.size(); ++i) reactants[i].second = round_cast<uint8_t>(result[i] * intCoef);
     products[0].second = intCoef;
     for (size_t i = 1; i < products.size(); ++i)
         products[i].second = round_cast<uint8_t>(result[reactants.size() + i - 1] * intCoef);
@@ -121,8 +118,7 @@ bool ReactionData::mapReactantsToProducts()
         return false;
 
     componentMapping.reserve(reactants.size() + products.size());
-    std::vector<std::unordered_set<c_size>> reactantIgnore(reactants.size()),
-        productIgnore(products.size());
+    std::vector<std::unordered_set<c_size>> reactantIgnore(reactants.size()), productIgnore(products.size());
 
     for (size_t i = 0; i < reactants.size(); ++i) {
         if (reactants[i].getStructure().isVirtualHydrogen())
@@ -131,8 +127,8 @@ bool ReactionData::mapReactantsToProducts()
         std::pair<std::unordered_map<c_size, c_size>, uint8_t> maxMap;
         size_t                                                 maxIdxJ = 0;
         for (size_t j = 0; j < products.size(); ++j) {
-            const auto map = reactants[i].getStructure().maximalMapTo(
-                products[j].getStructure(), reactantIgnore[i], productIgnore[j]);
+            const auto map =
+                reactants[i].getStructure().maximalMapTo(products[j].getStructure(), reactantIgnore[i], productIgnore[j]);
             if (map.first.size() > maxMap.first.size() ||
                 (map.first.size() == maxMap.first.size() && map.second > maxMap.second)) {
                 maxMap  = map;
@@ -149,8 +145,7 @@ bool ReactionData::mapReactantsToProducts()
 
             // only save radical atoms
             if (reactants[i].getStructure().getAtom(p.first).isRadical())
-                componentMapping.emplace(
-                    std::make_pair(std::make_pair(i, p.first), std::make_pair(maxIdxJ, p.second)));
+                componentMapping.emplace(std::make_pair(std::make_pair(i, p.first), std::make_pair(maxIdxJ, p.second)));
         }
 
         if (reactants[i].getStructure().getNonImpliedAtomCount() != reactantIgnore[i].size())
@@ -181,10 +176,7 @@ bool ReactionData::hasAsReactant(const MolecularStructure& structure) const
     return false;
 }
 
-bool ReactionData::hasAsReactant(const Molecule& molecule) const
-{
-    return hasAsReactant(molecule.getStructure());
-}
+bool ReactionData::hasAsReactant(const Molecule& molecule) const { return hasAsReactant(molecule.getStructure()); }
 
 std::vector<std::unordered_map<c_size, c_size>>
 ReactionData::generateConcreteReactantMatches(const std::vector<Reactant>& molecules) const
@@ -196,14 +188,12 @@ ReactionData::generateConcreteReactantMatches(const std::vector<Reactant>& molec
     std::vector<std::unordered_map<c_size, c_size>> matches;
     matches.reserve(reactants.size());
     for (size_t i = 0; i < reactants.size(); ++i) {
-        if (reactants[i].getStructure().isVirtualHydrogen() &&
-            molecules[i].molecule.getStructure().isVirtualHydrogen()) {
+        if (reactants[i].getStructure().isVirtualHydrogen() && molecules[i].molecule.getStructure().isVirtualHydrogen()) {
             matches.emplace_back();
             continue;
         }
 
-        matches.emplace_back(
-            utils::reverseMap(reactants[i].matchWith(molecules[i].molecule.getStructure())));
+        matches.emplace_back(utils::reverseMap(reactants[i].matchWith(molecules[i].molecule.getStructure())));
         if (matches.back().empty())
             return {};
     }
@@ -214,8 +204,7 @@ std::pair<size_t, std::unordered_map<c_size, c_size>>
 ReactionData::generateRetrosynthProductMatches(const StructureRef& targetProduct) const
 {
     for (size_t i = 0; i < products.size(); ++i) {
-        if (products[i].getStructure().isVirtualHydrogen() &&
-            targetProduct.getStructure().isVirtualHydrogen())
+        if (products[i].getStructure().isVirtualHydrogen() && targetProduct.getStructure().isVirtualHydrogen())
             return std::make_pair(i, std::unordered_map<c_size, c_size>());
 
         auto match = utils::reverseMap(products[i].matchWith(targetProduct));
@@ -227,8 +216,7 @@ ReactionData::generateRetrosynthProductMatches(const StructureRef& targetProduct
 }
 
 std::vector<Molecule> ReactionData::generateConcreteProducts(
-    const std::vector<Reactant>&                           molecules,
-    const std::vector<std::unordered_map<c_size, c_size>>& matches) const
+    const std::vector<Reactant>& molecules, const std::vector<std::unordered_map<c_size, c_size>>& matches) const
 {
     if (matches.size() != reactants.size())
         return std::vector<Molecule>();
@@ -236,8 +224,7 @@ std::vector<Molecule> ReactionData::generateConcreteProducts(
     // build concrete products
     std::vector<MolecularStructure> concreteProducts;
     concreteProducts.reserve(products.size());
-    for (size_t i = 0; i < products.size(); ++i)
-        concreteProducts.emplace_back(products[i].getStructure().createCopy());
+    for (size_t i = 0; i < products.size(); ++i) concreteProducts.emplace_back(products[i].getStructure().createCopy());
 
     for (const auto& p : componentMapping) {
         std::unordered_map<c_size, c_size> tempMap = {
@@ -269,14 +256,12 @@ std::vector<Molecule> ReactionData::generateConcreteProducts(
 }
 
 RetrosynthReaction ReactionData::generateRetrosynthReaction(
-    const StructureRef&                                          targetProduct,
-    const std::pair<size_t, std::unordered_map<c_size, c_size>>& match) const
+    const StructureRef& targetProduct, const std::pair<size_t, std::unordered_map<c_size, c_size>>& match) const
 {
     // build concrete products
     std::vector<MolecularStructure> substReactants;
     substReactants.reserve(reactants.size());
-    for (size_t i = 0; i < reactants.size(); ++i)
-        substReactants.emplace_back(reactants[i].getStructure().createCopy());
+    for (size_t i = 0; i < reactants.size(); ++i) substReactants.emplace_back(reactants[i].getStructure().createCopy());
 
     const auto targetMatchedComponents = utils::extractUniqueValues(match.second);
     const auto reversedMapping         = utils::reverseMap(componentMapping);
@@ -322,8 +307,8 @@ const std::vector<StructureRef>& ReactionData::getProducts() const { return prod
 
 const ImmutableSet<Catalyst>& ReactionData::getCatalysts() const { return catalysts; }
 
-Amount<Unit::MOLE_PER_SECOND> ReactionData::getSpeedAt(
-    const Amount<Unit::CELSIUS> temperature, const Amount<Unit::MOLE_RATIO> concentration) const
+Amount<Unit::MOLE_PER_SECOND>
+ReactionData::getSpeedAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::MOLE_RATIO> concentration) const
 {
     return tempSpeedEstimator->get(temperature) * concSpeedEstimator->get(concentration).asStd();
 }
@@ -392,10 +377,7 @@ bool ReactionData::isSpecializationOf(const ReactionData& other) const
     return true;
 }
 
-bool ReactionData::isGeneralizationOf(const ReactionData& other) const
-{
-    return other.isSpecializationOf(*this);
-}
+bool ReactionData::isGeneralizationOf(const ReactionData& other) const { return other.isSpecializationOf(*this); }
 
 bool ReactionData::isEquivalentTo(const ReactionData& other) const
 {
@@ -468,8 +450,8 @@ void ReactionData::setBaseReaction(const ReactionData& reaction) { baseReaction 
 
 std::string ReactionData::getHRTag() const { return '<' + std::to_string(id) + ':' + name + '>'; }
 
-void ReactionData::dumpDefinition(
-    std::ostream& out, const bool prettify, std::unordered_set<EstimatorId>& alreadyPrinted) const
+void
+ReactionData::dumpDefinition(std::ostream& out, const bool prettify, std::unordered_set<EstimatorId>& alreadyPrinted) const
 {
     static const auto valueOffset = checked_cast<uint8_t>(utils::max(
         def::Reactions::Id.size(),
@@ -480,13 +462,9 @@ void ReactionData::dumpDefinition(
         def::Reactions::TemperatureSpeed.size(),
         def::Reactions::ConcentrationSpeed.size()));
 
-    const auto compare = [](const StructureRef& l, const StructureRef& r) {
-        return l.getId() < r.getId();
-    };
-    const auto uniqueReactants =
-        ImmutableSet<StructureRef>::toSortedSetVector(utils::copy(reactants), compare);
-    const auto uniqueProducts =
-        ImmutableSet<StructureRef>::toSortedSetVector(utils::copy(products), compare);
+    const auto compare         = [](const StructureRef& l, const StructureRef& r) { return l.getId() < r.getId(); };
+    const auto uniqueReactants = ImmutableSet<StructureRef>::toSortedSetVector(utils::copy(reactants), compare);
+    const auto uniqueProducts  = ImmutableSet<StructureRef>::toSortedSetVector(utils::copy(products), compare);
 
     std::vector<std::string> reactantsStr;
     std::vector<std::string> productsStr;
@@ -500,10 +478,7 @@ void ReactionData::dumpDefinition(
     def::DataDumper dump(out, valueOffset, 0, prettify);
     dump.tryOolSubDefinition(tempSpeedEstimator, alreadyPrinted)
         .tryOolSubDefinition(concSpeedEstimator, alreadyPrinted)
-        .header(
-            def::Types::Reaction,
-            def::ReactionSpecifier(std::move(reactantsStr), std::move(productsStr)),
-            "")
+        .header(def::Types::Reaction, def::ReactionSpecifier(std::move(reactantsStr), std::move(productsStr)), "")
         .beginProperties()
         .propertyWithSep(def::Reactions::Id, id)
         .propertyWithSep(def::Reactions::Name, name);
@@ -516,10 +491,8 @@ void ReactionData::dumpDefinition(
         return;
     }
 
-    dump.defaultPropertyWithSep(
-            def::Reactions::Energy, reactionEnergy, Amount<Unit::JOULE_PER_MOLE>(0.0))
-        .defaultPropertyWithSep(
-            def::Reactions::Activation, activationEnergy, Amount<Unit::JOULE_PER_MOLE>(0.0))
+    dump.defaultPropertyWithSep(def::Reactions::Energy, reactionEnergy, Amount<Unit::JOULE_PER_MOLE>(0.0))
+        .defaultPropertyWithSep(def::Reactions::Activation, activationEnergy, Amount<Unit::JOULE_PER_MOLE>(0.0))
         .subDefinitionWithSep(def::Reactions::TemperatureSpeed, tempSpeedEstimator, alreadyPrinted)
         .subDefinition(def::Reactions::ConcentrationSpeed, concSpeedEstimator, alreadyPrinted)
         .endProperties()

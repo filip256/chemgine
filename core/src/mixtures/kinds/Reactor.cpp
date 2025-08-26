@@ -13,9 +13,8 @@ Reactor::Reactor(const Reactor& other) noexcept :
 }
 
 Reactor::Reactor(
-    const Ref<Atmosphere>     atmosphere,
-    const Amount<Unit::LITER> maxVolume,
-    const Ref<ContainerBase>  overflowTarget) noexcept :
+    const Ref<Atmosphere> atmosphere, const Amount<Unit::LITER> maxVolume, const Ref<ContainerBase> overflowTarget) noexcept
+    :
     MultiLayerMixture(atmosphere, maxVolume, overflowTarget)
 {}
 
@@ -76,15 +75,13 @@ float_s Reactor::getCatalyticReactivityCoefficient(const ImmutableSet<Catalyst>&
 void Reactor::findNewReactions()
 {
     // TODO: optimize (perhaps a generator would be good)
-    const auto reactants    = utils::extractValues(content.getReactants());
-    const auto arrangements = utils::getArrangementsWithRepetitions(
-        reactants, dataAccessor.get().reactions.getMaxReactantCount());
+    const auto reactants = utils::extractValues(content.getReactants());
+    const auto arrangements =
+        utils::getArrangementsWithRepetitions(reactants, dataAccessor.get().reactions.getMaxReactantCount());
 
     for (size_t i = 0; i < arrangements.size(); ++i) {
         const bool anyNew =
-            std::any_of(arrangements[i].begin(), arrangements[i].end(), [](const Reactant& r) {
-            return r.isNew;
-        });
+            std::any_of(arrangements[i].begin(), arrangements[i].end(), [](const Reactant& r) { return r.isNew; });
 
         if (anyNew == false)
             continue;
@@ -99,20 +96,18 @@ void Reactor::findNewReactions()
 void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
 {
     for (const auto& r : cachedReactions) {
-        auto speedCoef = r.getData()
-                             .getSpeedAt(
-                                 r.getReactantTemperature(),
-                                 getAmountOf(r.getReactants()).to<Unit::MOLE_RATIO>(totalMoles))
-                             .to<Unit::MOLE>(timespan) *
-                         totalVolume.asStd() *
-                         getInterLayerReactivityCoefficient(r.getReactants()) *
-                         getCatalyticReactivityCoefficient(r.getCatalysts());
+        auto speedCoef =
+            r.getData()
+                .getSpeedAt(r.getReactantTemperature(), getAmountOf(r.getReactants()).to<Unit::MOLE_RATIO>(totalMoles))
+                .to<Unit::MOLE>(timespan) *
+            totalVolume.asStd() *
+            getInterLayerReactivityCoefficient(r.getReactants()) *
+            getCatalyticReactivityCoefficient(r.getCatalysts());
 
         if (speedCoef == 0)
             continue;
 
-        Log(this).trace(
-            "Applying reaction {0} with speed={1}.", r.getData().getHRTag(), speedCoef.toString());
+        Log(this).trace("Applying reaction {0} with speed={1}.", r.getData().getHRTag(), speedCoef.toString());
 
         // if there isn't enough of a reactant, adjust the speed coefficient
         for (const auto& [_, i] : r.getReactants()) {
@@ -124,15 +119,13 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
         if (speedCoef == 0)
             continue;
 
-        for (const auto& [_, i] : r.getReactants())
-            MultiLayerMixture::add(i.mutate(-i.amount * speedCoef, *this));
+        for (const auto& [_, i] : r.getReactants()) MultiLayerMixture::add(i.mutate(-i.amount * speedCoef, *this));
         for (const auto& [_, i] : r.getProducts()) {
             const auto p = i.mutate(i.amount * speedCoef, *this);
             MultiLayerMixture::add(p.mutate(findLayerFor(p)));
         }
 
-        MultiLayerMixture::add(
-            r.getData().reactionEnergy.to<Unit::JOULE>(speedCoef), r.getReactants().any().layer);
+        MultiLayerMixture::add(r.getData().reactionEnergy.to<Unit::JOULE>(speedCoef), r.getReactants().any().layer);
     }
 }
 
@@ -149,17 +142,14 @@ void Reactor::runLayerEnergyConduction(const Amount<Unit::SECOND> timespan)
             if (diff == 0)
                 continue;
 
-            const auto diffE = diff > 0 ?
-                                        // molecules closer to the top usually have more
-                                        // energy than the layer avg. => favour up conversion
-                                   l.second.getHeatCapacity()
-                                           .to<Unit::JOULE_PER_CELSIUS>(l.second.moles)
-                                           .to<Unit::JOULE>(diff) *
-                                       favourableC.to<Unit::JOULE>(timespan)
-                                        : l.second.getHeatCapacity()
-                                                  .to<Unit::JOULE_PER_CELSIUS>(aboveLayer.moles)
-                                                  .to<Unit::JOULE>(diff) *
-                                              unfavourableC.to<Unit::JOULE>(timespan);
+            const auto diffE =
+                diff > 0 ?
+                         // molecules closer to the top usually have more
+                         // energy than the layer avg. => favour up conversion
+                    l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(l.second.moles).to<Unit::JOULE>(diff) *
+                        favourableC.to<Unit::JOULE>(timespan)
+                         : l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(aboveLayer.moles).to<Unit::JOULE>(diff) *
+                               unfavourableC.to<Unit::JOULE>(timespan);
 
             MultiLayerMixture::add(diffE, above);
             MultiLayerMixture::add(-diffE, l.first);
@@ -171,17 +161,14 @@ void Reactor::runLayerEnergyConduction(const Amount<Unit::SECOND> timespan)
             if (diff == 0)
                 continue;
 
-            const auto diffE = diff > 0 ?
-                                        // molecules closer to the bottom usually have less
-                                        // energy than the layer avg. => favour down conversion
-                                   l.second.getHeatCapacity()
-                                           .to<Unit::JOULE_PER_CELSIUS>(l.second.moles)
-                                           .to<Unit::JOULE>(diff) *
-                                       unfavourableC.to<Unit::JOULE>(timespan)
-                                        : l.second.getHeatCapacity()
-                                                  .to<Unit::JOULE_PER_CELSIUS>(belowLayer.moles)
-                                                  .to<Unit::JOULE>(diff) *
-                                              favourableC.to<Unit::JOULE>(timespan);
+            const auto diffE =
+                diff > 0 ?
+                         // molecules closer to the bottom usually have less
+                         // energy than the layer avg. => favour down conversion
+                    l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(l.second.moles).to<Unit::JOULE>(diff) *
+                        unfavourableC.to<Unit::JOULE>(timespan)
+                         : l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(belowLayer.moles).to<Unit::JOULE>(diff) *
+                               favourableC.to<Unit::JOULE>(timespan);
 
             MultiLayerMixture::add(diffE, below);
             MultiLayerMixture::add(-diffE, l.first);
@@ -199,10 +186,7 @@ void Reactor::consumePotentialEnergy()
 
 void Reactor::addEnergy(const Amount<Unit::JOULE> energy) { MultiLayerMixture::addEnergy(energy); }
 
-void Reactor::add(const Molecule& molecule, const Amount<Unit::MOLE> amount)
-{
-    MultiLayerMixture::add(molecule, amount);
-}
+void Reactor::add(const Molecule& molecule, const Amount<Unit::MOLE> amount) { MultiLayerMixture::add(molecule, amount); }
 
 void Reactor::add(Reactor& other)
 {

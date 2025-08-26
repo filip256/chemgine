@@ -68,8 +68,7 @@ auto crossProduct(const A aX, const A aY, const B bX, const B bY);
 /// <summary>
 /// Returns the <slope, intercept> pair of the linear function between the points A and B
 /// </summary>
-std::pair<float_s, float_s>
-getSlopeAndIntercept(const float_s aX, const float_s aY, const float_s bX, const float_s bY);
+std::pair<float_s, float_s> getSlopeAndIntercept(const float_s aX, const float_s aY, const float_s bX, const float_s bY);
 
 /// <summary>
 /// Returns the integral log2 of a value or 255 if the value is 0.
@@ -90,16 +89,14 @@ template <typename InT, typename OutT = InT>
 class LinearQuantization
 {
     static_assert(std::is_arithmetic_v<InT>, "LinearQuantization: InT must be an arithmetic type.");
-    static_assert(
-        std::is_arithmetic_v<OutT>, "LinearQuantization: OutT must be an arithmetic type.");
+    static_assert(std::is_arithmetic_v<OutT>, "LinearQuantization: OutT must be an arithmetic type.");
 
 private:
     float_h scale, shift;
     OutT    outMin, outMax;
 
 public:
-    constexpr LinearQuantization(
-        const InT inLow, const InT inHigh, const OutT outLow, const OutT outHigh) noexcept;
+    constexpr LinearQuantization(const InT inLow, const InT inHigh, const OutT outLow, const OutT outHigh) noexcept;
 
     constexpr OutT operator()(const InT value) const;
     constexpr OutT operator[](const InT value) const;
@@ -114,30 +111,8 @@ uint8_t utils::ilog2(const T x)
 
     // We need to check if x != 0 anyway, the indirection can be put to better use if we also
     // provide a small LUT.
-    static constexpr std::array<uint8_t, 24> lut = {static_cast<uint8_t>(-1),
-                                                    0,
-                                                    1,
-                                                    1,
-                                                    2,
-                                                    2,
-                                                    2,
-                                                    2,
-                                                    3,
-                                                    3,
-                                                    3,
-                                                    3,
-                                                    3,
-                                                    3,
-                                                    3,
-                                                    3,
-                                                    4,
-                                                    4,
-                                                    4,
-                                                    4,
-                                                    4,
-                                                    4,
-                                                    4,
-                                                    4};
+    static constexpr std::array<uint8_t, 24> lut = {
+        static_cast<uint8_t>(-1), 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4};
     if (x < lut.size())
         return lut[x];
 
@@ -212,8 +187,7 @@ template <typename A, typename B>
 auto utils::squaredDistance(const A aX, const A aY, const B bX, const B bY)
 {
     static_assert(
-        std::is_arithmetic_v<A> && std::is_arithmetic_v<B>,
-        "squaredDistance(): Input types must be arithmetic types.");
+        std::is_arithmetic_v<A> && std::is_arithmetic_v<B>, "squaredDistance(): Input types must be arithmetic types.");
     const auto dX  = aX - bX;
     const auto dY  = aY - bY;
     const auto sqX = dX * dX;
@@ -233,17 +207,14 @@ template <typename A, typename B>
 auto utils::chebyshevDistance(const A aX, const A aY, const B bX, const B bY)
 {
     static_assert(
-        std::is_arithmetic_v<A> && std::is_arithmetic_v<B>,
-        "chebyshevDistance(): Input types must be arithmetic types.");
+        std::is_arithmetic_v<A> && std::is_arithmetic_v<B>, "chebyshevDistance(): Input types must be arithmetic types.");
     return std::max(absoluteDifference(aX, bX), absoluteDifference(aY, bY));
 }
 
 template <typename A, typename B>
 auto utils::dotProduct(const A aX, const A aY, const B bX, const B bY)
 {
-    static_assert(
-        std::is_arithmetic_v<A> && std::is_arithmetic_v<B>,
-        "dotProduct(): Input types must be arithmetic types.");
+    static_assert(std::is_arithmetic_v<A> && std::is_arithmetic_v<B>, "dotProduct(): Input types must be arithmetic types.");
     return aX * bX + aY * bY;
 }
 
@@ -251,8 +222,7 @@ template <typename A, typename B>
 auto utils::crossProduct(const A aX, const A aY, const B bX, const B bY)
 {
     static_assert(
-        std::is_arithmetic_v<A> && std::is_arithmetic_v<B>,
-        "crossProduct(): Input types must be arithmetic types.");
+        std::is_arithmetic_v<A> && std::is_arithmetic_v<B>, "crossProduct(): Input types must be arithmetic types.");
     return aX * bY - aY * bX;
 }
 
@@ -261,8 +231,7 @@ constexpr auto utils::absoluteDifference(const A a, const B b)
 {
     // std::abs(a - b) would not work on unsigned types.
     static_assert(
-        std::is_arithmetic_v<A> && std::is_arithmetic_v<B>,
-        "absoluteDifference(): Input types must be arithmetic types.");
+        std::is_arithmetic_v<A> && std::is_arithmetic_v<B>, "absoluteDifference(): Input types must be arithmetic types.");
     const auto diff = a > b ? a - b : b - a;
 
     // If possible ensure unsigned output type.

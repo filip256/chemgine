@@ -38,8 +38,7 @@ ReactorFPSPerfTest::ReactorFPSPerfTest(
     const std::variant<size_t, std::chrono::nanoseconds> limit,
     const ContentInitializer&                            content,
     FlagField<TickMode>                                  tickMode) noexcept :
-    ReactorFPSPerfTest(
-        std::move(name), limit, content, Atmosphere::createDefaultAtmosphere(), tickMode)
+    ReactorFPSPerfTest(std::move(name), limit, content, Atmosphere::createDefaultAtmosphere(), tickMode)
 {}
 
 void ReactorFPSPerfTest::task() { reactor.tick(nextTickTimespan); }
@@ -51,17 +50,14 @@ void ReactorFPSPerfTest::postTask()
 }
 
 LabFPSPerfTest::LabFPSPerfTest(
-    std::string&&                                        name,
-    const std::variant<size_t, std::chrono::nanoseconds> limit,
-    Lab&&                                                lab) noexcept :
+    std::string&& name, const std::variant<size_t, std::chrono::nanoseconds> limit, Lab&& lab) noexcept :
     FPSPerfTestBase(std::move(name), limit),
     lab(std::move(lab))
 {}
 
 void LabFPSPerfTest::task() { lab.tick(nextTickTimespan); }
 
-FPSPerfTests::FPSPerfTests(
-    std::string&& name, const std::regex& filter, const std::string& defModulePath) noexcept :
+FPSPerfTests::FPSPerfTests(std::string&& name, const std::regex& filter, const std::string& defModulePath) noexcept :
     PerfTestGroup(std::move(name), filter)
 {
     Accessor<>::setDataStore(dataStore);

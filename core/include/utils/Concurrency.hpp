@@ -27,9 +27,7 @@ class NoConcurrencyGuard
     std::atomic_flag& flag;
 
 public:
-    NoConcurrencyGuard(
-        std::atomic_flag&           flag,
-        const std::source_location& location = std::source_location::current());
+    NoConcurrencyGuard(std::atomic_flag& flag, const std::source_location& location = std::source_location::current());
     ~NoConcurrencyGuard();
 };
 

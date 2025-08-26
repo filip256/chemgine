@@ -17,9 +17,8 @@
 class UIContext
 {
 private:
-    sf::RenderWindow window =
-        sf::RenderWindow(sf::VideoMode(sf::Vector2u(1'800, 1'000)), "Chemgine");
-    Lab lab;
+    sf::RenderWindow window = sf::RenderWindow(sf::VideoMode(sf::Vector2u(1'800, 1'000)), "Chemgine");
+    Lab              lab;
 
     sf::Font font;
 
@@ -55,8 +54,7 @@ public:
         bool     isInTimeSetMode = false;
         float_s  timeMultiplier  = 1.0;
         sf::Text textTimeMult(font, "x" + std::to_string(timeMultiplier).substr(0, 4), 18);
-        textTimeMult.setPosition(
-            sf::Vector2f(window.getSize().x - 50.0f, window.getSize().y - 22.0f));
+        textTimeMult.setPosition(sf::Vector2f(window.getSize().x - 50.0f, window.getSize().y - 22.0f));
 
         bool callRemoveEmptySystems = false;
 
@@ -104,8 +102,7 @@ public:
                         inHandSys.move(delta);
                         if (lab.anyIntersects(inHand.idx) != Lab::npos) {
                             inHandSys.move(-delta);
-                            sf::Mouse::setPosition(
-                                static_cast<sf::Vector2i>(mousePos - delta), window);
+                            sf::Mouse::setPosition(static_cast<sf::Vector2i>(mousePos - delta), window);
                         }
                         dndHelper.resetOrigin(mousePos);
                     }
@@ -119,8 +116,7 @@ public:
                     }
                     else if (mouseEvent->button == sf::Mouse::Button::Right) {
                         if (inputMolecule) {
-                            if (const auto [sys, comp] = lab.getSystemComponentAt(mousePos);
-                                sys != Lab::npos) {
+                            if (const auto [sys, comp] = lab.getSystemComponentAt(mousePos); sys != Lab::npos) {
                                 auto& component = lab.getSystem(sys).getComponent(comp);
                                 if (auto container = component.cast<BaseContainerComponent>()) {
                                     container->add(inputMolecule->first, inputMolecule->second);
@@ -148,10 +144,9 @@ public:
                 }
                 else if (const auto mouseEvent = event->getIf<sf::Event::MouseWheelScrolled>()) {
                     if (isInTimeSetMode) {
-                        timeMultiplier +=
-                            mouseEvent->delta * 0.05f * std::max(timeMultiplier, 1.0f);
-                        timeMultiplier = std::max(timeMultiplier, 0.05f);
-                        timeMultiplier = std::min(timeMultiplier, 50.0f);
+                        timeMultiplier += mouseEvent->delta * 0.05f * std::max(timeMultiplier, 1.0f);
+                        timeMultiplier  = std::max(timeMultiplier, 0.05f);
+                        timeMultiplier  = std::min(timeMultiplier, 50.0f);
 
                         textTimeMult.setString("x" + std::to_string(timeMultiplier).substr(0, 4));
                     }
@@ -160,8 +155,7 @@ public:
                 }
                 else if (const auto keyEvent = event->getIf<sf::Event::KeyPressed>()) {
                     if (keyEvent->code == sf::Keyboard::Key::LControl) {
-                        if (const auto sys = lab.getSystemComponentAt(mousePos);
-                            sys.first != Lab::npos) {
+                        if (const auto sys = lab.getSystemComponentAt(mousePos); sys.first != Lab::npos) {
                             const auto& comp = lab.getSystem(sys.first).getComponent(sys.second);
                             propertyPane.setSubject(comp);
                             drawPropertyPane = true;
@@ -174,8 +168,7 @@ public:
                 else if (const auto keyEvent = event->getIf<sf::Event::KeyReleased>()) {
                     if (keyEvent->code == sf::Keyboard::Key::I) {
                         const auto input = Input::get("Input Molecule   [SMILES]_[moles]");
-                        const auto temp =
-                            def::parse<std::pair<Molecule, Amount<Unit::MOLE>>>(input, '_');
+                        const auto temp  = def::parse<std::pair<Molecule, Amount<Unit::MOLE>>>(input, '_');
 
                         if (not temp) {
                             Log(this).error("Malformed input ignored: {0}.", input);
@@ -212,8 +205,7 @@ public:
             if (const auto timespan = (cTime - lastEnvTick).asSeconds(); timespan >= 0.01) {
                 // vapour.tick(timespan * timeMultiplier);
 
-                textTime.setString(
-                    "T= " + Amount<Unit::SECOND>(gameTime.asMilliseconds() / 1000.0f).format());
+                textTime.setString("T= " + Amount<Unit::SECOND>(gameTime.asMilliseconds() / 1000.0f).format());
 
                 lastEnvTick = cTime;
             }
@@ -224,10 +216,9 @@ public:
                 lastLabTick = cTime;
             }
 
-            cTime     = tickClock.getElapsedTime();
-            gameTime += sf::microseconds(
-                round_cast<int64_t>((cTime - lastFrame).asMicroseconds() * timeMultiplier));
-            lastFrame = cTime;
+            cTime      = tickClock.getElapsedTime();
+            gameTime  += sf::microseconds(round_cast<int64_t>((cTime - lastFrame).asMicroseconds() * timeMultiplier));
+            lastFrame  = cTime;
 
             window.clear();
             window.draw(lab);
@@ -241,9 +232,7 @@ public:
 
             if ((frameCount & 3) == 0) {
                 textFPS.setString(
-                    "FPS:" + std::to_string(
-                                 static_cast<int>(
-                                     4000000.0f / frameClock.getElapsedTime().asMicroseconds())));
+                    "FPS:" + std::to_string(static_cast<int>(4000000.0f / frameClock.getElapsedTime().asMicroseconds())));
                 frameClock.restart();
             }
 

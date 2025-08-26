@@ -90,12 +90,8 @@ private:
     std::source_location location;
 
 public:
-    LogFormat(
-        const char*            format,
-        std::source_location&& location = std::source_location::current()) noexcept;
-    LogFormat(
-        const std::string&     format,
-        std::source_location&& location = std::source_location::current()) noexcept;
+    LogFormat(const char* format, std::source_location&& location = std::source_location::current()) noexcept;
+    LogFormat(const std::string& format, std::source_location&& location = std::source_location::current()) noexcept;
     LogFormat(const LogFormat&) = delete;
     LogFormat(LogFormat&&)      = default;
 
@@ -146,8 +142,7 @@ private:
     void log(const LogFormat& format, const LogType type, Args&&... args) const;
 
 protected:
-    void logFormatted(
-        const std::string& msg, const std::source_location& location, const LogType type) const;
+    void logFormatted(const std::string& msg, const std::source_location& location, const LogType type) const;
 
     LogBase(const void* address, const std::type_index sourceType) noexcept;
     LogBase(const LogBase&) = delete;
@@ -194,8 +189,7 @@ void LogBase::log(const LogFormat& format, const LogType type, Args&&... args) c
     if (type != LogType::FATAL &&
         settings().logSourceFilter.mark_count() &&
         sourceType != typeid(void) &&
-        not std::regex_match(
-            utils::demangleTypeName(sourceType.name()), settings().logSourceFilter))
+        not std::regex_match(utils::demangleTypeName(sourceType.name()), settings().logSourceFilter))
         return;
 
     // Values returned from delayed-call args are temporary and need storage, normal args are stored
@@ -203,9 +197,8 @@ void LogBase::log(const LogFormat& format, const LogType type, Args&&... args) c
     const auto argStorage = std::make_tuple(utils::invokeOrForward(std::forward<Args>(args))...);
     const auto formatStr  = format.getFormat();
 
-    const auto message = std::apply([&](const auto&... pArgs) {
-        return std::vformat(formatStr, std::make_format_args(pArgs...));
-    }, argStorage);
+    const auto message = std::apply(
+        [&](const auto&... pArgs) { return std::vformat(formatStr, std::make_format_args(pArgs...)); }, argStorage);
 
     logFormatted(message, format.getLocation(), type);
 }
@@ -216,8 +209,7 @@ void LogBase::fatal(const LogFormat& format, Args&&... args) const
     log(std::move(format), LogType::FATAL, std::forward<Args>(args)...);
 
     OS::setTextColor(OS::BasicColor::DARK_RED, settings().outputStream);
-    settings().outputStream
-        << "\n   Execution aborted due to a fatal error.\n   Press ENTER to exit.\n";
+    settings().outputStream << "\n   Execution aborted due to a fatal error.\n   Press ENTER to exit.\n";
     settings().outputStream.flush();
     OS::setTextColor(OS::BasicColor::WHITE, settings().outputStream);
 

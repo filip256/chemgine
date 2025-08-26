@@ -32,10 +32,7 @@ public:
 template <>
 struct std::hash<StructureRef>
 {
-    size_t operator()(const StructureRef& reactable) const
-    {
-        return std::hash<MoleculeId>()(reactable.getId());
-    }
+    size_t operator()(const StructureRef& reactable) const { return std::hash<MoleculeId>()(reactable.getId()); }
 };
 
 template <>

@@ -23,13 +23,11 @@ public:
 
     size_t totalDefinitionCount() const;
 
-    using AtomIterator =
-        std::unordered_map<Symbol, std::unique_ptr<const AtomData>>::const_iterator;
+    using AtomIterator = std::unordered_map<Symbol, std::unique_ptr<const AtomData>>::const_iterator;
     AtomIterator atomsBegin() const;
     AtomIterator atomsEnd() const;
 
-    using RadicalIterator =
-        std::unordered_map<Symbol, std::unique_ptr<const RadicalData>>::const_iterator;
+    using RadicalIterator = std::unordered_map<Symbol, std::unique_ptr<const RadicalData>>::const_iterator;
     RadicalIterator radicalsBegin() const;
     RadicalIterator radicalsEnd() const;
 

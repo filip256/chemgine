@@ -11,15 +11,11 @@ PerfTest::PerfTest(std::string&& name) noexcept :
 
 const std::string& PerfTest::getName() const { return name; }
 
-bool PerfTest::isSkipped(const std::regex& filter) const
-{
-    return not std::regex_match(name, filter);
-}
+bool PerfTest::isSkipped(const std::regex& filter) const { return not std::regex_match(name, filter); }
 
 std::chrono::nanoseconds TimedTest::WarmUpTime = std::chrono::seconds(2);
 
-TimedTest::TimedTest(
-    std::string&& name, const std::variant<size_t, std::chrono::nanoseconds> limit) noexcept :
+TimedTest::TimedTest(std::string&& name, const std::variant<size_t, std::chrono::nanoseconds> limit) noexcept :
     PerfTest(std::move(name)),
     limit(limit)
 {}
@@ -36,9 +32,8 @@ size_t TimedTest::getTestCount() const { return 1; }
 
 std::chrono::nanoseconds TimedTest::getEstimatedRunTime() const
 {
-    const auto eta = std::holds_alternative<size_t>(limit)
-                         ? std::chrono::nanoseconds(std::get<size_t>(limit) * 1'000)
-                         : std::get<std::chrono::nanoseconds>(limit);
+    const auto eta = std::holds_alternative<size_t>(limit) ? std::chrono::nanoseconds(std::get<size_t>(limit) * 1'000)
+                                                           : std::get<std::chrono::nanoseconds>(limit);
 
     return eta + WarmUpTime + std::chrono::milliseconds(100);
 }
@@ -59,8 +54,8 @@ void TimedTest::runWarmUp()
 
 OS::ExecutionConfig TimedTest::stabilizeExecution()
 {
-    static const auto processorMask    = OS::getAvailablePhysicalProcessorMask();
-    const auto normalProcessorAffinity = OS::setCurrentThreadProcessorAffinity(processorMask);
+    static const auto processorMask           = OS::getAvailablePhysicalProcessorMask();
+    const auto        normalProcessorAffinity = OS::setCurrentThreadProcessorAffinity(processorMask);
 
     const auto normalPriority = OS::getCurrentProcessPriority();
     OS::setCurrentProcessPriority(OS::ProcessPriority::REALTIME_PRIORITY_CLASS);
@@ -135,9 +130,8 @@ TimingResult TimedTest::run(PerformanceReport& report)
     const auto normalConfig = stabilizeExecution();
     LogBase::hide();
 
-    const auto time = std::holds_alternative<size_t>(limit)
-                          ? runCounted(std::get<size_t>(limit))
-                          : runTimed(std::get<std::chrono::nanoseconds>(limit));
+    const auto time = std::holds_alternative<size_t>(limit) ? runCounted(std::get<size_t>(limit))
+                                                            : runTimed(std::get<std::chrono::nanoseconds>(limit));
 
     LogBase::unhide();
     restoreExecution(normalConfig);
@@ -149,9 +143,8 @@ TimingResult TimedTest::run(PerformanceReport& report)
 
 bool TimedTest::isSkipped(const std::regex& filter) const
 {
-    bool isInactive = std::holds_alternative<size_t>(limit)
-                          ? std::get<size_t>(limit) == 0
-                          : std::get<std::chrono::nanoseconds>(limit).count() <= 0;
+    bool isInactive = std::holds_alternative<size_t>(limit) ? std::get<size_t>(limit) == 0
+                                                            : std::get<std::chrono::nanoseconds>(limit).count() <= 0;
 
     return isInactive || PerfTest::isSkipped(filter);
 }

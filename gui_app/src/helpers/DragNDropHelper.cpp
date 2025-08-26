@@ -12,7 +12,4 @@ void DragNDropHelper::resetOrigin(const sf::Vector2f& point) { initialPos = poin
 
 bool DragNDropHelper::isInUse() const { return inUse; }
 
-sf::Vector2f DragNDropHelper::getDelta(const sf::Vector2f& point) const
-{
-    return point - initialPos;
-}
+sf::Vector2f DragNDropHelper::getDelta(const sf::Vector2f& point) const { return point - initialPos; }

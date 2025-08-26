@@ -21,10 +21,7 @@ enum class LayerType : uint8_t
     LAST  = SOLID,
 };
 
-static inline uint8_t toIndex(const LayerType type)
-{
-    return utils::ilog2(static_cast<uint8_t>(type));
-}
+static inline uint8_t toIndex(const LayerType type) { return utils::ilog2(static_cast<uint8_t>(type)); }
 
 static inline constexpr bool isRealLayer(const LayerType type)
 {

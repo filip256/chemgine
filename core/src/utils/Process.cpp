@@ -27,10 +27,7 @@ void OS::setCurrentProcessPriority(const OS::ProcessPriority priority)
 {
 #ifdef CHG_BUILD_WINDOWS
     if (not SetPriorityClass(GetCurrentProcess(), static_cast<DWORD>(priority)))
-        Log().fatal(
-            "Failed to set process priority: {0} (error code: {1}).",
-            underlying_cast(priority),
-            GetLastError());
+        Log().fatal("Failed to set process priority: {0} (error code: {1}).", underlying_cast(priority), GetLastError());
 
     Log().debug("Set process priority: {0}.", underlying_cast(priority));
 #endif
@@ -74,10 +71,7 @@ OS::ProcessorIndex ProcessorInfo::getCount() { return processorInfo.count; }
 SYSTEM_LOGICAL_PROCESSOR_INFORMATION ProcessorInfo::getInfo(const OS::ProcessorIndex idx)
 {
     if (idx >= processorInfo.count)
-        Log().fatal(
-            "Invalid processor index: {0}, system only has: {1} processors.",
-            idx,
-            processorInfo.count);
+        Log().fatal("Invalid processor index: {0}, system only has: {1} processors.", idx, processorInfo.count);
 
     return processorInfo.info[idx];
 }
@@ -106,8 +100,7 @@ OS::ProcessorAffinityMask OS::getAvailablePhysicalProcessorMask()
     ProcessorAffinityMask physicalProcessors  = {0};
 
     for (uint8_t i = 0; i < sizeof(DWORD_PTR) * 8; ++i) {
-        if (availableProcessors.test(i) &&
-            ProcessorInfo::getInfo(i).Relationship == RelationProcessorCore)
+        if (availableProcessors.test(i) && ProcessorInfo::getInfo(i).Relationship == RelationProcessorCore)
             physicalProcessors.set(i);
     }
 
@@ -124,8 +117,7 @@ OS::ProcessorAffinityMask OS::getLastAvailablePhysicalProcessorMask()
     ProcessorAffinityMask selectedProcessor   = {0};
 
     for (uint8_t i = sizeof(DWORD_PTR) * 8; i-- > 0;) {
-        if (availableProcessors.test(i) &&
-            ProcessorInfo::getInfo(i).Relationship == RelationProcessorCore) {
+        if (availableProcessors.test(i) && ProcessorInfo::getInfo(i).Relationship == RelationProcessorCore) {
             selectedProcessor.set(i);
             return selectedProcessor;
         }
@@ -141,16 +133,12 @@ OS::ProcessorAffinityMask OS::getLastAvailablePhysicalProcessorMask()
 OS::ProcessorAffinityMask OS::setCurrentThreadProcessorAffinity(const ProcessorAffinityMask mask)
 {
 #ifdef CHG_BUILD_WINDOWS
-    const auto prevMask =
-        SetThreadAffinityMask(GetCurrentThread(), static_cast<DWORD_PTR>(mask.to_ullong()));
+    const auto prevMask = SetThreadAffinityMask(GetCurrentThread(), static_cast<DWORD_PTR>(mask.to_ullong()));
     if (not prevMask)
         Log().fatal(
-            "Failed to set thread affinity to mask: '{0}' (error code: {1}).",
-            mask.to_string('-', '#'),
-            GetLastError());
+            "Failed to set thread affinity to mask: '{0}' (error code: {1}).", mask.to_string('-', '#'), GetLastError());
 
-    Log().debug(
-        "Set thread affinity to mask: '{0} [{1}]'.", mask.to_string('-', '#'), mask.to_ullong());
+    Log().debug("Set thread affinity to mask: '{0} [{1}]'.", mask.to_string('-', '#'), mask.to_ullong());
     return static_cast<ProcessorAffinityMask>(prevMask);
 #else
     return static_cast<ProcessorAffinityMask>(0);

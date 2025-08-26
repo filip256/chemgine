@@ -1,7 +1,6 @@
 #include "labware/kinds/BaseContainerComponent.hpp"
 
-BaseContainerComponent::BaseContainerComponent(const LabwareId id, const LabwareType type) noexcept
-    :
+BaseContainerComponent::BaseContainerComponent(const LabwareId id, const LabwareType type) noexcept :
     DrawableComponent(id, type)
 {}
 
@@ -12,7 +11,4 @@ const BaseContainerLabwareData& BaseContainerComponent::getData() const
 
 bool BaseContainerComponent::isContainer() const { return true; }
 
-void BaseContainerComponent::setOverflowTarget(BaseContainerComponent& target)
-{
-    setOverflowTarget(target.getContent());
-}
+void BaseContainerComponent::setOverflowTarget(BaseContainerComponent& target) { setOverflowTarget(target.getContent()); }

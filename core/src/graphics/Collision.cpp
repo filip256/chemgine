@@ -66,8 +66,7 @@ static BitmaskRegistry& bitmasks()
     return instance;
 }
 
-bool singlePixelTest(
-    const sf::Sprite& sprite, const sf::Vector2f& mousePosition, const uint8_t alphaLimit)
+bool singlePixelTest(const sf::Sprite& sprite, const sf::Vector2f& mousePosition, const uint8_t alphaLimit)
 {
     if (!sprite.getGlobalBounds().contains(mousePosition))
         return false;
@@ -87,8 +86,7 @@ bool singlePixelTest(
     return false;
 }
 
-bool
-pixelPerfectTest(const sf::Sprite& sprite1, const sf::Sprite& sprite2, const uint8_t alphaLimit)
+bool pixelPerfectTest(const sf::Sprite& sprite1, const sf::Sprite& sprite2, const uint8_t alphaLimit)
 {
     const auto intersection = sprite1.getGlobalBounds().findIntersection(sprite2.getGlobalBounds());
     if (not intersection)
@@ -101,10 +99,8 @@ pixelPerfectTest(const sf::Sprite& sprite1, const sf::Sprite& sprite2, const uin
     auto& mask2 = bitmasks().get(sprite2.getTexture());
 
     // Loop through our pixels
-    for (auto i = intersection->position.x; i < intersection->position.x + intersection->size.x;
-         ++i) {
-        for (auto j = intersection->position.y; j < intersection->position.y + intersection->size.y;
-             ++j) {
+    for (auto i = intersection->position.x; i < intersection->position.x + intersection->size.x; ++i) {
+        for (auto j = intersection->position.y; j < intersection->position.y + intersection->size.y; ++j) {
             const sf::Vector2f tPoint(i, j);
             auto               s1v = sprite1.getInverseTransform().transformPoint(tPoint);
             auto               s2v = sprite2.getInverseTransform().transformPoint(tPoint);
@@ -155,8 +151,7 @@ SizedTextureMask createBitmask(const std::string& filename)
 
     TextureMask mask(img.getSize().y * img.getSize().x);
     for (uint32_t y = 0; y < img.getSize().y; ++y) {
-        for (uint32_t x = 0; x < img.getSize().x; ++x)
-            mask[x + y * img.getSize().x] = img.getPixel(sf::Vector2u(x, y)).a;
+        for (uint32_t x = 0; x < img.getSize().x; ++x) mask[x + y * img.getSize().x] = img.getPixel(sf::Vector2u(x, y)).a;
     }
     return std::make_pair(mask, img.getSize());
 }
@@ -196,9 +191,9 @@ struct OrientedBoundingBox  // Used in the BoundingBoxTest
         auto transform = sprite.getTransform();
         auto local     = sprite.getTextureRect();
         points[0]      = transform.transformPoint(sf::Vector2f(0.f, 0.f));
-        points[1] = transform.transformPoint(sf::Vector2f(static_cast<float>(local.size.x), 0.f));
-        points[2] = transform.transformPoint(
-            sf::Vector2f(static_cast<float>(local.size.x), static_cast<float>(local.size.y)));
+        points[1]      = transform.transformPoint(sf::Vector2f(static_cast<float>(local.size.x), 0.f));
+        points[2] =
+            transform.transformPoint(sf::Vector2f(static_cast<float>(local.size.x), static_cast<float>(local.size.y)));
         points[3] = transform.transformPoint(sf::Vector2f(0.f, static_cast<float>(local.size.y)));
     }
 

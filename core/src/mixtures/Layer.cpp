@@ -3,10 +3,7 @@
 #include "data/values/Constants.hpp"
 #include "mixtures/kinds/Mixture.hpp"
 
-Layer::Layer(
-    const Ref<Mixture>          container,
-    const LayerType             layerType,
-    const Amount<Unit::CELSIUS> temperature) noexcept :
+Layer::Layer(const Ref<Mixture> container, const LayerType layerType, const Amount<Unit::CELSIUS> temperature) noexcept :
     layerType(layerType),
     temperature(temperature),
     container(container)
@@ -152,8 +149,7 @@ Amount<Unit::JOULE> Layer::getLeastEnergyDiff(const Amount<Unit::CELSIUS> target
             return highNucleator.getTransitionHeat().to<Unit::JOULE>(nMoles);
         }
 
-        return getTotalHeatCapacity().to<Unit::JOULE>(
-            std::min(target, transitionPoint) - temperature);
+        return getTotalHeatCapacity().to<Unit::JOULE>(std::min(target, transitionPoint) - temperature);
     }
 
     const auto transitionPoint = getMinAllowedTemperature();
@@ -188,9 +184,8 @@ void Layer::convertTemporaryStateReactants()
 
             auto tp = r.getBoilingPoint();
             if (tp < temperature) {
-                const auto lH = r.getVaporizationHeat();
-                const auto convMoles =
-                    std::min(r.amount, lH.to<Unit::MOLE>(getLeastEnergyDiff(tp)));
+                const auto lH        = r.getVaporizationHeat();
+                const auto convMoles = std::min(r.amount, lH.to<Unit::MOLE>(getLeastEnergyDiff(tp)));
                 container->add(r.mutate(convMoles, LayerType::GASEOUS));
                 container->add(r.mutate(-convMoles));
                 container->add(lH.to<Unit::JOULE>(convMoles), layerType);
@@ -199,9 +194,8 @@ void Layer::convertTemporaryStateReactants()
 
             tp = r.getMeltingPoint();
             if (tp > temperature) {
-                const auto lH = r.getFusionHeat();
-                const auto convMoles =
-                    std::min(r.amount, lH.to<Unit::MOLE>(getLeastEnergyDiff(tp)));
+                const auto lH        = r.getFusionHeat();
+                const auto convMoles = std::min(r.amount, lH.to<Unit::MOLE>(getLeastEnergyDiff(tp)));
                 container->add(r.mutate(convMoles, LayerType::SOLID));
                 container->add(r.mutate(-convMoles));
                 container->add(lH.to<Unit::JOULE>(convMoles), layerType);
@@ -215,9 +209,8 @@ void Layer::convertTemporaryStateReactants()
 
             const auto ltp = r.getBoilingPoint();
             if (ltp > temperature) {
-                const auto lH = r.getCondensationHeat();
-                const auto convMoles =
-                    std::min(r.amount, lH.to<Unit::MOLE>(getLeastEnergyDiff(ltp)));
+                const auto lH        = r.getCondensationHeat();
+                const auto convMoles = std::min(r.amount, lH.to<Unit::MOLE>(getLeastEnergyDiff(ltp)));
                 container->add(r.mutate(convMoles, LayerType::POLAR));
                 container->add(r.mutate(-convMoles));
                 container->add(lH.to<Unit::JOULE>(convMoles), layerType);
@@ -231,9 +224,8 @@ void Layer::convertTemporaryStateReactants()
 
             const auto htp = r.getMeltingPoint();
             if (htp < temperature) {
-                const auto lH = r.getLiquefactionHeat();
-                const auto convMoles =
-                    std::min(r.amount, lH.to<Unit::MOLE>(getLeastEnergyDiff(htp)));
+                const auto lH        = r.getLiquefactionHeat();
+                const auto convMoles = std::min(r.amount, lH.to<Unit::MOLE>(getLeastEnergyDiff(htp)));
                 container->add(r.mutate(convMoles, LayerType::POLAR));
                 container->add(r.mutate(-convMoles));
                 container->add(lH.to<Unit::JOULE>(convMoles), layerType);
@@ -262,14 +254,12 @@ Amount<Unit::CELSIUS> Layer::getTemperature() const { return temperature; }
 
 Amount<Unit::CELSIUS> Layer::getMinAllowedTemperature() const
 {
-    return lowNucleator.isValid() ? lowNucleator.getTransitionPoint()
-                                  : Amount<Unit::CELSIUS>::Minimum;
+    return lowNucleator.isValid() ? lowNucleator.getTransitionPoint() : Amount<Unit::CELSIUS>::Minimum;
 }
 
 Amount<Unit::CELSIUS> Layer::getMaxAllowedTemperature() const
 {
-    return highNucleator.isValid() ? highNucleator.getTransitionPoint()
-                                   : Amount<Unit::CELSIUS>::Maximum;
+    return highNucleator.isValid() ? highNucleator.getTransitionPoint() : Amount<Unit::CELSIUS>::Maximum;
 }
 
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> Layer::getHeatCapacity() const
@@ -329,9 +319,7 @@ Color Layer::getColor() const
     }
 
     alpha /= div;
-    alpha  = isGasLayer(layerType)      ? (alpha * 50) / 255
-             : isLiquidLayer(layerType) ? (alpha * 150) / 255
-                                        : alpha;
+    alpha  = isGasLayer(layerType) ? (alpha * 50) / 255 : isLiquidLayer(layerType) ? (alpha * 150) / 255 : alpha;
 
     return Color(
         static_cast<uint8_t>(red / div),

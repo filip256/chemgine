@@ -74,8 +74,7 @@ public:
 };
 
 template <class NodeT>
-DirectedGraph<NodeT>::NeighbourIterator::NeighbourIterator(
-    const DirectedGraph<NodeT>& owner, const size_t node) noexcept :
+DirectedGraph<NodeT>::NeighbourIterator::NeighbourIterator(const DirectedGraph<NodeT>& owner, const size_t node) noexcept :
     owner(owner),
     node(node),
     i(owner.size() - 1)
@@ -198,8 +197,7 @@ NodeT& DirectedGraph<NodeT>::operator[](const size_t idx)
 }
 
 template <class NodeT>
-DirectedGraph<NodeT>::NeighbourIterator
-DirectedGraph<NodeT>::getNeighbourIterator(const size_t idx) const
+DirectedGraph<NodeT>::NeighbourIterator DirectedGraph<NodeT>::getNeighbourIterator(const size_t idx) const
 {
     return NeighbourIterator(*this, idx);
 }

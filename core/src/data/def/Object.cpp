@@ -39,13 +39,11 @@ void Object::logUnusedWarnings() const
 
     for (const auto& [k, _] : ilSubDefs)
         if (not accessedSubDefs.contains(k))
-            Log(this).warn(
-                "Unused sub-definition for property: '{0}', at: {1}.", k, location.toString());
+            Log(this).warn("Unused sub-definition for property: '{0}', at: {1}.", k, location.toString());
 
     for (const auto& [k, _] : oolSubDefs)
         if (not accessedSubDefs.contains(k))
-            Log(this).warn(
-                "Unused sub-definition for property: '{0}', at: {1}.", k, location.toString());
+            Log(this).warn("Unused sub-definition for property: '{0}', at: {1}.", k, location.toString());
 }
 
 std::optional<std::string> Object::getOptionalProperty(const std::string& key) const
@@ -94,8 +92,7 @@ const Object* Object::getDefinition(const std::string& key) const
 {
     const auto def = getOptionalDefinition(key);
     if (def == nullptr)
-        Log(this).error(
-            "Missing required sub-definition: '{0}', at: {1}.", key, location.toString());
+        Log(this).error("Missing required sub-definition: '{0}', at: {1}.", key, location.toString());
 
     return def;
 }

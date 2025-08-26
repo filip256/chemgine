@@ -27,11 +27,9 @@ public:
     ImmutableSet(ImmutableSet&&)      = default;
 
     static std::vector<T> toSortedSetVector(std::vector<T>&& set);
-    static std::vector<T>
-    toSortedSetVector(std::vector<T>&& set, bool (*compare)(const T&, const T&));
+    static std::vector<T> toSortedSetVector(std::vector<T>&& set, bool (*compare)(const T&, const T&));
     static std::vector<T> toSortedSetVector(std::set<T>&& set);
-    static std::vector<T>
-    toSortedSetVector(std::set<T, std::function<bool(const T&, const T&)>>&& set);
+    static std::vector<T> toSortedSetVector(std::set<T, std::function<bool(const T&, const T&)>>&& set);
     static std::vector<T> toSortedSetVector(std::unordered_set<T>&& set);
 
     size_t size() const;
@@ -89,8 +87,7 @@ std::vector<T> ImmutableSet<T>::toSortedSetVector(std::vector<T>&& vector)
 }
 
 template <typename T>
-std::vector<T>
-ImmutableSet<T>::toSortedSetVector(std::vector<T>&& vector, bool (*compare)(const T&, const T&))
+std::vector<T> ImmutableSet<T>::toSortedSetVector(std::vector<T>&& vector, bool (*compare)(const T&, const T&))
 {
     // TODO: this check fails many times due to const members
     if constexpr (std::assignable_from<T&, T>)  // inplace if possible
@@ -100,8 +97,7 @@ ImmutableSet<T>::toSortedSetVector(std::vector<T>&& vector, bool (*compare)(cons
         return vector;
     }
     else {
-        std::set<T, std::function<bool(const T&, const T&)>> set(
-            vector.begin(), vector.end(), std::function(compare));
+        std::set<T, std::function<bool(const T&, const T&)>> set(vector.begin(), vector.end(), std::function(compare));
         return ImmutableSet<T>::toSortedSetVector(std::move(set));
     }
 }
@@ -118,8 +114,7 @@ std::vector<T> ImmutableSet<T>::toSortedSetVector(std::set<T>&& set)
 }
 
 template <typename T>
-std::vector<T>
-ImmutableSet<T>::toSortedSetVector(std::set<T, std::function<bool(const T&, const T&)>>&& set)
+std::vector<T> ImmutableSet<T>::toSortedSetVector(std::set<T, std::function<bool(const T&, const T&)>>&& set)
 {
     std::vector<T> result;
     result.reserve(set.size());
@@ -202,13 +197,7 @@ template <typename T>
 class def::Printer<ImmutableSet<T>>
 {
 public:
-    static std::string print(const ImmutableSet<T>& object)
-    {
-        return def::print(object.getContent());
-    }
+    static std::string print(const ImmutableSet<T>& object) { return def::print(object.getContent()); }
 
-    static std::string prettyPrint(const ImmutableSet<T>& object)
-    {
-        return def::prettyPrint(object.getContent());
-    }
+    static std::string prettyPrint(const ImmutableSet<T>& object) { return def::prettyPrint(object.getContent()); }
 };

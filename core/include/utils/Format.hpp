@@ -93,8 +93,7 @@ std::string utils::formatTime(TimeT time, const TimeFormat format)
 template <uint8_t B, typename T>
 std::string utils::toBase(T value)
 {
-    static constexpr std::string_view digits =
-        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    static constexpr std::string_view digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     static_assert(std::is_integral_v<T>, "toBase(): Input type must be an integral type.");
     static_assert(B >= 2 && B <= digits.size(), "toBase(): Invalid or unsupported base.");

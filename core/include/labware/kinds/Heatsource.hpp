@@ -19,8 +19,7 @@ public:
     void setTarget(BaseContainerComponent& target);
 
     bool tryConnect(LabwareComponentBase& other) override final;
-    void
-    disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase& other) override final;
+    void disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase& other) override final;
 
     void tick(const Amount<Unit::SECOND> timespan) override final;
 };

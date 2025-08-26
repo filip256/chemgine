@@ -11,9 +11,7 @@ concept IsRegressor = requires (RegT reg, const Amount<InUs>... inputs) {
 template <typename RegT, Unit OutU, Unit... InUs>
 class RegressionEstimator : public UnitizedEstimator<OutU, InUs...>
 {
-    static_assert(
-        IsRegressor<RegT, InUs...>,
-        "RegressionEstimator: RegT must be a regressor type of the right order.");
+    static_assert(IsRegressor<RegT, InUs...>, "RegressionEstimator: RegT must be a regressor type of the right order.");
 
 protected:
     const RegT regressor;
@@ -30,8 +28,7 @@ public:
     Amount<OutU> get(const Amount<InUs>... inputs) const override final;
 
     bool isEquivalent(
-        const EstimatorBase& other,
-        const float_s epsilon = std::numeric_limits<float_s>::epsilon()) const override final;
+        const EstimatorBase& other, const float_s epsilon = std::numeric_limits<float_s>::epsilon()) const override final;
 
     void dumpDefinition(
         std::ostream&                    out,
@@ -42,8 +39,7 @@ public:
 };
 
 template <typename RegT, Unit OutU, Unit... InUs>
-RegressionEstimator<RegT, OutU, InUs...>::RegressionEstimator(
-    const EstimatorId id, const RegT& regressor) noexcept :
+RegressionEstimator<RegT, OutU, InUs...>::RegressionEstimator(const EstimatorId id, const RegT& regressor) noexcept :
     Base(id),
     regressor(regressor)
 {}
@@ -67,8 +63,7 @@ Amount<OutU> RegressionEstimator<RegT, OutU, InUs...>::get(const Amount<InUs>...
 }
 
 template <typename RegT, Unit OutU, Unit... InUs>
-bool RegressionEstimator<RegT, OutU, InUs...>::isEquivalent(
-    const EstimatorBase& other, const float_s epsilon) const
+bool RegressionEstimator<RegT, OutU, InUs...>::isEquivalent(const EstimatorBase& other, const float_s epsilon) const
 {
     if (not EstimatorBase::isEquivalent(other, epsilon))
         return false;
@@ -95,8 +90,7 @@ void RegressionEstimator<RegT, OutU, InUs...>::dumpDefinition(
     }
     alreadyPrinted.emplace(Base::id);
 
-    static const auto valueOffset =
-        checked_cast<uint8_t>(utils::max(def::Data::Mode.size(), def::Data::Parameters.size()));
+    static const auto valueOffset = checked_cast<uint8_t>(utils::max(def::Data::Mode.size(), def::Data::Parameters.size()));
 
     def::DataDumper dump(out, valueOffset, baseIndent, prettify);
     if (printInline)

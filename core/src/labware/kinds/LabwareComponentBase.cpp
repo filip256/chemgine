@@ -8,8 +8,7 @@ LabwareComponentBase::LabwareComponentBase(const LabwareId id, const LabwareType
     data(Accessor<>::getDataStore().labware.at(id))
 {
     if (type != data.type)
-        Log(this).fatal(
-            "Labware component given by id {0} does not match the requested component type.", id);
+        Log(this).fatal("Labware component given by id {0} does not match the requested component type.", id);
 }
 
 bool LabwareComponentBase::isFlask() const { return data.type == LabwareType::FLASK; }

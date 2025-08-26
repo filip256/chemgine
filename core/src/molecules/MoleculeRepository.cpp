@@ -19,9 +19,7 @@ bool MoleculeRepository::add(const def::Object& definition)
     auto structure = def::Parser<MolecularStructure>::parse(definition.getSpecifier());
     if (not structure) {
         Log(this).error(
-            "Invalid SMILES specifier: '{0}', at: {1}.",
-            definition.getSpecifier(),
-            definition.getLocationName());
+            "Invalid SMILES specifier: '{0}', at: {1}.", definition.getSpecifier(), definition.getLocationName());
         return false;
     }
     if (findFirstConcrete(*structure) != nullptr) {
@@ -30,20 +28,14 @@ bool MoleculeRepository::add(const def::Object& definition)
     }
 
     const auto name = definition.getDefaultProperty(def::Molecules::Name, "?");
-    const auto hp   = definition.getDefaultProperty(
-        def::Molecules::Hydrophilicity, 1.0f, def::parse<Amount<Unit::MOLE_RATIO>>);
-    const auto lp = definition.getDefaultProperty(
-        def::Molecules::Lipophilicity, 0.0f, def::parse<Amount<Unit::MOLE_RATIO>>);
-    const auto col = definition.getDefaultProperty(
-        def::Molecules::Color, Color(0, 255, 255, 100), def::parse<Color>);
-    auto mp = definition.getDefinition(
-        def::Molecules::MeltingPoint,
-        def::Parser<UnitizedEstimator<Unit::CELSIUS, Unit::TORR>>::parse,
-        estimators);
+    const auto hp =
+        definition.getDefaultProperty(def::Molecules::Hydrophilicity, 1.0f, def::parse<Amount<Unit::MOLE_RATIO>>);
+    const auto lp = definition.getDefaultProperty(def::Molecules::Lipophilicity, 0.0f, def::parse<Amount<Unit::MOLE_RATIO>>);
+    const auto col = definition.getDefaultProperty(def::Molecules::Color, Color(0, 255, 255, 100), def::parse<Color>);
+    auto       mp  = definition.getDefinition(
+        def::Molecules::MeltingPoint, def::Parser<UnitizedEstimator<Unit::CELSIUS, Unit::TORR>>::parse, estimators);
     auto bp = definition.getDefinition(
-        def::Molecules::BoilingPoint,
-        def::Parser<UnitizedEstimator<Unit::CELSIUS, Unit::TORR>>::parse,
-        estimators);
+        def::Molecules::BoilingPoint, def::Parser<UnitizedEstimator<Unit::CELSIUS, Unit::TORR>>::parse, estimators);
     auto sd = definition.getDefinition(
         def::Molecules::SolidDensity,
         def::Parser<UnitizedEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>::parse,
@@ -73,9 +65,7 @@ bool MoleculeRepository::add(const def::Object& definition)
         def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>::parse,
         estimators);
     auto sol = definition.getDefinition(
-        def::Molecules::RelativeSolubility,
-        def::Parser<UnitizedEstimator<Unit::NONE, Unit::CELSIUS>>::parse,
-        estimators);
+        def::Molecules::RelativeSolubility, def::Parser<UnitizedEstimator<Unit::NONE, Unit::CELSIUS>>::parse, estimators);
     auto hen = definition.getDefinition(
         def::Molecules::HenryConstant,
         def::Parser<UnitizedEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>>::parse,
@@ -107,20 +97,11 @@ bool MoleculeRepository::add(const def::Object& definition)
     return true;
 }
 
-bool MoleculeRepository::contains(const MoleculeId id) const
-{
-    return concreteMolecules.contains(id);
-}
+bool MoleculeRepository::contains(const MoleculeId id) const { return concreteMolecules.contains(id); }
 
-const MoleculeData& MoleculeRepository::at(const MoleculeId id) const
-{
-    return *concreteMolecules.at(id);
-}
+const MoleculeData& MoleculeRepository::at(const MoleculeId id) const { return *concreteMolecules.at(id); }
 
-size_t MoleculeRepository::totalDefinitionCount() const
-{
-    return concreteMolecules.size() + genericMolecules.size();
-}
+size_t MoleculeRepository::totalDefinitionCount() const { return concreteMolecules.size() + genericMolecules.size(); }
 
 const MoleculeData* MoleculeRepository::findFirstConcrete(const MolecularStructure& structure) const
 {
@@ -131,8 +112,7 @@ const MoleculeData* MoleculeRepository::findFirstConcrete(const MolecularStructu
     return nullptr;
 }
 
-const GenericMoleculeData*
-MoleculeRepository::findFirstGeneric(const MolecularStructure& structure) const
+const GenericMoleculeData* MoleculeRepository::findFirstGeneric(const MolecularStructure& structure) const
 {
     for (const auto& m : genericMolecules)
         if (m.second->getStructure() == structure)
@@ -152,25 +132,20 @@ const MoleculeData& MoleculeRepository::findOrAddConcrete(MolecularStructure&& s
     if (existing != nullptr)
         return *existing;
 
-    Log(this).debug(
-        "New structure discovered: \n{0}",
-        CHG_DELAYED_EVAL(structure.toASCII().toString().toString()));
+    Log(this).debug("New structure discovered: \n{0}", CHG_DELAYED_EVAL(structure.toASCII().toString().toString()));
 
     const auto hydro = 1.0f;
     const auto lipo  = 0.0f;
     const auto color = Color(0, 255, 255, 100);
     auto       mp    = estimators.add<ConstantEstimator<Unit::CELSIUS, Unit::TORR>>(0.0f);
     auto       bp    = estimators.add<ConstantEstimator<Unit::CELSIUS, Unit::TORR>>(100.0f);
-    auto sd  = estimators.add<ConstantEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>(1.0f);
-    auto ld  = estimators.add<ConstantEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>(1.0f);
-    auto shc = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>(36.0f);
-    auto lhc =
-        estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>(75.4840232f);
-    auto flh =
-        estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(6020.0f);
-    auto vlh = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(
-        40700.0f);
-    auto slh = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(
+    auto       sd    = estimators.add<ConstantEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>(1.0f);
+    auto       ld    = estimators.add<ConstantEstimator<Unit::GRAM_PER_MILLILITER, Unit::CELSIUS>>(1.0f);
+    auto       shc   = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>(36.0f);
+    auto       lhc   = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE_CELSIUS, Unit::TORR>>(75.4840232f);
+    auto       flh   = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(6020.0f);
+    auto       vlh   = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(40700.0f);
+    auto       slh   = estimators.add<ConstantEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>(
         std::numeric_limits<float_s>::max());
     auto sol = estimators.add<ConstantEstimator<Unit::NONE, Unit::CELSIUS>>(1.0f);
     auto hen = estimators.add<ConstantEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>>(1000.0f);
@@ -212,8 +187,7 @@ const GenericMoleculeData& MoleculeRepository::findOrAdd(MolecularStructure&& st
         return *existing;
 
     const auto id = getFreeId();
-    const auto it = genericMolecules.emplace(
-        id, std::make_unique<GenericMoleculeData>(id, std::move(structure)));
+    const auto it = genericMolecules.emplace(id, std::make_unique<GenericMoleculeData>(id, std::move(structure)));
     return *it.first->second;
 }
 

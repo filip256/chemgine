@@ -7,8 +7,7 @@
 
 #include <queue>
 
-PortIdentifier::PortIdentifier(
-    LabwareSystem& system, const l_size componentIdx, const uint8_t portIdx) noexcept :
+PortIdentifier::PortIdentifier(LabwareSystem& system, const l_size componentIdx, const uint8_t portIdx) noexcept :
     componentIdx(componentIdx),
     portIdx(portIdx),
     system(system)
@@ -20,10 +19,7 @@ l_size PortIdentifier::getComponentIndex() const { return componentIdx; }
 
 uint8_t PortIdentifier::getPortIndex() const { return portIdx; }
 
-const LabwareComponentBase& PortIdentifier::getComponent() const
-{
-    return *system.components[componentIdx];
-}
+const LabwareComponentBase& PortIdentifier::getComponent() const { return *system.components[componentIdx]; }
 
 LabwareComponentBase& PortIdentifier::getComponent() { return *system.components[componentIdx]; }
 
@@ -31,10 +27,7 @@ const LabwareSystem& PortIdentifier::getSystem() const { return system; }
 
 LabwareSystem& PortIdentifier::getSystem() { return system; }
 
-const DrawablePort* PortIdentifier::operator->() const
-{
-    return &system.components[componentIdx]->getPort(portIdx);
-}
+const DrawablePort* PortIdentifier::operator->() const { return &system.components[componentIdx]->getPort(portIdx); }
 
 LabwareSystem::LabwareSystem(Lab& lab) noexcept :
     lab(lab)
@@ -48,10 +41,7 @@ LabwareSystem::LabwareSystem(std::unique_ptr<LabwareComponentBase>&& component, 
 
 l_size LabwareSystem::size() const { return checked_cast<l_size>(components.size()); }
 
-const LabwareComponentBase& LabwareSystem::getComponent(const size_t idx) const
-{
-    return *components[idx];
-}
+const LabwareComponentBase& LabwareSystem::getComponent(const size_t idx) const { return *components[idx]; }
 
 LabwareComponentBase& LabwareSystem::getComponent(const size_t idx) { return *components[idx]; }
 
@@ -59,9 +49,7 @@ void LabwareSystem::add(std::unique_ptr<LabwareComponentBase>&& component)
 {
     addToBoundary(component->getBounds());
 
-    connections.emplace_back(
-        std::vector<LabwareConnection>(
-            component->getPorts().size(), LabwareConnection(npos, 0, 0)));
+    connections.emplace_back(std::vector<LabwareConnection>(component->getPorts().size(), LabwareConnection(npos, 0, 0)));
     components.emplace_back(std::move(component));
 }
 
@@ -75,12 +63,10 @@ void LabwareSystem::add(PortIdentifier& srcPort, PortIdentifier& destPort)
     bool connectionSuccess  = srcComp.tryConnect(destComp);
     connectionSuccess      |= destComp.tryConnect(srcComp);  // make sure both are called
     if (connectionSuccess == false)
-        Log<LabwareSystem>().warn(
-            "Port-supported connection resulted in no connection between components.");
+        Log<LabwareSystem>().warn("Port-supported connection resulted in no connection between components.");
 
     srcComp.setRotation(destPort->angle - srcPort->angle + destPort.getComponent().getRotation());
-    srcComp.setPosition(
-        destPort->position - srcPort->position + destPort.getComponent().getPosition());
+    srcComp.setPosition(destPort->position - srcPort->position + destPort.getComponent().getPosition());
 
     for (uint8_t i = 0; i < srcSys.connections[srcPort.componentIdx].size(); ++i)
         if (srcSys.connections[srcPort.componentIdx][i].isFree() == false)
@@ -107,20 +93,18 @@ void LabwareSystem::add(PortIdentifier& srcPort, PortIdentifier& destPort)
             }
     }
 
-    const auto translatedComponent = srcSize - srcPort.componentIdx - 1 + destSize;
+    const auto translatedComponent                               = srcSize - srcPort.componentIdx - 1 + destSize;
     destSys.connections[destPort.componentIdx][destPort.portIdx] = LabwareConnection(
         translatedComponent,
         srcPort.portIdx,
         LabwareConnection::getStrength(
-            destPort->type,
-            destSys.components[translatedComponent]->getPort(srcPort.portIdx).type));
+            destPort->type, destSys.components[translatedComponent]->getPort(srcPort.portIdx).type));
 
     destSys.connections[translatedComponent][srcPort.portIdx] = LabwareConnection(
         destPort.componentIdx,
         destPort.portIdx,
         LabwareConnection::getStrength(
-            destSys.components[translatedComponent]->getPort(srcPort.portIdx).type,
-            destPort->type));
+            destSys.components[translatedComponent]->getPort(srcPort.portIdx).type, destPort->type));
 }
 
 void LabwareSystem::clearBoundary()
@@ -209,8 +193,7 @@ void LabwareSystem::recomputePositions(const l_size parent, const uint8_t parent
         components[current]->getPort(currentPort).position);
 
     for (uint8_t i = 0; i < connections[current].size(); ++i)
-        if (connections[current][i].isFree() == false &&
-            parent != connections[current][i].otherComponent)
+        if (connections[current][i].isFree() == false && parent != connections[current][i].otherComponent)
             recomputePositions(current, i);
 }
 
@@ -255,8 +238,7 @@ bool LabwareSystem::isFree(const l_size componentIdx, const uint8_t portIdx) con
 
 l_size LabwareSystem::findFirst() const { return components.empty() ? npos : 0; }
 
-std::pair<PortIdentifier, float_s>
-LabwareSystem::findClosestPort(const sf::Vector2f& point, const float_s maxSqDistance)
+std::pair<PortIdentifier, float_s> LabwareSystem::findClosestPort(const sf::Vector2f& point, const float_s maxSqDistance)
 {
     auto result = std::make_pair(PortIdentifier(*this, npos, 0), -1.0f);
 
@@ -276,8 +258,8 @@ LabwareSystem::findClosestPort(const sf::Vector2f& point, const float_s maxSqDis
         const auto& offset = components[i]->getPosition();
 
         for (uint8_t j = 0; j < ports.size(); ++j) {
-            const float_s dist = utils::squaredDistance(
-                point.x, point.y, ports[j].position.x + offset.x, ports[j].position.y + offset.y);
+            const float_s dist =
+                utils::squaredDistance(point.x, point.y, ports[j].position.x + offset.x, ports[j].position.y + offset.y);
             if (dist <= result.second) {
                 result.second             = dist;
                 result.first.componentIdx = i;
@@ -289,8 +271,7 @@ LabwareSystem::findClosestPort(const sf::Vector2f& point, const float_s maxSqDis
     return result;
 }
 
-std::pair<PortIdentifier, PortIdentifier>
-LabwareSystem::findClosestPort(LabwareSystem& other, const float_s maxSqDistance)
+std::pair<PortIdentifier, PortIdentifier> LabwareSystem::findClosestPort(LabwareSystem& other, const float_s maxSqDistance)
 {
     auto result = std::make_pair(PortIdentifier(*this, npos, 0), PortIdentifier(other, npos, 0));
 
@@ -298,8 +279,7 @@ LabwareSystem::findClosestPort(LabwareSystem& other, const float_s maxSqDistance
     for (l_size i = 0; i < components.size(); ++i) {
         const auto& ports = components[i]->getPorts();
         for (uint8_t j = 0; j < ports.size(); ++j) {
-            const auto temp = other.findClosestPort(
-                components[i]->getPosition() + ports[j].position, maxSqDistance);
+            const auto temp = other.findClosestPort(components[i]->getPosition() + ports[j].position, maxSqDistance);
 
             if (temp.first.isValid() && temp.second < minDist) {
                 minDist                    = temp.second;
@@ -360,8 +340,8 @@ std::unique_ptr<LabwareComponentBase> LabwareSystem::releaseComponent(const l_si
     return freeComponent;
 }
 
-LabwareSystem LabwareSystem::releaseSection(
-    const l_size componentIdx, const uint8_t portIdx, std::vector<l_size>& componentsToRemove)
+LabwareSystem
+LabwareSystem::releaseSection(const l_size componentIdx, const uint8_t portIdx, std::vector<l_size>& componentsToRemove)
 {
     const auto first = connections[componentIdx][portIdx].otherComponent;
     connections[componentIdx][portIdx].setFree();
@@ -396,8 +376,7 @@ LabwareSystem LabwareSystem::releaseSection(
             if (newSystem.connections.back()[i].isFree() == false &&
                 newSystem.connections.back()[i].otherComponent != c.second) {
                 queue.push(std::make_pair(newSystem.connections.back()[i].otherComponent, c.first));
-                newSystem.connections.back()[i].otherComponent =
-                    checked_cast<l_size>(i + newSystem.components.size());
+                newSystem.connections.back()[i].otherComponent = checked_cast<l_size>(i + newSystem.components.size());
             }
 
         queue.pop();
@@ -411,16 +390,11 @@ bool LabwareSystem::isFree(const PortIdentifier& port)
     return port.getSystem().isFree(port.getComponentIndex(), port.getPortIndex());
 }
 
-void LabwareSystem::connect(PortIdentifier& destination, PortIdentifier& source)
-{
-    add(source, destination);
-}
+void LabwareSystem::connect(PortIdentifier& destination, PortIdentifier& source) { add(source, destination); }
 
 bool LabwareSystem::canConnect(const PortIdentifier& destination, const PortIdentifier& source)
 {
-    return isFree(destination) &&
-           isFree(source) &&
-           LabwareConnection::getStrength(source->type, destination->type);
+    return isFree(destination) && isFree(source) && LabwareConnection::getStrength(source->type, destination->type);
 }
 
 std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
@@ -438,26 +412,19 @@ std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
             if (c.isFree())
                 continue;
 
-            components[componentIdx]->disconnect(
-                lab->getAtmosphere(), *components[c.otherComponent]);
-            components[c.otherComponent]->disconnect(
-                lab->getAtmosphere(), *components[componentIdx]);
+            components[componentIdx]->disconnect(lab->getAtmosphere(), *components[c.otherComponent]);
+            components[c.otherComponent]->disconnect(lab->getAtmosphere(), *components[componentIdx]);
 
-            const Amount<Unit::RADIAN> angle =
-                components[c.otherComponent]->getPort(c.otherPort).angle +
-                components[c.otherComponent]->getRotation() -
-                90.0_o;
+            const Amount<Unit::RADIAN> angle = components[c.otherComponent]->getPort(c.otherPort).angle +
+                                               components[c.otherComponent]->getRotation() -
+                                               90.0_o;
 
-            push.x += (components[componentIdx]->getPosition().x <
-                               components[c.otherComponent]->getPosition().x
-                           ? 1.0f
-                           : -1.0f) *
-                      std::cos(angle.asStd());
-            push.y += (components[componentIdx]->getPosition().y <
-                               components[c.otherComponent]->getPosition().y
-                           ? 1.0f
-                           : -1.0f) *
-                      std::sin(angle.asStd());
+            push.x +=
+                (components[componentIdx]->getPosition().x < components[c.otherComponent]->getPosition().x ? 1.0f : -1.0f) *
+                std::cos(angle.asStd());
+            push.y +=
+                (components[componentIdx]->getPosition().y < components[c.otherComponent]->getPosition().y ? 1.0f : -1.0f) *
+                std::sin(angle.asStd());
 
             // one of the sub-sections can remain in this
             if (skippedFirst == false) {
@@ -484,26 +451,19 @@ std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
             if (c.isFree())
                 continue;
 
-            components[componentIdx]->disconnect(
-                lab->getAtmosphere(), *components[c.otherComponent]);
-            components[c.otherComponent]->disconnect(
-                lab->getAtmosphere(), *components[componentIdx]);
+            components[componentIdx]->disconnect(lab->getAtmosphere(), *components[c.otherComponent]);
+            components[c.otherComponent]->disconnect(lab->getAtmosphere(), *components[componentIdx]);
 
-            const Amount<Unit::RADIAN> angle =
-                components[c.otherComponent]->getPort(c.otherPort).angle +
-                components[c.otherComponent]->getRotation() -
-                90.0_o;
+            const Amount<Unit::RADIAN> angle = components[c.otherComponent]->getPort(c.otherPort).angle +
+                                               components[c.otherComponent]->getRotation() -
+                                               90.0_o;
 
-            push.x += (components[componentIdx]->getPosition().x <
-                               components[c.otherComponent]->getPosition().x
-                           ? 1.0f
-                           : -1.0f) *
-                      std::cos(angle.asStd());
-            push.y += (components[componentIdx]->getPosition().y <
-                               components[c.otherComponent]->getPosition().y
-                           ? 1.0f
-                           : -1.0f) *
-                      std::sin(angle.asStd());
+            push.x +=
+                (components[componentIdx]->getPosition().x < components[c.otherComponent]->getPosition().x ? 1.0f : -1.0f) *
+                std::cos(angle.asStd());
+            push.y +=
+                (components[componentIdx]->getPosition().y < components[c.otherComponent]->getPosition().y ? 1.0f : -1.0f) *
+                std::sin(angle.asStd());
             break;
         }
     }

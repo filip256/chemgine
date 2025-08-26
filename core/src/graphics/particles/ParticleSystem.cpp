@@ -23,15 +23,9 @@ ParticleSystem::ParticleSystem(
     for (uint16_t i = 0; i < particleCount; ++i) particles.emplace_back(*this);
 }
 
-void ParticleSystem::setDirection(const Amount<Unit::DEGREE> direction)
-{
-    this->direction = direction;
-}
+void ParticleSystem::setDirection(const Amount<Unit::DEGREE> direction) { this->direction = direction; }
 
-void ParticleSystem::setTargetDirection(const Amount<Unit::DEGREE> direction)
-{
-    targetDirection = direction;
-}
+void ParticleSystem::setTargetDirection(const Amount<Unit::DEGREE> direction) { targetDirection = direction; }
 
 void ParticleSystem::setDirectionChangeRate(const float_s rate) { directionChangeRate = rate; }
 

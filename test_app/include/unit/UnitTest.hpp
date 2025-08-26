@@ -31,9 +31,7 @@ public:
 template <typename SetupT>
 class UnitTestSetup final : public UnitTest
 {
-    static_assert(
-        std::is_base_of_v<TestSetup, SetupT>,
-        "UnitTestSetup: SetupT must be a TestSetup derived type.");
+    static_assert(std::is_base_of_v<TestSetup, SetupT>, "UnitTestSetup: SetupT must be a TestSetup derived type.");
 
 private:
     SetupT setup;
@@ -99,15 +97,13 @@ public:
 template <typename T, typename... Args>
 void UnitTestGroup::registerTest(std::string&& name, Args&&... args)
 {
-    static_assert(
-        std::is_base_of_v<UnitTest, T>, "UnitTestGroup: T must be a UnitTest derived type.");
+    static_assert(std::is_base_of_v<UnitTest, T>, "UnitTestGroup: T must be a UnitTest derived type.");
 
     name = getName() + '.' + name;  // Append owning group name
 
     std::unique_ptr<UnitTest> test;
     if constexpr (utils::is_specialization_of_v<T, UnitTestSetup>)
-        test = std::make_unique<T>(
-            std::move(name), typename T::SetupType(std::forward<Args>(args)...));
+        test = std::make_unique<T>(std::move(name), typename T::SetupType(std::forward<Args>(args)...));
     else if constexpr (std::is_constructible_v<T, std::string&&, const std::regex&, Args...>)
         test = std::make_unique<T>(std::move(name), filter, std::forward<Args>(args)...);
     else

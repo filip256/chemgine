@@ -39,8 +39,7 @@ Amount<Unit::CELSIUS> Molecule::getBoilingPointAt(const Amount<Unit::TORR> press
     return data.boilingPointEstimator->get(pressure);
 }
 
-AggregationType Molecule::getAggregationAt(
-    const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
+AggregationType Molecule::getAggregationAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
 {
     return temperature > getBoilingPointAt(pressure)   ? AggregationType::GAS
            : temperature > getMeltingPointAt(pressure) ? AggregationType::LIQUID
@@ -48,80 +47,71 @@ AggregationType Molecule::getAggregationAt(
 }
 
 Amount<Unit::GRAM_PER_MILLILITER> Molecule::getDensityAt(
-    const Amount<Unit::CELSIUS> temperature,
-    const Amount<Unit::TORR>    pressure,
-    const AggregationType       aggregation) const
+    const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure, const AggregationType aggregation) const
 {
-    return aggregation == AggregationType::GAS
-               ? Formulas::idealGasLaw(temperature, pressure, molarMass)
+    return aggregation == AggregationType::GAS      ? Formulas::idealGasLaw(temperature, pressure, molarMass)
            : aggregation == AggregationType::LIQUID ? data.liquidDensityEstimator->get(temperature)
                                                     : data.solidDensityEstimator->get(temperature);
 }
 
-Amount<Unit::GRAM_PER_MILLILITER> Molecule::getDensityAt(
-    const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
+Amount<Unit::GRAM_PER_MILLILITER>
+Molecule::getDensityAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
 {
     return getDensityAt(temperature, pressure, getAggregationAt(temperature, pressure));
 }
 
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> Molecule::getHeatCapacityAt(
-    const Amount<Unit::CELSIUS> temperature,
-    const Amount<Unit::TORR>    pressure,
-    const AggregationType       aggregation) const
+    const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure, const AggregationType aggregation) const
 {
-    return aggregation == AggregationType::GAS
-               ? Formulas::isobaricHeatCapacity(data.getStructure().getDegreesOfFreedom())
-           : aggregation == AggregationType::LIQUID
-               ? data.liquidHeatCapacityEstimator->get(pressure)
-               : data.solidHeatCapacityEstimator->get(pressure);
+    return aggregation == AggregationType::GAS ? Formulas::isobaricHeatCapacity(data.getStructure().getDegreesOfFreedom())
+           : aggregation == AggregationType::LIQUID ? data.liquidHeatCapacityEstimator->get(pressure)
+                                                    : data.solidHeatCapacityEstimator->get(pressure);
 }
 
-Amount<Unit::JOULE_PER_MOLE_CELSIUS> Molecule::getHeatCapacityAt(
-    const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
+Amount<Unit::JOULE_PER_MOLE_CELSIUS>
+Molecule::getHeatCapacityAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
 {
     return getHeatCapacityAt(temperature, pressure, getAggregationAt(temperature, pressure));
 }
 
-Amount<Unit::JOULE_PER_MOLE> Molecule::getFusionHeatAt(
-    const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
+Amount<Unit::JOULE_PER_MOLE>
+Molecule::getFusionHeatAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
 {
     return data.fusionLatentHeatEstimator->get(temperature, -pressure);
 }
 
-Amount<Unit::JOULE_PER_MOLE> Molecule::getVaporizationHeatAt(
-    const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
+Amount<Unit::JOULE_PER_MOLE>
+Molecule::getVaporizationHeatAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
 {
     return data.vaporizationLatentHeatEstimator->get(temperature, pressure);
 }
 
-Amount<Unit::JOULE_PER_MOLE> Molecule::getSublimationHeatAt(
-    const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
+Amount<Unit::JOULE_PER_MOLE>
+Molecule::getSublimationHeatAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
 {
     return data.sublimationLatentHeatEstimator->get(temperature, pressure);
 }
 
-Amount<Unit::JOULE_PER_MOLE> Molecule::getLiquefactionHeatAt(
-    const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
+Amount<Unit::JOULE_PER_MOLE>
+Molecule::getLiquefactionHeatAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
 {
     return -getFusionHeatAt(temperature, pressure);
 }
 
-Amount<Unit::JOULE_PER_MOLE> Molecule::getCondensationHeatAt(
-    const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
+Amount<Unit::JOULE_PER_MOLE>
+Molecule::getCondensationHeatAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
 {
     return -getVaporizationHeatAt(temperature, -pressure);
 }
 
-Amount<Unit::JOULE_PER_MOLE> Molecule::getDepositionHeatAt(
-    const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
+Amount<Unit::JOULE_PER_MOLE>
+Molecule::getDepositionHeatAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
 {
     return -getSublimationHeatAt(temperature, -pressure);
 }
 
 Amount<Unit::MOLE_RATIO> Molecule::getSolubilityAt(
-    const Amount<Unit::CELSIUS> temperature,
-    const Amount<Unit::TORR>    pressure,
-    const Polarity&             solventPolarity) const
+    const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure, const Polarity& solventPolarity) const
 {
     if (this->getAggregationAt(temperature, pressure) == AggregationType::GAS)
         return pressure.to<Unit::MOLE_RATIO>(data.henrysConstantEstimator->get(temperature));

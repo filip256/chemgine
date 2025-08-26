@@ -15,8 +15,7 @@ public:
     char           chr;
     OS::BasicColor color;
 
-    constexpr ColoredChar(
-        const char chr, const OS::BasicColor color = OS::BasicColor::NONE) noexcept;
+    constexpr ColoredChar(const char chr, const OS::BasicColor color = OS::BasicColor::NONE) noexcept;
     ColoredChar(const ColoredChar&) = default;
 
     bool operator==(const ColoredChar other) const;
@@ -53,8 +52,7 @@ public:
 
     ColoredString() = default;
     ColoredString(const char* str, const OS::BasicColor color = OS::BasicColor::NONE) noexcept;
-    ColoredString(
-        const std::string& str, const OS::BasicColor color = OS::BasicColor::NONE) noexcept;
+    ColoredString(const std::string& str, const OS::BasicColor color = OS::BasicColor::NONE) noexcept;
     ColoredString(const size_t size, const ColoredChar chr) noexcept;
     template <typename It>
     ColoredString(const It first, const It last) noexcept;

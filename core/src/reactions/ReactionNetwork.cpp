@@ -29,8 +29,7 @@ bool ReactionNetwork::insert(const size_t current, ReactionData& reaction, size_
             graph.addEdge(current, firstInsert);
             graph.addEdge(firstInsert, i.getIndex());
             graph.removeEdge(current, i.getIndex());
-            reaction.setBaseReaction(
-                graph[current].data);  // TODO: select between multiple base reactions
+            reaction.setBaseReaction(graph[current].data);  // TODO: select between multiple base reactions
             i->data.setBaseReaction(reaction);
             matchFound = true;
         }
@@ -85,9 +84,7 @@ bool ReactionNetwork::insert(ReactionData& reaction)
 }
 
 bool ReactionNetwork::getOccurringReactions(
-    const std::vector<Reactant>&          reactants,
-    const size_t                          current,
-    std::unordered_set<ConcreteReaction>& result) const
+    const std::vector<Reactant>& reactants, const size_t current, std::unordered_set<ConcreteReaction>& result) const
 {
     bool matchFound = false;
     for (auto i = graph.getNeighbourIterator(current); i != npos; ++i) {
@@ -109,8 +106,7 @@ bool ReactionNetwork::getOccurringReactions(
     return matchFound;
 }
 
-std::unordered_set<ConcreteReaction>
-ReactionNetwork::getOccurringReactions(const std::vector<Reactant>& reactants) const
+std::unordered_set<ConcreteReaction> ReactionNetwork::getOccurringReactions(const std::vector<Reactant>& reactants) const
 {
     std::unordered_set<ConcreteReaction> result;
     for (size_t i = 0; i < topLayer.size(); ++i) {
@@ -132,9 +128,7 @@ ReactionNetwork::getOccurringReactions(const std::vector<Reactant>& reactants) c
 }
 
 bool ReactionNetwork::getRetrosynthReactions(
-    const StructureRef&                     targetProduct,
-    const size_t                            current,
-    std::unordered_set<RetrosynthReaction>& result) const
+    const StructureRef& targetProduct, const size_t current, std::unordered_set<RetrosynthReaction>& result) const
 {
     bool matchFound = false;
     for (auto i = graph.getNeighbourIterator(current); i != npos; ++i) {
@@ -154,8 +148,7 @@ bool ReactionNetwork::getRetrosynthReactions(
     return matchFound;
 }
 
-std::unordered_set<RetrosynthReaction>
-ReactionNetwork::getRetrosynthReactions(const StructureRef& targetProduct) const
+std::unordered_set<RetrosynthReaction> ReactionNetwork::getRetrosynthReactions(const StructureRef& targetProduct) const
 {
     std::unordered_set<RetrosynthReaction> result;
     for (size_t i = 0; i < topLayer.size(); ++i) {
@@ -174,8 +167,7 @@ ReactionNetwork::getRetrosynthReactions(const StructureRef& targetProduct) const
     return result;
 }
 
-void ReactionNetwork::print(
-    const size_t current, TextBlock& block, size_t& y, std::vector<uint8_t>& pipes) const
+void ReactionNetwork::print(const size_t current, TextBlock& block, size_t& y, std::vector<uint8_t>& pipes) const
 {
     pipes.emplace_back(true);
 
@@ -188,11 +180,9 @@ void ReactionNetwork::print(
 
         auto peek = i;
         if (++peek != npos)
-            block[y].insert(
-                (pipes.size() - 1) * 3, {ASCII::JunctionRight, ASCII::LineH, ASCII::LineH});
+            block[y].insert((pipes.size() - 1) * 3, {ASCII::JunctionRight, ASCII::LineH, ASCII::LineH});
         else {
-            block[y].insert(
-                (pipes.size() - 1) * 3, {ASCII::CornerBottomLeft, ASCII::LineH, ASCII::LineH});
+            block[y].insert((pipes.size() - 1) * 3, {ASCII::CornerBottomLeft, ASCII::LineH, ASCII::LineH});
             pipes.back() = false;
         }
 

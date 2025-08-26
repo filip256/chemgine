@@ -82,8 +82,7 @@ using SizedTextureMask = std::pair<TextureMask, sf::Vector2u>;
 /// downloading the textures from the graphics card to memory -> SLOW!
 /// You can avoid this by using the "createTextureAndBitmask" function
 //////
-bool pixelPerfectTest(
-    const sf::Sprite& sprite1, const sf::Sprite& sprite2, const uint8_t alphaLimit = 0);
+bool pixelPerfectTest(const sf::Sprite& sprite1, const sf::Sprite& sprite2, const uint8_t alphaLimit = 0);
 
 ///////
 /// Test if a single pixel collides By testing the alpha value at the given location.
@@ -95,8 +94,7 @@ bool pixelPerfectTest(
 /// downloading the textures from the graphics card to memory -> SLOW!
 /// You can avoid this by using the "createTextureAndBitmask" function
 //////
-bool singlePixelTest(
-    const sf::Sprite& sprite, const sf::Vector2f& mousePosition, const uint8_t alphaLimit = 0);
+bool singlePixelTest(const sf::Sprite& sprite, const sf::Vector2f& mousePosition, const uint8_t alphaLimit = 0);
 
 //////
 /// Replaces Texture::loadFromFile

@@ -18,7 +18,4 @@ bool Flask::tryConnect(LabwareComponentBase& other)
     return false;
 }
 
-void Flask::disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase& other)
-{
-    this->setOverflowTarget(dump);
-}
+void Flask::disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase& other) { this->setOverflowTarget(dump); }

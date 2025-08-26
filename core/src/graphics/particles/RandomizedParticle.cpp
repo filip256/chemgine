@@ -57,13 +57,11 @@ void RandomizedParticle::tick(Amount<Unit::SECOND> timespan)
 
     const auto& col            = shape.getFillColor();
     const auto  fadeMultiplier = ((lifespan - elapsed) / lifespan).asStd();
-    shape.setFillColor(
-        sf::Color(col.r, col.g, col.b, static_cast<uint8_t>(system.color.a * fadeMultiplier)));
+    shape.setFillColor(sf::Color(col.r, col.g, col.b, static_cast<uint8_t>(system.color.a * fadeMultiplier)));
 
     const auto                 distance = speed.to<Unit::NONE>(timespan).asStd();
     const Amount<Unit::RADIAN> radians  = direction;
-    shape.move(
-        sf::Vector2f(distance * std::cos(radians.asStd()), distance * std::sin(radians.asStd())));
+    shape.move(sf::Vector2f(distance * std::cos(radians.asStd()), distance * std::sin(radians.asStd())));
 
     auto directionIncrement = targetDirection - direction;
     if (directionIncrement > 180.0_o)

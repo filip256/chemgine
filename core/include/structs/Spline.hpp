@@ -15,9 +15,7 @@ public:
 
     Spline() = default;
     Spline(std::vector<std::pair<T, T>>&& points, const T maxCompressionLoss = 0.0) noexcept;
-    Spline(
-        std::initializer_list<std::pair<T, T>> initializer,
-        const T                                maxCompressionLoss = 0.0) noexcept;
+    Spline(std::initializer_list<std::pair<T, T>> initializer, const T maxCompressionLoss = 0.0) noexcept;
     Spline(const Spline&) = default;
     Spline(Spline&&)      = default;
 
@@ -39,8 +37,7 @@ public:
     /// </summary>
     void compress(const T maxLinearError);
 
-    bool
-    isEquivalent(const Spline<T>& other, const T epsilon = std::numeric_limits<T>::epsilon()) const;
+    bool isEquivalent(const Spline<T>& other, const T epsilon = std::numeric_limits<T>::epsilon()) const;
 
     static constexpr size_t npos = static_cast<size_t>(-1);
 };

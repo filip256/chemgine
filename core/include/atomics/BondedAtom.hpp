@@ -30,17 +30,14 @@ public:
 
     std::unique_ptr<BondedAtomBase> mutate(const Atom& atom);
 
-    static std::unique_ptr<BondedAtomBase>
-    create(const Symbol& symbol, const c_size index, std::vector<Bond>&& bonds);
-    static std::unique_ptr<BondedAtomBase>
-    create(const Atom& atom, const c_size index, std::vector<Bond>&& bonds);
+    static std::unique_ptr<BondedAtomBase> create(const Symbol& symbol, const c_size index, std::vector<Bond>&& bonds);
+    static std::unique_ptr<BondedAtomBase> create(const Atom& atom, const c_size index, std::vector<Bond>&& bonds);
 };
 
 template <typename AtomT>
 class BondedAtom : public BondedAtomBase
 {
-    static_assert(
-        std::is_base_of_v<Atom, AtomT>, "BondedAtom: AtomT must be an Atom derived type.");
+    static_assert(std::is_base_of_v<Atom, AtomT>, "BondedAtom: AtomT must be an Atom derived type.");
 
 private:
     const AtomT atom;
@@ -55,8 +52,7 @@ public:
 };
 
 template <typename AtomT>
-BondedAtom<AtomT>::BondedAtom(
-    const AtomT& atom, const c_size index, std::vector<Bond>&& bonds) noexcept :
+BondedAtom<AtomT>::BondedAtom(const AtomT& atom, const c_size index, std::vector<Bond>&& bonds) noexcept :
     BondedAtomBase(index, std::move(bonds)),
     atom(atom)
 {}

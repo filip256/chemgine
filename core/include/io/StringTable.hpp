@@ -10,7 +10,7 @@ private:
     std::vector<std::string>              header;
     std::vector<std::vector<std::string>> entries;
 
-    static void getMaxWidths(const std::vector<std::string>& strings, std::vector<size_t>& widths);
+    static void         getMaxWidths(const std::vector<std::string>& strings, std::vector<size_t>& widths);
     std::vector<size_t> getMaxWidths() const;
 
 public:

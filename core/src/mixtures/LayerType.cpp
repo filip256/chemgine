@@ -31,8 +31,7 @@ LayerType getLayerType(const AggregationType type, const bool isNonpolar, const 
     return type == AggregationType::GAS     ? LayerType::GASEOUS
            : type == AggregationType::SOLID ? LayerType::SOLID
            : type == AggregationType::LIQUID
-               ? (isNonpolar ? (isDense ? LayerType::DENSE_NONPOLAR : LayerType::NONPOLAR)
-                             : LayerType::POLAR)
+               ? (isNonpolar ? (isDense ? LayerType::DENSE_NONPOLAR : LayerType::NONPOLAR) : LayerType::POLAR)
                : LayerType::NONE;
 }
 
@@ -58,12 +57,6 @@ std::string getLayerName(const LayerType type)
     }
 }
 
-LayerType& operator++(LayerType& layer)
-{
-    return layer = static_cast<LayerType>(static_cast<uint8_t>(layer) << 1);
-}
+LayerType& operator++(LayerType& layer) { return layer = static_cast<LayerType>(static_cast<uint8_t>(layer) << 1); }
 
-LayerType& operator--(LayerType& layer)
-{
-    return layer = static_cast<LayerType>(static_cast<uint8_t>(layer) >> 1);
-}
+LayerType& operator--(LayerType& layer) { return layer = static_cast<LayerType>(static_cast<uint8_t>(layer) >> 1); }

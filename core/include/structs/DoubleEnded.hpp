@@ -103,8 +103,7 @@ DoubleEnded<T>::DoubleEnded(const DoubleEnded& other, CopyFn makeCopy) noexcept
 }
 
 template <typename T>
-DoubleEnded<T>::DoubleEnded(const IndexT begin, const IndexT end, const ConstElemRefT elem) noexcept
-    :
+DoubleEnded<T>::DoubleEnded(const IndexT begin, const IndexT end, const ConstElemRefT elem) noexcept :
     forward(end > 0 ? end : 0, elem),
     backward(begin < 0 ? -begin : 0, elem)
 {}

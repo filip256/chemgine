@@ -34,8 +34,7 @@ public:
 
     size_t totalDefinitionCount() const;
 
-    using Iterator =
-        std::unordered_map<EstimatorId, std::unique_ptr<const EstimatorBase>>::const_iterator;
+    using Iterator = std::unordered_map<EstimatorId, std::unique_ptr<const EstimatorBase>>::const_iterator;
     Iterator begin() const;
     Iterator end() const;
 
@@ -46,8 +45,7 @@ template <typename EstT, typename... Args>
 CountedRef<const EstT> EstimatorRepository::add(Args&&... args)
 {
     static_assert(
-        std::is_base_of_v<EstimatorBase, EstT>,
-        "EstimatorRepository: EstT must be an EstimatorBase derived type.");
+        std::is_base_of_v<EstimatorBase, EstT>, "EstimatorRepository: EstT must be an EstimatorBase derived type.");
 
     const auto id = getFreeId();
     return static_cast<const EstT&>(add(std::make_unique<EstT>(id, std::forward<Args>(args)...)));

@@ -20,7 +20,7 @@ MoleculeData::MoleculeData(
     EstimatorRef<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>&& vaporizationLatentHeatEstimator,
     EstimatorRef<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>&& sublimationLatentHeatEstimator,
     EstimatorRef<Unit::NONE, Unit::CELSIUS>&&                       relativeSolubilityEstimator,
-    EstimatorRef<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>&& henrysConstantEstimator) noexcept :
+    EstimatorRef<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>&&            henrysConstantEstimator) noexcept :
     GenericMoleculeData(id, std::move(structure)),
     type(this->structure.isOrganic() ? MoleculeType::ORGANIC : MoleculeType::INORGANIC),
     name(name),
@@ -45,8 +45,8 @@ MoleculeData::MoleculeData(
 
 const MolecularStructure& MoleculeData::getStructure() const { return structure; }
 
-void MoleculeData::dumpDefinition(
-    std::ostream& out, const bool prettify, std::unordered_set<EstimatorId>& alreadyPrinted) const
+void
+MoleculeData::dumpDefinition(std::ostream& out, const bool prettify, std::unordered_set<EstimatorId>& alreadyPrinted) const
 {
     static const auto valueOffset = checked_cast<uint8_t>(utils::max(
         def::Molecules::Name.size(),
@@ -84,20 +84,13 @@ void MoleculeData::dumpDefinition(
         .subDefinitionWithSep(def::Molecules::BoilingPoint, boilingPointEstimator, alreadyPrinted)
         .subDefinitionWithSep(def::Molecules::SolidDensity, solidDensityEstimator, alreadyPrinted)
         .subDefinitionWithSep(def::Molecules::LiquidDensity, liquidDensityEstimator, alreadyPrinted)
-        .subDefinitionWithSep(
-            def::Molecules::SolidHeatCapacity, solidHeatCapacityEstimator, alreadyPrinted)
-        .subDefinitionWithSep(
-            def::Molecules::LiquidHeatCapacity, liquidHeatCapacityEstimator, alreadyPrinted)
-        .subDefinitionWithSep(
-            def::Molecules::FusionLatentHeat, fusionLatentHeatEstimator, alreadyPrinted)
-        .subDefinitionWithSep(
-            def::Molecules::VaporizationLatentHeat, vaporizationLatentHeatEstimator, alreadyPrinted)
-        .subDefinitionWithSep(
-            def::Molecules::SublimationLatentHeat, sublimationLatentHeatEstimator, alreadyPrinted)
-        .subDefinitionWithSep(
-            def::Molecules::RelativeSolubility, relativeSolubilityEstimator, alreadyPrinted)
-        .subDefinitionWithSep(
-            def::Molecules::HenryConstant, henrysConstantEstimator, alreadyPrinted)
+        .subDefinitionWithSep(def::Molecules::SolidHeatCapacity, solidHeatCapacityEstimator, alreadyPrinted)
+        .subDefinitionWithSep(def::Molecules::LiquidHeatCapacity, liquidHeatCapacityEstimator, alreadyPrinted)
+        .subDefinitionWithSep(def::Molecules::FusionLatentHeat, fusionLatentHeatEstimator, alreadyPrinted)
+        .subDefinitionWithSep(def::Molecules::VaporizationLatentHeat, vaporizationLatentHeatEstimator, alreadyPrinted)
+        .subDefinitionWithSep(def::Molecules::SublimationLatentHeat, sublimationLatentHeatEstimator, alreadyPrinted)
+        .subDefinitionWithSep(def::Molecules::RelativeSolubility, relativeSolubilityEstimator, alreadyPrinted)
+        .subDefinitionWithSep(def::Molecules::HenryConstant, henrysConstantEstimator, alreadyPrinted)
         .propertyWithSep(def::Molecules::Hydrophilicity, polarity.hydrophilicity)
         .propertyWithSep(def::Molecules::Lipophilicity, polarity.lipophilicity)
         .property(def::Molecules::Color, color)

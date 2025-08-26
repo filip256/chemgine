@@ -1,15 +1,14 @@
 #include "unit/tests/EstimatorUnitTests.hpp"
 
-Estimator2DUnitTestBase::Estimator2DUnitTestBase(
-    std::string&& name, float_s (*generator)(const float_s)) noexcept :
+Estimator2DUnitTestBase::Estimator2DUnitTestBase(std::string&& name, float_s (*generator)(const float_s)) noexcept :
     UnitTest(std::move(name)),
     generator(generator)
 {}
 
 Amount<Unit::ANY> Estimator2DUnitTestBase::generateAt(const float_s x) { return generator(x); }
 
-std::vector<DataPoint<Unit::ANY, Unit::ANY>> Estimator2DUnitTestBase::generateData(
-    const float_s minX, const float_s maxX, const size_t size) const
+std::vector<DataPoint<Unit::ANY, Unit::ANY>>
+Estimator2DUnitTestBase::generateData(const float_s minX, const float_s maxX, const size_t size) const
 {
     std::vector<DataPoint<Unit::ANY, Unit::ANY>> data;
     data.reserve(size);
@@ -42,9 +41,8 @@ DataEstimator2DUnitTest::DataEstimator2DUnitTest(
 
 bool DataEstimator2DUnitTest::run()
 {
-    const auto testSize = (inputSize - 1) * 4;
-    const auto estimator =
-        factory.createData(generateData(testMinX, testMaxX, inputSize), mode, loss);
+    const auto testSize  = (inputSize - 1) * 4;
+    const auto estimator = factory.createData(generateData(testMinX, testMaxX, inputSize), mode, loss);
 
     float_h error = 0.0;
     size_t  n     = 0;
@@ -83,17 +81,10 @@ Estimator3DUnitTestBase::Estimator3DUnitTestBase(
     generator(generator)
 {}
 
-Amount<Unit::ANY> Estimator3DUnitTestBase::generateAt(const float_s x1, const float_s x2)
-{
-    return generator(x1, x2);
-}
+Amount<Unit::ANY> Estimator3DUnitTestBase::generateAt(const float_s x1, const float_s x2) { return generator(x1, x2); }
 
 std::vector<DataPoint<Unit::ANY, Unit::ANY, Unit::ANY>> Estimator3DUnitTestBase::generateData(
-    const float_s minX1,
-    const float_s maxX1,
-    const float_s minX2,
-    const float_s maxX2,
-    const size_t  size) const
+    const float_s minX1, const float_s maxX1, const float_s minX2, const float_s maxX2, const size_t size) const
 {
     std::vector<DataPoint<Unit::ANY, Unit::ANY, Unit::ANY>> data;
     data.reserve(size * size);
@@ -101,8 +92,7 @@ std::vector<DataPoint<Unit::ANY, Unit::ANY, Unit::ANY>> Estimator3DUnitTestBase:
     const float_s step1 = (maxX1 - minX1) / (size - 1);
     const float_s step2 = (maxX2 - minX2) / (size - 1);
     for (float_s x1 = minX1; x1 < maxX1; x1 += step1)
-        for (float_s x2 = minX2; x2 < maxX2; x2 += step2)
-            data.emplace_back(generator(x1, x2), x1, x2);
+        for (float_s x2 = minX2; x2 < maxX2; x2 += step2) data.emplace_back(generator(x1, x2), x1, x2);
 
     data.emplace_back(generator(maxX1, maxX2), maxX1, maxX2);
     return data;
@@ -133,9 +123,9 @@ DataEstimator3DUnitTest::DataEstimator3DUnitTest(
 
 bool DataEstimator3DUnitTest::run()
 {
-    const auto testSize  = (inputSize - 1) * 4;
-    const auto estimator = factory.createData(
-        generateData(testMinX1, testMaxX1, testMinX2, testMaxX2, inputSize), mode, loss);
+    const auto testSize = (inputSize - 1) * 4;
+    const auto estimator =
+        factory.createData(generateData(testMinX1, testMaxX1, testMinX2, testMaxX2, inputSize), mode, loss);
 
     float_h error = 0.0;
     size_t  n     = 0;
@@ -223,28 +213,22 @@ EstimatorUnitTests::EstimatorUnitTests(std::string&& name, const std::regex& fil
         return std::sin(x * x * x);
     }, EstimationMode::LINEAR, 0.0f, 100, 2.0f, 20.0f, 1e+00);
 
-    registerTest<DataEstimator3DUnitTest>(
-        "const_3D", [](const float_s x1, const float_s x2) -> float_s {
+    registerTest<DataEstimator3DUnitTest>("const_3D", [](const float_s x1, const float_s x2) -> float_s {
         return 2.0f;
     }, EstimationMode::LINEAR, 0.0f, 100, -100.0f, 100.0f, -100.0f, 100.0f, 0.0);
-    registerTest<DataEstimator3DUnitTest>(
-        "linear_3D", [](const float_s x1, const float_s x2) -> float_s {
+    registerTest<DataEstimator3DUnitTest>("linear_3D", [](const float_s x1, const float_s x2) -> float_s {
         return x1 * 1.2f - x2 * 0.9f + 4.2f;
     }, EstimationMode::LINEAR, 0.0f, 100, -100.0f, 100.0f, -100.0f, 100.0f, 1e-02);
-    registerTest<DataEstimator3DUnitTest>(
-        "bilinear_3D", [](const float_s x1, const float_s x2) -> float_s {
+    registerTest<DataEstimator3DUnitTest>("bilinear_3D", [](const float_s x1, const float_s x2) -> float_s {
         return x1 * x2 * 1.1f - 2.27f;
     }, EstimationMode::LINEAR, 0.0f, 100, -30.0f, 30.0f, -30.0f, 30.0f, 1e+03);
-    registerTest<DataEstimator3DUnitTest>(
-        "quasilinear_3D", [](const float_s x1, const float_s x2) -> float_s {
+    registerTest<DataEstimator3DUnitTest>("quasilinear_3D", [](const float_s x1, const float_s x2) -> float_s {
         return x1 * x1 * 1.2f - x2 * 0.8f + 1.25f;
     }, EstimationMode::LINEAR, 0.0f, 100, -30.0f, 30.0f, -30.0f, 30.0f, 1e+03);
-    registerTest<DataEstimator3DUnitTest>(
-        "quadratic_3D", [](const float_s x1, const float_s x2) -> float_s {
+    registerTest<DataEstimator3DUnitTest>("quadratic_3D", [](const float_s x1, const float_s x2) -> float_s {
         return x1 * x1 * 1.3f + x2 * x2 * 1.7f + x1 * x2 + x1 * 0.9f + x2 * 0.7f - 1.25f;
     }, EstimationMode::LINEAR, 0.0f, 100, -30.0f, 30.0f, -30.0f, 30.0f, 1e+04);
-    registerTest<DataEstimator3DUnitTest>(
-        "cubic_3D", [](const float_s x1, const float_s x2) -> float_s {
+    registerTest<DataEstimator3DUnitTest>("cubic_3D", [](const float_s x1, const float_s x2) -> float_s {
         return x1 * x1 * x1 * 1.3f +
                x2 * x2 * x2 * 1.2f +
                x1 * x1 * x2 * 1.5f +
@@ -255,12 +239,10 @@ EstimatorUnitTests::EstimatorUnitTests(std::string&& name, const std::regex& fil
                x2 * 0.2f +
                0.02f;
     }, EstimationMode::LINEAR, 0.0f, 100, -30.0f, 30.0f, -30.0f, 30.0f, 1e+05);
-    registerTest<DataEstimator3DUnitTest>(
-        "div_3D", [](const float_s x1, const float_s x2) -> float_s {
+    registerTest<DataEstimator3DUnitTest>("div_3D", [](const float_s x1, const float_s x2) -> float_s {
         return x1 / (x2 != 0.0f ? x2 : std::numeric_limits<float_s>::min());
     }, EstimationMode::LINEAR, 0.0f, 100, -30.0f, 30.0f, -30.0f, 30.0f, 1e+03);
-    registerTest<DataEstimator3DUnitTest>(
-        "fuzz_3D", [](const float_s x1, const float_s x2) -> float_s {
+    registerTest<DataEstimator3DUnitTest>("fuzz_3D", [](const float_s x1, const float_s x2) -> float_s {
         return static_cast<float_s>(std::pow(std::sin(x1 * x2 / std::tan(x2 * x2)), 2));
     }, EstimationMode::LINEAR, 0.0f, 20, -20.0f, 20.0f, -20.0f, 20.0f, 1e+00);
 }

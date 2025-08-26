@@ -30,8 +30,7 @@ void MixturePropertyPane::LayerPropertyPane::setPosition(const sf::Vector2f& pos
     propertyValue.setPosition(sf::Vector2f(position.x + 110.0f, position.y + 20.0f));
 }
 
-void MixturePropertyPane::LayerPropertyPane::draw(
-    sf::RenderTarget& target, sf::RenderStates states) const
+void MixturePropertyPane::LayerPropertyPane::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(title, states);
 
@@ -79,15 +78,9 @@ MixturePropertyPane::ContentPropertyPane::ContentPropertyPane(const sf::Font& fo
     propertyValue.setStyle(sf::Text::Bold);
 }
 
-const sf::Vector2f& MixturePropertyPane::ContentPropertyPane::getPosition() const
-{
-    return position;
-}
+const sf::Vector2f& MixturePropertyPane::ContentPropertyPane::getPosition() const { return position; }
 
-void MixturePropertyPane::ContentPropertyPane::setSubject(const Layer& subject)
-{
-    this->subject = subject;
-}
+void MixturePropertyPane::ContentPropertyPane::setSubject(const Layer& subject) { this->subject = subject; }
 
 void MixturePropertyPane::ContentPropertyPane::setPosition(const sf::Vector2f& position)
 {
@@ -96,8 +89,7 @@ void MixturePropertyPane::ContentPropertyPane::setPosition(const sf::Vector2f& p
     propertyValue.setPosition(sf::Vector2f(position.x + 140.0f, position.y));
 }
 
-void MixturePropertyPane::ContentPropertyPane::draw(
-    sf::RenderTarget& target, sf::RenderStates states) const
+void MixturePropertyPane::ContentPropertyPane::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     for (const auto& m : *subject) {
         propertyName.setString(utils::capitalize(m.molecule.getData().name));
@@ -150,8 +142,7 @@ void MixturePropertyPane::draw(sf::RenderTarget& target, sf::RenderStates states
     if (subject->isContainer() == false)
         return;
 
-    const auto& container =
-        static_cast<const BaseContainerComponent*>(&subject.get())->getContent();
+    const auto& container = static_cast<const BaseContainerComponent*>(&subject.get())->getContent();
 
     propertyName.setString("Moles:");
     propertyValue.setString(container.getTotalMoles().toString(6));
@@ -186,8 +177,7 @@ void MixturePropertyPane::draw(sf::RenderTarget& target, sf::RenderStates states
 
         layerPane.setPosition(propertyName.getPosition() + sf::Vector2f(22.0f, 32.0f));
         contentPane.setPosition(propertyName.getPosition() + sf::Vector2f(240.0f, 32.0f));
-        for (auto l = contentCast->getLayersDownBegin(); l != contentCast->getLayersDownEnd();
-             ++l) {
+        for (auto l = contentCast->getLayersDownBegin(); l != contentCast->getLayersDownEnd(); ++l) {
             layerPane.setSubject(l->second);
             contentPane.setSubject(l->second);
             target.draw(layerPane, states);

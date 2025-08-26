@@ -23,8 +23,7 @@ ReactorUnitTest::ReactorUnitTest(
     const Amount<Unit::LITER> maxVolume,
     const ContentInitializer& content,
     FlagField<TickMode>       tickMode) noexcept :
-    ReactorUnitTest(
-        std::move(name), maxVolume, content, Atmosphere::createDefaultAtmosphere(), tickMode)
+    ReactorUnitTest(std::move(name), maxVolume, content, Atmosphere::createDefaultAtmosphere(), tickMode)
 {}
 
 Amount<Unit::GRAM> ReactorUnitTest::getTotalSystemMass() const
@@ -244,10 +243,7 @@ bool BoilUnitTest::run()
             const auto dTemp = destination.getTemperature();
             ;
             if (dTemp != pastDestinationTemp) {
-                Log(this).error(
-                    "Destination layer temperature: {0} changed in phase: {1}.",
-                    dTemp.toString(),
-                    testPhase);
+                Log(this).error("Destination layer temperature: {0} changed in phase: {1}.", dTemp.toString(), testPhase);
                 success = false;
                 break;
             }
@@ -274,10 +270,7 @@ bool BoilUnitTest::run()
             const auto sTemp = source.getTemperature();
             ;
             if (sTemp != pastSourceTemp) {
-                Log(this).error(
-                    "Source layer temperature: {0} changed in phase: {1}.",
-                    dTemp.toString(),
-                    testPhase);
+                Log(this).error("Source layer temperature: {0} changed in phase: {1}.", dTemp.toString(), testPhase);
                 break;
             }
             pastSourceTemp = sTemp;
@@ -298,10 +291,7 @@ bool BoilUnitTest::run()
             const auto dTemp = destination.getTemperature();
             ;
             if (dTemp != pastDestinationTemp) {
-                Log(this).error(
-                    "Destination layer temperature: {0} changed in phase: {1}.",
-                    dTemp.toString(),
-                    testPhase);
+                Log(this).error("Destination layer temperature: {0} changed in phase: {1}.", dTemp.toString(), testPhase);
                 success = false;
                 break;
             }
@@ -315,18 +305,13 @@ bool BoilUnitTest::run()
             const auto dTemp = destination.getTemperature();
             if (dTemp <= pastDestinationTemp) {
                 Log(this).error(
-                    "Destination layer temperature: {0} did not increase in phase: {1}.",
-                    dTemp.toString(),
-                    testPhase);
+                    "Destination layer temperature: {0} did not increase in phase: {1}.", dTemp.toString(), testPhase);
                 success = false;
                 break;
             }
             pastDestinationTemp = dTemp;
             if (const auto sTemp = source.getTemperature(); not sTemp.isInfinity()) {
-                Log(this).error(
-                    "Source layer temperature: {0} was not infinity in phase {1}.",
-                    sTemp.toString(),
-                    testPhase);
+                Log(this).error("Source layer temperature: {0} was not infinity in phase {1}.", sTemp.toString(), testPhase);
                 success = false;
                 break;
             }
@@ -364,17 +349,14 @@ bool IncompatibleForwardingUnitTest::run()
 
     source.add(water);
     if (reactor.getAmountOf(water) != water.amount) {
-        Log(this).error(
-            "Incompatible reactant: '{0}' was not forwarded.",
-            water.molecule.getStructure().toSMILES());
+        Log(this).error("Incompatible reactant: '{0}' was not forwarded.", water.molecule.getStructure().toSMILES());
         return false;
     }
 
     const auto molesBefore = reactor.getTotalMoles();
     source.add(oxygen);
     if (reactor.getTotalMoles() != molesBefore) {
-        Log(this).error(
-            "Compatible reactant: '{0}' was forwarded.", oxygen.molecule.getStructure().toSMILES());
+        Log(this).error("Compatible reactant: '{0}' was forwarded.", oxygen.molecule.getStructure().toSMILES());
         return false;
     }
 
@@ -388,9 +370,8 @@ ImplicitForwardingUnitTest::ImplicitForwardingUnitTest(std::string&& name) noexc
         {
 }),
     source(
-        {{[](const Reactant& reactant) -> bool {
-              return reactant.molecule.getMolarMass() < 20.0_g;
-          }, Ref<ContainerBase>(reactor)}},
+        {{[](const Reactant& reactant) -> bool { return reactant.molecule.getMolarMass() < 20.0_g; },
+          Ref<ContainerBase>(reactor)}},
         dump)
 {}
 
@@ -401,25 +382,21 @@ bool ImplicitForwardingUnitTest::run()
 
     source.add(water);
     if (reactor.getAmountOf(water) != water.amount) {
-        Log(this).error(
-            "Incompatible reactant: '{0}' was not forwarded.",
-            water.molecule.getStructure().toSMILES());
+        Log(this).error("Incompatible reactant: '{0}' was not forwarded.", water.molecule.getStructure().toSMILES());
         return false;
     }
 
     const auto molesBefore = reactor.getTotalMoles();
     source.add(oxygen);
     if (reactor.getTotalMoles() != molesBefore) {
-        Log(this).error(
-            "Compatible reactant: '{0}' was forwarded.", oxygen.molecule.getStructure().toSMILES());
+        Log(this).error("Compatible reactant: '{0}' was forwarded.", oxygen.molecule.getStructure().toSMILES());
         return false;
     }
 
     return true;
 }
 
-MixtureUnitTests::MixtureUnitTests(
-    std::string&& name, const std::regex& filter, const std::string& defModulePath) noexcept :
+MixtureUnitTests::MixtureUnitTests(std::string&& name, const std::regex& filter, const std::string& defModulePath) noexcept :
     UnitTestGroup(std::move(name), filter)
 {
     Accessor<>::setDataStore(dataStore);

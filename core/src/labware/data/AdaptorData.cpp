@@ -7,8 +7,7 @@ AdaptorData::AdaptorData(
     const Amount<Unit::LITER>  volume,
     const std::string&         textureFile,
     const float_s              textureScale) noexcept :
-    ContainerLabwareData(
-        id, name, std::move(ports), textureFile, textureScale, volume, LabwareType::ADAPTOR)
+    ContainerLabwareData(id, name, std::move(ports), textureFile, textureScale, volume, LabwareType::ADAPTOR)
 {}
 
 void AdaptorData::dumpCustomProperties(def::DataDumper& dump) const

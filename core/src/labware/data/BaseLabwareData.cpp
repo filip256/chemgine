@@ -1,10 +1,7 @@
 #include "labware/data/BaseLabwareData.hpp"
 
 BaseLabwareData::BaseLabwareData(
-    const LabwareId            id,
-    const std::string&         name,
-    std::vector<LabwarePort>&& ports,
-    const LabwareType          type) noexcept :
+    const LabwareId id, const std::string& name, std::vector<LabwarePort>&& ports, const LabwareType type) noexcept :
     id(id),
     type(type),
     name(name),

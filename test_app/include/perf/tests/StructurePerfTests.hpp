@@ -12,9 +12,7 @@ private:
 
 public:
     StructureSMILESPerfTest(
-        const std::string&                                   name,
-        const std::variant<size_t, std::chrono::nanoseconds> limit,
-        std::string&&                                        smiles) noexcept;
+        const std::string& name, const std::variant<size_t, std::chrono::nanoseconds> limit, std::string&& smiles) noexcept;
 
     void task() override final;
 };
@@ -141,6 +139,5 @@ private:
     DataStore dataStore;
 
 public:
-    StructurePerfTests(
-        std::string&& name, const std::regex& filter, const std::string& atomsFilePath) noexcept;
+    StructurePerfTests(std::string&& name, const std::regex& filter, const std::string& atomsFilePath) noexcept;
 };

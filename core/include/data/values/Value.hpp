@@ -46,19 +46,16 @@ constexpr Value<T>::Value(const T value) noexcept :
 template <typename T>
 constexpr bool Value<T>::overflowsOnAdd(const Value<T>& other) const noexcept
 {
-    return this->value > 0.0 && other.value > 0.0
-               ? this->value > std::numeric_limits<T>::max() - other.value
-           : this->value < 0.0 && other.value < 0.0
-               ? this->value < std::numeric_limits<T>::min() - other.value
-               : false;
+    return this->value > 0.0 && other.value > 0.0   ? this->value > std::numeric_limits<T>::max() - other.value
+           : this->value < 0.0 && other.value < 0.0 ? this->value < std::numeric_limits<T>::min() - other.value
+                                                    : false;
 }
 
 template <typename T>
 constexpr bool Value<T>::overflowsOnMultiply(const Value<T>& other) const noexcept
 {
-    return this->value > 0.0
-               ? (other.value > 0.0 ? this->value > std::numeric_limits<T>::max() / other.value
-                                    : this->value > std::numeric_limits<T>::min() / other.value)
-               : (other.value > 0.0 ? this->value < std::numeric_limits<T>::min() / other.value
-                                    : this->value < std::numeric_limits<T>::max() / other.value);
+    return this->value > 0.0 ? (other.value > 0.0 ? this->value > std::numeric_limits<T>::max() / other.value
+                                                  : this->value > std::numeric_limits<T>::min() / other.value)
+                             : (other.value > 0.0 ? this->value < std::numeric_limits<T>::min() / other.value
+                                                  : this->value < std::numeric_limits<T>::max() / other.value);
 }

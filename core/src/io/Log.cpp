@@ -40,8 +40,7 @@ void LogBase::addContextIndent()
     OS::setTextColor(OS::BasicColor::WHITE, settings().outputStream);
 }
 
-std::string
-LogBase::getSourceIdentifier(const std::source_location& location, const LogType type) const
+std::string LogBase::getSourceIdentifier(const std::source_location& location, const LogType type) const
 {
     std::string sourceStr;
 
@@ -65,8 +64,7 @@ LogBase::getSourceIdentifier(const std::source_location& location, const LogType
     return sourceStr;
 }
 
-void LogBase::logFormatted(
-    const std::string& msg, const std::source_location& location, const LogType type) const
+void LogBase::logFormatted(const std::string& msg, const std::source_location& location, const LogType type) const
 {
     CHG_MUTEX_LOCK();
 
@@ -104,8 +102,7 @@ void LogBase::logFormatted(
         else
             Log<LogBase>().fatal("Unknown log type: {0}.", underlying_cast(type));
 
-        if (const auto sourceIdentifier = getSourceIdentifier(location, type);
-            sourceIdentifier.size()) {
+        if (const auto sourceIdentifier = getSourceIdentifier(location, type); sourceIdentifier.size()) {
             OS::setTextColor(OS::BasicColor::DARK_GREY, out);
             out << '[' << sourceIdentifier << "] ";
             suffixSize += static_cast<uint16_t>(sourceIdentifier.size() + 3);
@@ -168,8 +165,7 @@ void LogBase::unhide()
 
 void LogBase::breakline()
 {
-    settings().outputStream
-        << "\n.........................................................................\n\n";
+    settings().outputStream << "\n.........................................................................\n\n";
 }
 
 std::optional<LogType> LogBase::parseLogType(const std::string& str)
@@ -258,21 +254,12 @@ LogBase::Settings::Settings(
 LogBase::Settings& LogBase::settings()
 {
     static Settings settings(
-        LogType::ALL,  // logLevel
-        FlagField(LogType::DEBUG) |
-            LogType::WARN |
-            LogType::ERROR |
-            LogType::FATAL,  // printNameLevel
-        FlagField(LogType::DEBUG) |
-            LogType::WARN |
-            LogType::ERROR |
-            LogType::FATAL,  // printAddressLevel
-        FlagField(LogType::DEBUG) |
-            LogType::WARN |
-            LogType::ERROR |
-            LogType::FATAL,  // printLocationLevel
-        std::regex(),        // logSourceFilter
-        std::clog            // outputStream
+        LogType::ALL,                                                                 // logLevel
+        FlagField(LogType::DEBUG) | LogType::WARN | LogType::ERROR | LogType::FATAL,  // printNameLevel
+        FlagField(LogType::DEBUG) | LogType::WARN | LogType::ERROR | LogType::FATAL,  // printAddressLevel
+        FlagField(LogType::DEBUG) | LogType::WARN | LogType::ERROR | LogType::FATAL,  // printLocationLevel
+        std::regex(),                                                                 // logSourceFilter
+        std::clog                                                                     // outputStream
     );
 
     return settings;

@@ -31,47 +31,40 @@ public:
     Amount<Unit::CELSIUS> getMeltingPointAt(const Amount<Unit::TORR> pressure) const;
     Amount<Unit::CELSIUS> getBoilingPointAt(const Amount<Unit::TORR> pressure) const;
 
-    AggregationType getAggregationAt(
-        const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
+    AggregationType getAggregationAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
 
     Amount<Unit::GRAM_PER_MILLILITER> getDensityAt(
-        const Amount<Unit::CELSIUS> temperature,
-        const Amount<Unit::TORR>    pressure,
-        const AggregationType       aggregation) const;
+        const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure, const AggregationType aggregation) const;
 
     Amount<Unit::GRAM_PER_MILLILITER>
     getDensityAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
 
     Amount<Unit::JOULE_PER_MOLE_CELSIUS> getHeatCapacityAt(
-        const Amount<Unit::CELSIUS> temperature,
-        const Amount<Unit::TORR>    pressure,
-        const AggregationType       aggregation) const;
+        const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure, const AggregationType aggregation) const;
 
-    Amount<Unit::JOULE_PER_MOLE_CELSIUS> getHeatCapacityAt(
-        const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
+    Amount<Unit::JOULE_PER_MOLE_CELSIUS>
+    getHeatCapacityAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
 
-    Amount<Unit::JOULE_PER_MOLE> getFusionHeatAt(
-        const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
+    Amount<Unit::JOULE_PER_MOLE>
+    getFusionHeatAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
 
-    Amount<Unit::JOULE_PER_MOLE> getVaporizationHeatAt(
-        const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
+    Amount<Unit::JOULE_PER_MOLE>
+    getVaporizationHeatAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
 
-    Amount<Unit::JOULE_PER_MOLE> getSublimationHeatAt(
-        const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
+    Amount<Unit::JOULE_PER_MOLE>
+    getSublimationHeatAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
 
-    Amount<Unit::JOULE_PER_MOLE> getLiquefactionHeatAt(
-        const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
+    Amount<Unit::JOULE_PER_MOLE>
+    getLiquefactionHeatAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
 
-    Amount<Unit::JOULE_PER_MOLE> getCondensationHeatAt(
-        const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
+    Amount<Unit::JOULE_PER_MOLE>
+    getCondensationHeatAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
 
-    Amount<Unit::JOULE_PER_MOLE> getDepositionHeatAt(
-        const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
+    Amount<Unit::JOULE_PER_MOLE>
+    getDepositionHeatAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
 
     Amount<Unit::MOLE_RATIO> getSolubilityAt(
-        const Amount<Unit::CELSIUS> temperature,
-        const Amount<Unit::TORR>    pressure,
-        const Polarity&             solventPolarity) const;
+        const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure, const Polarity& solventPolarity) const;
 
     bool operator==(const Molecule& other) const;
     bool operator!=(const Molecule& other) const;
@@ -80,18 +73,12 @@ public:
 template <>
 struct std::hash<Molecule>
 {
-    size_t operator()(const Molecule& molecule) const
-    {
-        return std::hash<MoleculeId>()(molecule.getData().id);
-    }
+    size_t operator()(const Molecule& molecule) const { return std::hash<MoleculeId>()(molecule.getData().id); }
 };
 
 template <>
 class def::Parser<Molecule>
 {
 public:
-    static std::optional<Molecule> parse(const std::string& str)
-    {
-        return def::parse<MolecularStructure>(str);
-    }
+    static std::optional<Molecule> parse(const std::string& str) { return def::parse<MolecularStructure>(str); }
 };
