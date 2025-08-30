@@ -44,7 +44,7 @@ jobs:
     - name: Run pre-commit checks
       run: pre-commit run --all-files --show-diff-on-failure
 
-  build:
+  build-cpp:
     name: Build / ${{ matrix.kind.name }}
     needs: pre-commit
     runs-on: ${{ matrix.kind.os }}
@@ -130,9 +130,19 @@ jobs:
             build/defparse/**/defparse*
             !**/CMakeFiles/**
 
+  build-python:
+    name: Build / Python
+    needs: pre-commit
+    runs-on: ubuntu-latest
+    steps:
+     - name: Checkout repository
+       uses: actions/checkout@v4
+     - name: Build
+       run: python3 -m compileall dev_tools/
+
   unit:
     name: Unit / ${{ matrix.kind.name }}
-    needs: build
+    needs: build-cpp
     runs-on: ${{ matrix.kind.os }}
 
     strategy:

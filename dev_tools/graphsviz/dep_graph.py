@@ -29,7 +29,7 @@ import codecs
 from collections import defaultdict
 from graphviz import Digraph
 
-include_regex = re.compile('#include\s+["<"](.*)[">]')
+include_regex = re.compile(r'#include\s+["<"](.*)[">]')
 valid_headers = [[".h", ".hpp"], "black"]
 valid_sources = [[".c", ".cc", ".cpp"], "black"]
 valid_extensions = valid_headers[0] + valid_sources[0]
