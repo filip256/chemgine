@@ -31,14 +31,14 @@ else()
 endif()
 
 # ~ User options ~
-## DISABLE_CHECKED_CASTS
-if(DISABLE_CHECKED_CASTS)
-    target_compile_definitions(core CHG_DISABLE_CHECKED_CASTS)
+## ENABLE_CHECKED_CASTS
+if(ENABLE_CHECKED_CASTS)
+    target_compile_definitions(core PUBLIC CHG_ENABLE_CHECKED_CASTS)
 endif()
 
-## DISABLE_CHECKED_CASTS
-if(DISABLE_CONCURRENCY_CHECKS)
-    target_compile_definitions(core PUBLIC CHG_DISABLE_CONCURRENCY_CHECKS)
+## ENABLE_CHECKED_CASTS
+if(ENABLE_CONCURRENCY_CHECKS)
+    target_compile_definitions(core PUBLIC CHG_ENABLE_CONCURRENCY_CHECKS)
 endif()
 
 ## LOG_LEVEL

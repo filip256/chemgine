@@ -33,12 +33,12 @@ public:
 
 }  // namespace details
 
-#ifdef CHG_DISABLE_CONCURRENCY_CHECKS
-    #define CHG_NEVER_CONCURRENT()
-#else
+#ifdef CHG_ENABLE_CONCURRENCY_CHECKS
     #define CHG_NEVER_CONCURRENT()                             \
         static std::atomic_flag     __flag = ATOMIC_FLAG_INIT; \
         details::NoConcurrencyGuard __guard(__flag)
+#else
+    #define CHG_NEVER_CONCURRENT()
 #endif
 
 //

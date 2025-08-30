@@ -59,9 +59,7 @@ const DstT* final_cast(const SrcT& src)
 template <typename DstT, typename SrcT>
 DstT checked_cast(const SrcT& src)
 {
-#ifdef CHG_DISABLE_CHECKED_CASTS
-    return static_cast<DstT>(src);
-#else
+#ifdef CHG_ENABLE_CHECKED_CASTS
     if constexpr (is_safe_conversion_v<DstT, SrcT>)
         return static_cast<DstT>(src);
     else {
@@ -69,6 +67,8 @@ DstT checked_cast(const SrcT& src)
         assert((src == static_cast<SrcT>(dst)) && "Checked cast failed.");
         return dst;
     }
+#else
+    return static_cast<DstT>(src);
 #endif
 }
 
