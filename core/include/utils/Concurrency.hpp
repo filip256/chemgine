@@ -1,18 +1,19 @@
 #pragma once
 
-#include <mutex>
 #include <atomic>
-#include <source_location>
 #include <format>
+#include <mutex>
+#include <source_location>
 #include <sstream>
+#include <thread>
 
 //
 // MUTEX_LOCK
 //
 
-#define CHG_MUTEX_LOCK()                \
-	static std::mutex __mtx;            \
-    std::lock_guard __mutex_lock(__mtx)
+#define CHG_MUTEX_LOCK()                  \
+    static std::mutex __mtx;              \
+    std::lock_guard   __mutex_lock(__mtx)
 
 //
 // NEVER_CONCURRENT
@@ -26,22 +27,18 @@ class NoConcurrencyGuard
     std::atomic_flag& flag;
 
 public:
-    NoConcurrencyGuard(
-        std::atomic_flag& flag,
-        const std::source_location& location = std::source_location::current()
-    );
+    NoConcurrencyGuard(std::atomic_flag& flag, const std::source_location& location = std::source_location::current());
     ~NoConcurrencyGuard();
-
 };
 
-} // namespace details
+}  // namespace details
 
-#ifdef CHG_DISABLE_CONCURRENCY_CHECKS
-    #define CHG_NEVER_CONCURRENT()
+#ifdef CHG_ENABLE_CONCURRENCY_CHECKS
+    #define CHG_NEVER_CONCURRENT()                             \
+        static std::atomic_flag     __flag = ATOMIC_FLAG_INIT; \
+        details::NoConcurrencyGuard __guard(__flag)
 #else
-    #define CHG_NEVER_CONCURRENT()                         \
-        static std::atomic_flag __flag = ATOMIC_FLAG_INIT; \
-        details::NoConcurrencyGuard __guard(__flag) 
+    #define CHG_NEVER_CONCURRENT()
 #endif
 
 //
@@ -53,10 +50,7 @@ public:
 template <>
 struct std::formatter<std::thread::id>
 {
-    constexpr auto parse(format_parse_context& ctx)
-    {
-        return ctx.begin();
-    }
+    constexpr auto parse(format_parse_context& ctx) { return ctx.begin(); }
 
     template <typename FormatContext>
     auto format(const std::thread::id& id, FormatContext& ctx) const

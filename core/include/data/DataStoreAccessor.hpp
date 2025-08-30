@@ -5,13 +5,13 @@ class DataStore;
 class DataStoreAccessor
 {
 private:
-	const DataStore* dataStore = nullptr;
+    const DataStore* dataStore = nullptr;
 
 public:
-	DataStoreAccessor() = default;
+    DataStoreAccessor() = default;
 
-	const DataStore& get() const;
+    const DataStore& get() const;
 
-	void set(const DataStore& dataStore);
-	void unset();
+    void set(const DataStore& dataStore);
+    void unset();
 };

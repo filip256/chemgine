@@ -1,6 +1,7 @@
 from rdkit import Chem
 from rdkit.Chem import Descriptors
 
+
 def calculate_molar_mass(smiles: str) -> float:
     mol = Chem.MolFromSmiles(smiles)
     if mol is None:
@@ -9,7 +10,7 @@ def calculate_molar_mass(smiles: str) -> float:
 
 
 if __name__ == "__main__":
-    
+
     while True:
         smiles = input("Enter a SMILES string: ")
         try:

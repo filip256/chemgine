@@ -5,6 +5,6 @@
 class STP
 {
 public:
-	inline static const Amount<Unit::CELSIUS> temperature = 0.0;
-	inline static const Amount<Unit::TORR> pressure = 760.0;
+    static inline const Amount<Unit::CELSIUS> temperature = 0.0;
+    static inline const Amount<Unit::TORR>    pressure    = 760.0;
 };

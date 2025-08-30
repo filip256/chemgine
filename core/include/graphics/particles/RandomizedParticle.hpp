@@ -3,33 +3,32 @@
 #include "data/values/Amount.hpp"
 
 #include <SFML/Graphics.hpp>
-
-#include <vector>
 #include <random>
+#include <vector>
 
 class ParticleSystem;
 
 class RandomizedParticle : public sf::Drawable
 {
 private:
-	static float_s getRandom();
+    static float_s getRandom();
 
-	Amount<Unit::DEGREE> direction, targetDirection;
-	float_s rotationIncrement;
-	Amount<Unit::PER_SECOND> speed;
-	Amount<Unit::SECOND> lifespan, idlespan;
+    Amount<Unit::DEGREE>     direction, targetDirection;
+    float_s                  rotationIncrement;
+    Amount<Unit::PER_SECOND> speed;
+    Amount<Unit::SECOND>     lifespan, idlespan;
 
-	Amount<Unit::SECOND> elapsed = 0.0;
-	const ParticleSystem& system;
-	sf::RectangleShape shape;
+    Amount<Unit::SECOND>  elapsed = 0.0;
+    const ParticleSystem& system;
+    sf::RectangleShape    shape;
 
 public:
-	RandomizedParticle(const ParticleSystem& system) noexcept;
-	RandomizedParticle(const RandomizedParticle&) = default;
+    RandomizedParticle(const ParticleSystem& system) noexcept;
+    RandomizedParticle(const RandomizedParticle&) = default;
 
-	void reset();
+    void reset();
 
-	void tick(Amount<Unit::SECOND> timespan);
+    void tick(Amount<Unit::SECOND> timespan);
 
-	void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;
 };

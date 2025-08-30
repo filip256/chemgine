@@ -1,14 +1,10 @@
-bin/
-build/
-Debug/
-Release/
+bin/*
+build/*
 
-test_app/temp/
-dev_tools/vt/keys/
+dev_tools/vt/keys/*
 
-.vscode/
+.vscode/*
 
 *.vs
 *.pyc
 temp*
-

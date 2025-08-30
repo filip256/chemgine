@@ -357,7 +357,7 @@ _atom: Pr {
     valences:   {3}
 };
 
-_atom: Nd {
+_atom: And {
     name:       neodymium,
     weight:     144.24_g,
     valences:   {3}

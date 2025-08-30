@@ -1,42 +1,33 @@
 #include "mixtures/kinds/DumpContainer.hpp"
 
-#include "reactions/Reactant.hpp"
 #include "io/Log.hpp"
+#include "reactions/Reactant.hpp"
 
 DumpContainer DumpContainer::GlobalDumpContainer = DumpContainer();
 
-void DumpContainer::add(const Reactant& reactant) 
+void DumpContainer::add(const Reactant& reactant)
 {
-	const auto rMass = reactant.getMass();
-	if (totalMass.oveflowsOnAdd(rMass))
-	{
-		Log(this).warn("Mass overflowed and was set to 0 (some checks might fail).");
-		totalMass = 0.0;
-		return;
-	}
+    const auto rMass = reactant.getMass();
+    if (totalMass.overflowsOnAdd(rMass)) {
+        Log(this).warn("Mass overflowed and was set to 0 (some checks might fail).");
+        totalMass = 0.0;
+        return;
+    }
 
-	totalMass += rMass;
+    totalMass += rMass;
 }
 
-void DumpContainer::add(const Amount<Unit::JOULE> energy)
+void DumpContainer::addEnergy(const Amount<Unit::JOULE> energy)
 {
-	if (totalEnergy.oveflowsOnAdd(energy))
-	{
-		Log(this).warn("Energy overflowed and was set to 0 (some checks might fail).");
-		totalMass = 0.0;
-		return;
-	}
+    if (totalEnergy.overflowsOnAdd(energy)) {
+        Log(this).warn("Energy overflowed and was set to 0 (some checks might fail).");
+        totalMass = 0.0;
+        return;
+    }
 
-	totalEnergy += energy;
+    totalEnergy += energy;
 }
 
+Amount<Unit::GRAM> DumpContainer::getTotalMass() const { return totalMass; }
 
-Amount<Unit::GRAM> DumpContainer::getTotalMass() const
-{
-	return totalMass;
-}
-
-Amount<Unit::JOULE> DumpContainer::getTotalEnergy() const
-{
-	return totalEnergy;
-}
+Amount<Unit::JOULE> DumpContainer::getTotalEnergy() const { return totalEnergy; }

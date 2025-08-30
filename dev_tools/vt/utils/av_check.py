@@ -5,6 +5,7 @@ import os
 import sys
 import vt
 
+
 async def get_files_to_upload(queue, path):
     """Finds which files will be uploaded to VirusTotal."""
     if os.path.isfile(path):
