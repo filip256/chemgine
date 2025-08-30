@@ -56,7 +56,7 @@ jobs:
         - { name: Windows-VS2022-x64-Release, os: windows-2022,  arch: x64, config: Release, flags: -DCMAKE_C_COMPILER="cl.exe" -DCMAKE_CXX_COMPILER="cl.exe" -DEXTENDED_CHAR_SET=ASCII }
         - { name: Windows-VS2022-x86-Release, os: windows-2022,  arch: x86, config: Release, flags: -DCMAKE_C_COMPILER="cl.exe" -DCMAKE_CXX_COMPILER="cl.exe" -DEXTENDED_CHAR_SET=ASCII }
         - { name: Ubuntu-GCC-x64-Release,     os: ubuntu-latest, arch: x64, config: Release, flags: -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DEXTENDED_CHAR_SET=ASCII }
-        - { name: Ubuntu-Clang-x64-Release,   os: ubuntu-latest, arch: x64, config: Release, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DEXTENDED_CHAR_SET=ASCII }
+        - { name: Ubuntu-Clang-x64-Release,   os: ubuntu-latest, arch: x64, config: Release, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXE_LINKER_FLAGS="-fuse-ld=lld" -DEXTENDED_CHAR_SET=ASCII }
 
     steps:
       - name: Checkout repository
