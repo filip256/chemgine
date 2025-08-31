@@ -13,14 +13,14 @@ Atmosphere::Atmosphere(
     SingleLayerMixture<LayerType::GASEOUS>(temperature, pressure, contentInitializer, maxVolume, overflowTarget)
 {}
 
-Atmosphere Atmosphere::createSubatmosphere(const Amount<Unit::LITER> maxVolume)
+Atmosphere Atmosphere::createSubatmosphere(const Amount<Unit::LITER> subMaxVolume)
 {
-    return Atmosphere(layer.getTemperature(), pressure, content, maxVolume, Ref(*this));
+    return Atmosphere(layer.getTemperature(), pressure, content, subMaxVolume, Ref(*this));
 }
 
 Atmosphere Atmosphere::makeCopy() const { return Atmosphere(*this); }
 
-void Atmosphere::tick(const Amount<Unit::SECOND> timespan)
+void Atmosphere::tick(const Amount<Unit::SECOND>)
 {
     checkOverflow();
     removeNegligibles();

@@ -29,13 +29,13 @@ public:
     ParticleSystem(const ParticleSystem&) = delete;
     ParticleSystem(ParticleSystem&&)      = default;
 
-    void setDirection(const Amount<Unit::DEGREE> direction);
-    void setTargetDirection(const Amount<Unit::DEGREE> direction);
+    void setDirection(const Amount<Unit::DEGREE> newDirection);
+    void setTargetDirection(const Amount<Unit::DEGREE> newDirection);
     void setDirectionChangeRate(const float_s rate);
     void setParticleSize(const float_s size);
-    void setColor(const sf::Color& color);
-    void setSpeed(const Amount<Unit::PER_SECOND> speed);
-    void setLifespan(const Amount<Unit::SECOND> lifespan);
+    void setColor(const sf::Color& newColor);
+    void setSpeed(const Amount<Unit::PER_SECOND> newSpeed);
+    void setLifespan(const Amount<Unit::SECOND> newLifespan);
     void setOrigin(const sf::Vector2f& position);
     void moveOrigin(const sf::Vector2f& offset);
 

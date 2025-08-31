@@ -13,7 +13,7 @@ const BondedAtomBase& Bond::getOther() const { return *other; }
 
 BondedAtomBase& Bond::getOther() { return *other; }
 
-void Bond::setOther(BondedAtomBase& other) { this->other = &other; }
+void Bond::setOther(BondedAtomBase& newOther) { other = &newOther; }
 
 BondType Bond::getType() const { return type; }
 
@@ -216,7 +216,6 @@ bool Bond::isInDirection(const char symbol, const ASCII::Direction direction)
 
     default:
         Log<Bond>().fatal("Unsupported direction index: {}.", direction.getIdx());
-        return false;
     }
 }
 
@@ -239,7 +238,6 @@ bool Bond::hasCompleteASCIIRepresentation(const BondType type)
 
     default:
         Log<Bond>().fatal("Unsupported bond type: {}.", underlying_cast(type));
-        return false;
     }
 }
 
@@ -301,6 +299,5 @@ uint8_t Bond::getValence(const BondType type)
 
     default:
         Log<Bond>().fatal("Unsupported bond type: {0}.", underlying_cast(type));
-        return 0;
     }
 }

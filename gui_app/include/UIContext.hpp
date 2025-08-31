@@ -32,7 +32,7 @@ private:
 
         bool isSet() const { return idx != none; }
 
-        void set(size_t idx) { this->idx = idx; }
+        void set(size_t newIdx) { idx = newIdx; }
 
         void unset() { idx = none; }
 
@@ -107,14 +107,14 @@ public:
                         dndHelper.resetOrigin(mousePos);
                     }
                 }
-                else if (const auto mouseEvent = event->getIf<sf::Event::MouseButtonPressed>()) {
-                    if (mouseEvent->button == sf::Mouse::Button::Left) {
+                else if (const auto buttonPressEvent = event->getIf<sf::Event::MouseButtonPressed>()) {
+                    if (buttonPressEvent->button == sf::Mouse::Button::Left) {
                         if (const auto sys = lab.getSystemAt(mousePos); sys != Lab::npos) {
                             inHand.set(sys);
                             dndHelper.start(mousePos);
                         }
                     }
-                    else if (mouseEvent->button == sf::Mouse::Button::Right) {
+                    else if (buttonPressEvent->button == sf::Mouse::Button::Right) {
                         if (inputMolecule) {
                             if (const auto [sys, comp] = lab.getSystemComponentAt(mousePos); sys != Lab::npos) {
                                 auto& component = lab.getSystem(sys).getComponent(comp);
@@ -129,8 +129,8 @@ public:
                         }
                     }
                 }
-                else if (const auto mouseEvent = event->getIf<sf::Event::MouseButtonReleased>()) {
-                    if (mouseEvent->button == sf::Mouse::Button::Left) {
+                else if (const auto buttonReleaseEvent = event->getIf<sf::Event::MouseButtonReleased>()) {
+                    if (buttonReleaseEvent->button == sf::Mouse::Button::Left) {
                         if (inHand.isSet()) {
                             callRemoveEmptySystems |= lab.tryConnect(inHand.idx, 1600.f);
 
@@ -138,35 +138,35 @@ public:
                             dndHelper.end();
                         }
                     }
-                    else if (mouseEvent->button == sf::Mouse::Button::Right) {
+                    else if (buttonReleaseEvent->button == sf::Mouse::Button::Right) {
                         lab.tryDisconnect(mousePos);
                     }
                 }
-                else if (const auto mouseEvent = event->getIf<sf::Event::MouseWheelScrolled>()) {
+                else if (const auto wheelScrollEvent = event->getIf<sf::Event::MouseWheelScrolled>()) {
                     if (isInTimeSetMode) {
-                        timeMultiplier += mouseEvent->delta * 0.05f * std::max(timeMultiplier, 1.0f);
+                        timeMultiplier += wheelScrollEvent->delta * 0.05f * std::max(timeMultiplier, 1.0f);
                         timeMultiplier  = std::max(timeMultiplier, 0.05f);
                         timeMultiplier  = std::min(timeMultiplier, 50.0f);
 
                         textTimeMult.setString("x" + std::to_string(timeMultiplier).substr(0, 4));
                     }
                     else if (inHand.isSet())
-                        lab.getSystem(inHand.idx).rotate(mouseEvent->delta * 2.0f);
+                        lab.getSystem(inHand.idx).rotate(wheelScrollEvent->delta * 2.0f);
                 }
-                else if (const auto keyEvent = event->getIf<sf::Event::KeyPressed>()) {
-                    if (keyEvent->code == sf::Keyboard::Key::LControl) {
+                else if (const auto keyPressEvent = event->getIf<sf::Event::KeyPressed>()) {
+                    if (keyPressEvent->code == sf::Keyboard::Key::LControl) {
                         if (const auto sys = lab.getSystemComponentAt(mousePos); sys.first != Lab::npos) {
                             const auto& comp = lab.getSystem(sys.first).getComponent(sys.second);
                             propertyPane.setSubject(comp);
                             drawPropertyPane = true;
                         }
                     }
-                    else if (keyEvent->code == sf::Keyboard::Key::T) {
+                    else if (keyPressEvent->code == sf::Keyboard::Key::T) {
                         isInTimeSetMode = true;
                     }
                 }
-                else if (const auto keyEvent = event->getIf<sf::Event::KeyReleased>()) {
-                    if (keyEvent->code == sf::Keyboard::Key::I) {
+                else if (const auto keyReleaseEvent = event->getIf<sf::Event::KeyReleased>()) {
+                    if (keyReleaseEvent->code == sf::Keyboard::Key::I) {
                         const auto input = Input::get("Input Molecule   [SMILES]_[moles]");
                         const auto temp  = def::parse<std::pair<Molecule, Amount<Unit::MOLE>>>(input, '_');
 
@@ -180,14 +180,14 @@ public:
                         inputMolecule.emplace(*temp);
                         cursorHelper.setType(sf::Cursor::Type::Hand);
                     }
-                    else if (keyEvent->code == sf::Keyboard::Key::P) {
+                    else if (keyReleaseEvent->code == sf::Keyboard::Key::P) {
                         inputMolecule.reset();
                         cursorHelper.setType(sf::Cursor::Type::Cross);
                     }
-                    else if (keyEvent->code == sf::Keyboard::Key::LControl) {
+                    else if (keyReleaseEvent->code == sf::Keyboard::Key::LControl) {
                         drawPropertyPane = false;
                     }
-                    else if (keyEvent->code == sf::Keyboard::Key::T) {
+                    else if (keyReleaseEvent->code == sf::Keyboard::Key::T) {
                         isInTimeSetMode = false;
                     }
                 }
@@ -232,7 +232,8 @@ public:
 
             if ((frameCount & 3) == 0) {
                 textFPS.setString(
-                    "FPS:" + std::to_string(static_cast<int>(4000000.0f / frameClock.getElapsedTime().asMicroseconds())));
+                    "FPS:" +
+                    std::to_string(static_cast<int>(4000000.0f / frameClock.getElapsedTime().asMicroseconds())));
                 frameClock.restart();
             }
 

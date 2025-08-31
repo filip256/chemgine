@@ -21,11 +21,13 @@ MolecularStructure::MolecularStructure(const MolecularStructure& other) noexcept
     impliedHydrogenCount(other.impliedHydrogenCount)
 {
     this->atoms.reserve(other.atoms.size());
-    for (const auto& otherAtom : other.atoms) this->atoms.emplace_back(otherAtom->clone());
+    for (const auto& otherAtom : other.atoms)
+        this->atoms.emplace_back(otherAtom->clone());
 
     // Bond other atom references must be updated
     for (auto& a : this->atoms)
-        for (auto& b : a->bonds) b.setOther(*this->atoms[b.getOther().index]);
+        for (auto& b : a->bonds)
+            b.setOther(*this->atoms[b.getOther().index]);
 }
 
 MolecularStructure MolecularStructure::createCopy() const { return MolecularStructure(*this); }
@@ -92,7 +94,8 @@ void MolecularStructure::canonicalize()
         return lhs->getAtom().getPrecedence() > rhs->getAtom().getPrecedence();
     });
 
-    for (c_size i = 0; i < atoms.size(); ++i) atoms[i]->index = i;
+    for (c_size i = 0; i < atoms.size(); ++i)
+        atoms[i]->index = i;
 
     // Sort bonds by the precedence of the other atom and valence
     for (auto& a : atoms) {
@@ -114,7 +117,8 @@ namespace
 uint8_t getDegreeOf(const BondedAtomBase& atom)
 {
     uint8_t cnt = 0;
-    for (const auto& b : atom.bonds) cnt += b.getValence();
+    for (const auto& b : atom.bonds)
+        cnt += b.getValence();
     return cnt;
 }
 
@@ -272,7 +276,8 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 
             const Symbol symbol(smiles.substr(i + 1, t - i - 1));
             if (not Atom::isDefined(symbol)) {
-                Log(this).error("Undefined atomic symbol '{}' in SMILES:\n{}\n{}^", symbol, smiles, std::string(i, ' '));
+                Log(this).error(
+                    "Undefined atomic symbol '{}' in SMILES:\n{}\n{}^", symbol, smiles, std::string(i, ' '));
                 clear();
                 return false;
             }
@@ -312,7 +317,10 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 
             if (prev == nullptr) {
                 Log(this).error(
-                    "Illegal ring-closing bond with label: '{}' in SMILES:\n{}\n{}^", label, smiles, std::string(i, ' '));
+                    "Illegal ring-closing bond with label: '{}' in SMILES:\n{}\n{}^",
+                    label,
+                    smiles,
+                    std::string(i, ' '));
                 clear();
                 return false;
             }
@@ -397,7 +405,8 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 namespace
 {
 
-std::optional<std::pair<ASCII::Position, std::string>> extractSymbol(const TextBlock& buffer, const ASCII::Position origin)
+std::optional<std::pair<ASCII::Position, std::string>>
+extractSymbol(const TextBlock& buffer, const ASCII::Position origin)
 {
     // The symbol may reside on both sides of the origin:
     //   |
@@ -411,14 +420,17 @@ std::optional<std::pair<ASCII::Position, std::string>> extractSymbol(const TextB
     const auto& line = buffer[origin.y];
 
     int16_t beginIdx = origin.x - 1;
-    while (not line.isWhiteSpace(beginIdx) && line[beginIdx] != 'H') --beginIdx;
+    while (not line.isWhiteSpace(beginIdx) && line[beginIdx] != 'H')
+        --beginIdx;
     int16_t endIdx = origin.x + 1;
-    while (not line.isWhiteSpace(endIdx) && line[endIdx] != 'H') ++endIdx;
+    while (not line.isWhiteSpace(endIdx) && line[endIdx] != 'H')
+        ++endIdx;
 
     for (int16_t b = beginIdx + 1; b <= origin.x; ++b) {
         const auto startPoint = ASCII::Position(b, origin.y);
+
         for (int16_t e = endIdx - 1; e >= origin.x; --e) {
-            auto section = buffer[ASCII::PositionLine(startPoint, e - b + 1)];
+            auto section = buffer[ASCII::PositionLine(startPoint, static_cast<Symbol::SizeT>(e - b + 1))];
             if (buffer[startPoint] == '%' && def::parse<c_size>(section.substr(1)))
                 return std::make_pair(startPoint, std::move(section));
             if (Atom::isDefined(section))
@@ -535,7 +547,8 @@ bool MolecularStructure::loadFromASCII(const std::string& ascii)
         auto extractedSymbol = extractSymbol(buffer, state.position);
         if (not extractedSymbol) {
             insertError(buffer, state.position);
-            Log(this).error("Failed to parse ASCII atom symbol originating at {0}:\n{1}", state.position, buffer.toString());
+            Log(this).error(
+                "Failed to parse ASCII atom symbol originating at {0}:\n{1}", state.position, buffer.toString());
             clear();
             return false;
         }
@@ -652,7 +665,8 @@ c_size MolecularStructure::getImpliedHydrogenCount() const { return impliedHydro
 Amount<Unit::GRAM_PER_MOLE> MolecularStructure::getMolarMass() const
 {
     Amount<Unit::GRAM> cnt = 0;
-    for (c_size i = 0; i < atoms.size(); ++i) cnt += atoms[i]->getAtom().getData().weight;
+    for (c_size i = 0; i < atoms.size(); ++i)
+        cnt += atoms[i]->getAtom().getData().weight;
 
     cnt += Atom("H").getData().weight * impliedHydrogenCount;
     return cnt.to<Unit::GRAM_PER_MOLE>(Amount<Unit::MOLE>(1.0));
@@ -676,7 +690,8 @@ c_size MolecularStructure::getRadicalAtomsCount() const
 
     // Canonicalization ensures radical atoms are always stored at the end.
     auto i = static_cast<c_size>(atoms.size());
-    while (i-- > 0 && atoms[i]->getAtom().isRadical()) ++cnt;
+    while (i-- > 0 && atoms[i]->getAtom().isRadical())
+        ++cnt;
 
     return cnt;
 }
@@ -743,12 +758,16 @@ bool MolecularStructure::isEmpty() const { return impliedHydrogenCount == 0 && a
 
 c_size MolecularStructure::getNonImpliedAtomCount() const { return static_cast<c_size>(atoms.size()); }
 
-c_size MolecularStructure::getTotalAtomCount() const { return static_cast<c_size>(atoms.size() + impliedHydrogenCount); }
+c_size MolecularStructure::getTotalAtomCount() const
+{
+    return static_cast<c_size>(atoms.size() + impliedHydrogenCount);
+}
 
 c_size MolecularStructure::getBondCount() const
 {
     c_size cnt = 0;
-    for (const auto& a : atoms) cnt += static_cast<c_size>(a->bonds.size());
+    for (const auto& a : atoms)
+        cnt += static_cast<c_size>(a->bonds.size());
 
     // Two bonds are stored for each actual bond in the molecule.
     return cnt / 2;
@@ -799,7 +818,8 @@ bool MolecularStructure::isVirtualHydrogen() const { return atoms.empty() && imp
 bool MolecularStructure::areAdjacent(const c_size idxA, const c_size idxB) const
 {
     const auto& atomA = *atoms[idxA];
-    return std::any_of(atomA.bonds.begin(), atomA.bonds.end(), [&](const auto& b) { return b.getOther().isSame(atomA); });
+    const auto& atomB = *atoms[idxB];
+    return std::ranges::any_of(atomA.bonds, [&](const auto& b) { return b.getOther().isSame(atomB); });
 }
 
 namespace
@@ -893,19 +913,6 @@ bool DFSCompare(
     return true;
 }
 
-bool checkConnectivity(
-    const MolecularStructure& target, const MolecularStructure& pattern, const std::unordered_map<c_size, c_size>& mapping)
-{
-    // TODO: This checks if all the edges in the mapping are valid but it's very inefficient and it
-    // likely hides a bug.
-    for (const auto& m : mapping) {
-        for (const auto& n : mapping)
-            if (pattern.areAdjacent(m.second, n.second) && not target.areAdjacent(m.first, n.first))
-                return false;
-    }
-    return true;
-}
-
 }  // namespace
 
 std::unordered_map<c_size, c_size>
@@ -924,12 +931,7 @@ MolecularStructure::mapTo(const MolecularStructure& pattern, bool escapeRadicalT
             if (DFSCompare(*a, *pattern.atoms.front(), visited, mapping, escapeRadicalTypes) == false)
                 continue;
 
-            if (not pattern.isCyclic())
-                return mapping;
-
-            // Re-verifying connectivity is necessary for cycles
-            if (checkConnectivity(*this, pattern, mapping))
-                return mapping;
+            return mapping;
         }
     }
 
@@ -968,11 +970,14 @@ uint8_t getBondSimilarity(const BondedAtomBase& a, const BondedAtomBase& b)
     uint8_t                                       score = 255;
     std::array<int8_t, BondType::BOND_TYPE_COUNT> counts{0};
 
-    for (const auto& bondA : a.bonds) ++counts[bondA.getType()];
-    for (const auto& bondB : b.bonds) --counts[bondB.getType()];
+    for (const auto& bondA : a.bonds)
+        ++counts[bondA.getType()];
+    for (const auto& bondB : b.bonds)
+        --counts[bondB.getType()];
 
-    const auto scorePerBond = static_cast<uint8_t>(a.bonds.size()) / 255;
-    for (const auto& c : counts) score -= c * scorePerBond;
+    const auto scorePerBond = static_cast<uint8_t>(a.bonds.size() / 255);
+    for (const auto& c : counts)
+        score -= c * scorePerBond;
 
     return score;
 }
@@ -1161,13 +1166,16 @@ void MolecularStructure::copyBranch(
 }
 
 MolecularStructure MolecularStructure::addSubstituents(
-    const MolecularStructure& pattern, const MolecularStructure& instance, const std::unordered_map<c_size, c_size>& ipMap)
+    const MolecularStructure&                 pattern,
+    const MolecularStructure&                 instance,
+    const std::unordered_map<c_size, c_size>& ipMap)
 {
     MolecularStructure result(pattern);
 
     // Maintain the original mapping to ensure only the these atoms are substituted.
     auto sdMap = ipMap;
-    for (const auto& p : ipMap) copyBranch(result, instance, p.first, sdMap, false);
+    for (const auto& p : ipMap)
+        copyBranch(result, instance, p.first, sdMap, false);
 
     result.canonicalize();
     result.recountImpliedHydrogens();
@@ -1206,7 +1214,6 @@ public:
     bool add(const c_size idxA, const c_size idxB);
 
     c_size size() const;
-    bool   contains(const c_size idxA, const c_size idxB) const;
 
     using Iterator = decltype(closures)::const_iterator;
     Iterator begin() const;
@@ -1415,7 +1422,8 @@ std::string MolecularStructure::toSMILES(const c_size startAtomIdx) const
     }
 
     // Add cycle closures.
-    for (const auto& closure : cycleClosures) smiles.insert(closure.idxA, getCycleTagString(closure.tag));
+    for (const auto& closure : cycleClosures)
+        smiles.insert(closure.idxA, getCycleTagString(closure.tag));
 
     if (smiles.back() != ')')
         return smiles;
@@ -1423,7 +1431,8 @@ std::string MolecularStructure::toSMILES(const c_size startAtomIdx) const
     // Strip unnecessary parenthesis resulted from cycles, aka trailing ')' and their paired '('.
     // TODO: This is a bit inefficient, smiles could be generated without these parenthesis.
     auto idx = smiles.size() - 1;
-    while (idx-- > 0 && smiles[idx] == ')');
+    while (idx-- > 0 && smiles[idx] == ')')
+        ;
     const auto lastIdx = idx;  // Last non-')' symbol.
 
     std::vector<size_t> removeIdx;
@@ -1492,7 +1501,8 @@ bool MolecularStructure::loadFromMolBin(std::istream& is)
         char chr;
 
         std::string symbolStr;
-        while (is.get(chr) && chr != ':' && chr != ';') symbolStr += chr;
+        while (is.get(chr) && chr != ':' && chr != ';')
+            symbolStr += chr;
         if (symbolStr.empty())
             break;
 
@@ -1593,7 +1603,8 @@ void MolecularStructure::toMolBin(std::ostream& os) const
         const auto bondCount = static_cast<c_size>(atom.bonds.size());
         if (bondCount != 0) {
             os << ':';
-            for (const auto& b : atom.bonds) bin::print(os, std::make_pair(b.getType(), b.getOther().index));
+            for (const auto& b : atom.bonds)
+                bin::print(os, std::make_pair(b.getType(), b.getOther().index));
         }
     };
 
@@ -1766,7 +1777,8 @@ std::vector<MolecularStructure::Cycle> MolecularStructure::getFundamentalCycleBa
 
             // Since we use DFS to traverse we can just intersect root->...->parents[C]->C with
             // parents[N]->N. The intersection combined with C->N yields the cycle.
-            for (c_size i = parents[c]; i != parents[nextIdx]; i = parents[i]) cycle.emplace_back(atoms[i].get());
+            for (c_size i = parents[c]; i != parents[nextIdx]; i = parents[i])
+                cycle.emplace_back(atoms[i].get());
 
             cycle.emplace_back(atoms[parents[nextIdx]].get());
             cycle.emplace_back(atoms[nextIdx].get());
@@ -1801,13 +1813,14 @@ std::vector<MolecularStructure::Cycle> MolecularStructure::getMinimalCycleBasis(
     uniqueEdges.reserve(fundamentalCycles.size() * 3);
 
     for (const auto& cycle : fundamentalCycles) {
-        const Edge edge(cycle.front()->index, cycle.back()->index);
-        if (not edgeLabels.contains(edge)) {
-            const auto newLabel = static_cast<c_size>(edgeLabels.size());
-            edgeLabels.emplace(edge, newLabel);
-            uniqueEdges.emplace_back(edge);
+        {
+            const Edge edge(cycle.front()->index, cycle.back()->index);
+            if (not edgeLabels.contains(edge)) {
+                const auto newLabel = static_cast<c_size>(edgeLabels.size());
+                edgeLabels.emplace(edge, newLabel);
+                uniqueEdges.emplace_back(edge);
+            }
         }
-
         for (size_t i = 0; i < cycle.size() - 1; ++i) {
             const Edge edge(cycle[i]->index, cycle[i + 1]->index);
             if (edgeLabels.contains(edge))
@@ -1830,8 +1843,11 @@ std::vector<MolecularStructure::Cycle> MolecularStructure::getMinimalCycleBasis(
 
     for (const auto& cycle : fundamentalCycles) {
         boost::dynamic_bitset<uint32_t> encodedCycle(uniqueEdges.size());
-        const auto                      edgeIdx = edgeLabels.find(Edge(cycle.front()->index, cycle.back()->index))->second;
-        encodedCycle.set(edgeIdx);
+
+        {
+            const auto edgeIdx = edgeLabels.find(Edge(cycle.front()->index, cycle.back()->index))->second;
+            encodedCycle.set(edgeIdx);
+        }
         for (size_t i = 0; i < cycle.size() - 1; ++i) {
             const auto edgeIdx = edgeLabels.find(Edge(cycle[i]->index, cycle[i + 1]->index))->second;
             encodedCycle.set(edgeIdx);
@@ -1918,9 +1934,10 @@ ColoredTextBlock MolecularStructure::toASCII(const ASCII::PrintOptions options) 
         // Index:  1__
         const auto& atomSymbol = a->getAtom().getSymbol().str();
 
-        auto symbol = options.has(ASCII::PrintFlags::PRINT_ATOM_INDICES)
-                          ? ColoredString(utils::padRight(utils::toBase<36>(a->index), atomSymbol.size(), '_'), nodeColor)
-                          : ColoredString(atomSymbol, nodeColor);
+        auto symbol =
+            options.has(ASCII::PrintFlags::PRINT_ATOM_INDICES)
+                ? ColoredString(utils::padRight(utils::toBase<36>(a->index), atomSymbol.size(), '_'), nodeColor)
+                : ColoredString(atomSymbol, nodeColor);
 
         nodes.emplace_back(*a, std::move(symbol));
     }

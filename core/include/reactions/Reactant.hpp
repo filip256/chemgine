@@ -83,5 +83,6 @@ public:
     Reactant mutate(const LayerType newLayer) const;
     Reactant mutate(const Amount<Unit::MOLE> newAmount, const Ref<Mixture> newContainer) const;
     Reactant mutate(const Amount<Unit::MOLE> newAmount, const LayerType newLayer) const;
-    Reactant mutate(const Amount<Unit::MOLE> newAmount, const Ref<Mixture> newContainer, const LayerType newLayer) const;
+    Reactant
+    mutate(const Amount<Unit::MOLE> newAmount, const Ref<Mixture> newContainer, const LayerType newLayer) const;
 };

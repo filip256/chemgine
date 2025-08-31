@@ -40,10 +40,10 @@ private:
     using ContainerType = std::vector<ColoredChar>;
     ContainerType str;
 
-    ColoredString(ContainerType&& str) noexcept;
+    ColoredString(ContainerType&& data) noexcept;
 
-    static std::vector<ColoredChar> bind(const char* str, const OS::BasicColor color);
-    static std::vector<ColoredChar> bind(const std::string& str, const OS::BasicColor color);
+    static std::vector<ColoredChar> bind(const char* data, const OS::BasicColor color);
+    static std::vector<ColoredChar> bind(const std::string& data, const OS::BasicColor color);
 
 public:
     using value_type = ColoredChar;
@@ -51,8 +51,8 @@ public:
     static constexpr size_t npos = std::string::npos;
 
     ColoredString() = default;
-    ColoredString(const char* str, const OS::BasicColor color = OS::BasicColor::NONE) noexcept;
-    ColoredString(const std::string& str, const OS::BasicColor color = OS::BasicColor::NONE) noexcept;
+    ColoredString(const char* data, const OS::BasicColor color = OS::BasicColor::NONE) noexcept;
+    ColoredString(const std::string& data, const OS::BasicColor color = OS::BasicColor::NONE) noexcept;
     ColoredString(const size_t size, const ColoredChar chr) noexcept;
     template <typename It>
     ColoredString(const It first, const It last) noexcept;
@@ -95,7 +95,7 @@ public:
 
     void push_back(const ColoredChar coloredChr);
     void append(const ColoredString& other);
-    void append(const std::string& str, const OS::BasicColor color = OS::BasicColor::NONE);
+    void append(const std::string& data, const OS::BasicColor color = OS::BasicColor::NONE);
     void insert(const size_t idx, const ColoredChar coloredChr);
     void insert(const size_t idx, const ColoredString& other);
     template <typename It>
@@ -106,13 +106,13 @@ public:
 
     ColoredString& operator+=(const ColoredChar chr);
     ColoredString& operator+=(const ColoredString& other);
-    ColoredString& operator+=(const std::string& str);
+    ColoredString& operator+=(const std::string& data);
     ColoredString& operator<<(const ColoredChar chr);
     ColoredString& operator<<(const ColoredString& other);
-    ColoredString& operator<<(const std::string& str);
+    ColoredString& operator<<(const std::string& data);
     ColoredString  operator+(const ColoredChar chr);
     ColoredString  operator+(const ColoredString& other) const;
-    ColoredString  operator+(const std::string& str) const;
+    ColoredString  operator+(const std::string& data) const;
 
     ColoredString substr(const size_t pos = 0, const size_t count = npos) const;
     size_t        find_first_not_of(const ColoredChar chr, const size_t pos = 0) const;

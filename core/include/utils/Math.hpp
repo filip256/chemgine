@@ -68,7 +68,8 @@ auto crossProduct(const A aX, const A aY, const B bX, const B bY);
 /// <summary>
 /// Returns the <slope, intercept> pair of the linear function between the points A and B
 /// </summary>
-std::pair<float_s, float_s> getSlopeAndIntercept(const float_s aX, const float_s aY, const float_s bX, const float_s bY);
+std::pair<float_s, float_s>
+getSlopeAndIntercept(const float_s aX, const float_s aY, const float_s bX, const float_s bY);
 
 /// <summary>
 /// Returns the integral log2 of a value or 255 if the value is 0.
@@ -207,14 +208,16 @@ template <typename A, typename B>
 auto utils::chebyshevDistance(const A aX, const A aY, const B bX, const B bY)
 {
     static_assert(
-        std::is_arithmetic_v<A> && std::is_arithmetic_v<B>, "chebyshevDistance(): Input types must be arithmetic types.");
+        std::is_arithmetic_v<A> && std::is_arithmetic_v<B>,
+        "chebyshevDistance(): Input types must be arithmetic types.");
     return std::max(absoluteDifference(aX, bX), absoluteDifference(aY, bY));
 }
 
 template <typename A, typename B>
 auto utils::dotProduct(const A aX, const A aY, const B bX, const B bY)
 {
-    static_assert(std::is_arithmetic_v<A> && std::is_arithmetic_v<B>, "dotProduct(): Input types must be arithmetic types.");
+    static_assert(
+        std::is_arithmetic_v<A> && std::is_arithmetic_v<B>, "dotProduct(): Input types must be arithmetic types.");
     return aX * bX + aY * bY;
 }
 
@@ -231,7 +234,8 @@ constexpr auto utils::absoluteDifference(const A a, const B b)
 {
     // std::abs(a - b) would not work on unsigned types.
     static_assert(
-        std::is_arithmetic_v<A> && std::is_arithmetic_v<B>, "absoluteDifference(): Input types must be arithmetic types.");
+        std::is_arithmetic_v<A> && std::is_arithmetic_v<B>,
+        "absoluteDifference(): Input types must be arithmetic types.");
     const auto diff = a > b ? a - b : b - a;
 
     // If possible ensure unsigned output type.

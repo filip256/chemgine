@@ -62,12 +62,14 @@ public:
     static std::string print(const ReactionSpecifier& object)
     {
         std::string result;
-        for (size_t i = 0; i < object.reactants.size() - 1; ++i) result += object.reactants[i] + "+";
+        for (size_t i = 0; i < object.reactants.size() - 1; ++i)
+            result += object.reactants[i] + "+";
         result += object.reactants.back();
 
         result += "->";
 
-        for (size_t i = 0; i < object.products.size() - 1; ++i) result += object.products[i] + "+";
+        for (size_t i = 0; i < object.products.size() - 1; ++i)
+            result += object.products[i] + "+";
         result += object.products.back();
         return result;
     }
@@ -75,12 +77,14 @@ public:
     static std::string prettyPrint(const ReactionSpecifier& object)
     {
         std::string result;
-        for (size_t i = 0; i < object.reactants.size() - 1; ++i) result += object.reactants[i] + " + ";
+        for (size_t i = 0; i < object.reactants.size() - 1; ++i)
+            result += object.reactants[i] + " + ";
         result += object.reactants.back();
 
         result += " -> ";
 
-        for (size_t i = 0; i < object.products.size() - 1; ++i) result += object.products[i] + " + ";
+        for (size_t i = 0; i < object.products.size() - 1; ++i)
+            result += object.products[i] + " + ";
         result += object.products.back();
         return result;
     }

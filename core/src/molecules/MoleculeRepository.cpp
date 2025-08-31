@@ -30,7 +30,8 @@ bool MoleculeRepository::add(const def::Object& definition)
     const auto name = definition.getDefaultProperty(def::Molecules::Name, "?");
     const auto hp =
         definition.getDefaultProperty(def::Molecules::Hydrophilicity, 1.0f, def::parse<Amount<Unit::MOLE_RATIO>>);
-    const auto lp = definition.getDefaultProperty(def::Molecules::Lipophilicity, 0.0f, def::parse<Amount<Unit::MOLE_RATIO>>);
+    const auto lp =
+        definition.getDefaultProperty(def::Molecules::Lipophilicity, 0.0f, def::parse<Amount<Unit::MOLE_RATIO>>);
     const auto col = definition.getDefaultProperty(def::Molecules::Color, Color(0, 255, 255, 100), def::parse<Color>);
     auto       mp  = definition.getDefinition(
         def::Molecules::MeltingPoint, def::Parser<UnitizedEstimator<Unit::CELSIUS, Unit::TORR>>::parse, estimators);
@@ -65,7 +66,9 @@ bool MoleculeRepository::add(const def::Object& definition)
         def::Parser<UnitizedEstimator<Unit::JOULE_PER_MOLE, Unit::CELSIUS, Unit::TORR>>::parse,
         estimators);
     auto sol = definition.getDefinition(
-        def::Molecules::RelativeSolubility, def::Parser<UnitizedEstimator<Unit::NONE, Unit::CELSIUS>>::parse, estimators);
+        def::Molecules::RelativeSolubility,
+        def::Parser<UnitizedEstimator<Unit::NONE, Unit::CELSIUS>>::parse,
+        estimators);
     auto hen = definition.getDefinition(
         def::Molecules::HenryConstant,
         def::Parser<UnitizedEstimator<Unit::TORR_MOLE_RATIO, Unit::CELSIUS>>::parse,

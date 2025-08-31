@@ -7,9 +7,9 @@ Heatsource::Heatsource(const LabwareId id, Atmosphere& atmosphere) noexcept :
 
 const HeatsourceData& Heatsource::getData() const { return static_cast<const HeatsourceData&>(data); }
 
-void Heatsource::setTarget(const Ref<ContainerBase> target) { this->target = target; }
+void Heatsource::setTarget(const Ref<ContainerBase> newTarget) { target = newTarget; }
 
-void Heatsource::setTarget(BaseContainerComponent& target) { this->target = target.getContent(); }
+void Heatsource::setTarget(BaseContainerComponent& newTarget) { target = newTarget.getContent(); }
 
 bool Heatsource::tryConnect(LabwareComponentBase& other)
 {

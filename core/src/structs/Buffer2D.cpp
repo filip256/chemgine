@@ -243,7 +243,8 @@ Buffer2D<ContainerT>::Buffer2D(const ContainerT& str) noexcept
         return;
     }
 
-    for (auto i = lastNonEmpty + 1; i < block.forwardData().size(); ++i) block.popBack();  // Remove trailing empty lines.
+    for (auto i = lastNonEmpty + 1; i < block.forwardData().size(); ++i)
+        block.popBack();  // Remove trailing empty lines.
 }
 
 template <typename ContainerT>
@@ -274,8 +275,10 @@ template <typename ContainerT>
 size_t Buffer2D<ContainerT>::getMaxPositiveWidth() const
 {
     size_t maxWidth = 0;
-    for (const auto& line : block.backwardData()) maxWidth = std::max(maxWidth, line.data().forwardData().size());
-    for (const auto& line : block.forwardData()) maxWidth = std::max(maxWidth, line.data().forwardData().size());
+    for (const auto& line : block.backwardData())
+        maxWidth = std::max(maxWidth, line.data().forwardData().size());
+    for (const auto& line : block.forwardData())
+        maxWidth = std::max(maxWidth, line.data().forwardData().size());
 
     return maxWidth;
 }
@@ -284,8 +287,10 @@ template <typename ContainerT>
 size_t Buffer2D<ContainerT>::getMaxNegativeWidth() const
 {
     size_t maxWidth = 0;
-    for (const auto& line : block.backwardData()) maxWidth = std::max(maxWidth, line.data().backwardData().size());
-    for (const auto& line : block.forwardData()) maxWidth = std::max(maxWidth, line.data().backwardData().size());
+    for (const auto& line : block.backwardData())
+        maxWidth = std::max(maxWidth, line.data().backwardData().size());
+    for (const auto& line : block.forwardData())
+        maxWidth = std::max(maxWidth, line.data().backwardData().size());
 
     return maxWidth;
 }
@@ -312,8 +317,10 @@ Buffer2D<ContainerT>& Buffer2D<ContainerT>::appendRight(const Buffer2D& other, c
 
     // Pad all lines to the largest positive width.
     const auto thisMaxPositiveWidth = this->getMaxPositiveWidth() - 1;
-    for (auto& line : block.backwardData()) line.expandTo(thisMaxPositiveWidth);
-    for (auto& line : block.forwardData()) line.expandTo(thisMaxPositiveWidth);
+    for (auto& line : block.backwardData())
+        line.expandTo(thisMaxPositiveWidth);
+    for (auto& line : block.forwardData())
+        line.expandTo(thisMaxPositiveWidth);
 
     // Expand and center using white-space lines to reach the size of the other block.
     if (thisSize < otherSize) {
@@ -321,16 +328,20 @@ Buffer2D<ContainerT>& Buffer2D<ContainerT>::appendRight(const Buffer2D& other, c
         const auto half = diff / 2;
 
         size_t i = 0;
-        for (; i < half; ++i) this->block.emplaceFront(0, thisMaxPositiveWidth);
-        for (; i < diff; ++i) this->block.emplaceBack(0, thisMaxPositiveWidth);
+        for (; i < half; ++i)
+            this->block.emplaceFront(0, thisMaxPositiveWidth);
+        for (; i < diff; ++i)
+            this->block.emplaceBack(0, thisMaxPositiveWidth);
 
         thisSize = otherSize;
     }
 
     // Append padding.
     if (padding.size()) {
-        for (auto& line : this->block.backwardData()) line.appendBack(padding);
-        for (auto& line : this->block.forwardData()) line.appendBack(padding);
+        for (auto& line : this->block.backwardData())
+            line.appendBack(padding);
+        for (auto& line : this->block.forwardData())
+            line.appendBack(padding);
     }
 
     // If the two blocks have the same size, each i-th index from this is mapped to
@@ -408,7 +419,8 @@ Point<size_t> Buffer2D<ContainerT>::getTrimmedDimensions() const
     const auto endIdx = block.endIndex();
     auto       idx    = block.beginIndex();
 
-    while (idx < endIdx && block[idx].isWhiteSpace()) ++idx;
+    while (idx < endIdx && block[idx].isWhiteSpace())
+        ++idx;
 
     if (idx == endIdx)
         return Point<size_t>(0, 0);
@@ -504,7 +516,8 @@ void Buffer2D<ContainerT>::dump(StreamT& os) const
     const auto endIdx = block.endIndex();
     auto       idx    = block.beginIndex();
 
-    while (idx < endIdx && block[idx].isWhiteSpace()) ++idx;
+    while (idx < endIdx && block[idx].isWhiteSpace())
+        ++idx;
 
     if (idx == endIdx)
         return;  // Full white space.

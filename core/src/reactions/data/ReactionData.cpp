@@ -72,17 +72,18 @@ bool ReactionData::balance(
     }
 
     // the "1st product" rule: lock the coefficient to 1 and apply to system
-    const auto map = products[0].first.getStructure().getComponentCountMap();
-    for (const auto& c : map) {
-        if (sysmap.contains(c.first) == false) {
-            sysmap.emplace(c.first, sysmap.size());
-            system.addNullRow(syslen);
-            system.back().back() = static_cast<float_s>(c.second);
+    {
+        const auto map = products[0].first.getStructure().getComponentCountMap();
+        for (const auto& c : map) {
+            if (sysmap.contains(c.first) == false) {
+                sysmap.emplace(c.first, sysmap.size());
+                system.addNullRow(syslen);
+                system.back().back() = static_cast<float_s>(c.second);
+            }
+            else
+                system[sysmap[c.first]].back() = static_cast<float_s>(c.second);
         }
-        else
-            system[sysmap[c.first]].back() = static_cast<float_s>(c.second);
     }
-
     for (size_t i = 1; i < products.size(); ++i) {
         const auto map = products[i].first.getStructure().getComponentCountMap();
         for (const auto& c : map) {
@@ -101,9 +102,10 @@ bool ReactionData::balance(
     if (result.empty())
         return false;
 
-    const auto intCoef = utils::integerCoefficient(result);
+    const auto intCoef = checked_cast<uint8_t>(utils::integerCoefficient(result));
 
-    for (size_t i = 0; i < reactants.size(); ++i) reactants[i].second = round_cast<uint8_t>(result[i] * intCoef);
+    for (size_t i = 0; i < reactants.size(); ++i)
+        reactants[i].second = round_cast<uint8_t>(result[i] * intCoef);
     products[0].second = intCoef;
     for (size_t i = 1; i < products.size(); ++i)
         products[i].second = round_cast<uint8_t>(result[reactants.size() + i - 1] * intCoef);
@@ -127,8 +129,8 @@ bool ReactionData::mapReactantsToProducts()
         std::pair<std::unordered_map<c_size, c_size>, uint8_t> maxMap;
         size_t                                                 maxIdxJ = 0;
         for (size_t j = 0; j < products.size(); ++j) {
-            const auto map =
-                reactants[i].getStructure().maximalMapTo(products[j].getStructure(), reactantIgnore[i], productIgnore[j]);
+            const auto map = reactants[i].getStructure().maximalMapTo(
+                products[j].getStructure(), reactantIgnore[i], productIgnore[j]);
             if (map.first.size() > maxMap.first.size() ||
                 (map.first.size() == maxMap.first.size() && map.second > maxMap.second)) {
                 maxMap  = map;
@@ -188,7 +190,8 @@ ReactionData::generateConcreteReactantMatches(const std::vector<Reactant>& molec
     std::vector<std::unordered_map<c_size, c_size>> matches;
     matches.reserve(reactants.size());
     for (size_t i = 0; i < reactants.size(); ++i) {
-        if (reactants[i].getStructure().isVirtualHydrogen() && molecules[i].molecule.getStructure().isVirtualHydrogen()) {
+        if (reactants[i].getStructure().isVirtualHydrogen() &&
+            molecules[i].molecule.getStructure().isVirtualHydrogen()) {
             matches.emplace_back();
             continue;
         }
@@ -224,7 +227,8 @@ std::vector<Molecule> ReactionData::generateConcreteProducts(
     // build concrete products
     std::vector<MolecularStructure> concreteProducts;
     concreteProducts.reserve(products.size());
-    for (size_t i = 0; i < products.size(); ++i) concreteProducts.emplace_back(products[i].getStructure().createCopy());
+    for (size_t i = 0; i < products.size(); ++i)
+        concreteProducts.emplace_back(products[i].getStructure().createCopy());
 
     for (const auto& p : componentMapping) {
         std::unordered_map<c_size, c_size> tempMap = {
@@ -261,7 +265,8 @@ RetrosynthReaction ReactionData::generateRetrosynthReaction(
     // build concrete products
     std::vector<MolecularStructure> substReactants;
     substReactants.reserve(reactants.size());
-    for (size_t i = 0; i < reactants.size(); ++i) substReactants.emplace_back(reactants[i].getStructure().createCopy());
+    for (size_t i = 0; i < reactants.size(); ++i)
+        substReactants.emplace_back(reactants[i].getStructure().createCopy());
 
     const auto targetMatchedComponents = utils::extractUniqueValues(match.second);
     const auto reversedMapping         = utils::reverseMap(componentMapping);
@@ -450,8 +455,8 @@ void ReactionData::setBaseReaction(const ReactionData& reaction) { baseReaction 
 
 std::string ReactionData::getHRTag() const { return '<' + std::to_string(id) + ':' + name + '>'; }
 
-void
-ReactionData::dumpDefinition(std::ostream& out, const bool prettify, std::unordered_set<EstimatorId>& alreadyPrinted) const
+void ReactionData::dumpDefinition(
+    std::ostream& out, const bool prettify, std::unordered_set<EstimatorId>& alreadyPrinted) const
 {
     static const auto valueOffset = checked_cast<uint8_t>(utils::max(
         def::Reactions::Id.size(),

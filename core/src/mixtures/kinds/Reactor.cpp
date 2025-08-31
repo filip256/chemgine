@@ -9,12 +9,14 @@ Reactor::Reactor(const Reactor& other) noexcept :
     tickMode(other.tickMode)
 {
     this->cachedReactions.reserve(other.cachedReactions.size());
-    for (const auto& r : other.cachedReactions) this->cachedReactions.emplace(r.makeCopy());
+    for (const auto& r : other.cachedReactions)
+        this->cachedReactions.emplace(r.makeCopy());
 }
 
 Reactor::Reactor(
-    const Ref<Atmosphere> atmosphere, const Amount<Unit::LITER> maxVolume, const Ref<ContainerBase> overflowTarget) noexcept
-    :
+    const Ref<Atmosphere>     atmosphere,
+    const Amount<Unit::LITER> maxVolume,
+    const Ref<ContainerBase>  overflowTarget) noexcept :
     MultiLayerMixture(atmosphere, maxVolume, overflowTarget)
 {}
 
@@ -55,7 +57,7 @@ float_s Reactor::getInterLayerReactivityCoefficient(const ReactantSet& reactants
 {
     float_s result = 1.0;
     for (const auto& [_, r1] : reactants)
-        for (const auto& [_, r2] : reactants) {
+        for (const auto& [__, r2] : reactants) {
             result = std::min(getInterLayerReactivityCoefficient(r1, r2), result);
             if (result == 0.0)  // early return, coef is always positive
                 return 0.0;
@@ -90,7 +92,8 @@ void Reactor::findNewReactions()
         cachedReactions.merge(std::move(newReactions));
     }
 
-    for (auto& [_, r] : content) r.isNew = false;
+    for (auto& [_, r] : content)
+        r.isNew = false;
 }
 
 void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
@@ -119,7 +122,8 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
         if (speedCoef == 0)
             continue;
 
-        for (const auto& [_, i] : r.getReactants()) MultiLayerMixture::add(i.mutate(-i.amount * speedCoef, *this));
+        for (const auto& [_, i] : r.getReactants())
+            MultiLayerMixture::add(i.mutate(-i.amount * speedCoef, *this));
         for (const auto& [_, i] : r.getProducts()) {
             const auto p = i.mutate(i.amount * speedCoef, *this);
             MultiLayerMixture::add(p.mutate(findLayerFor(p)));
@@ -143,13 +147,14 @@ void Reactor::runLayerEnergyConduction(const Amount<Unit::SECOND> timespan)
                 continue;
 
             const auto diffE =
-                diff > 0 ?
-                         // molecules closer to the top usually have more
-                         // energy than the layer avg. => favour up conversion
+                diff > 0
+                    ?
+                    // molecules closer to the top usually have more
+                    // energy than the layer avg. => favour up conversion
                     l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(l.second.moles).to<Unit::JOULE>(diff) *
                         favourableC.to<Unit::JOULE>(timespan)
-                         : l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(aboveLayer.moles).to<Unit::JOULE>(diff) *
-                               unfavourableC.to<Unit::JOULE>(timespan);
+                    : l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(aboveLayer.moles).to<Unit::JOULE>(diff) *
+                          unfavourableC.to<Unit::JOULE>(timespan);
 
             MultiLayerMixture::add(diffE, above);
             MultiLayerMixture::add(-diffE, l.first);
@@ -162,13 +167,14 @@ void Reactor::runLayerEnergyConduction(const Amount<Unit::SECOND> timespan)
                 continue;
 
             const auto diffE =
-                diff > 0 ?
-                         // molecules closer to the bottom usually have less
-                         // energy than the layer avg. => favour down conversion
+                diff > 0
+                    ?
+                    // molecules closer to the bottom usually have less
+                    // energy than the layer avg. => favour down conversion
                     l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(l.second.moles).to<Unit::JOULE>(diff) *
                         unfavourableC.to<Unit::JOULE>(timespan)
-                         : l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(belowLayer.moles).to<Unit::JOULE>(diff) *
-                               favourableC.to<Unit::JOULE>(timespan);
+                    : l.second.getHeatCapacity().to<Unit::JOULE_PER_CELSIUS>(belowLayer.moles).to<Unit::JOULE>(diff) *
+                          favourableC.to<Unit::JOULE>(timespan);
 
             MultiLayerMixture::add(diffE, below);
             MultiLayerMixture::add(-diffE, l.first);
@@ -186,37 +192,9 @@ void Reactor::consumePotentialEnergy()
 
 void Reactor::addEnergy(const Amount<Unit::JOULE> energy) { MultiLayerMixture::addEnergy(energy); }
 
-void Reactor::add(const Molecule& molecule, const Amount<Unit::MOLE> amount) { MultiLayerMixture::add(molecule, amount); }
-
-void Reactor::add(Reactor& other)
+void Reactor::add(const Molecule& molecule, const Amount<Unit::MOLE> amount)
 {
-    // for (auto const& r : other.content)
-    //{
-    //	auto const it = this->content.find(r);
-    //	if (it == this->content.end())
-    //		this->content.emplace(r);
-    //	else
-    //		it->amount += r.amount;
-    // }
-}
-
-void Reactor::add(Reactor& other, const float_s ratio)
-{
-    // if (ratio >= 1.0)
-    //{
-    //	this->add(other);
-    //	return;
-    // }
-
-    // for (auto& r : other.content)
-    //{
-    //	auto const it = this->content.find(r);
-    //	if (it == this->content.end())
-    //		this->content.emplace(Reactant(r.molecule, r.layer, r.amount * ratio));
-    //	else
-    //		it->amount += r.amount * ratio;
-    //	r.amount -= r.amount * ratio;
-    // }
+    MultiLayerMixture::add(molecule, amount);
 }
 
 FlagField<TickMode> Reactor::getTickMode() const { return tickMode; }
@@ -274,7 +252,9 @@ bool Reactor::hasSameLayers(const Reactor& other, const Amount<>::StorageType ep
 
 bool Reactor::isSame(const Reactor& other, const Amount<>::StorageType epsilon) const
 {
-    return this->hasSameState(other) && this->hasSameContent(other) && this->hasSameLayers(other);
+    return this->hasSameState(other, epsilon) &&
+           this->hasSameContent(other, epsilon) &&
+           this->hasSameLayers(other, epsilon);
 }
 
 Reactor Reactor::makeCopy() const { return Reactor(*this); }

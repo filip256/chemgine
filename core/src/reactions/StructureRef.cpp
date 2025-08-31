@@ -38,4 +38,7 @@ std::optional<StructureRef> StructureRef::create(MolecularStructure&& structure)
                : std::nullopt;
 }
 
-std::optional<StructureRef> StructureRef::create(const std::string& smiles) { return create(MolecularStructure(smiles)); }
+std::optional<StructureRef> StructureRef::create(const std::string& smiles)
+{
+    return create(MolecularStructure(smiles));
+}

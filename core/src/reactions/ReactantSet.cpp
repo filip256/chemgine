@@ -17,13 +17,15 @@ ReactantSet::ReactantSet(const Ref<Mixture> container) noexcept :
 ReactantSet::ReactantSet(const std::vector<Molecule>& reactants) noexcept :
     container(NullRef)
 {
-    for (size_t i = 0; i < reactants.size(); ++i) add(Reactant(reactants[i], LayerType::NONE, 1.0));
+    for (size_t i = 0; i < reactants.size(); ++i)
+        add(Reactant(reactants[i], LayerType::NONE, 1.0));
 }
 
 ReactantSet::ReactantSet(const std::vector<Reactant>& reactants) noexcept :
     container(reactants.empty() ? NullRef : reactants.front().getContainer())
 {
-    for (size_t i = 0; i < reactants.size(); ++i) add(reactants[i].mutate(1.0_mol));
+    for (size_t i = 0; i < reactants.size(); ++i)
+        add(reactants[i].mutate(1.0_mol));
 }
 
 size_t ReactantSet::size() const { return reactants.size(); }
@@ -60,7 +62,8 @@ void ReactantSet::add(const Reactant& reactant)
 
 void ReactantSet::add(const ReactantSet& other)
 {
-    for (const auto& [_, r] : other.reactants) add(r);
+    for (const auto& [_, r] : other.reactants)
+        add(r);
 }
 
 const Reactant& ReactantSet::any() const { return reactants.begin()->second; }
@@ -74,7 +77,8 @@ Amount<Unit::MOLE> ReactantSet::getAmountOf(const ReactantId& reactantId) const
 Amount<Unit::MOLE> ReactantSet::getAmountOf(const ReactantSet& reactantSet) const
 {
     auto s = 0.0_mol;
-    for (const auto& [rId, _] : reactantSet) s += getAmountOf(rId);
+    for (const auto& [rId, _] : reactantSet)
+        s += getAmountOf(rId);
     return s;
 }
 

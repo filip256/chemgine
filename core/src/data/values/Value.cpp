@@ -4,7 +4,7 @@
 #include "utils/Numeric.hpp"
 
 template <class T>
-const T Value<T>::epsilon = std::numeric_limits<T>::epsilon();
+const T Value<T>::Epsilon = std::numeric_limits<T>::epsilon();
 
 template <class T>
 Value<T>& Value<T>::operator=(const Value<T>& other)
@@ -18,7 +18,7 @@ Value<T>& Value<T>::operator=(const Value<T>& other)
 template <typename T>
 bool Value<T>::operator==(const Value<T>& other) const
 {
-    return utils::floatEqual(value, other.value, epsilon);
+    return utils::floatEqual(value, other.value, Epsilon);
 }
 
 template <typename T>

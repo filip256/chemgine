@@ -61,13 +61,14 @@ public:
 };
 
 template <class NodeT>
-UndirectedGraph<NodeT>::NeighbourIterator::NeighbourIterator(const UndirectedGraph<NodeT>& owner, const size_t node) noexcept
-    :
+UndirectedGraph<NodeT>::NeighbourIterator::NeighbourIterator(
+    const UndirectedGraph<NodeT>& owner, const size_t node) noexcept :
     owner(owner),
     node(node),
     i(owner.size() - 1)
 {
-    while (i != npos && owner.areAdjacent(node, i) == false) --i;
+    while (i != npos && owner.areAdjacent(node, i) == false)
+        --i;
 }
 
 template <class NodeT>

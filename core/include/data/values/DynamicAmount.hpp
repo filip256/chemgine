@@ -237,7 +237,10 @@ template <>
 class def::Parser<Unit>
 {
 public:
-    static std::optional<Unit> parse(const std::string& str) { return DynamicAmount::getUnitFromSymbol(utils::strip(str)); }
+    static std::optional<Unit> parse(const std::string& str)
+    {
+        return DynamicAmount::getUnitFromSymbol(utils::strip(str));
+    }
 };
 
 template <Unit U>

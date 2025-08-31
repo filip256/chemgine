@@ -40,8 +40,10 @@ struct std::hash<RetrosynthReaction>
     size_t operator()(const RetrosynthReaction& reaction) const
     {
         size_t hash = 0;
-        for (const auto& [r, _] : reaction.reactants) utils::hashCombineWith(hash, r);
-        for (const auto& [r, _] : reaction.products) utils::hashCombineWith(hash, r);
+        for (const auto& [r, _] : reaction.reactants)
+            utils::hashCombineWith(hash, r);
+        for (const auto& [r, _] : reaction.products)
+            utils::hashCombineWith(hash, r);
         return hash;
     }
 };

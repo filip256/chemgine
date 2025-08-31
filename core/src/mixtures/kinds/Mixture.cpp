@@ -10,7 +10,8 @@ void Mixture::add(const Reactant& reactant) { content.add(reactant); }
 
 void Mixture::add(const Mixture& other)
 {
-    for (const auto& [_, r] : other.content) add(r);
+    for (const auto& [_, r] : other.content)
+        add(r);
 }
 
 void Mixture::add(const Molecule& molecule, const Amount<Unit::MOLE> amount)
@@ -24,6 +25,9 @@ ContentInitializer Mixture::getContentInitializer() const { return ContentInitia
 
 Amount<Unit::MOLE> Mixture::getAmountOf(const Reactant& reactant) const { return content.getAmountOf(reactant); }
 
-Amount<Unit::MOLE> Mixture::getAmountOf(const ReactantSet& reactantSet) const { return content.getAmountOf(reactantSet); }
+Amount<Unit::MOLE> Mixture::getAmountOf(const ReactantSet& reactantSet) const
+{
+    return content.getAmountOf(reactantSet);
+}
 
 Amount<Unit::MOLE> Mixture::getAmountOf(const Catalyst& catalyst) const { return content.getAmountOf(catalyst); }

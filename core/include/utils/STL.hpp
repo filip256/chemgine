@@ -203,7 +203,8 @@ std::unordered_map<ObjT, KeyT> utils::reverseMap(const std::unordered_map<KeyT, 
     std::unordered_map<ObjT, KeyT> result;
     result.reserve(map.bucket_count());
 
-    for (const auto& p : map) result.emplace(std::make_pair(p.second, p.first));
+    for (const auto& p : map)
+        result.emplace(std::make_pair(p.second, p.first));
 
     return result;
 }
@@ -214,7 +215,8 @@ std::vector<ObjT> utils::extractValues(const std::unordered_map<KeyT, ObjT>& map
     std::vector<ObjT> result;
     result.reserve(map.bucket_count());
 
-    for (const auto& p : map) result.emplace_back(p.second);
+    for (const auto& p : map)
+        result.emplace_back(p.second);
 
     return result;
 }
@@ -225,7 +227,8 @@ std::unordered_set<ObjT> utils::extractUniqueValues(const std::unordered_map<Key
     std::unordered_set<ObjT> result;
     result.reserve(map.bucket_count());
 
-    for (const auto& p : map) result.emplace(p.second);
+    for (const auto& p : map)
+        result.emplace(p.second);
 
     return result;
 }
@@ -245,7 +248,8 @@ std::vector<T1> utils::extractFirst(const std::vector<std::pair<T1, T2>>& vector
     result.reserve(vector.size());
 
     const auto s = vector.size();
-    for (size_t i = 0; i < s; ++i) result.emplace_back(vector[i].first);
+    for (size_t i = 0; i < s; ++i)
+        result.emplace_back(vector[i].first);
 
     return result;
 }
@@ -257,7 +261,8 @@ std::vector<T2> utils::extractSecond(const std::vector<std::pair<T1, T2>>& vecto
     result.reserve(vector.size());
 
     const auto s = vector.size();
-    for (size_t i = 0; i < s; ++i) result.emplace_back(vector[i].second);
+    for (size_t i = 0; i < s; ++i)
+        result.emplace_back(vector[i].second);
 
     return result;
 }
@@ -295,7 +300,8 @@ std::vector<ObjT> utils::flatten(const std::vector<std::pair<ObjT, CntT>>& vecto
     result.reserve(vector.size());
 
     for (size_t i = 0; i < vector.size(); ++i)
-        for (CntT j = 0; j < vector[i].second; ++j) result.emplace_back(vector[i].first);
+        for (CntT j = 0; j < vector[i].second; ++j)
+            result.emplace_back(vector[i].first);
 
     return result;
 }
@@ -321,7 +327,8 @@ std::vector<OutT> utils::transform(const std::vector<InT>& vector)
     std::vector<OutT> result;
     result.reserve(vector.size());
 
-    std::transform(vector.begin(), vector.end(), std::back_inserter(result), [](const InT& item) { return OutT(item); });
+    std::transform(
+        vector.begin(), vector.end(), std::back_inserter(result), [](const InT& item) { return OutT(item); });
 
     return result;
 }
@@ -419,7 +426,8 @@ std::vector<size_t> utils::getSortingPermutation(const std::vector<T>& vector, b
     // Initialize indexMap[i] = i
     std::vector<size_t> indexMap;
     indexMap.reserve(vector.size());
-    for (size_t i = 0; i < vector.size(); ++i) indexMap.emplace_back(i);
+    for (size_t i = 0; i < vector.size(); ++i)
+        indexMap.emplace_back(i);
 
     // Generate a mapping between each index in the sorted vector and the index of the same element
     // in the original vector.
@@ -429,7 +437,8 @@ std::vector<size_t> utils::getSortingPermutation(const std::vector<T>& vector, b
 
     // Reverse the mapping to obtain the permutation
     std::vector<size_t> permutation(vector.size());
-    for (size_t i = 0; i < vector.size(); ++i) permutation[indexMap[i]] = i;
+    for (size_t i = 0; i < vector.size(); ++i)
+        permutation[indexMap[i]] = i;
 
     return permutation;
 }

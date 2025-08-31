@@ -78,7 +78,8 @@ public:
     LayerUpIterator getLayersUpBegin() const;
     LayerUpIterator getLayersUpEnd() const;
 
-    void copyContentTo(Ref<ContainerBase> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer) const;
+    void
+    copyContentTo(Ref<ContainerBase> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer) const;
     void moveContentTo(Ref<ContainerBase> destination, const Amount<Unit::LITER> volume, const LayerType sourceLayer);
 
     MultiLayerMixture makeCopy() const;

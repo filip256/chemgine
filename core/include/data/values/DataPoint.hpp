@@ -60,7 +60,7 @@ class def::Parser<DataPoint<OutU, InUs...>>
 private:
     template <size_t... Is>
     static std::optional<std::tuple<Amount<InUs>...>>
-    convertInputs(const std::vector<DynamicAmount>& baseInputs, const def::Location& location, std::index_sequence<Is...>)
+    convertInputs(const std::vector<DynamicAmount>& baseInputs, std::index_sequence<Is...>)
     {
         std::tuple<Amount<InUs>...> expectedInputs;
         auto                        failed = static_cast<uint8_t>(-1);
@@ -153,21 +153,24 @@ public:
             baseInputs.emplace_back(*convert);
         }
 
-        // try given input order
-        const auto expectedInputs = convertInputs(baseInputs, location, std::make_index_sequence<inputCount>{});
+        // Try given input order.
+        auto expectedInputs = convertInputs(baseInputs, std::make_index_sequence<inputCount>{});
         if (expectedInputs)
             return DataPoint(*expectedOutput, *expectedInputs);
 
-        // try to permute input order (must sort before calling next_permutation)
-        std::sort(
-            baseInputs.begin(), baseInputs.end(), [](const auto& l, const auto& r) { return l.getUnit() < r.getUnit(); });
+        // Try to permute input order (must sort before calling next_permutation).
+        std::sort(baseInputs.begin(), baseInputs.end(), [](const auto& l, const auto& r) {
+            return l.getUnit() < r.getUnit();
+        });
+
         do {
-            const auto expectedInputs = convertInputs(baseInputs, location, std::make_index_sequence<inputCount>{});
+            expectedInputs = convertInputs(baseInputs, std::make_index_sequence<inputCount>{});
             if (expectedInputs)
                 return DataPoint(*expectedOutput, *expectedInputs);
 
-        } while (std::next_permutation(
-            baseInputs.begin(), baseInputs.end(), [](const auto& l, const auto& r) { return l.getUnit() < r.getUnit(); }));
+        } while (std::next_permutation(baseInputs.begin(), baseInputs.end(), [](const auto& l, const auto& r) {
+            return l.getUnit() < r.getUnit();
+        }));
 
         std::string baseUnitNames = DynamicAmount::getUnitSymbol(inputBaseUnits.front());
         for (size_t i = 1; i < inputBaseUnits.size(); ++i)

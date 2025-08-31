@@ -8,9 +8,15 @@
 // ColoredChar
 //
 
-bool ColoredChar::operator==(const ColoredChar other) const { return this->chr == other.chr && this->color == other.color; }
+bool ColoredChar::operator==(const ColoredChar other) const
+{
+    return this->chr == other.chr && this->color == other.color;
+}
 
-bool ColoredChar::operator!=(const ColoredChar other) const { return this->chr != other.chr || this->color != other.color; }
+bool ColoredChar::operator!=(const ColoredChar other) const
+{
+    return this->chr != other.chr || this->color != other.color;
+}
 
 //
 // ColoredString
@@ -20,31 +26,32 @@ ColoredString::ColoredString(ContainerType&& str) noexcept :
     str(std::move(str))
 {}
 
-ColoredString::ColoredString(const char* str, const OS::BasicColor color) noexcept :
-    ColoredString(bind(str, color))
+ColoredString::ColoredString(const char* data, const OS::BasicColor color) noexcept :
+    ColoredString(bind(data, color))
 {}
 
-ColoredString::ColoredString(const std::string& str, const OS::BasicColor color) noexcept :
-    ColoredString(bind(str, color))
+ColoredString::ColoredString(const std::string& data, const OS::BasicColor color) noexcept :
+    ColoredString(bind(data, color))
 {}
 
 ColoredString::ColoredString(const size_t size, const ColoredChar chr) noexcept :
     str(size, chr)
 {}
 
-std::vector<ColoredChar> ColoredString::bind(const char* str, const OS::BasicColor color)
+std::vector<ColoredChar> ColoredString::bind(const char* data, const OS::BasicColor color)
 {
     std::vector<ColoredChar> temp;
-    for (size_t i = 0; str[i] != '\0'; ++i) temp.emplace_back(str[i], color);
+    for (size_t i = 0; data[i] != '\0'; ++i)
+        temp.emplace_back(data[i], color);
 
     return temp;
 }
 
-std::vector<ColoredChar> ColoredString::bind(const std::string& str, const OS::BasicColor color)
+std::vector<ColoredChar> ColoredString::bind(const std::string& data, const OS::BasicColor color)
 {
     std::vector<ColoredChar> temp;
-    temp.reserve(str.size());
-    std::ranges::transform(str, std::back_inserter(temp), [color](const auto c) { return ColoredChar(c, color); });
+    temp.reserve(data.size());
+    std::ranges::transform(data, std::back_inserter(temp), [color](const auto c) { return ColoredChar(c, color); });
 
     return temp;
 }
@@ -109,12 +116,16 @@ void ColoredString::append(const ColoredString& other)
     this->str.insert(this->str.end(), other.str.begin(), other.str.end());
 }
 
-void ColoredString::append(const std::string& str, const OS::BasicColor color)
+void ColoredString::append(const std::string& data, const OS::BasicColor color)
 {
-    for (const auto c : str) push_back(ColoredChar(c, color));
+    for (const auto c : data)
+        push_back(ColoredChar(c, color));
 }
 
-void ColoredString::insert(const size_t idx, const ColoredChar coloredChr) { str.insert(str.begin() + idx, coloredChr); }
+void ColoredString::insert(const size_t idx, const ColoredChar coloredChr)
+{
+    str.insert(str.begin() + idx, coloredChr);
+}
 
 void ColoredString::insert(const size_t idx, const ColoredString& other)
 {
@@ -137,9 +148,9 @@ ColoredString& ColoredString::operator+=(const ColoredString& other)
     return *this;
 }
 
-ColoredString& ColoredString::operator+=(const std::string& str)
+ColoredString& ColoredString::operator+=(const std::string& data)
 {
-    append(str);
+    append(data);
     return *this;
 }
 
@@ -147,7 +158,7 @@ ColoredString& ColoredString::operator<<(const ColoredChar chr) { return operato
 
 ColoredString& ColoredString::operator<<(const ColoredString& other) { return operator+=(other); }
 
-ColoredString& ColoredString::operator<<(const std::string& str) { return operator+=(str); }
+ColoredString& ColoredString::operator<<(const std::string& data) { return operator+=(data); }
 
 ColoredString ColoredString::operator+(const ColoredChar chr)
 {
@@ -161,10 +172,10 @@ ColoredString ColoredString::operator+(const ColoredString& other) const
     return temp += other;
 }
 
-ColoredString ColoredString::operator+(const std::string& str) const
+ColoredString ColoredString::operator+(const std::string& data) const
 {
     ColoredString temp(*this);
-    return temp += str;
+    return temp += data;
 }
 
 ColoredString ColoredString::substr(const size_t pos, const size_t count) const
@@ -196,7 +207,8 @@ std::ostream& operator<<(std::ostream& os, const ColoredString& coloredString)
 {
     // Ignore colors if the output stream doesn't support colors.
     if (&os != &std::cout && &os != &std::cerr && &os != &std::clog) {
-        for (const auto c : coloredString.str) os << c.chr;
+        for (const auto c : coloredString.str)
+            os << c.chr;
         return os;
     }
 

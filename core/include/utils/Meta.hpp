@@ -3,12 +3,18 @@
 #include "utils/Numeric.hpp"
 
 #include <ostream>
+#include <type_traits>
 
 namespace utils
 {
 
+template <auto N>
+using const_value = std::integral_constant<decltype(N), N>;
+
 template <typename...>
 inline constexpr bool always_false = false;
+template <auto N>
+inline constexpr bool always_false_v = always_false<const_value<N>>;
 
 template <typename T>
 bool equal(const T x, const T y);

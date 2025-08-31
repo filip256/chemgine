@@ -11,8 +11,10 @@ bool utils::isWhiteSpace(const char c)
 static std::pair<size_t, size_t> getStripInterval(const std::string& str, bool (*pred)(char))
 {
     size_t start = 0, end = str.size();
-    while (start < end && pred(str[start])) ++start;
-    while (end > start && pred(str[end - 1])) --end;
+    while (start < end && pred(str[start]))
+        ++start;
+    while (end > start && pred(str[end - 1]))
+        --end;
 
     return std::make_pair(start, end);
 }

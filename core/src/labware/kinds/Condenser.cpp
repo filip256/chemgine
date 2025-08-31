@@ -32,14 +32,14 @@ bool Condenser::tryConnect(LabwareComponentBase& other)
     return false;
 }
 
-void Condenser::disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase& other)
+void Condenser::disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase&)
 {
     this->setOverflowTarget(dump);
 }
 
 void Condenser::tick(const Amount<Unit::SECOND> timespan)
 {
-    const auto& data    = getData();
+    const auto& cData   = getData();
     auto&       content = getContent<0>();
     auto&       coolant = getContent<1>();
 
@@ -47,7 +47,7 @@ void Condenser::tick(const Amount<Unit::SECOND> timespan)
         // TODO: make hT depend on the temp difference and add conversions methods
         const auto tempDiff = content.getLayerTemperature() - coolant.getLayerTemperature(LayerType::POLAR);
         const auto heatTransfer =
-            5.0_J * tempDiff.asStd() * data.length.asStd() * data.efficiency.asStd() * timespan.asStd();
+            5.0_J * tempDiff.asStd() * cData.length.asStd() * cData.efficiency.asStd() * timespan.asStd();
         content.addEnergy(-heatTransfer);
         coolant.addEnergy(heatTransfer);
     }

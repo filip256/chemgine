@@ -25,8 +25,10 @@ bool ReactantId::operator!=(const ReactantId& other) const
 }
 
 Reactant::Reactant(
-    const Molecule& molecule, const LayerType layer, const Amount<Unit::MOLE> amount, const Ref<Mixture> container) noexcept
-    :
+    const Molecule&          molecule,
+    const LayerType          layer,
+    const Amount<Unit::MOLE> amount,
+    const Ref<Mixture>       container) noexcept :
     layer(layer),
     amount(amount),
     molecule(molecule),
@@ -117,7 +119,10 @@ Reactant Reactant::mutate(const Amount<Unit::MOLE> newAmount) const
     return Reactant(molecule, layer, newAmount, container);
 }
 
-Reactant Reactant::mutate(const Ref<Mixture> newContainer) const { return Reactant(molecule, layer, amount, newContainer); }
+Reactant Reactant::mutate(const Ref<Mixture> newContainer) const
+{
+    return Reactant(molecule, layer, amount, newContainer);
+}
 
 Reactant Reactant::mutate(const LayerType newLayer) const { return Reactant(molecule, newLayer, amount, container); }
 

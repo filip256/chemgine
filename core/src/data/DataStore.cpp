@@ -81,7 +81,8 @@ bool DataStore::load(const std::string& path)
     while (true) {
         if (not analysis.failed) {
             const auto definitionsToParse = analysis.totalDefinitionCount - analysis.preparsedDefinitionCount;
-            const auto percent = static_cast<uint8_t>((static_cast<float_s>(definitionCount) / definitionsToParse) * 100.f);
+            const auto percent =
+                static_cast<uint8_t>((static_cast<float_s>(definitionCount) / definitionsToParse) * 100.f);
             Log(this).info("\r[{0}/{1} | {2}%] Parsing definitions...", definitionCount, definitionsToParse, percent);
         }
 
@@ -117,15 +118,20 @@ void DataStore::dump(const std::string& path, const bool prettify) const
 
     out << ":.\n"
         << "   - Chemgine Generated Definition File -\n\n   Version: 0.0.0\n   Sources:\n";
-    for (const auto& f : fileStore.getHistory()) out << "    > " << f.first << '\n';
+    for (const auto& f : fileStore.getHistory())
+        out << "    > " << f.first << '\n';
     out << ".:\n\n";
 
-    for (auto a = atoms.atomsBegin(); a != atoms.atomsEnd(); ++a) a->second->dumpDefinition(out, prettify);
-    for (auto r = atoms.radicalsBegin(); r != atoms.radicalsEnd(); ++r) r->second->dumpDefinition(out, prettify);
+    for (auto a = atoms.atomsBegin(); a != atoms.atomsEnd(); ++a)
+        a->second->dumpDefinition(out, prettify);
+    for (auto r = atoms.radicalsBegin(); r != atoms.radicalsEnd(); ++r)
+        r->second->dumpDefinition(out, prettify);
 
     std::unordered_set<EstimatorId> printedEstimators;
-    for (const auto& m : molecules) m.second->dumpDefinition(out, prettify, printedEstimators);
-    for (const auto& r : reactions) r.second->dumpDefinition(out, prettify, printedEstimators);
+    for (const auto& m : molecules)
+        m.second->dumpDefinition(out, prettify, printedEstimators);
+    for (const auto& r : reactions)
+        r.second->dumpDefinition(out, prettify, printedEstimators);
 
     const auto dir = utils::extractDirName(path);
     for (const auto& l : labware) {

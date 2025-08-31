@@ -49,7 +49,8 @@ void LabwareSystem::add(std::unique_ptr<LabwareComponentBase>&& component)
 {
     addToBoundary(component->getBounds());
 
-    connections.emplace_back(std::vector<LabwareConnection>(component->getPorts().size(), LabwareConnection(npos, 0, 0)));
+    connections.emplace_back(
+        std::vector<LabwareConnection>(component->getPorts().size(), LabwareConnection(npos, 0, 0)));
     components.emplace_back(std::move(component));
 }
 
@@ -93,7 +94,7 @@ void LabwareSystem::add(PortIdentifier& srcPort, PortIdentifier& destPort)
             }
     }
 
-    const auto translatedComponent                               = srcSize - srcPort.componentIdx - 1 + destSize;
+    const auto translatedComponent = static_cast<l_size>(srcSize - srcPort.componentIdx - 1 + destSize);
     destSys.connections[destPort.componentIdx][destPort.portIdx] = LabwareConnection(
         translatedComponent,
         srcPort.portIdx,
@@ -117,7 +118,8 @@ void LabwareSystem::clearBoundary()
 void LabwareSystem::recomputeBoundary()
 {
     clearBoundary();
-    for (l_size i = 0; i < components.size(); ++i) addToBoundary(components[i]->getBounds());
+    for (l_size i = 0; i < components.size(); ++i)
+        addToBoundary(components[i]->getBounds());
 }
 
 void LabwareSystem::addToBoundary(const sf::FloatRect& box)
@@ -138,7 +140,8 @@ void LabwareSystem::removeFromBoundary(const sf::FloatRect& box)
         return;
 
     clearBoundary();
-    for (l_size i = 0; i < components.size(); ++i) addToBoundary(components[i]->getBounds());
+    for (l_size i = 0; i < components.size(); ++i)
+        addToBoundary(components[i]->getBounds());
 }
 
 bool LabwareSystem::isOnBoundary(const sf::FloatRect& box) const
@@ -151,7 +154,8 @@ bool LabwareSystem::isOnBoundary(const sf::FloatRect& box) const
 
 void LabwareSystem::tick(const Amount<Unit::SECOND> timespan)
 {
-    for (l_size i = 0; i < components.size(); ++i) components[i]->tick(timespan);
+    for (l_size i = 0; i < components.size(); ++i)
+        components[i]->tick(timespan);
 }
 
 void LabwareSystem::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -166,7 +170,8 @@ void LabwareSystem::draw(sf::RenderTarget& target, sf::RenderStates states) cons
     target.draw(bBox, states);*/
 #endif
 
-    for (l_size i = 0; i < components.size(); ++i) target.draw(*components[i], states);
+    for (l_size i = 0; i < components.size(); ++i)
+        target.draw(*components[i], states);
 }
 
 void LabwareSystem::move(const sf::Vector2f& offset)
@@ -174,7 +179,8 @@ void LabwareSystem::move(const sf::Vector2f& offset)
     boundingBox.position.x += offset.x;
     boundingBox.position.y += offset.y;
 
-    for (l_size i = 0; i < components.size(); ++i) components[i]->move(offset);
+    for (l_size i = 0; i < components.size(); ++i)
+        components[i]->move(offset);
 }
 
 void LabwareSystem::recomputePositions(const l_size parent, const uint8_t parentPort)
@@ -238,7 +244,8 @@ bool LabwareSystem::isFree(const l_size componentIdx, const uint8_t portIdx) con
 
 l_size LabwareSystem::findFirst() const { return components.empty() ? npos : 0; }
 
-std::pair<PortIdentifier, float_s> LabwareSystem::findClosestPort(const sf::Vector2f& point, const float_s maxSqDistance)
+std::pair<PortIdentifier, float_s>
+LabwareSystem::findClosestPort(const sf::Vector2f& point, const float_s maxSqDistance)
 {
     auto result = std::make_pair(PortIdentifier(*this, npos, 0), -1.0f);
 
@@ -258,8 +265,8 @@ std::pair<PortIdentifier, float_s> LabwareSystem::findClosestPort(const sf::Vect
         const auto& offset = components[i]->getPosition();
 
         for (uint8_t j = 0; j < ports.size(); ++j) {
-            const float_s dist =
-                utils::squaredDistance(point.x, point.y, ports[j].position.x + offset.x, ports[j].position.y + offset.y);
+            const float_s dist = utils::squaredDistance(
+                point.x, point.y, ports[j].position.x + offset.x, ports[j].position.y + offset.y);
             if (dist <= result.second) {
                 result.second             = dist;
                 result.first.componentIdx = i;
@@ -271,7 +278,8 @@ std::pair<PortIdentifier, float_s> LabwareSystem::findClosestPort(const sf::Vect
     return result;
 }
 
-std::pair<PortIdentifier, PortIdentifier> LabwareSystem::findClosestPort(LabwareSystem& other, const float_s maxSqDistance)
+std::pair<PortIdentifier, PortIdentifier>
+LabwareSystem::findClosestPort(LabwareSystem& other, const float_s maxSqDistance)
 {
     auto result = std::make_pair(PortIdentifier(*this, npos, 0), PortIdentifier(other, npos, 0));
 
@@ -420,10 +428,12 @@ std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
                                                90.0_o;
 
             push.x +=
-                (components[componentIdx]->getPosition().x < components[c.otherComponent]->getPosition().x ? 1.0f : -1.0f) *
+                (components[componentIdx]->getPosition().x < components[c.otherComponent]->getPosition().x ? 1.0f
+                                                                                                           : -1.0f) *
                 std::cos(angle.asStd());
             push.y +=
-                (components[componentIdx]->getPosition().y < components[c.otherComponent]->getPosition().y ? 1.0f : -1.0f) *
+                (components[componentIdx]->getPosition().y < components[c.otherComponent]->getPosition().y ? 1.0f
+                                                                                                           : -1.0f) *
                 std::sin(angle.asStd());
 
             // one of the sub-sections can remain in this
@@ -459,10 +469,12 @@ std::vector<LabwareSystem> LabwareSystem::disconnect(const l_size componentIdx)
                                                90.0_o;
 
             push.x +=
-                (components[componentIdx]->getPosition().x < components[c.otherComponent]->getPosition().x ? 1.0f : -1.0f) *
+                (components[componentIdx]->getPosition().x < components[c.otherComponent]->getPosition().x ? 1.0f
+                                                                                                           : -1.0f) *
                 std::cos(angle.asStd());
             push.y +=
-                (components[componentIdx]->getPosition().y < components[c.otherComponent]->getPosition().y ? 1.0f : -1.0f) *
+                (components[componentIdx]->getPosition().y < components[c.otherComponent]->getPosition().y ? 1.0f
+                                                                                                           : -1.0f) *
                 std::sin(angle.asStd());
             break;
         }

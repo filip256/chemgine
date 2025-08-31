@@ -12,7 +12,8 @@ DrawableComponent::DrawableComponent(const LabwareId id, const LabwareType type)
     sprite.setOrigin(sprite.getGlobalBounds().size / 2.0f);
 
     adjustedPorts.reserve(data.ports.size());
-    for (uint8_t i = 0; i < data.ports.size(); ++i) adjustedPorts.emplace_back(data.ports[i], sprite.getOrigin(), txScale);
+    for (uint8_t i = 0; i < data.ports.size(); ++i)
+        adjustedPorts.emplace_back(data.ports[i], sprite.getOrigin(), txScale);
 }
 
 const DrawableLabwareData& DrawableComponent::getData() const { return static_cast<const DrawableLabwareData&>(data); }
@@ -33,7 +34,8 @@ Amount<Unit::DEGREE> DrawableComponent::getRotation() const { return sprite.getR
 
 void DrawableComponent::setRotation(const Amount<Unit::DEGREE> angle)
 {
-    for (uint8_t i = 0; i < adjustedPorts.size(); ++i) adjustedPorts[i].rotate(angle);
+    for (uint8_t i = 0; i < adjustedPorts.size(); ++i)
+        adjustedPorts[i].rotate(angle);
     sprite.setRotation(sf::degrees(angle.asStd()));
 }
 

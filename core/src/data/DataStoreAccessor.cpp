@@ -9,11 +9,11 @@ const DataStore& DataStoreAccessor::get() const
     return *dataStore;
 }
 
-void DataStoreAccessor::set(const DataStore& dataStore)
+void DataStoreAccessor::set(const DataStore& newStore)
 {
-    if (this->dataStore != nullptr)
+    if (dataStore != nullptr)
         Log(this).warn("Already initialized data store accessor has been modified.");
-    this->dataStore = &dataStore;
+    dataStore = &newStore;
 }
 
 void DataStoreAccessor::unset() { dataStore = nullptr; }

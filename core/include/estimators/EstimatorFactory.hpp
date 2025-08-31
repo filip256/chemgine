@@ -25,7 +25,9 @@ public:
 
     template <Unit OutU, Unit... InUs>
     EstimatorRef<OutU, InUs...> createData(
-        std::vector<DataPoint<OutU, InUs...>>&& dataPoints, const EstimationMode mode, const float_s maxCompressionLoss);
+        std::vector<DataPoint<OutU, InUs...>>&& dataPoints,
+        const EstimationMode                    mode,
+        const float_s                           maxCompressionLoss);
 
     template <Unit OutU, Unit InU>
     EstimatorRef<OutU, InU>
@@ -42,7 +44,8 @@ public:
     EstimatorRef<OutU, InU> createLinearRegression(const float_s paramX, const float_s shift);
 
     template <Unit OutU, Unit InU1, Unit InU2>
-    EstimatorRef<OutU, InU1, InU2> createLinearRegression(const float_s paramX, const float_s paramY, const float_s shift);
+    EstimatorRef<OutU, InU1, InU2>
+    createLinearRegression(const float_s paramX, const float_s paramY, const float_s shift);
 };
 
 template <Unit OutU, Unit... InUs>
@@ -66,33 +69,43 @@ EstimatorRef<OutU, InUs...> EstimatorFactory::createData(
         std::vector<std::pair<float_s, float_s>> points;
         points.reserve(uniquePoints.size());
         std::transform(
-            uniquePoints.begin(), uniquePoints.end(), std::back_inserter(points), [](const DataPoint<OutU, InUs...>& p) {
+            uniquePoints.begin(),
+            uniquePoints.end(),
+            std::back_inserter(points),
+            [](const DataPoint<OutU, InUs...>& p) {
             return std::pair(std::get<0>(p.inputs).asStd(), p.output.asStd());
         });
 
         // Linear 2D
         if (uniquePoints.size() == 2) {
             if (mode == EstimationMode::LINEAR)
-                return repository.add<RegressionEstimator<LinearRegressor2D, OutU, InUs...>>(LinearRegressor2D::fit(points));
+                return repository.add<RegressionEstimator<LinearRegressor2D, OutU, InUs...>>(
+                    LinearRegressor2D::fit(points));
         }
 
         // Spline 2D
-        return repository.add<SplineEstimator<OutU, InUs...>>(Spline<float_s>(std::move(points), maxCompressionLoss), mode);
+        return repository.add<SplineEstimator<OutU, InUs...>>(
+            Spline<float_s>(std::move(points), maxCompressionLoss), mode);
     }
     else if constexpr (inputCount == 2) {
         std::vector<std::tuple<float_s, float_s, float_s>> points;
         points.reserve(uniquePoints.size());
         std::transform(
-            uniquePoints.begin(), uniquePoints.end(), std::back_inserter(points), [](const DataPoint<OutU, InUs...>& p) {
+            uniquePoints.begin(),
+            uniquePoints.end(),
+            std::back_inserter(points),
+            [](const DataPoint<OutU, InUs...>& p) {
             return std::tuple(std::get<0>(p.inputs).asStd(), std::get<1>(p.inputs).asStd(), p.output.asStd());
         });
 
         // Linear 3D
         if (mode == EstimationMode::LINEAR)
-            return repository.add<RegressionEstimator<LinearRegressor3D, OutU, InUs...>>(LinearRegressor3D::fit(points));
+            return repository.add<RegressionEstimator<LinearRegressor3D, OutU, InUs...>>(
+                LinearRegressor3D::fit(points));
     }
+    else
+        static_assert(utils::always_false_v<sizeof...(InUs)>, "Unsupported estimator data type.");
 
-    Log(this).fatal("Unsupported estimator data type.");
     CHG_UNREACHABLE();
 }
 

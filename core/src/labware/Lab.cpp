@@ -15,7 +15,8 @@ void Lab::add(LabwareSystem&& system) { systems.emplace_back(std::move(system));
 void Lab::removeEmptySystems()
 {
     systems.erase(
-        std::remove_if(systems.begin(), systems.end(), [](const LabwareSystem& s) { return s.size() == 0; }), systems.end());
+        std::remove_if(systems.begin(), systems.end(), [](const LabwareSystem& s) { return s.size() == 0; }),
+        systems.end());
 }
 
 size_t Lab::getSystemCount() const { return systems.size(); }
@@ -79,7 +80,8 @@ bool Lab::tryDisconnect(const sf::Vector2f& point)
             continue;
 
         auto newSystems = sys.disconnect(component);
-        for (size_t j = 0; j < newSystems.size(); ++j) add(std::move(newSystems[j]));
+        for (size_t j = 0; j < newSystems.size(); ++j)
+            add(std::move(newSystems[j]));
 
         return true;
     }
@@ -96,7 +98,8 @@ Lab::LabSystemsIterator Lab::getSystemsEnd() { return systems.end(); }
 
 void Lab::tick(const Amount<Unit::SECOND> timespan)
 {
-    for (size_t i = 0; i < systems.size(); ++i) systems[i].tick(timespan);
+    for (size_t i = 0; i < systems.size(); ++i)
+        systems[i].tick(timespan);
     atmosphere->tick(timespan);
 }
 
@@ -106,5 +109,6 @@ void Lab::draw(sf::RenderTarget& target, sf::RenderStates states) const
     atmosphereOverlay.setFillColor(utils::colorCast(atmosphere->getLayerColor()));
     target.draw(atmosphereOverlay, states);
 
-    for (size_t i = 0; i < systems.size(); ++i) target.draw(systems[i], states);
+    for (size_t i = 0; i < systems.size(); ++i)
+        target.draw(systems[i], states);
 }

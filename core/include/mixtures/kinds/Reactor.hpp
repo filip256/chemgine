@@ -56,8 +56,6 @@ public:
 
     void addEnergy(const Amount<Unit::JOULE> energy) override final;
     void add(const Molecule& molecule, const Amount<Unit::MOLE> amount) override;
-    void add(Reactor& other);
-    void add(Reactor& other, const float_s ratio);
 
     FlagField<TickMode> getTickMode() const;
     void                setTickMode(const FlagField<TickMode> mode);

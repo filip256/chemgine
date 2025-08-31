@@ -17,14 +17,19 @@ const Bond* BondedAtomBase::getBondTo(const BondedAtomBase& other) const
     return bondIt != bonds.end() ? &*bondIt : nullptr;
 }
 
-std::unique_ptr<BondedAtomBase> BondedAtomBase::mutate(const Atom& atom) { return create(atom, index, std::move(bonds)); }
-
-std::unique_ptr<BondedAtomBase> BondedAtomBase::create(const Symbol& symbol, const c_size index, std::vector<Bond>&& bonds)
+std::unique_ptr<BondedAtomBase> BondedAtomBase::mutate(const Atom& atom)
 {
-    return Radical::isDefined(symbol) ? static_cast<std::unique_ptr<BondedAtomBase>>(
-                                            std::make_unique<BondedAtom<Radical>>(Radical(symbol), index, std::move(bonds)))
-                                      : static_cast<std::unique_ptr<BondedAtomBase>>(
-                                            std::make_unique<BondedAtom<Atom>>(Atom(symbol), index, std::move(bonds)));
+    return create(atom, index, std::move(bonds));
+}
+
+std::unique_ptr<BondedAtomBase>
+BondedAtomBase::create(const Symbol& symbol, const c_size index, std::vector<Bond>&& bonds)
+{
+    return Radical::isDefined(symbol)
+               ? static_cast<std::unique_ptr<BondedAtomBase>>(
+                     std::make_unique<BondedAtom<Radical>>(Radical(symbol), index, std::move(bonds)))
+               : static_cast<std::unique_ptr<BondedAtomBase>>(
+                     std::make_unique<BondedAtom<Atom>>(Atom(symbol), index, std::move(bonds)));
 }
 
 std::unique_ptr<BondedAtomBase> BondedAtomBase::create(const Atom& atom, const c_size index, std::vector<Bond>&& bonds)

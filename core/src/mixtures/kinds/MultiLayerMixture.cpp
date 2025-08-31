@@ -11,12 +11,14 @@ MultiLayerMixture::MultiLayerMixture(const MultiLayerMixture& other) noexcept :
     maxVolume(other.maxVolume),
     overflowTarget(other.overflowTarget)
 {
-    for (const auto& l : other.layers) this->layers.emplace(std::make_pair(l.first, l.second.makeCopy(*this)));
+    for (const auto& l : other.layers)
+        this->layers.emplace(std::make_pair(l.first, l.second.makeCopy(*this)));
 }
 
 MultiLayerMixture::MultiLayerMixture(
-    const Ref<Atmosphere> atmosphere, const Amount<Unit::LITER> maxVolume, const Ref<ContainerBase> overflowTarget) noexcept
-    :
+    const Ref<Atmosphere>     atmosphere,
+    const Amount<Unit::LITER> maxVolume,
+    const Ref<ContainerBase>  overflowTarget) noexcept :
     pressure(atmosphere->getPressure()),
     maxVolume(maxVolume),
     overflowTarget(overflowTarget)
@@ -331,8 +333,8 @@ void MultiLayerMixture::copyContentTo(
     }
 }
 
-void
-MultiLayerMixture::moveContentTo(Ref<ContainerBase> destination, Amount<Unit::LITER> volume, const LayerType sourceLayer)
+void MultiLayerMixture::moveContentTo(
+    Ref<ContainerBase> destination, Amount<Unit::LITER> volume, const LayerType sourceLayer)
 {
     if (hasLayer(sourceLayer) == false)
         return;

@@ -15,7 +15,8 @@ ReactorUnitTest::ReactorUnitTest(
 {
     this->atmosphere->setOverflowTarget(dump);
     reactor.setTickMode(tickMode);
-    for (const auto& m : content) reactor.add(m.first, m.second);
+    for (const auto& m : content)
+        reactor.add(m.first, m.second);
 }
 
 ReactorUnitTest::ReactorUnitTest(
@@ -243,7 +244,8 @@ bool BoilUnitTest::run()
             const auto dTemp = destination.getTemperature();
             ;
             if (dTemp != pastDestinationTemp) {
-                Log(this).error("Destination layer temperature: {0} changed in phase: {1}.", dTemp.toString(), testPhase);
+                Log(this).error(
+                    "Destination layer temperature: {0} changed in phase: {1}.", dTemp.toString(), testPhase);
                 success = false;
                 break;
             }
@@ -291,7 +293,8 @@ bool BoilUnitTest::run()
             const auto dTemp = destination.getTemperature();
             ;
             if (dTemp != pastDestinationTemp) {
-                Log(this).error("Destination layer temperature: {0} changed in phase: {1}.", dTemp.toString(), testPhase);
+                Log(this).error(
+                    "Destination layer temperature: {0} changed in phase: {1}.", dTemp.toString(), testPhase);
                 success = false;
                 break;
             }
@@ -311,7 +314,8 @@ bool BoilUnitTest::run()
             }
             pastDestinationTemp = dTemp;
             if (const auto sTemp = source.getTemperature(); not sTemp.isInfinity()) {
-                Log(this).error("Source layer temperature: {0} was not infinity in phase {1}.", sTemp.toString(), testPhase);
+                Log(this).error(
+                    "Source layer temperature: {0} was not infinity in phase {1}.", sTemp.toString(), testPhase);
                 success = false;
                 break;
             }
@@ -396,7 +400,8 @@ bool ImplicitForwardingUnitTest::run()
     return true;
 }
 
-MixtureUnitTests::MixtureUnitTests(std::string&& name, const std::regex& filter, const std::string& defModulePath) noexcept :
+MixtureUnitTests::MixtureUnitTests(
+    std::string&& name, const std::regex& filter, const std::string& defModulePath) noexcept :
     UnitTestGroup(std::move(name), filter)
 {
     Accessor<>::setDataStore(dataStore);

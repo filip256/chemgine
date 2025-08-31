@@ -7,7 +7,9 @@ void FileStore::clear() { parseHistory.clear(); }
 ParseStatus FileStore::getFileStatus(const std::string& filePath) const
 {
     const auto it = parseHistory.find(filePath);
-    return it == parseHistory.end() ? ParseStatus::UNTOUCHED : it->second ? ParseStatus::COMPLETED : ParseStatus::STARTED;
+    return it == parseHistory.end() ? ParseStatus::UNTOUCHED
+           : it->second             ? ParseStatus::COMPLETED
+                                    : ParseStatus::STARTED;
 }
 
 void FileStore::setFileStatus(const std::string& filePath, const ParseStatus status)

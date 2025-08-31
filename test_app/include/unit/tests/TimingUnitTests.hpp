@@ -16,7 +16,8 @@ class TimingUnitTest : public UnitTest
 
     public:
         DummyPerfTest(
-            const std::variant<size_t, std::chrono::nanoseconds> limit, const std::chrono::nanoseconds waitTime) noexcept;
+            const std::variant<size_t, std::chrono::nanoseconds> limit,
+            const std::chrono::nanoseconds                       waitTime) noexcept;
 
         std::chrono::nanoseconds getWaitTime() const;
     };

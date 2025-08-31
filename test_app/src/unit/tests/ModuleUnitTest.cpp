@@ -56,8 +56,8 @@ WaterPropertiesUnitTest::WaterPropertiesUnitTest(std::string&& name, const std::
         1.0e-3);
 }
 
-ModuleUnitTest::ModuleUnitTest(const std::string& name, const std::regex& filter, const std::string& defModulePath) noexcept
-    :
+ModuleUnitTest::ModuleUnitTest(
+    const std::string& name, const std::regex& filter, const std::string& defModulePath) noexcept :
     UnitTestGroup(name + '_' + utils::extractFileName(defModulePath), filter)
 {
     Accessor<>::setDataStore(dataStore);

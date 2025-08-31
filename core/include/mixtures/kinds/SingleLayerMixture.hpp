@@ -56,8 +56,8 @@ public:
     Ref<ContainerBase> getOverflowTarget() const override final;
     void               setOverflowTarget(const Ref<ContainerBase> target) override final;
     void               setIncompatibilityTarget(const LayerType layerType, const Ref<ContainerBase> target);
-    void               setIncompatibilityTargets(const FlagField<LayerType> layerTypes, const Ref<ContainerBase> target);
-    void               setAllIncompatibilityTargets(const Ref<ContainerBase> target);
+    void setIncompatibilityTargets(const FlagField<LayerType> layerTypes, const Ref<ContainerBase> target);
+    void setAllIncompatibilityTargets(const Ref<ContainerBase> target);
     Ref<ContainerBase> getIncompatibilityTarget(const LayerType layerType) const;
 
     void add(const Reactant& reactant) override final;
@@ -114,7 +114,8 @@ SingleLayerMixture<L>::SingleLayerMixture(
         if (i != L)
             incompatibilityTargets.emplace(std::make_pair(i, Ref(DumpContainer::GlobalDumpContainer)));
 
-    for (const auto& [m, a] : contentInitializer) add(Reactant(m, L, a, *this));
+    for (const auto& [m, a] : contentInitializer)
+        add(Reactant(m, L, a, *this));
     scaleToVolume(maxVolume);
 }
 
@@ -241,9 +242,11 @@ void SingleLayerMixture<L>::setIncompatibilityTarget(const LayerType layerType, 
 }
 
 template <LayerType L>
-void SingleLayerMixture<L>::setIncompatibilityTargets(const FlagField<LayerType> layerTypes, const Ref<ContainerBase> target)
+void
+SingleLayerMixture<L>::setIncompatibilityTargets(const FlagField<LayerType> layerTypes, const Ref<ContainerBase> target)
 {
-    for (auto l = layerTypes.begin(); l != layerTypes.end(); ++l) setIncompatibilityTarget(*l, target);
+    for (auto l = layerTypes.begin(); l != layerTypes.end(); ++l)
+        setIncompatibilityTarget(*l, target);
 }
 
 template <LayerType L>

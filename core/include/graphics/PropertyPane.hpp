@@ -21,8 +21,8 @@ class MixturePropertyPane : public sf::Drawable
 
         const sf::Vector2f& getPosition() const;
 
-        void setSubject(const Layer& subject);
-        void setPosition(const sf::Vector2f& position);
+        void setSubject(const Layer& newSubject);
+        void setPosition(const sf::Vector2f& newPosition);
 
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;
     };
@@ -39,8 +39,8 @@ class MixturePropertyPane : public sf::Drawable
 
         const sf::Vector2f& getPosition() const;
 
-        void setSubject(const Layer& subject);
-        void setPosition(const sf::Vector2f& position);
+        void setSubject(const Layer& newSubject);
+        void setPosition(const sf::Vector2f& newPosition);
 
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;
     };
@@ -57,8 +57,8 @@ private:
 public:
     MixturePropertyPane(const sf::Font& font) noexcept;
 
-    void setSubject(const LabwareComponentBase& subject);
-    void setPosition(const sf::Vector2f& position);
+    void setSubject(const LabwareComponentBase& newSubject);
+    void setPosition(const sf::Vector2f& newPosition);
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;
 };

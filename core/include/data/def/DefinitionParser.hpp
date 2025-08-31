@@ -82,7 +82,10 @@ public:
         if (const auto illegalIdx = idStr.find_first_of(" .~;:'\"<>(){}~`!@#$%^&*()-+[]{}|?,/\\");
             illegalIdx != std::string::npos) {
             log.error(
-                "Identifier: '{0}' contains illegal symbol: '{1}', at: {2}.", idStr, idStr[illegalIdx], location.toString());
+                "Identifier: '{0}' contains illegal symbol: '{1}', at: {2}.",
+                idStr,
+                idStr[illegalIdx],
+                location.toString());
             return std::nullopt;
         }
 
@@ -100,9 +103,9 @@ public:
             return std::nullopt;
         }
 
-        const auto                                          props = utils::split(propertiesStr, ',', "{[(", "}])", true);
-        std::unordered_map<std::string, std::string>        properties;
-        std::unordered_map<std::string, def::Object>        ilSubDefs;
+        const auto                                   props = utils::split(propertiesStr, ',', "{[(", "}])", true);
+        std::unordered_map<std::string, std::string> properties;
+        std::unordered_map<std::string, def::Object> ilSubDefs;
         std::unordered_map<std::string, const def::Object*> oolSubDefs;
 
         for (size_t i = 0; i < props.size(); ++i) {

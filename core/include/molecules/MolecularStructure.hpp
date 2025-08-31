@@ -250,7 +250,10 @@ template <>
 class def::Parser<MolecularStructure>
 {
 public:
-    static std::optional<MolecularStructure> parse(const std::string& str) { return MolecularStructure::fromSMILES(str); }
+    static std::optional<MolecularStructure> parse(const std::string& str)
+    {
+        return MolecularStructure::fromSMILES(str);
+    }
 };
 
 template <>

@@ -27,8 +27,9 @@ TimingUnitTest::TimingUnitTest(
     UnitTest(
         name +
         '_' +
-        (std::holds_alternative<size_t>(limit) ? std::to_string(std::get<size_t>(limit))
-                                               : std::to_string(std::get<std::chrono::nanoseconds>(limit).count()) + "ns") +
+        (std::holds_alternative<size_t>(limit)
+             ? std::to_string(std::get<size_t>(limit))
+             : std::to_string(std::get<std::chrono::nanoseconds>(limit).count()) + "ns") +
         '_' +
         std::to_string(waitTime.count()) +
         "ns"),
@@ -47,7 +48,9 @@ bool TimingUnitTest::run()
     const auto error = (static_cast<float_h>(minAbsDiff) / ref) * 100.0;
     if (error > threshold) {
         Log(this).error(
-            "Error: {0}% exceeded the test threshold: {1}%.", std::format("{:f}", error), std::format("{:f}", threshold));
+            "Error: {0}% exceeded the test threshold: {1}%.",
+            std::format("{:f}", error),
+            std::format("{:f}", threshold));
         return false;
     }
 

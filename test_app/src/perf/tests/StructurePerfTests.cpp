@@ -5,7 +5,8 @@
 //
 
 StructureSMILESPerfTest::StructureSMILESPerfTest(
-    const std::string& name, const std::variant<size_t, std::chrono::nanoseconds> limit, std::string&& smiles) noexcept :
+    const std::string& name, const std::variant<size_t, std::chrono::nanoseconds> limit, std::string&& smiles) noexcept
+    :
     TimedTest(name + '_' + smiles, limit),
     smiles(std::move(smiles))
 {}
@@ -60,7 +61,10 @@ void StructureAtomMapPerfTest::task() { dontOptimize = static_cast<bool>(target.
 // StructureMaximalAtomMapPerfTest
 //
 
-void StructureMaximalAtomMapPerfTest::task() { dontOptimize = static_cast<bool>(target.maximalMapTo(pattern).first.size()); }
+void StructureMaximalAtomMapPerfTest::task()
+{
+    dontOptimize = static_cast<bool>(target.maximalMapTo(pattern).first.size());
+}
 
 //
 // StructureSubstitutionPerfTest
@@ -106,8 +110,9 @@ void ASCIIPrintTest::task() { dontOptimize = static_cast<bool>(target.toASCII().
 //
 
 ASCIIParseTest::ASCIIParseTest(
-    const std::string& name, const std::variant<size_t, std::chrono::nanoseconds> limit, const std::string& smiles) noexcept
-    :
+    const std::string&                                   name,
+    const std::variant<size_t, std::chrono::nanoseconds> limit,
+    const std::string&                                   smiles) noexcept :
     TimedTest(name + '_' + smiles, limit),
     ascii(generateASCII(smiles))
 {}
@@ -139,12 +144,15 @@ StructurePerfTests::StructurePerfTests(
 
     registerTest<PerfTestSetup<AccessorTestSetup>>("setup", dataStore);
 
-    registerTest<StructureSMILESPerfTest>("SMILES", std::chrono::seconds(8), "C(C)C(CC(C(C)C(C(C)C)(C(C)C))(C(C)C)C)CC");
+    registerTest<StructureSMILESPerfTest>(
+        "SMILES", std::chrono::seconds(8), "C(C)C(CC(C(C)C(C(C)C)(C(C)C))(C(C)C)C)CC");
     registerTest<StructureSMILESPerfTest>(
         "SMILES", std::chrono::seconds(8), "CCNC14CC(CC=C1C2=C(OC)C=CC3=C2C(=C[N]3)C4)C(=O)N(C)C");
     registerTest<StructureSMILESPerfTest>("SMILES", std::chrono::seconds(8), "S(-O)(-O)(-O)(OCC)(OCCC(N(C)C)=O)C#N");
     registerTest<StructureSMILESPerfTest>(
-        "SMILES", std::chrono::seconds(8), "C3=CC27CC18C=CC16C=C%10CCC%12C%11C=C5C=C4C(C=C2C3)C49C5=C(C6C789)C%10%11%12");
+        "SMILES",
+        std::chrono::seconds(8),
+        "C3=CC27CC18C=CC16C=C%10CCC%12C%11C=C5C=C4C(C=C2C3)C49C5=C(C6C789)C%10%11%12");
 
     registerTest<StructureEqualityPerfTest>(
         "equality_true",
@@ -152,7 +160,10 @@ StructurePerfTests::StructurePerfTests(
         "C(C)C(CC(C(C)C(C(C)C)(C(C)C))(C(C)C)C)CCC(C(CCCC)(CC(C(C)CC)CC)C)CC",
         "C(C)C(CC(C(C)C(C(C)C)(C(C)C))(C(C)C)C)CCC(C(CCCC)(CC(C(C)CC)CC)C)CC");
     registerTest<StructureEqualityPerfTest>(
-        "equality_true", std::chrono::seconds(5), "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67", "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67");
+        "equality_true",
+        std::chrono::seconds(5),
+        "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67",
+        "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67");
     registerTest<StructureEqualityPerfTest>(
         "equality_true",
         std::chrono::seconds(5),
@@ -199,7 +210,10 @@ StructurePerfTests::StructurePerfTests(
         "C(C)C(CC(C(C)C(C(C)C)(C(C)C))(C(C)C)C)CC",
         "C(C)C(CC(C(C)C(C(C)C)(C(C)C))(C(C)C)C)CC");
     registerTest<StructureMaximalAtomMapPerfTest>(
-        "maximal_map", std::chrono::seconds(10), "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67", "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67");
+        "maximal_map",
+        std::chrono::seconds(10),
+        "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67",
+        "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67");
     registerTest<StructureMaximalAtomMapPerfTest>(
         "maximal_map",
         std::chrono::seconds(10),
@@ -224,10 +238,14 @@ StructurePerfTests::StructurePerfTests(
     registerTest<StructureMinimalCyclePerfTest>(
         "minimal_cycle", std::chrono::seconds(10), "C2CC1CC3C1C7C2CCC6CC4CC5CC3C45C67");
 
-    registerTest<ASCIIPrintTest>("ascii_print", std::chrono::seconds(30), "CCN(CC)C(=O)C1CN(C2CC3=CNC4=CC=CC(=C34)C2=C1)C");
-    registerTest<ASCIIPrintTest>("ascii_print", std::chrono::seconds(30), "CC(=O)OC1=C2OC4C(O)C=CC3C5CC(C=C1)=C2C34CCN5C");
-    registerTest<ASCIIParseTest>("ascii_parse", std::chrono::seconds(10), "CCN(CC)C(=O)C1CN(C2CC3=CNC4=CC=CC(=C34)C2=C1)C");
-    registerTest<ASCIIParseTest>("ascii_parse", std::chrono::seconds(10), "CC(=O)OC1=C2OC4C(O)C=CC3C5CC(C=C1)=C2C34CCN5C");
+    registerTest<ASCIIPrintTest>(
+        "ascii_print", std::chrono::seconds(30), "CCN(CC)C(=O)C1CN(C2CC3=CNC4=CC=CC(=C34)C2=C1)C");
+    registerTest<ASCIIPrintTest>(
+        "ascii_print", std::chrono::seconds(30), "CC(=O)OC1=C2OC4C(O)C=CC3C5CC(C=C1)=C2C34CCN5C");
+    registerTest<ASCIIParseTest>(
+        "ascii_parse", std::chrono::seconds(10), "CCN(CC)C(=O)C1CN(C2CC3=CNC4=CC=CC(=C34)C2=C1)C");
+    registerTest<ASCIIParseTest>(
+        "ascii_parse", std::chrono::seconds(10), "CC(=O)OC1=C2OC4C(O)C=CC3C5CC(C=C1)=C2C34CCN5C");
 
     registerTest<PerfTestSetup<AccessorTestCleanup>>("cleanup");
     Accessor<>::unsetDataStore();

@@ -13,7 +13,9 @@ public:
     sf::Vector2f               position;
 
     DrawablePort(
-        const LabwarePort& port, const sf::Vector2f& origin = sf::Vector2f(0.0f, 0.0f), const float_s scale = 1.0f) noexcept;
+        const LabwarePort&  port,
+        const sf::Vector2f& origin = sf::Vector2f(0.0f, 0.0f),
+        const float_s scale        = 1.0f) noexcept;
 
-    void rotate(const Amount<Unit::DEGREE> angle);
+    void rotate(const Amount<Unit::DEGREE> newAngle);
 };

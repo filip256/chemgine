@@ -16,18 +16,18 @@ MixturePropertyPane::LayerPropertyPane::LayerPropertyPane(const sf::Font& font) 
 
 const sf::Vector2f& MixturePropertyPane::LayerPropertyPane::getPosition() const { return position; }
 
-void MixturePropertyPane::LayerPropertyPane::setSubject(const Layer& subject)
+void MixturePropertyPane::LayerPropertyPane::setSubject(const Layer& newSubject)
 {
-    this->subject = subject;
-    title.setString(utils::capitalize(getLayerName(subject.getType())) + " Layer:");
+    subject = newSubject;
+    title.setString(utils::capitalize(getLayerName(newSubject.getType())) + " Layer:");
 }
 
-void MixturePropertyPane::LayerPropertyPane::setPosition(const sf::Vector2f& position)
+void MixturePropertyPane::LayerPropertyPane::setPosition(const sf::Vector2f& newPosition)
 {
-    this->position = position;
-    title.setPosition(position);
-    propertyName.setPosition(sf::Vector2f(position.x, position.y + 20.0f));
-    propertyValue.setPosition(sf::Vector2f(position.x + 110.0f, position.y + 20.0f));
+    position = newPosition;
+    title.setPosition(newPosition);
+    propertyName.setPosition(newPosition + sf::Vector2f(0.0f, 20.0f));
+    propertyValue.setPosition(newPosition + sf::Vector2f(110.0f, 20.0f));
 }
 
 void MixturePropertyPane::LayerPropertyPane::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -80,13 +80,13 @@ MixturePropertyPane::ContentPropertyPane::ContentPropertyPane(const sf::Font& fo
 
 const sf::Vector2f& MixturePropertyPane::ContentPropertyPane::getPosition() const { return position; }
 
-void MixturePropertyPane::ContentPropertyPane::setSubject(const Layer& subject) { this->subject = subject; }
+void MixturePropertyPane::ContentPropertyPane::setSubject(const Layer& newSubject) { subject = newSubject; }
 
-void MixturePropertyPane::ContentPropertyPane::setPosition(const sf::Vector2f& position)
+void MixturePropertyPane::ContentPropertyPane::setPosition(const sf::Vector2f& newPosition)
 {
-    this->position = position;
-    propertyName.setPosition(sf::Vector2f(position.x, position.y));
-    propertyValue.setPosition(sf::Vector2f(position.x + 140.0f, position.y));
+    position = newPosition;
+    propertyName.setPosition(newPosition);
+    propertyValue.setPosition(newPosition + sf::Vector2f(140.0f, 0.0f));
 }
 
 void MixturePropertyPane::ContentPropertyPane::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -115,24 +115,24 @@ MixturePropertyPane::MixturePropertyPane(const sf::Font& font) noexcept :
     propertyValue.setStyle(sf::Text::Bold);
 }
 
-void MixturePropertyPane::setSubject(const LabwareComponentBase& subject)
+void MixturePropertyPane::setSubject(const LabwareComponentBase& newSubject)
 {
-    this->subject = subject;
-    setPosition(subject.getPosition());
+    subject = newSubject;
+    setPosition(newSubject.getPosition());
 
 #ifndef NDEBUG
-    title.setString(subject.getData().name + " <" + utils::toHex(&subject) + '>');
+    title.setString(newSubject.getData().name + " <" + utils::toHex(&newSubject) + '>');
 #else
-    title.setString(subject.getData().name);
+    title.setString(newSubject.getData().name);
 #endif
 }
 
-void MixturePropertyPane::setPosition(const sf::Vector2f& position)
+void MixturePropertyPane::setPosition(const sf::Vector2f& newPosition)
 {
-    this->position = position;
-    title.setPosition(position);
-    propertyName.setPosition(sf::Vector2f(position.x, position.y + 20.0f));
-    propertyValue.setPosition(sf::Vector2f(position.x + 110.0f, position.y + 20.0f));
+    position = newPosition;
+    title.setPosition(newPosition);
+    propertyName.setPosition(newPosition + sf::Vector2f(0.0f, 20.0f));
+    propertyValue.setPosition(newPosition + sf::Vector2f(110.0f, 20.0f));
 }
 
 void MixturePropertyPane::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -170,14 +170,14 @@ void MixturePropertyPane::draw(sf::RenderTarget& target, sf::RenderStates states
     target.draw(propertyName, states);
     target.draw(propertyValue, states);
 
-    if (const auto contentCast = Ref(container).cast<const MultiLayerMixture>()) {
+    if (const auto multiLayerMixture = Ref(container).cast<const MultiLayerMixture>()) {
         propertyName.move(sf::Vector2f(0.0f, 20.0f));
         propertyName.setString("Layers:");
         target.draw(propertyName, states);
 
         layerPane.setPosition(propertyName.getPosition() + sf::Vector2f(22.0f, 32.0f));
         contentPane.setPosition(propertyName.getPosition() + sf::Vector2f(240.0f, 32.0f));
-        for (auto l = contentCast->getLayersDownBegin(); l != contentCast->getLayersDownEnd(); ++l) {
+        for (auto l = multiLayerMixture->getLayersDownBegin(); l != multiLayerMixture->getLayersDownEnd(); ++l) {
             layerPane.setSubject(l->second);
             contentPane.setSubject(l->second);
             target.draw(layerPane, states);
@@ -186,12 +186,12 @@ void MixturePropertyPane::draw(sf::RenderTarget& target, sf::RenderStates states
             contentPane.setPosition(contentPane.getPosition() + sf::Vector2f(0.0f, 130.0f));
         }
     }
-    else if (const auto contentCast = Ref(container).cast<const Atmosphere>()) {
+    else if (const auto atmosphere = Ref(container).cast<const Atmosphere>()) {
         layerPane.setPosition(propertyName.getPosition() + sf::Vector2f(22.0f, 32.0f));
         contentPane.setPosition(propertyName.getPosition() + sf::Vector2f(240.0f, 32.0f));
 
-        layerPane.setSubject(contentCast->getLayer());
-        contentPane.setSubject(contentCast->getLayer());
+        layerPane.setSubject(atmosphere->getLayer());
+        contentPane.setSubject(atmosphere->getLayer());
         target.draw(layerPane, states);
         target.draw(contentPane, states);
     }

@@ -3,7 +3,8 @@
 #include "data/values/Constants.hpp"
 #include "mixtures/kinds/Mixture.hpp"
 
-Layer::Layer(const Ref<Mixture> container, const LayerType layerType, const Amount<Unit::CELSIUS> temperature) noexcept :
+Layer::Layer(const Ref<Mixture> container, const LayerType layerType, const Amount<Unit::CELSIUS> temperature) noexcept
+    :
     layerType(layerType),
     temperature(temperature),
     container(container)

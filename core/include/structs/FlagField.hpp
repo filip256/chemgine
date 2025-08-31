@@ -80,7 +80,8 @@ FlagIterator<EnumT>::FlagIterator(const StorageT field, const uint8_t idx) noexc
 template <typename EnumT>
 void FlagIterator<EnumT>::findNext()
 {
-    while ((field & (1 << idx)) == 0 && idx < sizeof(StorageT) * 8) ++idx;
+    while ((field & (1 << idx)) == 0 && idx < sizeof(StorageT) * 8)
+        ++idx;
 }
 
 template <typename EnumT>

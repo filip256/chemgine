@@ -14,7 +14,8 @@ Estimator2DUnitTestBase::generateData(const float_s minX, const float_s maxX, co
     data.reserve(size);
 
     const float_s step = (maxX - minX) / (size - 1);
-    for (float_s x = minX; x < maxX; x += step) data.emplace_back(generator(x), x);
+    for (float_s x = minX; x < maxX; x += step)
+        data.emplace_back(generator(x), x);
 
     data.emplace_back(generator(maxX), maxX);
     return data;
@@ -92,7 +93,8 @@ std::vector<DataPoint<Unit::ANY, Unit::ANY, Unit::ANY>> Estimator3DUnitTestBase:
     const float_s step1 = (maxX1 - minX1) / (size - 1);
     const float_s step2 = (maxX2 - minX2) / (size - 1);
     for (float_s x1 = minX1; x1 < maxX1; x1 += step1)
-        for (float_s x2 = minX2; x2 < maxX2; x2 += step2) data.emplace_back(generator(x1, x2), x1, x2);
+        for (float_s x2 = minX2; x2 < maxX2; x2 += step2)
+            data.emplace_back(generator(x1, x2), x1, x2);
 
     data.emplace_back(generator(maxX1, maxX2), maxX1, maxX2);
     return data;
@@ -170,7 +172,7 @@ bool DataEstimator3DUnitTest::run()
 EstimatorUnitTests::EstimatorUnitTests(std::string&& name, const std::regex& filter) noexcept :
     UnitTestGroup(std::move(name), filter)
 {
-    registerTest<DataEstimator2DUnitTest>("const_2D", [](const float_s x) -> float_s {
+    registerTest<DataEstimator2DUnitTest>("const_2D", [](const float_s) -> float_s {
         return 7.0f;
     }, EstimationMode::LINEAR, 0.0f, 1'000, -100.0f, 100.0f, 0.0);
     registerTest<DataEstimator2DUnitTest>("linear_steep_2D", [](const float_s x) -> float_s {
@@ -213,7 +215,7 @@ EstimatorUnitTests::EstimatorUnitTests(std::string&& name, const std::regex& fil
         return std::sin(x * x * x);
     }, EstimationMode::LINEAR, 0.0f, 100, 2.0f, 20.0f, 1e+00);
 
-    registerTest<DataEstimator3DUnitTest>("const_3D", [](const float_s x1, const float_s x2) -> float_s {
+    registerTest<DataEstimator3DUnitTest>("const_3D", [](const float_s, const float_s) -> float_s {
         return 2.0f;
     }, EstimationMode::LINEAR, 0.0f, 100, -100.0f, 100.0f, -100.0f, 100.0f, 0.0);
     registerTest<DataEstimator3DUnitTest>("linear_3D", [](const float_s x1, const float_s x2) -> float_s {

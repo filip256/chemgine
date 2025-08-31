@@ -98,8 +98,10 @@ DoubleEnded<T>::DoubleEnded(const DoubleEnded& other, CopyFn makeCopy) noexcept
 {
     this->forward.reserve(other.forward.size());
     this->backward.reserve(other.backward.size());
-    for (ConstElemRefT elem : other.forward) this->forward.emplace_back(makeCopy(elem));
-    for (ConstElemRefT elem : other.backward) this->backward.emplace_back(makeCopy(elem));
+    for (ConstElemRefT elem : other.forward)
+        this->forward.emplace_back(makeCopy(elem));
+    for (ConstElemRefT elem : other.backward)
+        this->backward.emplace_back(makeCopy(elem));
 }
 
 template <typename T>
@@ -420,14 +422,16 @@ T DoubleEnded<T>::combine() const
 template <typename T>
 void DoubleEnded<T>::dump(T& output, const IndexT beginIdx, const IndexT endIdx) const
 {
-    for (auto i = beginIdx; i < endIdx; ++i) output.push_back((*this)[i]);
+    for (auto i = beginIdx; i < endIdx; ++i)
+        output.push_back((*this)[i]);
 }
 
 template <typename T>
 void DoubleEnded<T>::dump(std::ostream& os, const IndexT beginIdx, const IndexT endIdx) const
 {
     if constexpr (utils::is_streamable_v<ElemT>) {
-        for (auto i = beginIdx; i < endIdx; ++i) os << (*this)[i];
+        for (auto i = beginIdx; i < endIdx; ++i)
+            os << (*this)[i];
     }
     else if constexpr (utils::is_streamable_v<T>) {
         T temp;
@@ -443,8 +447,10 @@ template <typename T>
 std::ostream& operator<<(std::ostream& os, const DoubleEnded<T>& obj)
 {
     if constexpr (utils::is_streamable_v<typename DoubleEnded<T>::ElemT>) {
-        for (size_t i = obj.backward.size(); i-- > 0;) os << obj.backward[i];
-        for (size_t i = 0; i < obj.forward.size(); ++i) os << obj.forward[i];
+        for (size_t i = obj.backward.size(); i-- > 0;)
+            os << obj.backward[i];
+        for (size_t i = 0; i < obj.forward.size(); ++i)
+            os << obj.forward[i];
     }
     else if constexpr (utils::is_streamable_v<T>)
         os << obj.combine();

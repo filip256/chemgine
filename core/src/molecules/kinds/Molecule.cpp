@@ -39,7 +39,8 @@ Amount<Unit::CELSIUS> Molecule::getBoilingPointAt(const Amount<Unit::TORR> press
     return data.boilingPointEstimator->get(pressure);
 }
 
-AggregationType Molecule::getAggregationAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
+AggregationType
+Molecule::getAggregationAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const
 {
     return temperature > getBoilingPointAt(pressure)   ? AggregationType::GAS
            : temperature > getMeltingPointAt(pressure) ? AggregationType::LIQUID
@@ -61,9 +62,10 @@ Molecule::getDensityAt(const Amount<Unit::CELSIUS> temperature, const Amount<Uni
 }
 
 Amount<Unit::JOULE_PER_MOLE_CELSIUS> Molecule::getHeatCapacityAt(
-    const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure, const AggregationType aggregation) const
+    const Amount<Unit::CELSIUS>, const Amount<Unit::TORR> pressure, const AggregationType aggregation) const
 {
-    return aggregation == AggregationType::GAS ? Formulas::isobaricHeatCapacity(data.getStructure().getDegreesOfFreedom())
+    return aggregation == AggregationType::GAS
+               ? Formulas::isobaricHeatCapacity(data.getStructure().getDegreesOfFreedom())
            : aggregation == AggregationType::LIQUID ? data.liquidHeatCapacityEstimator->get(pressure)
                                                     : data.solidHeatCapacityEstimator->get(pressure);
 }

@@ -36,12 +36,14 @@ bool SystemMatrix<T>::toREF()
             return false;
         }
 
-        for (size_t j = i; j < cols; ++j) matrix[i][j] /= pivot;
+        for (size_t j = i; j < cols; ++j)
+            matrix[i][j] /= pivot;
 
         // Eliminate non-zero elements below the pivot
         for (size_t k = i + 1; k < rows; ++k) {
             const auto factor = matrix[k][i];
-            for (size_t j = i; j < cols; ++j) matrix[k][j] -= factor * matrix[i][j];
+            for (size_t j = i; j < cols; ++j)
+                matrix[k][j] -= factor * matrix[i][j];
         }
     }
 
@@ -63,7 +65,8 @@ bool SystemMatrix<T>::toREF()
     if (std::abs(pivot) < 1e-10)
         return false;
 
-    for (size_t j = rows - 1; j < cols; ++j) matrix.back()[j] /= pivot;
+    for (size_t j = rows - 1; j < cols; ++j)
+        matrix.back()[j] /= pivot;
 
     return true;
 }
@@ -98,7 +101,8 @@ bool SystemMatrix<T>::trySolution(const std::vector<T>& solution) const
 {
     for (size_t i = 0; i < matrix.size(); ++i) {
         T temp = 0;
-        for (size_t j = 0; j < matrix[i].size() - 1; ++j) temp += matrix[i][j] * solution[j];
+        for (size_t j = 0; j < matrix[i].size() - 1; ++j)
+            temp += matrix[i][j] * solution[j];
 
         if (not utils::floatEqual(temp, matrix[i].back(), static_cast<T>(1e-10)))
             return false;
@@ -117,7 +121,8 @@ std::vector<T> SystemMatrix<T>::solve()
 
     for (size_t i = n; i-- > 0;) {
         result[i] = matrix[i][n];
-        for (size_t j = i + 1; j < n; ++j) result[i] -= matrix[i][j] * result[j];
+        for (size_t j = i + 1; j < n; ++j)
+            result[i] -= matrix[i][j] * result[j];
         result[i] /= matrix[i][i];
     }
 

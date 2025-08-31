@@ -57,7 +57,6 @@ Direction Direction::turn(const Angle angle, const bool parallelIsBackward) cons
             return parallelIsBackward ? 4 : 0;
         default:
             Log(this).fatal("Got unknown angle.");
-            return 0xFF;
         }
     }(angle, parallelIsBackward);
 

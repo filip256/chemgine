@@ -13,7 +13,7 @@ target_include_directories(core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 # ~ Compiler options ~
 if(MSVC)
     target_compile_options(core PUBLIC
-        /W3     # Warning Level  TODO: Upgrade to /W4
+        /W4     # Warning Level
         /WX     # Treat warnings as errors
         /utf-8
     )
@@ -110,18 +110,18 @@ FetchContent_MakeAvailable(cxxopts)
 target_link_libraries(core PUBLIC cxxopts)
 
 ## fmt
-message(STATUS "Fetching fmt v${FMT_VERSION} from ${FMT_REPOSITORY}")
-FetchContent_Declare(fmt
-    GIT_REPOSITORY ${FMT_REPOSITORY}
-    GIT_TAG ${FMT_VERSION}
-    GIT_SHALLOW ON
-    GIT_PROGRESS TRUE
-    EXCLUDE_FROM_ALL
-    SYSTEM
-)
-FetchContent_MakeAvailable(fmt)
+# message(STATUS "Fetching fmt v${FMT_VERSION} from ${FMT_REPOSITORY}")
+# FetchContent_Declare(fmt
+#     GIT_REPOSITORY ${FMT_REPOSITORY}
+#     GIT_TAG ${FMT_VERSION}
+#     GIT_SHALLOW ON
+#     GIT_PROGRESS TRUE
+#     EXCLUDE_FROM_ALL
+#     SYSTEM
+# )
+# FetchContent_MakeAvailable(fmt)
 
-target_link_libraries(core PUBLIC fmt::fmt)
+# target_link_libraries(core PUBLIC fmt::fmt)
 
 ## SFML
 message(STATUS "Fetching SFML v${SFML_VERSION} from ${SFML_REPOSITORY}")

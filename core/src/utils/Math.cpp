@@ -17,10 +17,12 @@ constexpr uint32_t utils::gcd(uint32_t a, uint32_t b)
         ++k;
     }
 
-    while ((a & 1) == 0) a >>= 1;
+    while ((a & 1) == 0)
+        a >>= 1;
 
     do {
-        while ((b & 1) == 0) b >>= 1;
+        while ((b & 1) == 0)
+            b >>= 1;
 
         if (a > b)
             std::swap(a, b);
@@ -33,7 +35,10 @@ constexpr uint32_t utils::gcd(uint32_t a, uint32_t b)
 
 constexpr uint32_t utils::lcm(uint32_t a, uint32_t b) { return a / gcd(a, b) * b; }
 
-bool utils::isInteger(const float_s v, const float_s precision) { return std::abs(v - static_cast<int>(v)) < precision; }
+bool utils::isInteger(const float_s v, const float_s precision)
+{
+    return std::abs(v - static_cast<int>(v)) < precision;
+}
 
 uint32_t utils::integerCoefficient(float_s v)
 {
@@ -82,7 +87,12 @@ uint64_t utils::combinations(const uint64_t n, uint64_t k)
 }
 
 float_s utils::squaredDistance(
-    const float_s pX, const float_s pY, const float_s rLeft, const float_s rTop, const float_s rRight, const float_s rBottom)
+    const float_s pX,
+    const float_s pY,
+    const float_s rLeft,
+    const float_s rTop,
+    const float_s rRight,
+    const float_s rBottom)
 {
     const float_s dx = std::max(std::max(rLeft - pX, pX - rRight), 0.0f);
     const float_s dy = std::max(std::max(rTop - pY, pY - rBottom), 0.0f);

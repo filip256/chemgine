@@ -151,7 +151,8 @@ SizedTextureMask createBitmask(const std::string& filename)
 
     TextureMask mask(img.getSize().y * img.getSize().x);
     for (uint32_t y = 0; y < img.getSize().y; ++y) {
-        for (uint32_t x = 0; x < img.getSize().x; ++x) mask[x + y * img.getSize().x] = img.getPixel(sf::Vector2u(x, y)).a;
+        for (uint32_t x = 0; x < img.getSize().x; ++x)
+            mask[x + y * img.getSize().x] = img.getPixel(sf::Vector2u(x, y)).a;
     }
     return std::make_pair(mask, img.getSize());
 }

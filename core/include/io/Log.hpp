@@ -215,14 +215,14 @@ void LogBase::fatal(const LogFormat& format, Args&&... args) const
 
 #ifndef NDEBUG
     chg::fatal("Chemgine encountered a fatal error.");
-#endif
-
+#else
     [[maybe_unused]] const auto ignored = getchar();
     std::exit(EXIT_FAILURE);
+#endif
 }
 
 template <class... Args>
-void LogBase::error(const LogFormat& format, Args&&... args) const
+void LogBase::error([[maybe_unused]] const LogFormat& format, [[maybe_unused]] Args&&... args) const
 {
 #ifdef CHG_LOG_ERROR
     log(std::move(format), LogType::ERROR, std::forward<Args>(args)...);
@@ -230,7 +230,7 @@ void LogBase::error(const LogFormat& format, Args&&... args) const
 }
 
 template <class... Args>
-void LogBase::warn(const LogFormat& format, Args&&... args) const
+void LogBase::warn([[maybe_unused]] const LogFormat& format, [[maybe_unused]] Args&&... args) const
 {
 #ifdef CHG_LOG_WARN
     log(std::move(format), LogType::WARN, std::forward<Args>(args)...);
@@ -238,7 +238,7 @@ void LogBase::warn(const LogFormat& format, Args&&... args) const
 }
 
 template <class... Args>
-void LogBase::success(const LogFormat& format, Args&&... args) const
+void LogBase::success([[maybe_unused]] const LogFormat& format, [[maybe_unused]] Args&&... args) const
 {
 #ifdef CHG_LOG_SUCCESS
     log(std::move(format), LogType::SUCCESS, std::forward<Args>(args)...);
@@ -246,7 +246,7 @@ void LogBase::success(const LogFormat& format, Args&&... args) const
 }
 
 template <class... Args>
-void LogBase::info(const LogFormat& format, Args&&... args) const
+void LogBase::info([[maybe_unused]] const LogFormat& format, [[maybe_unused]] Args&&... args) const
 {
 #ifdef CHG_LOG_INFO
     log(std::move(format), LogType::INFO, std::forward<Args>(args)...);
@@ -254,7 +254,7 @@ void LogBase::info(const LogFormat& format, Args&&... args) const
 }
 
 template <class... Args>
-void LogBase::debug(const LogFormat& format, Args&&... args) const
+void LogBase::debug([[maybe_unused]] const LogFormat& format, [[maybe_unused]] Args&&... args) const
 {
 #ifdef CHG_LOG_DEBUG
     log(std::move(format), LogType::DEBUG, std::forward<Args>(args)...);
@@ -262,7 +262,7 @@ void LogBase::debug(const LogFormat& format, Args&&... args) const
 }
 
 template <class... Args>
-void LogBase::trace(const LogFormat& format, Args&&... args) const
+void LogBase::trace([[maybe_unused]] const LogFormat& format, [[maybe_unused]] Args&&... args) const
 {
 #ifdef CHG_LOG_TRACE
     log(std::move(format), LogType::TRACE, std::forward<Args>(args)...);

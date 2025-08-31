@@ -106,8 +106,10 @@ bool StructureSMILESUnitTest::run()
 //
 
 StructureEqualityUnitTest::StructureEqualityUnitTest(
-    const std::string& name, const std::string& targetSmiles, const std::string& patternSmiles, const bool expected) noexcept
-    :
+    const std::string& name,
+    const std::string& targetSmiles,
+    const std::string& patternSmiles,
+    const bool         expected) noexcept :
     UnitTest(name + '_' + targetSmiles + '_' + patternSmiles),
     expected(expected),
     target(targetSmiles),
@@ -137,8 +139,10 @@ bool StructureEqualityUnitTest::run()
 //
 
 StructureAtomMapUnitTest::StructureAtomMapUnitTest(
-    const std::string& name, const std::string& targetSmiles, const std::string& patternSmiles, const bool expected) noexcept
-    :
+    const std::string& name,
+    const std::string& targetSmiles,
+    const std::string& patternSmiles,
+    const bool         expected) noexcept :
     UnitTest(name + '_' + targetSmiles + '_' + patternSmiles),
     expected(expected),
     target(targetSmiles),
@@ -240,7 +244,8 @@ bool FundamentalCycleUnitTest::run()
     atomSet.reserve(cycles.size());
 
     for (const auto& cycle : cycles)
-        for (const auto atom : cycle) atomSet.emplace(atom->index);
+        for (const auto atom : cycle)
+            atomSet.emplace(atom->index);
 
     if (atomSet.size() != expectedTotalCyclicAtomCount) {
         Log(this).error(
@@ -278,7 +283,8 @@ bool MinimalCycleUnitTest::run()
     actualCycleSizes.reserve(expectedCycleSizes.size());
 
     for (const auto& cycle : cycles) {
-        for (const auto atom : cycle) atomSet.emplace(atom->index);
+        for (const auto atom : cycle)
+            atomSet.emplace(atom->index);
 
         if (auto it = actualCycleSizes.find(static_cast<c_size>(cycle.size())); it != actualCycleSizes.end())
             ++(it->second);

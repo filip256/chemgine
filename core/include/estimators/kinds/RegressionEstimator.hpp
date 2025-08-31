@@ -27,8 +27,8 @@ public:
 
     Amount<OutU> get(const Amount<InUs>... inputs) const override final;
 
-    bool isEquivalent(
-        const EstimatorBase& other, const float_s epsilon = std::numeric_limits<float_s>::epsilon()) const override final;
+    bool isEquivalent(const EstimatorBase& other, const float_s epsilon = std::numeric_limits<float_s>::epsilon())
+        const override final;
 
     void dumpDefinition(
         std::ostream&                    out,
@@ -90,7 +90,8 @@ void RegressionEstimator<RegT, OutU, InUs...>::dumpDefinition(
     }
     alreadyPrinted.emplace(Base::id);
 
-    static const auto valueOffset = checked_cast<uint8_t>(utils::max(def::Data::Mode.size(), def::Data::Parameters.size()));
+    static const auto valueOffset =
+        checked_cast<uint8_t>(utils::max(def::Data::Mode.size(), def::Data::Parameters.size()));
 
     def::DataDumper dump(out, valueOffset, baseIndent, prettify);
     if (printInline)

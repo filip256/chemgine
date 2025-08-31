@@ -7,8 +7,9 @@ ConcreteReaction::ConcreteReaction(const ConcreteReaction& other) noexcept :
 {}
 
 ConcreteReaction::ConcreteReaction(
-    const ReactionData& baseReaction, const std::vector<Reactant>& reactants, const std::vector<Molecule>& products) noexcept
-    :
+    const ReactionData&          baseReaction,
+    const std::vector<Reactant>& reactants,
+    const std::vector<Molecule>& products) noexcept :
     baseReaction(baseReaction),
     reactants(reactants),
     products(products)

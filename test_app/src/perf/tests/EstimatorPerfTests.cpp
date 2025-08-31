@@ -20,7 +20,8 @@ LinearSplinePerfTest::generateInput(float_s (*generator)(const float_s), const u
     input.reserve(size);
 
     const auto step = static_cast<float_s>(100.0f / (size - 1));
-    for (float_s x = 50.0f; x > -50.0f; x -= step) input.emplace_back(x, generator(x));
+    for (float_s x = 50.0f; x > -50.0f; x -= step)
+        input.emplace_back(x, generator(x));
     input.emplace_back(-50.0f, generator(-50.0f));
 
     return input;
@@ -28,7 +29,10 @@ LinearSplinePerfTest::generateInput(float_s (*generator)(const float_s), const u
 
 void LinearSplinePerfTest::preTask() { inputCopy = input; }
 
-void LinearSplinePerfTest::task() { dontOptimize = static_cast<bool>(Spline<float_s>(std::move(inputCopy), loss).size()); }
+void LinearSplinePerfTest::task()
+{
+    dontOptimize = static_cast<bool>(Spline<float_s>(std::move(inputCopy), loss).size());
+}
 
 void LinearSplinePerfTest::postTask() { inputCopy.clear(); }
 
@@ -38,9 +42,12 @@ EstimatorPerfTests::EstimatorPerfTests(std::string&& name, const std::regex& fil
     registerTest<LinearSplinePerfTest>(
         "lspline_quadratic", std::chrono::seconds(5), [](const float_s x) -> float_s { return x * x; }, 10'000, 0.0f);
     registerTest<LinearSplinePerfTest>(
-        "lspline_quadratic_loss", std::chrono::seconds(5), [](const float_s x) -> float_s { return x * x; }, 10'000, 0.25f);
+        "lspline_quadratic_loss", std::chrono::seconds(5), [](const float_s x) -> float_s {
+        return x * x;
+    }, 10'000, 0.25f);
     registerTest<LinearSplinePerfTest>(
         "lspline_sin", std::chrono::seconds(5), [](const float_s x) -> float_s { return std::sin(x); }, 10'000, 0.0f);
-    registerTest<LinearSplinePerfTest>(
-        "lspline_sin_loss", std::chrono::seconds(5), [](const float_s x) -> float_s { return std::sin(x); }, 10'000, 0.5f);
+    registerTest<LinearSplinePerfTest>("lspline_sin_loss", std::chrono::seconds(5), [](const float_s x) -> float_s {
+        return std::sin(x);
+    }, 10'000, 0.5f);
 }

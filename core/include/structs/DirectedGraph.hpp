@@ -74,12 +74,14 @@ public:
 };
 
 template <class NodeT>
-DirectedGraph<NodeT>::NeighbourIterator::NeighbourIterator(const DirectedGraph<NodeT>& owner, const size_t node) noexcept :
+DirectedGraph<NodeT>::NeighbourIterator::NeighbourIterator(
+    const DirectedGraph<NodeT>& owner, const size_t node) noexcept :
     owner(owner),
     node(node),
     i(owner.size() - 1)
 {
-    while (i != npos && owner.areAdjacent(node, i) == false) --i;
+    while (i != npos && owner.areAdjacent(node, i) == false)
+        --i;
 }
 
 template <class NodeT>
@@ -159,7 +161,8 @@ size_t DirectedGraph<NodeT>::addNode(const NodeT& reaction)
 {
     nodes.emplace_back(reaction);
 
-    for (size_t i = 0; i < edges.size(); ++i) edges[i].emplace_back(false);
+    for (size_t i = 0; i < edges.size(); ++i)
+        edges[i].emplace_back(false);
     edges.emplace_back(std::vector<uint8_t>(nodes.size(), false));
 
     return nodes.size() - 1;

@@ -10,8 +10,9 @@ EstimatorRepository::~EstimatorRepository() noexcept { clear(); }
 
 const EstimatorBase& EstimatorRepository::add(std::unique_ptr<const EstimatorBase>&& estimator)
 {
-    const auto it = std::find_if(
-        estimators.cbegin(), estimators.cend(), [&estimator](const auto& e) { return e.second->isEquivalent(*estimator); });
+    const auto it = std::find_if(estimators.cbegin(), estimators.cend(), [&estimator](const auto& e) {
+        return e.second->isEquivalent(*estimator);
+    });
 
     if (it != estimators.end())
         return *it->second;
@@ -43,7 +44,8 @@ void EstimatorRepository::clear()
         estimators.clear();
 
     // Ensure referenced estimators are deleted after those which reference them
-    for (; maxEstimatorNesting-- > 0;) dropUnusedEstimators();
+    for (; maxEstimatorNesting-- > 0;)
+        dropUnusedEstimators();
     dropUnusedEstimators();
 }
 

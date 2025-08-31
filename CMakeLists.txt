@@ -25,8 +25,8 @@ set(CXXOPTS_REPOSITORY "https://github.com/jarro2783/cxxopts.git" CACHE STRING "
 set(CXXOPTS_VERSION "3.3.1" CACHE STRING "cxxopts version to fetch")
 
 ## fmt
-set(FMT_REPOSITORY "https://github.com/fmtlib/fmt.git" CACHE STRING "fmt repository URL")
-set(FMT_VERSION "11.2.0" CACHE STRING "fmt version to fetch")
+# set(FMT_REPOSITORY "https://github.com/fmtlib/fmt.git" CACHE STRING "fmt repository URL")
+# set(FMT_VERSION "11.2.0" CACHE STRING "fmt version to fetch")
 
 ## SFML
 set(SFML_REPOSITORY "https://github.com/SFML/SFML.git" CACHE STRING "SFML repository URL")
@@ -122,8 +122,8 @@ message(STATUS "Thirdparty:")
 message(STATUS " > BOOST_DOWNLOAD_URL = ${BOOST_DOWNLOAD_URL}")
 message(STATUS " > CXXOPTS_REPOSITORY = ${CXXOPTS_REPOSITORY}")
 message(STATUS " > CXXOPTS_VERSION = ${CXXOPTS_VERSION}")
-message(STATUS " > FMT_REPOSITORY = ${FMT_REPOSITORY}")
-message(STATUS " > FMT_VERSION = ${FMT_VERSION}")
+# message(STATUS " > FMT_REPOSITORY = ${FMT_REPOSITORY}")
+# message(STATUS " > FMT_VERSION = ${FMT_VERSION}")
 message(STATUS " > SFML_REPOSITORY = ${SFML_REPOSITORY}")
 message(STATUS " > SFML_VERSION = ${SFML_VERSION}")
 message(STATUS " > BUILD_SHARED_LIBS = ${BUILD_SHARED_LIBS}")

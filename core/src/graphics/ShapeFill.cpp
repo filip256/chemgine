@@ -42,7 +42,8 @@ void ShapeFill::setDrawSection(float_s start, float_s end, const sf::Color& colo
     const auto topCut    = size.y * (1.0f - end);
     const auto heightCut = std::ceil(size.y * (end - start));
     sprite.setTextureRect(
-        sf::IntRect(sf::Vector2i(0, static_cast<int32_t>(topCut)), sf::Vector2i(size.x, static_cast<int32_t>(heightCut))));
+        sf::IntRect(
+            sf::Vector2i(0, static_cast<int32_t>(topCut)), sf::Vector2i(size.x, static_cast<int32_t>(heightCut))));
 
     const auto rotation = sprite.getRotation().asRadians();
     sprite.setPosition(

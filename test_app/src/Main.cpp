@@ -53,6 +53,4 @@ int main(int argc, char* argv[])
         Log().fatal("Regex creation failed with error:\n{0}", e.what());
         CHG_UNREACHABLE();
     }
-
-    return 0;
 }

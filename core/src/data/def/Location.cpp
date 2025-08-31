@@ -20,4 +20,4 @@ std::string Location::toString() const
 
 Location Location::createUnknown() { return Location("", 0); }
 
-Location Location::createEOF(const std::string& file) { return Location("", eofLine); }
+Location Location::createEOF(const std::string& file) { return Location(file, eofLine); }

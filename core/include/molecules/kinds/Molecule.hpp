@@ -34,13 +34,17 @@ public:
     AggregationType getAggregationAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
 
     Amount<Unit::GRAM_PER_MILLILITER> getDensityAt(
-        const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure, const AggregationType aggregation) const;
+        const Amount<Unit::CELSIUS> temperature,
+        const Amount<Unit::TORR>    pressure,
+        const AggregationType       aggregation) const;
 
     Amount<Unit::GRAM_PER_MILLILITER>
     getDensityAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
 
     Amount<Unit::JOULE_PER_MOLE_CELSIUS> getHeatCapacityAt(
-        const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure, const AggregationType aggregation) const;
+        const Amount<Unit::CELSIUS> temperature,
+        const Amount<Unit::TORR>    pressure,
+        const AggregationType       aggregation) const;
 
     Amount<Unit::JOULE_PER_MOLE_CELSIUS>
     getHeatCapacityAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
@@ -64,7 +68,9 @@ public:
     getDepositionHeatAt(const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure) const;
 
     Amount<Unit::MOLE_RATIO> getSolubilityAt(
-        const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure, const Polarity& solventPolarity) const;
+        const Amount<Unit::CELSIUS> temperature,
+        const Amount<Unit::TORR>    pressure,
+        const Polarity&             solventPolarity) const;
 
     bool operator==(const Molecule& other) const;
     bool operator!=(const Molecule& other) const;

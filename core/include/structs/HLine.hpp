@@ -50,7 +50,7 @@ constexpr HLine<T, LenT>::HLine(const Point<T>& origin, const LenT length) noexc
     if constexpr (not std::is_unsigned_v<LenT>) {
         if (length < 0) {
             // Swap the origin and end-point such that length becomes positive.
-            this->origin = Point<T>(origin.x - length + utils::SmallestPositive<T>, origin.y);
+            this->origin = Point<T>(static_cast<T>(origin.x - length + utils::SmallestPositive<T>), origin.y);
             this->length = -length;
         }
     }
@@ -59,13 +59,13 @@ constexpr HLine<T, LenT>::HLine(const Point<T>& origin, const LenT length) noexc
 template <typename T, typename LenT>
 template <typename OtherT, typename OtherLenT, typename>
 constexpr HLine<T, LenT>::HLine(const HLine<OtherT, OtherLenT>& other) noexcept :
-    HLine(other.origin, other.length)
+    HLine(other.origin, static_cast<LenT>(other.length))
 {}
 
 template <typename T, typename LenT>
 template <typename OtherT, typename OtherLenT>
 constexpr HLine<T, LenT>::HLine(const HLine<OtherT, OtherLenT>& other) noexcept :
-    HLine(other.origin, other.length)
+    HLine(other.origin, static_cast<LenT>(other.length))
 {}
 
 template <typename T, typename LenT>

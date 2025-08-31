@@ -12,7 +12,8 @@ std::string utils::toBin(const std::string& str, const char byteDelim, const cha
     std::ostringstream os;
 
     const auto printChar = [&os](const uint8_t c) {
-        for (uint8_t bit = 7; bit-- > 0;) os << ((c >> bit) & 1);
+        for (uint8_t bit = 7; bit-- > 0;)
+            os << ((c >> bit) & 1);
     };
 
     for (size_t i = 0; i < str.size() - 1; ++i) {

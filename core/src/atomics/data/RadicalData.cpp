@@ -7,7 +7,8 @@
 
 const std::unordered_set<Symbol> RadicalData::MatchAny = std::unordered_set<Symbol>{{'*'}};
 
-RadicalData::RadicalData(const Symbol& symbol, const std::string& name, std::unordered_set<Symbol>&& matchables) noexcept :
+RadicalData::RadicalData(
+    const Symbol& symbol, const std::string& name, std::unordered_set<Symbol>&& matchables) noexcept :
     AtomData(symbol, name, 0.0_g, utils::copy(AtomData::RadicalAnyValence)),
     matchables(std::move(matchables))
 {}

@@ -39,7 +39,7 @@ AllowShortEnumsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLambdasOnASingleLine: All
-AllowShortLoopsOnASingleLine: true
+AllowShortLoopsOnASingleLine: false
 AllowShortNamespacesOnASingleLine: false
 DerivePointerAlignment: false
 
@@ -64,7 +64,7 @@ BreakFunctionDefinitionParameters: false
 BreakInheritanceList: AfterComma
 BreakStringLiterals: true
 BreakTemplateDeclarations: Yes
-ColumnLimit: 125
+ColumnLimit: 120
 CompactNamespaces: false
 EmptyLineAfterAccessModifier: Never
 EmptyLineBeforeAccessModifier: LogicalBlock

@@ -20,7 +20,8 @@ class ReactionData
 {
 private:
     static bool balance(
-        std::vector<std::pair<StructureRef, uint8_t>>& reactants, std::vector<std::pair<StructureRef, uint8_t>>& products);
+        std::vector<std::pair<StructureRef, uint8_t>>& reactants,
+        std::vector<std::pair<StructureRef, uint8_t>>& products);
 
     /// <summary>
     /// Maps every component from reactants to every component from products.

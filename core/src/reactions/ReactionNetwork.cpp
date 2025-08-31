@@ -106,7 +106,8 @@ bool ReactionNetwork::getOccurringReactions(
     return matchFound;
 }
 
-std::unordered_set<ConcreteReaction> ReactionNetwork::getOccurringReactions(const std::vector<Reactant>& reactants) const
+std::unordered_set<ConcreteReaction>
+ReactionNetwork::getOccurringReactions(const std::vector<Reactant>& reactants) const
 {
     std::unordered_set<ConcreteReaction> result;
     for (size_t i = 0; i < topLayer.size(); ++i) {
@@ -174,9 +175,9 @@ void ReactionNetwork::print(const size_t current, TextBlock& block, size_t& y, s
     for (auto i = graph.getNeighbourIterator(current); i != npos; ++i) {
         ++y;
 
-        for (size_t i = 0; i < pipes.size() - 1; ++i)
-            if (pipes[i])
-                block[y][i * 3] = ASCII::LineV;
+        for (size_t j = 0; j < pipes.size() - 1; ++j)
+            if (pipes[j])
+                block[y][j * 3] = ASCII::LineV;
 
         auto peek = i;
         if (++peek != npos)

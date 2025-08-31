@@ -12,7 +12,8 @@ private:
     const std::vector<std::pair<float_s, float_s>> input;
     std::vector<std::pair<float_s, float_s>>       inputCopy;
 
-    static std::vector<std::pair<float_s, float_s>> generateInput(float_s (*generator)(const float_s), const uint32_t size);
+    static std::vector<std::pair<float_s, float_s>>
+    generateInput(float_s (*generator)(const float_s), const uint32_t size);
 
 public:
     LinearSplinePerfTest(

@@ -60,7 +60,8 @@ bool UnitTestGroup::run()
     if (failed.size() != 0) {
         // TODO: add incremental multi-line log support
         std::string failedStr;
-        for (const auto& idx : failed) failedStr += "\n - " + tests[idx]->getName();
+        for (const auto& idx : failed)
+            failedStr += "\n - " + tests[idx]->getName();
 
         Log(this).error("{0}/{1} sub-tests failed:{2}", failed.size(), tests.size(), failedStr);
         return false;

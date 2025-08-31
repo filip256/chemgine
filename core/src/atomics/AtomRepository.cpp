@@ -40,7 +40,8 @@ bool AtomRepository::add<RadicalData>(const def::Object& definition)
 {
     const auto symbol = def::parse<Symbol>(definition.getSpecifier());
     if (not symbol) {
-        Log(this).error("Invalid radical symbol: '{0}' at: {1}.", definition.getSpecifier(), definition.getLocationName());
+        Log(this).error(
+            "Invalid radical symbol: '{0}' at: {1}.", definition.getSpecifier(), definition.getLocationName());
         return false;
     }
 
@@ -52,21 +53,21 @@ bool AtomRepository::add<RadicalData>(const def::Object& definition)
         return false;
     }
 
-    // check match symbols
+    // Check matching symbols.
     for (size_t i = 0; i < matches->size(); ++i) {
-        const auto& symbol = (*matches)[i];
-        if (symbol == '*')  // match-any symbol
+        const auto& matchSymbol = (*matches)[i];
+        if (matchSymbol == '*')  // Match-any symbol.
         {
             if (matches->size() != 1)
                 Log(this).warn(
-                    "Found redundant atom match symbols in set containing the match-any symbol: "
-                    "'*', at: {0}.",
+                    "Found redundant match symbols in set containing the match-any symbol: "
+                    "'*', at: {}.",
                     definition.getLocationName());
             continue;
         }
 
-        if (contains(symbol) == false) {
-            Log(this).error("Unknown atom match symbol: '{0}', at: {1}.", symbol, definition.getLocationName());
+        if (contains(matchSymbol) == false) {
+            Log(this).error("Unknown atom match symbol: '{0}', at: {1}.", matchSymbol, definition.getLocationName());
             return false;
         }
     }
@@ -81,7 +82,10 @@ bool AtomRepository::add<RadicalData>(const def::Object& definition)
     return true;
 }
 
-bool AtomRepository::contains(const Symbol& symbol) const { return atoms.contains(symbol) || radicals.contains(symbol); }
+bool AtomRepository::contains(const Symbol& symbol) const
+{
+    return atoms.contains(symbol) || radicals.contains(symbol);
+}
 
 const AtomData& AtomRepository::at(const Symbol& symbol) const
 {

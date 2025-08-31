@@ -180,12 +180,14 @@ uint8_t ReactionRepository::getMaxReactantCount() const { return maxReactantCoun
 
 const ReactionNetwork& ReactionRepository::getNetwork() const { return network; }
 
-std::unordered_set<ConcreteReaction> ReactionRepository::findOccurringReactions(const std::vector<Reactant>& reactants) const
+std::unordered_set<ConcreteReaction>
+ReactionRepository::findOccurringReactions(const std::vector<Reactant>& reactants) const
 {
     return network.getOccurringReactions(reactants);
 }
 
-std::unordered_set<RetrosynthReaction> ReactionRepository::getRetrosynthReactions(const StructureRef& targetProduct) const
+std::unordered_set<RetrosynthReaction>
+ReactionRepository::getRetrosynthReactions(const StructureRef& targetProduct) const
 {
     return network.getRetrosynthReactions(targetProduct);
 }
@@ -207,11 +209,12 @@ size_t ReactionRepository::generateCurrentSpan() const
     return molecules.size() - reactants.size();
 }
 
-size_t ReactionRepository::generateTotalSpan(const size_t maxIterations) const
+size_t ReactionRepository::generateTotalSpan() const
 {
     const size_t initialCnt = molecules.size();
 
-    while (generateCurrentSpan() > 0 && molecules.size() < 1'000);
+    while (generateCurrentSpan() > 0 && molecules.size() < 1'000)
+        ;
 
     return molecules.size() - initialCnt;
 }

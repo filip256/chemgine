@@ -50,8 +50,8 @@ std::string AtomData::getSMILES() const
 
 void AtomData::dumpDefinition(std::ostream& out, const bool prettify) const
 {
-    static const auto valueOffset =
-        checked_cast<uint8_t>(utils::max(def::Atoms::Name.size(), def::Atoms::Weight.size(), def::Atoms::Valences.size()));
+    static const auto valueOffset = checked_cast<uint8_t>(
+        utils::max(def::Atoms::Name.size(), def::Atoms::Weight.size(), def::Atoms::Valences.size()));
 
     def::DataDumper(out, valueOffset, 0, prettify)
         .header(def::Types::Atom, symbol, "")

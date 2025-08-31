@@ -20,10 +20,12 @@ ShapeFillTexture::ShapeFillTexture(
 
     for (uint32_t i = 0; i < maskSize.y; ++i) {
         uint32_t l = 0;
-        while (++l < maskSize.x && mask[i * maskSize.x + l] <= alphaThreshold);
+        while (++l < maskSize.x && mask[i * maskSize.x + l] <= alphaThreshold)
+            ;
 
         uint32_t r = maskSize.x;
-        while (--r > l && mask[i * maskSize.x + r] <= alphaThreshold);
+        while (--r > l && mask[i * maskSize.x + r] <= alphaThreshold)
+            ;
 
         for (uint32_t j = l; j < r; ++j) {
             img.setPixel(sf::Vector2u(j, i), sf::Color::White);

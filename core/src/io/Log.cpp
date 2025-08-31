@@ -36,7 +36,8 @@ LogBase::LogBase(const void* address, const std::type_index sourceType) noexcept
 void LogBase::addContextIndent()
 {
     OS::setTextColor(OS::BasicColor::DARK_GREY, settings().outputStream);
-    for (uint8_t i = 0; i < contexts; ++i) settings().outputStream << ASCII::MiddleDot1 << "   ";
+    for (uint8_t i = 0; i < contexts; ++i)
+        settings().outputStream << ASCII::MiddleDot1 << "   ";
     OS::setTextColor(OS::BasicColor::WHITE, settings().outputStream);
 }
 
@@ -115,7 +116,8 @@ void LogBase::logFormatted(const std::string& msg, const std::source_location& l
         // Folded log
         // Don't backspace on the first folded log.
         if (foldCount != static_cast<size_t>(-1)) {
-            for (size_t i = 0; i < foldCount; ++i) out << '\b';
+            for (size_t i = 0; i < foldCount; ++i)
+                out << '\b';
         }
 
         out << msg.c_str() + 1;

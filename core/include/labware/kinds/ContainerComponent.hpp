@@ -58,7 +58,8 @@ public:
 
 template <typename... Args>
 template <typename... CArgs, typename>
-ContainerComponent<Args...>::ContainerComponent(const LabwareId id, const LabwareType type, CArgs&&... containers) noexcept :
+ContainerComponent<Args...>::ContainerComponent(
+    const LabwareId id, const LabwareType type, CArgs&&... containers) noexcept :
     BaseContainerComponent(id, type),
     fills(getData().generateShapeFills()),
     containers(std::forward<CArgs>(containers)...)

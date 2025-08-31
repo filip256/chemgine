@@ -77,7 +77,8 @@ ContainerLabwareData<C>::ContainerLabwareData(
     BaseContainerLabwareData(id, name, std::move(ports), textureFile, textureScale, type),
     volumes(std::move(volumes))
 {
-    for (uint8_t i = 0; i < C; ++i) fillTextures[i] = ShapeFillTexture(*fillTextureFiles[i], 0, hasMultiLayerStorage(type));
+    for (uint8_t i = 0; i < C; ++i)
+        fillTextures[i] = ShapeFillTexture(*fillTextureFiles[i], 0, hasMultiLayerStorage(type));
 }
 
 template <uint8_t C>

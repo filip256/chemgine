@@ -15,8 +15,8 @@ public:
 
     const HeatsourceData& getData() const override final;
 
-    void setTarget(const Ref<ContainerBase> target);
-    void setTarget(BaseContainerComponent& target);
+    void setTarget(const Ref<ContainerBase> newTarget);
+    void setTarget(BaseContainerComponent& newTarget);
 
     bool tryConnect(LabwareComponentBase& other) override final;
     void disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase& other) override final;

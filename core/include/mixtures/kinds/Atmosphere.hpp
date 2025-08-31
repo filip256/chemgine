@@ -18,7 +18,7 @@ public:
 
     void tick(const Amount<Unit::SECOND> timespan);
 
-    Atmosphere createSubatmosphere(const Amount<Unit::LITER> maxVolume);
+    Atmosphere createSubatmosphere(const Amount<Unit::LITER> subMaxVolume);
 
     Atmosphere makeCopy() const;
 

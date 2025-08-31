@@ -9,7 +9,7 @@ protected:
     T value = 0.0;
 
 public:
-    static const T epsilon;
+    static const T Epsilon;
 
     constexpr Value() = default;
     constexpr Value(const T value) noexcept;

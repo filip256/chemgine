@@ -16,7 +16,7 @@ const def::Object* OOLDefRepository::add(def::Object&& definition)
     }
 
     auto       tempId = definition.getIdentifier();
-    const auto it     = definitions.emplace(std::move(tempId), std::make_unique<const def::Object>(std::move(definition)));
+    const auto it = definitions.emplace(std::move(tempId), std::make_unique<const def::Object>(std::move(definition)));
 
     return it.first->second.get();
 }
@@ -31,6 +31,7 @@ size_t OOLDefRepository::totalDefinitionCount() const { return definitions.size(
 
 void OOLDefRepository::clear()
 {
-    for (const auto& [_, d] : definitions) d->logUnusedWarnings();
+    for (const auto& [_, d] : definitions)
+        d->logUnusedWarnings();
     definitions.clear();
 }

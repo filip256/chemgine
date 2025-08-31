@@ -11,7 +11,8 @@
 
 using namespace def;
 
-FileParser::FileParser(const std::string& filePath, FileStore& fileStore, const OOLDefRepository& oolDefinitions) noexcept :
+FileParser::FileParser(
+    const std::string& filePath, FileStore& fileStore, const OOLDefRepository& oolDefinitions) noexcept :
     currentFile(utils::normalizePath(filePath)),
     stream(currentFile),
     oolDefinitions(oolDefinitions),
@@ -46,7 +47,8 @@ void FileParser::include(const std::string& filePath)
         return;
 
     if (status == ParseStatus::STARTED) {
-        Log(this).error("Encountered cyclic dependency on file: '{0}', at: {1}:{2}.", filePath, currentFile, currentLine);
+        Log(this).error(
+            "Encountered cyclic dependency on file: '{0}', at: {1}:{2}.", filePath, currentFile, currentLine);
         return;
     }
 

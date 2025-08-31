@@ -12,7 +12,9 @@ private:
 
 public:
     StructureSMILESPerfTest(
-        const std::string& name, const std::variant<size_t, std::chrono::nanoseconds> limit, std::string&& smiles) noexcept;
+        const std::string&                                   name,
+        const std::variant<size_t, std::chrono::nanoseconds> limit,
+        std::string&&                                        smiles) noexcept;
 
     void task() override final;
 };

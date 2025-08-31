@@ -45,8 +45,8 @@ MoleculeData::MoleculeData(
 
 const MolecularStructure& MoleculeData::getStructure() const { return structure; }
 
-void
-MoleculeData::dumpDefinition(std::ostream& out, const bool prettify, std::unordered_set<EstimatorId>& alreadyPrinted) const
+void MoleculeData::dumpDefinition(
+    std::ostream& out, const bool prettify, std::unordered_set<EstimatorId>& alreadyPrinted) const
 {
     static const auto valueOffset = checked_cast<uint8_t>(utils::max(
         def::Molecules::Name.size(),

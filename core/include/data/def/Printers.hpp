@@ -93,7 +93,8 @@ public:
             return def::print(object.front());
 
         std::string result = "{";
-        for (size_t i = 0; i < object.size(); ++i) result += def::print(object[i]) + ',';
+        for (size_t i = 0; i < object.size(); ++i)
+            result += def::print(object[i]) + ',';
 
         result.back() = '}';
         return result;
@@ -108,7 +109,8 @@ public:
             return def::prettyPrint(*object.begin());
 
         std::string result = "{ ";
-        for (size_t i = 0; i < object.size(); ++i) result += def::prettyPrint(object[i]) + ", ";
+        for (size_t i = 0; i < object.size(); ++i)
+            result += def::prettyPrint(object[i]) + ", ";
 
         result[result.size() - 2] = ' ';
         result.back()             = '}';
@@ -128,7 +130,8 @@ public:
         }
 
         std::string result = "{";
-        for (const auto& p : object) result += p.first + ':' + def::print(p.second) + ',';
+        for (const auto& p : object)
+            result += p.first + ':' + def::print(p.second) + ',';
 
         result.back() = '}';
         return result;
@@ -145,7 +148,8 @@ public:
         }
 
         std::string result = "{ ";
-        for (const auto& p : object) result += p.first + ": " + def::prettyPrint(p.second) + ", ";
+        for (const auto& p : object)
+            result += p.first + ": " + def::prettyPrint(p.second) + ", ";
 
         result[result.size() - 2] = ' ';
         result.back()             = '}';
@@ -163,7 +167,8 @@ public:
             return def::print(*object.begin());
 
         std::string result = "{";
-        for (const auto& i : object) result += def::print(i) + ',';
+        for (const auto& i : object)
+            result += def::print(i) + ',';
 
         result.back() = '}';
         return result;
@@ -178,7 +183,8 @@ public:
             return def::prettyPrint(*object.begin());
 
         std::string result = "{ ";
-        for (const auto& i : object) result += def::prettyPrint(i) + ", ";
+        for (const auto& i : object)
+            result += def::prettyPrint(i) + ", ";
 
         result[result.size() - 2] = ' ';
         result.back()             = '}';
@@ -197,7 +203,8 @@ private:
     }
 
     template <std::size_t... Is>
-    static void prettyPrintTupleElements(const std::tuple<Args...>& object, std::string& result, std::index_sequence<Is...>)
+    static void
+    prettyPrintTupleElements(const std::tuple<Args...>& object, std::string& result, std::index_sequence<Is...>)
     {
         ((result += def::prettyPrint(std::get<Is>(object)) + ", "), ...);
     }

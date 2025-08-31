@@ -24,8 +24,8 @@ public:
     void setColor(const sf::Color& color);
     void setOrigin(const sf::Vector2f& position);
     void moveOrigin(const sf::Vector2f& offset);
-    void setRelativeDensity(const float_s relativeDensity);
-    void setStreamIntensity(const float_s streamIntensity);
+    void setRelativeDensity(const float_s newRelativeDensity);
+    void setStreamIntensity(const float_s newStreamIntensity);
 
     void tick(const Amount<Unit::SECOND> timespan);
     void draw(sf::RenderTarget& target, sf::RenderStates states) const override final;

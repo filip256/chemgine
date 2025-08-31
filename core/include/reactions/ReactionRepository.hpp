@@ -61,5 +61,5 @@ public:
     /// Newely created molecules are also taken into account in further iterations.
     /// Returns the number of new molecules found.
     /// </summary>
-    size_t generateTotalSpan(const size_t maxIterations = std::numeric_limits<size_t>::max()) const;
+    size_t generateTotalSpan() const;
 };

@@ -8,7 +8,8 @@ template <Unit OutU, Unit... InUs>
 class def::Parser<UnitizedEstimator<OutU, InUs...>>
 {
 public:
-    static std::optional<EstimatorRef<OutU, InUs...>> parse(const def::Object& definition, EstimatorRepository& repository)
+    static std::optional<EstimatorRef<OutU, InUs...>>
+    parse(const def::Object& definition, EstimatorRepository& repository)
     {
         const Log<Parser<UnitizedEstimator<OutU, InUs...>>> log;
 
@@ -23,7 +24,9 @@ public:
         const auto specifier = def::parse<EstimatorSpecifier>(definition.getSpecifier());
         if (not specifier) {
             log.error(
-                "Malfomed data units specifier: '{0}', at: {1}.", definition.getSpecifier(), definition.getLocationName());
+                "Malfomed data units specifier: '{0}', at: {1}.",
+                definition.getSpecifier(),
+                definition.getLocationName());
             return std::nullopt;
         }
 
@@ -46,7 +49,8 @@ public:
             return factory.createConstant<OutU, InUs...>(*constant);
         }
 
-        if (const auto strValues = definition.getOptionalProperty(def::Data::Values, def::parse<std::vector<std::string>>)) {
+        if (const auto strValues =
+                definition.getOptionalProperty(def::Data::Values, def::parse<std::vector<std::string>>)) {
             const auto mode =
                 definition.getDefaultProperty(def::Data::Mode, EstimationMode::LINEAR, def::parse<EstimationMode>);
             const auto loss = definition.getDefaultProperty(def::Data::CompressionLoss, 0.0f, def::parse<float_s>);
@@ -110,7 +114,8 @@ public:
                     if (not anchorPoint)
                         return std::nullopt;
 
-                    const auto hShift = definition.getDefaultProperty(def::Data::HorizontalShift, 0.0f, def::parse<float_s>);
+                    const auto hShift =
+                        definition.getDefaultProperty(def::Data::HorizontalShift, 0.0f, def::parse<float_s>);
                     return factory.createAffine(*base, *anchorPoint, hShift);
                 }
 
@@ -126,8 +131,9 @@ public:
 
                 // manual transform
                 const auto vShift = definition.getDefaultProperty(def::Data::VerticalShift, 0.0f, def::parse<float_s>);
-                const auto hShift = definition.getDefaultProperty(def::Data::HorizontalShift, 0.0f, def::parse<float_s>);
-                const auto scale  = definition.getDefaultProperty(def::Data::Scale, 1.0f, def::parse<float_s>);
+                const auto hShift =
+                    definition.getDefaultProperty(def::Data::HorizontalShift, 0.0f, def::parse<float_s>);
+                const auto scale = definition.getDefaultProperty(def::Data::Scale, 1.0f, def::parse<float_s>);
 
                 return factory.createAffine(*base, vShift, hShift, scale);
             }

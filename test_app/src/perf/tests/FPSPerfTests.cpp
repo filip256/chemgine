@@ -30,7 +30,8 @@ ReactorFPSPerfTest::ReactorFPSPerfTest(
 {
     this->atmosphere->setOverflowTarget(dump);
     reactor.setTickMode(tickMode);
-    for (const auto& m : content) reactor.add(m.first, m.second);
+    for (const auto& m : content)
+        reactor.add(m.first, m.second);
 }
 
 ReactorFPSPerfTest::ReactorFPSPerfTest(

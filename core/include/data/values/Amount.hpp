@@ -38,7 +38,8 @@ public:
     constexpr Amount<UnitT> operator-=(const Amount<UnitT> other) noexcept;
 
     inline constexpr bool equals(
-        const Amount<UnitT> other, const StorageType epsilon = std::numeric_limits<StorageType>::epsilon()) const noexcept;
+        const Amount<UnitT> other,
+        const StorageType   epsilon = std::numeric_limits<StorageType>::epsilon()) const noexcept;
 
     inline constexpr StorageType asKilo() const noexcept;
     inline constexpr StorageType asStd() const noexcept;
@@ -861,7 +862,8 @@ constexpr Amount<Unit::MOLE> Amount<Unit::JOULE_PER_MOLE>::to(const Amount<Unit:
 
 template <>
 template <>
-constexpr Amount<Unit::JOULE> Amount<Unit::JOULE_PER_CELSIUS>::to(const Amount<Unit::CELSIUS> temperature) const noexcept
+constexpr Amount<Unit::JOULE>
+Amount<Unit::JOULE_PER_CELSIUS>::to(const Amount<Unit::CELSIUS> temperature) const noexcept
 {
     return value * temperature.asStd();
 }
@@ -935,7 +937,8 @@ Amount<Unit::JOULE_PER_CELSIUS>::to(const Amount<Unit::MOLE> moles) const noexce
 
 template <>
 template <>
-constexpr Amount<Unit::CELSIUS> Amount<Unit::JOULE>::to(const Amount<Unit::JOULE_PER_CELSIUS> heatCapacity) const noexcept
+constexpr Amount<Unit::CELSIUS>
+Amount<Unit::JOULE>::to(const Amount<Unit::JOULE_PER_CELSIUS> heatCapacity) const noexcept
 {
     return value / heatCapacity.asStd();
 }
@@ -956,46 +959,85 @@ constexpr Amount<Unit::MOLE> Amount<Unit::MOLE_PER_SECOND>::to(const Amount<Unit
 
 // --- Literals ---    //
 
-inline constexpr Amount<Unit::LITER> operator""_L(long double value) { return static_cast<Amount<>::StorageType>(value); }
+inline constexpr Amount<Unit::LITER> operator""_L(long double value)
+{
+    return static_cast<Amount<>::StorageType>(value);
+}
 
 inline constexpr Amount<Unit::CUBIC_METER> operator""_m3(long double value)
 {
     return static_cast<Amount<>::StorageType>(value);
 }
 
-inline constexpr Amount<Unit::GRAM> operator""_g(long double value) { return static_cast<Amount<>::StorageType>(value); }
+inline constexpr Amount<Unit::GRAM> operator""_g(long double value)
+{
+    return static_cast<Amount<>::StorageType>(value);
+}
 
-inline constexpr Amount<Unit::MOLE> operator""_mol(long double value) { return static_cast<Amount<>::StorageType>(value); }
+inline constexpr Amount<Unit::MOLE> operator""_mol(long double value)
+{
+    return static_cast<Amount<>::StorageType>(value);
+}
 
-inline constexpr Amount<Unit::SECOND> operator""_s(long double value) { return static_cast<Amount<>::StorageType>(value); }
+inline constexpr Amount<Unit::SECOND> operator""_s(long double value)
+{
+    return static_cast<Amount<>::StorageType>(value);
+}
 
-inline constexpr Amount<Unit::CELSIUS> operator""_C(long double value) { return static_cast<Amount<>::StorageType>(value); }
+inline constexpr Amount<Unit::CELSIUS> operator""_C(long double value)
+{
+    return static_cast<Amount<>::StorageType>(value);
+}
 
-inline constexpr Amount<Unit::KELVIN> operator""_K(long double value) { return static_cast<Amount<>::StorageType>(value); }
+inline constexpr Amount<Unit::KELVIN> operator""_K(long double value)
+{
+    return static_cast<Amount<>::StorageType>(value);
+}
 
 inline constexpr Amount<Unit::FAHRENHEIT> operator""_F(long double value)
 {
     return static_cast<Amount<>::StorageType>(value);
 }
 
-inline constexpr Amount<Unit::TORR> operator""_torr(long double value) { return static_cast<Amount<>::StorageType>(value); }
+inline constexpr Amount<Unit::TORR> operator""_torr(long double value)
+{
+    return static_cast<Amount<>::StorageType>(value);
+}
 
-inline constexpr Amount<Unit::PASCAL> operator""_Pa(long double value) { return static_cast<Amount<>::StorageType>(value); }
+inline constexpr Amount<Unit::PASCAL> operator""_Pa(long double value)
+{
+    return static_cast<Amount<>::StorageType>(value);
+}
 
 inline constexpr Amount<Unit::ATMOSPHERE> operator""_atm(long double value)
 {
     return static_cast<Amount<>::StorageType>(value);
 }
 
-inline constexpr Amount<Unit::JOULE> operator""_J(long double value) { return static_cast<Amount<>::StorageType>(value); }
+inline constexpr Amount<Unit::JOULE> operator""_J(long double value)
+{
+    return static_cast<Amount<>::StorageType>(value);
+}
 
-inline constexpr Amount<Unit::WATT> operator""_W(long double value) { return static_cast<Amount<>::StorageType>(value); }
+inline constexpr Amount<Unit::WATT> operator""_W(long double value)
+{
+    return static_cast<Amount<>::StorageType>(value);
+}
 
-inline constexpr Amount<Unit::METER> operator""_m(long double value) { return static_cast<Amount<>::StorageType>(value); }
+inline constexpr Amount<Unit::METER> operator""_m(long double value)
+{
+    return static_cast<Amount<>::StorageType>(value);
+}
 
-inline constexpr Amount<Unit::DEGREE> operator""_o(long double value) { return static_cast<Amount<>::StorageType>(value); }
+inline constexpr Amount<Unit::DEGREE> operator""_o(long double value)
+{
+    return static_cast<Amount<>::StorageType>(value);
+}
 
-inline constexpr Amount<Unit::RADIAN> operator""_rad(long double value) { return static_cast<Amount<>::StorageType>(value); }
+inline constexpr Amount<Unit::RADIAN> operator""_rad(long double value)
+{
+    return static_cast<Amount<>::StorageType>(value);
+}
 
 // --- Printer ---    //
 

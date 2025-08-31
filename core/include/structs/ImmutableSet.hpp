@@ -105,30 +105,21 @@ std::vector<T> ImmutableSet<T>::toSortedSetVector(std::vector<T>&& vector, bool 
 template <typename T>
 std::vector<T> ImmutableSet<T>::toSortedSetVector(std::set<T>&& set)
 {
-    std::vector<T> result;
-    result.reserve(set.size());
-
-    for (auto&& it : set) result.emplace_back(std::move(it));
-
-    return result;
+    return std::vector<T>(std::make_move_iterator(set.begin()), std::make_move_iterator(set.end()));
 }
 
 template <typename T>
 std::vector<T> ImmutableSet<T>::toSortedSetVector(std::set<T, std::function<bool(const T&, const T&)>>&& set)
 {
-    std::vector<T> result;
-    result.reserve(set.size());
-
-    for (auto&& it : set) result.emplace_back(std::move(it));
-
-    return result;
+    return std::vector<T>(std::make_move_iterator(set.begin()), std::make_move_iterator(set.end()));
 }
 
 template <typename T>
 std::vector<T> ImmutableSet<T>::toSortedSetVector(std::unordered_set<T>&& set)
 {
     std::set<T> result;
-    for (auto&& it : set) result.emplace(std::move(it));
+    for (auto&& it : set)
+        result.emplace(std::move(it));
 
     return result;
 }

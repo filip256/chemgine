@@ -16,8 +16,8 @@ public:
 
     Amount<OutU> get(const Amount<InUs>...) const override final;
 
-    bool isEquivalent(
-        const EstimatorBase& other, const float_s epsilon = std::numeric_limits<float_s>::epsilon()) const override final;
+    bool isEquivalent(const EstimatorBase& other, const float_s epsilon = std::numeric_limits<float_s>::epsilon())
+        const override final;
 
     void dumpDefinition(
         std::ostream&                    out,

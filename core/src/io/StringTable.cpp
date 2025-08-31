@@ -13,7 +13,8 @@ StringTable::StringTable(std::vector<std::string>&& header, const bool alignEntr
 
 void StringTable::getMaxWidths(const std::vector<std::string>& strings, std::vector<size_t>& widths)
 {
-    for (size_t i = 0; i < strings.size(); ++i) widths[i] = std::max(widths[i], strings[i].size() + 2);
+    for (size_t i = 0; i < strings.size(); ++i)
+        widths[i] = std::max(widths[i], strings[i].size() + 2);
 }
 
 std::vector<size_t> StringTable::getMaxWidths() const
@@ -21,7 +22,8 @@ std::vector<size_t> StringTable::getMaxWidths() const
     std::vector<size_t> widths(header.size(), 0);
     getMaxWidths(header, widths);
 
-    for (size_t i = 0; i < entries.size(); ++i) getMaxWidths(entries[i], widths);
+    for (size_t i = 0; i < entries.size(); ++i)
+        getMaxWidths(entries[i], widths);
 
     // make sure header can be cleanly centered
     for (size_t i = 0; i < header.size(); ++i)
@@ -54,7 +56,8 @@ void StringTable::dump(std::ostream& out) const
 
     // top line
     out << ASCII::CornerTopLeft;
-    for (size_t i = 0; i < widths.size() - 1; ++i) out << std::string(widths[i], ASCII::LineH) << ASCII::JunctionDown;
+    for (size_t i = 0; i < widths.size() - 1; ++i)
+        out << std::string(widths[i], ASCII::LineH) << ASCII::JunctionDown;
     out << std::string(widths.back(), ASCII::LineH) << ASCII::CornerTopRight;
     out << '\n';
 
@@ -69,7 +72,8 @@ void StringTable::dump(std::ostream& out) const
 
     // breakline
     out << ASCII::JunctionRight;
-    for (size_t i = 0; i < widths.size() - 1; ++i) out << std::string(widths[i], ASCII::LineH) << ASCII::Cross;
+    for (size_t i = 0; i < widths.size() - 1; ++i)
+        out << std::string(widths[i], ASCII::LineH) << ASCII::Cross;
     out << std::string(widths.back(), ASCII::LineH) << ASCII::JunctionLeft;
     out << '\n';
 
@@ -77,7 +81,8 @@ void StringTable::dump(std::ostream& out) const
         if (entries[i].empty()) {
             // breakline
             out << ASCII::JunctionRight;
-            for (size_t i = 0; i < widths.size() - 1; ++i) out << std::string(widths[i], ASCII::LineH) << ASCII::Cross;
+            for (size_t j = 0; j < widths.size() - 1; ++j)
+                out << std::string(widths[j], ASCII::LineH) << ASCII::Cross;
             out << std::string(widths.back(), ASCII::LineH) << ASCII::JunctionLeft;
             out << '\n';
 
@@ -100,7 +105,8 @@ void StringTable::dump(std::ostream& out) const
 
     // bottom line
     out << ASCII::CornerBottomLeft;
-    for (size_t i = 0; i < widths.size() - 1; ++i) out << std::string(widths[i], ASCII::LineH) << ASCII::JunctionUp;
+    for (size_t i = 0; i < widths.size() - 1; ++i)
+        out << std::string(widths[i], ASCII::LineH) << ASCII::JunctionUp;
     out << std::string(widths.back(), ASCII::LineH) << ASCII::CornerBottomRight;
 }
 

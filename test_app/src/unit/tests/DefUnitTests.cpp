@@ -65,7 +65,8 @@ bool DefLoadUnitTest::run()
     return true;
 }
 
-DefCountUnitTest::DefCountUnitTest(std::string&& name, const DataStore& dataStore, const size_t expectedDefCount) noexcept :
+DefCountUnitTest::DefCountUnitTest(
+    std::string&& name, const DataStore& dataStore, const size_t expectedDefCount) noexcept :
     UnitTest(std::move(name)),
     dataStore(dataStore),
     expectedDefCount(expectedDefCount)
@@ -82,8 +83,8 @@ bool DefCountUnitTest::run()
     return true;
 }
 
-DefDumpUnitTest::DefDumpUnitTest(std::string&& name, DataStore& dataStore, std::string&& path, const bool prettify) noexcept
-    :
+DefDumpUnitTest::DefDumpUnitTest(
+    std::string&& name, DataStore& dataStore, std::string&& path, const bool prettify) noexcept :
     UnitTest(std::move(name)),
     prettify(prettify),
     dataStore(dataStore),

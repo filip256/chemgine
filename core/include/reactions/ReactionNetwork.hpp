@@ -24,7 +24,9 @@ private:
     bool insert(const size_t current, ReactionData& reaction, size_t& firstInsert);
 
     bool getOccurringReactions(
-        const std::vector<Reactant>& reactants, const size_t current, std::unordered_set<ConcreteReaction>& result) const;
+        const std::vector<Reactant>&          reactants,
+        const size_t                          current,
+        std::unordered_set<ConcreteReaction>& result) const;
 
     bool getRetrosynthReactions(
         const StructureRef& targetProduct, const size_t current, std::unordered_set<RetrosynthReaction>& result) const;

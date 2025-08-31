@@ -27,7 +27,8 @@ void OS::setCurrentProcessPriority(const OS::ProcessPriority priority)
 {
 #ifdef CHG_BUILD_WINDOWS
     if (not SetPriorityClass(GetCurrentProcess(), static_cast<DWORD>(priority)))
-        Log().fatal("Failed to set process priority: {0} (error code: {1}).", underlying_cast(priority), GetLastError());
+        Log().fatal(
+            "Failed to set process priority: {0} (error code: {1}).", underlying_cast(priority), GetLastError());
 
     Log().debug("Set process priority: {0}.", underlying_cast(priority));
 #endif
@@ -136,7 +137,9 @@ OS::ProcessorAffinityMask OS::setCurrentThreadProcessorAffinity(const ProcessorA
     const auto prevMask = SetThreadAffinityMask(GetCurrentThread(), static_cast<DWORD_PTR>(mask.to_ullong()));
     if (not prevMask)
         Log().fatal(
-            "Failed to set thread affinity to mask: '{0}' (error code: {1}).", mask.to_string('-', '#'), GetLastError());
+            "Failed to set thread affinity to mask: '{0}' (error code: {1}).",
+            mask.to_string('-', '#'),
+            GetLastError());
 
     Log().debug("Set thread affinity to mask: '{0} [{1}]'.", mask.to_string('-', '#'), mask.to_ullong());
     return static_cast<ProcessorAffinityMask>(prevMask);

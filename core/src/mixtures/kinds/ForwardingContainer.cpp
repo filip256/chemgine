@@ -22,7 +22,8 @@ void ForwardingContainer::add(const Reactant& reactant)
 void ForwardingContainer::addEnergy(const Amount<Unit::JOULE> energy)
 {
     const auto splitEnergy = energy / static_cast<Amount<>::StorageType>(forwardingRules.size());
-    for (size_t i = 0; i < forwardingRules.size(); ++i) forwardingRules[i].target->addEnergy(splitEnergy);
+    for (size_t i = 0; i < forwardingRules.size(); ++i)
+        forwardingRules[i].target->addEnergy(splitEnergy);
 }
 
 void ForwardingContainer::addRule(ForwardingRule rule) { forwardingRules.push_back(rule); }
