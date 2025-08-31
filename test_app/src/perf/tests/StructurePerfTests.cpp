@@ -136,13 +136,7 @@ StructurePerfTests::StructurePerfTests(
     std::string&& name, const std::regex& filter, const std::string& atomsFilePath) noexcept :
     PerfTestGroup(std::move(name), filter)
 {
-    Accessor<>::setDataStore(dataStore);
-
-    LogBase::hide();
-    dataStore.load(atomsFilePath);
-    LogBase::unhide();
-
-    registerTest<PerfTestSetup<AccessorTestSetup>>("setup", dataStore);
+    registerTest<PerfTestSetup<AccessorTestSetup>>("setup", dataStore, atomsFilePath);
 
     registerTest<StructureSMILESPerfTest>(
         "SMILES", std::chrono::seconds(8), "C(C)C(CC(C(C)C(C(C)C)(C(C)C))(C(C)C)C)CC");
@@ -248,5 +242,4 @@ StructurePerfTests::StructurePerfTests(
         "ascii_parse", std::chrono::seconds(10), "CC(=O)OC1=C2OC4C(O)C=CC3C5CC(C=C1)=C2C34CCN5C");
 
     registerTest<PerfTestSetup<AccessorTestCleanup>>("cleanup");
-    Accessor<>::unsetDataStore();
 }

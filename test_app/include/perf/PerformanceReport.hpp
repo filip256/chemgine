@@ -28,5 +28,5 @@ public:
     void dump(std::ostream& out) const;
     void dump(const std::string& path) const;
 
-    StringTable compare(const PerformanceReport& other) const;
+    ColoredStringTable compare(const PerformanceReport& other) const;
 };

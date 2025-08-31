@@ -14,9 +14,9 @@ private:
 public:
     Catalyst(const Catalyst&) = default;
 
-    const MoleculeId                   getId() const;
+    MoleculeId                         getId() const;
     const MolecularStructure&          getStructure() const;
-    const Amount<Unit::MOLE_RATIO>     getIdealAmount() const;
+    Amount<Unit::MOLE_RATIO>           getIdealAmount() const;
     std::unordered_map<c_size, c_size> matchWith(const Catalyst& other) const;
     std::unordered_map<c_size, c_size> matchWith(const MolecularStructure& structure) const;
     bool                               matchesWith(const Catalyst& other) const;

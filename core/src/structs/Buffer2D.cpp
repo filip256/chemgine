@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+using namespace details;
+
 //
 // Line
 //
@@ -591,10 +593,10 @@ ContainerT Buffer2D<ContainerT>::toString() const
 // Definitions
 //
 
-template class Buffer2D<std::string>;
-template class Buffer2D<ColoredString>;
+template class details::Buffer2D<std::string>;
+template class details::Buffer2D<ColoredString>;
 
-template void Buffer2D<std::string>::dump<std::ostream>(std::ostream&) const;
-template void Buffer2D<std::string>::dump<std::ostringstream>(std::ostringstream&) const;
-template void Buffer2D<ColoredString>::dump<std::ostream>(std::ostream&) const;
-template void Buffer2D<ColoredString>::dump<ColoredString>(ColoredString&) const;
+template void details::Buffer2D<std::string>::dump<std::ostream>(std::ostream&) const;
+template void details::Buffer2D<std::string>::dump<std::ostringstream>(std::ostringstream&) const;
+template void details::Buffer2D<ColoredString>::dump<std::ostream>(std::ostream&) const;
+template void details::Buffer2D<ColoredString>::dump<ColoredString>(ColoredString&) const;

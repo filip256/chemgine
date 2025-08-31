@@ -6,15 +6,6 @@
 template <class T>
 const T Value<T>::Epsilon = std::numeric_limits<T>::epsilon();
 
-template <class T>
-Value<T>& Value<T>::operator=(const Value<T>& other)
-{
-    if (this != &other)
-        value = other.value;
-
-    return *this;
-}
-
 template <typename T>
 bool Value<T>::operator==(const Value<T>& other) const
 {

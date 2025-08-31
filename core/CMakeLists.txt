@@ -21,7 +21,7 @@ if(MSVC)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
        CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     target_compile_options(core PUBLIC
-        -Wall                    # Warning Level  TODO: Upgrade to -Wall -Wextra
+        -Wall -Wextra            # Warning Level
         -Wno-overloaded-virtual  # TODO: Remove
         -Werror                  # Treat warnings as errors
     )

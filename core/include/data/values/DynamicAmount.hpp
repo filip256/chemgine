@@ -18,8 +18,6 @@ private:
 public:
     DynamicAmount(const Unit unit) noexcept;
     DynamicAmount(const StorageType value, const Unit unit) noexcept;
-    DynamicAmount(const DynamicAmount&) = default;
-
     template <Unit OUnitT>
     DynamicAmount(const Amount<OUnitT> amount) noexcept;
 

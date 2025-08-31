@@ -22,7 +22,7 @@ Symbol::Symbol(const char* str) noexcept :
 
 const std::string& Symbol::str() const { return symbol; }
 
-const Symbol::SizeT Symbol::size() const { return static_cast<SizeT>(symbol.size()); }
+Symbol::SizeT Symbol::size() const { return static_cast<SizeT>(symbol.size()); }
 
 bool Symbol::operator==(const Symbol& other) const { return this->symbol == other.symbol; }
 

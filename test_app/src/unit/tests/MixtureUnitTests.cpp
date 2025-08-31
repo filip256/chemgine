@@ -404,13 +404,7 @@ MixtureUnitTests::MixtureUnitTests(
     std::string&& name, const std::regex& filter, const std::string& defModulePath) noexcept :
     UnitTestGroup(std::move(name), filter)
 {
-    Accessor<>::setDataStore(dataStore);
-
-    LogBase::hide();
-    dataStore.load(defModulePath);
-    LogBase::unhide();
-
-    registerTest<UnitTestSetup<AccessorTestSetup>>("setup", dataStore);
+    registerTest<UnitTestSetup<AccessorTestSetup>>("setup", dataStore, defModulePath);
 
     registerTest<MassConservationUnitTest>(
         "mass_conservation_0",
@@ -444,5 +438,4 @@ MixtureUnitTests::MixtureUnitTests(
     registerTest<ImplicitForwardingUnitTest>("forward_implicit");
 
     registerTest<UnitTestSetup<AccessorTestCleanup>>("cleanup");
-    Accessor<>::unsetDataStore();
 }

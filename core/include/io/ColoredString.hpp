@@ -16,7 +16,6 @@ public:
     OS::BasicColor color;
 
     constexpr ColoredChar(const char chr, const OS::BasicColor color = OS::BasicColor::NONE) noexcept;
-    ColoredChar(const ColoredChar&) = default;
 
     bool operator==(const ColoredChar other) const;
     bool operator!=(const ColoredChar other) const;

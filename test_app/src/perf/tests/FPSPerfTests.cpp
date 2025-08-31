@@ -61,13 +61,7 @@ void LabFPSPerfTest::task() { lab.tick(nextTickTimespan); }
 FPSPerfTests::FPSPerfTests(std::string&& name, const std::regex& filter, const std::string& defModulePath) noexcept :
     PerfTestGroup(std::move(name), filter)
 {
-    Accessor<>::setDataStore(dataStore);
-
-    LogBase::hide();
-    dataStore.load(defModulePath);
-    LogBase::unhide();
-
-    registerTest<PerfTestSetup<AccessorTestSetup>>("setup", dataStore);
+    registerTest<PerfTestSetup<AccessorTestSetup>>("setup", dataStore, defModulePath);
 
     registerTest<ReactorFPSPerfTest>(
         "reactor_default",
@@ -88,5 +82,4 @@ FPSPerfTests::FPSPerfTests(std::string&& name, const std::regex& filter, const s
     registerTest<LabFPSPerfTest>("lab_default", std::chrono::seconds(30), std::move(lab));
 
     registerTest<PerfTestSetup<AccessorTestCleanup>>("cleanup");
-    Accessor<>::unsetDataStore();
 }

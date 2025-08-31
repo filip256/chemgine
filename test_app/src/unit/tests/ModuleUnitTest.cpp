@@ -60,16 +60,9 @@ ModuleUnitTest::ModuleUnitTest(
     const std::string& name, const std::regex& filter, const std::string& defModulePath) noexcept :
     UnitTestGroup(name + '_' + utils::extractFileName(defModulePath), filter)
 {
-    Accessor<>::setDataStore(dataStore);
-
-    LogBase::hide();
-    dataStore.load(defModulePath);
-    LogBase::unhide();
-
-    registerTest<UnitTestSetup<AccessorTestSetup>>("setup", dataStore);
+    registerTest<UnitTestSetup<AccessorTestSetup>>("setup", dataStore, defModulePath);
 
     registerTest<WaterPropertiesUnitTest>("water");
 
     registerTest<UnitTestSetup<AccessorTestCleanup>>("cleanup");
-    Accessor<>::unsetDataStore();
 }

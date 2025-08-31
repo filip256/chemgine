@@ -14,8 +14,6 @@ public:
     constexpr Value() = default;
     constexpr Value(const T value) noexcept;
 
-    Value<T>& operator=(const Value<T>& other);
-
     Value<T> operator+(const Value<T>& other) const;
     Value<T> operator-(const Value<T>& other) const;
     Value<T> operator*(const T scalar) const;

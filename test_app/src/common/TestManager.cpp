@@ -75,8 +75,9 @@ void TestManager::runPerf()
     PerformanceReport prev;
     const auto&       buildName = utils::getBuildTypeName();
 
-    if (prev.load("./reports/perf_" + buildName + "_LTS.txt"))
-        Log(this).info("Performance report:\n{0}", CHG_DELAYED_EVAL(current.compare(prev).toString()));
+    if (prev.load("./reports/perf_" + buildName + "_LTS.txt")) {
+        std::cout << current.compare(prev);
+    }
     else {
         utils::createDir("./reports");
         Log(this).warn("Missing previous performance report.");

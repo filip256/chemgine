@@ -111,7 +111,6 @@ bool DefClearUnitTest::run()
 DefUnitTests::DefUnitTests(std::string&& name, const std::regex& filter, const std::string& baseDefFilePath) noexcept :
     UnitTestGroup(std::move(name), filter)
 {
-    Accessor<>::setDataStore(dataStore);
     registerTest<UnitTestSetup<AccessorTestSetup>>("setup", dataStore);
 
     registerTest<DefClearUnitTest>("clear_base", dataStore);
@@ -257,5 +256,4 @@ DefUnitTests::DefUnitTests(std::string&& name, const std::regex& filter, const s
 
     registerTest<UnitTestSetup<RemoveDirTestSetup>>("cleanup", "./temp");
     registerTest<UnitTestSetup<AccessorTestCleanup>>("cleanup");
-    Accessor<>::unsetDataStore();
 }

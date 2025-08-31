@@ -76,19 +76,19 @@ template <typename T>
 T copy(const T& obj);
 
 template <typename T>
-T min(T arg);
+T min(const T arg);
 template <typename T, typename... Args>
-T min(T arg1, Args... args);
+T min(const T arg1, const Args... args);
 
 template <typename T>
-T max(T arg);
+T max(const T arg);
 template <typename T, typename... Args>
-T max(T arg1, Args... args);
+T max(const T arg1, const Args... args);
 
 template <typename T>
-T closest(T z, T arg);
+T closest(const T z, const T arg);
 template <typename T, typename... Args>
-T closest(T z, T arg1, Args... args);
+T closest(const T z, const T arg1, const Args... args);
 
 //
 // NPos
@@ -491,37 +491,37 @@ T utils::copy(const T& obj)
 }
 
 template <typename T>
-T utils::min(T arg)
+T utils::min(const T arg)
 {
     return arg;
 }
 
 template <typename T, typename... Args>
-T utils::min(T arg1, Args... args)
+T utils::min(const T arg1, const Args... args)
 {
     return std::min(arg1, max(args...));
 }
 
 template <typename T>
-T utils::max(T arg)
+T utils::max(const T arg)
 {
     return arg;
 }
 
 template <typename T, typename... Args>
-T utils::max(T arg1, Args... args)
+T utils::max(const T arg1, const Args... args)
 {
     return std::max(arg1, max(args...));
 }
 
 template <typename T>
-T utils::closest(T z, T arg)
+T utils::closest(const T, const T arg)
 {
     return arg;
 }
 
 template <typename T, typename... Args>
-T utils::closest(T z, T arg1, Args... args)
+T utils::closest(const T z, const T arg1, const Args... args)
 {
     const auto rest = closest(z, args...);
     return (std::abs(z - arg1) < std::abs(z - rest)) ? arg1 : rest;

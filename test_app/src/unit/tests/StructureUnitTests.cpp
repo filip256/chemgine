@@ -398,13 +398,7 @@ StructureUnitTests::StructureUnitTests(
     std::string&& name, const std::regex& filter, const std::string& atomsFilePath) noexcept :
     UnitTestGroup(std::move(name), filter)
 {
-    Accessor<>::setDataStore(dataStore);
-
-    LogBase::hide();
-    dataStore.load(atomsFilePath);
-    LogBase::unhide();
-
-    registerTest<UnitTestSetup<AccessorTestSetup>>("setup", dataStore);
+    registerTest<UnitTestSetup<AccessorTestSetup>>("setup", dataStore, atomsFilePath);
 
     registerTest<StructureSMILESUnitTest>("SMILES", "CN(C)C(=O)C1=CC=CC=C1", 149.19f);
     registerTest<StructureSMILESUnitTest>("SMILES", "C1=CC=CC=C1R", 77.11f);
@@ -656,5 +650,4 @@ StructureUnitTests::StructureUnitTests(
     registerTest<MolBinUnitTest>("MolBin", "CCN(CC)C(=O)C1CN(C2CC3=CNC4=CC=CC(=C34)C2=C1)C");
 
     registerTest<UnitTestSetup<AccessorTestCleanup>>("cleanup");
-    Accessor<>::unsetDataStore();
 }

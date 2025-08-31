@@ -23,7 +23,6 @@ public:
 
     inline constexpr Amount() = default;
     inline constexpr Amount(const StorageType value) noexcept;
-    inline constexpr Amount(const Amount<UnitT>&) = default;
 
     template <Unit OUnitT>
     inline constexpr Amount(const Amount<OUnitT>&) noexcept = delete;

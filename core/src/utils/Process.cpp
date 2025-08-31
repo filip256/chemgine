@@ -23,7 +23,7 @@ OS::ProcessPriority OS::getCurrentProcessPriority()
 #endif
 }
 
-void OS::setCurrentProcessPriority(const OS::ProcessPriority priority)
+void OS::setCurrentProcessPriority([[maybe_unused]] const OS::ProcessPriority priority)
 {
 #ifdef CHG_BUILD_WINDOWS
     if (not SetPriorityClass(GetCurrentProcess(), static_cast<DWORD>(priority)))
@@ -131,7 +131,7 @@ OS::ProcessorAffinityMask OS::getLastAvailablePhysicalProcessorMask()
 #endif
 }
 
-OS::ProcessorAffinityMask OS::setCurrentThreadProcessorAffinity(const ProcessorAffinityMask mask)
+OS::ProcessorAffinityMask OS::setCurrentThreadProcessorAffinity([[maybe_unused]] const ProcessorAffinityMask mask)
 {
 #ifdef CHG_BUILD_WINDOWS
     const auto prevMask = SetThreadAffinityMask(GetCurrentThread(), static_cast<DWORD_PTR>(mask.to_ullong()));

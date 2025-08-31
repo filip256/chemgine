@@ -5,11 +5,11 @@ Catalyst::Catalyst(const StructureRef& reactable, const Amount<Unit::MOLE_RATIO>
     reactable(reactable)
 {}
 
-const MoleculeId Catalyst::getId() const { return reactable.getId(); }
+MoleculeId Catalyst::getId() const { return reactable.getId(); }
 
 const MolecularStructure& Catalyst::getStructure() const { return reactable.getStructure(); }
 
-const Amount<Unit::MOLE_RATIO> Catalyst::getIdealAmount() const { return idealAmount; }
+Amount<Unit::MOLE_RATIO> Catalyst::getIdealAmount() const { return idealAmount; }
 
 std::unordered_map<c_size, c_size> Catalyst::matchWith(const Catalyst& other) const
 {

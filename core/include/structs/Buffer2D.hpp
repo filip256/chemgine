@@ -8,6 +8,9 @@
 #include <ostream>
 #include <string>
 
+namespace details
+{
+
 /// <summary>
 /// 2D buffer which expands as it's being written to, filling empty elements with neutral values.
 /// </summary>
@@ -137,12 +140,14 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Buffer2D<U>& buffer);
 };
 
-using TextBlock        = Buffer2D<std::string>;
-using ColoredTextBlock = Buffer2D<ColoredString>;
-
 template <typename ContainerT>
 std::ostream& operator<<(std::ostream& os, const Buffer2D<ContainerT>& buffer)
 {
     buffer.dump(os);
     return os;
 }
+
+}  // namespace details
+
+using TextBlock        = details::Buffer2D<std::string>;
+using ColoredTextBlock = details::Buffer2D<ColoredString>;

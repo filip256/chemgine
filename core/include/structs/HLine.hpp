@@ -16,7 +16,6 @@ public:
     Point<T> origin;
 
     constexpr HLine(const Point<T>& origin, const LenT length) noexcept;
-    constexpr HLine(const HLine&) = default;
 
     template <
         typename OtherT,

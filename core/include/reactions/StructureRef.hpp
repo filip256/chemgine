@@ -15,7 +15,7 @@ private:
 public:
     StructureRef(const StructureRef&) = default;
 
-    const MoleculeId          getId() const;
+    MoleculeId                getId() const;
     const MolecularStructure& getStructure() const;
 
     std::unordered_map<c_size, c_size> matchWith(const MolecularStructure& structure) const;

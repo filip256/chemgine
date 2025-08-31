@@ -23,7 +23,7 @@ public:
 
     const std::string& str() const;
 
-    const SizeT size() const;
+    SizeT size() const;
 
     bool operator==(const Symbol& other) const;
     bool operator!=(const Symbol& other) const;

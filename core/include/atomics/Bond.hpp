@@ -15,7 +15,6 @@ private:
 
 public:
     Bond(BondedAtomBase& other, const BondType type);
-    Bond(const Bond&) = default;
 
     const BondedAtomBase& getOther() const;
     BondedAtomBase&       getOther();

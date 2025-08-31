@@ -6,7 +6,7 @@ StructureRef::StructureRef(const GenericMoleculeData& data) noexcept :
     data(data)
 {}
 
-const MoleculeId StructureRef::getId() const { return data.id; }
+MoleculeId StructureRef::getId() const { return data.id; }
 
 const MolecularStructure& StructureRef::getStructure() const { return data.getStructure(); }
 

@@ -86,13 +86,14 @@ void PerformanceReport::dump(const std::string& path) const
     out.close();
 }
 
-StringTable PerformanceReport::compare(const PerformanceReport& other) const
+ColoredStringTable PerformanceReport::compare(const PerformanceReport& other) const
 {
-    StringTable table({"Test Name", this->timestamp, other.timestamp, "Difference", "Change"}, true);
+    ColoredStringTable table({"Test Name", this->timestamp, other.timestamp, "Difference", "Change"}, true);
 
     for (const auto& [k, t] : this->timeTable) {
         const auto oth = other.timeTable.find(k);
         if (oth == other.timeTable.end()) {
+            // Entry not found in other.
             const auto thisTimeStr =
                 std::format("{:.2f}", std::min(t.averageTime, t.medianTime).count() / 1000.0) + "us";
             table.addEntry({k, thisTimeStr, "?", "?", "?"});
@@ -106,13 +107,13 @@ StringTable PerformanceReport::compare(const PerformanceReport& other) const
             std::pair(t.medianTime.count() / 1000.0, oth->second.averageTime.count() / 1000.0),
         };
 
-        // Compute the % changes
+        // Compute the % changes.
         std::array<float_h, 4> changes;
         std::transform(pairs.begin(), pairs.end(), changes.begin(), [](const auto& p) {
             return (p.first - p.second) / std::max(p.second, std::numeric_limits<float_h>::min()) * 100.0;
         });
 
-        // Pick the smallest absolute change out of the 4 combinations
+        // Pick the smallest absolute change out of the 4 combinations.
         const auto minChangeIt = std::min_element(changes.begin(), changes.end(), [](const auto lhs, const auto rhs) {
             return std::abs(lhs) < std::abs(rhs);
         });
@@ -121,7 +122,11 @@ StringTable PerformanceReport::compare(const PerformanceReport& other) const
         const auto thisTimeStr  = std::format("{:.2f}", pairs[minIdx].first) + "us";
         const auto otherTimeStr = std::format("{:.2f}", pairs[minIdx].second) + "us";
         const auto minDiffStr   = std::format("{:.2f}", pairs[minIdx].first - pairs[minIdx].second) + "us";
-        const auto minChangeStr = std::format("{:+.2f}", *minChangeIt) + '%';
+        const auto color        = *minChangeIt <= -5.0f ? OS::BasicColor::GREEN
+                                  : *minChangeIt < 1.0f ? OS::BasicColor::DARK_GREY
+                                  : *minChangeIt < 5.0f ? OS::BasicColor::DARK_YELLOW
+                                                        : OS::BasicColor::RED;
+        const auto minChangeStr = ColoredString(std::format("{:+.2f}", *minChangeIt) + '%', color);
 
         table.addEntry({k, thisTimeStr, otherTimeStr, minDiffStr, minChangeStr});
     }
