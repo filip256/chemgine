@@ -12,7 +12,7 @@ defaults:
 
 jobs:
   cleanup:
-    name: Cache cleanup
+    name: Cleanup
     runs-on: ubuntu-latest
 
     permissions:
@@ -20,17 +20,17 @@ jobs:
       contents: read
 
     steps:
-      - name: Cleanup
+      - name: Cache cleanup
         run: |
-          echo "Fetching list of cache keys"
-          cacheKeysForPR=$(gh cache list --ref $BRANCH --limit 100 --json id --jq '.[].id')
+          echo "Fetching list of cache keys."
+          CACHE_KEYS=$(gh cache list --ref $BRANCH --limit 100 --json id --jq '.[].id')
 
           set +e  # Setting this to not fail the workflow while deleting cache keys.
           echo "Deleting caches from $BRANCH:"
-          for cacheKey in $cacheKeysForPR
+          for KEY in $CACHE_KEYS
           do
-              echo " - $cacheKey"
-              gh cache delete $cacheKey
+              echo " - $KEY"
+              gh cache delete $KEY
           done
           echo "Done"
         env:

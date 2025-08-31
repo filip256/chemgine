@@ -31,6 +31,6 @@ private:
 public:
     TestManager(std::regex&& filter) noexcept;
 
-    bool runUnit();
-    void runPerf();
+    bool              runUnit();
+    PerformanceReport runPerf();
 };

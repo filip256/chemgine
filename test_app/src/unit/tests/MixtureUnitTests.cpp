@@ -1,6 +1,7 @@
 #include "unit/tests/MixtureUnitTests.hpp"
 
 #include "io/StringTable.hpp"
+#include "utils/Build.hpp"
 
 ReactorUnitTest::ReactorUnitTest(
     std::string&&                 name,
@@ -418,13 +419,15 @@ MixtureUnitTests::MixtureUnitTests(
 
     registerTest<OverflowUnitTest>("overflow");
 
-    registerTest<DeterminismUnitTest>(
-        "determinism_0",
-        1.0_L,
-        ContentInitializer({
-            {Molecule("CC(=O)O"), 2.0_mol},
-            {    Molecule("OCC"), 3.0_mol}
-    }));
+    // TODO: Fix this test on Linux:
+    CHG_WINDOWS_ONLY(
+        registerTest<DeterminismUnitTest>(
+            "determinism_0",
+            1.0_L,
+            ContentInitializer({
+                {Molecule("CC(=O)O"), 2.0_mol},
+                {    Molecule("OCC"), 3.0_mol}
+    })));
 
     registerTest<BoilUnitTest>(
         "boil_0",

@@ -38,6 +38,7 @@ if(MSVC)
     add_compile_options(
         /MP           # Multi-processor Compilation
         /permissive-  # Strict standard conformance
+        /utf-8
     )
 
     add_compile_options(
@@ -66,6 +67,11 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR
 
 else()
     message(WARNING "Unsupported CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
+endif()
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    # LLD should be better than gold.
+    add_link_options(-fuse-ld=lld)
 endif()
 
 # ~ User options ~

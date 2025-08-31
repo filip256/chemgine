@@ -10,6 +10,12 @@
 #include <array>
 #include <fstream>
 
+std::optional<PerformanceReport> PerformanceReport::fromFile(const std::string& path)
+{
+    PerformanceReport report;
+    return report.load(path) ? std::optional(report) : std::nullopt;
+}
+
 void PerformanceReport::add(const std::string& key, const TimingResult& time)
 {
     auto it = timeTable.find(key);
@@ -88,15 +94,20 @@ void PerformanceReport::dump(const std::string& path) const
 
 ColoredStringTable PerformanceReport::compare(const PerformanceReport& other) const
 {
-    ColoredStringTable table({"Test Name", this->timestamp, other.timestamp, "Difference", "Change"}, true);
+    static const ColoredString missing("?", OS::BasicColor::DARK_GREY);
+
+    ColoredStringTable table({"Test Name", other.timestamp, this->timestamp, "Difference", "Change"}, true);
 
     for (const auto& [k, t] : this->timeTable) {
         const auto oth = other.timeTable.find(k);
         if (oth == other.timeTable.end()) {
             // Entry not found in other.
-            const auto thisTimeStr =
-                std::format("{:.2f}", std::min(t.averageTime, t.medianTime).count() / 1000.0) + "us";
-            table.addEntry({k, thisTimeStr, "?", "?", "?"});
+            const ColoredString name(k, OS::BasicColor::DARK_GREY);
+            const ColoredString thisTimeStr(
+                std::format("{:.2f}", std::min(t.averageTime, t.medianTime).count() / 1000.0) + "us",
+                OS::BasicColor::DARK_GREY);
+
+            table.addEntry({name, missing, thisTimeStr, missing, missing});
             continue;
         }
 
@@ -118,24 +129,28 @@ ColoredStringTable PerformanceReport::compare(const PerformanceReport& other) co
             return std::abs(lhs) < std::abs(rhs);
         });
 
-        const auto minIdx       = std::distance(changes.begin(), minChangeIt);
-        const auto thisTimeStr  = std::format("{:.2f}", pairs[minIdx].first) + "us";
-        const auto otherTimeStr = std::format("{:.2f}", pairs[minIdx].second) + "us";
-        const auto minDiffStr   = std::format("{:.2f}", pairs[minIdx].first - pairs[minIdx].second) + "us";
-        const auto color        = *minChangeIt <= -5.0f ? OS::BasicColor::GREEN
-                                  : *minChangeIt < 1.0f ? OS::BasicColor::DARK_GREY
-                                  : *minChangeIt < 5.0f ? OS::BasicColor::DARK_YELLOW
-                                                        : OS::BasicColor::RED;
-        const auto minChangeStr = ColoredString(std::format("{:+.2f}", *minChangeIt) + '%', color);
+        const auto          minIdx = std::distance(changes.begin(), minChangeIt);
+        const auto          color  = *minChangeIt <= -5.0f ? OS::BasicColor::GREEN
+                                     : *minChangeIt < 1.0f ? OS::BasicColor::DARK_GREY
+                                     : *minChangeIt < 5.0f ? OS::BasicColor::DARK_YELLOW
+                                                           : OS::BasicColor::RED;
+        const ColoredString name(k, color);
+        const ColoredString otherTimeStr(std::format("{:.2f}", pairs[minIdx].second) + "us", color);
+        const ColoredString thisTimeStr(std::format("{:.2f}", pairs[minIdx].first) + "us", color);
+        const ColoredString minDiffStr(std::format("{:.2f}", pairs[minIdx].first - pairs[minIdx].second) + "us", color);
+        const ColoredString minChangeStr(std::format("{:+.2f}", *minChangeIt) + '%', color);
 
-        table.addEntry({k, thisTimeStr, otherTimeStr, minDiffStr, minChangeStr});
+        table.addEntry({name, otherTimeStr, thisTimeStr, minDiffStr, minChangeStr});
     }
 
     for (const auto& [k, t] : other.timeTable) {
         if (not this->timeTable.contains(k)) {
-            const auto otherTimeStr =
-                std::format("{:.2f}", std::min(t.averageTime, t.medianTime).count() / 1000.0) + "us";
-            table.addEntry({k, "?", otherTimeStr, "?", "?"});
+            const ColoredString name(k, OS::BasicColor::DARK_GREY);
+            const ColoredString otherTimeStr(
+                std::format("{:.2f}", std::min(t.averageTime, t.medianTime).count() / 1000.0) + "us",
+                OS::BasicColor::DARK_GREY);
+
+            table.addEntry({name, otherTimeStr, missing, missing, missing});
         }
     }
 

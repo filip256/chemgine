@@ -2,6 +2,7 @@
 
 #include "global/Charset.hpp"
 #include "io/Log.hpp"
+#include "utils/Build.hpp"
 
 namespace ASCII
 {
@@ -57,6 +58,7 @@ Direction Direction::turn(const Angle angle, const bool parallelIsBackward) cons
             return parallelIsBackward ? 4 : 0;
         default:
             Log(this).fatal("Got unknown angle.");
+            CHG_UNREACHABLE();
         }
     }(angle, parallelIsBackward);
 

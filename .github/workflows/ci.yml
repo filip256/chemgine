@@ -56,7 +56,7 @@ jobs:
         - { name: Windows-VS2022-x64-Release, os: windows-2022,  arch: x64, config: Release, flags: -DCMAKE_C_COMPILER="cl.exe" -DCMAKE_CXX_COMPILER="cl.exe" -DEXTENDED_CHAR_SET=ASCII }
         - { name: Windows-VS2022-x86-Release, os: windows-2022,  arch: x86, config: Release, flags: -DCMAKE_C_COMPILER="cl.exe" -DCMAKE_CXX_COMPILER="cl.exe" -DEXTENDED_CHAR_SET=ASCII }
         - { name: Ubuntu-GCC-x64-Release,     os: ubuntu-latest, arch: x64, config: Release, flags: -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DEXTENDED_CHAR_SET=ASCII }
-        - { name: Ubuntu-Clang-x64-Release,   os: ubuntu-latest, arch: x64, config: Release, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_EXE_LINKER_FLAGS="-fuse-ld=lld" -DEXTENDED_CHAR_SET=ASCII }
+        - { name: Ubuntu-Clang-x64-Release,   os: ubuntu-latest, arch: x64, config: Release, flags: -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DEXTENDED_CHAR_SET=ASCII }
 
     steps:
       - name: Checkout repository
@@ -93,14 +93,6 @@ jobs:
           append-timestamp: false
           evict-old-files: job
 
-      - name: Cache cleanup
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh extension install actions/gh-actions-cache
-          gh actions-cache delete "sccache-${{ matrix.kind.name }}-${{ github.event.pull_request.head.ref || github.ref_name }}-" --confirm || true
-        continue-on-error: true
-
       - name: Configure environment (Windows)
         if: matrix.kind.os == 'windows-2022'
         uses: ilammy/msvc-dev-cmd@v1
@@ -131,6 +123,14 @@ jobs:
             build/defparse/**/defparse*
             !**/CMakeFiles/**
 
+      - name: Cache cleanup
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh extension install actions/gh-actions-cache
+          gh actions-cache delete "sccache-${{ matrix.kind.name }}-${{ github.event.pull_request.head.ref || github.ref_name }}-" --confirm || true
+        continue-on-error: true
+
   build-python:
     name: Build / Python
     needs: pre-commit
@@ -141,7 +141,7 @@ jobs:
      - name: Build
        run: python3 -m compileall dev_tools/
 
-  unit:
+  unit-test:
     name: Unit / ${{ matrix.kind.name }}
     needs: build-cpp
     runs-on: ${{ matrix.kind.os }}
@@ -150,13 +150,14 @@ jobs:
       fail-fast: false
       matrix:
         kind:
-        - { name: Windows-VS2022-x64-Release, os: windows-2022,  config: Release }
-        - { name: Windows-VS2022-x86-Release, os: windows-2022,  config: Release }
-        - { name: Ubuntu-GCC-x64-Release,     os: ubuntu-latest, config: Release }
-        - { name: Ubuntu-Clang-x64-Release,   os: ubuntu-latest, config: Release }
+        - { name: Windows-VS2022-x64-Release, os: windows-2022  }
+        - { name: Windows-VS2022-x86-Release, os: windows-2022  }
+        - { name: Ubuntu-GCC-x64-Release,     os: ubuntu-latest }
+        - { name: Ubuntu-Clang-x64-Release,   os: ubuntu-latest }
 
     steps:
-      - uses: actions/download-artifact@v4
+      - name: Download binaries
+        uses: actions/download-artifact@v4
         with:
           name: Chemgine-${{ matrix.kind.name }}
 
@@ -171,3 +172,121 @@ jobs:
         run: |
           chmod +x test_app
           xvfb-run ./test_app -u
+
+  perf-test:
+    name: Performance / ${{ matrix.kind.name }}
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: unit-test
+    runs-on: ${{ matrix.kind.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        kind:
+        - { name: Windows-VS2022-x64-Release, os: windows-2022  }
+        - { name: Ubuntu-GCC-x64-Release,     os: ubuntu-latest }
+        - { name: Ubuntu-Clang-x64-Release,   os: ubuntu-latest }
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: Chemgine-${{ matrix.kind.name }}
+
+      - name: Run metrics (Windows)
+        if: matrix.kind.os == 'windows-2022'
+        working-directory: ./test_app/
+        run: ./test_app.exe -p "perf-${{ github.event.pull_request.head.sha || github.sha }}.report"
+
+      - name: Run metrics (Ubuntu)
+        if: matrix.kind.os == 'ubuntu-latest'
+        working-directory: ./test_app/
+        run: |
+          chmod +x test_app
+          xvfb-run ./test_app -p "perf-${{ github.event.pull_request.head.sha || github.sha }}.report"
+
+      - name: Compare
+        run: |
+          REPORTS_BRANCH="reports/${{ github.event.pull_request.head.ref || github.ref_name }}"
+          REPORTS_PATH="./performance/${{ matrix.kind.name }}"
+
+          git checkout "$REPORTS_BRANCH"
+          git fetch origin "$REPORTS_BRANCH"
+          git pull origin "$REPORTS_BRANCH"
+
+          # Find the last commit that modified a matching report file.
+          PREV_REPORTS_SHA=$(git log -1 --pretty=format:"%H" "${REPORTS_PATH}/perf-*")
+          if [ -z "$PREV_REPORTS_SHA" ]; then
+            echo "Found no previous report."
+            exit 0
+          fi
+
+          # Extract the main branch SHA from the commit name: 'perf-{TYPE}-{PREV_MAIN_SHA}'.
+          PREV_MAIN_SHA=$(git log -1 --pretty=format:"%s" "$PREV_REPORTS_SHA" | sed -E 's/^perf-.*-([a-f0-9]+)$/\1/')
+          if [ -z "$PREV_MAIN_SHA" ]; then
+            echo "Malformed reports commit message."
+            exit 1
+          fi
+
+          echo "Found previous report: '${REPORTS_BRANCH}@${PREV_REPORTS_SHA} <- ${{ github.event.pull_request.head.ref || github.ref_name }}@${PREV_MAIN_SHA}'."
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            ./test_app/test_app.exe -c "${REPORTS_PATH}/perf-${PREV_MAIN_SHA}.report,test_app/perf-${{ github.event.pull_request.head.sha || github.sha }}.report"
+          else
+            xvfb-run ./test_app/test_app -c "${REPORTS_PATH}/perf-${PREV_MAIN_SHA}.report,test_app/perf-${{ github.event.pull_request.head.sha || github.sha }}.report"
+          fi
+        continue-on-error: true
+
+      - name: Push report
+        run: |
+          REPORTS_BRANCH="reports/${{ github.event.pull_request.head.ref || github.ref_name }}"
+          CURRENT_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+
+          if git ls-remote --exit-code --heads origin "$REPORTS_BRANCH"; then
+            echo "Branch: '$REPORTS_BRANCH' already exists."
+            git fetch origin "$REPORTS_BRANCH"
+            git checkout "$REPORTS_BRANCH"
+          else
+            echo "Creating new branch: '$REPORTS_BRANCH'."
+            git checkout --orphan "$REPORTS_BRANCH"
+            git reset --hard
+
+            git -c user.name="github-actions" -c user.email="github-actions@github.com" commit --allow-empty -m "Initialize reports branch"
+            git push origin "$REPORTS_BRANCH"
+          fi
+
+          mkdir -p ./performance/${{ matrix.kind.name }}
+          mv "test_app/perf-${CURRENT_SHA}.report" ./performance/${{ matrix.kind.name }}/
+
+          git add ./performance/${{ matrix.kind.name }}/perf-${CURRENT_SHA}.report
+          git -c user.name="github-actions" -c user.email="github-actions@github.com" commit -m "perf-${{ matrix.kind.name }}-${CURRENT_SHA}"
+
+          # Multiple matrix jobs can push to this branch, run multiple attempts to ensure each job can push safely.
+          MAX_PUSH_RETRIES=5
+          PUSH_COUNT=0
+          PUSH_SUCCESS=0
+
+          while [ $PUSH_COUNT -lt $MAX_PUSH_RETRIES ]; do
+            git stash
+            git fetch origin "$REPORTS_BRANCH"
+            git pull --rebase origin "$REPORTS_BRANCH" || true
+
+            if git push origin "$REPORTS_BRANCH"; then
+              echo "Push succeeded."
+              PUSH_SUCCESS=1
+              break
+            else
+              echo "Push failed, retrying..."
+              PUSH_COUNT=$((PUSH_COUNT+1))
+              sleep 1
+            fi
+          done
+
+          if [ $PUSH_SUCCESS -ne 1 ]; then
+            echo "Failed to push after $MAX_PUSH_RETRIES attempts."
+            exit 1
+          fi

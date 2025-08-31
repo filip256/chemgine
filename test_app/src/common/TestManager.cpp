@@ -10,8 +10,6 @@
 #include "unit/tests/MixtureUnitTests.hpp"
 #include "unit/tests/ModuleUnitTest.hpp"
 #include "unit/tests/StructureUnitTests.hpp"
-#include "utils/Build.hpp"
-#include "utils/Path.hpp"
 
 UnitTests::UnitTests(const std::regex& filter) noexcept :
     UnitTestGroup("Unit", filter)
@@ -63,25 +61,10 @@ bool TestManager::runUnit()
     return true;
 }
 
-void TestManager::runPerf()
+PerformanceReport TestManager::runPerf()
 {
     if (perfTests.getTestCount() == 0) {
         Log(this).info("No perf tests match the given filter.");
-        return;
     }
-
-    const auto current = perfTests.generateReport();
-
-    PerformanceReport prev;
-    const auto&       buildName = utils::getBuildTypeName();
-
-    if (prev.load("./reports/perf_" + buildName + "_LTS.txt")) {
-        std::cout << current.compare(prev);
-    }
-    else {
-        utils::createDir("./reports");
-        Log(this).warn("Missing previous performance report.");
-    }
-
-    current.dump("./reports/perf_" + buildName + "_LTS.txt");
+    return perfTests.generateReport();
 }

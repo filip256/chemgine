@@ -18,6 +18,8 @@ public:
     PerformanceReport(const PerformanceReport&) = default;
     PerformanceReport(PerformanceReport&&)      = default;
 
+    static std::optional<PerformanceReport> fromFile(const std::string& path);
+
     void add(const std::string& key, const TimingResult& time);
     void merge(PerformanceReport&& other);
     void setTimestamp();

@@ -15,7 +15,6 @@ if(MSVC)
     target_compile_options(core PUBLIC
         /W4     # Warning Level
         /WX     # Treat warnings as errors
-        /utf-8
     )
 
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR

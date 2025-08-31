@@ -3,6 +3,7 @@
 #include "atomics/BondedAtom.hpp"
 #include "global/Charset.hpp"
 #include "io/Log.hpp"
+#include "utils/Build.hpp"
 
 Bond::Bond(BondedAtomBase& other, const BondType type) :
     type(type),
@@ -216,6 +217,7 @@ bool Bond::isInDirection(const char symbol, const ASCII::Direction direction)
 
     default:
         Log<Bond>().fatal("Unsupported direction index: {}.", direction.getIdx());
+        CHG_UNREACHABLE();
     }
 }
 
@@ -238,6 +240,7 @@ bool Bond::hasCompleteASCIIRepresentation(const BondType type)
 
     default:
         Log<Bond>().fatal("Unsupported bond type: {}.", underlying_cast(type));
+        CHG_UNREACHABLE();
     }
 }
 
@@ -299,5 +302,6 @@ uint8_t Bond::getValence(const BondType type)
 
     default:
         Log<Bond>().fatal("Unsupported bond type: {0}.", underlying_cast(type));
+        CHG_UNREACHABLE();
     }
 }
