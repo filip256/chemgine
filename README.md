@@ -1,10 +1,11 @@
 # Chemgine
 
-Real-time laboratory scale chemical simulation engine.
+**Real-time laboratory scale chemical simulation engine.**
 
 # How to Build
 
-Chemgine is built using [CMake](https://cmake.org/download/) (v3.20+). Bellow are a few common build configurations:
+Chemgine can be built using [CMake](https://cmake.org/download/) (v3.20+).
+Bellow are a few common build configurations:
 
 <details>
   <summary><strong><span style="font-size:1.2em;">Windows (MSVC)</span></strong></summary>
@@ -38,14 +39,12 @@ cmake --build build --parallel $(nproc)
 ```
 </details>
 
-<br>
-
 # How to Debug
 
 <details>
   <summary><strong><span style="font-size:1.2em;">Ubuntu (GCC) using VS Code</span></strong></summary>
 
-1. Ensure gdb is installed:
+1. Ensure `gdb` is installed:
 ```sh
 sudo apt update
 sudo apt install gdb
@@ -64,14 +63,12 @@ cmake --build build --parallel $(nproc)
 cp dev/presets/launch.json .vscode
 ```
 
-5. In *VS Code* go to `Run and Debug` (Ctrl+Shift+D), select the desired configuration and click run.
+5. In *VS Code* go to `Run and Debug` (*Ctrl+Shift+D*), select the desired configuration and click run.
 
 </details>
 
-<br>
-
 # How to Contribute
-## Install pre-commit:
+### Pre-commit:
 ```sh
 pip install pre-commit
 pre-commit --version  # v4.3.0+
@@ -80,8 +77,8 @@ cd <chemgine-project-root>
 pre-commit install
 ```
 
-## Visual Studio:
-### Automatic formatting:
+### Visual Studio:
+#### Automatic formatting:
 [*Microsoft Visual Studio*](https://visualstudio.microsoft.com/) ships together with a *clang-format* version which is usually older than the latest version. This may cause issues with some of the rules defined in [.clang-format](.clang-format). To fix them:
  1. Download the latest [LLVM release](https://github.com/llvm/llvm-project/releases) (look for `clang+llvm-20.1.8-x86_64-pc-windows-msvc.tar.xz`)
  2. Extract `bin/clang-format.exe`
