@@ -1,311 +1,300 @@
 #include "data/def/FileParser.hpp"
 
-#include "data/def/Parsers.hpp"
-#include "utils/String.hpp"
-#include "utils/Path.hpp"
+#include "data/FileStore.hpp"
 #include "data/OOLDefRepository.hpp"
 #include "data/def/DefinitionParser.hpp"
-#include "data/FileStore.hpp"
 #include "data/def/Keywords.hpp"
+#include "data/def/Parsers.hpp"
 #include "io/Log.hpp"
+#include "utils/Path.hpp"
+#include "utils/String.hpp"
 
 using namespace def;
 
 FileParser::FileParser(
-	const std::string& filePath,
-	FileStore& fileStore,
-	const OOLDefRepository& oolDefinitions
-) noexcept :
-	currentFile(utils::normalizePath(filePath)),
-	stream(currentFile),
-	oolDefinitions(oolDefinitions),
-	fileStore(fileStore)
+    const std::string& filePath, FileStore& fileStore, const OOLDefRepository& oolDefinitions) noexcept :
+    currentFile(utils::normalizePath(filePath)),
+    stream(currentFile),
+    oolDefinitions(oolDefinitions),
+    fileStore(fileStore)
 {
-	if (not stream.is_open())
-	{
-		Log(this).error("Failed to open file: '{0}' for reading.", currentFile);
-		return;
-	}
+    if (not stream.is_open()) {
+        Log(this).error("Failed to open file: '{0}' for reading.", currentFile);
+        return;
+    }
 
-	if(fileStore.getFileStatus(filePath) == ParseStatus::COMPLETED)
-	{
-		Log(this).warn("Skipping already loaded file: '{0}'.", filePath);
-		forceFinish();
-		return;
-	}
+    if (fileStore.getFileStatus(filePath) == ParseStatus::COMPLETED) {
+        Log(this).warn("Skipping already loaded file: '{0}'.", filePath);
+        forceFinish();
+        return;
+    }
 
-	fileStore.setFileStatus(currentFile, ParseStatus::STARTED);
+    fileStore.setFileStatus(currentFile, ParseStatus::STARTED);
 }
 
 FileParser::~FileParser() noexcept
 {
-	if (stream.is_open())
-	{
-		Log(this).warn("Incomplete parsing on file: '{0}'.", currentFile);
-		stream.close();
-	}
+    if (stream.is_open()) {
+        Log(this).warn("Incomplete parsing on file: '{0}'.", currentFile);
+        stream.close();
+    }
 }
 
 void FileParser::include(const std::string& filePath)
 {
-	const auto status = fileStore.getFileStatus(filePath);
-	if (status == ParseStatus::COMPLETED) // skip already parsed file
-		return;
+    const auto status = fileStore.getFileStatus(filePath);
+    if (status == ParseStatus::COMPLETED)  // skip already parsed file
+        return;
 
-	if (status == ParseStatus::STARTED)
-	{
-		Log(this).error("Encountered cyclic dependency on file: '{0}', at: {1}:{2}.", filePath, currentFile, currentLine);
-		return;
-	}
+    if (status == ParseStatus::STARTED) {
+        Log(this).error(
+            "Encountered cyclic dependency on file: '{0}', at: {1}:{2}.", filePath, currentFile, currentLine);
+        return;
+    }
 
-	subParser = std::make_unique<FileParser>(filePath, fileStore, oolDefinitions);
+    subParser = std::make_unique<FileParser>(filePath, fileStore, oolDefinitions);
 }
 
 void FileParser::closeSubparser()
 {
-	// inherit include aliases
-	includeAliases.merge(subParser->includeAliases);
-	for (const auto& a : subParser->includeAliases)
-		if(includeAliases[a.first] != a.second)
-			Log(this).warn("Overwritten already defined include alias: '{0}: {1}' from included file, at: {2}:{3}.", a.first, a.second, currentFile, currentLine);
-	
-	subParser->stream.close();
-	subParser.reset(nullptr);
+    // inherit include aliases
+    includeAliases.merge(subParser->includeAliases);
+    for (const auto& a : subParser->includeAliases)
+        if (includeAliases[a.first] != a.second)
+            Log(this).warn(
+                "Overwritten already defined include alias: '{0}: {1}' from included file, at: "
+                "{2}:{3}.",
+                a.first,
+                a.second,
+                currentFile,
+                currentLine);
+
+    subParser->stream.close();
+    subParser.reset(nullptr);
 }
 
-bool FileParser::isOpen() const
-{
-	return stream.is_open();
-}
+bool FileParser::isOpen() const { return stream.is_open(); }
 
 def::Location FileParser::getCurrentLocalLocation() const
 {
-	return isOpen() ? def::Location(currentFile, currentLine) :
-		def::Location::createEOF(currentFile);
+    return isOpen() ? def::Location(currentFile, currentLine) : def::Location::createEOF(currentFile);
 }
 
 def::Location FileParser::getCurrentGlobalLocation() const
 {
-	return subParser ? subParser->getCurrentGlobalLocation() :
-		getCurrentLocalLocation();
+    return subParser ? subParser->getCurrentGlobalLocation() : getCurrentLocalLocation();
 }
 
 void FileParser::forceFinish()
 {
-	if (isOpen())
-	{
-		fileStore.setFileStatus(currentFile, ParseStatus::COMPLETED);
-		stream.close();
-	}
+    if (isOpen()) {
+        fileStore.setFileStatus(currentFile, ParseStatus::COMPLETED);
+        stream.close();
+    }
 }
 
 std::string FileParser::nextLocalLine()
 {
-	std::string line;
-	while (std::getline(stream, line))
-	{
-		++currentLine;
+    std::string line;
+    while (std::getline(stream, line)) {
+        ++currentLine;
 
-		utils::strip(line);
-		if (line.empty())
-			continue;
+        utils::strip(line);
+        if (line.empty())
+            continue;
 
-		return line;
-	}
+        return line;
+    }
 
-	forceFinish();
-	return "";
+    forceFinish();
+    return "";
 }
 
 std::string FileParser::nextGlobalLine()
 {
-	// finish includes first
-	if (subParser)
-	{
-		const auto subLine = subParser->nextGlobalLine();
-		if (subParser->isOpen())
-			return subLine;
+    // finish includes first
+    if (subParser) {
+        const auto subLine = subParser->nextGlobalLine();
+        if (subParser->isOpen())
+            return subLine;
 
-		closeSubparser();
-	}
+        closeSubparser();
+    }
 
-	// main file
-	while(true)
-	{
-		const auto line = nextLocalLine();
-		if (line.empty())
-			break;
+    // main file
+    while (true) {
+        const auto line = nextLocalLine();
+        if (line.empty())
+            break;
 
-		// include
-		if (line.starts_with(def::Syntax::Include))
-		{
-			const auto pathEnd = line.find(def::Syntax::IncludeAs, def::Syntax::Include.size());
-			auto path = utils::normalizePath(
-				line.substr(def::Syntax::Include.size(), pathEnd - def::Syntax::Include.size()));
+        // include
+        if (line.starts_with(def::Syntax::Include)) {
+            const auto pathEnd = line.find(def::Syntax::IncludeAs, def::Syntax::Include.size());
+            auto       path =
+                utils::normalizePath(line.substr(def::Syntax::Include.size(), pathEnd - def::Syntax::Include.size()));
 
-			// append dir
-			if (path.starts_with("~/"))
-				path = utils::combinePaths(utils::extractDirName(currentFile), path.substr(1));
+            // append dir
+            if (path.starts_with("~/"))
+                path = utils::combinePaths(utils::extractDirName(currentFile), path.substr(1));
 
-			include(path);
-			return nextGlobalLine();
-		}
+            include(path);
+            return nextGlobalLine();
+        }
 
-		return line;
-	}
+        return line;
+    }
 
-	forceFinish();
-	return "";
+    forceFinish();
+    return "";
 }
 
 std::pair<std::string, def::Location> FileParser::nextDefinitionLine()
 {
-	// finish includes first
-	if (subParser)
-	{
-		auto subLine = subParser->nextDefinitionLine();
-		if (subLine.first.size())
-			return subLine;
+    // finish includes first
+    if (subParser) {
+        auto subLine = subParser->nextDefinitionLine();
+        if (subLine.first.size())
+            return subLine;
 
-		closeSubparser();
-	}
+        closeSubparser();
+    }
 
-	// main file
-	while(true)
-	{
-		auto line = nextLocalLine();
-		if (line.empty())
-			break;
+    // main file
+    while (true) {
+        auto line = nextLocalLine();
+        if (line.empty())
+            break;
 
-		// single-line comment
-		if (line.starts_with("::"))
-			continue;
+        // single-line comment
+        if (line.starts_with("::"))
+            continue;
 
-		// multi-line comment
-		if (line.starts_with(":."))
-		{
-			bool commentClosed = false;
-			while(true)
-			{
-				line = nextLocalLine();
-				if (line.empty())
-					break;
+        // multi-line comment
+        if (line.starts_with(":.")) {
+            bool commentClosed = false;
+            while (true) {
+                line = nextLocalLine();
+                if (line.empty())
+                    break;
 
-				if (line.ends_with(".:"))
-				{
-					commentClosed = true;
-					break;
-				}
-			};
+                if (line.ends_with(".:")) {
+                    commentClosed = true;
+                    break;
+                }
+            };
 
+            if (commentClosed)
+                continue;
 
-			if (commentClosed)
-				continue;
+            Log(this).error("Missing multi-line definition terminator: '.:', at: {0}:{1}.", currentFile, currentLine);
+        }
 
-			Log(this).error("Missing multi-line definition terminator: '.:', at: {0}:{1}.", currentFile, currentLine);
-		}
+        // debug message
+        if (line.starts_with(">>")) {
+            line = line.substr(2);
+            utils::strip(line);
+            Log(this).debug("{0}", line);
+            continue;
+        }
 
-		// debug message
-		if (line.starts_with(">>"))
-		{
-			line = line.substr(2);
-			utils::strip(line);
-			Log(this).debug("{0}", line);
-			continue;
-		}
+        // include
+        if (line.starts_with(def::Syntax::Include)) {
+            const auto pathEnd = line.find(def::Syntax::IncludeAs, def::Syntax::Include.size());
+            auto       path =
+                utils::normalizePath(line.substr(def::Syntax::Include.size(), pathEnd - def::Syntax::Include.size()));
 
-		// include
-		if (line.starts_with(def::Syntax::Include))
-		{
-			const auto pathEnd = line.find(def::Syntax::IncludeAs, def::Syntax::Include.size());
-			auto path = utils::normalizePath(
-				line.substr(def::Syntax::Include.size(), pathEnd - def::Syntax::Include.size()));
+            // append dir
+            if (path.starts_with("~/"))
+                path = utils::combinePaths(utils::extractDirName(currentFile), path.substr(1));
 
-			// append dir
-			if (path.starts_with("~/"))
-				path = utils::combinePaths(utils::extractDirName(currentFile), path.substr(1));
+            if (path.empty()) {
+                Log(this).error(
+                    "Missing include path after '{0}' keyword, at: {1}:{2}.",
+                    def::Syntax::Include,
+                    currentFile,
+                    currentLine);
+                continue;
+            }
 
-			if (path.empty())
-			{
-				Log(this).error("Missing include path after '{0}' keyword, at: {1}:{2}.", def::Syntax::Include, currentFile, currentLine);
-				continue;
-			}
+            if (pathEnd != std::string::npos) {
+                auto alias = utils::strip(line.substr(pathEnd + def::Syntax::IncludeAs.size()));
+                if (alias.empty()) {
+                    Log(this).error(
+                        "Missing include alias after '{0}' keyword, at: {1}:{2}.",
+                        def::Syntax::IncludeAs,
+                        currentFile,
+                        currentLine);
+                    continue;
+                }
 
-			if (pathEnd != std::string::npos)
-			{
-				auto alias = utils::strip(line.substr(pathEnd + def::Syntax::IncludeAs.size()));
-				if (alias.empty())
-				{
-					Log(this).error("Missing include alias after '{0}' keyword, at: {1}:{2}.", def::Syntax::IncludeAs, currentFile, currentLine);
-					continue;
-				}
+                if (auto status = includeAliases.emplace(std::move(alias), path); not status.second) {
+                    Log(this).warn(
+                        "Redefinition of an existing include alias: '{0}: {1}', at: {2}:{3}.",
+                        alias,
+                        status.first->second,
+                        currentFile,
+                        currentLine);
+                    status.first->second = path;
+                }
+            }
 
-				if (auto status = includeAliases.emplace(std::move(alias), path); not status.second)
-				{
-					Log(this).warn("Redefinition of an existing include alias: '{0}: {1}', at: {2}:{3}.", alias, status.first->second, currentFile, currentLine);
-					status.first->second = path;
-				}
-			}
+            include(path);
+            return nextDefinitionLine();
+        }
 
-			include(path);
-			return nextDefinitionLine();
-		}
+        // defs
+        if (line.starts_with('_')) {
+            auto location = getCurrentLocalLocation();
 
-		// defs
-		if (line.starts_with('_'))
-		{
-			auto location = getCurrentLocalLocation();
+            // single-line def
+            if (line.ends_with(';'))
+                return std::make_pair(line, std::move(location));
 
-			// single-line def
-			if (line.ends_with(';'))
-				return std::make_pair(line, std::move(location));
+            // multi-line def
+            while (true) {
+                const auto newLine = nextLocalLine();
+                if (newLine.empty())
+                    break;
 
-			// multi-line def
-			while(true)
-			{
-				const auto newLine = nextLocalLine();
-				if (newLine.empty())
-					break;
+                // skip comments
+                if (newLine.starts_with("::"))
+                    continue;
 
-				// skip comments
-				if (newLine.starts_with("::"))
-					continue;
+                line += ' ' + newLine;
+                if (newLine.ends_with(';'))
+                    return std::make_pair(line, std::move(location));
+            };
 
-				line += ' ' + newLine;
-				if (newLine.ends_with(';'))
-					return std::make_pair(line, std::move(location));
-			};
+            Log(this).error("Missing definition terminator: ';', at: {0}.", location.toString());
+            continue;
+        }
 
-			Log(this).error("Missing definition terminator: ';', at: {0}.", location.toString());
-			continue;
-		}
+        Log(this).error("Unknown synthax: '{0}', at: {1}:{2}.", line, currentFile, currentLine);
+    };
 
-		Log(this).error("Unknown synthax: '{0}', at: {1}:{2}.", line, currentFile, currentLine);
-	};
-
-	forceFinish();
-	return std::make_pair("", def::Location::createEOF(currentFile));
+    forceFinish();
+    return std::make_pair("", def::Location::createEOF(currentFile));
 }
 
 std::optional<def::Object> FileParser::nextDefinition()
 {
-	// finish includes first
-	if (subParser)
-	{
-		auto subDef = subParser->nextDefinition();
-		if (subDef)
-			return subDef;
+    // finish includes first
+    if (subParser) {
+        auto subDef = subParser->nextDefinition();
+        if (subDef)
+            return subDef;
 
-		// continue parsing until EoF, even if error occurs
-		if (not subParser->isOpen())
-			closeSubparser();
-	}
+        // continue parsing until EoF, even if error occurs
+        if (not subParser->isOpen())
+            closeSubparser();
+    }
 
-	auto [line, location] = nextDefinitionLine();
-	if (location.isEOF())
-		return std::nullopt;
+    auto [line, location] = nextDefinitionLine();
+    if (location.isEOF())
+        return std::nullopt;
 
-	// TODO: remove dirty trick to pass subparser's inlcude aliases to this's parser (needed for the first def in a file)
-	return def::parse<def::Object>(
-		line, std::move(location), subParser ? subParser->includeAliases : includeAliases, oolDefinitions);
+    // TODO: remove dirty trick to pass subparser's include aliases to this's parser (needed for the
+    // first def in a file)
+    return def::parse<def::Object>(
+        line, std::move(location), subParser ? subParser->includeAliases : includeAliases, oolDefinitions);
 }

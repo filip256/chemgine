@@ -1,6 +1,7 @@
 from rdkit import Chem
 from collections import Counter
 
+
 def count_fundamental_cycles(smiles):
     mol = Chem.MolFromSmiles(smiles)
     if mol is None:
@@ -19,7 +20,6 @@ if __name__ == "__main__":
             count_by_size = count_fundamental_cycles(smiles)
             for size in sorted(count_by_size):
                 print(f"Cycle size {size}: {count_by_size[size]} ring(s).")
-                
+
         except ValueError as e:
             print(e)
-            

@@ -4,19 +4,16 @@
 
 const DataStore& DataStoreAccessor::get() const
 {
-	if (dataStore == nullptr)
-		Log(this).fatal("Tried to access a data store with an uninitialized accessor.");
-	return *dataStore;
+    if (dataStore == nullptr)
+        Log(this).fatal("Tried to access a data store with an uninitialized accessor.");
+    return *dataStore;
 }
 
-void DataStoreAccessor::set(const DataStore& dataStore)
+void DataStoreAccessor::set(const DataStore& newStore)
 {
-	if (this->dataStore != nullptr)
-		Log(this).warn("Already initilized data store accessor has been modified.");
-	this->dataStore = &dataStore;
+    if (dataStore != nullptr)
+        Log(this).warn("Already initialized data store accessor has been modified.");
+    dataStore = &newStore;
 }
 
-void DataStoreAccessor::unset()
-{
-	dataStore = nullptr;
-}
+void DataStoreAccessor::unset() { dataStore = nullptr; }

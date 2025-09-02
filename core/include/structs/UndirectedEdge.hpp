@@ -9,10 +9,7 @@ private:
     std::pair<T, T> indices;
 
 public:
-    UndirectedEdge(
-        const T idxA,
-        const T idxB
-    ) noexcept;
+    UndirectedEdge(const T idxA, const T idxB) noexcept;
 
     const std::pair<T, T>& pair() const;
 
@@ -23,10 +20,7 @@ public:
 };
 
 template <typename T>
-UndirectedEdge<T>::UndirectedEdge(
-    const T idxA,
-    const T idxB
-) noexcept :
+UndirectedEdge<T>::UndirectedEdge(const T idxA, const T idxB) noexcept :
     indices(idxA < idxB ? std::pair(idxA, idxB) : std::pair(idxB, idxA))
 {}
 
@@ -61,8 +55,5 @@ bool UndirectedEdge<T>::operator==(const UndirectedEdge& other) const
 template <typename T>
 struct std::hash<UndirectedEdge<T>>
 {
-    size_t operator() (const UndirectedEdge<T>& edge) const
-    {
-        return std::hash<std::pair<T, T>>()(edge.pair());
-    }
+    size_t operator()(const UndirectedEdge<T>& edge) const { return std::hash<std::pair<T, T>>()(edge.pair()); }
 };

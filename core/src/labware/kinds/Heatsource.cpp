@@ -1,48 +1,32 @@
 #include "labware/kinds/Heatsource.hpp"
 
-Heatsource::Heatsource(
-	const LabwareId id,
-	Atmosphere& atmosphere
-) noexcept :
-	EquipmentComponent(id, LabwareType::HEATSOURCE),
-	target(atmosphere)
+Heatsource::Heatsource(const LabwareId id, Atmosphere& atmosphere) noexcept :
+    EquipmentComponent(id, LabwareType::HEATSOURCE),
+    target(atmosphere)
 {}
 
-const HeatsourceData& Heatsource::getData() const
-{
-	return static_cast<const HeatsourceData&>(data);
-}
+const HeatsourceData& Heatsource::getData() const { return static_cast<const HeatsourceData&>(data); }
 
-void Heatsource::setTarget(const Ref<ContainerBase> target)
-{
-	this->target = target;
-}
+void Heatsource::setTarget(const Ref<ContainerBase> newTarget) { target = newTarget; }
 
-void Heatsource::setTarget(BaseContainerComponent& target)
-{
-	this->target = target.getContent();
-}
+void Heatsource::setTarget(BaseContainerComponent& newTarget) { target = newTarget.getContent(); }
 
 bool Heatsource::tryConnect(LabwareComponentBase& other)
 {
-	if (other.isContainer())
-	{
-		this->setTarget(other.as<BaseContainerComponent&>());
-		return true;
-	}
+    if (other.isContainer()) {
+        this->setTarget(other.as<BaseContainerComponent&>());
+        return true;
+    }
 
-	return false;
+    return false;
 }
 
-void Heatsource::disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase&)
-{
-	this->setTarget(dump);
-}
+void Heatsource::disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase&) { this->setTarget(dump); }
 
 void Heatsource::tick(const Amount<Unit::SECOND> timespan)
 {
-	if (target.isSet() == false)
-		return;
+    if (target.isSet() == false)
+        return;
 
-	target->add(getData().maxPowerOutput.to<Unit::JOULE>(timespan));
+    target->addEnergy(getData().maxPowerOutput.to<Unit::JOULE>(timespan));
 }

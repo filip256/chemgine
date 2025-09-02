@@ -1,0 +1,65 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "gui_app",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/gui_app/gui_app",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/gui_app/",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "test_app",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/test_app/test_app",
+            "args": ["-u"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/test_app/",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "defparse",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/defparse/defparse",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/defparse/",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}

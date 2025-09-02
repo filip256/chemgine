@@ -1,25 +1,22 @@
 #pragma once
 
-#include "molecules/MoleculeId.hpp"
 #include "molecules/MolecularStructure.hpp"
+#include "molecules/MoleculeId.hpp"
 
 class GenericMoleculeData
 {
 public:
-	const MoleculeId id;
+    const MoleculeId id;
 
 protected:
-	const MolecularStructure structure;
+    MolecularStructure structure;
 
 public:
-	GenericMoleculeData(
-		const MoleculeId id,
-		MolecularStructure&& structure
-	) noexcept;
+    GenericMoleculeData(const MoleculeId id, MolecularStructure&& structure) noexcept;
 
-	GenericMoleculeData(const GenericMoleculeData&) = delete;
-	GenericMoleculeData(GenericMoleculeData&&) = default;
-	~GenericMoleculeData() = default;
+    GenericMoleculeData(const GenericMoleculeData&) = delete;
+    GenericMoleculeData(GenericMoleculeData&&)      = default;
+    ~GenericMoleculeData()                          = default;
 
-	const MolecularStructure& getStructure() const;
+    const MolecularStructure& getStructure() const;
 };

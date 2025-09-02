@@ -1,38 +1,36 @@
 #pragma once
 
-#include "unit/UnitTest.hpp"
 #include "perf/PerfTest.hpp"
+#include "unit/UnitTest.hpp"
 #include "unit/tests/TimingUnitTests.hpp"
 
 class UnitTests : public UnitTestGroup
 {
 public:
-	UnitTests(const std::regex& filter) noexcept;
+    UnitTests(const std::regex& filter) noexcept;
 };
-
 
 class PerfTests : public PerfTestGroup
 {
 private:
-	TimingUnitTests timingUnitTests;
+    TimingUnitTests timingUnitTests;
 
 public:
-	PerfTests(const std::regex& filter) noexcept;
+    PerfTests(const std::regex& filter) noexcept;
 
-	TimingResult run(PerformanceReport& report) override final;
+    TimingResult run(PerformanceReport& report) override final;
 };
-
 
 class TestManager
 {
 private:
-	std::regex filter;
-	UnitTests unitTests;
-	PerfTests perfTests;
+    std::regex filter;
+    UnitTests  unitTests;
+    PerfTests  perfTests;
 
 public:
-	TestManager(std::regex&& filter) noexcept;
+    TestManager(std::regex&& filter) noexcept;
 
-	void runUnit();
-	void runPerf();
+    bool              runUnit();
+    PerformanceReport runPerf();
 };

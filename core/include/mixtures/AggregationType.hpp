@@ -5,11 +5,11 @@
 
 enum class AggregationType : uint8_t
 {
-	GAS,
-	LIQUID,
-	SOLID,
+    GAS,
+    LIQUID,
+    SOLID,
 
-	NONE
+    NONE
 };
 
 std::string getLayerName(const AggregationType type);

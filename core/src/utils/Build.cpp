@@ -3,10 +3,10 @@
 const std::string& utils::getBuildTypeName()
 {
 #ifdef NDEBUG
-	static const std::string buildTypeName = "RELEASE";
+    static const std::string buildTypeName = "RELEASE";
 #else
-	static const std::string buildTypeName = "DEBUG";
+    static const std::string buildTypeName = "DEBUG";
 #endif
 
-	return buildTypeName;
+    return buildTypeName;
 }

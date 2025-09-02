@@ -1,7 +1,7 @@
 #pragma once
 
-#include "atomics/kinds/Atom.hpp"
 #include "atomics/data/RadicalData.hpp"
+#include "atomics/kinds/Atom.hpp"
 
 class Radical : public Atom
 {

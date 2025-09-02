@@ -7,61 +7,55 @@ class DataStore;
 class TestSetup
 {
 public:
-	TestSetup() = default;
-	TestSetup(const TestSetup&) = default;
-	TestSetup(TestSetup&&) = default;
-	virtual ~TestSetup() = default;
+    TestSetup()                 = default;
+    TestSetup(const TestSetup&) = default;
+    TestSetup(TestSetup&&)      = default;
+    virtual ~TestSetup()        = default;
 
-	virtual void run() = 0;
+    virtual void run() = 0;
 };
 
-
+// DataStore's must be available twice, during both test initialization and execution.
+// This setup loads and sets the DataStore once during initialization and sets it again during execution.
 class AccessorTestSetup : public TestSetup
 {
 private:
-	const DataStore& dataStore;
+    DataStore& dataStore;
 
 public:
-	AccessorTestSetup(
-		const DataStore& dataStore
-	) noexcept;
+    AccessorTestSetup(DataStore& dataStore) noexcept;
+    AccessorTestSetup(DataStore& dataStore, const std::string& loadPath) noexcept;
 
-	void run() override final;
+    void run() override final;
 };
 
-
+// This step clears the effects of AccessorTestSetup, ensuring a clean global context for future tests.
 class AccessorTestCleanup : public TestSetup
 {
 public:
-	using TestSetup::TestSetup;
+    AccessorTestCleanup() noexcept;
 
-	void run() override final;
+    void run() override final;
 };
-
 
 class CreateDirTestSetup : public TestSetup
 {
 private:
-	const std::string directory;
+    const std::string directory;
 
 public:
-	CreateDirTestSetup(
-		std::string&& directory
-	) noexcept;
+    CreateDirTestSetup(std::string&& directory) noexcept;
 
-	void run() override final;
+    void run() override final;
 };
-
 
 class RemoveDirTestSetup : public TestSetup
 {
 private:
-	const std::string directory;
+    const std::string directory;
 
 public:
-	RemoveDirTestSetup(
-		std::string&& directory
-	) noexcept;
+    RemoveDirTestSetup(std::string&& directory) noexcept;
 
-	void run() override final;
+    void run() override final;
 };

@@ -1,28 +1,25 @@
 #pragma once
 
-#include "labware/kinds/EquipmentComponent.hpp"
 #include "labware/data/HeatsourceData.hpp"
 #include "labware/kinds/BaseContainerComponent.hpp"
+#include "labware/kinds/EquipmentComponent.hpp"
 #include "mixtures/kinds/Atmosphere.hpp"
 
 class Heatsource : public EquipmentComponent
 {
 private:
-	Ref<ContainerBase> target;
+    Ref<ContainerBase> target;
 
 public:
-	Heatsource(
-		const LabwareId id,
-		Atmosphere& atmosphere
-	) noexcept;
+    Heatsource(const LabwareId id, Atmosphere& atmosphere) noexcept;
 
-	const HeatsourceData& getData() const override final;
+    const HeatsourceData& getData() const override final;
 
-	void setTarget(const Ref<ContainerBase> target);
-	void setTarget(BaseContainerComponent& target);
+    void setTarget(const Ref<ContainerBase> newTarget);
+    void setTarget(BaseContainerComponent& newTarget);
 
-	bool tryConnect(LabwareComponentBase& other) override final;
-	void disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase& other) override final;
+    bool tryConnect(LabwareComponentBase& other) override final;
+    void disconnect(const Ref<ContainerBase> dump, const LabwareComponentBase& other) override final;
 
-	void tick(const Amount<Unit::SECOND> timespan) override final;
+    void tick(const Amount<Unit::SECOND> timespan) override final;
 };

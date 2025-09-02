@@ -4,26 +4,26 @@
 #include "data/def/Printers.hpp"
 #include "molecules/ASCIIStructurePrinter.hpp"
 
-#include <vector>
-#include <string>
 #include <map>
+#include <memory>
+#include <stack>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
-#include <stack>
-#include <memory>
+#include <vector>
 
 class MolecularStructure
 {
 private:
-    uint16_t impliedHydrogenCount = 0;
+    uint16_t                                     impliedHydrogenCount = 0;
     std::vector<std::unique_ptr<BondedAtomBase>> atoms;
 
     static void addBond(BondedAtomBase& from, BondedAtomBase& to, const BondType bondType);
     static bool addBondChecked(BondedAtomBase& from, BondedAtomBase& to, const BondType bondType);
-    
+
     BondedAtomBase* addAtom(const Symbol& symbol, BondedAtomBase* prev, const BondType bondType);
-    void removeAtom(const c_size idx);
-    void mutateAtom(const c_size idx, const Atom& newAtom);
+    void            removeAtom(const c_size idx);
+    void            mutateAtom(const c_size idx, const Atom& newAtom);
 
     /// <summary>
     /// Returns the number of required hydrogens in order to complete the molecule.
@@ -50,10 +50,10 @@ public:
     static std::optional<MolecularStructure> fromMolBin(std::istream& is);
     static std::optional<MolecularStructure> loadMolBinFile(const std::string& path);
 
-    std::string toSMILES(const c_size startAtomIdx = 0) const;
+    std::string      toSMILES(const c_size startAtomIdx = 0) const;
     ColoredTextBlock toASCII(const ASCII::PrintOptions options = ASCII::PrintOptions::Default) const;
-    void toMolBin(std::ostream& os) const;
-    void toMolBinFile(const std::string& path) const;
+    void             toMolBin(std::ostream& os) const;
+    void             toMolBinFile(const std::string& path) const;
 
 private:
     bool loadFromSMILES(const std::string& smiles);
@@ -68,7 +68,7 @@ public:
     /// </summary>
     void canonicalize();
 
-    const Atom& getAtom(const c_size idx) const;
+    const Atom&           getAtom(const c_size idx) const;
     const BondedAtomBase& getBondedAtom(const c_size idx) const;
 
     std::string printInfo() const;
@@ -105,19 +105,19 @@ public:
     uint8_t getDegreesOfFreedom() const;
 
     /// <summary>
-    /// Checks if the molecule contains no radical atoms. 
+    /// Checks if the molecule contains no radical atoms.
     /// Complexity: O(1)
     /// </summary>
     bool isConcrete() const;
 
     /// <summary>
-    /// Checks if the molecule contains at least one radical atom. 
+    /// Checks if the molecule contains at least one radical atom.
     /// Complexity: O(1)
     /// </summary>
     bool isGeneric() const;
 
     /// <summary>
-    /// Checks if the molecule contains a C-H bond. 
+    /// Checks if the molecule contains a C-H bond.
     /// Complexity: O(n)
     /// </summary>
     bool isOrganic() const;
@@ -177,7 +177,7 @@ public:
 
     /// <summary>
     /// Returns the first found mapping between the atoms of the pattern and the atoms of *this.
-    /// The whole pattern structure must be matched. 
+    /// The whole pattern structure must be matched.
     /// Complexity: rather large
     /// </summary>
     std::unordered_map<c_size, c_size> mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const;
@@ -187,10 +187,9 @@ public:
     /// Complexity: rather large
     /// </summary>
     std::pair<std::unordered_map<c_size, c_size>, uint8_t> maximalMapTo(
-        const MolecularStructure& pattern,
-        const std::unordered_set<c_size>& targetIgnore = std::unordered_set<c_size>(),
-        const std::unordered_set<c_size>& patternIgnore = std::unordered_set<c_size>()
-    ) const;
+        const MolecularStructure&         pattern,
+        const std::unordered_set<c_size>& targetIgnore  = std::unordered_set<c_size>(),
+        const std::unordered_set<c_size>& patternIgnore = std::unordered_set<c_size>()) const;
 
     void recountImpliedHydrogens();
 
@@ -198,26 +197,29 @@ public:
     /// Copies the branch starting at sourceIdx from source into the destination, using the mapping
     /// in order to avoid copying unwanted branches and resolve cycles.
     /// </summary>
-    /// <param name="sourceIdx">: the common atom between the destination and source, where the branch starts</param>
-    /// <param name="sdMapping">: a map between the atoms of the source and those of the destination.</param>
-    /// <param name="canonicalize">: if true, canonicalization and implied hydrogen recount occurs after the copy is made and sdMapping is invalidated. </param>
+    /// <param name="sourceIdx">: the common atom between the destination and source, where the
+    /// branch starts</param> <param name="sdMapping">: a map between the atoms of the source and
+    /// those of the destination.</param> <param name="canonicalize">: if true, canonicalization and
+    /// implied hydrogen recount occurs after the copy is made and sdMapping is invalidated.
+    /// </param>
     static void copyBranch(
-        MolecularStructure& destination,
-        const MolecularStructure& source,
-        const c_size sourceIdx,
+        MolecularStructure&                 destination,
+        const MolecularStructure&           source,
+        const c_size                        sourceIdx,
         std::unordered_map<c_size, c_size>& sdMapping,
-        bool canonicalize = true,
-        const std::unordered_set<c_size>& sourceIgnore = std::unordered_set<c_size>());
+        bool                                canonicalize = true,
+        const std::unordered_set<c_size>& sourceIgnore   = std::unordered_set<c_size>());
 
     /// <summary>
-    /// Returns a molecule derived from pattern by adding all the substituents of instance that start from common atoms.
+    /// Returns a molecule derived from pattern by adding all the substituents of instance that
+    /// start from common atoms.
     /// </summary>
     /// <param name="pattern">: the base structure </param>
     /// <param name="instance">: a structure that has common substructures with the pattern </param>
     /// <param name="ipMap">: a map between the common atoms of pattern and instance </param>
     static MolecularStructure addSubstituents(
-        const MolecularStructure& pattern,
-        const MolecularStructure& instance,
+        const MolecularStructure&                 pattern,
+        const MolecularStructure&                 instance,
         const std::unordered_map<c_size, c_size>& ipMap);
 
     using Cycle = std::vector<const BondedAtomBase*>;
@@ -244,7 +246,6 @@ public:
     bool operator!=(const std::string& other) const;
 };
 
-
 template <>
 class def::Parser<MolecularStructure>
 {
@@ -259,9 +260,5 @@ template <>
 class def::Printer<MolecularStructure>
 {
 public:
-    static std::string print(const MolecularStructure& object)
-    {
-        return object.toSMILES();
-    }
+    static std::string print(const MolecularStructure& object) { return object.toSMILES(); }
 };
-

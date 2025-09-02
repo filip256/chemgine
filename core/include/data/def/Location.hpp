@@ -4,32 +4,31 @@
 
 namespace def
 {
-	class Location
-	{
-	private:
-		const static size_t eofLine = static_cast<size_t>(-1);
 
-		std::string file;
-		size_t line;
+class Location
+{
+private:
+    static const size_t eofLine = static_cast<size_t>(-1);
 
-	public:
-		Location(
-			const std::string& file,
-			const size_t line
-		) noexcept;
-		Location(const Location&) = default;
-		Location(Location&&) = default;
+    std::string file;
+    size_t      line;
 
-		Location& operator=(Location&&) = default;
+public:
+    Location(const std::string& file, const size_t line) noexcept;
+    Location(const Location&) = default;
+    Location(Location&&)      = default;
 
-		const std::string& getFile() const;
-		size_t getLine() const;
+    Location& operator=(Location&&) = default;
 
-		bool isEOF() const;
+    const std::string& getFile() const;
+    size_t             getLine() const;
 
-		std::string toString() const;
+    bool isEOF() const;
 
-		static Location createUnknown();
-		static Location createEOF(const std::string& file);
-	};
-}
+    std::string toString() const;
+
+    static Location createUnknown();
+    static Location createEOF(const std::string& file);
+};
+
+}  // namespace def

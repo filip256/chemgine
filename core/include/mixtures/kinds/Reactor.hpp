@@ -1,79 +1,70 @@
 #pragma once
 
-#include <unordered_set>
-#include <array>
-
-#include "mixtures/kinds/MultiLayerMixture.hpp"
-#include "data/DataStoreAccessor.hpp"
-#include "reactions/kinds/ConcreteReaction.hpp"
-#include "mixtures/kinds/Atmosphere.hpp"
-#include "structs/FlagField.hpp"
 #include "data/Accessor.hpp"
+#include "data/DataStoreAccessor.hpp"
+#include "mixtures/kinds/Atmosphere.hpp"
+#include "mixtures/kinds/MultiLayerMixture.hpp"
+#include "reactions/kinds/ConcreteReaction.hpp"
+#include "structs/FlagField.hpp"
+
+#include <array>
+#include <unordered_set>
 
 enum class TickMode : uint8_t
 {
-	DISABLE_ALL = 0,
+    DISABLE_ALL = 0,
 
-	ENABLE_OVERFLOW = 1 << 0,
-	ENABLE_NEGLIGIBLES = 1 << 1,
-	ENABLE_REACTIONS = 1 << 2,
-	ENABLE_CONDUCTION = 1 << 3,
-	ENABLE_ENERGY = 1 << 4,
+    ENABLE_OVERFLOW    = 1 << 0,
+    ENABLE_NEGLIGIBLES = 1 << 1,
+    ENABLE_REACTIONS   = 1 << 2,
+    ENABLE_CONDUCTION  = 1 << 3,
+    ENABLE_ENERGY      = 1 << 4,
 
-	ENABLE_ALL = static_cast<uint8_t>(-1)
+    ENABLE_ALL = static_cast<uint8_t>(-1)
 };
 
-class Reactor : public MultiLayerMixture, public Accessor<>
+class Reactor : public MultiLayerMixture,
+                public Accessor<>
 {
 private:
-	float_s stirSpeed = 0.0;
+    float_s stirSpeed = 0.0;
 
-	FlagField<TickMode> tickMode = TickMode::ENABLE_ALL;
+    FlagField<TickMode> tickMode = TickMode::ENABLE_ALL;
 
-	std::unordered_set<ConcreteReaction> cachedReactions;
+    std::unordered_set<ConcreteReaction> cachedReactions;
 
-	float_s getInterLayerReactivityCoefficient(const Reactant& r1, const Reactant& r2) const;
-	float_s getInterLayerReactivityCoefficient(const ReactantSet& reactants) const;
-	float_s getCatalyticReactivityCoefficient(const ImmutableSet<Catalyst>& catalysts) const;
+    float_s getInterLayerReactivityCoefficient(const Reactant& r1, const Reactant& r2) const;
+    float_s getInterLayerReactivityCoefficient(const ReactantSet& reactants) const;
+    float_s getCatalyticReactivityCoefficient(const ImmutableSet<Catalyst>& catalysts) const;
 
-	void findNewReactions();
-	void runReactions(const Amount<Unit::SECOND> timespan);
-	void runLayerEnergyConduction(const Amount<Unit::SECOND> timespan);
-	void consumePotentialEnergy();
+    void findNewReactions();
+    void runReactions(const Amount<Unit::SECOND> timespan);
+    void runLayerEnergyConduction(const Amount<Unit::SECOND> timespan);
+    void consumePotentialEnergy();
 
-	Reactor(const Reactor& other) noexcept;
+    Reactor(const Reactor& other) noexcept;
 
 public:
-	Reactor(
-		const Ref<Atmosphere> atmosphere,
-		const Amount<Unit::LITER> maxVolume,
-		const Ref<ContainerBase> overflowTarget
-	) noexcept;
+    Reactor(
+        const Ref<Atmosphere>     atmosphere,
+        const Amount<Unit::LITER> maxVolume,
+        const Ref<ContainerBase>  overflowTarget) noexcept;
 
-	Reactor(
-		const Ref<Atmosphere> atmosphere,
-		const Amount<Unit::LITER> maxVolume
-	) noexcept;
+    Reactor(const Ref<Atmosphere> atmosphere, const Amount<Unit::LITER> maxVolume) noexcept;
 
-	Reactor(Reactor&&) = default;
+    Reactor(Reactor&&) = default;
 
-	void add(const Amount<Unit::JOULE> heat) override final;
-	void add(const Molecule& molecule, const Amount<Unit::MOLE> amount) override;
-	void add(Reactor& other);
-	void add(Reactor& other, const float_s ratio);
+    void addEnergy(const Amount<Unit::JOULE> energy) override final;
+    void add(const Molecule& molecule, const Amount<Unit::MOLE> amount) override;
 
-	FlagField<TickMode> getTickMode() const;
-	void setTickMode(const FlagField<TickMode> mode);
-	void tick(const Amount<Unit::SECOND> timespan);
+    FlagField<TickMode> getTickMode() const;
+    void                setTickMode(const FlagField<TickMode> mode);
+    void                tick(const Amount<Unit::SECOND> timespan);
 
-	bool hasSameState(const Reactor& other,
-		const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
-	bool hasSameContent(const Reactor& other,
-		const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
-	bool hasSameLayers(const Reactor& other,
-		const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
-	bool isSame(const Reactor& other,
-		const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
+    bool hasSameState(const Reactor& other, const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
+    bool hasSameContent(const Reactor& other, const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
+    bool hasSameLayers(const Reactor& other, const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
+    bool isSame(const Reactor& other, const Amount<>::StorageType epsilon = Amount<>::Epsilon.asStd()) const;
 
-	Reactor makeCopy() const;
+    Reactor makeCopy() const;
 };

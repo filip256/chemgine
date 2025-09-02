@@ -1,0 +1,39 @@
+name: Post-Merge
+
+on:
+  pull_request:
+    types:
+      - closed
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  cleanup:
+    name: Cleanup
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: write
+      contents: read
+
+    steps:
+      - name: Cache cleanup
+        run: |
+          echo "Fetching list of cache keys."
+          CACHE_KEYS=$(gh cache list --ref $BRANCH --limit 100 --json id --jq '.[].id')
+
+          set +e  # Setting this to not fail the workflow while deleting cache keys.
+          echo "Deleting caches from $BRANCH:"
+          for KEY in $CACHE_KEYS
+          do
+              echo " - $KEY"
+              gh cache delete $KEY
+          done
+          echo "Done"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          BRANCH: refs/pull/${{ github.event.pull_request.number }}/merge

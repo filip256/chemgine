@@ -4,6 +4,6 @@
 
 enum class MoleculeType : uint8_t
 {
-	INORGANIC,
-	ORGANIC
+    INORGANIC,
+    ORGANIC
 };

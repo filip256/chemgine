@@ -5,15 +5,12 @@
 class Polarity
 {
 public:
-	Amount<Unit::MOLE_RATIO> hydrophilicity;
-	Amount<Unit::MOLE_RATIO> lipophilicity;
+    Amount<Unit::MOLE_RATIO> hydrophilicity;
+    Amount<Unit::MOLE_RATIO> lipophilicity;
 
-	Polarity(
-		Amount<Unit::MOLE_RATIO> hydrophilicity,
-		Amount<Unit::MOLE_RATIO> lipophilicity
-	) noexcept;
+    Polarity(Amount<Unit::MOLE_RATIO> hydrophilicity, Amount<Unit::MOLE_RATIO> lipophilicity) noexcept;
 
-	Polarity(const Polarity&) = default;
+    Polarity(const Polarity&) = default;
 
-	Amount<Unit::NONE> getPartitionCoefficient() const;
+    Amount<Unit::NONE> getPartitionCoefficient() const;
 };

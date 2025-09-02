@@ -2,15 +2,9 @@
 
 BaseComponentData::BaseComponentData() {}
 
-BaseComponentData::BaseComponentData(
-	const Amount<Unit::GRAM> weight,
-	const uint8_t rarity
-) :
-	weight(weight),
-	rarity(rarity)
+BaseComponentData::BaseComponentData(const Amount<Unit::GRAM> weight, const uint8_t rarity) noexcept :
+    rarity(rarity),
+    weight(weight)
 {}
 
-uint8_t BaseComponentData::getRarity() const
-{
-	return rarity;
-}
+uint8_t BaseComponentData::getRarity() const { return rarity; }
