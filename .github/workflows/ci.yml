@@ -171,7 +171,7 @@ jobs:
         working-directory: ./test_app/
         run: |
           chmod +x test_app
-          xvfb-run ./test_app -u
+          sudo xvfb-run ./test_app -u
 
   perf-test:
     name: Performance / ${{ matrix.kind.name }}
@@ -208,7 +208,7 @@ jobs:
         working-directory: ./test_app/
         run: |
           chmod +x test_app
-          xvfb-run ./test_app -p "perf-${{ github.event.pull_request.head.sha || github.sha }}.report"
+          sudo xvfb-run ./test_app -p "perf-${{ github.event.pull_request.head.sha || github.sha }}.report"
 
       - name: Compare
         run: |
@@ -237,7 +237,7 @@ jobs:
           if [ "$RUNNER_OS" = "Windows" ]; then
             ./test_app/test_app.exe -c "${REPORTS_PATH}/perf-${PREV_MAIN_SHA}.report,test_app/perf-${{ github.event.pull_request.head.sha || github.sha }}.report"
           else
-            xvfb-run ./test_app/test_app -c "${REPORTS_PATH}/perf-${PREV_MAIN_SHA}.report,test_app/perf-${{ github.event.pull_request.head.sha || github.sha }}.report"
+            sudo xvfb-run ./test_app/test_app -c "${REPORTS_PATH}/perf-${PREV_MAIN_SHA}.report,test_app/perf-${{ github.event.pull_request.head.sha || github.sha }}.report"
           fi
         continue-on-error: true
 

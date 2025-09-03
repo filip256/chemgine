@@ -149,7 +149,7 @@ void PerfTestGroup::registerTest(std::string&& name, Args&&... args)
 {
     static_assert(std::is_base_of_v<PerfTest, T>, "PerfTestGroup: T must be a PerfTest derived type.");
 
-    name = getName() + '.' + name;  // Append owning group name
+    name = getName() + '.' + name;  // Append owning group name.
 
     std::unique_ptr<PerfTest> test;
     if constexpr (utils::is_specialization_of_v<T, PerfTestSetup>)
