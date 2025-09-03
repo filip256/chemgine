@@ -8,7 +8,8 @@
 #include "unit/tests/DefUnitTests.hpp"
 #include "unit/tests/EstimatorUnitTests.hpp"
 #include "unit/tests/MixtureUnitTests.hpp"
-#include "unit/tests/ModuleUnitTest.hpp"
+#include "unit/tests/ModuleUnitTests.hpp"
+#include "unit/tests/ProcessUnitTests.hpp"
 #include "unit/tests/StructureUnitTests.hpp"
 
 UnitTests::UnitTests(const std::regex& filter) noexcept :
@@ -19,6 +20,7 @@ UnitTests::UnitTests(const std::regex& filter) noexcept :
     registerTest<DefUnitTests>("def", "./data/builtin/radicals.cdef");
     registerTest<ModuleUnitTest>("Module", "./data/builtin.cdef");
     registerTest<MixtureUnitTests>("Mixture", "./data/builtin.cdef");
+    registerTest<ProcessUnitTests>("Process");
 }
 
 PerfTests::PerfTests(const std::regex& filter) noexcept :

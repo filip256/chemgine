@@ -1,6 +1,6 @@
-#include "unit/tests/ModuleUnitTest.hpp"
+#include "unit/tests/ModuleUnitTests.hpp"
 
-#include "unit/tests/PropertyUnitTest.hpp"
+#include "unit/tests/PropertyUnitTests.hpp"
 #include "utils/Path.hpp"
 
 WaterPropertiesUnitTest::WaterPropertiesUnitTest(std::string&& name, const std::regex& filter) noexcept :
