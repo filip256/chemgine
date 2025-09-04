@@ -4,8 +4,6 @@
 
 #include <unordered_set>
 
-class AtomRepository;
-
 class RadicalData : public AtomData
 {
 public:

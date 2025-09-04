@@ -88,7 +88,8 @@ void SplineEstimator<OutU, InU>::dumpDefinition(
     }
     alreadyPrinted.emplace(Base::id);
 
-    static const auto valueOffset = checked_cast<uint8_t>(utils::max(def::Data::Mode.size(), def::Data::Values.size()));
+    static constexpr auto valueOffset =
+        checked_cast<uint8_t>(utils::max(def::Data::Mode.size(), def::Data::Values.size()));
 
     def::DataDumper dump(out, valueOffset, baseIndent, prettify);
     if (printInline)

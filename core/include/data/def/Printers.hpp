@@ -40,9 +40,9 @@ class Printer<T, std::enable_if_t<std::is_floating_point_v<T>>>
 public:
     static std::string print(const T object)
     {
-        return utils::floatEqual(object, std::numeric_limits<T>::lowest()) ? def::Amounts::Min
+        return utils::floatEqual(object, std::numeric_limits<T>::lowest()) ? std::string(def::Amounts::Min)
                : utils::floatEqual(object, std::numeric_limits<T>::max())
-                   ? def::Amounts::Max
+                   ? std::string(def::Amounts::Max)
                    : utils::formatFloatingPoint(std::format("{:.{}f}", object, 5));
     }
 };
@@ -52,6 +52,13 @@ class Printer<std::string>
 {
 public:
     static std::string print(const std::string& str) { return utils::strip(str); }
+};
+
+template <>
+class Printer<std::string_view>
+{
+public:
+    static std::string print(const std::string_view str) { return def::print(std::string(str)); }
 };
 
 template <>
@@ -118,38 +125,38 @@ public:
     }
 };
 
-template <typename T>
-class Printer<std::unordered_map<std::string, T>>
+template <typename Key, typename T>
+class Printer<std::unordered_map<Key, T>>
 {
 public:
-    static std::string print(const std::unordered_map<std::string, T>& object)
+    static std::string print(const std::unordered_map<Key, T>& object)
     {
         if (object.size() == 1) {
             const auto& p = *object.begin();
-            return p.first + ':' + def::print(p.second);
+            return def::print(p.first) + ':' + def::print(p.second);
         }
 
         std::string result = "{";
         for (const auto& p : object)
-            result += p.first + ':' + def::print(p.second) + ',';
+            result += def::print(p.first) + ':' + def::print(p.second) + ',';
 
         result.back() = '}';
         return result;
     }
 
-    static std::string prettyPrint(const std::unordered_map<std::string, T>& object)
+    static std::string prettyPrint(const std::unordered_map<Key, T>& object)
     {
         if (object.size() == 0)
             return "{}";
 
         if (object.size() == 1) {
             const auto& p = *object.begin();
-            return p.first + ": " + def::prettyPrint(p.second);
+            return def::prettyPrint(p.first) + ": " + def::prettyPrint(p.second);
         }
 
         std::string result = "{ ";
         for (const auto& p : object)
-            result += p.first + ": " + def::prettyPrint(p.second) + ", ";
+            result += def::prettyPrint(p.first) + ": " + def::prettyPrint(p.second) + ", ";
 
         result[result.size() - 2] = ' ';
         result.back()             = '}';

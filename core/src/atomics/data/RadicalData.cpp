@@ -15,7 +15,7 @@ RadicalData::RadicalData(
 
 void RadicalData::dumpDefinition(std::ostream& out, const bool prettify) const
 {
-    static const auto valueOffset =
+    static constexpr auto valueOffset =
         checked_cast<uint8_t>(utils::max(def::Atoms::Name.size(), def::Atoms::RadicalMatches.size()));
 
     def::DataDumper(out, valueOffset, 0, prettify)

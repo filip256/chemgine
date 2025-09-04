@@ -6,6 +6,8 @@
 #include <cmath>
 #include <iterator>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -76,19 +78,19 @@ template <typename T>
 T copy(const T& obj);
 
 template <typename T>
-T min(const T arg);
+constexpr T min(const T arg);
 template <typename T, typename... Args>
-T min(const T arg1, const Args... args);
+constexpr T min(const T arg1, const Args... args);
 
 template <typename T>
-T max(const T arg);
+constexpr T max(const T arg);
 template <typename T, typename... Args>
-T max(const T arg1, const Args... args);
+constexpr T max(const T arg1, const Args... args);
 
 template <typename T>
-T closest(const T z, const T arg);
+constexpr T closest(const T z, const T arg);
 template <typename T, typename... Args>
-T closest(const T z, const T arg1, const Args... args);
+constexpr T closest(const T z, const T arg1, const Args... args);
 
 //
 // NPos
@@ -174,6 +176,24 @@ public:
     DerefIterator& operator++();
     DerefIterator  operator++(int);
 };
+
+//
+// Transparent hashes
+//
+
+struct StringHash
+{
+    using is_transparent = void;
+
+    size_t operator()(const std::string_view sv) const noexcept { return std::hash<std::string_view>{}(sv); }
+};
+
+// Transparent string map which allows querying using strings, string_views and const char*.
+template <typename T>
+using StringMap = std::unordered_map<std::string, T, StringHash, std::equal_to<>>;
+// Transparent string_view map which allows querying using strings, string_views and const char*.
+template <typename T>
+using StringViewMap = std::unordered_map<std::string_view, T, StringHash, std::equal_to<>>;
 
 };  // namespace utils
 
@@ -491,37 +511,37 @@ T utils::copy(const T& obj)
 }
 
 template <typename T>
-T utils::min(const T arg)
+constexpr T utils::min(const T arg)
 {
     return arg;
 }
 
 template <typename T, typename... Args>
-T utils::min(const T arg1, const Args... args)
+constexpr T utils::min(const T arg1, const Args... args)
 {
     return std::min(arg1, max(args...));
 }
 
 template <typename T>
-T utils::max(const T arg)
+constexpr T utils::max(const T arg)
 {
     return arg;
 }
 
 template <typename T, typename... Args>
-T utils::max(const T arg1, const Args... args)
+constexpr T utils::max(const T arg1, const Args... args)
 {
     return std::max(arg1, max(args...));
 }
 
 template <typename T>
-T utils::closest(const T, const T arg)
+constexpr T utils::closest(const T, const T arg)
 {
     return arg;
 }
 
 template <typename T, typename... Args>
-T utils::closest(const T z, const T arg1, const Args... args)
+constexpr T utils::closest(const T z, const T arg1, const Args... args)
 {
     const auto rest = closest(z, args...);
     return (std::abs(z - arg1) < std::abs(z - rest)) ? arg1 : rest;

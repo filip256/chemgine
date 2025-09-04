@@ -3,6 +3,7 @@
 #include "data/def/Location.hpp"
 #include "io/Log.hpp"
 #include "structs/CountedRef.hpp"
+#include "utils/STL.hpp"
 
 #include <optional>
 #include <unordered_map>
@@ -33,19 +34,19 @@ private:
     mutable std::unordered_set<std::string> accessedProperties;
     mutable std::unordered_set<std::string> accessedSubDefs;
 
-    std::unordered_map<std::string, std::string>   properties;
-    std::unordered_map<std::string, Object>        ilSubDefs;
-    std::unordered_map<std::string, const Object*> oolSubDefs;
+    utils::StringMap<std::string>   properties;
+    utils::StringMap<Object>        ilSubDefs;
+    utils::StringMap<const Object*> oolSubDefs;
 
 public:
     Object(
-        const DefinitionType                             type,
-        std::string&&                                    identifier,
-        std::string&&                                    specifier,
-        std::unordered_map<std::string, std::string>&&   properties,
-        std::unordered_map<std::string, Object>&&        ilSubDefs,
-        std::unordered_map<std::string, const Object*>&& oolSubDefs,
-        def::Location&&                                  location) noexcept;
+        const DefinitionType              type,
+        std::string&&                     identifier,
+        std::string&&                     specifier,
+        utils::StringMap<std::string>&&   properties,
+        utils::StringMap<Object>&&        ilSubDefs,
+        utils::StringMap<const Object*>&& oolSubDefs,
+        def::Location&&                   location) noexcept;
 
     Object(const Object&) = delete;
     Object(Object&&)      = default;
@@ -63,18 +64,18 @@ public:
     /// Extracts and returns the property with the given key.
     /// If the property isn't found, an error message is logged.
     /// </summary>
-    std::optional<std::string> getProperty(const std::string& key) const;
+    std::optional<std::string> getProperty(const std::string_view key) const;
 
     /// <summary>
     /// Extracts and returns the property with the given key (if found).
     /// </summary>
-    std::optional<std::string> getOptionalProperty(const std::string& key) const;
+    std::optional<std::string> getOptionalProperty(const std::string_view key) const;
 
     /// <summary>
     /// Extracts and returns the property with the given key (if found).
     /// If the property isn't found the given default string is returned.
     /// </summary>
-    std::string getDefaultProperty(const std::string& key, std::string&& defaultValue) const;
+    std::string getDefaultProperty(const std::string_view key, std::string&& defaultValue) const;
 
     /// <summary>
     /// Extracts the property with the given key and returns its parsed value.
@@ -82,7 +83,9 @@ public:
     /// </summary>
     template <typename T, typename... Args>
     std::optional<T> getProperty(
-        const std::string& key, std::optional<T> (*parser)(const std::string&, Args...), Args&&... parserArgs) const;
+        const std::string_view key,
+        std::optional<T>       (*parser)(const std::string&, Args...),
+        Args&&... parserArgs) const;
 
     /// <summary>
     /// Extracts the property with the given key (if found) and returns its parsed value.
@@ -90,7 +93,9 @@ public:
     /// </summary>
     template <typename T, typename... Args>
     std::optional<T> getOptionalProperty(
-        const std::string& key, std::optional<T> (*parser)(const std::string&, Args...), Args&&... parserArgs) const;
+        const std::string_view key,
+        std::optional<T>       (*parser)(const std::string&, Args...),
+        Args&&... parserArgs) const;
 
     /// <summary>
     /// Extracts the property with the given key (if found) and returns its parsed value.
@@ -99,21 +104,21 @@ public:
     /// </summary>
     template <typename T, typename D, typename... Args>
     T getDefaultProperty(
-        const std::string& key,
-        D&&                defaultValue,
-        std::optional<T>   (*parser)(const std::string&, Args...),
+        const std::string_view key,
+        D&&                    defaultValue,
+        std::optional<T>       (*parser)(const std::string&, Args...),
         Args&&... parserArgs) const;
 
     /// <summary>
     /// Extracts and returns the definition with the given key.
     /// If the definition isn't found, an error message is logged.
     /// </summary>
-    const Object* getDefinition(const std::string& key) const;
+    const Object* getDefinition(const std::string_view key) const;
 
     /// <summary>
     /// Extracts and returns the definition with the given key (if found).
     /// </summary>
-    const Object* getOptionalDefinition(const std::string& key) const;
+    const Object* getOptionalDefinition(const std::string_view key) const;
 
     /// <summary>
     /// Extracts the definition with the given key and returns its parsed value.
@@ -121,7 +126,7 @@ public:
     /// </summary>
     template <typename T, typename... Args>
     std::optional<CountedRef<const T>> getDefinition(
-        const std::string&                 key,
+        const std::string_view             key,
         std::optional<CountedRef<const T>> (*parser)(const Object&, Args...),
         Args&&... parserArgs) const;
 
@@ -131,7 +136,7 @@ public:
     /// </summary>
     template <typename T, typename... Args>
     std::optional<CountedRef<const T>> getOptionalDefinition(
-        const std::string&                 key,
+        const std::string_view             key,
         std::optional<CountedRef<const T>> (*parser)(const Object&, Args...),
         Args&&... parserArgs) const;
 
@@ -142,7 +147,7 @@ public:
     /// </summary>
     template <typename T, typename D, typename... Args>
     CountedRef<const T> getDefaultDefinition(
-        const std::string&                 key,
+        const std::string_view             key,
         D&&                                defaultValue,
         std::optional<CountedRef<const T>> (*parser)(const Object&, Args...),
         Args&&... parserArgs) const;
@@ -150,7 +155,7 @@ public:
 
 template <typename T, typename... Args>
 std::optional<T> Object::getProperty(
-    const std::string& key, std::optional<T> (*parser)(const std::string&, Args...), Args&&... parserArgs) const
+    const std::string_view key, std::optional<T> (*parser)(const std::string&, Args...), Args&&... parserArgs) const
 {
     const auto strProp = getProperty(key);
     if (not strProp)
@@ -165,7 +170,7 @@ std::optional<T> Object::getProperty(
 
 template <typename T, typename... Args>
 std::optional<T> Object::getOptionalProperty(
-    const std::string& key, std::optional<T> (*parser)(const std::string&, Args...), Args&&... parserArgs) const
+    const std::string_view key, std::optional<T> (*parser)(const std::string&, Args...), Args&&... parserArgs) const
 {
     const auto strProp = getOptionalProperty(key);
     if (not strProp)
@@ -180,9 +185,9 @@ std::optional<T> Object::getOptionalProperty(
 
 template <typename T, typename D, typename... Args>
 T Object::getDefaultProperty(
-    const std::string& key,
-    D&&                defaultValue,
-    std::optional<T>   (*parser)(const std::string&, Args...),
+    const std::string_view key,
+    D&&                    defaultValue,
+    std::optional<T>       (*parser)(const std::string&, Args...),
     Args&&... parserArgs) const
 {
     const auto prop = getOptionalProperty<T>(key, parser, std::forward<Args>(parserArgs)...);
@@ -191,7 +196,7 @@ T Object::getDefaultProperty(
 
 template <typename T, typename... Args>
 std::optional<CountedRef<const T>> Object::getOptionalDefinition(
-    const std::string&                 key,
+    const std::string_view             key,
     std::optional<CountedRef<const T>> (*parser)(const Object&, Args...),
     Args&&... parserArgs) const
 {
@@ -208,7 +213,7 @@ std::optional<CountedRef<const T>> Object::getOptionalDefinition(
 
 template <typename T, typename... Args>
 std::optional<CountedRef<const T>> Object::getDefinition(
-    const std::string&                 key,
+    const std::string_view             key,
     std::optional<CountedRef<const T>> (*parser)(const Object&, Args...),
     Args&&... parserArgs) const
 {
@@ -225,7 +230,7 @@ std::optional<CountedRef<const T>> Object::getDefinition(
 
 template <typename T, typename D, typename... Args>
 CountedRef<const T> Object::getDefaultDefinition(
-    const std::string&                 key,
+    const std::string_view             key,
     D&&                                defaultValue,
     std::optional<CountedRef<const T>> (*parser)(const Object&, Args...),
     Args&&... parserArgs) const

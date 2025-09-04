@@ -5,13 +5,13 @@
 using namespace def;
 
 Object::Object(
-    const DefinitionType                             type,
-    std::string&&                                    identifier,
-    std::string&&                                    specifier,
-    std::unordered_map<std::string, std::string>&&   properties,
-    std::unordered_map<std::string, Object>&&        ilSubDefs,
-    std::unordered_map<std::string, const Object*>&& oolSubDefs,
-    def::Location&&                                  location) noexcept :
+    const DefinitionType              type,
+    std::string&&                     identifier,
+    std::string&&                     specifier,
+    utils::StringMap<std::string>&&   properties,
+    utils::StringMap<Object>&&        ilSubDefs,
+    utils::StringMap<const Object*>&& oolSubDefs,
+    def::Location&&                   location) noexcept :
     type(type),
     identifier(std::move(identifier)),
     specifier(std::move(specifier)),
@@ -46,7 +46,7 @@ void Object::logUnusedWarnings() const
             Log(this).warn("Unused sub-definition for property: '{0}', at: {1}.", k, location.toString());
 }
 
-std::optional<std::string> Object::getOptionalProperty(const std::string& key) const
+std::optional<std::string> Object::getOptionalProperty(const std::string_view key) const
 {
     auto it = properties.find(key);
     if (it == properties.end())
@@ -56,7 +56,7 @@ std::optional<std::string> Object::getOptionalProperty(const std::string& key) c
     return it->second;
 }
 
-std::optional<std::string> Object::getProperty(const std::string& key) const
+std::optional<std::string> Object::getProperty(const std::string_view key) const
 {
     const auto prop = getOptionalProperty(key);
     if (not prop)
@@ -65,13 +65,13 @@ std::optional<std::string> Object::getProperty(const std::string& key) const
     return prop;
 }
 
-std::string Object::getDefaultProperty(const std::string& key, std::string&& defaultValue) const
+std::string Object::getDefaultProperty(const std::string_view key, std::string&& defaultValue) const
 {
     const auto prop = getOptionalProperty(key);
     return prop ? *prop : defaultValue;
 }
 
-const Object* Object::getOptionalDefinition(const std::string& key) const
+const Object* Object::getOptionalDefinition(const std::string_view key) const
 {
     const auto ilDef = ilSubDefs.find(key);
     if (ilDef != ilSubDefs.end()) {
@@ -88,7 +88,7 @@ const Object* Object::getOptionalDefinition(const std::string& key) const
     return nullptr;
 }
 
-const Object* Object::getDefinition(const std::string& key) const
+const Object* Object::getDefinition(const std::string_view key) const
 {
     const auto def = getOptionalDefinition(key);
     if (def == nullptr)

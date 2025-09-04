@@ -458,7 +458,7 @@ std::string ReactionData::getHRTag() const { return '<' + std::to_string(id) + '
 void ReactionData::dumpDefinition(
     std::ostream& out, const bool prettify, std::unordered_set<EstimatorId>& alreadyPrinted) const
 {
-    static const auto valueOffset = checked_cast<uint8_t>(utils::max(
+    static constexpr auto valueOffset = checked_cast<uint8_t>(utils::max(
         def::Reactions::Id.size(),
         def::Reactions::Name.size(),
         def::Reactions::Catalysts.size(),

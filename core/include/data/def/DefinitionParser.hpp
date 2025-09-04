@@ -16,7 +16,7 @@ public:
         const std::unordered_map<std::string, std::string>& includeAliases,
         const OOLDefRepository&                             oolDefinitions)
     {
-        static const std::unordered_map<std::string, DefinitionType> typeMap{
+        static const std::unordered_map<std::string_view, DefinitionType> typeMap{
             {    def::Types::Auto,     DefinitionType::AUTO},
             {    def::Types::Data,     DefinitionType::DATA},
             {    def::Types::Atom,     DefinitionType::ATOM},
@@ -103,10 +103,10 @@ public:
             return std::nullopt;
         }
 
-        const auto                                   props = utils::split(propertiesStr, ',', "{[(", "}])", true);
-        std::unordered_map<std::string, std::string> properties;
-        std::unordered_map<std::string, def::Object> ilSubDefs;
-        std::unordered_map<std::string, const def::Object*> oolSubDefs;
+        const auto                           props = utils::split(propertiesStr, ',', "{[(", "}])", true);
+        utils::StringMap<std::string>        properties;
+        utils::StringMap<def::Object>        ilSubDefs;
+        utils::StringMap<const def::Object*> oolSubDefs;
 
         for (size_t i = 0; i < props.size(); ++i) {
             const size_t nameEnd = props[i].find(':');

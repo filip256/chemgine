@@ -82,7 +82,7 @@ void AffineEstimator<OutU, InU>::dumpDefinition(
         return;
     }
 
-    static const auto valueOffset = checked_cast<uint8_t>(utils::max(
+    static constexpr auto valueOffset = checked_cast<uint8_t>(utils::max(
         def::Data::Base.size(),
         def::Data::VerticalShift.size(),
         def::Data::HorizontalShift.size(),

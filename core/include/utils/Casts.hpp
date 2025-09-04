@@ -57,7 +57,7 @@ const DstT* final_cast(const SrcT& src)
 /// Similar to static_cast but assures no data is lost during the conversion.
 /// </summary>
 template <typename DstT, typename SrcT>
-DstT checked_cast(const SrcT& src)
+constexpr DstT checked_cast(const SrcT& src)
 {
 #ifdef CHG_ENABLE_CHECKED_CASTS
     if constexpr (is_safe_conversion_v<DstT, SrcT>)

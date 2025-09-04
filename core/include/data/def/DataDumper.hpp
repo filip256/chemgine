@@ -24,39 +24,39 @@ public:
     DataDumper(DataDumper&&)      = default;
 
     template <typename T>
-    DataDumper& header(const std::string& type, const T& specifier, const std::string& idendtifier);
+    DataDumper& header(const std::string_view type, const T& specifier, const std::string& idendtifier);
 
     DataDumper& beginProperties();
 
     template <typename T>
-    DataDumper& property(const std::string& name, const T& value);
+    DataDumper& property(const std::string_view name, const T& value);
 
     template <typename T>
-    DataDumper& propertyWithSep(const std::string& name, const T& value, const bool preSep = false);
+    DataDumper& propertyWithSep(const std::string_view name, const T& value, const bool preSep = false);
 
     template <typename T>
-    DataDumper& defaultProperty(const std::string& name, const T& value, const T& defaultValue);
+    DataDumper& defaultProperty(const std::string_view name, const T& value, const T& defaultValue);
 
     template <typename T>
-    DataDumper&
-    defaultPropertyWithSep(const std::string& name, const T& value, const T& defaultValue, const bool preSep = false);
+    DataDumper& defaultPropertyWithSep(
+        const std::string_view name, const T& value, const T& defaultValue, const bool preSep = false);
 
     template <typename T, typename HistoryT>
     DataDumper& tryOolSubDefinition(const T& value, HistoryT& alreadyPrinted);
 
     template <typename T, typename HistoryT>
-    DataDumper& subDefinition(const std::string& name, const T& value, HistoryT& alreadyPrinted);
+    DataDumper& subDefinition(const std::string_view name, const T& value, HistoryT& alreadyPrinted);
 
     template <typename T, typename HistoryT>
-    DataDumper&
-    subDefinitionWithSep(const std::string& name, const T& value, HistoryT& alreadyPrinted, const bool preSep = false);
+    DataDumper& subDefinitionWithSep(
+        const std::string_view name, const T& value, HistoryT& alreadyPrinted, const bool preSep = false);
 
     DataDumper& endProperties();
     DataDumper& endDefinition();
 };
 
 template <typename T>
-DataDumper& DataDumper::header(const std::string& type, const T& specifier, const std::string& idendtifier)
+DataDumper& DataDumper::header(const std::string_view type, const T& specifier, const std::string& idendtifier)
 {
     out << '_' << type;
     if (idendtifier.size())
@@ -67,7 +67,7 @@ DataDumper& DataDumper::header(const std::string& type, const T& specifier, cons
 }
 
 template <typename T>
-DataDumper& DataDumper::property(const std::string& name, const T& value)
+DataDumper& DataDumper::property(const std::string_view name, const T& value)
 {
     if (settings.prettify)
         out << baseIndent;
@@ -82,7 +82,7 @@ DataDumper& DataDumper::property(const std::string& name, const T& value)
 }
 
 template <typename T>
-DataDumper& DataDumper::propertyWithSep(const std::string& name, const T& value, const bool preSep)
+DataDumper& DataDumper::propertyWithSep(const std::string_view name, const T& value, const bool preSep)
 {
     if (preSep)
         out << settings.propertySep << settings.newLine;
@@ -96,7 +96,7 @@ DataDumper& DataDumper::propertyWithSep(const std::string& name, const T& value,
 }
 
 template <typename T>
-DataDumper& DataDumper::defaultProperty(const std::string& name, const T& value, const T& defaultValue)
+DataDumper& DataDumper::defaultProperty(const std::string_view name, const T& value, const T& defaultValue)
 {
     if (not utils::equal(value, defaultValue))
         property(name, value);
@@ -104,8 +104,8 @@ DataDumper& DataDumper::defaultProperty(const std::string& name, const T& value,
 }
 
 template <typename T>
-DataDumper&
-DataDumper::defaultPropertyWithSep(const std::string& name, const T& value, const T& defaultValue, const bool preSep)
+DataDumper& DataDumper::defaultPropertyWithSep(
+    const std::string_view name, const T& value, const T& defaultValue, const bool preSep)
 {
     if (not utils::equal(value, defaultValue))
         propertyWithSep(name, value, preSep);
@@ -120,7 +120,7 @@ DataDumper& DataDumper::tryOolSubDefinition(const T& value, HistoryT& alreadyPri
 }
 
 template <typename T, typename HistoryT>
-DataDumper& DataDumper::subDefinition(const std::string& name, const T& value, HistoryT& alreadyPrinted)
+DataDumper& DataDumper::subDefinition(const std::string_view name, const T& value, HistoryT& alreadyPrinted)
 {
     if (settings.prettify)
         out << baseIndent;
@@ -140,8 +140,8 @@ DataDumper& DataDumper::subDefinition(const std::string& name, const T& value, H
 }
 
 template <typename T, typename HistoryT>
-DataDumper&
-DataDumper::subDefinitionWithSep(const std::string& name, const T& value, HistoryT& alreadyPrinted, const bool preSep)
+DataDumper& DataDumper::subDefinitionWithSep(
+    const std::string_view name, const T& value, HistoryT& alreadyPrinted, const bool preSep)
 {
     if (preSep)
         out << settings.propertySep << settings.newLine;
