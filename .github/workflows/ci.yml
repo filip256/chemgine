@@ -290,3 +290,29 @@ jobs:
             echo "Failed to push after $MAX_PUSH_RETRIES attempts."
             exit 1
           fi
+
+  virus-check:
+    name: VirusTotal / ${{ matrix.kind.name }}
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: unit-test
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        kind:
+        - { name: Windows-VS2022-x64-Release }
+
+    steps:
+      - name: Download binaries
+        uses: actions/download-artifact@v4
+        with:
+          name: Chemgine-${{ matrix.kind.name }}
+
+      - name: Scan
+        uses: crazy-max/ghaction-virustotal@v4
+        with:
+          vt_api_key: ${{ secrets.VT_API_KEY }}
+          request_rate: 4
+          files: |
+            ./test_app/test_app.exe
