@@ -14,7 +14,7 @@ FlaskData::FlaskData(
 
 void FlaskData::dumpCustomProperties(def::DataDumper& dump) const
 {
-    dump.propertyWithSep(def::Labware::Volume, getVolume())
-        .propertyWithSep(def::Labware::Texture, "~/" + textureFile)
+    dump.property(def::Labware::Volume, getVolume())
+        .property(def::Labware::Texture, "~/" + textureFile)
         .property(def::Labware::TextureScale, textureScale);
 }

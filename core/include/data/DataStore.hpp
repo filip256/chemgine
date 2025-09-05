@@ -2,7 +2,7 @@
 
 #include "atomics/AtomRepository.hpp"
 #include "data/FileStore.hpp"
-#include "data/OOLDefRepository.hpp"
+#include "data/OutlineDefRepository.hpp"
 #include "estimators/EstimatorRepository.hpp"
 #include "labware/LabwareRepository.hpp"
 #include "molecules/MoleculeRepository.hpp"
@@ -13,7 +13,7 @@ class DataStore
 public:
     FileStore fileStore;
 
-    OOLDefRepository oolDefinitions;
+    OutlineDefRepository outlineDefinitions;
 
     AtomRepository atoms;
 

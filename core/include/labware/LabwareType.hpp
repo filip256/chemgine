@@ -31,14 +31,15 @@ class def::Parser<LabwareType>
 public:
     static std::optional<LabwareType> parse(const std::string& str)
     {
-        static const std::unordered_map<std::string, LabwareType> typeMap{
+        static const utils::StringViewMap<LabwareType> typeMap{
             {     def::Labware::Flask,      LabwareType::FLASK},
             {   def::Labware::Adaptor,    LabwareType::ADAPTOR},
             { def::Labware::Condenser,  LabwareType::CONDENSER},
             {def::Labware::Heatsource, LabwareType::HEATSOURCE},
         };
 
-        return utils::find(typeMap, str);
+        const auto it = typeMap.find(str);
+        return it != typeMap.end() ? std::optional(it->second) : std::nullopt;
     }
 };
 
@@ -48,13 +49,13 @@ class def::Printer<LabwareType>
 public:
     static std::string print(const LabwareType object)
     {
-        static const std::unordered_map<LabwareType, std::string> typeMap{
+        static const std::unordered_map<LabwareType, std::string_view> typeMap{
             {     LabwareType::FLASK,      def::Labware::Flask},
             {   LabwareType::ADAPTOR,    def::Labware::Adaptor},
             { LabwareType::CONDENSER,  def::Labware::Condenser},
             {LabwareType::HEATSOURCE, def::Labware::Heatsource},
         };
 
-        return typeMap.at(object);
+        return std::string(typeMap.at(object));
     }
 };

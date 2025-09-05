@@ -5,20 +5,20 @@
 using namespace def;
 
 Object::Object(
-    const DefinitionType                             type,
-    std::string&&                                    identifier,
-    std::string&&                                    specifier,
-    std::unordered_map<std::string, std::string>&&   properties,
-    std::unordered_map<std::string, Object>&&        ilSubDefs,
-    std::unordered_map<std::string, const Object*>&& oolSubDefs,
-    def::Location&&                                  location) noexcept :
+    const DefinitionType              type,
+    std::string&&                     identifier,
+    std::string&&                     specifier,
+    utils::StringMap<std::string>&&   properties,
+    utils::StringMap<Object>&&        ilSubDefs,
+    utils::StringMap<const Object*>&& outlineSubDefs,
+    def::Location&&                   location) noexcept :
     type(type),
     identifier(std::move(identifier)),
     specifier(std::move(specifier)),
     location(std::move(location)),
     properties(std::move(properties)),
     ilSubDefs(std::move(ilSubDefs)),
-    oolSubDefs(std::move(oolSubDefs))
+    outlineSubDefs(std::move(outlineSubDefs))
 {}
 
 DefinitionType Object::getType() const { return type; }
@@ -41,12 +41,12 @@ void Object::logUnusedWarnings() const
         if (not accessedSubDefs.contains(k))
             Log(this).warn("Unused sub-definition for property: '{0}', at: {1}.", k, location.toString());
 
-    for (const auto& [k, _] : oolSubDefs)
+    for (const auto& [k, _] : outlineSubDefs)
         if (not accessedSubDefs.contains(k))
             Log(this).warn("Unused sub-definition for property: '{0}', at: {1}.", k, location.toString());
 }
 
-std::optional<std::string> Object::getOptionalProperty(const std::string& key) const
+std::optional<std::string> Object::getOptionalProperty(const std::string_view key) const
 {
     auto it = properties.find(key);
     if (it == properties.end())
@@ -56,7 +56,7 @@ std::optional<std::string> Object::getOptionalProperty(const std::string& key) c
     return it->second;
 }
 
-std::optional<std::string> Object::getProperty(const std::string& key) const
+std::optional<std::string> Object::getProperty(const std::string_view key) const
 {
     const auto prop = getOptionalProperty(key);
     if (not prop)
@@ -65,13 +65,13 @@ std::optional<std::string> Object::getProperty(const std::string& key) const
     return prop;
 }
 
-std::string Object::getDefaultProperty(const std::string& key, std::string&& defaultValue) const
+std::string Object::getDefaultProperty(const std::string_view key, std::string&& defaultValue) const
 {
     const auto prop = getOptionalProperty(key);
     return prop ? *prop : defaultValue;
 }
 
-const Object* Object::getOptionalDefinition(const std::string& key) const
+const Object* Object::getOptionalDefinition(const std::string_view key) const
 {
     const auto ilDef = ilSubDefs.find(key);
     if (ilDef != ilSubDefs.end()) {
@@ -79,16 +79,16 @@ const Object* Object::getOptionalDefinition(const std::string& key) const
         return &ilDef->second;
     }
 
-    const auto oolDef = oolSubDefs.find(key);
-    if (oolDef != oolSubDefs.end()) {
+    const auto outlineDef = outlineSubDefs.find(key);
+    if (outlineDef != outlineSubDefs.end()) {
         accessedSubDefs.emplace(key);
-        return oolDef->second;
+        return outlineDef->second;
     }
 
     return nullptr;
 }
 
-const Object* Object::getDefinition(const std::string& key) const
+const Object* Object::getDefinition(const std::string_view key) const
 {
     const auto def = getOptionalDefinition(key);
     if (def == nullptr)

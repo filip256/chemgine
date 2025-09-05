@@ -730,7 +730,7 @@ Categorizations:
     -----------------------------------------------------------------------------------------------------------------
 
     Cross-Radical Matching:
-     - A radical 'R1' := '[C, Cl, Br]' should also match 'R2' : '[Cl, Br]' -> 'R1' := '[C, Cl, Br, R2]'.
+     - A radical 'R1' := '[C, Cl, Br]' should also match 'R2' := '[Cl, Br]' -> 'R1' := '[C, Cl, Br, R2]'.
      - This allows better reaction specialization hierarchies.
      - Relations should be formed at load-time.
 

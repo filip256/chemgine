@@ -1,140 +1,140 @@
 #pragma once
 
-#include <string>
+#include <string_view>
 
 namespace def
 {
 namespace Syntax
 {
 
-const std::string Include   = "INCLUDE";
-const std::string IncludeAs = "AS";
+constexpr std::string_view Include   = "INCLUDE";
+constexpr std::string_view IncludeAs = "AS";
 
 }  // namespace Syntax
 
 namespace Amounts
 {
 
-const std::string Min = "-INF";
-const std::string Max = "INF";
+constexpr std::string_view Min = "-INF";
+constexpr std::string_view Max = "INF";
 
 }  // namespace Amounts
 
 namespace Types
 {
 
-const std::string Auto     = "";
-const std::string Data     = "data";
-const std::string Atom     = "atom";
-const std::string Radical  = "radical";
-const std::string Molecule = "mol";
-const std::string Reaction = "react";
-const std::string Labware  = "lab";
+constexpr std::string_view Auto     = "";
+constexpr std::string_view Data     = "data";
+constexpr std::string_view Atom     = "atom";
+constexpr std::string_view Radical  = "radical";
+constexpr std::string_view Molecule = "mol";
+constexpr std::string_view Reaction = "react";
+constexpr std::string_view Labware  = "lab";
 
 }  // namespace Types
 
 namespace Data
 {
 
-const std::string Constant        = "const";
-const std::string Values          = "values";
-const std::string Mode            = "mode";
-const std::string CompressionLoss = "loss";
-const std::string Base            = "base";
-const std::string Input1          = "input_1";
-const std::string Input2          = "input_2";
-const std::string VerticalShift   = "v_shift";
-const std::string HorizontalShift = "h_shift";
-const std::string Scale           = "scale";
-const std::string AnchorPoint     = "anchor_point";
-const std::string RebasePoint     = "rebase_point";
-const std::string Parameters      = "params";
+constexpr std::string_view Constant        = "const";
+constexpr std::string_view Values          = "values";
+constexpr std::string_view Mode            = "mode";
+constexpr std::string_view CompressionLoss = "loss";
+constexpr std::string_view Base            = "base";
+constexpr std::string_view Input1          = "input_1";
+constexpr std::string_view Input2          = "input_2";
+constexpr std::string_view VerticalShift   = "v_shift";
+constexpr std::string_view HorizontalShift = "h_shift";
+constexpr std::string_view Scale           = "scale";
+constexpr std::string_view AnchorPoint     = "anchor_point";
+constexpr std::string_view RebasePoint     = "rebase_point";
+constexpr std::string_view Parameters      = "params";
 
 }  // namespace Data
 
 namespace Atoms
 {
 
-const std::string Name           = "name";
-const std::string Weight         = "weight";
-const std::string Valences       = "valences";
-const std::string RadicalMatches = "matches";
+constexpr std::string_view Name           = "name";
+constexpr std::string_view Weight         = "weight";
+constexpr std::string_view Valences       = "valences";
+constexpr std::string_view RadicalMatches = "matches";
 
 }  // namespace Atoms
 
 namespace Molecules
 {
 
-const std::string Name                   = "name";
-const std::string MeltingPoint           = "melting_point";
-const std::string BoilingPoint           = "boiling_point";
-const std::string SolidDensity           = "solid_density";
-const std::string LiquidDensity          = "liquid_density";
-const std::string SolidHeatCapacity      = "solid_hc";
-const std::string LiquidHeatCapacity     = "liquid_hc";
-const std::string FusionLatentHeat       = "fusion_lh";
-const std::string VaporizationLatentHeat = "vaporization_lh";
-const std::string SublimationLatentHeat  = "sublimation_lh";
-const std::string Hydrophilicity         = "hydrophilicity";
-const std::string Lipophilicity          = "lipophilicity";
-const std::string RelativeSolubility     = "rel_solubility";
-const std::string HenryConstant          = "henry_const";
-const std::string Color                  = "color";
+constexpr std::string_view Name                   = "name";
+constexpr std::string_view MeltingPoint           = "melting_point";
+constexpr std::string_view BoilingPoint           = "boiling_point";
+constexpr std::string_view SolidDensity           = "solid_density";
+constexpr std::string_view LiquidDensity          = "liquid_density";
+constexpr std::string_view SolidHeatCapacity      = "solid_hc";
+constexpr std::string_view LiquidHeatCapacity     = "liquid_hc";
+constexpr std::string_view FusionLatentHeat       = "fusion_lh";
+constexpr std::string_view VaporizationLatentHeat = "vaporization_lh";
+constexpr std::string_view SublimationLatentHeat  = "sublimation_lh";
+constexpr std::string_view Hydrophilicity         = "hydrophilicity";
+constexpr std::string_view Lipophilicity          = "lipophilicity";
+constexpr std::string_view RelativeSolubility     = "rel_solubility";
+constexpr std::string_view HenryConstant          = "henry_const";
+constexpr std::string_view Color                  = "color";
 
 }  // namespace Molecules
 
 namespace Reactions
 {
 
-const std::string Id                 = "id";
-const std::string Name               = "name";
-const std::string TemperatureSpeed   = "speed_t";
-const std::string ConcentrationSpeed = "speed_c";
-const std::string Energy             = "energy";
-const std::string Activation         = "activation";
-const std::string Catalysts          = "catalysts";
-const std::string IsCut              = "is_cut";
+constexpr std::string_view Id                 = "id";
+constexpr std::string_view Name               = "name";
+constexpr std::string_view TemperatureSpeed   = "speed_t";
+constexpr std::string_view ConcentrationSpeed = "speed_c";
+constexpr std::string_view Energy             = "energy";
+constexpr std::string_view Activation         = "activation";
+constexpr std::string_view Catalysts          = "catalysts";
+constexpr std::string_view IsCut              = "is_cut";
 
 }  // namespace Reactions
 
 namespace Labware
 {
 
-const std::string Id         = "id";
-const std::string Flask      = "flask";
-const std::string Adaptor    = "adaptor";
-const std::string Condenser  = "condenser";
-const std::string Heatsource = "heatsource";
+constexpr std::string_view Id         = "id";
+constexpr std::string_view Flask      = "flask";
+constexpr std::string_view Adaptor    = "adaptor";
+constexpr std::string_view Condenser  = "condenser";
+constexpr std::string_view Heatsource = "heatsource";
 
-const std::string Name         = "name";
-const std::string Ports        = "ports";
-const std::string Volume       = "volume";
-const std::string Length       = "length";
-const std::string Efficiency   = "effic";
-const std::string InnerMask    = "inner_mask";
-const std::string CoolantMask  = "coolant_mask";
-const std::string Power        = "power";
-const std::string Texture      = "tx";
-const std::string TextureScale = "tx_scale";
+constexpr std::string_view Name         = "name";
+constexpr std::string_view Ports        = "ports";
+constexpr std::string_view Volume       = "volume";
+constexpr std::string_view Length       = "length";
+constexpr std::string_view Efficiency   = "effic";
+constexpr std::string_view InnerMask    = "inner_mask";
+constexpr std::string_view CoolantMask  = "coolant_mask";
+constexpr std::string_view Power        = "power";
+constexpr std::string_view Texture      = "tx";
+constexpr std::string_view TextureScale = "tx_scale";
 
 }  // namespace Labware
 
 namespace Color
 {
 
-const std::string R         = "r";
-const std::string G         = "g";
-const std::string B         = "b";
-const std::string Intensity = "intensity";
+constexpr std::string_view R         = "r";
+constexpr std::string_view G         = "g";
+constexpr std::string_view B         = "b";
+constexpr std::string_view Intensity = "intensity";
 
 }  // namespace Color
 
 namespace Port
 {
 
-const std::string X     = "x";
-const std::string Y     = "y";
-const std::string Angle = "angle";
+constexpr std::string_view X     = "x";
+constexpr std::string_view Y     = "y";
+constexpr std::string_view Angle = "angle";
 
 }  // namespace Port
 }  // namespace def

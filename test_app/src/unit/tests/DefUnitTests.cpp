@@ -13,7 +13,8 @@ bool DefUnitTest::run()
     bool success = true;
 
     const std::unordered_map<std::string, std::string> includeAliases;
-    auto def = def::parse<def::Object>(defLine, def::Location(getName(), 0), includeAliases, dataStore.oolDefinitions);
+    auto                                               def =
+        def::parse<def::Object>(defLine, def::Location(getName(), 0), includeAliases, dataStore.outlineDefinitions);
     if (not def) {
         Log(this).error("Failed to parse definition: \n{0}", defLine);
         success = false;

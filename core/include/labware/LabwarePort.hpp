@@ -24,7 +24,7 @@ public:
         if (not pair)
             return std::nullopt;
 
-        const auto props = def::parse<std::unordered_map<std::string, std::string>>(pair->second);
+        const auto props = def::parse<utils::StringMap<std::string>>(pair->second);
         if (not props)
             return std::nullopt;
 
@@ -52,7 +52,7 @@ class def::Printer<LabwarePort>
 public:
     static std::string print(const LabwarePort& object)
     {
-        std::unordered_map<std::string, std::string> props{
+        std::unordered_map<std::string_view, std::string> props{
             {    def::Port::X,     def::print(object.x)},
             {    def::Port::Y,     def::print(object.y)},
             {def::Port::Angle, def::print(object.angle)}
@@ -63,7 +63,7 @@ public:
 
     static std::string prettyPrint(const LabwarePort& object)
     {
-        std::unordered_map<std::string, std::string> props{
+        std::unordered_map<std::string_view, std::string> props{
             {    def::Port::X,     def::print(object.x)},
             {    def::Port::Y,     def::print(object.y)},
             {def::Port::Angle, def::print(object.angle)}

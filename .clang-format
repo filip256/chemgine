@@ -203,7 +203,7 @@ IntegerLiteralSeparator:
   Decimal: 3
   Hex: -1
 KeepFormFeed: true
-LineEnding: CRLF
+LineEnding: LF
 ReflowComments: Always
 ShortNamespaceLines: 0
 

@@ -6,7 +6,7 @@
 #include <optional>
 
 class FileStore;
-class OOLDefRepository;
+class OutlineDefRepository;
 
 namespace def
 {
@@ -19,7 +19,7 @@ private:
     std::ifstream                                stream;
     std::unique_ptr<FileParser>                  subParser = nullptr;
     std::unordered_map<std::string, std::string> includeAliases;
-    const OOLDefRepository&                      oolDefinitions;
+    const OutlineDefRepository&                  outlineDefinitions;
 
     FileStore& fileStore;
 
@@ -27,7 +27,8 @@ private:
     void closeSubparser();
 
 public:
-    FileParser(const std::string& filePath, FileStore& fileStore, const OOLDefRepository& oolDefinitions) noexcept;
+    FileParser(
+        const std::string& filePath, FileStore& fileStore, const OutlineDefRepository& outlineDefinitions) noexcept;
     FileParser(const FileParser&) = delete;
     FileParser(FileParser&&)      = default;
     ~FileParser() noexcept;

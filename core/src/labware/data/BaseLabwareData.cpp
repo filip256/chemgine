@@ -10,7 +10,7 @@ BaseLabwareData::BaseLabwareData(
 
 void BaseLabwareData::dumpDefinition(std::ostream& out, const bool prettify) const
 {
-    static const auto valueOffset = checked_cast<uint8_t>(utils::max(
+    static constexpr auto valueOffset = checked_cast<uint8_t>(utils::max(
         def::Labware::Id.size(),
         def::Labware::Name.size(),
         def::Labware::Ports.size(),
@@ -26,9 +26,9 @@ void BaseLabwareData::dumpDefinition(std::ostream& out, const bool prettify) con
     def::DataDumper dump(out, valueOffset, 0, prettify);
     dump.header(def::Types::Labware, type, "")
         .beginProperties()
-        .propertyWithSep(def::Labware::Id, id)
-        .propertyWithSep(def::Labware::Name, name)
-        .propertyWithSep(def::Labware::Ports, ports);
+        .property(def::Labware::Id, id)
+        .property(def::Labware::Name, name)
+        .property(def::Labware::Ports, ports);
 
     dumpCustomProperties(dump);
     dump.endProperties().endDefinition();

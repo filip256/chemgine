@@ -26,11 +26,11 @@ CondenserData::CondenserData(
 
 void CondenserData::dumpCustomProperties(def::DataDumper& dump) const
 {
-    dump.propertyWithSep(def::Labware::Volume, getVolume<0>())
-        .propertyWithSep(def::Labware::Length, length)
-        .propertyWithSep(def::Labware::Efficiency, efficiency)
-        .propertyWithSep(def::Labware::Texture, "~/" + textureFile)
-        .propertyWithSep(def::Labware::InnerMask, "~/fill0_" + textureFile)
-        .propertyWithSep(def::Labware::CoolantMask, "~/fill1_" + textureFile)
+    dump.property(def::Labware::Volume, getVolume<0>())
+        .property(def::Labware::Length, length)
+        .property(def::Labware::Efficiency, efficiency)
+        .property(def::Labware::Texture, "~/" + textureFile)
+        .property(def::Labware::InnerMask, "~/fill0_" + textureFile)
+        .property(def::Labware::CoolantMask, "~/fill1_" + textureFile)
         .property(def::Labware::TextureScale, textureScale);
 }

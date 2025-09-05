@@ -39,10 +39,22 @@ cmake --build build --parallel $(nproc)
 ```
 </details>
 
-# How to Debug
+# Developer guides
 
 <details>
-  <summary><strong><span style="font-size:1.2em;">Ubuntu (GCC) using VS Code</span></strong></summary>
+  <summary><strong><span style="font-size:1.2em;">Setting up pre-commit</span></strong></summary>
+
+```sh
+pip install pre-commit
+pre-commit --version  # v4.3.0+
+
+# In the repo's root:
+pre-commit install
+```
+</details>
+
+<details>
+  <summary><strong><span style="font-size:1.2em;">Ubuntu debugging using VS Code</span></strong></summary>
 
 1. Ensure `gdb` is installed:
 ```sh
@@ -67,19 +79,12 @@ cp dev/presets/launch.json .vscode
 
 </details>
 
-# How to Contribute
-### Pre-commit:
-```sh
-pip install pre-commit
-pre-commit --version  # v4.3.0+
+<details>
+  <summary><strong><span style="font-size:1.2em;">Visual Studio automatic formatting</span></strong></summary>
 
-cd <chemgine-project-root>
-pre-commit install
-```
-
-### Visual Studio:
-#### Automatic formatting:
 [*Microsoft Visual Studio*](https://visualstudio.microsoft.com/) ships together with a *clang-format* version which is usually older than the latest version. This may cause issues with some of the rules defined in [.clang-format](.clang-format). To fix them:
  1. Download the latest [LLVM release](https://github.com/llvm/llvm-project/releases) (look for `clang+llvm-20.1.8-x86_64-pc-windows-msvc.tar.xz`)
  2. Extract `bin/clang-format.exe`
  3. In *Visual Studio* go to `Tools -> Options -> Text Editor -> C/C++ -> Code Style -> Formatting -> General`, tick `Use custom path to clang-format.exe` and browse for the updated `clang-format.exe`.
+
+ </details>
