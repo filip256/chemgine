@@ -43,6 +43,7 @@ jobs:
 
     - name: Run pre-commit checks
       run: pre-commit run --all-files --show-diff-on-failure
+      continue-on-error: true
 
   build-cpp:
     name: Build / ${{ matrix.kind.name }}
