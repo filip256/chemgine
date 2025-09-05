@@ -56,8 +56,8 @@ void AtomData::dumpDefinition(std::ostream& out, const bool prettify) const
     def::DataDumper(out, valueOffset, 0, prettify)
         .header(def::Types::Atom, symbol, "")
         .beginProperties()
-        .propertyWithSep(def::Atoms::Name, name)
-        .propertyWithSep(def::Atoms::Weight, weight)
+        .property(def::Atoms::Name, name)
+        .property(def::Atoms::Weight, weight)
         .property(def::Atoms::Valences, valences)
         .endProperties()
         .endDefinition();

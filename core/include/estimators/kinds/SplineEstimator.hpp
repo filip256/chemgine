@@ -97,7 +97,7 @@ void SplineEstimator<OutU, InU>::dumpDefinition(
     else
         dump.header(def::Types::Data, Base::getUnitSpecifier(), Base::getDefIdentifier());
 
-    dump.beginProperties().propertyWithSep(def::Data::Mode, getMode());
+    dump.beginProperties().property(def::Data::Mode, getMode());
 
     if (prettify) {
         const auto&                       content = spline.getContent();

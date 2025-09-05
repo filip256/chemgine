@@ -9,7 +9,7 @@
 
 DataStore::DataStore() :
     fileStore(),
-    oolDefinitions(),
+    outlineDefinitions(),
     atoms(),
     estimators(),
     molecules(estimators),
@@ -19,7 +19,7 @@ DataStore::DataStore() :
 
 size_t DataStore::totalDefinitionCount() const
 {
-    return oolDefinitions.totalDefinitionCount() +
+    return outlineDefinitions.totalDefinitionCount() +
            atoms.totalDefinitionCount() +
            estimators.totalDefinitionCount() +
            molecules.totalDefinitionCount() +
@@ -35,7 +35,7 @@ bool DataStore::addDefinition(def::Object&& definition)
         return false;
 
     case def::DefinitionType::DATA:
-        return oolDefinitions.add(std::move(definition));
+        return outlineDefinitions.add(std::move(definition));
     case def::DefinitionType::ATOM:
         return atoms.add<AtomData>(definition);
     case def::DefinitionType::RADICAL:
@@ -77,7 +77,7 @@ bool DataStore::load(const std::string& path)
 
     bool            success         = true;
     auto            definitionCount = analysis.preparsedDefinitionCount;
-    def::FileParser parser(normPath, fileStore, oolDefinitions);
+    def::FileParser parser(normPath, fileStore, outlineDefinitions);
     while (true) {
         if (not analysis.failed) {
             const auto definitionsToParse = analysis.totalDefinitionCount - analysis.preparsedDefinitionCount;
@@ -104,7 +104,7 @@ bool DataStore::load(const std::string& path)
     }
 
     estimators.dropUnusedEstimators();
-    oolDefinitions.clear();
+    outlineDefinitions.clear();
     return success;
 }
 
@@ -149,6 +149,6 @@ void DataStore::clear()
     molecules.clear();
     estimators.clear();
     atoms.clear();
-    oolDefinitions.clear();
+    outlineDefinitions.clear();
     fileStore.clear();
 }

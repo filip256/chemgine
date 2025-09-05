@@ -1,6 +1,6 @@
 #pragma once
 
-#include "data/OOLDefRepository.hpp"
+#include "data/OutlineDefRepository.hpp"
 #include "data/def/Keywords.hpp"
 #include "data/def/Object.hpp"
 #include "data/def/Parsers.hpp"
@@ -14,7 +14,7 @@ public:
         const std::string&                                  str,
         def::Location&&                                     location,
         const std::unordered_map<std::string, std::string>& includeAliases,
-        const OOLDefRepository&                             oolDefinitions)
+        const OutlineDefRepository&                         outlineDefinitions)
     {
         static const std::unordered_map<std::string_view, DefinitionType> typeMap{
             {    def::Types::Auto,     DefinitionType::AUTO},
@@ -106,7 +106,7 @@ public:
         const auto                           props = utils::split(propertiesStr, ',', "{[(", "}])", true);
         utils::StringMap<std::string>        properties;
         utils::StringMap<def::Object>        ilSubDefs;
-        utils::StringMap<const def::Object*> oolSubDefs;
+        utils::StringMap<const def::Object*> outlineSubDefs;
 
         for (size_t i = 0; i < props.size(); ++i) {
             const size_t nameEnd = props[i].find(':');
@@ -138,7 +138,7 @@ public:
 
             // in-line sub-definition
             if (value.starts_with('_')) {
-                auto subDef = def::parse<def::Object>(value, utils::copy(location), includeAliases, oolDefinitions);
+                auto subDef = def::parse<def::Object>(value, utils::copy(location), includeAliases, outlineDefinitions);
                 if (not subDef) {
                     log.error("Failed to parse in-line sub-definition: '{0}', at: {1}.", value, location.toString());
                     return std::nullopt;
@@ -169,13 +169,13 @@ public:
                 else
                     value.insert(1, location.getFile() + '@');  // append local address
 
-                const auto* definition = oolDefinitions.getDefinition(value.substr(1));
+                const auto* definition = outlineDefinitions.getDefinition(value.substr(1));
                 if (definition == nullptr) {
                     log.error("Unknown out-of-line definition identifier: '{0}', at: {1}.", value, location.toString());
                     return std::nullopt;
                 }
 
-                oolSubDefs.emplace(std::move(name), definition);
+                outlineSubDefs.emplace(std::move(name), definition);
                 continue;
             }
 
@@ -194,7 +194,7 @@ public:
             std::move(specifierStr),
             std::move(properties),
             std::move(ilSubDefs),
-            std::move(oolSubDefs),
+            std::move(outlineSubDefs),
             std::move(location));
     }
 };

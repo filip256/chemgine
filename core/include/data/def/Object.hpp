@@ -36,7 +36,7 @@ private:
 
     utils::StringMap<std::string>   properties;
     utils::StringMap<Object>        ilSubDefs;
-    utils::StringMap<const Object*> oolSubDefs;
+    utils::StringMap<const Object*> outlineSubDefs;
 
 public:
     Object(
@@ -45,7 +45,7 @@ public:
         std::string&&                     specifier,
         utils::StringMap<std::string>&&   properties,
         utils::StringMap<Object>&&        ilSubDefs,
-        utils::StringMap<const Object*>&& oolSubDefs,
+        utils::StringMap<const Object*>&& outlineSubDefs,
         def::Location&&                   location) noexcept;
 
     Object(const Object&) = delete;

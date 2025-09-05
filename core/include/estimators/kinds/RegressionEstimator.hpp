@@ -100,7 +100,7 @@ void RegressionEstimator<RegT, OutU, InUs...>::dumpDefinition(
         dump.header(def::Types::Data, Base::getUnitSpecifier(), Base::getDefIdentifier());
 
     dump.beginProperties()
-        .propertyWithSep(def::Data::Mode, getMode())
+        .property(def::Data::Mode, getMode())
         .property(def::Data::Parameters, regressor.getParams())
         .endProperties();
 

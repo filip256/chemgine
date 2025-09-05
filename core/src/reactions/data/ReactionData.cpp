@@ -481,24 +481,24 @@ void ReactionData::dumpDefinition(
         productsStr.emplace_back(def::print(uniqueProducts[i].getStructure()));
 
     def::DataDumper dump(out, valueOffset, 0, prettify);
-    dump.tryOolSubDefinition(tempSpeedEstimator, alreadyPrinted)
-        .tryOolSubDefinition(concSpeedEstimator, alreadyPrinted)
+    dump.tryOutlineSubDefinition(tempSpeedEstimator, alreadyPrinted)
+        .tryOutlineSubDefinition(concSpeedEstimator, alreadyPrinted)
         .header(def::Types::Reaction, def::ReactionSpecifier(std::move(reactantsStr), std::move(productsStr)), "")
         .beginProperties()
-        .propertyWithSep(def::Reactions::Id, id)
-        .propertyWithSep(def::Reactions::Name, name);
+        .property(def::Reactions::Id, id)
+        .property(def::Reactions::Name, name);
 
     if (catalysts.size())
-        dump.propertyWithSep(def::Reactions::Catalysts, catalysts);
+        dump.property(def::Reactions::Catalysts, catalysts);
 
     if (isCut) {
         dump.property(def::Reactions::IsCut, true).endProperties().endDefinition();
         return;
     }
 
-    dump.defaultPropertyWithSep(def::Reactions::Energy, reactionEnergy, Amount<Unit::JOULE_PER_MOLE>(0.0))
-        .defaultPropertyWithSep(def::Reactions::Activation, activationEnergy, Amount<Unit::JOULE_PER_MOLE>(0.0))
-        .subDefinitionWithSep(def::Reactions::TemperatureSpeed, tempSpeedEstimator, alreadyPrinted)
+    dump.defaultProperty(def::Reactions::Energy, reactionEnergy, Amount<Unit::JOULE_PER_MOLE>(0.0))
+        .defaultProperty(def::Reactions::Activation, activationEnergy, Amount<Unit::JOULE_PER_MOLE>(0.0))
+        .subDefinition(def::Reactions::TemperatureSpeed, tempSpeedEstimator, alreadyPrinted)
         .subDefinition(def::Reactions::ConcentrationSpeed, concSpeedEstimator, alreadyPrinted)
         .endProperties()
         .endDefinition();

@@ -6,10 +6,13 @@
 
 class RadicalData : public AtomData
 {
-public:
-    const std::unordered_set<Symbol> matchables;
+private:
+    std::unordered_set<Symbol> matches;
 
-    RadicalData(const Symbol& symbol, const std::string& name, std::unordered_set<Symbol>&& matchables) noexcept;
+public:
+    RadicalData(const Symbol& symbol, const std::string& name, std::unordered_set<Symbol>&& matches) noexcept;
+
+    const std::unordered_set<Symbol>& getMatches() const;
 
     void dumpDefinition(std::ostream& out, const bool prettify) const override final;
 

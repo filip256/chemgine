@@ -92,8 +92,8 @@ void AffineEstimator<OutU, InU>::dumpDefinition(
 
     def::DataDumper dump(out, valueOffset, baseIndent, prettify);
     if (not printInline) {
-        // try to OOL print base, since it might have multiple references
-        dump.tryOolSubDefinition(base, alreadyPrinted);
+        // Try to outline the base, since it might have multiple references.
+        dump.tryOutlineSubDefinition(base, alreadyPrinted);
         if (this->getRefCount() == 1)
             return;
     }
@@ -114,9 +114,9 @@ void AffineEstimator<OutU, InU>::dumpDefinition(
 
     dump.beginProperties()
         .subDefinition(def::Data::Base, base, alreadyPrinted)
-        .defaultPropertyWithSep(def::Data::VerticalShift, vShift, 0.0f, true)
-        .defaultPropertyWithSep(def::Data::HorizontalShift, hShift, 0.0f, true)
-        .defaultPropertyWithSep(def::Data::Scale, scale, 1.0f, true)
+        .defaultProperty(def::Data::VerticalShift, vShift, 0.0f)
+        .defaultProperty(def::Data::HorizontalShift, hShift, 0.0f)
+        .defaultProperty(def::Data::Scale, scale, 1.0f)
         .endProperties();
 
     if (not printInline)

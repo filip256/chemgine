@@ -26,9 +26,9 @@ void BaseLabwareData::dumpDefinition(std::ostream& out, const bool prettify) con
     def::DataDumper dump(out, valueOffset, 0, prettify);
     dump.header(def::Types::Labware, type, "")
         .beginProperties()
-        .propertyWithSep(def::Labware::Id, id)
-        .propertyWithSep(def::Labware::Name, name)
-        .propertyWithSep(def::Labware::Ports, ports);
+        .property(def::Labware::Id, id)
+        .property(def::Labware::Name, name)
+        .property(def::Labware::Ports, ports);
 
     dumpCustomProperties(dump);
     dump.endProperties().endDefinition();

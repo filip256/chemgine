@@ -10,7 +10,7 @@ Object::Object(
     std::string&&                     specifier,
     utils::StringMap<std::string>&&   properties,
     utils::StringMap<Object>&&        ilSubDefs,
-    utils::StringMap<const Object*>&& oolSubDefs,
+    utils::StringMap<const Object*>&& outlineSubDefs,
     def::Location&&                   location) noexcept :
     type(type),
     identifier(std::move(identifier)),
@@ -18,7 +18,7 @@ Object::Object(
     location(std::move(location)),
     properties(std::move(properties)),
     ilSubDefs(std::move(ilSubDefs)),
-    oolSubDefs(std::move(oolSubDefs))
+    outlineSubDefs(std::move(outlineSubDefs))
 {}
 
 DefinitionType Object::getType() const { return type; }
@@ -41,7 +41,7 @@ void Object::logUnusedWarnings() const
         if (not accessedSubDefs.contains(k))
             Log(this).warn("Unused sub-definition for property: '{0}', at: {1}.", k, location.toString());
 
-    for (const auto& [k, _] : oolSubDefs)
+    for (const auto& [k, _] : outlineSubDefs)
         if (not accessedSubDefs.contains(k))
             Log(this).warn("Unused sub-definition for property: '{0}', at: {1}.", k, location.toString());
 }
@@ -79,10 +79,10 @@ const Object* Object::getOptionalDefinition(const std::string_view key) const
         return &ilDef->second;
     }
 
-    const auto oolDef = oolSubDefs.find(key);
-    if (oolDef != oolSubDefs.end()) {
+    const auto outlineDef = outlineSubDefs.find(key);
+    if (outlineDef != outlineSubDefs.end()) {
         accessedSubDefs.emplace(key);
-        return oolDef->second;
+        return outlineDef->second;
     }
 
     return nullptr;

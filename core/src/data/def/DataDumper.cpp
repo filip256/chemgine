@@ -4,10 +4,10 @@ using namespace def;
 
 DataDumper::DataDumper(
     std::ostream& out, const uint8_t valueOffset, const uint16_t baseIndent, const bool prettify) noexcept :
+    baseIndent(std::string(baseIndent, ' ')),
     out(out),
     settings(prettify ? def::PrintSettings::Pretty : def::PrintSettings::Minimal),
-    valueOffset(valueOffset + 2),
-    baseIndent(std::string(baseIndent, ' '))
+    valueOffset(valueOffset + 2)
 {}
 
 DataDumper& DataDumper::beginProperties()
@@ -18,6 +18,8 @@ DataDumper& DataDumper::beginProperties()
 
 DataDumper& DataDumper::endProperties()
 {
+    missingSep = false;
+
     out << settings.newLine;
     if (settings.prettify)
         out << baseIndent;

@@ -1,7 +1,7 @@
 #include "data/def/FileParser.hpp"
 
 #include "data/FileStore.hpp"
-#include "data/OOLDefRepository.hpp"
+#include "data/OutlineDefRepository.hpp"
 #include "data/def/DefinitionParser.hpp"
 #include "data/def/Keywords.hpp"
 #include "data/def/Parsers.hpp"
@@ -12,10 +12,10 @@
 using namespace def;
 
 FileParser::FileParser(
-    const std::string& filePath, FileStore& fileStore, const OOLDefRepository& oolDefinitions) noexcept :
+    const std::string& filePath, FileStore& fileStore, const OutlineDefRepository& outlineDefinitions) noexcept :
     currentFile(utils::normalizePath(filePath)),
     stream(currentFile),
-    oolDefinitions(oolDefinitions),
+    outlineDefinitions(outlineDefinitions),
     fileStore(fileStore)
 {
     if (not stream.is_open()) {
@@ -52,7 +52,7 @@ void FileParser::include(const std::string& filePath)
         return;
     }
 
-    subParser = std::make_unique<FileParser>(filePath, fileStore, oolDefinitions);
+    subParser = std::make_unique<FileParser>(filePath, fileStore, outlineDefinitions);
 }
 
 void FileParser::closeSubparser()
@@ -296,5 +296,5 @@ std::optional<def::Object> FileParser::nextDefinition()
     // TODO: remove dirty trick to pass subparser's include aliases to this's parser (needed for the
     // first def in a file)
     return def::parse<def::Object>(
-        line, std::move(location), subParser ? subParser->includeAliases : includeAliases, oolDefinitions);
+        line, std::move(location), subParser ? subParser->includeAliases : includeAliases, outlineDefinitions);
 }
