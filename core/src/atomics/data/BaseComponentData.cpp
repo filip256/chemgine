@@ -7,4 +7,4 @@ BaseComponentData::BaseComponentData(const Amount<Unit::GRAM> weight, const uint
     weight(weight)
 {}
 
-uint8_t BaseComponentData::getRarity() const { return rarity; }
+uint8_t BaseComponentData::getPrecedence() const { return rarity; }

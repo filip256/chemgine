@@ -11,23 +11,24 @@
 template <>
 bool AtomRepository::add<AtomData>(const def::Object& definition)
 {
-    const auto symbol = def::parse<Symbol>(definition.getSpecifier());
+    auto symbol = def::parse<Symbol>(definition.getSpecifier());
     if (not symbol) {
-        Log(this).error("Invalid atom symbol: '{0}' at: {1}.", definition.getSpecifier(), definition.getLocationName());
+        Log(this).error("Invalid atom symbol: '{}' at: {}.", definition.getSpecifier(), definition.getLocationName());
         return false;
     }
 
-    const auto name     = definition.getProperty(def::Atoms::Name);
+    auto       name     = definition.getProperty(def::Atoms::Name);
     const auto weight   = definition.getProperty(def::Atoms::Weight, def::parse<Amount<Unit::GRAM>>);
     auto       valences = definition.getProperty(def::Atoms::Valences, def::parse<std::vector<uint8_t>>);
 
     if (not(name && weight && valences)) {
-        Log(this).error("Incomplete atom definition at: {0}.", definition.getLocationName());
+        Log(this).error("Incomplete atom definition at: {}.", definition.getLocationName());
         return false;
     }
 
-    if (not atoms.emplace(*symbol, std::make_unique<AtomData>(*symbol, *name, *weight, std::move(*valences))).second) {
-        Log(this).warn("Atom with duplicate symbol: '{0}' skipped.", *symbol);
+    auto data = std::make_unique<AtomData>(std::move(*symbol), std::move(*name), *weight, std::move(*valences));
+    if (not atoms.emplace(data->symbol, std::move(data)).second) {
+        Log(this).warn("Atom with duplicate symbol: '{}' skipped.", data->symbol);
         return false;
     }
 
@@ -38,18 +39,18 @@ bool AtomRepository::add<AtomData>(const def::Object& definition)
 template <>
 bool AtomRepository::add<RadicalData>(const def::Object& definition)
 {
-    const auto symbol = def::parse<Symbol>(definition.getSpecifier());
+    auto symbol = def::parse<Symbol>(definition.getSpecifier());
     if (not symbol) {
         Log(this).error(
-            "Invalid radical symbol: '{0}' at: {1}.", definition.getSpecifier(), definition.getLocationName());
+            "Invalid radical symbol: '{}' at: {}.", definition.getSpecifier(), definition.getLocationName());
         return false;
     }
 
-    const auto name    = definition.getDefaultProperty(def::Atoms::Name, utils::copy(symbol->str()));
-    const auto matches = definition.getProperty(def::Atoms::RadicalMatches, def::parse<std::vector<Symbol>>);
+    auto name    = definition.getDefaultProperty(def::Atoms::Name, utils::copy(symbol->str()));
+    auto matches = definition.getProperty(def::Atoms::RadicalMatches, def::parse<std::vector<Symbol>>);
 
     if (not matches) {
-        Log(this).error("Incomplete radical definition at: {0}.", definition.getLocationName());
+        Log(this).error("Incomplete radical definition at: {}.", definition.getLocationName());
         return false;
     }
 
@@ -67,14 +68,49 @@ bool AtomRepository::add<RadicalData>(const def::Object& definition)
         }
 
         if (contains(matchSymbol) == false) {
-            Log(this).error("Unknown atom match symbol: '{0}', at: {1}.", matchSymbol, definition.getLocationName());
+            Log(this).error("Unknown atom match symbol: '{}', at: {}.", matchSymbol, definition.getLocationName());
             return false;
         }
     }
 
-    std::unordered_set matchSet(matches->begin(), matches->end());
-    if (not radicals.emplace(*symbol, std::make_unique<RadicalData>(*symbol, name, std::move(matchSet))).second) {
-        Log(this).warn("Atom with duplicate symbol: '{0}' skipped.", *symbol);
+    SymbolMatchSet matchSet;
+    matchSet.reserve(matches->size());
+    for (auto& m : *matches) {
+        matchSet.emplace(std::move(m), /*inferred=*/false);
+    }
+
+    // Infer cross-radical matches:
+    // R1 = {A, B}     >>  R1 := {A, B}
+    // R2 = {A, B, C}  >>  R2 := {A, B, C, R1, R3}
+    // R3 = {A, B, C}  >>  R3 := {A, B, C, R1, R2}
+    for (auto& [s, a] : atoms) {
+        if (auto r = final_cast<RadicalData>(*a)) {
+            const auto inclusion =
+                utils::compareInclusion(matchSet, r->getMatches(), [](const auto& m) { return not m.isInferred; });
+            if (utils::isNPos(inclusion))
+                continue;  // No common matches.
+
+            if (inclusion == 1)
+                matchSet.emplace(utils::copy(r->symbol), /*inferred=*/true);
+            else if (inclusion == -1)
+                r->addInferredMatch(utils::copy(*symbol));
+            else {
+                Log(this).warn(
+                    "Redundant radical definition: '{}' perfectly matches existing radical: '{}: {}', at: {}.",
+                    *symbol,
+                    r->symbol,
+                    def::prettyPrint(r->getMatches()),
+                    definition.getLocationName());
+
+                r->addInferredMatch(utils::copy(*symbol));
+                matchSet.emplace(utils::copy(r->symbol), /*inferred=*/true);
+            }
+        }
+    }
+
+    auto data = std::make_unique<RadicalData>(std::move(*symbol), std::move(name), std::move(matchSet));
+    if (not atoms.emplace(data->symbol, std::move(data)).second) {
+        Log(this).warn("Radical with duplicate symbol: '{}' skipped.", data->symbol);
         return false;
     }
 
@@ -82,35 +118,27 @@ bool AtomRepository::add<RadicalData>(const def::Object& definition)
     return true;
 }
 
-bool AtomRepository::contains(const Symbol& symbol) const
+const AtomBaseData* AtomRepository::find(const Symbol& symbol) const
 {
-    return atoms.contains(symbol) || radicals.contains(symbol);
+    const auto aIt = atoms.find(symbol);
+    return aIt != atoms.end() ? aIt->second.get() : nullptr;
 }
 
-const AtomData& AtomRepository::at(const Symbol& symbol) const
+bool AtomRepository::contains(const Symbol& symbol) const { return atoms.contains(symbol); }
+
+const AtomBaseData& AtomRepository::at(const Symbol& symbol) const
 {
     if (const auto aIt = atoms.find(symbol); aIt != atoms.end())
         return *aIt->second;
 
-    if (const auto rIt = radicals.find(symbol); rIt != radicals.end())
-        return *rIt->second;
-
-    Log(this).fatal("Tried to access an atom using an undefined symbol: '{0}'", symbol);
+    Log(this).fatal("Tried to access an atom using an undefined symbol: '{}'", symbol);
     CHG_UNREACHABLE();
 }
 
-size_t AtomRepository::totalDefinitionCount() const { return atoms.size() + radicals.size(); }
+size_t AtomRepository::totalDefinitionCount() const { return atoms.size(); }
 
-AtomRepository::AtomIterator AtomRepository::atomsBegin() const { return atoms.begin(); }
+AtomRepository::Iterator AtomRepository::begin() const { return atoms.begin(); }
 
-AtomRepository::AtomIterator AtomRepository::atomsEnd() const { return atoms.end(); }
+AtomRepository::Iterator AtomRepository::end() const { return atoms.end(); }
 
-AtomRepository::RadicalIterator AtomRepository::radicalsBegin() const { return radicals.begin(); }
-
-AtomRepository::RadicalIterator AtomRepository::radicalsEnd() const { return radicals.end(); }
-
-void AtomRepository::clear()
-{
-    atoms.clear();
-    radicals.clear();
-}
+void AtomRepository::clear() { atoms.clear(); }

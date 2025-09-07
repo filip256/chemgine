@@ -7,8 +7,8 @@
 class AtomRepository
 {
 private:
-    std::unordered_map<Symbol, std::unique_ptr<const AtomData>>    atoms;
-    std::unordered_map<Symbol, std::unique_ptr<const RadicalData>> radicals;
+    using ContainerT = std::unordered_map<Symbol, std::unique_ptr<AtomBaseData>>;
+    ContainerT atoms;
 
 public:
     AtomRepository()                      = default;
@@ -18,18 +18,15 @@ public:
     template <typename AtomT>
     bool add(const def::Object& definition);
 
-    bool            contains(const Symbol& symbol) const;
-    const AtomData& at(const Symbol& symbol) const;
+    const AtomBaseData* find(const Symbol& symbol) const;
+    bool                contains(const Symbol& symbol) const;
+    const AtomBaseData& at(const Symbol& symbol) const;
 
     size_t totalDefinitionCount() const;
 
-    using AtomIterator = std::unordered_map<Symbol, std::unique_ptr<const AtomData>>::const_iterator;
-    AtomIterator atomsBegin() const;
-    AtomIterator atomsEnd() const;
-
-    using RadicalIterator = std::unordered_map<Symbol, std::unique_ptr<const RadicalData>>::const_iterator;
-    RadicalIterator radicalsBegin() const;
-    RadicalIterator radicalsEnd() const;
+    using Iterator = ContainerT::const_iterator;
+    Iterator begin() const;
+    Iterator end() const;
 
     void clear();
 

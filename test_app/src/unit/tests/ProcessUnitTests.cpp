@@ -5,6 +5,9 @@
 #include "utils/Casts.hpp"
 #include "utils/Process.hpp"
 
+namespace
+{
+
 //
 // PriorityUnitTest
 //
@@ -112,6 +115,8 @@ bool ProcessorAffinityUnitTest::run()
 
     return true;
 }
+
+}  // namespace
 
 //
 // ProcessUnitTests

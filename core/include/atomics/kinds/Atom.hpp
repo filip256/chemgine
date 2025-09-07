@@ -1,37 +1,20 @@
 #pragma once
 
 #include "atomics/data/AtomData.hpp"
-#include "data/Accessor.hpp"
-#include "global/SizeTypedefs.hpp"
+#include "atomics/kinds/AtomBase.hpp"
 
-#include <unordered_map>
-
-class Atom : public Accessor<>
+class Atom : public Cloneable<Atom, AtomBase>
 {
-protected:
-    const AtomData& data;
+private:
+    using Base = Cloneable<Atom, AtomBase>;
+    using Base::isDefined;
 
 public:
-    Atom(const Symbol& symbol) noexcept;
-    Atom(const Atom&) = default;
-    virtual ~Atom()   = default;
+    using Base::Cloneable;
 
-    virtual const AtomData& getData() const;
+    const AtomData& getData() const override final;
 
-    bool isRadical() const;
+    bool matches(const AtomBase& other) const override final;
 
-    uint8_t                            getPrecedence() const;
-    const Symbol&                      getSymbol() const;
-    std::string                        getSMILES() const;
-    std::unordered_map<Symbol, c_size> getComponentCountMap() const;
-
-    bool         equals(const Atom& other) const;
-    virtual bool matches(const Atom& other) const;
-
-    bool operator==(const Atom& other) const;
-    bool operator!=(const Atom& other) const;
-
-    virtual std::unique_ptr<Atom> clone() const;
-
-    static bool isDefined(const Symbol& symbol);
+    static std::optional<Atom> fromSymbol(const Symbol& symbol);
 };

@@ -11,10 +11,12 @@
 #include "unit/tests/ModuleUnitTests.hpp"
 #include "unit/tests/ProcessUnitTests.hpp"
 #include "unit/tests/StructureUnitTests.hpp"
+#include "unit/tests/UtilsUnitTests.hpp"
 
 UnitTests::UnitTests(const std::regex& filter) noexcept :
     UnitTestGroup("Unit", filter)
 {
+    registerTest<UtilsUnitTests>("utils");
     registerTest<EstimatorUnitTests>("Estimator");
     registerTest<StructureUnitTests>("Structure", "./data/builtin/radicals.cdef");
     registerTest<DefUnitTests>("def", "./data/builtin/radicals.cdef");

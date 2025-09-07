@@ -150,7 +150,19 @@ StructureAtomMapUnitTest::StructureAtomMapUnitTest(
     pattern(patternSmiles)
 {}
 
-bool StructureAtomMapUnitTest::run() { return (target.mapTo(pattern, true).size() > 0) == expected; }
+bool StructureAtomMapUnitTest::run()
+{
+    const auto map = target.mapTo(pattern, true);
+    if ((map.size() == pattern.getNonImpliedAtomCount()) != expected) {
+        Log(this).error(
+            "Actual map size: {0} is different from the expected size: {1}.",
+            map.size(),
+            pattern.getNonImpliedAtomCount());
+        return false;
+    }
+
+    return true;
+}
 
 //
 // StructureMaximalAtomMapUnitTest
@@ -461,9 +473,8 @@ StructureUnitTests::StructureUnitTests(
     registerTest<StructureEqualityUnitTest>(
         "equality", "N2C1=CC=C(OC)C=C1C(CCN(C)C)C2", "N2C1=CC=C(OC)C=C1C(C2)CCN(C)C", true);
 
-    // TODO: should check the size of the mapping
     // TODO: add reaction concretization tests
-    // TODO: unit tests should show failed checks at the end
+
     registerTest<StructureAtomMapUnitTest>("map", "CN(C)C(=O)C1=CC=CC=C1", "C1=CC=CC=C1R", true);
     registerTest<StructureAtomMapUnitTest>("map", "CC(=O)OC", "RC(=O)OR", true);
     registerTest<StructureAtomMapUnitTest>("map", "CC(=O)OC", "RC(=O)O", false);
@@ -488,6 +499,11 @@ StructureUnitTests::StructureUnitTests(
         "N(R)C14CC(CC=C1C2=C(OR)C=CC3=C2C(=C[N]3)C4)C(=O)N(R)R",
         true);
     registerTest<StructureAtomMapUnitTest>("map", "[Cl]", "X", true);
+    registerTest<StructureAtomMapUnitTest>("map", "CC", "C[T1]", true);
+    registerTest<StructureAtomMapUnitTest>("map", "CSi", "C[T1]", true);
+    registerTest<StructureAtomMapUnitTest>("map", "CR", "C[T1]", true);
+    registerTest<StructureAtomMapUnitTest>("map", "C[T2]", "C[T1]", true);
+    registerTest<StructureAtomMapUnitTest>("map", "C[T1]", "C[T2]", false);
 
     registerTest<StructureMaximalAtomMapUnitTest>("maximal_map", "CC(=O)OC", "OCC", 3);
     registerTest<StructureMaximalAtomMapUnitTest>("maximal_map", "C1CCCCC(O)CC1", "CC(O)C", 4);

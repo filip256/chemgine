@@ -3,21 +3,19 @@
 #include "data/DataStore.hpp"
 #include "io/Log.hpp"
 
-Radical::Radical(const Symbol& symbol) noexcept :
-    Atom(symbol)
-{}
-
 const RadicalData& Radical::getData() const { return static_cast<const RadicalData&>(data); }
 
-bool Radical::matches(const Atom& other) const
+bool Radical::matches(const AtomBase& other) const
 {
-    const auto& d = this->getData();
-    return equals(other) || d.getMatches() == RadicalData::MatchAny || d.getMatches().contains(other.getData().symbol);
+    if (equals(other))
+        return true;
+
+    const auto& thisData = this->getData();
+    return thisData.getMatches().contains(other.getSymbol()) || thisData.getMatches() == RadicalData::MatchAny;
 }
 
-std::unique_ptr<Atom> Radical::clone() const { return std::make_unique<Radical>(*this); }
-
-bool Radical::isDefined(const Symbol& symbol)
+std::optional<Radical> Radical::fromSymbol(const Symbol& symbol)
 {
-    return Atom::isDefined(symbol) && getDataStore().atoms.at(symbol).isRadical();
+    const auto data = Accessor<>::getDataStore().atoms.find(symbol);
+    return data != nullptr && data->isRadical() ? std::optional(Radical(*data)) : std::nullopt;
 }

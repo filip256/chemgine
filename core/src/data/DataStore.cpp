@@ -122,10 +122,13 @@ void DataStore::dump(const std::string& path, const bool prettify) const
         out << "    > " << f.first << '\n';
     out << ".:\n\n";
 
-    for (auto a = atoms.atomsBegin(); a != atoms.atomsEnd(); ++a)
-        a->second->dumpDefinition(out, prettify);
-    for (auto r = atoms.radicalsBegin(); r != atoms.radicalsEnd(); ++r)
-        r->second->dumpDefinition(out, prettify);
+    // Atoms are dumped before radicals.
+    for (const auto& a : atoms)
+        if (not a.second->isRadical())
+            a.second->dumpDefinition(out, prettify);
+    for (const auto& r : atoms)
+        if (r.second->isRadical())
+            r.second->dumpDefinition(out, prettify);
 
     std::unordered_set<EstimatorId> printedEstimators;
     for (const auto& m : molecules)

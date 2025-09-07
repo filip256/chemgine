@@ -22,5 +22,5 @@ public:
     virtual uint8_t     getFittingValence(const uint8_t bonds) const = 0;
     virtual std::string getSMILES() const                            = 0;
 
-    uint8_t getRarity() const;
+    uint8_t getPrecedence() const;
 };

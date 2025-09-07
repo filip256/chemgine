@@ -19,6 +19,30 @@ template <typename KeyT1, typename KeyT2, typename ObjT>
 std::unordered_map<KeyT1, ObjT>
 compose(const std::unordered_map<KeyT1, KeyT2>& map1, const std::unordered_map<KeyT2, ObjT>& map2);
 
+// Checks if all the elements matching the filter in RHS are also present in LHS.
+template <typename SetT>
+bool includes(const SetT& lhs, const SetT& rhs);
+// Checks if all the elements matching the filter in RHS are also present in LHS. Only the keys which match the given
+// filter are considered.
+template <typename SetT, typename Func>
+bool includes(const SetT& lhs, const SetT& rhs, Func&& filter);
+
+// Returns:
+//    0    if LHS and RHS contain the same elements,
+//    1    if all the elements in RHS are also present in LHS,
+//   -1    if all the elements in LHS are also present in RHS,
+//   npos  otherwise
+template <typename SetT>
+int8_t compareInclusion(const SetT& lhs, const SetT& rhs);
+// Returns:
+//    0    if LHS and RHS contain the same elements,
+//    1    if all the elements in RHS are also present in LHS,
+//   -1    if all the elements in LHS are also present in RHS,
+//   npos  otherwise
+// Only the elements which match the given filter are considered.
+template <typename SetT, typename Func>
+int8_t compareInclusion(const SetT& lhs, const SetT& rhs, Func&& filter);
+
 template <typename T1, typename T2>
 std::pair<T2, T1> reversePair(const std::pair<T1, T2>& pair);
 
@@ -215,6 +239,51 @@ utils::compose(const std::unordered_map<KeyT1, KeyT2>& map1, const std::unordere
             result.emplace(std::make_pair(p.first, map2.at(p.second)));
     }
     return result;
+}
+
+template <typename SetT>
+bool utils::includes(const SetT& lhs, const SetT& rhs)
+{
+    if (lhs.size() < rhs.size())
+        return false;
+
+    for (const auto& p : rhs)
+        if (not lhs.contains(p))
+            return false;
+    return true;
+}
+
+template <typename SetT, typename Func>
+bool utils::includes(const SetT& lhs, const SetT& rhs, Func&& filter)
+{
+    for (const auto& p : rhs)
+        if (filter(p) && not lhs.contains(p))
+            return false;
+    return true;
+}
+
+template <typename SetT>
+int8_t utils::compareInclusion(const SetT& lhs, const SetT& rhs)
+{
+    if (rhs.size() < lhs.size()) {
+        return includes(lhs, rhs) ? 1 : utils::npos<int8_t>;
+    }
+    if (lhs.size() < rhs.size()) {
+        return includes(rhs, lhs) ? -1 : utils::npos<int8_t>;
+    }
+
+    for (const auto& p : lhs)
+        if (not rhs.contains(p))
+            return utils::npos<int8_t>;
+    return 0;
+}
+
+template <typename SetT, typename Func>
+int8_t utils::compareInclusion(const SetT& lhs, const SetT& rhs, Func&& filter)
+{
+    const auto lhsIncludesRhs = includes(lhs, rhs, filter);
+    const auto rhsIncludesRhs = includes(rhs, lhs, filter);
+    return lhsIncludesRhs ? (rhsIncludesRhs ? 0 : 1) : (rhsIncludesRhs ? -1 : utils::npos<int8_t>);
 }
 
 template <typename KeyT, typename ObjT>

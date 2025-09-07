@@ -1,18 +1,20 @@
 #pragma once
 
 #include "atomics/data/RadicalData.hpp"
-#include "atomics/kinds/Atom.hpp"
+#include "atomics/kinds/AtomBase.hpp"
 
-class Radical : public Atom
+class Radical : public Cloneable<Radical, AtomBase>
 {
+private:
+    using Base = Cloneable<Radical, AtomBase>;
+    using Base::isDefined;
+
 public:
-    Radical(const Symbol& symbol) noexcept;
+    using Base::Cloneable;
 
     const RadicalData& getData() const override final;
 
-    bool matches(const Atom& other) const override final;
+    bool matches(const AtomBase& other) const override final;
 
-    std::unique_ptr<Atom> clone() const override final;
-
-    static bool isDefined(const Symbol& symbol);
+    static std::optional<Radical> fromSymbol(const Symbol& symbol);
 };

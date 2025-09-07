@@ -129,34 +129,34 @@ template <typename Key, typename T>
 class Printer<std::unordered_map<Key, T>>
 {
 public:
-    static std::string print(const std::unordered_map<Key, T>& object)
+    static std::string print(const std::unordered_map<Key, T>& object, const bool printValue = true)
     {
         if (object.size() == 1) {
             const auto& p = *object.begin();
-            return def::print(p.first) + ':' + def::print(p.second);
+            return def::print(p.first) + (printValue ? (':' + def::print(p.second)) : "");
         }
 
         std::string result = "{";
         for (const auto& p : object)
-            result += def::print(p.first) + ':' + def::print(p.second) + ',';
+            result += def::print(p.first) + (printValue ? (':' + def::print(p.second)) : "") + ',';
 
         result.back() = '}';
         return result;
     }
 
-    static std::string prettyPrint(const std::unordered_map<Key, T>& object)
+    static std::string prettyPrint(const std::unordered_map<Key, T>& object, const bool printValue = true)
     {
         if (object.size() == 0)
             return "{}";
 
         if (object.size() == 1) {
             const auto& p = *object.begin();
-            return def::prettyPrint(p.first) + ": " + def::prettyPrint(p.second);
+            return def::prettyPrint(p.first) + (printValue ? (": " + def::prettyPrint(p.second)) : "");
         }
 
         std::string result = "{ ";
         for (const auto& p : object)
-            result += def::prettyPrint(p.first) + ": " + def::prettyPrint(p.second) + ", ";
+            result += def::prettyPrint(p.first) + (printValue ? (": " + def::prettyPrint(p.second)) : "") + ", ";
 
         result[result.size() - 2] = ' ';
         result.back()             = '}';
@@ -164,11 +164,11 @@ public:
     }
 };
 
-template <typename T>
-class Printer<std::unordered_set<T>>
+template <typename T, typename Hash, typename KeyEqual>
+class Printer<std::unordered_set<T, Hash, KeyEqual>>
 {
 public:
-    static std::string print(const std::unordered_set<T>& object)
+    static std::string print(const std::unordered_set<T, Hash, KeyEqual>& object)
     {
         if (object.size() == 1)
             return def::print(*object.begin());
@@ -181,7 +181,7 @@ public:
         return result;
     }
 
-    static std::string prettyPrint(const std::unordered_set<T>& object)
+    static std::string prettyPrint(const std::unordered_set<T, Hash, KeyEqual>& object)
     {
         if (object.size() == 0)
             return "{}";

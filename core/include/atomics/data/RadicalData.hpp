@@ -1,20 +1,30 @@
 #pragma once
 
-#include "atomics/data/AtomData.hpp"
+#include "atomics/data/AtomBaseData.hpp"
+#include "data/values/SymbolMatch.hpp"
 
-#include <unordered_set>
-
-class RadicalData : public AtomData
+class RadicalData : public AtomBaseData
 {
 private:
-    std::unordered_set<Symbol> matches;
+    SymbolMatchSet matches;
 
 public:
-    RadicalData(const Symbol& symbol, const std::string& name, std::unordered_set<Symbol>&& matches) noexcept;
+    RadicalData(Symbol&& symbol, std::string&& name, SymbolMatchSet&& matches) noexcept;
 
-    const std::unordered_set<Symbol>& getMatches() const;
+    const SymbolMatchSet& getMatches() const;
+    void                  addInferredMatch(Symbol&& match);
+
+    bool isRadical() const override final;
+
+    const ImmutableSet<uint8_t>& getValences() const override final;
+    uint8_t                      getFittingValence(const uint8_t bonds) const override final;
+    bool                         hasValence(const uint8_t valence) const override final;
+
+    uint8_t            getPrecedence() const override final;
+    Amount<Unit::GRAM> getWeight() const override final;
 
     void dumpDefinition(std::ostream& out, const bool prettify) const override final;
 
-    static const std::unordered_set<Symbol> MatchAny;
+    static const ImmutableSet<uint8_t> AnyValence;
+    static const SymbolMatchSet        MatchAny;
 };

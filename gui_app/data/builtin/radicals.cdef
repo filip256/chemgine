@@ -14,11 +14,6 @@ _radical : R {
     matches:  C,
 };
 
-_radical : A {
-    name:     aromatic radical,
-    matches:  C,
-};
-
 _radical : X {
     name:     halogen radical,
     matches:  {F, Cl, Br, At, Ts},
