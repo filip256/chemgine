@@ -1038,7 +1038,7 @@ inline constexpr Amount<Unit::RADIAN> operator""_rad(long double value)
     return static_cast<Amount<>::StorageType>(value);
 }
 
-// --- Printer ---    //
+// --- Extras ---    //
 
 template <Unit U>
 class def::Printer<Amount<U>>
@@ -1054,4 +1054,15 @@ public:
         else
             return valStr;
     }
+};
+
+template <Unit U>
+class utils::NPos<Amount<U>>
+{
+public:
+    using ObjT = Amount<U>;
+
+    static constexpr ObjT value = ObjT(npos<typename Amount<U>::StorageType>);
+
+    static constexpr bool isNPos(const ObjT& amount) { return isNPos(amount.asStd()); }
 };

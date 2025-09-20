@@ -33,10 +33,12 @@ uint8_t getPrecedenceOf(const Symbol& symbol)
 }  // namespace
 
 AtomData::AtomData(
-    Symbol&& symbol, std::string&& name, const Amount<Unit::GRAM> weight, ImmutableSet<uint8_t>&& valences) noexcept :
-    AtomBaseData(std::move(symbol), std::move(name)),
+    Symbol&&                          symbol,
+    std::string&&                     name,
+    const Amount<Unit::GRAM_PER_MOLE> weight,
+    ImmutableSet<uint8_t>&&           valences) noexcept :
+    AtomBaseData(std::move(symbol), std::move(name), weight),
     valences(std::move(valences)),
-    weight(weight),
     rarity(getPrecedenceOf(this->symbol))
 {}
 
@@ -57,8 +59,6 @@ bool AtomData::hasValence(const uint8_t valence) const
 }
 
 uint8_t AtomData::getPrecedence() const { return rarity; }
-
-Amount<Unit::GRAM> AtomData::getWeight() const { return weight; }
 
 void AtomData::dumpDefinition(std::ostream& out, const bool prettify) const
 {

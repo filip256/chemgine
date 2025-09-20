@@ -15,8 +15,9 @@
 class MolecularStructure
 {
 private:
-    uint16_t                                     impliedHydrogenCount = 0;
     std::vector<std::unique_ptr<BondedAtomBase>> atoms;
+    Amount<Unit::GRAM_PER_MOLE>                  molarMass            = 0.0f;
+    uint16_t                                     impliedHydrogenCount = 0;
 
     static void addBond(BondedAtomBase& from, BondedAtomBase& to, const BondType bondType);
     static bool addBondChecked(BondedAtomBase& from, BondedAtomBase& to, const BondType bondType);
@@ -30,7 +31,7 @@ private:
     /// If the valences of the atoms aren't respected it returns -1.
     /// Complexity: O(n_comps * n_bonds)
     /// </summary>
-    int16_t countImpliedHydrogens() const;
+    std::pair<Amount<Unit::GRAM_PER_MOLE>, int16_t> countProperties() const;
 
     bool isFullyConnected() const;
 
@@ -175,12 +176,17 @@ public:
 
     MolecularStructure createCopy() const;
 
+private:
+    template <bool Exact>
+    std::unordered_map<c_size, c_size> _mapTo(const MolecularStructure& pattern) const;
+
+public:
     /// <summary>
     /// Returns the first found mapping between the atoms of the pattern and the atoms of *this.
-    /// The whole pattern structure must be matched.
+    /// Radicals are escaped but the whole pattern structure must be matched.
     /// Complexity: rather large
     /// </summary>
-    std::unordered_map<c_size, c_size> mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const;
+    std::unordered_map<c_size, c_size> mapTo(const MolecularStructure& pattern) const;
 
     /// <summary>
     /// Returns the largest mapping between the atoms of the pattern and the atoms of *this.

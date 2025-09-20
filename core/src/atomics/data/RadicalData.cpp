@@ -11,8 +11,9 @@ const SymbolMatchSet        RadicalData::MatchAny   = SymbolMatchSet{
              {'*', false}
 };
 
-RadicalData::RadicalData(Symbol&& symbol, std::string&& name, SymbolMatchSet&& matches) noexcept :
-    AtomBaseData(std::move(symbol), std::move(name)),
+RadicalData::RadicalData(
+    Symbol&& symbol, std::string&& name, const Amount<Unit::GRAM_PER_MOLE> weight, SymbolMatchSet&& matches) noexcept :
+    AtomBaseData(std::move(symbol), std::move(name), weight),
     matches(std::move(matches))
 {}
 
@@ -32,13 +33,6 @@ uint8_t RadicalData::getPrecedence() const
 {
     // During structure canonicalization radicals have the lowest precedence.
     return 0;
-}
-
-Amount<Unit::GRAM> RadicalData::getWeight() const
-{
-    // TODO: It might help to use the minimum weight of all the matching atoms, allowing more early returns in structure
-    // comparisons.
-    return 0.0_g;
 }
 
 void RadicalData::dumpDefinition(std::ostream& out, const bool prettify) const

@@ -9,8 +9,7 @@ Molecule::Molecule(const MoleculeData& data) noexcept :
 {}
 
 Molecule::Molecule(MolecularStructure&& structure) noexcept :
-    data(Accessor<>::getDataStore().molecules.findOrAddConcrete(std::move(structure))),
-    molarMass(data.getStructure().getMolarMass())
+    data(Accessor<>::getDataStore().molecules.findOrAddConcrete(std::move(structure)))
 {}
 
 Molecule::Molecule(const std::string& smiles) noexcept :
@@ -19,7 +18,7 @@ Molecule::Molecule(const std::string& smiles) noexcept :
 
 MoleculeId Molecule::getId() const { return data.id; }
 
-Amount<Unit::GRAM_PER_MOLE> Molecule::getMolarMass() const { return molarMass; }
+Amount<Unit::GRAM_PER_MOLE> Molecule::getMolarMass() const { return data.getStructure().getMolarMass(); }
 
 const MoleculeData& Molecule::getData() const { return data; }
 
@@ -50,7 +49,7 @@ Molecule::getAggregationAt(const Amount<Unit::CELSIUS> temperature, const Amount
 Amount<Unit::GRAM_PER_MILLILITER> Molecule::getDensityAt(
     const Amount<Unit::CELSIUS> temperature, const Amount<Unit::TORR> pressure, const AggregationType aggregation) const
 {
-    return aggregation == AggregationType::GAS      ? Formulas::idealGasLaw(temperature, pressure, molarMass)
+    return aggregation == AggregationType::GAS      ? Formulas::idealGasLaw(temperature, pressure, getMolarMass())
            : aggregation == AggregationType::LIQUID ? data.liquidDensityEstimator->get(temperature)
                                                     : data.solidDensityEstimator->get(temperature);
 }

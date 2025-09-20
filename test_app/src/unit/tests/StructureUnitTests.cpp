@@ -152,7 +152,7 @@ StructureAtomMapUnitTest::StructureAtomMapUnitTest(
 
 bool StructureAtomMapUnitTest::run()
 {
-    const auto map = target.mapTo(pattern, true);
+    const auto map = target.mapTo(pattern);
     if ((map.size() == pattern.getNonImpliedAtomCount()) != expected) {
         Log(this).error(
             "Actual map size: {} is different from the expected size: {}.",
@@ -413,6 +413,7 @@ StructureUnitTests::StructureUnitTests(
 {
     registerTest<UnitTestSetup<AccessorTestSetup>>("setup", dataStore, atomsFilePath);
 
+    registerTest<StructureSMILESUnitTest>("SMILES", "HH", 2.01f);
     registerTest<StructureSMILESUnitTest>("SMILES", "CN(C)C(=O)C1=CC=CC=C1", 149.19f);
     registerTest<StructureSMILESUnitTest>("SMILES", "C1=CC=CC=C1R", 77.11f);
     registerTest<StructureSMILESUnitTest>("SMILES", "CC(=O)OC", 74.08f);

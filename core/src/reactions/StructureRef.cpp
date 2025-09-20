@@ -13,7 +13,7 @@ const MolecularStructure& StructureRef::getStructure() const { return data.getSt
 std::unordered_map<c_size, c_size> StructureRef::matchWith(const MolecularStructure& structure) const
 {
     const auto& thisStructure = getStructure();
-    const auto  map           = structure.mapTo(thisStructure, true);
+    const auto  map           = structure.mapTo(thisStructure);
     if (map.size() == thisStructure.getNonImpliedAtomCount())
         return map;
 
