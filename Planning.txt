@@ -272,7 +272,7 @@ Tasks:
   22. Spread system ticks across multiple frames
   DONE. Add NullRef type instead of Ref<T>::NullRef
   DONE. Rename normalization to canonicalization
-  24. Remove MolecularStructure.mapTo(setB[i], false), only mapTo(setB[i], true) is needed
+  DONE. Remove MolecularStructure.mapTo(setB[i], false), only mapTo(setB[i], true) is needed
   DONE. Add catalysts to specialization tree
   DONE. Add id parser
   DONE. Add DynamicAmount

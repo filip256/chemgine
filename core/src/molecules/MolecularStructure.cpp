@@ -19,6 +19,7 @@
 MolecularStructure::MolecularStructure(const std::string& smiles) { loadFromSMILES(smiles); }
 
 MolecularStructure::MolecularStructure(const MolecularStructure& other) noexcept :
+    molarMass(other.molarMass),
     impliedHydrogenCount(other.impliedHydrogenCount)
 {
     this->atoms.reserve(other.atoms.size());
@@ -36,6 +37,7 @@ MolecularStructure MolecularStructure::createCopy() const { return MolecularStru
 void MolecularStructure::clear()
 {
     atoms.clear();
+    molarMass            = 0.0f;
     impliedHydrogenCount = 0;
 }
 
@@ -130,20 +132,24 @@ int8_t MolecularStructure::getImpliedHydrogenCount(const BondedAtomBase& atom)
     const auto d = getDegreeOf(atom);
     const auto v = atom.getAtom().getData().getFittingValence(d);
 
-    return v == AtomData::NullValence ? -1 : v - d;
+    return v == AtomData::NullValence ? utils::npos<int8_t> : v - d;
 }
 
-int16_t MolecularStructure::countImpliedHydrogens() const
+std::pair<Amount<Unit::GRAM_PER_MOLE>, int16_t> MolecularStructure::countProperties() const
 {
-    int16_t hCount = 0;
+    std::pair<Amount<Unit::GRAM_PER_MOLE>, int16_t> result{0.0f, 0};
     for (const auto& a : atoms) {
-        const auto h = getImpliedHydrogenCount(*a);
-        if (h == -1)
-            return -1;
+        result.first += a->getAtom().getData().weight;
 
-        hCount += h;
+        const auto h = getImpliedHydrogenCount(*a);
+        if (utils::isNPos(h))
+            return utils::npos<std::pair<Amount<Unit::GRAM_PER_MOLE>, int16_t>>;
+
+        result.second += h;
     }
-    return hCount;
+
+    result.first += Predefined::get().Hydrogen.getData().weight * result.second;
+    return result;
 }
 
 bool MolecularStructure::isFullyConnected() const
@@ -202,6 +208,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
         if (not AtomBase::isDefined("H"))
             return false;
 
+        molarMass            = Predefined::get().Hydrogen.getData().weight * 2;
         impliedHydrogenCount = 2;
         return true;
     }
@@ -391,13 +398,13 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
         return false;
     }
 
-    const auto hCount = countImpliedHydrogens();
-    if (hCount == -1) {
+    const auto properties = countProperties();
+    if (utils::isNPos(properties)) {
         Log(this).error("Valence of an atom was exceeded in SMILES:\n{}", smiles);
         clear();
         return false;
     }
-    impliedHydrogenCount = hCount;
+    std::tie(molarMass, impliedHydrogenCount) = properties;
 
     canonicalize();
 
@@ -500,6 +507,7 @@ bool MolecularStructure::loadFromASCII(const std::string& ascii)
     }
 
     if (buffer.toString() == "H2") {
+        molarMass            = Predefined::get().Hydrogen.getData().weight * 2;
         impliedHydrogenCount = 2;
         return true;
     }
@@ -642,13 +650,13 @@ bool MolecularStructure::loadFromASCII(const std::string& ascii)
         }
     }
 
-    const auto hCount = countImpliedHydrogens();
-    if (hCount == -1) {
-        Log(this).error("Valence of an atom was exceeded is ASCII block:\n{}", ascii);
+    const auto properties = countProperties();
+    if (utils::isNPos(properties)) {
+        Log(this).error("Valence of an atom was exceeded in ASCII block:\n{}", ascii);
         clear();
         return false;
     }
-    impliedHydrogenCount = hCount;
+    std::tie(molarMass, impliedHydrogenCount) = properties;
 
     canonicalize();
 
@@ -665,15 +673,7 @@ const BondedAtomBase& MolecularStructure::getBondedAtom(const c_size idx) const 
 
 c_size MolecularStructure::getImpliedHydrogenCount() const { return impliedHydrogenCount; }
 
-Amount<Unit::GRAM_PER_MOLE> MolecularStructure::getMolarMass() const
-{
-    Amount<Unit::GRAM> cnt = 0;
-    for (c_size i = 0; i < atoms.size(); ++i)
-        cnt += atoms[i]->getAtom().getData().getWeight();
-
-    cnt += Predefined::get().Hydrogen.getData().getWeight() * impliedHydrogenCount;
-    return cnt.to<Unit::GRAM_PER_MOLE>(Amount<Unit::MOLE>(1.0));
-}
+Amount<Unit::GRAM_PER_MOLE> MolecularStructure::getMolarMass() const { return molarMass; }
 
 uint8_t MolecularStructure::getDegreesOfFreedom() const
 {
@@ -808,7 +808,7 @@ bool MolecularStructure::isConnected() const
     return std::any_of(visited.begin(), visited.end(), [](const auto& v) { return not v; });
 }
 
-bool MolecularStructure::isVirtualHydrogen() const { return atoms.empty() && impliedHydrogenCount == 2; }
+bool MolecularStructure::isVirtualHydrogen() const { return impliedHydrogenCount == 2 && atoms.empty(); }
 
 //
 // Matching
@@ -824,20 +824,21 @@ bool MolecularStructure::areAdjacent(const c_size idxA, const c_size idxB) const
 namespace
 {
 
-bool areMatching(const BondedAtomBase& a, const BondedAtomBase& b, const bool escapeRadicalTypes)
+template <bool Exact>
+bool areMatching(const BondedAtomBase& a, const BondedAtomBase& b)
 {
     if (a.bonds.size() != b.bonds.size())
         return false;
 
-    return escapeRadicalTypes ? b.getAtom().matches(a.getAtom()) : b.getAtom().equals(a.getAtom());
+    return Exact ? b.getAtom().equals(a.getAtom()) : b.getAtom().matches(a.getAtom());
 }
 
+template <bool Exact>
 bool areMatching(
     const Bond&                               nextA,
     const Bond&                               nextB,
     const std::vector<uint8_t>&               visitedB,
-    const std::unordered_map<c_size, c_size>& mapping,
-    const bool                                escapeRadicalTypes)
+    const std::unordered_map<c_size, c_size>& mapping)
 {
     if (nextA.getType() != nextB.getType())
         return false;
@@ -845,11 +846,13 @@ bool areMatching(
     const auto& otherA = nextA.getOther();
     const auto& otherB = nextB.getOther();
 
-    // Escape radical types
-    if (escapeRadicalTypes == true && otherB.getAtom().isRadical())
-        return otherB.getAtom().matches(otherA.getAtom());
+    // Escape radical types.
+    if constexpr (not Exact) {
+        if (otherB.getAtom().isRadical())
+            return otherB.getAtom().matches(otherA.getAtom());
+    }
 
-    if (not areMatching(otherA, otherB, escapeRadicalTypes))
+    if (otherA.bonds.size() != otherB.bonds.size() || not otherA.getAtom().equals(otherB.getAtom()))
         return false;
 
     // Test to see if both have the same types of bonds
@@ -875,12 +878,12 @@ bool areMatching(
 /// <param name="visitedB">: vector with the size of the pattern, initialized to false</param>
 /// <param name="mapping">: empty map that will store all matching nodes at the end of the
 /// execution</param>
+template <bool Exact>
 bool DFSCompare(
     const BondedAtomBase&               a,
     const BondedAtomBase&               b,
     std::vector<uint8_t>&               visitedB,
-    std::unordered_map<c_size, c_size>& mapping,
-    bool                                escapeRadicalTypes)
+    std::unordered_map<c_size, c_size>& mapping)
 {
     mapping.emplace(a.index, b.index);
     visitedB[b.index] = true;
@@ -891,16 +894,15 @@ bool DFSCompare(
 
         auto matchFound = false;
         for (const auto& bondA : a.bonds) {
-            if (mapping.contains(bondA.getOther().index) ||
-                not areMatching(bondA, bondB, visitedB, mapping, escapeRadicalTypes))
+            if (mapping.contains(bondA.getOther().index) || not areMatching<Exact>(bondA, bondB, visitedB, mapping))
                 continue;
 
-            if (DFSCompare(bondA.getOther(), bondB.getOther(), visitedB, mapping, escapeRadicalTypes)) {
+            if (DFSCompare<Exact>(bondA.getOther(), bondB.getOther(), visitedB, mapping)) {
                 matchFound = true;
                 break;
             }
 
-            // Revert wrong branch
+            // Revert wrong branch.
             visitedB[bondB.getOther().index] = false;
             mapping.erase(bondA.getOther().index);
         }
@@ -914,20 +916,20 @@ bool DFSCompare(
 
 }  // namespace
 
-std::unordered_map<c_size, c_size>
-MolecularStructure::mapTo(const MolecularStructure& pattern, bool escapeRadicalTypes) const
+template <bool Exact>
+std::unordered_map<c_size, c_size> MolecularStructure::_mapTo(const MolecularStructure& pattern) const
 {
-    if (pattern.atoms.size() > this->atoms.size() || pattern.atoms.size() == 0)
+    if (pattern.atoms.empty())
         return std::unordered_map<c_size, c_size>();
 
     for (const auto& a : this->atoms) {
         // Should start with a non radical type from pattern.
         // Canonicalization assures that if such atom exists, it is the first.
-        if (areMatching(*a, *pattern.atoms.front(), escapeRadicalTypes)) {
+        if (areMatching<Exact>(*a, *pattern.atoms.front())) {
             std::vector<uint8_t>               visited(pattern.atoms.size(), false);
             std::unordered_map<c_size, c_size> mapping;
 
-            if (DFSCompare(*a, *pattern.atoms.front(), visited, mapping, escapeRadicalTypes) == false)
+            if (DFSCompare<Exact>(*a, *pattern.atoms.front(), visited, mapping) == false)
                 continue;
 
             return mapping;
@@ -937,25 +939,39 @@ MolecularStructure::mapTo(const MolecularStructure& pattern, bool escapeRadicalT
     return std::unordered_map<c_size, c_size>();
 }
 
+template std::unordered_map<c_size, c_size> MolecularStructure::_mapTo<true>(const MolecularStructure& pattern) const;
+template std::unordered_map<c_size, c_size> MolecularStructure::_mapTo<false>(const MolecularStructure& pattern) const;
+
+std::unordered_map<c_size, c_size> MolecularStructure::mapTo(const MolecularStructure& pattern) const
+{
+    // A patter will never match a smaller target.
+    if (pattern.molarMass > this->molarMass ||
+        pattern.atoms.size() > this->atoms.size() ||
+        pattern.impliedHydrogenCount > this->impliedHydrogenCount)
+        return std::unordered_map<c_size, c_size>();
+
+    return _mapTo<false>(pattern);
+}
+
 bool MolecularStructure::operator==(const MolecularStructure& other) const
 {
-    if (this->atoms.size() != other.atoms.size() || this->impliedHydrogenCount != other.impliedHydrogenCount)
-        return false;
-
-    return this->mapTo(other, false).size() == this->atoms.size();
-}
-
-bool MolecularStructure::operator!=(const MolecularStructure& other) const
-{
-    if (this->atoms.size() != other.atoms.size() || this->impliedHydrogenCount != other.impliedHydrogenCount)
+    if (this->isVirtualHydrogen() && other.isVirtualHydrogen())
         return true;
 
-    return this->mapTo(other, false).size() != this->atoms.size();
+    // A slightly larger epsilon is needed to match larger structures which were created in different ways.
+    if (not this->molarMass.equals(other.molarMass.asStd(), 2.0e-07f) ||
+        this->atoms.size() != other.atoms.size() ||
+        this->impliedHydrogenCount != other.impliedHydrogenCount)
+        return false;
+
+    return not this->_mapTo<true>(other).empty();
 }
+
+bool MolecularStructure::operator!=(const MolecularStructure& other) const { return !(*this == other); }
 
 bool MolecularStructure::operator==(const std::string& other) const { return *this == MolecularStructure(other); }
 
-bool MolecularStructure::operator!=(const std::string& other) const { return *this != MolecularStructure(other); }
+bool MolecularStructure::operator!=(const std::string& other) const { return !(*this == other); }
 
 //
 // Maximal Mapping
@@ -1092,8 +1108,16 @@ std::pair<std::unordered_map<c_size, c_size>, uint8_t> MolecularStructure::maxim
 
 void MolecularStructure::recountImpliedHydrogens()
 {
-    if (!isVirtualHydrogen())
-        impliedHydrogenCount = countImpliedHydrogens();
+    if (isVirtualHydrogen())
+        return;
+
+    const auto properties = countProperties();
+    if (utils::isNPos(properties)) {
+        Log(this).error("Valence of an atom was exceeded.");
+        return;
+    }
+
+    std::tie(molarMass, impliedHydrogenCount) = properties;
 }
 
 void MolecularStructure::mutateAtom(const c_size idx, const AtomBase& newAtom)
@@ -1489,6 +1513,7 @@ bool MolecularStructure::loadFromMolBin(std::istream& is)
     }
 
     if (is.peek() == '!') {
+        molarMass            = Predefined::get().Hydrogen.getData().weight * 2;
         impliedHydrogenCount = 2;
         return true;
     }
@@ -1574,13 +1599,13 @@ bool MolecularStructure::loadFromMolBin(std::istream& is)
         return false;
     }
 
-    const auto hCount = countImpliedHydrogens();
-    if (hCount == -1) {
+    const auto properties = countProperties();
+    if (utils::isNPos(properties)) {
         Log(this).error("Valence of an atom was exceeded in MolBin representation.");
         clear();
         return false;
     }
-    impliedHydrogenCount = hCount;
+    std::tie(molarMass, impliedHydrogenCount) = properties;
 
     // No canonicalization is needed for MolBin representation.
     return true;
@@ -2007,7 +2032,7 @@ std::string MolecularStructure::printInfo() const
     info << " - Bond sparsity:      "
          << std::format("{:.1f}", (1.0 - bondCount / ((atomCount * (atomCount - 1)) / 2.0)) * 100.0) << "%\n";
 
-    info << " - Molar mass:         " << getMolarMass().toString() << '\n';
+    info << " - Molar mass:         " << molarMass.toString() << '\n';
     info << " - Cycle count:        " << getCycleCount() << '\n';
     info << " - Is organic:         " << (isOrganic() ? "Yes" : "No") << '\n';
     info << " - Degrees of freedom: " << std::to_string(getDegreesOfFreedom()) << '\n';

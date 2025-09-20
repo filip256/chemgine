@@ -1213,7 +1213,7 @@ void StructurePrinter::printImpliedHydrogens(const Node& node)
         Direction::Right, Direction::Left, Direction::Down, Direction::Up};
 
     const auto hCount = MolecularStructure::getImpliedHydrogenCount(node.getAtom());
-    if (hCount <= 0)
+    if (utils::isNPos(hCount))
         return;
 
     uint8_t directionIdx = 0;

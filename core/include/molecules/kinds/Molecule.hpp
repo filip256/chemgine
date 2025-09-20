@@ -10,8 +10,7 @@
 class Molecule : public Accessor<>
 {
 private:
-    const MoleculeData&         data;
-    Amount<Unit::GRAM_PER_MOLE> molarMass;
+    const MoleculeData& data;
 
 public:
     Molecule(const MoleculeData& data) noexcept;

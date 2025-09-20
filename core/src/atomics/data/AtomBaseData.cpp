@@ -1,8 +1,9 @@
 #include "atomics/data/AtomBaseData.hpp"
 
-AtomBaseData::AtomBaseData(Symbol&& symbol, std::string&& name) noexcept :
+AtomBaseData::AtomBaseData(Symbol&& symbol, std::string&& name, const Amount<Unit::GRAM_PER_MOLE> weight) noexcept :
     symbol(std::move(symbol)),
-    name(std::move(name))
+    name(std::move(name)),
+    weight(weight)
 {}
 
 std::string AtomBaseData::getSMILES() const

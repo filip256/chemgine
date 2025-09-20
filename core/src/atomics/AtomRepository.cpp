@@ -18,7 +18,7 @@ bool AtomRepository::add<AtomData>(const def::Object& definition)
     }
 
     auto       name     = definition.getProperty(def::Atoms::Name);
-    const auto weight   = definition.getProperty(def::Atoms::Weight, def::parse<Amount<Unit::GRAM>>);
+    const auto weight   = definition.getProperty(def::Atoms::Weight, def::parse<Amount<Unit::GRAM_PER_MOLE>>);
     auto       valences = definition.getProperty(def::Atoms::Valences, def::parse<std::vector<uint8_t>>);
 
     if (not(name && weight && valences)) {
@@ -54,9 +54,11 @@ bool AtomRepository::add<RadicalData>(const def::Object& definition)
         return false;
     }
 
-    // Check matching symbols.
-    for (size_t i = 0; i < matches->size(); ++i) {
-        const auto& matchSymbol = (*matches)[i];
+    // Check matching symbols and compute weight.
+    SymbolMatchSet matchSet;
+    matchSet.reserve(matches->size());
+    Amount<Unit::GRAM_PER_MOLE> minWeight = 0.0f;
+    for (auto&& matchSymbol : *matches) {
         if (matchSymbol == '*')  // Match-any symbol.
         {
             if (matches->size() != 1)
@@ -64,19 +66,22 @@ bool AtomRepository::add<RadicalData>(const def::Object& definition)
                     "Found redundant match symbols in set containing the match-any symbol: "
                     "'*', at: {}.",
                     definition.getLocationName());
+
+            matchSet.emplace(std::move(matchSymbol), /*inferred=*/false);
             continue;
         }
 
-        if (contains(matchSymbol) == false) {
+        if (const auto matchAtom = find(matchSymbol)) {
+            // The weight of a radical is the minimum weight of all the atoms and structures it matches. This factor
+            // aids the early return condition of molecular comparisons.
+            minWeight = std::min(minWeight, matchAtom->weight);
+        }
+        else {
             Log(this).error("Unknown atom match symbol: '{}', at: {}.", matchSymbol, definition.getLocationName());
             return false;
         }
-    }
 
-    SymbolMatchSet matchSet;
-    matchSet.reserve(matches->size());
-    for (auto& m : *matches) {
-        matchSet.emplace(std::move(m), /*inferred=*/false);
+        matchSet.emplace(std::move(matchSymbol), /*inferred=*/false);
     }
 
     // Infer cross-radical matches:
@@ -108,7 +113,7 @@ bool AtomRepository::add<RadicalData>(const def::Object& definition)
         }
     }
 
-    auto data = std::make_unique<RadicalData>(std::move(*symbol), std::move(name), std::move(matchSet));
+    auto data = std::make_unique<RadicalData>(std::move(*symbol), std::move(name), minWeight, std::move(matchSet));
     if (not atoms.emplace(data->symbol, std::move(data)).second) {
         Log(this).warn("Radical with duplicate symbol: '{}' skipped.", data->symbol);
         return false;

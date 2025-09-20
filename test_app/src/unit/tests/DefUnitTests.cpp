@@ -121,7 +121,7 @@ DefUnitTests::DefUnitTests(std::string&& name, const std::regex& filter, const s
         "atom",
         "_atom:   Fe{"
         "name: iron,"
-        "weight: 55.845_g,"
+        "weight: 55.845_g/mol,"
         "valences: {2,3}"
         "};");
 

@@ -55,7 +55,7 @@ void StructureInequalityPerfTest::task() { dontOptimize = (target != pattern); }
 // StructureAtomMapPerfTest
 //
 
-void StructureAtomMapPerfTest::task() { dontOptimize = static_cast<bool>(target.mapTo(pattern, true).size()); }
+void StructureAtomMapPerfTest::task() { dontOptimize = static_cast<bool>(target.mapTo(pattern).size()); }
 
 //
 // StructureMaximalAtomMapPerfTest

@@ -172,7 +172,7 @@ bool ReactionData::mapReactantsToProducts()
 bool ReactionData::hasAsReactant(const MolecularStructure& structure) const
 {
     for (size_t i = 0; i < reactants.size(); ++i) {
-        if (structure.mapTo(reactants[i].getStructure(), true).size() != 0)
+        if (structure.mapTo(reactants[i].getStructure()).size() != 0)
             return true;
     }
     return false;
