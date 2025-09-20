@@ -91,20 +91,20 @@ public:
         // parse values
         const auto pair = def::parse<std::pair<std::string, DynamicAmount>>(str, ':');
         if (not pair) {
-            log.error("Malfomed data point: '{0}', at: {1}.", str, location.toString());
+            log.error("Malfomed data point: '{}', at: {}.", str, location.toString());
             return std::nullopt;
         }
 
         const auto rawInputs = def::parse<std::vector<DynamicAmount>>(pair->first, ',');
         if (not rawInputs) {
-            log.error("Malfomed data point inputs list: '{0}', at: {1}.", pair->first, location.toString());
+            log.error("Malfomed data point inputs list: '{}', at: {}.", pair->first, location.toString());
             return std::nullopt;
         }
         if (rawInputs->size() != inputCount) {
             log.error(
-                "The number of data point inputs ({0}) in: '{1}' does not match the expected "
-                "number of inputs ({2}), "
-                "at: {3}.",
+                "The number of data point inputs ({}) in: '{}' does not match the expected "
+                "number of inputs ({}), "
+                "at: {}.",
                 rawInputs->size(),
                 pair->first,
                 inputCount,
@@ -116,8 +116,8 @@ public:
         const auto baseOutput = pair->second.to(outputBaseUnit);
         if (not baseOutput) {
             log.error(
-                "Failed to convert data point output from given unit: '{0}' to base unit: '{1}', "
-                "at: {2}.",
+                "Failed to convert data point output from given unit: '{}' to base unit: '{}', "
+                "at: {}.",
                 pair->second.getUnitSymbol(),
                 DynamicAmount::getUnitSymbol(outputBaseUnit),
                 location.toString());
@@ -127,8 +127,8 @@ public:
         const auto expectedOutput = baseOutput->to<OutU>();
         if (not expectedOutput) {
             log.error(
-                "Failed to convert data point output from base unit: '{0}' to expected unit: "
-                "'{1}', at: {2}.",
+                "Failed to convert data point output from base unit: '{}' to expected unit: "
+                "'{}', at: {}.",
                 baseOutput->getUnitSymbol(),
                 DynamicAmount::getUnitSymbol(OutU),
                 location.toString());
@@ -142,8 +142,8 @@ public:
             const auto convert = (*rawInputs)[i].to(inputBaseUnits[i]);
             if (not convert) {
                 log.error(
-                    "Failed to convert data point input from given unit: '{0}' to base unit: "
-                    "'{1}', at: {2}.",
+                    "Failed to convert data point input from given unit: '{}' to base unit: "
+                    "'{}', at: {}.",
                     (*rawInputs)[i].getUnitSymbol(),
                     DynamicAmount::getUnitSymbol(inputBaseUnits[i]),
                     location.toString());
@@ -182,8 +182,8 @@ public:
         expectedUnitNames.pop_back();
 
         log.error(
-            "Failed to convert data point inputs from base units: '{0}' to expected units: '{1}', "
-            "at: {2}.",
+            "Failed to convert data point inputs from base units: '{}' to expected units: '{}', "
+            "at: {}.",
             baseUnitNames,
             expectedUnitNames,
             location.toString());

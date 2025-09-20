@@ -65,12 +65,12 @@ bool DataEstimator2DUnitTest::run()
 
     error /= n;
     if (error <= testThreshold) {
-        Log(this).trace("UnitTest passed with error: {0} (MAE).", std::format("{:e}", error));
+        Log(this).trace("UnitTest passed with error: {} (MAE).", std::format("{:e}", error));
         return true;
     }
 
     Log(this).error(
-        "Error: {0} (MAE) exceeded the test threshold: {1}.",
+        "Error: {} (MAE) exceeded the test threshold: {}.",
         std::format("{:e}", error),
         std::format("{:e}", testThreshold));
     return error <= testThreshold;
@@ -158,12 +158,12 @@ bool DataEstimator3DUnitTest::run()
 
     error /= n;
     if (error <= testThreshold) {
-        Log(this).trace("UnitTest passed with error: {0} (MAE).", std::format("{:e}", error));
+        Log(this).trace("UnitTest passed with error: {} (MAE).", std::format("{:e}", error));
         return true;
     }
 
     Log(this).error(
-        "Error: {0} (MAE) exceeded the test threshold: {1}.",
+        "Error: {} (MAE) exceeded the test threshold: {}.",
         std::format("{:e}", error),
         std::format("{:e}", testThreshold));
     return error <= testThreshold;

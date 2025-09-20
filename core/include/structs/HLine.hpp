@@ -143,7 +143,7 @@ struct std::formatter<HLine<T, LenT>>
     template <typename FormatContext>
     auto format(const HLine<T, LenT>& line, FormatContext& ctx) const
     {
-        return format_to(ctx.out(), "{0} -> {1}", line.origin, line.endPoint());
+        return format_to(ctx.out(), "{} -> {}", line.origin, line.endPoint());
     }
 };
 

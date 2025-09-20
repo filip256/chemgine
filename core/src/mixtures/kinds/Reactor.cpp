@@ -110,7 +110,7 @@ void Reactor::runReactions(const Amount<Unit::SECOND> timespan)
         if (speedCoef == 0)
             continue;
 
-        Log(this).trace("Applying reaction {0} with speed={1}.", r.getData().getHRTag(), speedCoef.toString());
+        Log(this).trace("Applying reaction {} with speed={}.", r.getData().getHRTag(), speedCoef.toString());
 
         // if there isn't enough of a reactant, adjust the speed coefficient
         for (const auto& [_, i] : r.getReactants()) {

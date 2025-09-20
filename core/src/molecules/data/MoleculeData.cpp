@@ -39,7 +39,7 @@ MoleculeData::MoleculeData(
     henrysConstantEstimator(std::move(henrysConstantEstimator))
 {
     if (this->structure.isGeneric()) {
-        Log(this).warn("Generic structure with id {0} defined as molecule.", id);
+        Log(this).warn("Generic structure with id {} defined as molecule.", id);
     }
 }
 

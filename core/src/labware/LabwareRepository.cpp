@@ -11,11 +11,11 @@
 bool LabwareRepository::checkTextureFile(std::string path, const def::Location& location)
 {
     if (not utils::fileExists(path)) {
-        Log(this).error("Unable to find texture file: '{0}', at: {1}.", path, location.toString());
+        Log(this).error("Unable to find texture file: '{}', at: {}.", path, location.toString());
         return false;
     }
     if (const auto ext = utils::extractExtension(path); ext != "png") {
-        Log(this).error("Invalid texture file extension: '{0}', at: {1}.", ext, location.toString());
+        Log(this).error("Invalid texture file extension: '{}', at: {}.", ext, location.toString());
         return false;
     }
 
@@ -32,7 +32,7 @@ bool LabwareRepository::add<LabwareType::FLASK>(const LabwareId id, const def::O
     const auto txScale = definition.getDefaultProperty(def::Labware::TextureScale, 1.0f, def::parseUnsigned<float_s>);
 
     if (not(volume && ports && tx)) {
-        Log(this).error("Incomplete flask definition at: {0}.", definition.getLocationName());
+        Log(this).error("Incomplete flask definition at: {}.", definition.getLocationName());
         return false;
     }
 
@@ -53,7 +53,7 @@ bool LabwareRepository::add<LabwareType::ADAPTOR>(const LabwareId id, const def:
     const auto txScale = definition.getDefaultProperty(def::Labware::TextureScale, 1.0f, def::parseUnsigned<float_s>);
 
     if (not(volume && ports && tx)) {
-        Log(this).error("Incomplete adaptor definition at: {0}.", definition.getLocationName());
+        Log(this).error("Incomplete adaptor definition at: {}.", definition.getLocationName());
         return false;
     }
 
@@ -78,7 +78,7 @@ bool LabwareRepository::add<LabwareType::CONDENSER>(const LabwareId id, const de
     const auto txScale = definition.getDefaultProperty(def::Labware::TextureScale, 1.0f, def::parseUnsigned<float_s>);
 
     if (not(volume && length && effic && ports && tx && inner && coolant)) {
-        Log(this).error("Incomplete condenser definition at: {0}.", definition.getLocationName());
+        Log(this).error("Incomplete condenser definition at: {}.", definition.getLocationName());
         return false;
     }
 
@@ -104,7 +104,7 @@ bool LabwareRepository::add<LabwareType::HEATSOURCE>(const LabwareId id, const d
     const auto txScale = definition.getDefaultProperty(def::Labware::TextureScale, 1.0f, def::parseUnsigned<float_s>);
 
     if (not(power && ports && tx)) {
-        Log(this).error("Incomplete heatsource definition at: {0}.", definition.getLocationName());
+        Log(this).error("Incomplete heatsource definition at: {}.", definition.getLocationName());
         return false;
     }
 
@@ -127,7 +127,7 @@ bool LabwareRepository::add(const def::Object& definition)
     const auto it = adders.find(definition.getSpecifier());
     if (it == adders.end()) {
         Log(this).error(
-            "Unknown labware specifier: '{0}', at: {1}.", definition.getSpecifier(), definition.getLocationName());
+            "Unknown labware specifier: '{}', at: {}.", definition.getSpecifier(), definition.getLocationName());
         return false;
     }
 
@@ -136,7 +136,7 @@ bool LabwareRepository::add(const def::Object& definition)
         return false;
 
     if (labware.contains(*id)) {
-        Log(this).error("Labware with duplicate id: '{0}', at: {1}.", *id, definition.getLocationName());
+        Log(this).error("Labware with duplicate id: '{}', at: {}.", *id, definition.getLocationName());
         return false;
     }
 

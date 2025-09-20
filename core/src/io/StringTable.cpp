@@ -42,7 +42,7 @@ template <typename StringT>
 void Table<StringT>::addEntry(std::vector<StringT>&& entry)
 {
     if (entry.size() != header.size()) {
-        Log(this).fatal("New entry size: {0} does not match the table header size: {1}.", entry.size(), header.size());
+        Log(this).fatal("New entry size: {} does not match the table header size: {}.", entry.size(), header.size());
         return;
     }
     entries.emplace_back(std::move(entry));

@@ -99,8 +99,8 @@ void AffineEstimator<OutU, InU>::dumpDefinition(
     }
     else if (base->getRefCount() > 1 && not alreadyPrinted.contains(base->getId())) {
         Log(this).fatal(
-            "Tried to inline-print an estimator sub-definition (id: {0}) with multiple references, "
-            "id: {1}.",
+            "Tried to inline-print an estimator sub-definition (id: {}) with multiple references, "
+            "id: {}.",
             def::print(base->getId()),
             def::print(this->id));
     }

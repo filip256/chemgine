@@ -19,7 +19,7 @@ bool ReactionRepository::add(const def::Object& definition)
     if (not id)
         id = getFreeId();
     else if (reactions.contains(*id)) {
-        Log(this).error("Reaction with duplicate id: '{0}', at: {1}.", *id, definition.getLocationName());
+        Log(this).error("Reaction with duplicate id: '{}', at: {}.", *id, definition.getLocationName());
         return false;
     }
 
@@ -28,7 +28,7 @@ bool ReactionRepository::add(const def::Object& definition)
     const auto spec = def::parse<def::ReactionSpecifier>(definition.getSpecifier());
     if (not spec) {
         Log(this).error(
-            "Invalid reaction specifier: '{0}', at: {1}.", definition.getSpecifier(), definition.getLocationName());
+            "Invalid reaction specifier: '{}', at: {}.", definition.getSpecifier(), definition.getLocationName());
         return false;
     }
 
@@ -39,7 +39,7 @@ bool ReactionRepository::add(const def::Object& definition)
         const auto r = StructureRef::create(spec->reactants[i]);
         if (not r) {
             Log(this).error(
-                "Malformed reactant: '{0}' in reaction with id: {1}, at: {2}.",
+                "Malformed reactant: '{}' in reaction with id: {}, at: {}.",
                 spec->reactants[i],
                 *id,
                 definition.getLocationName());
@@ -55,7 +55,7 @@ bool ReactionRepository::add(const def::Object& definition)
         const auto p = StructureRef::create(spec->products[i]);
         if (not p) {
             Log(this).error(
-                "Malformed product: '{0}' in reaction with id: {1}, at: {2}.",
+                "Malformed product: '{}' in reaction with id: {}, at: {}.",
                 spec->products[i],
                 *id,
                 definition.getLocationName());
@@ -65,7 +65,7 @@ bool ReactionRepository::add(const def::Object& definition)
     }
 
     if (ReactionData::balance(reactantIds, productIds) == false) {
-        Log(this).error("Reaction with id: '{0}' could not be balanced.", *id);
+        Log(this).error("Reaction with id: '{}' could not be balanced.", *id);
         return false;
     }
 
@@ -79,7 +79,7 @@ bool ReactionRepository::add(const def::Object& definition)
         const auto c = def::parse<Catalyst>(catStr[i]);
         if (not c) {
             Log(this).error(
-                "Malformed catalyst: '{0}' in reaction with id: '{1}', at: {2}.",
+                "Malformed catalyst: '{}' in reaction with id: '{}', at: {}.",
                 catStr[i],
                 *id,
                 definition.getLocationName());
@@ -91,7 +91,7 @@ bool ReactionRepository::add(const def::Object& definition)
             if (catalysts[j].matchesWith(c->getStructure()) || c->matchesWith(catalysts[j].getStructure())) {
                 isUnique = false;
                 Log(this).warn(
-                    "Ignored duplicate catalyst '{0}' in reaction with id {1}, at: {2}.",
+                    "Ignored duplicate catalyst '{}' in reaction with id {}, at: {}.",
                     catStr[i],
                     *id,
                     definition.getLocationName());
@@ -145,7 +145,7 @@ bool ReactionRepository::add(const def::Object& definition)
 
     // create
     if (data->mapReactantsToProducts() == false) {
-        Log(this).error("Malformed reaction with id: {0}, at: {1}.", *id, definition.getLocationName());
+        Log(this).error("Malformed reaction with id: {}, at: {}.", *id, definition.getLocationName());
         return false;
     }
 
@@ -224,7 +224,7 @@ ReactionId ReactionRepository::getFreeId() const
     static ReactionId id = 0;
     while (reactions.contains(id)) {
         if (id == std::numeric_limits<ReactionId>::max())
-            Log(this).fatal("Reaction id limit reached: {0}.", id);
+            Log(this).fatal("Reaction id limit reached: {}.", id);
         ++id;
     }
     return id;

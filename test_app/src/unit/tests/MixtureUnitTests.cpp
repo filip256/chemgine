@@ -49,7 +49,7 @@ bool MassConservationUnitTest::run()
         const auto error = std::abs((massAfter - massBefore).asStd());
         if (error > threshold) {
             Log(this).error(
-                "Mass loss: {0} exceeded the test threshold: {1} after tick {2}/{3}.",
+                "Mass loss: {} exceeded the test threshold: {} after tick {}/{}.",
                 std::format("{:e}", error),
                 std::format("{:e}", threshold),
                 i + 1,
@@ -71,8 +71,8 @@ bool OverflowUnitTest::run()
     auto       error           = std::abs((reactor.getTotalVolume() - containerVolume).asStd());
     if (error > threshold) {
         Log(this).error(
-            "Post-initialization content volume and container volume difference: {0} exceeded test "
-            "threshold: {1}.",
+            "Post-initialization content volume and container volume difference: {} exceeded test "
+            "threshold: {}.",
             std::format("{:e}", error),
             std::format("{:e}", threshold));
         return false;
@@ -88,7 +88,7 @@ bool OverflowUnitTest::run()
     error = std::abs((atmBefore + reactorBefore - atmAfter - reactorAfter).asStd());
     if (error > threshold) {
         Log(this).error(
-            "Overflow transfer loss: {0} exceeded test threshold: {1}.",
+            "Overflow transfer loss: {} exceeded test threshold: {}.",
             std::format("{:e}", error),
             std::format("{:e}", threshold));
         return false;
@@ -97,8 +97,8 @@ bool OverflowUnitTest::run()
     error = std::abs((reactorAfter - containerVolume).asStd());
     if (error > threshold) {
         Log(this).error(
-            "Post-overflow volume and container volume difference: {0} exceeded test threshold: "
-            "{1}.",
+            "Post-overflow volume and container volume difference: {} exceeded test threshold: "
+            "{}.",
             std::format("{:e}", error),
             std::format("{:e}", threshold));
         return false;
@@ -127,7 +127,7 @@ bool DeterminismUnitTest::run()
         auto error   = std::abs((reactor.getPressure() - copy.getPressure()).asStd());
         if (error > threshold) {
             Log(this).error(
-                "Pressure difference: {0} exceeded the test threshold: {1} after tick {2}/{3}.",
+                "Pressure difference: {} exceeded the test threshold: {} after tick {}/{}.",
                 std::format("{:e}", error),
                 std::format("{:e}", threshold),
                 i + 1,
@@ -138,7 +138,7 @@ bool DeterminismUnitTest::run()
         error = std::abs((reactor.getTotalMoles() - copy.getTotalMoles()).asStd());
         if (error > threshold) {
             Log(this).error(
-                "Moles difference: {0} exceeded the test threshold: {1} after tick {2}/{3}.",
+                "Moles difference: {} exceeded the test threshold: {} after tick {}/{}.",
                 std::format("{:e}", error),
                 std::format("{:e}", threshold),
                 i + 1,
@@ -149,7 +149,7 @@ bool DeterminismUnitTest::run()
         error = std::abs((reactor.getTotalMass() - copy.getTotalMass()).asStd());
         if (error > threshold) {
             Log(this).error(
-                "Mass difference: {0} exceeded the test threshold: {1} after tick {2}/{3}.",
+                "Mass difference: {} exceeded the test threshold: {} after tick {}/{}.",
                 std::format("{:e}", error),
                 std::format("{:e}", threshold),
                 i + 1,
@@ -160,7 +160,7 @@ bool DeterminismUnitTest::run()
         error = std::abs((reactor.getTotalVolume() - copy.getTotalVolume()).asStd());
         if (error > threshold) {
             Log(this).error(
-                "Volume difference: {0} exceeded the test threshold: {1} after tick {2}/{3}.",
+                "Volume difference: {} exceeded the test threshold: {} after tick {}/{}.",
                 std::format("{:e}", error),
                 std::format("{:e}", threshold),
                 i + 1,
@@ -169,12 +169,12 @@ bool DeterminismUnitTest::run()
         }
 
         if (not reactor.hasSameContent(copy, static_cast<Amount<>::StorageType>(threshold))) {
-            Log(this).error("Reactors have different content after tick {0}/{1}.", i + 1, ticks);
+            Log(this).error("Reactors have different content after tick {}/{}.", i + 1, ticks);
             success = false;
         }
 
         if (not reactor.hasSameLayers(copy, static_cast<Amount<>::StorageType>(threshold))) {
-            Log(this).error("Reactors have different layers after tick {0}/{1}.", i + 1, ticks);
+            Log(this).error("Reactors have different layers after tick {}/{}.", i + 1, ticks);
             success = false;
         }
 
@@ -233,8 +233,8 @@ bool BoilUnitTest::run()
             }
             else if (sTemp >= sourceMaxTemp) {
                 Log(this).error(
-                    "Actual source layer temperature: {0} exceeded expected temperature: {1} in "
-                    "phase: {2}.",
+                    "Actual source layer temperature: {} exceeded expected temperature: {} in "
+                    "phase: {}.",
                     sTemp.toString(),
                     sourceMaxTemp.toString(),
                     testPhase);
@@ -245,8 +245,7 @@ bool BoilUnitTest::run()
             const auto dTemp = destination.getTemperature();
             ;
             if (dTemp != pastDestinationTemp) {
-                Log(this).error(
-                    "Destination layer temperature: {0} changed in phase: {1}.", dTemp.toString(), testPhase);
+                Log(this).error("Destination layer temperature: {} changed in phase: {}.", dTemp.toString(), testPhase);
                 success = false;
                 break;
             }
@@ -261,8 +260,8 @@ bool BoilUnitTest::run()
             }
             else if (dTemp >= sourceMaxTemp) {
                 Log(this).error(
-                    "Actual destination layer temperature: {0} exceeded expected temperature: {1} "
-                    "in phase: {2}.",
+                    "Actual destination layer temperature: {} exceeded expected temperature: {} "
+                    "in phase: {}.",
                     dTemp.toString(),
                     sourceMaxTemp.toString(),
                     testPhase);
@@ -273,7 +272,7 @@ bool BoilUnitTest::run()
             const auto sTemp = source.getTemperature();
             ;
             if (sTemp != pastSourceTemp) {
-                Log(this).error("Source layer temperature: {0} changed in phase: {1}.", dTemp.toString(), testPhase);
+                Log(this).error("Source layer temperature: {} changed in phase: {}.", dTemp.toString(), testPhase);
                 break;
             }
             pastSourceTemp = sTemp;
@@ -283,7 +282,7 @@ bool BoilUnitTest::run()
             const auto nMoles = reactor.getAmountOf(nucleator);
             if (nMoles >= pastNucleatorAmount) {
                 Log(this).error(
-                    "Failed to transfer nucleator: '{0}' in phase : {1}.",
+                    "Failed to transfer nucleator: '{}' in phase : {}.",
                     nucleator.molecule.getStructure().toSMILES(),
                     testPhase);
                 success = false;
@@ -294,8 +293,7 @@ bool BoilUnitTest::run()
             const auto dTemp = destination.getTemperature();
             ;
             if (dTemp != pastDestinationTemp) {
-                Log(this).error(
-                    "Destination layer temperature: {0} changed in phase: {1}.", dTemp.toString(), testPhase);
+                Log(this).error("Destination layer temperature: {} changed in phase: {}.", dTemp.toString(), testPhase);
                 success = false;
                 break;
             }
@@ -309,14 +307,14 @@ bool BoilUnitTest::run()
             const auto dTemp = destination.getTemperature();
             if (dTemp <= pastDestinationTemp) {
                 Log(this).error(
-                    "Destination layer temperature: {0} did not increase in phase: {1}.", dTemp.toString(), testPhase);
+                    "Destination layer temperature: {} did not increase in phase: {}.", dTemp.toString(), testPhase);
                 success = false;
                 break;
             }
             pastDestinationTemp = dTemp;
             if (const auto sTemp = source.getTemperature(); not sTemp.isInfinity()) {
                 Log(this).error(
-                    "Source layer temperature: {0} was not infinity in phase {1}.", sTemp.toString(), testPhase);
+                    "Source layer temperature: {} was not infinity in phase {}.", sTemp.toString(), testPhase);
                 success = false;
                 break;
             }
@@ -324,12 +322,12 @@ bool BoilUnitTest::run()
     }
 
     if (success && testPhase != 3) {
-        Log(this).error("Not all test phases were reached, current phase: {0}.", testPhase);
+        Log(this).error("Not all test phases were reached, current phase: {}.", testPhase);
         success = false;
     }
 
     if (not success) {
-        Log(this).debug("UnitTest results:\n{0}", logTable.toString());
+        Log(this).debug("UnitTest results:\n{}", logTable.toString());
         return false;
     }
 
@@ -354,14 +352,14 @@ bool IncompatibleForwardingUnitTest::run()
 
     source.add(water);
     if (reactor.getAmountOf(water) != water.amount) {
-        Log(this).error("Incompatible reactant: '{0}' was not forwarded.", water.molecule.getStructure().toSMILES());
+        Log(this).error("Incompatible reactant: '{}' was not forwarded.", water.molecule.getStructure().toSMILES());
         return false;
     }
 
     const auto molesBefore = reactor.getTotalMoles();
     source.add(oxygen);
     if (reactor.getTotalMoles() != molesBefore) {
-        Log(this).error("Compatible reactant: '{0}' was forwarded.", oxygen.molecule.getStructure().toSMILES());
+        Log(this).error("Compatible reactant: '{}' was forwarded.", oxygen.molecule.getStructure().toSMILES());
         return false;
     }
 
@@ -387,14 +385,14 @@ bool ImplicitForwardingUnitTest::run()
 
     source.add(water);
     if (reactor.getAmountOf(water) != water.amount) {
-        Log(this).error("Incompatible reactant: '{0}' was not forwarded.", water.molecule.getStructure().toSMILES());
+        Log(this).error("Incompatible reactant: '{}' was not forwarded.", water.molecule.getStructure().toSMILES());
         return false;
     }
 
     const auto molesBefore = reactor.getTotalMoles();
     source.add(oxygen);
     if (reactor.getTotalMoles() != molesBefore) {
-        Log(this).error("Compatible reactant: '{0}' was forwarded.", oxygen.molecule.getStructure().toSMILES());
+        Log(this).error("Compatible reactant: '{}' was forwarded.", oxygen.molecule.getStructure().toSMILES());
         return false;
     }
 

@@ -19,11 +19,11 @@ bool MoleculeRepository::add(const def::Object& definition)
     auto structure = def::Parser<MolecularStructure>::parse(definition.getSpecifier());
     if (not structure) {
         Log(this).error(
-            "Invalid SMILES specifier: '{0}', at: {1}.", definition.getSpecifier(), definition.getLocationName());
+            "Invalid SMILES specifier: '{}', at: {}.", definition.getSpecifier(), definition.getLocationName());
         return false;
     }
     if (findFirstConcrete(*structure) != nullptr) {
-        Log(this).warn("Already defined molecule: '{0}' skipped.", definition.getSpecifier());
+        Log(this).warn("Already defined molecule: '{}' skipped.", definition.getSpecifier());
         return false;
     }
 
@@ -135,7 +135,7 @@ const MoleculeData& MoleculeRepository::findOrAddConcrete(MolecularStructure&& s
     if (existing != nullptr)
         return *existing;
 
-    Log(this).debug("New structure discovered: \n{0}", CHG_DELAYED_EVAL(structure.toASCII().toString().toString()));
+    Log(this).debug("New structure discovered: \n{}", CHG_DELAYED_EVAL(structure.toASCII().toString().toString()));
 
     const auto hydro = 1.0f;
     const auto lipo  = 0.0f;
@@ -211,7 +211,7 @@ MoleculeId MoleculeRepository::getFreeId() const
     static MoleculeId id = 0;
     while (concreteMolecules.contains(id) || genericMolecules.contains(id)) {
         if (id == std::numeric_limits<MoleculeId>::max())
-            Log(this).fatal("Molecule id limit reached: {0}.", id);
+            Log(this).fatal("Molecule id limit reached: {}.", id);
         ++id;
     }
     return id;

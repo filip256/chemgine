@@ -73,14 +73,14 @@ bool StructureSMILESUnitTest::run()
 {
     const auto parsedMolecule = MolecularStructure::fromSMILES(smiles);
     if (not parsedMolecule) {
-        Log(this).error("Failed to parse input SMILES: '{0}'.", smiles);
+        Log(this).error("Failed to parse input SMILES: '{}'.", smiles);
         return false;
     }
 
     const auto actualMass = parsedMolecule->getMolarMass();
     if (not utils::floatEqual(actualMass.asStd(), expectedMass.asStd(), 0.005f)) {
         Log(this).error(
-            "Parsed molecule's molar mass: {0} does not match the expected molar mass: {1}.",
+            "Parsed molecule's molar mass: {} does not match the expected molar mass: {}.",
             actualMass.toString(),
             expectedMass.toString());
         return false;
@@ -90,12 +90,12 @@ bool StructureSMILESUnitTest::run()
 
     const auto printedMolecule = MolecularStructure::fromSMILES(printedSmiles);
     if (not printedMolecule) {
-        Log(this).error("Failed to parse printed SMILES: '{0}'.", printedSmiles);
+        Log(this).error("Failed to parse printed SMILES: '{}'.", printedSmiles);
         return false;
     }
 
     if (*parsedMolecule != *printedMolecule) {
-        Log(this).error("Equality check between printed molecule: '{0}' and input failed.", printedSmiles);
+        Log(this).error("Equality check between printed molecule: '{}' and input failed.", printedSmiles);
         return false;
     }
 
@@ -155,7 +155,7 @@ bool StructureAtomMapUnitTest::run()
     const auto map = target.mapTo(pattern, true);
     if ((map.size() == pattern.getNonImpliedAtomCount()) != expected) {
         Log(this).error(
-            "Actual map size: {0} is different from the expected size: {1}.",
+            "Actual map size: {} is different from the expected size: {}.",
             map.size(),
             pattern.getNonImpliedAtomCount());
         return false;
@@ -183,7 +183,7 @@ bool StructureMaximalAtomMapUnitTest::run()
 {
     const auto size = target.maximalMapTo(pattern).first.size();
     if (size != expectedSize) {
-        Log(this).error("Actual map size: {0} is different from the expected size: {1}.", size, expectedSize);
+        Log(this).error("Actual map size: {} is different from the expected size: {}.", size, expectedSize);
         return false;
     }
     return true;
@@ -209,7 +209,7 @@ bool StructureSubstitutionUnitTest::run()
     const auto map = instance.maximalMapTo(pattern).first;
     if (map.empty()) {
         Log(this).error(
-            "Generating the atom mapping between instance: '{0}' and pattern: '{1}' failed.",
+            "Generating the atom mapping between instance: '{}' and pattern: '{}' failed.",
             instance.toSMILES(),
             pattern.toSMILES());
         return false;
@@ -218,7 +218,7 @@ bool StructureSubstitutionUnitTest::run()
     const auto result = MolecularStructure::addSubstituents(pattern, instance, map);
     if (result != expected) {
         Log(this).error(
-            "Equality check between result: '{0}' and expected result: '{1}' failed.",
+            "Equality check between result: '{}' and expected result: '{}' failed.",
             result.toSMILES(),
             expected.toSMILES());
         return false;
@@ -247,7 +247,7 @@ bool FundamentalCycleUnitTest::run()
     const auto cycles = molecule.getFundamentalCycleBasis();
     if (cycles.size() != expectedCycleCount) {
         Log(this).error(
-            "Actual cycle count: {0} is different from the expected count: {1}.", cycles.size(), expectedCycleCount);
+            "Actual cycle count: {} is different from the expected count: {}.", cycles.size(), expectedCycleCount);
         return false;
     }
 
@@ -262,7 +262,7 @@ bool FundamentalCycleUnitTest::run()
 
     if (atomSet.size() != expectedTotalCyclicAtomCount) {
         Log(this).error(
-            "Actual total cyclic atom count: {0} is different from the expected atom count: {1}.",
+            "Actual total cyclic atom count: {} is different from the expected atom count: {}.",
             atomSet.size(),
             expectedTotalCyclicAtomCount);
         return false;
@@ -307,7 +307,7 @@ bool MinimalCycleUnitTest::run()
 
     if (atomSet.size() != expectedTotalCyclicAtomCount) {
         Log(this).error(
-            "Actual total cyclic atom count: {0} is different from the expected atom count: {1}.",
+            "Actual total cyclic atom count: {} is different from the expected atom count: {}.",
             atomSet.size(),
             expectedTotalCyclicAtomCount);
         return false;
@@ -327,7 +327,7 @@ bool MinimalCycleUnitTest::run()
         for (const auto& [actSize, actCount] : actualCycleSizes)
             diffTable.addEntry({std::to_string(actSize), "0", std::to_string(actCount)});
 
-        Log(this).error("Actual cycle sizes differ from the expected sizes:\n{0}", diffTable.toString());
+        Log(this).error("Actual cycle sizes differ from the expected sizes:\n{}", diffTable.toString());
         return false;
     }
 
@@ -350,13 +350,13 @@ bool ASCIIPrintUnitTest::run()
     const auto ascii          = molecule.toASCII().toString().toString();
     const auto parsedMolecule = MolecularStructure::fromASCII(ascii);
     if (not parsedMolecule) {
-        Log(this).error("Failed to parse input ASCII:\n{0}", ascii);
+        Log(this).error("Failed to parse input ASCII:\n{}", ascii);
         return false;
     }
 
     if (*parsedMolecule != molecule) {
         Log(this).error(
-            "Equality check between printed molecule: '{0}' and input: '{1}' failed:\n{2}",
+            "Equality check between printed molecule: '{}' and input: '{}' failed:\n{}",
             parsedMolecule->toSMILES(),
             molecule.toSMILES(),
             ascii);
@@ -364,7 +364,7 @@ bool ASCIIPrintUnitTest::run()
     }
 
     if (not allowLinearCycleExpansion && ascii.find('%') != std::string::npos) {
-        Log(this).error("ASCII print is valid but contains unexpected linear cycle expansion closure:\n{0}", ascii);
+        Log(this).error("ASCII print is valid but contains unexpected linear cycle expansion closure:\n{}", ascii);
         return false;
     }
 

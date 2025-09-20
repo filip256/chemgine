@@ -181,7 +181,7 @@ ColoredString ColoredString::operator+(const std::string& data) const
 ColoredString ColoredString::substr(const size_t pos, const size_t count) const
 {
     if (pos >= str.size())
-        Log(this).fatal("substr(): Out-of-range starting position: {0} (size: {1})", pos, str.size());
+        Log(this).fatal("substr(): Out-of-range starting position: {} (size: {})", pos, str.size());
 
     const auto maxCount = std::min(count, str.size() - pos);
     return std::vector<ColoredChar>(str.begin() + pos, str.begin() + pos + maxCount);

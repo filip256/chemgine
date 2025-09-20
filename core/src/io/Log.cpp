@@ -101,7 +101,7 @@ void LogBase::logFormatted(const std::string& msg, const std::source_location& l
             suffixSize += static_cast<uint8_t>(tagIt->second.size() + 1);
         }
         else
-            Log<LogBase>().fatal("Unknown log type: {0}.", underlying_cast(type));
+            Log<LogBase>().fatal("Unknown log type: {}.", underlying_cast(type));
 
         if (const auto sourceIdentifier = getSourceIdentifier(location, type); sourceIdentifier.size()) {
             OS::setTextColor(OS::BasicColor::DARK_GREY, out);
@@ -229,7 +229,7 @@ bool LogBase::isLogTypeEnabled(const LogType type)
         return false;
 #endif
     default:
-        Log<LogBase>().fatal("Undefined log type: {0}", underlying_cast(type));
+        Log<LogBase>().fatal("Undefined log type: {}", underlying_cast(type));
         CHG_UNREACHABLE();
     }
 }

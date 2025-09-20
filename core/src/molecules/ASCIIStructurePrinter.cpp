@@ -460,7 +460,7 @@ Edge& StructurePrinter::getEdge(const BondedAtomBase& from, const BondedAtomBase
     // TODO: Could replace getBondTo() uses with getEdge() to get O(1).
     const auto it = edges.find(UndirectedEdge(from.index, to.index));
     if (it == edges.end())
-        Log(this).fatal("Unregistered bond between nodes {0} and {1}.", from.index, to.index);
+        Log(this).fatal("Unregistered bond between nodes {} and {}.", from.index, to.index);
 
     return it->second;
 }
@@ -757,7 +757,7 @@ std::vector<PositionLine> StructurePrinter::generateOptimalCycleLayout(
         if (positionCount == totalAtomsToPrint - 1)  // Complete layout.
         {
             Log(this).trace(
-                "Generated optimal layout of size {0} (score: {1}, stack size: {2}).",
+                "Generated optimal layout of size {} (score: {}, stack size: {}).",
                 totalAtomsToPrint - (not noConstraints),
                 current.getScore(),
                 stack.size() + 1);
@@ -1044,7 +1044,7 @@ std::vector<PositionLine> StructurePrinter::generateOneShotCycleLayout(
             isAmbiguousBondPlacement(edgePos, dirToFirst, cycle[prevIdx]->getBondTo(firstAtom)->getType()))
             return {};
 
-        Log(this).trace("Generated one-shot layout of size {0}.", cycle.size());
+        Log(this).trace("Generated one-shot layout of size {}.", cycle.size());
         return positions;
     }
 
@@ -1188,7 +1188,7 @@ void StructurePrinter::printError(const Position point, const std::string& messa
     const auto errorSymbolStr = ASCII::AshUppercase + std::to_string(errorCount);
     const auto errorSymbol    = ColoredString(errorSymbolStr, OS::BasicColor::RED_BG);
 
-    Log(this).error(LogFormat("[{0}] {1}", std::move(location)), errorSymbolStr, message);
+    Log(this).error(LogFormat("[{}] {}", std::move(location)), errorSymbolStr, message);
 
     if (buffer.isWhiteSpace(point, errorSymbol.size())) {
         buffer.insert(point, errorSymbol);

@@ -31,7 +31,7 @@ bool DataStore::addDefinition(def::Object&& definition)
 {
     switch (definition.getType()) {
     case def::DefinitionType::AUTO:
-        Log(this).error("Cannot infer type for out-of-line definition, at: {0}.", definition.getLocationName());
+        Log(this).error("Cannot infer type for out-of-line definition, at: {}.", definition.getLocationName());
         return false;
 
     case def::DefinitionType::DATA:
@@ -49,7 +49,7 @@ bool DataStore::addDefinition(def::Object&& definition)
 
     default:
         Log(this).error(
-            "Unknown definition type: '{0}', at: {1}.",
+            "Unknown definition type: '{}', at: {}.",
             static_cast<uint8_t>(definition.getType()),
             definition.getLocationName());
         return false;
@@ -62,12 +62,12 @@ bool DataStore::load(const std::string& path)
 
     const auto analysis = def::FileAnalyzer(normPath, fileStore).analyze();
     if (analysis.failed)
-        Log(this).warn("Pre-parse analysis failed on file: '{0}'", normPath);
+        Log(this).warn("Pre-parse analysis failed on file: '{}'", normPath);
     else {
         Log(this).info(
-            "Pre-parse analysis on file: '{0}':\n - Top-level Definitions: {1} ({2} already "
+            "Pre-parse analysis on file: '{}':\n - Top-level Definitions: {} ({} already "
             "parsed)\n - Files:         "
-            "        {3} ({4} already parsed)",
+            "        {} ({} already parsed)",
             normPath,
             analysis.totalDefinitionCount,
             analysis.preparsedDefinitionCount,
@@ -83,13 +83,13 @@ bool DataStore::load(const std::string& path)
             const auto definitionsToParse = analysis.totalDefinitionCount - analysis.preparsedDefinitionCount;
             const auto percent =
                 static_cast<uint8_t>((static_cast<float_s>(definitionCount) / definitionsToParse) * 100.f);
-            Log(this).info("\r[{0}/{1} | {2}%] Parsing definitions...", definitionCount, definitionsToParse, percent);
+            Log(this).info("\r[{}/{} | {}%] Parsing definitions...", definitionCount, definitionsToParse, percent);
         }
 
         auto entry = parser.nextDefinition();
         if (not parser.isOpen()) {
             Log(this).success("Parsing completed.");
-            Log(this).info("Currently storing {0} definitions.", totalDefinitionCount());
+            Log(this).info("Currently storing {} definitions.", totalDefinitionCount());
             break;
         }
 
@@ -112,7 +112,7 @@ void DataStore::dump(const std::string& path, const bool prettify) const
 {
     std::ofstream out(path);
     if (not out.is_open()) {
-        Log(this).fatal("Failed to open file: '{0}' for writing.", path);
+        Log(this).fatal("Failed to open file: '{}' for writing.", path);
         return;
     }
 

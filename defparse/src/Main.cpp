@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
         if (const auto logLevel = LogBase::parseLogType(logLevelStr))
             LogBase::settings().logLevel = *logLevel;
         else {
-            Log().fatal("Failed to parse log level: '{0}'.", logLevelStr);
+            Log().fatal("Failed to parse log level: '{}'.", logLevelStr);
             return 1;
         }
 
@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
         Accessor<>::setDataStore(dataStore);
         const auto inputFile = args["input"].as<std::string>();
         if (not dataStore.load(inputFile)) {
-            Log().fatal("Failed to load file: '{0}'.", inputFile);
+            Log().fatal("Failed to load file: '{}'.", inputFile);
             return 1;
         }
 
@@ -58,9 +58,9 @@ int main(int argc, char* argv[])
         const auto prettify = args["pretty"].as<bool>();
         dataStore.dump(outputFile, prettify);
 
-        Log().info("Dumped output to file: '{0}'.", outputFile);
+        Log().info("Dumped output to file: '{}'.", outputFile);
     } catch (const cxxopts::exceptions::exception& e) {
-        Log().fatal("Option parsing failed.\n{0}", e.what());
+        Log().fatal("Option parsing failed.\n{}", e.what());
         return 1;
     }
 

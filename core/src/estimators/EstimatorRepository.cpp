@@ -54,7 +54,7 @@ EstimatorId EstimatorRepository::getFreeId() const
     static EstimatorId id = 0;
     while (estimators.contains(id)) {
         if (id == std::numeric_limits<EstimatorId>::max())
-            Log(this).fatal("Estimator id limit reached: {0}.", id);
+            Log(this).fatal("Estimator id limit reached: {}.", id);
         ++id;
     }
     return id;

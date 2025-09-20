@@ -29,7 +29,7 @@ public:
         const Log<Parser<def::Object>> log;
 
         if (str.starts_with('_') == false) {
-            log.error("Missing definition begin symbol: '_', at: {0}.", location.toString());
+            log.error("Missing definition begin symbol: '_', at: {}.", location.toString());
             return std::nullopt;
         }
 
@@ -38,12 +38,12 @@ public:
         if (typeEnd != std::string::npos) {
             idEnd = str.find('>', typeEnd + 1);
             if (idEnd == std::string::npos) {
-                Log<Parser<def::Object>>().error("Missing identifier terminator: '>', at: {0}.", location.toString());
+                Log<Parser<def::Object>>().error("Missing identifier terminator: '>', at: {}.", location.toString());
                 return std::nullopt;
             }
 
             if (idEnd - typeEnd < 2) {
-                log.error("Definition with empty identifier, at: {0}.", location.toString());
+                log.error("Definition with empty identifier, at: {}.", location.toString());
                 return std::nullopt;
             }
         }
@@ -51,20 +51,20 @@ public:
             idEnd = typeEnd = str.find(':', 1);
 
         if (typeEnd == std::string::npos) {
-            log.error("Malformed definition: '{0}', at: {1}.", str, location.toString());
+            log.error("Malformed definition: '{}', at: {}.", str, location.toString());
             return std::nullopt;
         }
 
         const auto specifierBegin = str.find(':', idEnd);
         const auto specifierEnd   = str.find('{', specifierBegin + 1);
         if (specifierEnd == std::string::npos) {
-            log.error("Malformed definition: '{0}', at: {1}.", str, location.toString());
+            log.error("Malformed definition: '{}', at: {}.", str, location.toString());
             return std::nullopt;
         }
 
         const auto propertiesEnd = str.rfind('}');
         if (propertiesEnd == std::string::npos || propertiesEnd < specifierEnd) {
-            log.error("Malformed definition: '{0}', at: {1}.", str, location.toString());
+            log.error("Malformed definition: '{}', at: {}.", str, location.toString());
             return std::nullopt;
         }
 
@@ -72,7 +72,7 @@ public:
         const auto typeStr = utils::strip(str.substr(1, typeEnd - 1));
         const auto typeIt  = typeMap.find(typeStr);
         if (typeIt == typeMap.end()) {
-            log.error("Definition with unknown type: '{0}', at: {1}.", typeStr, location.toString());
+            log.error("Definition with unknown type: '{}', at: {}.", typeStr, location.toString());
             return std::nullopt;
         }
         const auto type = typeIt->second;
@@ -82,7 +82,7 @@ public:
         if (const auto illegalIdx = idStr.find_first_of(" .~;:'\"<>(){}~`!@#$%^&*()-+[]{}|?,/\\");
             illegalIdx != std::string::npos) {
             log.error(
-                "Identifier: '{0}' contains illegal symbol: '{1}', at: {2}.",
+                "Identifier: '{}' contains illegal symbol: '{}', at: {}.",
                 idStr,
                 idStr[illegalIdx],
                 location.toString());
@@ -92,14 +92,14 @@ public:
         // parse specifier
         auto specifierStr = utils::strip(str.substr(specifierBegin + 1, specifierEnd - specifierBegin - 1));
         if (specifierStr.empty()) {
-            log.error("Definition with missing specifier: '{0}', at: {1}.", str, location.toString());
+            log.error("Definition with missing specifier: '{}', at: {}.", str, location.toString());
             return std::nullopt;
         }
 
         // parse properties
         const auto propertiesStr = str.substr(specifierEnd + 1, propertiesEnd - specifierEnd - 1);
         if (propertiesStr.empty()) {
-            log.error("Definition with missing properties block: '{0}', at: {1}.", str, location.toString());
+            log.error("Definition with missing properties block: '{}', at: {}.", str, location.toString());
             return std::nullopt;
         }
 
@@ -111,19 +111,19 @@ public:
         for (size_t i = 0; i < props.size(); ++i) {
             const size_t nameEnd = props[i].find(':');
             if (nameEnd == std::string::npos) {
-                log.error("Definition with malformed property: '{0}', at: {1}.", props[i], location.toString());
+                log.error("Definition with malformed property: '{}', at: {}.", props[i], location.toString());
                 return std::nullopt;
             }
 
             auto name = utils::strip(props[i].substr(0, nameEnd));
             if (name.empty()) {
-                log.error("Definition property with missing name: '{0}', at: {1}.", props[i], location.toString());
+                log.error("Definition property with missing name: '{}', at: {}.", props[i], location.toString());
                 return std::nullopt;
             }
             if (const auto illegalIdx = name.find_first_of(" .~;:'\"<>(){}~`!@#$%^&*()-+[]{}|?,/\\");
                 illegalIdx != std::string::npos) {
                 log.error(
-                    "Property name: '{0}' contains illegal symbol: '{1}', at: {2}.",
+                    "Property name: '{}' contains illegal symbol: '{}', at: {}.",
                     name,
                     name[illegalIdx],
                     location.toString());
@@ -132,7 +132,7 @@ public:
 
             auto value = utils::strip(props[i].substr(nameEnd + 1));
             if (value.empty()) {
-                log.error("Definition property with missing value: '{0}', at: {1}.", props[i], location.toString());
+                log.error("Definition property with missing value: '{}', at: {}.", props[i], location.toString());
                 return std::nullopt;
             }
 
@@ -140,7 +140,7 @@ public:
             if (value.starts_with('_')) {
                 auto subDef = def::parse<def::Object>(value, utils::copy(location), includeAliases, outlineDefinitions);
                 if (not subDef) {
-                    log.error("Failed to parse in-line sub-definition: '{0}', at: {1}.", value, location.toString());
+                    log.error("Failed to parse in-line sub-definition: '{}', at: {}.", value, location.toString());
                     return std::nullopt;
                 }
 
@@ -154,13 +154,13 @@ public:
                 if (const auto aliasEnd = value.find('@', 1); aliasEnd != std::string::npos) {
                     const auto alias = value.substr(1, aliasEnd - 1);
                     if (alias.empty()) {
-                        log.error("Empty include alias on value: '{0}', at: {1}.", value, location.toString());
+                        log.error("Empty include alias on value: '{}', at: {}.", value, location.toString());
                         return std::nullopt;
                     }
 
                     const auto aliasIt = includeAliases.find(alias);
                     if (aliasIt == includeAliases.end()) {
-                        log.error("Undefined include alias: '{0}', at: {1}.", alias, location.toString());
+                        log.error("Undefined include alias: '{}', at: {}.", alias, location.toString());
                         return std::nullopt;
                     }
 
@@ -171,7 +171,7 @@ public:
 
                 const auto* definition = outlineDefinitions.getDefinition(value.substr(1));
                 if (definition == nullptr) {
-                    log.error("Unknown out-of-line definition identifier: '{0}', at: {1}.", value, location.toString());
+                    log.error("Unknown out-of-line definition identifier: '{}', at: {}.", value, location.toString());
                     return std::nullopt;
                 }
 

@@ -132,7 +132,7 @@ std::string DynamicAmount::getUnitSymbol(const Unit unit)
         return Amount<Unit::TORR_MOLE_RATIO>::unitSymbol();
     default:
         Log<DynamicAmount>().fatal(
-            "Unable to find symbol for Unit[{0}].", static_cast<std::underlying_type_t<Unit>>(unit));
+            "Unable to find symbol for Unit[{}].", static_cast<std::underlying_type_t<Unit>>(unit));
         return "";
     }
 }
@@ -202,7 +202,7 @@ std::string DynamicAmount::getUnitName(const Unit unit)
         return Amount<Unit::TORR_MOLE_RATIO>::unitName();
     default:
         Log<DynamicAmount>().fatal(
-            "Unable to find name for Unit[{0}].", static_cast<std::underlying_type_t<Unit>>(unit));
+            "Unable to find name for Unit[{}].", static_cast<std::underlying_type_t<Unit>>(unit));
         return "";
     }
 }

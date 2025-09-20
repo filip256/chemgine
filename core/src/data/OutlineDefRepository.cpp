@@ -7,8 +7,8 @@ const def::Object* OutlineDefRepository::add(def::Object&& definition)
     const auto existing = definitions.find(definition.getIdentifier());
     if (existing != definitions.end()) {
         Log(this).error(
-            "Clash between existing OOL identifier: '{0}' (defined at: {1}) and new definition at: "
-            "{2}.",
+            "Clash between existing OOL identifier: '{}' (defined at: {}) and new definition at: "
+            "{}.",
             existing->first,
             existing->second->getLocationName(),
             definition.getLocationName());

@@ -163,7 +163,7 @@ TimingResult PerfTestGroup::run(PerformanceReport& report)
     TimingResult totalTime(std::chrono::nanoseconds(0), std::chrono::nanoseconds(0));
 
     Log(this).info(
-        "{0}: Running {1} sub-tests... (ETA: {2})",
+        "{}: Running {} sub-tests... (ETA: {})",
         getName(),
         testCount,
         utils::formatTime(estimatedRunTime, utils::TimeFormat::HUMAN_HH_MM_SS));
@@ -176,7 +176,7 @@ TimingResult PerfTestGroup::run(PerformanceReport& report)
             continue;
         }
 
-        Log(this).info("\rRunning {0}...", tests[i]->getName());
+        Log(this).info("\rRunning {}...", tests[i]->getName());
 
         LogBase::nest();
         const auto time = tests[i]->run(report);
@@ -188,7 +188,7 @@ TimingResult PerfTestGroup::run(PerformanceReport& report)
         const auto medianTimeInMs = time.medianTime.count() / 1'000'000.0;
 
         Log(this).info(
-            "\rTest {0} took {1}ms (avg) / {2}ms (med).",
+            "\rTest {} took {}ms (avg) / {}ms (med).",
             tests[i]->getName(),
             std::format("{:.4f}", avgTimeInMs),
             std::format("{:.4f}", medianTimeInMs));
