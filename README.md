@@ -1,8 +1,8 @@
-# Chemgine
+# Chemgine :alembic:
 
-**Real-time laboratory scale chemical simulation engine.**
+**Real-time lab-scale chemical simulation engine.**
 
-# How to Build
+# How to Build :gear:
 
 Chemgine can be built using [CMake](https://cmake.org/download/) (v3.20+).
 Bellow are a few common build configurations:
@@ -39,7 +39,7 @@ cmake --build build --parallel $(nproc)
 ```
 </details>
 
-# Developer guides
+# Developer Guides :books:
 
 <details>
   <summary><strong><span style="font-size:1.2em;">Setting up pre-commit</span></strong></summary>
