@@ -75,7 +75,7 @@ void utils::createDir(const std::string& path)
         if (not std::filesystem::exists(path))
             std::filesystem::create_directory(path);
     } catch (const std::filesystem::filesystem_error& e) {
-        Log().fatal("Failed to create directory: '{0}'\n'{1}'", path, e.what());
+        Log().fatal("Failed to create directory: '{}'\n'{}'", path, e.what());
     }
 }
 
@@ -85,6 +85,6 @@ void utils::removeDir(const std::string& path)
         if (std::filesystem::exists(path))
             std::filesystem::remove_all(path);
     } catch (const std::filesystem::filesystem_error& e) {
-        Log().fatal("Failed to remove directory: '{0}'\n'{1}'", path, e.what());
+        Log().fatal("Failed to remove directory: '{}'\n'{}'", path, e.what());
     }
 }

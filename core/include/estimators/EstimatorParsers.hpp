@@ -15,7 +15,7 @@ public:
 
         if (definition.getType() != DefinitionType::DATA && definition.getType() != DefinitionType::AUTO) {
             log.error(
-                "Expected definition of type 'DATA' but got: '{0}', at: {1}.",
+                "Expected definition of type 'DATA' but got: '{}', at: {}.",
                 static_cast<uint8_t>(definition.getType()),
                 definition.getLocationName());
             return std::nullopt;
@@ -24,7 +24,7 @@ public:
         const auto specifier = def::parse<EstimatorSpecifier>(definition.getSpecifier());
         if (not specifier) {
             log.error(
-                "Malfomed data units specifier: '{0}', at: {1}.",
+                "Malfomed data units specifier: '{}', at: {}.",
                 definition.getSpecifier(),
                 definition.getLocationName());
             return std::nullopt;
@@ -33,9 +33,9 @@ public:
         const auto inputCount = sizeof...(InUs);
         if (specifier->inUnits.size() != inputCount) {
             log.error(
-                "The number of input base units ({0}) in: '{1}' does not match the expected number "
-                "of inputs ({2}), "
-                "at: {3}.",
+                "The number of input base units ({}) in: '{}' does not match the expected number "
+                "of inputs ({}), "
+                "at: {}.",
                 specifier->inUnits.size(),
                 definition.getSpecifier(),
                 inputCount,
@@ -78,7 +78,7 @@ public:
                 if (mode == EstimationMode::LINEAR) {
                     if (parameters->size() != 2) {
                         log.error(
-                            "Invalid number of parameters ({0}) for 1st degree linear regression.", parameters->size());
+                            "Invalid number of parameters ({}) for 1st degree linear regression.", parameters->size());
                         return std::nullopt;
                     }
 
@@ -89,7 +89,7 @@ public:
                 if (mode == EstimationMode::LINEAR) {
                     if (parameters->size() != 3) {
                         log.error(
-                            "Invalid number of parameters ({0}) for 2nd degree linear regression.", parameters->size());
+                            "Invalid number of parameters ({}) for 2nd degree linear regression.", parameters->size());
                         return std::nullopt;
                     }
 
@@ -98,7 +98,7 @@ public:
                 }
             }
 
-            log.fatal("Unsupported regression estimator definition, at: {0}", definition.getLocationName());
+            log.fatal("Unsupported regression estimator definition, at: {}", definition.getLocationName());
         }
 
         if constexpr (inputCount == 1) {
@@ -139,7 +139,7 @@ public:
             }
         }
 
-        log.fatal("Unsupported estimator definition, at: {0}", definition.getLocationName());
+        log.fatal("Unsupported estimator definition, at: {}", definition.getLocationName());
         return std::nullopt;
     }
 };

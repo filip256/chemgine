@@ -506,7 +506,7 @@ bool MolecularStructure::loadFromASCII(const std::string& ascii)
 
     const auto startPos = findStartPosition(buffer);
     if (utils::isNPos(startPos)) {
-        Log(this).error("ASCII block contains no recognizable atom symbols:\n{0}.", buffer.toString());
+        Log(this).error("ASCII block contains no recognizable atom symbols:\n{}.", buffer.toString());
         return false;
     }
 
@@ -550,7 +550,7 @@ bool MolecularStructure::loadFromASCII(const std::string& ascii)
         if (not extractedSymbol) {
             insertError(buffer, state.position);
             Log(this).error(
-                "Failed to parse ASCII atom symbol originating at {0}:\n{1}", state.position, buffer.toString());
+                "Failed to parse ASCII atom symbol originating at {}:\n{}", state.position, buffer.toString());
             clear();
             return false;
         }
@@ -568,7 +568,7 @@ bool MolecularStructure::loadFromASCII(const std::string& ascii)
             if (it->second == nullptr) {
                 insertError(buffer, state.position);
                 Log(this).error(
-                    "Found duplicate cycle closure label '{0}' at {1}:\n{2}", label, state.position, buffer.toString());
+                    "Found duplicate cycle closure label '{}' at {}:\n{}", label, state.position, buffer.toString());
                 clear();
                 return false;
             }
@@ -576,8 +576,8 @@ bool MolecularStructure::loadFromASCII(const std::string& ascii)
             if (not addBondChecked(*state.prev, *it->second, state.bondType)) {
                 insertError(buffer, state.position);
                 Log(this).error(
-                    "Cycle closure with label '{0}' at {1} redefines an existing bond between two "
-                    "atoms:\n{2}",
+                    "Cycle closure with label '{}' at {} redefines an existing bond between two "
+                    "atoms:\n{}",
                     label,
                     state.position,
                     buffer.toString());
@@ -630,7 +630,7 @@ bool MolecularStructure::loadFromASCII(const std::string& ascii)
                     // insertError(buffer, nodePos);
                     // insertError(buffer, retryPos);
 
-                    // Log(this).error("Expected atom symbol at {0} or {1}:\n{2}", nodePos,
+                    // Log(this).error("Expected atom symbol at {} or {}:\n{}", nodePos,
                     // retryPos, buffer.toString()); clear(); return false;
                     continue;
                 }
@@ -644,7 +644,7 @@ bool MolecularStructure::loadFromASCII(const std::string& ascii)
 
     const auto hCount = countImpliedHydrogens();
     if (hCount == -1) {
-        Log(this).error("Valence of an atom was exceeded is ASCII block:\n{0}", ascii);
+        Log(this).error("Valence of an atom was exceeded is ASCII block:\n{}", ascii);
         clear();
         return false;
     }
@@ -853,7 +853,7 @@ bool areMatching(
         return false;
 
     // Test to see if both have the same types of bonds
-    std::array<int8_t, BondType::BOND_TYPE_COUNT + 1> counts{0};
+    std::array<int8_t, BondType::BOND_TYPE_COUNT + 1> counts{};
     for (c_size i = 0; i < otherA.bonds.size(); ++i) {
         ++counts[otherA.bonds[i].getType()];
         --counts[otherB.bonds[i].getType()];
@@ -967,7 +967,7 @@ namespace
 uint8_t getBondSimilarity(const BondedAtomBase& a, const BondedAtomBase& b)
 {
     uint8_t                                       score = 255;
-    std::array<int8_t, BondType::BOND_TYPE_COUNT> counts{0};
+    std::array<int8_t, BondType::BOND_TYPE_COUNT> counts{};
 
     for (const auto& bondA : a.bonds)
         ++counts[bondA.getType()];

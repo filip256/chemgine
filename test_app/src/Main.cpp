@@ -30,11 +30,11 @@ int main(int argc, char* argv[])
         const auto logLevelStr = args.count("log") ? args["log"].as<std::string>() : "INFO";
         const auto logLevel    = LogBase::parseLogType(logLevelStr);
         if (not logLevel) {
-            Log().fatal("Failed to parse log level: '{0}'.", logLevelStr);
+            Log().fatal("Failed to parse log level: '{}'.", logLevelStr);
             CHG_UNREACHABLE();
         }
         if (not LogBase::isLogTypeEnabled(*logLevel)) {
-            Log().fatal("The specified log level: '{0}' is disabled on this build.", logLevelStr);
+            Log().fatal("The specified log level: '{}' is disabled on this build.", logLevelStr);
             CHG_UNREACHABLE();
         }
         LogBase::settings().logLevel = *logLevel;
@@ -102,10 +102,10 @@ int main(int argc, char* argv[])
         return returnCode;
 
     } catch (const cxxopts::exceptions::exception& e) {
-        Log().fatal("Option parsing failed with error:\n{0}", e.what());
+        Log().fatal("Option parsing failed with error:\n{}", e.what());
         CHG_UNREACHABLE();
     } catch (const std::regex_error& e) {
-        Log().fatal("Regex creation failed with error:\n{0}", e.what());
+        Log().fatal("Regex creation failed with error:\n{}", e.what());
         CHG_UNREACHABLE();
     }
 }

@@ -42,7 +42,7 @@ std::string Bond::getSMILES(const BondType type)
     case BondType::AROMATIC:
         return ":";
     default:
-        Log<Bond>().fatal("Unsupported bond type: {0}.", underlying_cast(type));
+        Log<Bond>().fatal("Unsupported bond type: {}.", underlying_cast(type));
         return "?";
     }
 }
@@ -94,7 +94,7 @@ char Bond::getASCII(const BondType type, const ASCII::Direction direction)
         return ':';
 
     default:
-        Log<Bond>().fatal("Unsupported bond type: {0}.", underlying_cast(type));
+        Log<Bond>().fatal("Unsupported bond type: {}.", underlying_cast(type));
         return '?';
     }
 }
@@ -275,7 +275,7 @@ float_s Bond::getASCIIScore(const BondType type, const ASCII::Direction directio
         }
 
     default:
-        Log<Bond>().fatal("Unsupported bond type: {0}.", underlying_cast(type));
+        Log<Bond>().fatal("Unsupported bond type: {}.", underlying_cast(type));
         return 0.0;
     }
 }
@@ -301,7 +301,7 @@ uint8_t Bond::getValence(const BondType type)
         return 4;
 
     default:
-        Log<Bond>().fatal("Unsupported bond type: {0}.", underlying_cast(type));
+        Log<Bond>().fatal("Unsupported bond type: {}.", underlying_cast(type));
         CHG_UNREACHABLE();
     }
 }

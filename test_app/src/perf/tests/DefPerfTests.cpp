@@ -13,7 +13,7 @@ void DefPerfSetup::run()
 
     LogBase::hide(LogType::ERROR);
     if (not dataStore.load(inputPath))
-        Log(this).error("Failed to load: '{0}' during setup.", inputPath);
+        Log(this).error("Failed to load: '{}' during setup.", inputPath);
     LogBase::unhide();
 
     dataStore.dump(outputPath, prettify);
@@ -55,7 +55,7 @@ void DefDumpPerfTest::preTask()
     LogBase::hide(LogType::ERROR);
 
     if (not dataStore.load(inputPath))
-        Log(this).error("Failed to load: '{0}' during setup.", inputPath);
+        Log(this).error("Failed to load: '{}' during setup.", inputPath);
 
     LogBase::unhide();
 }

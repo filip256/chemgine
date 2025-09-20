@@ -85,7 +85,7 @@ std::string utils::formatTime(TimeT time, const TimeFormat format)
         }
 
     default:
-        chg::fatal("Unknown time format: {0}.", underlying_cast(format));
+        chg::fatal("Unknown time format: {}.", underlying_cast(format));
     }
 }
 

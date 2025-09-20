@@ -163,7 +163,7 @@ std::optional<T> Object::getProperty(
 
     const auto parsed = parser(*strProp, std::forward<Args>(parserArgs)...);
     if (not parsed)
-        Log(this).error("Failed to parse property: '{0} : {1}', at: {2}.", key, *strProp, location.toString());
+        Log(this).error("Failed to parse property: '{} : {}', at: {}.", key, *strProp, location.toString());
 
     return parsed;
 }
@@ -178,7 +178,7 @@ std::optional<T> Object::getOptionalProperty(
 
     const auto parsed = parser(*strProp, std::forward<Args>(parserArgs)...);
     if (not parsed)
-        Log(this).warn("Failed to parse optional property: '{0} : {1}', at: {2}.", key, *strProp, location.toString());
+        Log(this).warn("Failed to parse optional property: '{} : {}', at: {}.", key, *strProp, location.toString());
 
     return parsed;
 }
@@ -206,7 +206,7 @@ std::optional<CountedRef<const T>> Object::getOptionalDefinition(
 
     auto parsed = parser(*def, std::forward<Args>(parserArgs)...);
     if (not parsed)
-        Log(this).warn("Failed to parse optional sub-definition for: '{0}', at: {1}.", key, location.toString());
+        Log(this).warn("Failed to parse optional sub-definition for: '{}', at: {}.", key, location.toString());
 
     return parsed;
 }
@@ -223,7 +223,7 @@ std::optional<CountedRef<const T>> Object::getDefinition(
 
     auto parsed = parser(*def, std::forward<Args>(parserArgs)...);
     if (not parsed)
-        Log(this).error("Failed to parse sub-definition for: '{0}', at: {1}.", key, location.toString());
+        Log(this).error("Failed to parse sub-definition for: '{}', at: {}.", key, location.toString());
 
     return parsed;
 }

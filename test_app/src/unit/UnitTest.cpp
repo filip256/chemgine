@@ -25,7 +25,7 @@ bool UnitTestGroup::run()
 {
     std::vector<size_t> failed;
 
-    Log(this).info("{0}: Running {1} sub-tests...", getName(), testCount);
+    Log(this).info("{}: Running {} sub-tests...", getName(), testCount);
     LogBase::nest();
 
     for (size_t i = 0; i < tests.size(); ++i) {
@@ -35,7 +35,7 @@ bool UnitTestGroup::run()
             continue;
         }
 
-        Log(this).info("\rRunning {0}...", tests[i]->getName());
+        Log(this).info("\rRunning {}...", tests[i]->getName());
 
         LogBase::nest();
         const auto start   = std::chrono::high_resolution_clock::now();
@@ -46,10 +46,10 @@ bool UnitTestGroup::run()
         const auto timeInMs = (end - start).count() / 1000000.0;
 
         if (success)
-            Log(this).info("\rTest {0} passed ({1}ms).", tests[i]->getName(), std::format("{:.4f}", timeInMs));
+            Log(this).info("\rTest {} passed ({}ms).", tests[i]->getName(), std::format("{:.4f}", timeInMs));
         else {
             failed.emplace_back(i);
-            Log(this).info("\rTest {0} failed ({1}ms).", tests[i]->getName(), std::format("{:.4f}", timeInMs));
+            Log(this).info("\rTest {} failed ({}ms).", tests[i]->getName(), std::format("{:.4f}", timeInMs));
         }
 
         Log(this).info("\0");
@@ -63,7 +63,7 @@ bool UnitTestGroup::run()
         for (const auto& idx : failed)
             failedStr += "\n - " + tests[idx]->getName();
 
-        Log(this).error("{0}/{1} sub-tests failed:{2}", failed.size(), tests.size(), failedStr);
+        Log(this).error("{}/{} sub-tests failed:{}", failed.size(), tests.size(), failedStr);
         return false;
     }
 

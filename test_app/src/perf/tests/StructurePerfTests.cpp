@@ -121,7 +121,7 @@ std::string ASCIIParseTest::generateASCII(const std::string& smiles)
 {
     const auto molecule = MolecularStructure::fromSMILES(smiles);
     if (not molecule)
-        Log<ASCIIParseTest>().fatal("Failed to initialize test due to invalid SMILES: '{0}'.", smiles);
+        Log<ASCIIParseTest>().fatal("Failed to initialize test due to invalid SMILES: '{}'.", smiles);
 
     return molecule->toASCII().toString().toString();
 }

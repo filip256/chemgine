@@ -19,12 +19,12 @@ FileParser::FileParser(
     fileStore(fileStore)
 {
     if (not stream.is_open()) {
-        Log(this).error("Failed to open file: '{0}' for reading.", currentFile);
+        Log(this).error("Failed to open file: '{}' for reading.", currentFile);
         return;
     }
 
     if (fileStore.getFileStatus(filePath) == ParseStatus::COMPLETED) {
-        Log(this).warn("Skipping already loaded file: '{0}'.", filePath);
+        Log(this).warn("Skipping already loaded file: '{}'.", filePath);
         forceFinish();
         return;
     }
@@ -35,7 +35,7 @@ FileParser::FileParser(
 FileParser::~FileParser() noexcept
 {
     if (stream.is_open()) {
-        Log(this).warn("Incomplete parsing on file: '{0}'.", currentFile);
+        Log(this).warn("Incomplete parsing on file: '{}'.", currentFile);
         stream.close();
     }
 }
@@ -47,8 +47,7 @@ void FileParser::include(const std::string& filePath)
         return;
 
     if (status == ParseStatus::STARTED) {
-        Log(this).error(
-            "Encountered cyclic dependency on file: '{0}', at: {1}:{2}.", filePath, currentFile, currentLine);
+        Log(this).error("Encountered cyclic dependency on file: '{}', at: {}:{}.", filePath, currentFile, currentLine);
         return;
     }
 
@@ -62,8 +61,8 @@ void FileParser::closeSubparser()
     for (const auto& a : subParser->includeAliases)
         if (includeAliases[a.first] != a.second)
             Log(this).warn(
-                "Overwritten already defined include alias: '{0}: {1}' from included file, at: "
-                "{2}:{3}.",
+                "Overwritten already defined include alias: '{}: {}' from included file, at: "
+                "{}:{}.",
                 a.first,
                 a.second,
                 currentFile,
@@ -186,14 +185,14 @@ std::pair<std::string, def::Location> FileParser::nextDefinitionLine()
             if (commentClosed)
                 continue;
 
-            Log(this).error("Missing multi-line definition terminator: '.:', at: {0}:{1}.", currentFile, currentLine);
+            Log(this).error("Missing multi-line definition terminator: '.:', at: {}:{}.", currentFile, currentLine);
         }
 
         // debug message
         if (line.starts_with(">>")) {
             line = line.substr(2);
             utils::strip(line);
-            Log(this).debug("{0}", line);
+            Log(this).debug("{}", line);
             continue;
         }
 
@@ -209,7 +208,7 @@ std::pair<std::string, def::Location> FileParser::nextDefinitionLine()
 
             if (path.empty()) {
                 Log(this).error(
-                    "Missing include path after '{0}' keyword, at: {1}:{2}.",
+                    "Missing include path after '{}' keyword, at: {}:{}.",
                     def::Syntax::Include,
                     currentFile,
                     currentLine);
@@ -220,7 +219,7 @@ std::pair<std::string, def::Location> FileParser::nextDefinitionLine()
                 auto alias = utils::strip(line.substr(pathEnd + def::Syntax::IncludeAs.size()));
                 if (alias.empty()) {
                     Log(this).error(
-                        "Missing include alias after '{0}' keyword, at: {1}:{2}.",
+                        "Missing include alias after '{}' keyword, at: {}:{}.",
                         def::Syntax::IncludeAs,
                         currentFile,
                         currentLine);
@@ -229,7 +228,7 @@ std::pair<std::string, def::Location> FileParser::nextDefinitionLine()
 
                 if (auto status = includeAliases.emplace(std::move(alias), path); not status.second) {
                     Log(this).warn(
-                        "Redefinition of an existing include alias: '{0}: {1}', at: {2}:{3}.",
+                        "Redefinition of an existing include alias: '{}: {}', at: {}:{}.",
                         alias,
                         status.first->second,
                         currentFile,
@@ -265,11 +264,11 @@ std::pair<std::string, def::Location> FileParser::nextDefinitionLine()
                     return std::make_pair(line, std::move(location));
             };
 
-            Log(this).error("Missing definition terminator: ';', at: {0}.", location.toString());
+            Log(this).error("Missing definition terminator: ';', at: {}.", location.toString());
             continue;
         }
 
-        Log(this).error("Unknown synthax: '{0}', at: {1}:{2}.", line, currentFile, currentLine);
+        Log(this).error("Unknown synthax: '{}', at: {}:{}.", line, currentFile, currentLine);
     };
 
     forceFinish();

@@ -16,7 +16,7 @@ bool ReactionNetwork::insert(const size_t current, ReactionData& reaction, size_
 
         if (reaction.isSpecializationOf(i->data)) {
             if (reaction.isEquivalentTo(i->data)) {
-                Log(this).warn("Discarded duplicate reaction with id {0}.", reaction.id);
+                Log(this).warn("Discarded duplicate reaction with id {}.", reaction.id);
                 return false;
             }
 
@@ -54,7 +54,7 @@ bool ReactionNetwork::insert(ReactionData& reaction)
         auto& topReaction = graph[topLayer[i]].data;
         if (reaction.isSpecializationOf(topReaction)) {
             if (reaction.isEquivalentTo(topReaction)) {
-                Log(this).warn("Discarded duplicate reaction with id {0}.", reaction.id);
+                Log(this).warn("Discarded duplicate reaction with id {}.", reaction.id);
                 return false;
             }
 

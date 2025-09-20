@@ -60,7 +60,7 @@ template <typename AvgT>
 void AverageStream<AvgT>::remove(AvgRefT value)
 {
     if (_count == 0)
-        Log(this).fatal("Tried to remove value: {0} from an empty stream.", value);
+        Log(this).fatal("Tried to remove value: {} from an empty stream.", value);
 
     _sum -= value;
     --_count;

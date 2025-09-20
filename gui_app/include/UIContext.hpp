@@ -121,7 +121,7 @@ public:
                                 if (auto container = component.cast<BaseContainerComponent>()) {
                                     container->add(inputMolecule->first, inputMolecule->second);
                                     Log(this).info(
-                                        "Added {0} of {1}.",
+                                        "Added {} of {}.",
                                         inputMolecule->second.toString(),
                                         inputMolecule->first.getData().name);
                                 }
@@ -171,7 +171,7 @@ public:
                         const auto temp  = def::parse<std::pair<Molecule, Amount<Unit::MOLE>>>(input, '_');
 
                         if (not temp) {
-                            Log(this).error("Malformed input ignored: {0}.", input);
+                            Log(this).error("Malformed input ignored: {}.", input);
                             inputMolecule.reset();
                             cursorHelper.setType(sf::Cursor::Type::Cross);
                             continue;

@@ -241,7 +241,7 @@ struct std::formatter<Point<T>>
     template <typename FormatContext>
     auto format(const Point<T>& point, FormatContext& ctx) const
     {
-        return format_to(ctx.out(), "({0}, {1})", point.x, point.y);
+        return format_to(ctx.out(), "({}, {})", point.x, point.y);
     }
 };
 

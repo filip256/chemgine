@@ -48,9 +48,7 @@ bool TimingUnitTest::run()
     const auto error = (static_cast<float_h>(minAbsDiff) / ref) * 100.0;
     if (error > threshold) {
         Log(this).error(
-            "Error: {0}% exceeded the test threshold: {1}%.",
-            std::format("{:f}", error),
-            std::format("{:f}", threshold));
+            "Error: {}% exceeded the test threshold: {}%.", std::format("{:f}", error), std::format("{:f}", threshold));
         return false;
     }
 

@@ -170,7 +170,7 @@ void OS::setCurrentProcessPriority(const OS::ProcessPriority priority)
             Log().fatal("Failed to set SCHED_FIFO scheduler (error code: {}).", errno);
     }
     else {
-        static const sched_param param{0};
+        static const sched_param param{};
         if (sched_setscheduler(0, SCHED_OTHER, &param) != 0)
             Log().fatal("Failed to set SCHED_OTHER scheduler (error code: {}).", errno);
     }
@@ -201,7 +201,7 @@ OS::ProcessorAffinityMask OS::getAvailableProcessorMask()
 OS::ProcessorAffinityMask OS::getAvailablePhysicalProcessorMask()
 {
     static const auto     availableProcessors = getAvailableProcessorMask();
-    ProcessorAffinityMask physicalProcessors  = {0};
+    ProcessorAffinityMask physicalProcessors  = {};
 
 #ifdef CHG_BUILD_WINDOWS
 

@@ -55,7 +55,7 @@ bool PropertyUnitTest<ObjT, OutU, InUs...>::run()
         const auto error = std::abs((ref - act).asStd());
         if (error > threshold) {
             Log(this).error(
-                "Error: {0} (act= {1}, ref= {2}) exceeded the test threshold: {3}.",
+                "Error: {} (act= {}, ref= {}) exceeded the test threshold: {}.",
                 std::format("{:e}", error),
                 act.toString(),
                 ref.toString(),

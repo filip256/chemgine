@@ -13,7 +13,7 @@ NoConcurrencyGuard::NoConcurrencyGuard(std::atomic_flag& flag, const std::source
         auto pathStr = utils::getRelativePathToProjectRoot(location.file_name());
         utils::normalizePath(pathStr);
         chg::fatal(
-            "Concurrency detected in NEVER_CONCURRENT context, at: '{0}:{1}', thread id: {2}.",
+            "Concurrency detected in NEVER_CONCURRENT context, at: '{}:{}', thread id: {}.",
             pathStr,
             location.line(),
             std::this_thread::get_id());

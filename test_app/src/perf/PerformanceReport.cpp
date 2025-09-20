@@ -20,7 +20,7 @@ void PerformanceReport::add(const std::string& key, const TimingResult& time)
 {
     auto it = timeTable.find(key);
     if (it != timeTable.end())
-        Log(this).fatal("Report already contains a time entry for: '{0}'", key);
+        Log(this).fatal("Report already contains a time entry for: '{}'", key);
 
     timeTable.emplace(key, time);
 }
@@ -48,12 +48,12 @@ bool PerformanceReport::load(const std::string& path)
 {
     std::ifstream file(path);
     if (not file.is_open()) {
-        Log(this).error("Failed to open file: '{0}' for reading.", path);
+        Log(this).error("Failed to open file: '{}' for reading.", path);
         return false;
     }
 
     if (not std::getline(file, timestamp)) {
-        Log(this).error("Report file: '{0}' is empty.", path);
+        Log(this).error("Report file: '{}' is empty.", path);
         return false;
     }
 
@@ -61,7 +61,7 @@ bool PerformanceReport::load(const std::string& path)
     while (std::getline(file, line)) {
         const auto pair = def::parse<std::pair<std::string, std::pair<int64_t, int64_t>>>(line);
         if (not pair) {
-            Log(this).error("Invalid report line: '{0}' in file: '{1}'.", line, path);
+            Log(this).error("Invalid report line: '{}' in file: '{}'.", line, path);
             continue;
         }
 
@@ -84,7 +84,7 @@ void PerformanceReport::dump(const std::string& path) const
 {
     std::ofstream out(path);
     if (not out.is_open()) {
-        Log(this).fatal("Failed to open file: '{0}' for writing.", path);
+        Log(this).fatal("Failed to open file: '{}' for writing.", path);
         return;
     }
 
