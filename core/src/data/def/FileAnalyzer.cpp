@@ -1,6 +1,6 @@
 #include "data/def/FileAnalyzer.hpp"
 
-#include "data/OOLDefRepository.hpp"
+#include "data/OutlineDefRepository.hpp"
 #include "data/def/Keywords.hpp"
 
 using namespace def;

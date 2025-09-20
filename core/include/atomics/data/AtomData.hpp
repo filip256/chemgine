@@ -1,44 +1,31 @@
 #pragma once
 
-#include "atomics/data/BaseComponentData.hpp"
-#include "data/def/PrintSettings.hpp"
-#include "data/values/Symbol.hpp"
-#include "structs/ImmutableSet.hpp"
+#include "atomics/data/AtomBaseData.hpp"
 
-#include <iostream>
-
-class AtomData : public BaseComponentData
+class AtomData : public AtomBaseData
 {
 private:
     const ImmutableSet<uint8_t> valences;
+    const Amount<Unit::GRAM>    weight;
+    const uint8_t               rarity;
 
 public:
-    const Symbol      symbol;
-    const std::string name;
-
     AtomData(
-        const Symbol&            symbol,
-        const std::string&       name,
+        Symbol&&                 symbol,
+        std::string&&            name,
         const Amount<Unit::GRAM> weight,
         ImmutableSet<uint8_t>&&  valences) noexcept;
 
-    AtomData(const AtomData&) = delete;
-    AtomData(AtomData&&)      = default;
-    ~AtomData()               = default;
+    bool isRadical() const override final;
 
-    bool isRadical() const;
+    const ImmutableSet<uint8_t>& getValences() const override final;
+    uint8_t                      getFittingValence(const uint8_t bonds) const override final;
+    bool                         hasValence(const uint8_t valence) const override final;
 
-    bool                         hasValence(const uint8_t v) const;
-    const ImmutableSet<uint8_t>& getValences() const;
+    uint8_t            getPrecedence() const override final;
+    Amount<Unit::GRAM> getWeight() const override final;
 
-    uint8_t     getFittingValence(const uint8_t bonds) const override final;
-    std::string getSMILES() const override final;
+    void dumpDefinition(std::ostream& out, const bool prettify) const override final;
 
-    virtual void dumpDefinition(std::ostream& out, const bool prettify) const;
-    void         print(std::ostream& out = std::cout) const;
-
-    static uint8_t getRarityOf(const Symbol& symbol);
-
-    static const uint8_t               NullValence = static_cast<uint8_t>(-1);
-    static const ImmutableSet<uint8_t> RadicalAnyValence;
+    static const uint8_t NullValence = static_cast<uint8_t>(-1);
 };

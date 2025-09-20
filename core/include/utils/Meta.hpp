@@ -21,6 +21,10 @@ bool equal(const T x, const T y);
 template <typename T1, typename T2>
 bool equal(const T1 x, const T2 y);
 
+//
+// is_specialization_of
+//
+
 template <typename, template <typename> class>
 struct is_specialization_of : std::false_type
 {};
@@ -28,8 +32,32 @@ struct is_specialization_of : std::false_type
 template <typename U, template <typename> class Template>
 struct is_specialization_of<Template<U>, Template> : std::true_type
 {};
+
 template <typename T, template <typename> class Template>
 constexpr bool is_specialization_of_v = is_specialization_of<T, Template>::value;
+
+//
+// is_derived_from
+//
+
+template <typename T, template <typename...> class Template>
+struct is_derived_from
+{
+private:
+    template <typename... Args>
+    static std::true_type test(const Template<Args...>*)
+    {
+        return {};
+    }
+
+    static std::false_type test(...) { return {}; }
+
+public:
+    static constexpr bool value = decltype(test(std::declval<T*>()))::value;
+};
+
+template <typename T, template <typename...> class Template>
+inline constexpr bool is_derived_from_v = is_derived_from<T, Template>::value;
 
 template <typename T>
 concept Streamable = requires (std::ostream& os, T t) {

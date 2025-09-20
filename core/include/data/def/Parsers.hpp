@@ -214,17 +214,20 @@ public:
     }
 };
 
-template <typename T>
-class Parser<std::unordered_map<std::string, T>>
+template <typename T, typename Hash, typename KeyEqual>
+class Parser<std::unordered_map<std::string, T, Hash, KeyEqual>>
 {
+private:
+    using ResultT = std::unordered_map<std::string, T, Hash, KeyEqual>;
+
 public:
-    static std::optional<std::unordered_map<std::string, T>> parse(const std::string& str)
+    static std::optional<ResultT> parse(const std::string& str)
     {
         auto entries = def::parse<std::vector<std::pair<std::string, std::string>>>(str);
         if (not entries)
             return std::nullopt;
 
-        std::unordered_map<std::string, T> result;
+        ResultT result;
         result.reserve(entries->size());
         for (size_t i = 0; i < entries->size(); ++i) {
             utils::strip((*entries)[i].second);

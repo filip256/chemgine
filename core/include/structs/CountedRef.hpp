@@ -53,6 +53,8 @@ CountT Countable<CountT>::getRefCount() const
 template <CountableType T>
 class CountedRef final
 {
+    static_assert(utils::is_derived_from_v<T, Countable>, "CountedRef: T must inherit Countable.");
+
 private:
     T& object;
 

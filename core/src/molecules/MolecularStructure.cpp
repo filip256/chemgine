@@ -1,5 +1,6 @@
 #include "molecules/MolecularStructure.hpp"
 
+#include "data/Predefined.hpp"
 #include "data/def/Parsers.hpp"
 #include "io/Log.hpp"
 #include "io/StringTable.hpp"
@@ -55,14 +56,14 @@ bool MolecularStructure::addBondChecked(BondedAtomBase& from, BondedAtomBase& to
     return true;
 }
 
-BondedAtomBase* MolecularStructure::addAtom(const Symbol& symbol, BondedAtomBase* prev, const BondType bondType)
+BondedAtomBase*
+MolecularStructure::addAtom(std::unique_ptr<BondedAtomBase>&& atom, BondedAtomBase* prev, const BondType bondType)
 {
     // Ignore implied atoms.
-    static const auto hydrogen = Atom("H");
-    if (symbol == hydrogen.getData().symbol && bondType == BondType::SINGLE)
+    if (atom->getAtom().equals(Predefined::get().Hydrogen) && bondType == BondType::SINGLE)
         return prev;
 
-    auto& inserted = *atoms.emplace_back(BondedAtomBase::create(symbol, static_cast<c_size>(atoms.size()), {}));
+    auto& inserted = *atoms.emplace_back(std::move(atom));
     if (prev)
         addBond(inserted, *prev, bondType);
 
@@ -198,7 +199,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
 
     if (smiles == "HH")  // The only purely virtual molecule
     {
-        if (not Atom::isDefined("H"))
+        if (not AtomBase::isDefined("H"))
             return false;
 
         impliedHydrogenCount = 2;
@@ -214,16 +215,16 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
         // Basic atom
         if (isalpha(smiles[i])) {
             if (i < smiles.size() - 1) {
-                if (Symbol symbol(smiles.substr(i, 2)); Atom::isDefined(symbol)) {
-                    prev     = addAtom(symbol, prev, bondType);
+                if (auto atom = BondedAtomBase::create(smiles.substr(i, 2), static_cast<c_size>(atoms.size()), {})) {
+                    prev     = addAtom(std::move(atom), prev, bondType);
                     bondType = BondType::SINGLE;
                     ++i;
                     continue;
                 }
             }
 
-            if (Symbol symbol(smiles[i]); Atom::isDefined(symbol)) {
-                prev     = addAtom(symbol, prev, bondType);
+            if (auto atom = BondedAtomBase::create(smiles[i], static_cast<c_size>(atoms.size()), {})) {
+                prev     = addAtom(std::move(atom), prev, bondType);
                 bondType = BondType::SINGLE;
                 continue;
             }
@@ -274,15 +275,16 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
                 return false;
             }
 
-            const Symbol symbol(smiles.substr(i + 1, t - i - 1));
-            if (not Atom::isDefined(symbol)) {
+            const auto symbol = smiles.substr(i + 1, t - i - 1);
+            auto       atom   = BondedAtomBase::create(symbol, static_cast<c_size>(atoms.size()), {});
+            if (atom == nullptr) {
                 Log(this).error(
                     "Undefined atomic symbol '{}' in SMILES:\n{}\n{}^", symbol, smiles, std::string(i, ' '));
                 clear();
                 return false;
             }
 
-            prev     = addAtom(symbol, prev, bondType);
+            prev     = addAtom(std::move(atom), prev, bondType);
             bondType = BondType::SINGLE;
 
             i = t;
@@ -433,7 +435,7 @@ extractSymbol(const TextBlock& buffer, const ASCII::Position origin)
             auto section = buffer[ASCII::PositionLine(startPoint, static_cast<Symbol::SizeT>(e - b + 1))];
             if (buffer[startPoint] == '%' && def::parse<c_size>(section.substr(1)))
                 return std::make_pair(startPoint, std::move(section));
-            if (Atom::isDefined(section))
+            if (AtomBase::isDefined(section))
                 return std::make_pair(startPoint, std::move(section));
         }
     }
@@ -452,7 +454,7 @@ ASCII::Position findStartPosition(const TextBlock& buffer)
             auto endIdx = checked_cast<int16_t>(x);
             while (not line.isWhiteSpace(endIdx)) {
                 const auto section = buffer[ASCII::PositionLine(origin, checked_cast<Symbol::SizeT>(endIdx - x + 1))];
-                if (Atom::isDefined(section))
+                if (AtomBase::isDefined(section))
                     return static_cast<ASCII::Position>(origin);
 
                 ++endIdx;
@@ -589,7 +591,8 @@ bool MolecularStructure::loadFromASCII(const std::string& ascii)
 
         const Symbol symbol(std::move(extractedSymbol->second));
 
-        auto* newAtom = addAtom(symbol, state.prev, state.bondType);
+        auto* newAtom =
+            addAtom(BondedAtomBase::create(symbol, static_cast<c_size>(atoms.size()), {}), state.prev, state.bondType);
         for (Symbol::SizeT i = 0; i < symbol.size(); ++i)
             positionMap.emplace(state.position + ASCII::Direction::Right.get() * i, newAtom);
 
@@ -656,7 +659,7 @@ bool MolecularStructure::loadFromASCII(const std::string& ascii)
 // Property getters
 //
 
-const Atom& MolecularStructure::getAtom(const c_size idx) const { return atoms[idx]->getAtom(); }
+const AtomBase& MolecularStructure::getAtom(const c_size idx) const { return atoms[idx]->getAtom(); }
 
 const BondedAtomBase& MolecularStructure::getBondedAtom(const c_size idx) const { return *atoms[idx]; }
 
@@ -666,9 +669,9 @@ Amount<Unit::GRAM_PER_MOLE> MolecularStructure::getMolarMass() const
 {
     Amount<Unit::GRAM> cnt = 0;
     for (c_size i = 0; i < atoms.size(); ++i)
-        cnt += atoms[i]->getAtom().getData().weight;
+        cnt += atoms[i]->getAtom().getData().getWeight();
 
-    cnt += Atom("H").getData().weight * impliedHydrogenCount;
+    cnt += Predefined::get().Hydrogen.getData().getWeight() * impliedHydrogenCount;
     return cnt.to<Unit::GRAM_PER_MOLE>(Amount<Unit::MOLE>(1.0));
 }
 
@@ -713,17 +716,15 @@ bool MolecularStructure::isOrganic() const
 {
     // A molecule is considered organic when it contains a C-H bond.
     const auto hasOrganicBond = [](const auto& a) {
-        static const auto carbon   = Atom("C");
-        static const auto hydrogen = Atom("H");
-
-        if (a->getAtom() != carbon)
+        if (a->getAtom().equals(Predefined::get().Carbon))
             return false;
 
         if (getImpliedHydrogenCount(*a) > 0)
             return true;
 
-        return std::any_of(
-            a->bonds.begin(), a->bonds.end(), [](const auto& b) { return b.getOther().getAtom() == hydrogen; });
+        return std::any_of(a->bonds.begin(), a->bonds.end(), [](const auto& b) {
+            return b.getOther().getAtom().equals(Predefined::get().Hydrogen);
+        });
     };
 
     return std::any_of(atoms.begin(), atoms.end(), hasOrganicBond);
@@ -743,9 +744,7 @@ std::unordered_map<Symbol, c_size> MolecularStructure::getComponentCountMap() co
     if (impliedHydrogenCount == 0)
         return result;
 
-    static const auto hydrogen = Atom("H");
-    const auto&       hSymbol  = hydrogen.getData().symbol;
-
+    const auto& hSymbol = Predefined::get().Hydrogen.getData().symbol;
     if (auto it = result.find(hSymbol); it != result.end())
         it->second += impliedHydrogenCount;
     else
@@ -1097,7 +1096,7 @@ void MolecularStructure::recountImpliedHydrogens()
         impliedHydrogenCount = countImpliedHydrogens();
 }
 
-void MolecularStructure::mutateAtom(const c_size idx, const Atom& newAtom)
+void MolecularStructure::mutateAtom(const c_size idx, const AtomBase& newAtom)
 {
     auto& oldBondedAtom = *atoms[idx];
     auto  newBondedAtom = oldBondedAtom.mutate(newAtom);
@@ -1507,7 +1506,7 @@ bool MolecularStructure::loadFromMolBin(std::istream& is)
             break;
 
         Symbol symbol(std::move(symbolStr));
-        if (not Atom::isDefined(symbol)) {
+        if (not AtomBase::isDefined(symbol)) {
             Log(this).error("MolBin atomic symbol: '{}' is undefined.", symbol);
             clear();
             return false;

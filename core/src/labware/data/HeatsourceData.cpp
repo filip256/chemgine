@@ -13,7 +13,7 @@ HeatsourceData::HeatsourceData(
 
 void HeatsourceData::dumpCustomProperties(def::DataDumper& dump) const
 {
-    dump.propertyWithSep(def::Labware::Power, maxPowerOutput)
-        .propertyWithSep(def::Labware::Texture, "~/" + textureFile)
+    dump.property(def::Labware::Power, maxPowerOutput)
+        .property(def::Labware::Texture, "~/" + textureFile)
         .property(def::Labware::TextureScale, textureScale);
 }

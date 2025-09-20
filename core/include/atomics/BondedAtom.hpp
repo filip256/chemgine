@@ -2,6 +2,7 @@
 
 #include "atomics/Bond.hpp"
 #include "atomics/kinds/Atom.hpp"
+#include "global/SizeTypedefs.hpp"
 
 #include <memory>
 #include <vector>
@@ -23,21 +24,21 @@ public:
 
     bool isSame(const BondedAtomBase& other) const;
 
-    virtual const Atom&                     getAtom() const = 0;
+    virtual const AtomBase&                 getAtom() const = 0;
     virtual std::unique_ptr<BondedAtomBase> clone() const   = 0;
 
     const Bond* getBondTo(const BondedAtomBase& other) const;
 
-    std::unique_ptr<BondedAtomBase> mutate(const Atom& atom);
+    std::unique_ptr<BondedAtomBase> mutate(const AtomBase& atom);
 
     static std::unique_ptr<BondedAtomBase> create(const Symbol& symbol, const c_size index, std::vector<Bond>&& bonds);
-    static std::unique_ptr<BondedAtomBase> create(const Atom& atom, const c_size index, std::vector<Bond>&& bonds);
+    static std::unique_ptr<BondedAtomBase> create(const AtomBase& atom, const c_size index, std::vector<Bond>&& bonds);
 };
 
 template <typename AtomT>
 class BondedAtom : public BondedAtomBase
 {
-    static_assert(std::is_base_of_v<Atom, AtomT>, "BondedAtom: AtomT must be an Atom derived type.");
+    static_assert(std::is_base_of_v<AtomBase, AtomT>, "BondedAtom: AtomT must be an Atom derived type.");
 
 private:
     const AtomT atom;

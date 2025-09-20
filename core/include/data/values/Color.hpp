@@ -24,7 +24,7 @@ class def::Parser<Color>
 public:
     static std::optional<::Color> parse(const std::string& str)
     {
-        const auto props = def::parse<std::unordered_map<std::string, std::string>>(str);
+        const auto props = def::parse<utils::StringMap<std::string>>(str);
         if (not props)
             return std::nullopt;
 
@@ -54,7 +54,7 @@ class def::Printer<Color>
 public:
     static std::string print(const ::Color object)
     {
-        std::unordered_map<std::string, uint8_t> props{
+        std::unordered_map<std::string_view, uint8_t> props{
             {        def::Color::R, object.r},
             {        def::Color::G, object.g},
             {        def::Color::B, object.b},
@@ -66,7 +66,7 @@ public:
 
     static std::string prettyPrint(const ::Color object)
     {
-        std::unordered_map<std::string, uint8_t> props{
+        std::unordered_map<std::string_view, uint8_t> props{
             {        def::Color::R, object.r},
             {        def::Color::G, object.g},
             {        def::Color::B, object.b},

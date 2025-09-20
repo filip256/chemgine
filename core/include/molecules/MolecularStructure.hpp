@@ -21,9 +21,9 @@ private:
     static void addBond(BondedAtomBase& from, BondedAtomBase& to, const BondType bondType);
     static bool addBondChecked(BondedAtomBase& from, BondedAtomBase& to, const BondType bondType);
 
-    BondedAtomBase* addAtom(const Symbol& symbol, BondedAtomBase* prev, const BondType bondType);
+    BondedAtomBase* addAtom(std::unique_ptr<BondedAtomBase>&& atom, BondedAtomBase* prev, const BondType bondType);
     void            removeAtom(const c_size idx);
-    void            mutateAtom(const c_size idx, const Atom& newAtom);
+    void            mutateAtom(const c_size idx, const AtomBase& newAtom);
 
     /// <summary>
     /// Returns the number of required hydrogens in order to complete the molecule.
@@ -68,7 +68,7 @@ public:
     /// </summary>
     void canonicalize();
 
-    const Atom&           getAtom(const c_size idx) const;
+    const AtomBase&       getAtom(const c_size idx) const;
     const BondedAtomBase& getBondedAtom(const c_size idx) const;
 
     std::string printInfo() const;

@@ -9,7 +9,7 @@
 
 DataStore::DataStore() :
     fileStore(),
-    oolDefinitions(),
+    outlineDefinitions(),
     atoms(),
     estimators(),
     molecules(estimators),
@@ -19,7 +19,7 @@ DataStore::DataStore() :
 
 size_t DataStore::totalDefinitionCount() const
 {
-    return oolDefinitions.totalDefinitionCount() +
+    return outlineDefinitions.totalDefinitionCount() +
            atoms.totalDefinitionCount() +
            estimators.totalDefinitionCount() +
            molecules.totalDefinitionCount() +
@@ -35,7 +35,7 @@ bool DataStore::addDefinition(def::Object&& definition)
         return false;
 
     case def::DefinitionType::DATA:
-        return oolDefinitions.add(std::move(definition));
+        return outlineDefinitions.add(std::move(definition));
     case def::DefinitionType::ATOM:
         return atoms.add<AtomData>(definition);
     case def::DefinitionType::RADICAL:
@@ -77,7 +77,7 @@ bool DataStore::load(const std::string& path)
 
     bool            success         = true;
     auto            definitionCount = analysis.preparsedDefinitionCount;
-    def::FileParser parser(normPath, fileStore, oolDefinitions);
+    def::FileParser parser(normPath, fileStore, outlineDefinitions);
     while (true) {
         if (not analysis.failed) {
             const auto definitionsToParse = analysis.totalDefinitionCount - analysis.preparsedDefinitionCount;
@@ -104,7 +104,7 @@ bool DataStore::load(const std::string& path)
     }
 
     estimators.dropUnusedEstimators();
-    oolDefinitions.clear();
+    outlineDefinitions.clear();
     return success;
 }
 
@@ -122,10 +122,13 @@ void DataStore::dump(const std::string& path, const bool prettify) const
         out << "    > " << f.first << '\n';
     out << ".:\n\n";
 
-    for (auto a = atoms.atomsBegin(); a != atoms.atomsEnd(); ++a)
-        a->second->dumpDefinition(out, prettify);
-    for (auto r = atoms.radicalsBegin(); r != atoms.radicalsEnd(); ++r)
-        r->second->dumpDefinition(out, prettify);
+    // Atoms are dumped before radicals.
+    for (const auto& a : atoms)
+        if (not a.second->isRadical())
+            a.second->dumpDefinition(out, prettify);
+    for (const auto& r : atoms)
+        if (r.second->isRadical())
+            r.second->dumpDefinition(out, prettify);
 
     std::unordered_set<EstimatorId> printedEstimators;
     for (const auto& m : molecules)
@@ -149,6 +152,6 @@ void DataStore::clear()
     molecules.clear();
     estimators.clear();
     atoms.clear();
-    oolDefinitions.clear();
+    outlineDefinitions.clear();
     fileStore.clear();
 }

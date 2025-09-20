@@ -1,5 +1,6 @@
 #include "molecules/ASCIIStructurePrinter.hpp"
 
+#include "data/Predefined.hpp"
 #include "global/Charset.hpp"
 #include "io/Log.hpp"
 #include "molecules/MolecularStructure.hpp"
@@ -1482,10 +1483,10 @@ void StructurePrinter::printNeighbors(const Node& node, const Direction prevDire
             printError(node.position, "Insufficient space for atom: '" + other.getAtom().getSymbol().str() + "'.");
     }
 
-    static const auto carbon = Atom("C");
+    static const auto& carbon = Predefined::get().Carbon;
     if (not options.has(PrintFlags::PRINT_ATOM_INDICES) &&
-        ((options.has(PrintFlags::PRINT_IMPLIED_CARBON_HYDROGENS) && atom.getAtom() == carbon) ||
-         (options.has(PrintFlags::PRINT_IMPLIED_NON_CARBON_HYDROGENS) && atom.getAtom() != carbon)))
+        ((options.has(PrintFlags::PRINT_IMPLIED_CARBON_HYDROGENS) && atom.getAtom().equals(carbon)) ||
+         (options.has(PrintFlags::PRINT_IMPLIED_NON_CARBON_HYDROGENS) && atom.getAtom().equals(carbon))))
         printImpliedHydrogens(node);
 }
 

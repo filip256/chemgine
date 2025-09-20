@@ -13,14 +13,15 @@ bool DefUnitTest::run()
     bool success = true;
 
     const std::unordered_map<std::string, std::string> includeAliases;
-    auto def = def::parse<def::Object>(defLine, def::Location(getName(), 0), includeAliases, dataStore.oolDefinitions);
+    auto                                               def =
+        def::parse<def::Object>(defLine, def::Location(getName(), 0), includeAliases, dataStore.outlineDefinitions);
     if (not def) {
-        Log(this).error("Failed to parse definition: \n{0}", defLine);
+        Log(this).error("Failed to parse definition: \n{}", defLine);
         success = false;
     }
 
     if (success && not dataStore.addDefinition(std::move(*def))) {
-        Log(this).error("Failed to store parsed definition: \0{0}", defLine);
+        Log(this).error("Failed to store parsed definition: \0{}", defLine);
         success = false;
     }
 
@@ -49,13 +50,13 @@ bool DefLoadUnitTest::run()
     const auto estimatorCountAfter = dataStore.estimators.totalDefinitionCount();
     if (estimatorCountBefore != estimatorCountAfter) {
         Log(this).error(
-            "Store contains {0} unused estimators after load completion.", estimatorCountBefore - estimatorCountAfter);
+            "Store contains {} unused estimators after load completion.", estimatorCountBefore - estimatorCountAfter);
         return false;
     }
 
     if (success != expectedSuccess) {
         Log(this).error(
-            "Actual load status: '{0}' does not match expected status: '{1}'.",
+            "Actual load status: '{}' does not match expected status: '{}'.",
             path,
             def::print(success),
             def::print(expectedSuccess));
@@ -76,7 +77,7 @@ bool DefCountUnitTest::run()
 {
     const auto defCount = dataStore.totalDefinitionCount();
     if (defCount != expectedDefCount) {
-        Log(this).error("Actual definition count: {0} does not match expected count: {1}.", defCount, expectedDefCount);
+        Log(this).error("Actual definition count: {} does not match expected count: {}.", defCount, expectedDefCount);
         return false;
     }
 
@@ -241,17 +242,17 @@ DefUnitTests::DefUnitTests(std::string&& name, const std::regex& filter, const s
     registerTest<UnitTestSetup<CreateDirTestSetup>>("setup", "./temp");
 
     registerTest<DefLoadUnitTest>("load_builtin", dataStore, "./data/builtin.cdef", true);
-    registerTest<DefCountUnitTest>("count", dataStore, 213);
+    registerTest<DefCountUnitTest>("count", dataStore, 214);
     registerTest<DefDumpUnitTest>("dump", dataStore, "./temp/builtin.cdef", false);
     registerTest<DefClearUnitTest>("clear", dataStore);
     registerTest<DefLoadUnitTest>("load", dataStore, "./temp/builtin.cdef", true);
-    registerTest<DefCountUnitTest>("count", dataStore, 213);
+    registerTest<DefCountUnitTest>("count", dataStore, 214);
     registerTest<DefDumpUnitTest>("dump_pretty", dataStore, "./temp/builtin_pretty.cdef", true);
     registerTest<DefLoadUnitTest>("reload", dataStore, "./temp/builtin_pretty.cdef", false);
-    registerTest<DefCountUnitTest>("count", dataStore, 213);
+    registerTest<DefCountUnitTest>("count", dataStore, 214);
     registerTest<DefClearUnitTest>("clear", dataStore);
     registerTest<DefLoadUnitTest>("load_pretty", dataStore, "./temp/builtin_pretty.cdef", true);
-    registerTest<DefCountUnitTest>("count", dataStore, 213);
+    registerTest<DefCountUnitTest>("count", dataStore, 214);
     registerTest<DefClearUnitTest>("clear", dataStore);
 
     registerTest<UnitTestSetup<RemoveDirTestSetup>>("cleanup", "./temp");

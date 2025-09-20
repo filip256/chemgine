@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
             return 0;
         }
 
-        const auto outputFile = args["output"].as<std::string>();
+        const auto outputFile = utils::normalizePath(args["output"].as<std::string>());
         const auto dirName    = utils::extractDirName(outputFile);
         if (dirName.size())
             utils::createDir(dirName);

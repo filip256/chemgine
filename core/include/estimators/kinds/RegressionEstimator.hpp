@@ -90,7 +90,7 @@ void RegressionEstimator<RegT, OutU, InUs...>::dumpDefinition(
     }
     alreadyPrinted.emplace(Base::id);
 
-    static const auto valueOffset =
+    static constexpr auto valueOffset =
         checked_cast<uint8_t>(utils::max(def::Data::Mode.size(), def::Data::Parameters.size()));
 
     def::DataDumper dump(out, valueOffset, baseIndent, prettify);
@@ -100,7 +100,7 @@ void RegressionEstimator<RegT, OutU, InUs...>::dumpDefinition(
         dump.header(def::Types::Data, Base::getUnitSpecifier(), Base::getDefIdentifier());
 
     dump.beginProperties()
-        .propertyWithSep(def::Data::Mode, getMode())
+        .property(def::Data::Mode, getMode())
         .property(def::Data::Parameters, regressor.getParams())
         .endProperties();
 
