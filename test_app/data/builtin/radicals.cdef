@@ -33,3 +33,13 @@ _radical : T2 {
     name:     test radical,
     matches:  Si,
 };
+
+_radical : T3 {
+    name:     test radical,
+    matches:  {O, N},
+};
+
+_radical : T4 {
+    name:     test radical,
+    matches:  {O, C},
+};

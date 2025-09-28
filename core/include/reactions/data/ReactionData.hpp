@@ -1,6 +1,5 @@
 #pragma once
 
-#include "atomics/data/BaseComponentData.hpp"
 #include "data/values/Amount.hpp"
 #include "estimators/kinds/UnitizedEstimator.hpp"
 #include "reactions/Catalyst.hpp"

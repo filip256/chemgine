@@ -1,6 +1,6 @@
 #include "structs/SystemMatrix.hpp"
 
-#include "global/Precision.hpp"
+#include "global/Typedef.hpp"
 #include "utils/Numeric.hpp"
 
 #include <algorithm>

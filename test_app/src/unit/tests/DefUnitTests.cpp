@@ -242,17 +242,17 @@ DefUnitTests::DefUnitTests(std::string&& name, const std::regex& filter, const s
     registerTest<UnitTestSetup<CreateDirTestSetup>>("setup", "./temp");
 
     registerTest<DefLoadUnitTest>("load_builtin", dataStore, "./data/builtin.cdef", true);
-    registerTest<DefCountUnitTest>("count", dataStore, 214);
+    registerTest<DefCountUnitTest>("count", dataStore, 216);
     registerTest<DefDumpUnitTest>("dump", dataStore, "./temp/builtin.cdef", false);
     registerTest<DefClearUnitTest>("clear", dataStore);
     registerTest<DefLoadUnitTest>("load", dataStore, "./temp/builtin.cdef", true);
-    registerTest<DefCountUnitTest>("count", dataStore, 214);
+    registerTest<DefCountUnitTest>("count", dataStore, 216);
     registerTest<DefDumpUnitTest>("dump_pretty", dataStore, "./temp/builtin_pretty.cdef", true);
     registerTest<DefLoadUnitTest>("reload", dataStore, "./temp/builtin_pretty.cdef", false);
-    registerTest<DefCountUnitTest>("count", dataStore, 214);
+    registerTest<DefCountUnitTest>("count", dataStore, 216);
     registerTest<DefClearUnitTest>("clear", dataStore);
     registerTest<DefLoadUnitTest>("load_pretty", dataStore, "./temp/builtin_pretty.cdef", true);
-    registerTest<DefCountUnitTest>("count", dataStore, 214);
+    registerTest<DefCountUnitTest>("count", dataStore, 216);
     registerTest<DefClearUnitTest>("clear", dataStore);
 
     registerTest<UnitTestSetup<RemoveDirTestSetup>>("cleanup", "./temp");

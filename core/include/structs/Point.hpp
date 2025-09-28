@@ -21,15 +21,19 @@ public:
     explicit constexpr Point(const OtherT x, const OtherT y) noexcept;
 
     constexpr Point(const std::pair<T, T>& pair) noexcept;
-    template <typename OtherT, typename = std::enable_if_t<is_safe_conversion_v<OtherT, T>>>
+    template <typename OtherT>
+    requires is_safe_conversion_v<OtherT, T>
     constexpr Point(const std::pair<OtherT, OtherT>& pair) noexcept;
     template <typename OtherT>
+    requires (!is_safe_conversion_v<OtherT, T>)
     explicit constexpr Point(const std::pair<OtherT, OtherT>& pair) noexcept;
 
     constexpr Point(const Point&) = default;
-    template <typename OtherT, typename = std::enable_if_t<is_safe_conversion_v<OtherT, T>>>
+    template <typename OtherT>
+    requires is_safe_conversion_v<OtherT, T>
     constexpr Point(const Point<OtherT>& other) noexcept;
     template <typename OtherT>
+    requires (!is_safe_conversion_v<OtherT, T>)
     explicit constexpr Point(const Point<OtherT>& other) noexcept;
 
     template <typename OtherT = T>
@@ -88,25 +92,29 @@ constexpr Point<T>::Point(const std::pair<T, T>& pair) noexcept :
 {}
 
 template <typename T>
-template <typename OtherT, typename>
+template <typename OtherT>
+requires is_safe_conversion_v<OtherT, T>
 constexpr Point<T>::Point(const std::pair<OtherT, OtherT>& pair) noexcept :
     Point(pair.first, pair.second)
 {}
 
 template <typename T>
 template <typename OtherT>
+requires (!is_safe_conversion_v<OtherT, T>)
 constexpr Point<T>::Point(const std::pair<OtherT, OtherT>& pair) noexcept :
     Point(pair.first, pair.second)
 {}
 
 template <typename T>
-template <typename OtherT, typename>
+template <typename OtherT>
+requires is_safe_conversion_v<OtherT, T>
 constexpr Point<T>::Point(const Point<OtherT>& other) noexcept :
     Point(other.x, other.y)
 {}
 
 template <typename T>
 template <typename OtherT>
+requires (!is_safe_conversion_v<OtherT, T>)
 constexpr Point<T>::Point(const Point<OtherT>& other) noexcept :
     Point(other.x, other.y)
 {}

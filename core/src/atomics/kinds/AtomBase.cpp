@@ -14,7 +14,7 @@ const AtomBaseData& AtomBase::getData() const { return data; }
 
 bool AtomBase::isRadical() const { return data.isRadical(); }
 
-uint8_t AtomBase::getPrecedence() const { return data.getPrecedence(); }
+AtomPrecedence AtomBase::getPrecedence() const { return data.getPrecedence(); }
 
 const Symbol& AtomBase::getSymbol() const { return data.symbol; }
 

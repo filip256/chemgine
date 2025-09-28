@@ -13,13 +13,20 @@ const SymbolMatchSet        RadicalData::MatchAny   = SymbolMatchSet{
 
 RadicalData::RadicalData(
     Symbol&& symbol, std::string&& name, const Amount<Unit::GRAM_PER_MOLE> weight, SymbolMatchSet&& matches) noexcept :
-    AtomBaseData(std::move(symbol), std::move(name), weight),
+    AtomBaseData(std::move(symbol), std::move(name), weight, /*precedence=*/-1),
     matches(std::move(matches))
 {}
 
 const SymbolMatchSet& RadicalData::getMatches() const { return matches; }
 
-void RadicalData::addInferredMatch(Symbol&& match) { matches.emplace(std::move(match), /*inferred=*/true); }
+void RadicalData::addInferredMatch(const RadicalData& other)
+{
+    matches.emplace(utils::copy(other.symbol), /*inferred=*/true);
+    // If this radical (R1 := {C, S}) matches another radical (R2 := {C}), its precedence must be lower to ensure a
+    // valid matching order is picked in cases like: O(C)S ~= O(R1)R2  (R2 must be matched first to C because it's
+    // 'tighter' than R1).
+    precedence = std::min<AtomPrecedence>(precedence, other.precedence - 1);
+}
 
 bool RadicalData::isRadical() const { return true; }
 
@@ -28,12 +35,6 @@ const ImmutableSet<uint8_t>& RadicalData::getValences() const { return AnyValenc
 uint8_t RadicalData::getFittingValence(const uint8_t bonds) const { return bonds != 0 ? bonds : 1; }
 
 bool RadicalData::hasValence(const uint8_t) const { return true; }
-
-uint8_t RadicalData::getPrecedence() const
-{
-    // During structure canonicalization radicals have the lowest precedence.
-    return 0;
-}
 
 void RadicalData::dumpDefinition(std::ostream& out, const bool prettify) const
 {

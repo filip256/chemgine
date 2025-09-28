@@ -8,11 +8,9 @@ namespace utils
 
 bool isWhiteSpace(const char c);
 
-void strip(std::string& str, bool (*pred)(const char) = [](const auto c) -> bool { return isWhiteSpace(c); });
+void strip(std::string& str, bool (*pred)(const char) = isWhiteSpace);
 
-std::string strip(const std::string& str, bool (*pred)(const char) = [](const auto c) -> bool {
-    return isWhiteSpace(c);
-});
+std::string strip(const std::string& str, bool (*pred)(const char) = isWhiteSpace);
 
 std::vector<std::string> split(const std::string& line, const char separator, const bool ignoreEmpty = false);
 

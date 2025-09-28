@@ -1,6 +1,6 @@
 #pragma once
 
-#include "global/Precision.hpp"
+#include "global/Typedef.hpp"
 #include "structs/CountedRef.hpp"
 
 #include <string>

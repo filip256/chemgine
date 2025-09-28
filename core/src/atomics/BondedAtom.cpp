@@ -3,8 +3,8 @@
 #include "atomics/kinds/Radical.hpp"
 
 BondedAtomBase::BondedAtomBase(const c_size index, std::vector<Bond>&& bonds) noexcept :
-    index(index),
-    bonds(std::move(bonds))
+    bonds(std::move(bonds)),
+    index(index)
 {}
 
 bool BondedAtomBase::isSame(const BondedAtomBase& other) const { return this == &other; }

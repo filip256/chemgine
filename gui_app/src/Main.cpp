@@ -10,6 +10,10 @@ int main()
     Accessor<>::setDataStore(store);
     store.load("./data/builtin.cdef");
 
+    const auto a = MolecularStructure("S1234(CCC1(C4(C3)))CC2");
+    const auto b = MolecularStructure("S1234(C(C3)C4CC1)CC2");
+    std::cout << (a == b);
+
     const auto asc = MolecularStructure("CC(=O)OC1=C2OC4C(C=O)C=CC3C5CC(C=C1)=C2C34CCN5C").toASCII();
     std::cout << asc;
     std::cout << MolecularStructure("CC(=O)OC1=C2OC4C(OC(C)=O)C=CC3C5CC(C=C1)=C2C34CCN5C").toASCII();

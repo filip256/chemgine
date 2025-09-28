@@ -1,7 +1,7 @@
 #pragma once
 
 #include "PortType.hpp"
-#include "global/SizeTypedefs.hpp"
+#include "global/Typedef.hpp"
 
 #include <cstdint>
 

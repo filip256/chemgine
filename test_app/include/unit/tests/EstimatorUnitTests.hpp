@@ -2,7 +2,7 @@
 
 #include "data/values/DataPoint.hpp"
 #include "estimators/EstimatorFactory.hpp"
-#include "global/Precision.hpp"
+#include "global/Typedef.hpp"
 #include "unit/UnitTest.hpp"
 
 class Estimator2DUnitTestBase : public UnitTest

@@ -37,9 +37,8 @@ AtomData::AtomData(
     std::string&&                     name,
     const Amount<Unit::GRAM_PER_MOLE> weight,
     ImmutableSet<uint8_t>&&           valences) noexcept :
-    AtomBaseData(std::move(symbol), std::move(name), weight),
-    valences(std::move(valences)),
-    rarity(getPrecedenceOf(this->symbol))
+    AtomBaseData(std::move(symbol), std::move(name), weight, getPrecedenceOf(symbol)),
+    valences(std::move(valences))
 {}
 
 bool AtomData::isRadical() const { return false; }
@@ -57,8 +56,6 @@ bool AtomData::hasValence(const uint8_t valence) const
     // Usually an atom has less than 8 valences, linear search if preferred.
     return std::ranges::any_of(getValences(), [valence](const uint8_t v) { return v == valence; });
 }
-
-uint8_t AtomData::getPrecedence() const { return rarity; }
 
 void AtomData::dumpDefinition(std::ostream& out, const bool prettify) const
 {

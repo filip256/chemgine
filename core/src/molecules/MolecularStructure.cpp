@@ -16,11 +16,17 @@
 #include <numeric>
 #include <sstream>
 
+//
+// Consrtuction
+//
+
 MolecularStructure::MolecularStructure(const std::string& smiles) { loadFromSMILES(smiles); }
 
 MolecularStructure::MolecularStructure(const MolecularStructure& other) noexcept :
     molarMass(other.molarMass),
-    impliedHydrogenCount(other.impliedHydrogenCount)
+    impliedHydrogenCount(other.impliedHydrogenCount),
+    bondCount(other.bondCount),
+    traits(other.traits)
 {
     this->atoms.reserve(other.atoms.size());
     for (const auto& otherAtom : other.atoms)
@@ -32,6 +38,19 @@ MolecularStructure::MolecularStructure(const MolecularStructure& other) noexcept
             b.setOther(*this->atoms[b.getOther().index]);
 }
 
+MolecularStructure::MolecularStructure(
+    std::vector<std::unique_ptr<BondedAtomBase>>&& atoms,
+    const Amount<Unit::GRAM_PER_MOLE>              molarMass,
+    const uint16_t                                 impliedHydrogenCount,
+    const c_size                                   bondCount,
+    const FlagField<Traits>                        traits) noexcept :
+    atoms(std::move(atoms)),
+    molarMass(molarMass),
+    impliedHydrogenCount(impliedHydrogenCount),
+    bondCount(bondCount),
+    traits(traits)
+{}
+
 MolecularStructure MolecularStructure::createCopy() const { return MolecularStructure(*this); }
 
 void MolecularStructure::clear()
@@ -39,6 +58,17 @@ void MolecularStructure::clear()
     atoms.clear();
     molarMass            = 0.0f;
     impliedHydrogenCount = 0;
+    bondCount            = 0;
+    traits               = Traits::NONE;
+}
+
+void MolecularStructure::makeMolecularHydrogen()
+{
+    atoms.clear();
+    molarMass            = Predefined::get().Hydrogen.getData().weight * 2.0f;
+    impliedHydrogenCount = 2;
+    bondCount            = 0;
+    traits               = FlagField(Traits::IS_HYDROGEN);
 }
 
 void MolecularStructure::addBond(BondedAtomBase& from, BondedAtomBase& to, const BondType bondType)
@@ -93,14 +123,142 @@ void MolecularStructure::canonicalize()
         return;
     }
 
-    std::sort(atoms.begin(), atoms.end(), [](const auto& lhs, const auto& rhs) {
+    // Atom sorting from rare atoms to carbon to 'tight' radicals to 'relaxed' radicals. Various procedures can take
+    // advantage of this.
+    std::ranges::sort(atoms, [](const auto& lhs, const auto& rhs) {
         return lhs->getAtom().getPrecedence() > rhs->getAtom().getPrecedence();
     });
-
     for (c_size i = 0; i < atoms.size(); ++i)
         atoms[i]->index = i;
 
-    // Sort bonds by the precedence of the other atom and valence
+    // Atom sorting is sufficient for concrete molecules.
+    if (isConcrete())
+        return;
+
+    // Bond (topologic) sorting sorts based on the lowest precedence of the of the chain. Sorting based on the
+    // precedence of only the next atom is not sufficient for cases like: O(CC)CCC ~= O(CR)CC.
+
+    std::vector<std::vector<AtomPrecedence>> bondPrecedences;
+    bondPrecedences.reserve(atoms.size());
+    for (const auto& a : atoms)
+        bondPrecedences.emplace_back(a->bonds.size(), utils::npos<AtomPrecedence>);
+
+    // Do an initial DF from a random atom and set P for directed bond going towards:
+    //  - a terminal atom: P = the precedence of the atom
+    //  - otherwise: P = min(Pi, ...), where Pi is the P of each neighbor (except the prev one)
+    // This already sets P's for all bonds in 1 direction.
+
+    // class State
+    //{
+    // public:
+    //     State* prev = nullptr;
+    //     const BondedAtomBase* atom = nullptr;
+    //     c_size bondIdx = 0;
+    //     c_size lastParsedBondIdx = utils::npos<c_size>;
+    //     AtomPrecedence precedence;
+
+    // State() = delete;
+    // State(const BondedAtomBase& atom) noexcept :
+    //     atom(&atom),
+    //     precedence(atom.getAtom().getPrecedence())
+    // {}
+    // State(const BondedAtomBase& atom, State& prev) noexcept :
+    //     atom(&atom),
+    //     precedence(atom.getAtom().getPrecedence()),
+    //     prev(&prev)
+    // {}
+    // };
+
+    // std::vector<State> stack;
+    // stack.reserve(atoms.size());  // Worst case.
+    // stack.emplace_back(*atoms.front());
+
+    // std::vector<uint8_t> visited(atoms.size(), false);
+
+    //// TODO: Also the min precedence isn't enough. When the min precedence we might differentiate
+    //// based on precedence sum for cases where we must differentiate between branches leading to the same kind of
+    /// radicals.
+    // while(stack.size())
+    //{
+    //     auto& state = stack.back();
+    //     const auto& bonds = state.atom->bonds;
+
+    // visited[state.atom->index] = true;
+
+    // if(not utils::isNPos(state.lastParsedBondIdx)) {
+    //     // When returning back to this state, collect the precedence from the last parsed outer bond.
+    //     const auto lastNeighborPrecedence = bondPrecedences[state.atom->index][state.lastParsedBondIdx];
+    //     state.precedence = std::min(state.precedence, lastNeighborPrecedence);
+    // }
+
+    // auto parseNextBond = false;
+    // while(state.bondIdx < bonds.size())
+    // {
+    //     const auto& neighbor = bonds[state.bondIdx].getOther();
+    //     if(state.prev != nullptr && neighbor.isSame(*state.prev->atom)) {
+    //         // Avoid going back to previous atom.
+    //         ++state.bondIdx;
+    //         continue;
+    //     }
+
+    // if(const auto existing = bondPrecedences[state.atom->index][state.bondIdx]; not utils::isNPos(existing)) {
+    //     // Outer precedence was already computed, no reason to recur.
+    //     state.precedence = std::min(state.precedence, existing);
+    //     ++state.bondIdx;
+    //     continue;
+    // }
+
+    // if(visited[neighbor.index]) {
+    //     // Cycle: The outer precedence of an atom depends on itself? No! All the edges of a cycle should have the
+    //     same precedence (in both directions), which should be equal to the lowest precedence between the branches
+    //     stemming from the cycle. Essentially the cycle collapses into a single atom.
+    //     // TODO: This is still a problem, make NPos = max would not affect the result but precedences will remain
+    //     unassigned.
+    //     ++state.bondIdx;
+    //     continue;
+    // }
+
+    // // Parse the next bond.
+    // state.lastParsedBondIdx = state.bondIdx;
+    // stack.emplace_back(neighbor, state);
+    // ++state.bondIdx;
+    // parseNextBond = true;
+    // }
+
+    // if(parseNextBond)
+    //     continue;  // Keep returning this state until all outer bonds are parsed.
+
+    // // After parsing all outer bonds, set the minimum precedence to the inner bond.
+    // if(state.prev != nullptr)
+    //     bondPrecedences[state.prev->atom->index][state.prev->lastParsedBondIdx] = state.precedence;
+    // stack.pop_back();
+    // }
+
+    //// 2. For the other direction, perform DF's starting from all the leaves (discovered in the first DF) until all
+    /// bonds /     have a score on both directions. / 3. Sort the bonds of each atom based on this score.
+    // for (size_t i = 0; i < atoms.size(); ++i) {
+    //     auto& bonds = atoms[i]->bonds;
+    //     const auto& precedence = bondPrecedences[i];
+
+    // // Manual insertion sort since the precedences aren't stored in the Bond objects.
+    // for (size_t j = 1; j < bonds.size(); ++j) {
+    //     const auto keyIdx = j;
+    //     const auto key = bonds[keyIdx];
+
+    // auto k = j;
+    // while (k > 0) {
+    //     auto leftIdx = k - 1;
+    //     if (precedence[leftIdx] <= precedence[keyIdx])
+    //         break;
+
+    // bonds[k] = bonds[leftIdx];
+    // --k;
+    // }
+
+    // bonds[k] = key;
+    // }
+    // }
+
     for (auto& a : atoms) {
         std::sort(a->bonds.begin(), a->bonds.end(), [](const auto& lhs, const auto& rhs) {
             const auto lhsPrecedence = lhs.getOther().getAtom().getPrecedence();
@@ -135,28 +293,50 @@ int8_t MolecularStructure::getImpliedHydrogenCount(const BondedAtomBase& atom)
     return v == AtomData::NullValence ? utils::npos<int8_t> : v - d;
 }
 
-std::pair<Amount<Unit::GRAM_PER_MOLE>, int16_t> MolecularStructure::countProperties() const
+bool MolecularStructure::determineProperties()
 {
+    molarMass            = 0.0f;
+    impliedHydrogenCount = 0;
+    bondCount            = 0;
+    traits               = Traits::NONE;
+
     std::pair<Amount<Unit::GRAM_PER_MOLE>, int16_t> result{0.0f, 0};
     for (const auto& a : atoms) {
-        result.first += a->getAtom().getData().weight;
+        molarMass += a->getAtom().getData().weight;
 
         const auto h = getImpliedHydrogenCount(*a);
-        if (utils::isNPos(h))
-            return utils::npos<std::pair<Amount<Unit::GRAM_PER_MOLE>, int16_t>>;
+        if (utils::isNPos(h)) {
+            Log(this).error("Valence of atom: '{}' ({}) was exceeded.", a->getAtom().getSymbol(), a->index);
+            return false;
+        }
+        impliedHydrogenCount += h;
 
-        result.second += h;
+        if (not traits.has(
+                Traits::IS_ORGANIC)) {  // Once an organic C-H bond is found we can skip repeating this check.
+            if (a->getAtom().equals(Predefined::get().Carbon)) {
+                if (h > 0 || std::ranges::any_of(a->bonds, [](const auto& b) {
+                    return b.getOther().getAtom().equals(Predefined::get().Hydrogen);
+                }))
+                    traits.raise(Traits::IS_ORGANIC);
+            }
+        }
+
+        if (a->getAtom().isRadical())
+            traits.raise(Traits::IS_GENERIC);
+
+        bondCount += static_cast<c_size>(a->bonds.size());
     }
 
-    result.first += Predefined::get().Hydrogen.getData().weight * result.second;
-    return result;
+    bondCount /= 2;  // Since we represent the structure as an adjacency list, each bond appears twice.
+    molarMass += Predefined::get().Hydrogen.getData().weight * impliedHydrogenCount;
+    return true;
 }
 
 bool MolecularStructure::isFullyConnected() const
 {
     if (atoms.size() == 0)
         return true;
-    if (getBondCount() < atoms.size() - 1)  // Minimum number of edges: N - 1
+    if (bondCount < atoms.size() - 1)  // Minimum number of edges: N - 1
         return false;
 
     c_size               visitedCount = 0;
@@ -190,7 +370,122 @@ bool MolecularStructure::isFullyConnected() const
 }
 
 //
-// SMILES
+// Property Getters
+//
+
+const AtomBase& MolecularStructure::getAtom(const c_size idx) const { return atoms[idx]->getAtom(); }
+
+const BondedAtomBase& MolecularStructure::getBondedAtom(const c_size idx) const { return *atoms[idx]; }
+
+Amount<Unit::GRAM_PER_MOLE> MolecularStructure::getMolarMass() const { return molarMass; }
+
+uint8_t MolecularStructure::getDegreesOfFreedom() const
+{
+    if (atoms.size() == 1)  // mono-atomics have 3
+        return 3;
+
+    if (atoms.size() == 2 || isVirtualHydrogen())  // di-atomics have 5
+        return 5;
+
+    // TODO: find degreesOfFreedom for other molecules (6 is true for CH4)
+    return 6;
+}
+
+std::unordered_map<Symbol, c_size> MolecularStructure::getComponentCountMap() const
+{
+    std::unordered_map<Symbol, c_size> result;
+    for (const auto& a : atoms) {
+        const auto& symbol = a->getAtom().getData().symbol;
+        if (auto it = result.find(symbol); it != result.end())
+            ++it->second;
+        else
+            result.emplace(symbol, 1);
+    }
+
+    if (impliedHydrogenCount == 0)
+        return result;
+
+    const auto& hSymbol = Predefined::get().Hydrogen.getData().symbol;
+    if (auto it = result.find(hSymbol); it != result.end())
+        it->second += impliedHydrogenCount;
+    else
+        result.emplace(hSymbol, impliedHydrogenCount);
+
+    return result;
+}
+
+c_size MolecularStructure::getImpliedHydrogenCount() const { return impliedHydrogenCount; }
+
+c_size MolecularStructure::getNonImpliedAtomCount() const { return static_cast<c_size>(atoms.size()); }
+
+c_size MolecularStructure::getRadicalAtomsCount() const
+{
+    c_size cnt = 0;
+
+    // Canonicalization ensures radical atoms are always stored at the end.
+    auto i = static_cast<c_size>(atoms.size());
+    while (i-- > 0 && atoms[i]->getAtom().isRadical())
+        ++cnt;
+
+    return cnt;
+}
+
+c_size MolecularStructure::getTotalAtomCount() const
+{
+    return static_cast<c_size>(atoms.size() + impliedHydrogenCount);
+}
+
+c_size MolecularStructure::getBondCount() const { return bondCount; }
+
+c_size MolecularStructure::getCycleCount() const
+{
+    // A tree has N - 1 edges, with every extra edge a cycle gets formed.
+    return static_cast<c_size>(static_cast<int32_t>(bondCount) - (atoms.size() - 1));
+}
+
+bool MolecularStructure::isEmpty() const { return impliedHydrogenCount == 0 && atoms.empty(); }
+
+bool MolecularStructure::isConnected() const
+{
+    if (atoms.size() == 0)
+        return true;
+    if (bondCount < atoms.size() - 1)
+        return false;
+
+    std::vector<uint8_t> visited(atoms.size(), false);
+    std::stack<c_size>   stack;
+
+    // DFS to check if all nodes are reachable.
+    c_size c = 0;
+    while (true) {
+        visited[c] = true;
+
+        for (const auto& b : atoms[c]->bonds)
+            if (not visited[b.getOther().index])
+                stack.push(b.getOther().index);
+
+        if (stack.empty())
+            break;
+
+        c = stack.top();
+        stack.pop();
+    }
+
+    return std::any_of(visited.begin(), visited.end(), [](const auto& v) { return not v; });
+}
+
+bool MolecularStructure::isGeneric() const { return traits.has(Traits::IS_GENERIC); }
+
+bool MolecularStructure::isConcrete() const { return not isGeneric(); }
+
+bool MolecularStructure::isOrganic() const { return traits.has(Traits::IS_ORGANIC); }
+
+bool MolecularStructure::isCyclic() const { return getCycleCount() > 0; }
+
+bool MolecularStructure::isVirtualHydrogen() const { return traits.has(Traits::IS_HYDROGEN); }
+
+//
+// SMILES Loader
 //
 
 std::optional<MolecularStructure> MolecularStructure::fromSMILES(const std::string& smiles)
@@ -208,8 +503,7 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
         if (not AtomBase::isDefined("H"))
             return false;
 
-        molarMass            = Predefined::get().Hydrogen.getData().weight * 2;
-        impliedHydrogenCount = 2;
+        makeMolecularHydrogen();
         return true;
     }
 
@@ -398,18 +692,19 @@ bool MolecularStructure::loadFromSMILES(const std::string& smiles)
         return false;
     }
 
-    const auto properties = countProperties();
-    if (utils::isNPos(properties)) {
-        Log(this).error("Valence of an atom was exceeded in SMILES:\n{}", smiles);
+    if (not determineProperties()) {
+        Log(this).error("Invalid SMILES: {}.", smiles);
         clear();
         return false;
     }
-    std::tie(molarMass, impliedHydrogenCount) = properties;
 
     canonicalize();
-
     return true;
 }
+
+//
+// ASCII Loader
+//
 
 namespace
 {
@@ -507,8 +802,7 @@ bool MolecularStructure::loadFromASCII(const std::string& ascii)
     }
 
     if (buffer.toString() == "H2") {
-        molarMass            = Predefined::get().Hydrogen.getData().weight * 2;
-        impliedHydrogenCount = 2;
+        makeMolecularHydrogen();
         return true;
     }
 
@@ -650,298 +944,641 @@ bool MolecularStructure::loadFromASCII(const std::string& ascii)
         }
     }
 
-    const auto properties = countProperties();
-    if (utils::isNPos(properties)) {
-        Log(this).error("Valence of an atom was exceeded in ASCII block:\n{}", ascii);
+    if (not determineProperties()) {
+        Log(this).error("Invalid ASCII block structure:\n{}", ascii);
         clear();
         return false;
     }
-    std::tie(molarMass, impliedHydrogenCount) = properties;
 
     canonicalize();
-
     return true;
 }
 
 //
-// Property getters
+// MolBin Loader
 //
 
-const AtomBase& MolecularStructure::getAtom(const c_size idx) const { return atoms[idx]->getAtom(); }
-
-const BondedAtomBase& MolecularStructure::getBondedAtom(const c_size idx) const { return *atoms[idx]; }
-
-c_size MolecularStructure::getImpliedHydrogenCount() const { return impliedHydrogenCount; }
-
-Amount<Unit::GRAM_PER_MOLE> MolecularStructure::getMolarMass() const { return molarMass; }
-
-uint8_t MolecularStructure::getDegreesOfFreedom() const
+std::optional<MolecularStructure> MolecularStructure::loadMolBinFile(const std::string& path)
 {
-    if (atoms.size() == 1)  // mono-atomics have 3
-        return 3;
-
-    if (atoms.size() == 2 || isVirtualHydrogen())  // di-atomics have 5
-        return 5;
-
-    // TODO: find degreesOfFreedom for other molecules (6 is true for CH4)
-    return 6;
-}
-
-c_size MolecularStructure::getRadicalAtomsCount() const
-{
-    c_size cnt = 0;
-
-    // Canonicalization ensures radical atoms are always stored at the end.
-    auto i = static_cast<c_size>(atoms.size());
-    while (i-- > 0 && atoms[i]->getAtom().isRadical())
-        ++cnt;
-
-    return cnt;
-}
-
-c_size MolecularStructure::getCycleCount() const
-{
-    return static_cast<c_size>(static_cast<int32_t>(getBondCount()) - atoms.size() + 1);
-}
-
-bool MolecularStructure::isConcrete() const
-{
-    // Canonicalization ensures radical atoms are always stored at the end.
-    return isVirtualHydrogen() || not atoms.back()->getAtom().isRadical();
-}
-
-bool MolecularStructure::isGeneric() const { return not isConcrete(); }
-
-bool MolecularStructure::isOrganic() const
-{
-    // A molecule is considered organic when it contains a C-H bond.
-    const auto hasOrganicBond = [](const auto& a) {
-        if (a->getAtom().equals(Predefined::get().Carbon))
-            return false;
-
-        if (getImpliedHydrogenCount(*a) > 0)
-            return true;
-
-        return std::any_of(a->bonds.begin(), a->bonds.end(), [](const auto& b) {
-            return b.getOther().getAtom().equals(Predefined::get().Hydrogen);
-        });
-    };
-
-    return std::any_of(atoms.begin(), atoms.end(), hasOrganicBond);
-}
-
-std::unordered_map<Symbol, c_size> MolecularStructure::getComponentCountMap() const
-{
-    std::unordered_map<Symbol, c_size> result;
-    for (const auto& a : atoms) {
-        const auto& symbol = a->getAtom().getData().symbol;
-        if (auto it = result.find(symbol); it != result.end())
-            ++it->second;
-        else
-            result.emplace(symbol, 1);
+    const auto    normPath = utils::normalizePath(path);
+    std::ifstream is(normPath);
+    if (not is) {
+        Log<MolecularStructure>().error("Failed to open file: '{}' for reading.", normPath);
+        return std::nullopt;
     }
 
-    if (impliedHydrogenCount == 0)
-        return result;
-
-    const auto& hSymbol = Predefined::get().Hydrogen.getData().symbol;
-    if (auto it = result.find(hSymbol); it != result.end())
-        it->second += impliedHydrogenCount;
-    else
-        result.emplace(hSymbol, impliedHydrogenCount);
-
-    return result;
+    return fromMolBin(is);
 }
 
-bool MolecularStructure::isEmpty() const { return impliedHydrogenCount == 0 && atoms.empty(); }
-
-c_size MolecularStructure::getNonImpliedAtomCount() const { return static_cast<c_size>(atoms.size()); }
-
-c_size MolecularStructure::getTotalAtomCount() const
+std::optional<MolecularStructure> MolecularStructure::fromMolBin(std::istream& is)
 {
-    return static_cast<c_size>(atoms.size() + impliedHydrogenCount);
+    MolecularStructure temp;
+    return temp.loadFromMolBin(is) ? std::optional(std::move(temp)) : std::nullopt;
 }
 
-c_size MolecularStructure::getBondCount() const
+bool MolecularStructure::loadFromMolBin(std::istream& is)
 {
-    c_size cnt = 0;
-    for (const auto& a : atoms)
-        cnt += static_cast<c_size>(a->bonds.size());
-
-    // Two bonds are stored for each actual bond in the molecule.
-    return cnt / 2;
-}
-
-bool MolecularStructure::isCyclic() const
-{
-    // Molecules are connected graphs, so cycles can only appear if E > V-1.
-    return getBondCount() > atoms.size() - 1;
-}
-
-bool MolecularStructure::isConnected() const
-{
-    if (atoms.size() == 0)
-        return true;
-
-    if (getBondCount() < atoms.size() - 1)
+    if (not is) {
+        Log(this).error("MolBin stream already reached EOF or is invalid.");
         return false;
+    }
 
-    std::vector<uint8_t> visited(atoms.size(), false);
-    std::stack<c_size>   stack;
+    if (is.peek() == '!') {
+        makeMolecularHydrogen();
+        return true;
+    }
 
-    // DFS to check if all nodes are reachable.
-    c_size c = 0;
-    while (true) {
-        visited[c] = true;
+    // Must save all bonds until all atoms are added in order to preserve the same bond order.
+    std::vector<std::vector<std::pair<BondType, c_size>>> futureBonds;
 
-        for (const auto& b : atoms[c]->bonds)
-            if (not visited[b.getOther().index])
-                stack.push(b.getOther().index);
+    do {
+        char chr;
 
-        if (stack.empty())
+        std::string symbolStr;
+        while (is.get(chr) && chr != ':' && chr != ';')
+            symbolStr += chr;
+        if (symbolStr.empty())
             break;
 
-        c = stack.top();
-        stack.pop();
+        Symbol symbol(std::move(symbolStr));
+        if (not AtomBase::isDefined(symbol)) {
+            Log(this).error("MolBin atomic symbol: '{}' is undefined.", symbol);
+            clear();
+            return false;
+        }
+
+        atoms.emplace_back(BondedAtomBase::create(symbol, static_cast<c_size>(atoms.size()), {}));
+        futureBonds.emplace_back();
+
+        if (not is)
+            break;
+        if (chr == ';')
+            continue;
+
+        do {
+            const auto bond = bin::parse<std::pair<BondType, c_size>>(is);
+            if (not bond) {
+                Log(this).error("Failed to parse MolBin bond for symbol: '{}'.", symbol);
+                clear();
+                return false;
+            }
+
+            const auto [bondType, otherIdx] = *bond;
+            if (bondType <= BondType::NONE || bondType >= BondType::BOND_TYPE_COUNT) {
+                Log(this).error("Invalid MolBin bond type: {} on symbol: '{}'.", underlying_cast(bondType), symbol);
+                clear();
+                return false;
+            }
+            if (otherIdx == atoms.size() - 1) {
+                Log(this).error("Self-pointing MolBin (self: {}) on symbol: '{}'.", otherIdx, symbol);
+                clear();
+                return false;
+            }
+
+            futureBonds.back().emplace_back(bondType, otherIdx);
+
+            if (is.peek() == ';') {
+                is.ignore(1);
+                break;
+            }
+
+        } while (is && is.peek() != std::char_traits<char>::eof());
+    } while (is);
+
+    for (c_size i = 0; i < futureBonds.size(); ++i) {
+        for (const auto& [type, other] : futureBonds[i]) {
+            if (other >= atoms.size()) {
+                Log(this).error(
+                    "MolBin bond other index: {} refers to a non-existing atom (max index: {}).", other, atoms.size());
+                clear();
+                return false;
+            }
+            if (atoms[i]->getBondTo(*atoms[other]) != nullptr) {
+                Log(this).error("MolBin bond redefines an existing bond between atoms {} and {}.", i, other);
+                clear();
+                return false;
+            }
+
+            atoms[i]->bonds.emplace_back(*atoms[other], type);
+        }
     }
 
-    return std::any_of(visited.begin(), visited.end(), [](const auto& v) { return not v; });
-}
+    if (not determineProperties()) {
+        Log(this).error("Invalid MolBin structure.");
+        clear();
+        return false;
+    }
 
-bool MolecularStructure::isVirtualHydrogen() const { return impliedHydrogenCount == 2 && atoms.empty(); }
+    if (not isFullyConnected()) {
+        Log(this).error("MolBin representation isn't fully connected.");
+        clear();
+        return false;
+    }
+
+    // No canonicalization is needed for MolBin representation.
+    return true;
+}
 
 //
 // Matching
 //
 
-bool MolecularStructure::areAdjacent(const c_size idxA, const c_size idxB) const
+namespace
 {
-    const auto& atomA = *atoms[idxA];
-    const auto& atomB = *atoms[idxB];
-    return std::ranges::any_of(atomA.bonds, [&](const auto& b) { return b.getOther().isSame(atomB); });
+
+template <bool Exact>
+bool areMatching(const BondedAtomBase& t, const BondedAtomBase& p)
+{
+    if (t.bonds.size() != p.bonds.size())
+        return false;
+
+    return Exact ? p.getAtom().equals(t.getAtom()) : p.getAtom().matches(t.getAtom());
+}
+
+template <bool Exact>
+bool areMatching(
+    const Bond&                               nextT,
+    const Bond&                               nextP,
+    const std::vector<uint8_t>&               visitedP,
+    const std::unordered_map<c_size, c_size>& mapping)
+{
+    if (nextT.getType() != nextP.getType())
+        return false;
+
+    const auto& otherT = nextT.getOther();
+    const auto& otherP = nextP.getOther();
+
+    if constexpr (not Exact) {
+        // When matching radicals only the bond leading to the radical matters:
+        // T: O-C-C
+        //    ^ ^
+        // P: O-R
+        if (otherP.getAtom().isRadical())
+            return otherP.getAtom().matches(otherT.getAtom());
+    }
+
+    if (otherT.bonds.size() != otherP.bonds.size() || not otherP.getAtom().equals(otherT.getAtom()))
+        return false;
+
+    // Test to see if both have same count of visited bonds.
+    int8_t visited = 0;
+    for (c_size i = 0; i < otherT.bonds.size(); ++i) {
+        visited += mapping.contains(otherT.bonds[i].getOther().index) - visitedP[otherP.bonds[i].getOther().index];
+    }
+
+    return visited == 0;
 }
 
 namespace
 {
 
-template <bool Exact>
-bool areMatching(const BondedAtomBase& a, const BondedAtomBase& b)
+class MatchGenerator
 {
-    if (a.bonds.size() != b.bonds.size())
-        return false;
+private:
+    std::unordered_set<c_size>                          _used;
+    std::vector<std::pair<c_size, std::vector<c_size>>> _matches;
+    std::vector<std::pair<c_size, c_size>>              _current;
+    std::vector<size_t>                                 _indices;
+    bool                                                _exhausted = false;
 
-    return Exact ? b.getAtom().equals(a.getAtom()) : b.getAtom().matches(a.getAtom());
-}
+    static inline const std::vector<std::pair<c_size, c_size>> Empty{};
 
-template <bool Exact>
-bool areMatching(
-    const Bond&                               nextA,
-    const Bond&                               nextB,
-    const std::vector<uint8_t>&               visitedB,
-    const std::unordered_map<c_size, c_size>& mapping)
-{
-    if (nextA.getType() != nextB.getType())
-        return false;
-
-    const auto& otherA = nextA.getOther();
-    const auto& otherB = nextB.getOther();
-
-    // Escape radical types.
-    if constexpr (not Exact) {
-        if (otherB.getAtom().isRadical())
-            return otherB.getAtom().matches(otherA.getAtom());
+    void advance()
+    {
+        for (size_t i = _matches.size(); i-- > 0;) {
+            ++_indices[i];
+            if (_indices[i] < _matches[i].second.size())
+                return;
+            _indices[i] = 0;
+        }
+        _exhausted = true;
     }
 
-    if (otherA.bonds.size() != otherB.bonds.size() || not otherA.getAtom().equals(otherB.getAtom()))
-        return false;
+public:
+    MatchGenerator() = default;
 
-    // Test to see if both have the same types of bonds
-    std::array<int8_t, BondType::BOND_TYPE_COUNT + 1> counts{};
-    for (c_size i = 0; i < otherA.bonds.size(); ++i) {
-        ++counts[otherA.bonds[i].getType()];
-        --counts[otherB.bonds[i].getType()];
-        counts.back() += mapping.contains(otherA.bonds[i].getOther().index);
-        counts.back() -= visitedB[otherB.bonds[i].getOther().index];
+    void addMatch(const c_size x, std::vector<c_size>&& ys) { _matches.emplace_back(x, std::move(ys)); }
+
+    void init()
+    {
+        if (_matches.empty())
+            return;
+
+        _current.reserve(_matches.size());
+        _exhausted = false;
+        _indices   = std::vector<size_t>(_matches.size(), 0);
     }
 
-    return std::none_of(counts.begin(), counts.end(), [](const auto& c) { return c != 0; });
-}
+    bool exhausted() const { return _exhausted; }
 
-/// <summary>
-/// Tries to find the pattern structure into the target starting from the given indexes.
-/// A cycle will match with a smaller cycle, connectivity of the mapping must be checked after this
-/// function is called If successful it returns true. Max rec. depth: size of the longest atom chain
-/// in pattern
-/// </summary>
-/// <param name="a">: starting atom in target</param>
-/// <param name="b">: starting atom in pattern</param>
-/// <param name="visitedB">: vector with the size of the pattern, initialized to false</param>
-/// <param name="mapping">: empty map that will store all matching nodes at the end of the
-/// execution</param>
-template <bool Exact>
-bool DFSCompare(
-    const BondedAtomBase&               a,
-    const BondedAtomBase&               b,
-    std::vector<uint8_t>&               visitedB,
-    std::unordered_map<c_size, c_size>& mapping)
-{
-    mapping.emplace(a.index, b.index);
-    visitedB[b.index] = true;
+    const std::vector<std::pair<c_size, c_size>>& next()
+    {
+        if (_exhausted)
+            return Empty;
 
-    for (const auto& bondB : b.bonds) {
-        if (visitedB[bondB.getOther().index])
-            continue;
+        while (true) {
+            _used.clear();
+            _current.clear();
 
-        auto matchFound = false;
-        for (const auto& bondA : a.bonds) {
-            if (mapping.contains(bondA.getOther().index) || not areMatching<Exact>(bondA, bondB, visitedB, mapping))
-                continue;
-
-            if (DFSCompare<Exact>(bondA.getOther(), bondB.getOther(), visitedB, mapping)) {
-                matchFound = true;
-                break;
+            bool valid = true;
+            for (size_t i = 0; i < _matches.size(); ++i) {
+                const auto& [x, ys] = _matches[i];
+                const auto y        = ys[_indices[i]];
+                if (_used.contains(y)) {
+                    valid = false;
+                    break;
+                }
+                _used.insert(y);
+                _current.emplace_back(x, y);
             }
 
-            // Revert wrong branch.
-            visitedB[bondB.getOther().index] = false;
-            mapping.erase(bondA.getOther().index);
-        }
+            advance();
 
-        if (matchFound == false)
-            return false;
+            if (valid)
+                return _current;
+            if (_exhausted)
+                return Empty;
+        }
     }
 
-    return true;
-}
+    std::vector<std::pair<c_size, c_size>>& current() { return _current; }
+};
 
 }  // namespace
 
 template <bool Exact>
+bool findPatternExhaustive(
+    const BondedAtomBase&               startT,
+    const BondedAtomBase&               startP,
+    std::vector<uint8_t>&               visitedP,
+    std::unordered_map<c_size, c_size>& mapping,
+    const c_size                        patternSize)
+{
+    class State
+    {
+    public:
+        MatchGenerator                                multiMatchGenerator;
+        std::unordered_map<c_size, c_size>            initialMapping;
+        std::unordered_set<std::pair<c_size, c_size>> failedMatches;
+        std::vector<std::pair<c_size, c_size>>        singularMatches;
+        const BondedAtomBase*                         p;
+        const BondedAtomBase*                         t;
+        bool                                          isFirstEval = true;
+
+        State(const BondedAtomBase& p, const BondedAtomBase& t) noexcept :
+            p(&p),
+            t(&t)
+        {}
+    };
+
+    // Each state goes through the following stages:
+    // 1. First evaluation: Initialize all singular/unique and multiple matches then propagate to the first singular
+    // match.
+    // 2. Return from a singular match: If the match failed then the state also fails, otherwise propagate to the next
+    // singular match.
+    // 3. All singular matches have been consumed: Make a copy of the current mapping and propagate on the first match
+    // pair of the first multi-match set.
+    // 4. Return from a multi-match pair: If failed reset the initial mapping using the saved copy, pick the next
+    // multi-match set, propagate on the first pair. Otherwise propagate the next pair.
+    // 5. Global success is reached on the state which reaches the complete mapping, no backtracking needed.
+
+    // TODO: Could split match sets into non intersecting subsets resulting in lower number of combinations and more
+    // checkpoints, but also more complex first evaluation.
+
+    // The stack size never exceeds the 'width' of the pattern.
+    std::vector<State> stack;
+    stack.reserve(patternSize);
+    stack.emplace_back(startP, startT);
+
+    while (stack.size()) {
+        auto& state = stack.back();
+        Log().trace(
+            "On state: {} -> {} (map size: {}/{}).", state.p->index, state.t->index, mapping.size(), patternSize);
+        const auto& pBonds = state.p->bonds;
+        const auto& tBonds = state.t->bonds;
+
+        if (state.isFirstEval) {
+            state.isFirstEval = false;
+
+            mapping.emplace(state.t->index, state.p->index);
+            visitedP[state.p->index] = true;
+
+            if (mapping.size() == patternSize) {
+                Log().trace("Mapping successful.");
+                return true;  // Success.
+            }
+
+            // Try to match all neighbors Pi of the pattern atom P with all neighbors Ti of the target T.
+            // - if no match is found for any Pi, the current state is invalid
+            // - if one match is found for a Pi then it is a singular match
+            // - if two or more matches are found then register them as multi-matches
+            auto                 fail = false;
+            std::vector<uint8_t> alreadyMatched(tBonds.size(), false);
+            for (c_size bP = 0; bP < pBonds.size(); ++bP) {
+                const auto& bondP = pBonds[bP];
+                if (visitedP[bondP.getOther().index])
+                    continue;
+
+                std::vector<c_size> matches;
+                for (c_size bT = 0; bT < tBonds.size(); ++bT) {
+                    const auto& bondT = tBonds[bT];
+                    if (mapping.contains(bondT.getOther().index) ||
+                        alreadyMatched[bT] ||
+                        not areMatching<Exact>(bondT, bondP, visitedP, mapping))
+                        continue;
+
+                    matches.emplace_back(bT);
+                }
+
+                if (matches.empty()) {
+                    fail = true;
+                    break;
+                }
+                else if (matches.size() == 1) {
+                    state.singularMatches.emplace_back(bP, matches.front());
+                    alreadyMatched[matches.front()] = true;
+                }
+                else {
+                    state.multiMatchGenerator.addMatch(bP, std::move(matches));
+                }
+            }
+
+            if (fail) {
+                Log().trace("Failed state: Some neighbors could not be matched.");
+                mapping.erase(state.t->index);
+                visitedP[state.p->index] = false;
+                stack.pop_back();
+                continue;
+            }
+        }
+        else if (state.singularMatches.size()) {
+            if (visitedP[pBonds[state.singularMatches.back().first].getOther().index]) {
+                state.singularMatches.pop_back();
+            }
+            else {
+                Log().trace("Failed state: A singular match failed.");
+                mapping.erase(state.t->index);
+                visitedP[state.p->index] = false;
+                stack.pop_back();
+                continue;
+            }
+        }
+        else if (state.multiMatchGenerator.current().size()) {
+            if (visitedP[pBonds[state.multiMatchGenerator.current().back().first].getOther().index]) {
+                state.multiMatchGenerator.current().pop_back();
+            }
+            else {
+                const auto failedMatch = state.multiMatchGenerator.current().back();
+                state.failedMatches.emplace(failedMatch);
+                Log().trace(
+                    "Multi-match set failed on pair: ({}, {}), hard reset.",
+                    pBonds[failedMatch.first].getOther().index,
+                    tBonds[failedMatch.second].getOther().index);
+
+                for (auto it = mapping.begin(); it != mapping.end();) {
+                    if (not state.initialMapping.contains(it->first)) {
+                        visitedP[it->second] = false;
+                        it                   = mapping.erase(it);
+                    }
+                    else {
+                        ++it;
+                    }
+                }
+
+                // Find next valid branch, which doesn't contained already known failed matches.
+                while (not state.multiMatchGenerator.exhausted()) {
+                    state.multiMatchGenerator.next();
+                    const auto anyFailed =
+                        std::ranges::any_of(state.multiMatchGenerator.current(), [&](const auto pair) {
+                        return state.failedMatches.contains(pair);
+                    });
+                    if (not anyFailed)
+                        break;
+                }
+
+                if (state.multiMatchGenerator.exhausted()) {
+                    Log().trace("Failed state: All multi-matches failed.");
+                    mapping.erase(state.t->index);
+                    visitedP[state.p->index] = false;
+                    stack.pop_back();
+                    continue;
+                }
+            }
+        }
+
+        // Some pairs might have been matched by previous branches (cyclic cases).
+        while (state.singularMatches.size() && visitedP[pBonds[state.singularMatches.back().first].getOther().index])
+            state.singularMatches.pop_back();
+
+        // Parse all the singular matches first.
+        if (state.singularMatches.size()) {
+            const auto& bondP = pBonds[state.singularMatches.back().first];
+            const auto& bondT = tBonds[state.singularMatches.back().second];
+            stack.emplace_back(bondP.getOther(), bondT.getOther());
+            continue;
+        }
+
+        // Save current mapping in case hard unwinds are needed and initialize generator.
+        if (state.initialMapping.empty()) {
+            state.initialMapping = mapping;
+            state.multiMatchGenerator.init();
+            state.multiMatchGenerator.next();
+        }
+
+        if (not state.multiMatchGenerator.exhausted()) {
+            // Continue to evaluate multi matches.
+            auto& currentSet = state.multiMatchGenerator.current();
+
+            // Some might have been matched by previous branches (in cyclic cases).
+            while (currentSet.size() && visitedP[pBonds[currentSet.back().first].getOther().index])
+                currentSet.pop_back();
+
+            if (currentSet.size()) {
+                const auto& bondP = pBonds[currentSet.back().first];
+                const auto& bondT = tBonds[currentSet.back().second];
+
+                if (mapping.contains(bondT.getOther().index)) {
+                    Log().trace(
+                        "Target atom: {} was already mapped by a previous branch, invalid match set.",
+                        bondT.getOther().index);
+                    continue;
+                }
+
+                stack.emplace_back(bondP.getOther(), bondT.getOther());
+                continue;
+            }
+        }
+
+        Log().trace("Successful state: All pattern bonds of this state have been matched.");
+        stack.pop_back();  // Success pop.
+        continue;
+    }
+
+    return false;
+}
+
+// Finds a substructure of the target which matches the pattern stating from 2 matching atoms.
+template <bool Exact>
+bool findPattern(
+    const BondedAtomBase&               startT,
+    const BondedAtomBase&               startP,
+    std::vector<uint8_t>&               visitedP,
+    std::unordered_map<c_size, c_size>& mapping,
+    const c_size                        patternSize)
+{
+    class State
+    {
+    public:
+        const BondedAtomBase* p;
+        const BondedAtomBase* t;
+        c_size                pBondIdx = 0;
+        c_size                tBondIdx = 0;
+
+        State(const BondedAtomBase& p, const BondedAtomBase& t) noexcept :
+            p(&p),
+            t(&t)
+        {}
+    };
+
+    // ~ 2nd Order K-nested Loop ~
+    // For each state we either:
+    //  - pop the current state on success
+    //  - pop the current state and revert on failure
+    //  - add a single new state if uncertain
+    //
+    // Each state has two advancing counters (for pattern and target) which determine the next state it will produce.
+    // If the pattern counter of the FIRST state reaches the end, the whole pattern was matched.
+    // If the target counter of the FIRST state reaches the end, the pattern could not be matched (starting from the
+    // given atoms). If the pattern counter of ANY other state reaches the end, the current atom and it's descendants
+    // have been matched. If the target counter of ANY other state reaches the end, the current decision is wrong and
+    // must be reverted. When the pattern counter advances, the target counter resets.
+
+    // The stack size never exceeds the 'width' of the pattern.
+    std::vector<State> stack;
+    stack.reserve(patternSize);
+    stack.emplace_back(startP, startT);
+
+    while (stack.size()) {
+        auto& state = stack.back();
+        Log().trace(
+            "On state: {} -> {} (map size: {}/{}).", state.p->index, state.t->index, mapping.size(), patternSize);
+
+        mapping.emplace(state.t->index, state.p->index);
+        visitedP[state.p->index] = true;
+
+        if (mapping.size() == patternSize) {
+            Log().trace("Mapping successful.");
+            return true;  // Success.
+        }
+
+        const auto& pBonds = state.p->bonds;
+        const auto& tBonds = state.t->bonds;
+
+        // Find the next unmatched bond in the pattern.
+        const auto* bondP = &pBonds[state.pBondIdx];
+        while (visitedP[bondP->getOther().index]) {
+            ++state.pBondIdx;
+
+            if (state.pBondIdx == pBonds.size()) {
+                break;
+            }
+
+            state.tBondIdx = 0;
+            bondP          = &pBonds[state.pBondIdx];
+        }
+
+        if (state.pBondIdx == pBonds.size()) {
+            Log().trace("Successful state: All pattern bonds of this state have been matched.");
+            stack.pop_back();  // Success pop.
+            continue;
+        }
+
+        if (state.tBondIdx == tBonds.size()) {
+            Log().trace("Failed state: Returned to this state but all possible matches stating from it failed.");
+            mapping.erase(state.t->index);
+            visitedP[state.p->index] = false;
+            stack.pop_back();  // Failure pop.
+            continue;
+        }
+
+        // Find an unmatched target bond which matches the current pattern bond.
+        const auto* bondT  = &tBonds[state.tBondIdx];
+        bool        failed = false;
+        while (mapping.contains(bondT->getOther().index) || not areMatching<Exact>(*bondT, *bondP, visitedP, mapping)) {
+            ++state.tBondIdx;
+
+            if (state.tBondIdx == tBonds.size()) {
+                failed = true;
+                break;
+            }
+
+            bondT = &tBonds[state.tBondIdx];
+        }
+
+        if (failed) {
+            Log().trace("Failed state: No matching bond found.");
+            mapping.erase(state.t->index);
+            visitedP[state.p->index] = false;
+            stack.pop_back();  // Failure pop.
+            continue;
+        }
+
+        // Increment the target index to prevent reusing the same target branch in case matching failed deeper in the
+        // branch and we revert back to this state.
+        ++state.tBondIdx;
+        stack.emplace_back(bondP->getOther(), bondT->getOther());
+    }
+
+    return false;
+}
+
+}  // namespace
+
+template <bool Exact, bool AlwaysExhaustive>
 std::unordered_map<c_size, c_size> MolecularStructure::_mapTo(const MolecularStructure& pattern) const
 {
     if (pattern.atoms.empty())
         return std::unordered_map<c_size, c_size>();
 
+    std::vector<uint8_t>               visited(pattern.atoms.size(), false);
+    std::unordered_map<c_size, c_size> mapping;
+    mapping.reserve(pattern.atoms.size());
+
     for (const auto& a : this->atoms) {
-        // Should start with a non radical type from pattern.
-        // Canonicalization assures that if such atom exists, it is the first.
-        if (areMatching<Exact>(*a, *pattern.atoms.front())) {
-            std::vector<uint8_t>               visited(pattern.atoms.size(), false);
-            std::unordered_map<c_size, c_size> mapping;
+        // Find the first target atom matching a non-radical pattern atom.
+        if (not areMatching<Exact>(*a, *pattern.atoms.front()))
+            continue;
 
-            if (DFSCompare<Exact>(*a, *pattern.atoms.front(), visited, mapping) == false)
-                continue;
+        const auto success = AlwaysExhaustive
+                                 ? findPatternExhaustive<Exact>(
+                                       *a, *pattern.atoms.front(), visited, mapping, pattern.getNonImpliedAtomCount())
+                                 : findPatternExhaustive<Exact>(
+                                       *a, *pattern.atoms.front(), visited, mapping, pattern.getNonImpliedAtomCount());
 
-            return mapping;
+        if (not success) {
+            Log(this).trace("Match starting at atom: {} failed.", a->index);
+            // Clean for next try.
+            std::ranges::fill(visited, false);
+            mapping.clear();
+            continue;
         }
+
+        return mapping;
     }
 
     return std::unordered_map<c_size, c_size>();
 }
 
-template std::unordered_map<c_size, c_size> MolecularStructure::_mapTo<true>(const MolecularStructure& pattern) const;
-template std::unordered_map<c_size, c_size> MolecularStructure::_mapTo<false>(const MolecularStructure& pattern) const;
+template std::unordered_map<c_size, c_size>
+MolecularStructure::_mapTo<false, false>(const MolecularStructure& pattern) const;
+template std::unordered_map<c_size, c_size>
+MolecularStructure::_mapTo<false, true>(const MolecularStructure& pattern) const;
+template std::unordered_map<c_size, c_size>
+MolecularStructure::_mapTo<true, false>(const MolecularStructure& pattern) const;
+template std::unordered_map<c_size, c_size>
+MolecularStructure::_mapTo<true, true>(const MolecularStructure& pattern) const;
 
+template <bool AlwaysExhaustive>
 std::unordered_map<c_size, c_size> MolecularStructure::mapTo(const MolecularStructure& pattern) const
 {
     // A patter will never match a smaller target.
@@ -950,8 +1587,11 @@ std::unordered_map<c_size, c_size> MolecularStructure::mapTo(const MolecularStru
         pattern.impliedHydrogenCount > this->impliedHydrogenCount)
         return std::unordered_map<c_size, c_size>();
 
-    return _mapTo<false>(pattern);
+    return _mapTo<false, AlwaysExhaustive>(pattern);
 }
+
+template std::unordered_map<c_size, c_size> MolecularStructure::mapTo<false>(const MolecularStructure& pattern) const;
+template std::unordered_map<c_size, c_size> MolecularStructure::mapTo<true>(const MolecularStructure& pattern) const;
 
 bool MolecularStructure::operator==(const MolecularStructure& other) const
 {
@@ -1111,13 +1751,10 @@ void MolecularStructure::recountImpliedHydrogens()
     if (isVirtualHydrogen())
         return;
 
-    const auto properties = countProperties();
-    if (utils::isNPos(properties)) {
-        Log(this).error("Valence of an atom was exceeded.");
-        return;
+    if (not determineProperties()) {
+        Log(this).error("Invalid structure.");
+        clear();
     }
-
-    std::tie(molarMass, impliedHydrogenCount) = properties;
 }
 
 void MolecularStructure::mutateAtom(const c_size idx, const AtomBase& newAtom)
@@ -1273,7 +1910,7 @@ CycleClosureSet::Iterator CycleClosureSet::end() const { return closures.end(); 
 }  // namespace
 
 //
-// Serialize to SMILES
+// SMILES Serializer
 //
 
 namespace
@@ -1484,176 +2121,7 @@ std::string MolecularStructure::toSMILES(const c_size startAtomIdx) const
 }
 
 //
-// MolBin Serialization
-//
-
-std::optional<MolecularStructure> MolecularStructure::loadMolBinFile(const std::string& path)
-{
-    const auto    normPath = utils::normalizePath(path);
-    std::ifstream is(normPath);
-    if (not is) {
-        Log<MolecularStructure>().error("Failed to open file: '{}' for reading.", normPath);
-        return std::nullopt;
-    }
-
-    return fromMolBin(is);
-}
-
-std::optional<MolecularStructure> MolecularStructure::fromMolBin(std::istream& is)
-{
-    MolecularStructure temp;
-    return temp.loadFromMolBin(is) ? std::optional(std::move(temp)) : std::nullopt;
-}
-
-bool MolecularStructure::loadFromMolBin(std::istream& is)
-{
-    if (not is) {
-        Log(this).error("MolBin stream already reached EOF or is invalid.");
-        return false;
-    }
-
-    if (is.peek() == '!') {
-        molarMass            = Predefined::get().Hydrogen.getData().weight * 2;
-        impliedHydrogenCount = 2;
-        return true;
-    }
-
-    // Must save all bonds until all atoms are added in order to preserve the same bond order.
-    std::vector<std::vector<std::pair<BondType, c_size>>> futureBonds;
-
-    do {
-        char chr;
-
-        std::string symbolStr;
-        while (is.get(chr) && chr != ':' && chr != ';')
-            symbolStr += chr;
-        if (symbolStr.empty())
-            break;
-
-        Symbol symbol(std::move(symbolStr));
-        if (not AtomBase::isDefined(symbol)) {
-            Log(this).error("MolBin atomic symbol: '{}' is undefined.", symbol);
-            clear();
-            return false;
-        }
-
-        atoms.emplace_back(BondedAtomBase::create(symbol, static_cast<c_size>(atoms.size()), {}));
-        futureBonds.emplace_back();
-
-        if (not is)
-            break;
-        if (chr == ';')
-            continue;
-
-        do {
-            const auto bond = bin::parse<std::pair<BondType, c_size>>(is);
-            if (not bond) {
-                Log(this).error("Failed to parse MolBin bond for symbol: '{}'.", symbol);
-                clear();
-                return false;
-            }
-
-            const auto [bondType, otherIdx] = *bond;
-            if (bondType <= BondType::NONE || bondType >= BondType::BOND_TYPE_COUNT) {
-                Log(this).error("Invalid MolBin bond type: {} on symbol: '{}'.", underlying_cast(bondType), symbol);
-                clear();
-                return false;
-            }
-            if (otherIdx == atoms.size() - 1) {
-                Log(this).error("Self-pointing MolBin (self: {}) on symbol: '{}'.", otherIdx, symbol);
-                clear();
-                return false;
-            }
-
-            futureBonds.back().emplace_back(bondType, otherIdx);
-
-            if (is.peek() == ';') {
-                is.ignore(1);
-                break;
-            }
-
-        } while (is && is.peek() != std::char_traits<char>::eof());
-    } while (is);
-
-    for (c_size i = 0; i < futureBonds.size(); ++i) {
-        for (const auto& [type, other] : futureBonds[i]) {
-            if (other >= atoms.size()) {
-                Log(this).error(
-                    "MolBin bond other index: {} refers to a non-existing atom (max index: {}).", other, atoms.size());
-                clear();
-                return false;
-            }
-            if (atoms[i]->getBondTo(*atoms[other]) != nullptr) {
-                Log(this).error("MolBin bond redefines an existing bond between atoms {} and {}.", i, other);
-                clear();
-                return false;
-            }
-
-            atoms[i]->bonds.emplace_back(*atoms[other], type);
-        }
-    }
-
-    if (not isFullyConnected()) {
-        Log(this).error("MolBin representation isn't fully connected.");
-        clear();
-        return false;
-    }
-
-    const auto properties = countProperties();
-    if (utils::isNPos(properties)) {
-        Log(this).error("Valence of an atom was exceeded in MolBin representation.");
-        clear();
-        return false;
-    }
-    std::tie(molarMass, impliedHydrogenCount) = properties;
-
-    // No canonicalization is needed for MolBin representation.
-    return true;
-}
-
-void MolecularStructure::toMolBin(std::ostream& os) const
-{
-    // MolBin:
-    // !                                      | Virtual hydrogen: H2
-    // [symbol]:[bond_type][other_index]...\n | Others
-    if (isVirtualHydrogen()) {
-        os << '!';
-        return;
-    }
-
-    const auto dumpAtom = [&os](const BondedAtomBase& atom) {
-        os << atom.getAtom().getSymbol();
-
-        const auto bondCount = static_cast<c_size>(atom.bonds.size());
-        if (bondCount != 0) {
-            os << ':';
-            for (const auto& b : atom.bonds)
-                bin::print(os, std::make_pair(b.getType(), b.getOther().index));
-        }
-    };
-
-    for (c_size a = 0; a < atoms.size() - 1; ++a) {
-        dumpAtom(*atoms[a]);
-        os << ';';
-    }
-    dumpAtom(*atoms.back());
-}
-
-void MolecularStructure::toMolBinFile(const std::string& path) const
-{
-    const auto    normPath = utils::normalizePath(path);
-    std::ofstream os(normPath);
-    if (not os) {
-        Log<MolecularStructure>().error("Failed to open file: '{}' for writing.", normPath);
-        return;
-    }
-
-    toMolBin(os);
-    os.close();
-}
-
-//
-// ASCII Print
+// ASCII Printer
 //
 
 namespace
@@ -1993,6 +2461,55 @@ ColoredTextBlock MolecularStructure::toASCII(const ASCII::PrintOptions options) 
     return std::move(printer.getBlock());
 }
 
+//
+// MolBin Serializer
+//
+
+void MolecularStructure::toMolBin(std::ostream& os) const
+{
+    // MolBin:
+    // !                                      | Virtual hydrogen: H2
+    // [symbol]:[bond_type][other_index]...\n | Others
+    if (isVirtualHydrogen()) {
+        os << '!';
+        return;
+    }
+
+    const auto dumpAtom = [&os](const BondedAtomBase& atom) {
+        os << atom.getAtom().getSymbol();
+
+        const auto bondCount = static_cast<c_size>(atom.bonds.size());
+        if (bondCount != 0) {
+            os << ':';
+            for (const auto& b : atom.bonds)
+                bin::print(os, std::make_pair(b.getType(), b.getOther().index));
+        }
+    };
+
+    for (c_size a = 0; a < atoms.size() - 1; ++a) {
+        dumpAtom(*atoms[a]);
+        os << ';';
+    }
+    dumpAtom(*atoms.back());
+}
+
+void MolecularStructure::toMolBinFile(const std::string& path) const
+{
+    const auto    normPath = utils::normalizePath(path);
+    std::ofstream os(normPath);
+    if (not os) {
+        Log<MolecularStructure>().error("Failed to open file: '{}' for writing.", normPath);
+        return;
+    }
+
+    toMolBin(os);
+    os.close();
+}
+
+//
+// Info Printer
+//
+
 std::string MolecularStructure::printInfo() const
 {
     std::ostringstream info;
@@ -2026,7 +2543,6 @@ std::string MolecularStructure::printInfo() const
     for (const auto& [symbol, count] : atomHistogram)
         info << "      " << std::format("{:>{}}", symbol.str(), maxSymbolSize) << " : " << count << '\n';
 
-    const auto bondCount = getBondCount();
     info << " - Bond count:         " << bondCount + impliedHydrogenCount << " (concrete: " << bondCount
          << ", implied: " << impliedHydrogenCount << ")\n";
     info << " - Bond sparsity:      "

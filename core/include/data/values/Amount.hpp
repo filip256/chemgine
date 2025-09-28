@@ -3,7 +3,7 @@
 #include "Unit.hpp"
 #include "data/def/Printers.hpp"
 #include "data/values/Value.hpp"
-#include "global/Precision.hpp"
+#include "global/Typedef.hpp"
 #include "utils/Numeric.hpp"
 
 #include <cmath>

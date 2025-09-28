@@ -14,10 +14,23 @@
 
 class MolecularStructure
 {
+    enum class Traits : uint8_t
+    {
+        NONE = 0,
+
+        IS_HYDROGEN = 1 << 0,
+        IS_GENERIC  = 1 << 1,
+        IS_ORGANIC  = 1 << 2,
+
+        REQUIRES_EXHAUSTIVE_MAPPING = 1 << 3
+    };
+
 private:
     std::vector<std::unique_ptr<BondedAtomBase>> atoms;
     Amount<Unit::GRAM_PER_MOLE>                  molarMass            = 0.0f;
     uint16_t                                     impliedHydrogenCount = 0;
+    c_size                                       bondCount            = 0;
+    FlagField<Traits>                            traits               = Traits::NONE;
 
     static void addBond(BondedAtomBase& from, BondedAtomBase& to, const BondType bondType);
     static bool addBondChecked(BondedAtomBase& from, BondedAtomBase& to, const BondType bondType);
@@ -26,17 +39,19 @@ private:
     void            removeAtom(const c_size idx);
     void            mutateAtom(const c_size idx, const AtomBase& newAtom);
 
-    /// <summary>
-    /// Returns the number of required hydrogens in order to complete the molecule.
-    /// If the valences of the atoms aren't respected it returns -1.
-    /// Complexity: O(n_comps * n_bonds)
-    /// </summary>
-    std::pair<Amount<Unit::GRAM_PER_MOLE>, int16_t> countProperties() const;
+    bool determineProperties();
 
     bool isFullyConnected() const;
 
     MolecularStructure() = default;
     MolecularStructure(const MolecularStructure& other) noexcept;
+
+    MolecularStructure(
+        std::vector<std::unique_ptr<BondedAtomBase>>&& atoms,
+        const Amount<Unit::GRAM_PER_MOLE>              molarMass,
+        const uint16_t                                 impliedHydrogenCount,
+        const c_size                                   bondCount,
+        const FlagField<Traits>                        traits) noexcept;
 
 public:
     static constexpr c_size npos = static_cast<c_size>(-1);
@@ -57,16 +72,13 @@ public:
     void             toMolBinFile(const std::string& path) const;
 
 private:
+    void makeMolecularHydrogen();
+
     bool loadFromSMILES(const std::string& smiles);
     bool loadFromASCII(const std::string& ascii);
     bool loadFromMolBin(std::istream& is);
 
 public:
-    /// <summary>
-    /// Sorts atoms and bonds in decreasing order of atom precedence.
-    /// Normalization simplifies algorithms and speeds up comparison.
-    /// Complexity: O(n_comps * n_bonds * n_bonds)
-    /// </summary>
     void canonicalize();
 
     const AtomBase&       getAtom(const c_size idx) const;
@@ -79,92 +91,30 @@ public:
     /// If the valences of the atom aren't respected it returns -1.
     /// </summary>
     static int8_t getImpliedHydrogenCount(const BondedAtomBase& atom);
+    c_size        getImpliedHydrogenCount() const;
+    c_size        getNonImpliedAtomCount() const;
+    c_size        getRadicalAtomsCount() const;
+    c_size        getTotalAtomCount() const;
+    c_size        getBondCount() const;
+    c_size        getCycleCount() const;
 
-    /// <summary>
-    /// Complexity: O(1)
-    /// </summary>
-    c_size getImpliedHydrogenCount() const;
-
-    /// <summary>
-    /// Complexity: O(n)
-    /// </summary>
-    c_size getRadicalAtomsCount() const;
-
-    /// <summary>
-    /// Complexity: equal to getBondCount()
-    /// </summary>
-    c_size getCycleCount() const;
-
-    /// <summary>
-    /// Complexity: O(n)
-    /// </summary>
     Amount<Unit::GRAM_PER_MOLE> getMolarMass() const;
 
-    /// <summary>
-    /// Complexity: O(1) (for now)
-    /// </summary>
     uint8_t getDegreesOfFreedom() const;
 
-    /// <summary>
-    /// Checks if the molecule contains no radical atoms.
-    /// Complexity: O(1)
-    /// </summary>
-    bool isConcrete() const;
-
-    /// <summary>
-    /// Checks if the molecule contains at least one radical atom.
-    /// Complexity: O(1)
-    /// </summary>
+    bool isEmpty() const;
+    bool isConnected() const;
     bool isGeneric() const;
-
-    /// <summary>
-    /// Checks if the molecule contains a C-H bond.
-    /// Complexity: O(n)
-    /// </summary>
+    bool isConcrete() const;
     bool isOrganic() const;
+    bool isCyclic() const;
+    bool isVirtualHydrogen() const;
 
     /// <summary>
     /// Returns a map representing a histogram of all the atoms in this structure.
     /// Complexity: O(n)
     /// </summary>
     std::unordered_map<Symbol, c_size> getComponentCountMap() const;
-
-    /// <summary>
-    /// Returns true if the molecule contains no real or virtual atoms.
-    /// Complexity: O(1)
-    /// </summary>
-    bool isEmpty() const;
-
-    /// <summary>
-    /// Returns the number of non-implied (i.e. hydrogen) atoms.
-    /// Complexity: O(1)
-    /// </summary>
-    c_size getNonImpliedAtomCount() const;
-
-    /// <summary>
-    /// Returns the total number of atoms in the molecule.
-    /// Complexity: O(1)
-    /// </summary>
-    c_size getTotalAtomCount() const;
-
-    /// <summary>
-    /// Returns the number of non-implied bonds.
-    /// Complexity: O(n)
-    /// </summary>
-    c_size getBondCount() const;
-
-    /// <summary>
-    /// Checks if the molecule contains at least one cycle.
-    /// Complexity: equal to getBondCount()
-    /// </summary>
-    bool isCyclic() const;
-
-    bool isConnected() const;
-
-    /// <summary>
-    /// Returns true if this is a pure virtual H2 molecule.
-    /// </summary>
-    bool isVirtualHydrogen() const;
 
     /// <summary>
     /// Checks if the two atoms are adjacent.
@@ -177,7 +127,7 @@ public:
     MolecularStructure createCopy() const;
 
 private:
-    template <bool Exact>
+    template <bool Exact, bool AlwaysExhaustive = false>
     std::unordered_map<c_size, c_size> _mapTo(const MolecularStructure& pattern) const;
 
 public:
@@ -186,6 +136,7 @@ public:
     /// Radicals are escaped but the whole pattern structure must be matched.
     /// Complexity: rather large
     /// </summary>
+    template <bool AlwaysExhaustive = false>
     std::unordered_map<c_size, c_size> mapTo(const MolecularStructure& pattern) const;
 
     /// <summary>

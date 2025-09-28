@@ -758,3 +758,32 @@ Categorizations:
       The first is a good starting point but overall the second is what we need.
 
     -----------------------------------------------------------------------------------------------------------------
+
+    Matching O(CCC)CC to O(CR)CCC fails:
+        The radical path (CR) is matched before the other one (CCC) which then fails to match.
+        In the same way we cannot start a match from a radical, paths leading to radicals must be matched only
+        after non-radical paths (or 'tighter' radicals) are matched. Sorting the atoms is not enough, the bonds of
+        each atom must be sorted based on what they lead up to:
+
+        1. Do an initial DF from a random atom and set P for directed bond going towards:
+            - a terminal atom: P = the precedence of the atom
+            - otherwise: P = min(Pi, ...), where Pi is the P of each neighbor (except the prev one)
+            This already sets P's for all bonds in 1 direction.
+        2. For the other direction, perform DF's starting from all the leaves (discovered in the first DF) until all bonds
+            have a score on both directions.
+        3. Sort the bonds of each atom based on this score.
+
+        'Tight' radicals:
+        A radical R1 := {C, Cl} also includes/matches another radical R2 := {C} (so in fact R1 := {C, Cl, R2}).
+        R2 is a 'tighter' radical when compared to R1. It has to be matched first, otherwise we risk losing a possible
+        match.
+
+        Canonicalization:
+        This is done in 2 places:
+          - loading
+          - reaction substitution
+
+        With the new topological ordering, canonicalization gets too slow to run at simulation time.
+        During simulation we only get concrete molecules so the whole canonicalization may be skipped
+        (atom ordering could still be good thou for equality matching). This means we only have to do the full
+        topological sort during loading and for retrosynthesis!

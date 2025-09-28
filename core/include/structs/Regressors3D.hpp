@@ -1,7 +1,7 @@
 #pragma once
 
 #include "estimators/EstimationMode.hpp"
-#include "global/Precision.hpp"
+#include "global/Typedef.hpp"
 
 #include <optional>
 #include <tuple>

@@ -25,6 +25,9 @@ bool equal(const T1 x, const T2 y);
 // is_specialization_of
 //
 
+namespace details
+{
+
 template <typename, template <typename> class>
 struct is_specialization_of : std::false_type
 {};
@@ -33,12 +36,17 @@ template <typename U, template <typename> class Template>
 struct is_specialization_of<Template<U>, Template> : std::true_type
 {};
 
+}  // namespace details
+
 template <typename T, template <typename> class Template>
-constexpr bool is_specialization_of_v = is_specialization_of<T, Template>::value;
+constexpr bool is_specialization_of_v = details::is_specialization_of<T, Template>::value;
 
 //
 // is_derived_from
 //
+
+namespace details
+{
 
 template <typename T, template <typename...> class Template>
 struct is_derived_from
@@ -56,8 +64,34 @@ public:
     static constexpr bool value = decltype(test(std::declval<T*>()))::value;
 };
 
+}  // namespace details
+
 template <typename T, template <typename...> class Template>
-inline constexpr bool is_derived_from_v = is_derived_from<T, Template>::value;
+inline constexpr bool is_derived_from_v = details::is_derived_from<T, Template>::value;
+
+//
+// underlying_or_self
+//
+
+namespace details
+{
+
+template <typename T, bool = std::is_enum_v<T>>
+struct underlying_or_self
+{
+    using type = T;
+};
+
+template <typename T>
+struct underlying_or_self<T, true>
+{
+    using type = std::underlying_type_t<T>;
+};
+
+}  // namespace details
+
+template <typename T>
+using underlying_or_self_t = typename details::underlying_or_self<T>::type;
 
 template <typename T>
 concept Streamable = requires (std::ostream& os, T t) {

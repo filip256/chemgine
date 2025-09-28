@@ -20,9 +20,9 @@ public:
 
     bool isRadical() const;
 
-    uint8_t       getPrecedence() const;
-    const Symbol& getSymbol() const;
-    std::string   getSMILES() const;
+    AtomPrecedence getPrecedence() const;
+    const Symbol&  getSymbol() const;
+    std::string    getSMILES() const;
 
     bool         equals(const AtomBase& other) const;
     virtual bool matches(const AtomBase& other) const = 0;

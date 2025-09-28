@@ -2,7 +2,7 @@
 
 #include "atomics/Bond.hpp"
 #include "atomics/kinds/Atom.hpp"
-#include "global/SizeTypedefs.hpp"
+#include "global/Typedef.hpp"
 
 #include <memory>
 #include <vector>
@@ -13,8 +13,8 @@ protected:
     BondedAtomBase(const c_size index, std::vector<Bond>&& bonds) noexcept;
 
 public:
-    c_size            index;
     std::vector<Bond> bonds;
+    c_size            index;
 
     BondedAtomBase(const BondedAtomBase&) = default;
     BondedAtomBase(BondedAtomBase&&)      = default;

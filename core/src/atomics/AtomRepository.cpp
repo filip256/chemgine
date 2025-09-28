@@ -84,38 +84,41 @@ bool AtomRepository::add<RadicalData>(const def::Object& definition)
         matchSet.emplace(std::move(matchSymbol), /*inferred=*/false);
     }
 
+    auto thisR = std::make_unique<RadicalData>(std::move(*symbol), std::move(name), minWeight, std::move(matchSet));
+
     // Infer cross-radical matches:
     // R1 = {A, B}     >>  R1 := {A, B}
     // R2 = {A, B, C}  >>  R2 := {A, B, C, R1, R3}
     // R3 = {A, B, C}  >>  R3 := {A, B, C, R1, R2}
-    for (auto& [s, a] : atoms) {
-        if (auto r = final_cast<RadicalData>(*a)) {
-            const auto inclusion =
-                utils::compareInclusion(matchSet, r->getMatches(), [](const auto& m) { return not m.isInferred; });
+    for (auto& [_, a] : atoms) {
+        if (auto* otherR = final_cast<RadicalData>(*a)) {
+            const auto inclusion = utils::compareInclusion(
+                thisR->getMatches(), otherR->getMatches(), [](const auto& m) { return not m.isInferred; });
             if (utils::isNPos(inclusion))
                 continue;  // No common matches.
 
+            // Both the new radical and the existing radical may be modified. This way the order of the radical
+            // definitions does not affect match inference.
             if (inclusion == 1)
-                matchSet.emplace(utils::copy(r->symbol), /*inferred=*/true);
+                thisR->addInferredMatch(*otherR);
             else if (inclusion == -1)
-                r->addInferredMatch(utils::copy(*symbol));
+                otherR->addInferredMatch(*thisR);
             else {
                 Log(this).warn(
                     "Redundant radical definition: '{}' perfectly matches existing radical: '{}: {}', at: {}.",
                     *symbol,
-                    r->symbol,
-                    def::prettyPrint(r->getMatches()),
+                    otherR->symbol,
+                    def::prettyPrint(otherR->getMatches()),
                     definition.getLocationName());
 
-                r->addInferredMatch(utils::copy(*symbol));
-                matchSet.emplace(utils::copy(r->symbol), /*inferred=*/true);
+                otherR->addInferredMatch(*thisR);
+                thisR->addInferredMatch(*otherR);
             }
         }
     }
 
-    auto data = std::make_unique<RadicalData>(std::move(*symbol), std::move(name), minWeight, std::move(matchSet));
-    if (not atoms.emplace(data->symbol, std::move(data)).second) {
-        Log(this).warn("Radical with duplicate symbol: '{}' skipped.", data->symbol);
+    if (not atoms.emplace(thisR->symbol, std::move(thisR)).second) {
+        Log(this).warn("Radical with duplicate symbol: '{}' skipped.", thisR->symbol);
         return false;
     }
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "utils/Exception.hpp"
-
 #include <string>
 
 // CHG_UNREACHABLE
@@ -36,6 +34,25 @@ static_assert("Unsupported target operating system.");
 #else
     #define CHG_LINUX_ONLY(...)
 #endif
+
+// Build options
+// (converting macros to constexpr values ensures both pathways compile)
+namespace chg
+{
+
+#ifdef CHG_ENABLE_CHECKED_CASTS
+constexpr bool ENABLE_CHECKED_CASTS = true;
+#else
+constexpr bool ENABLE_CHECKED_CASTS = false;
+#endif
+
+#ifdef CHG_ENABLE_CONCURRENCY_CHECKS
+constexpr bool ENABLE_CONCURRENCY_CHECKS = true;
+#else
+constexpr bool ENABLE_CONCURRENCY_CHECKS = false;
+#endif
+
+}  // namespace chg
 
 namespace utils
 {

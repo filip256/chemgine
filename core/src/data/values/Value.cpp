@@ -1,6 +1,6 @@
 #include "data/values/Value.hpp"
 
-#include "global/Precision.hpp"
+#include "global/Typedef.hpp"
 #include "utils/Numeric.hpp"
 
 template <class T>

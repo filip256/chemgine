@@ -2,7 +2,7 @@
 
 #include "data/def/Parsers.hpp"
 #include "data/def/Printers.hpp"
-#include "global/Precision.hpp"
+#include "global/Typedef.hpp"
 #include "io/Log.hpp"
 #include "utils/Path.hpp"
 

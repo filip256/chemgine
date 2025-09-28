@@ -1,5 +1,6 @@
 #pragma once
 
+#include "io/Log.hpp"
 #include "utils/Casts.hpp"
 
 #include <algorithm>
@@ -84,8 +85,11 @@ auto transform(const std::vector<InT>& vector, CallableT&& converter);
 
 template <typename InT1, typename InT2, typename OutT = std::pair<InT1, InT2>>
 std::vector<OutT> zip(std::vector<InT1>&& vector, const InT2& object);
-template <typename OutT, typename ObjT1, typename ObjT2>
-std::vector<OutT> zip(std::vector<ObjT1>&& vector, const ObjT2& object);
+template <typename OutT, typename InT1, typename InT2>
+std::vector<OutT> zip(std::vector<InT1>&& vector, const InT2& object);
+
+template <typename T = size_t>
+std::vector<T> iota(const size_t n);
 
 template <typename T>
 std::vector<std::vector<T>> getArrangementsWithRepetitions(const std::vector<T>& vector, const size_t maxLength);
@@ -99,7 +103,7 @@ template <typename T, typename OutT = T>
 OutT getAveragedMedian(std::vector<T>& values);
 
 template <typename T>
-T copy(const T& obj);
+inline T copy(const T& obj);
 
 template <typename T>
 constexpr T min(const T arg);
@@ -218,6 +222,27 @@ using StringMap = std::unordered_map<std::string, T, StringHash, std::equal_to<>
 // Transparent string_view map which allows querying using strings, string_views and const char*.
 template <typename T>
 using StringViewMap = std::unordered_map<std::string_view, T, StringHash, std::equal_to<>>;
+
+//
+// InjectivePairingEGenerator
+//
+
+template <typename T = size_t>
+class InjectivePairingGenerator
+{
+    static_assert(std::is_integral_v<T>, "T must be an integral type.");
+
+private:
+    std::vector<T> permutation;
+    T              n;
+    bool           first = true;
+
+public:
+    InjectivePairingGenerator(const T n, const T m) noexcept;
+
+    void                         reset();
+    std::vector<std::pair<T, T>> next();
+};
 
 };  // namespace utils
 
@@ -480,6 +505,16 @@ std::vector<OutT> utils::zip(std::vector<InT1>&& vector, const InT2& object)
 }
 
 template <typename T>
+std::vector<T> utils::iota(const size_t n)
+{
+    std::vector<T> result;
+    result.reserve(n);
+    for (T i = 0; i < n; ++i)
+        result.emplace_back(i);
+    return result;
+}
+
+template <typename T>
 static void getArrangementsWithRepetitions(
     const std::vector<T>& vector, const size_t maxLength, std::vector<T>& current, std::vector<std::vector<T>>& result)
 {
@@ -512,11 +547,7 @@ std::vector<std::vector<T>> utils::getArrangementsWithRepetitions(const std::vec
 template <typename T>
 std::vector<size_t> utils::getSortingPermutation(const std::vector<T>& vector, bool (*lessThan)(const T&, const T&))
 {
-    // Initialize indexMap[i] = i
-    std::vector<size_t> indexMap;
-    indexMap.reserve(vector.size());
-    for (size_t i = 0; i < vector.size(); ++i)
-        indexMap.emplace_back(i);
+    auto indexMap = iota<size_t>(vector.size());
 
     // Generate a mapping between each index in the sorted vector and the index of the same element
     // in the original vector.
@@ -574,7 +605,7 @@ OutT utils::getAveragedMedian(std::vector<T>& values)
 }
 
 template <typename T>
-T utils::copy(const T& obj)
+inline T utils::copy(const T& obj)
 {
     return obj;
 }
@@ -660,4 +691,42 @@ utils::DerefIterator<IteratorT> utils::DerefIterator<IteratorT>::operator++(int)
     DerefIterator tmp = *this;
     ++(*this);
     return tmp;
+}
+
+//
+// InjectivePairingGenerator
+//
+
+template <typename T>
+utils::InjectivePairingGenerator<T>::InjectivePairingGenerator(const T n, const T m) noexcept :
+    n(n),
+    permutation(iota<T>(m))
+{
+    if (n > m)
+        Log(this).fatal("Cannot map {} elements to {} elements injectively.", n, m);
+}
+
+template <typename T>
+void utils::InjectivePairingGenerator<T>::reset()
+{
+    permutation = iota<T>(permutation.size());
+    first       = true;
+}
+
+template <typename T>
+std::vector<std::pair<T, T>> utils::InjectivePairingGenerator<T>::next()
+{
+    if (!first && !std::ranges::next_permutation(permutation).found) {
+        return {};
+    }
+    else {
+        first = false;
+    }
+
+    std::vector<std::pair<T, T>> result;
+    result.reserve(n);
+    for (T i = 0; i < n; ++i) {
+        result.emplace_back(i, permutation[i]);
+    }
+    return result;
 }

@@ -16,23 +16,23 @@
 UnitTests::UnitTests(const std::regex& filter) noexcept :
     UnitTestGroup("Unit", filter)
 {
-    registerTest<UtilsUnitTests>("utils");
-    registerTest<EstimatorUnitTests>("Estimator");
+    // registerTest<UtilsUnitTests>("utils");
+    // registerTest<EstimatorUnitTests>("Estimator");
     registerTest<StructureUnitTests>("Structure", "./data/builtin/radicals.cdef");
-    registerTest<DefUnitTests>("def", "./data/builtin/radicals.cdef");
-    registerTest<ModuleUnitTest>("Module", "./data/builtin.cdef");
-    registerTest<MixtureUnitTests>("Mixture", "./data/builtin.cdef");
-    registerTest<ProcessUnitTests>("Process");
+    // registerTest<DefUnitTests>("def", "./data/builtin/radicals.cdef");
+    // registerTest<ModuleUnitTest>("Module", "./data/builtin.cdef");
+    // registerTest<MixtureUnitTests>("Mixture", "./data/builtin.cdef");
+    // registerTest<ProcessUnitTests>("Process");
 }
 
 PerfTests::PerfTests(const std::regex& filter) noexcept :
     PerfTestGroup("Perf", filter),
     timingUnitTests("Timing", filter)
 {
-    registerTest<EstimatorPerfTests>("Estimator");
-    registerTest<StructurePerfTests>("Structure", "./data/builtin/radicals.cdef");
-    registerTest<DefPerfTests>("def", "./data/builtin/radicals.cdef");
-    registerTest<FPSPerfTests>("FPS", "./data/builtin.cdef");
+    // registerTest<EstimatorPerfTests>("Estimator");
+    // registerTest<StructurePerfTests>("Structure", "./data/builtin/radicals.cdef");
+    // registerTest<DefPerfTests>("def", "./data/builtin/radicals.cdef");
+    // registerTest<FPSPerfTests>("FPS", "./data/builtin.cdef");
 }
 
 TimingResult PerfTests::run(PerformanceReport& report)

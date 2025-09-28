@@ -6,7 +6,6 @@ class AtomData : public AtomBaseData
 {
 private:
     const ImmutableSet<uint8_t> valences;
-    const uint8_t               rarity;
 
 public:
     AtomData(
@@ -20,8 +19,6 @@ public:
     const ImmutableSet<uint8_t>& getValences() const override final;
     uint8_t                      getFittingValence(const uint8_t bonds) const override final;
     bool                         hasValence(const uint8_t valence) const override final;
-
-    uint8_t getPrecedence() const override final;
 
     void dumpDefinition(std::ostream& out, const bool prettify) const override final;
 

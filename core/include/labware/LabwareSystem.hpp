@@ -1,6 +1,6 @@
 #pragma once
 
-#include "global/SizeTypedefs.hpp"
+#include "global/Typedef.hpp"
 #include "labware/LabwareConnection.hpp"
 #include "labware/kinds/LabwareComponentBase.hpp"
 
